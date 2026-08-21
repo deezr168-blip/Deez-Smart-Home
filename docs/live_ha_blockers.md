@@ -48,6 +48,46 @@ current entity **state** and issue live control actions.
   scaffolding** — there is currently no available path to pull the real
   YAML/config for these out of the live instance through this connector.
 
+## Findings from the entity inventory (2026-08-21)
+
+A full live read via `GetLiveContext` (430 entities, see
+`docs/entity_inventory.md`) surfaced additional blockers beyond the
+missing config-export capability:
+
+- **No `entity_id` values available.** `GetLiveContext` only returns
+  friendly name, domain, state, area, and partial attributes — never the
+  actual `entity_id`. Real entity IDs must be confirmed via the entity
+  registry / Developer Tools / REST API before any automation, script, or
+  dashboard in this repo references a specific entity. This inventory is
+  not sufficient on its own to write HA config.
+- **Likely duplicate device registrations.** Several TP-Link Kasa/Tapo
+  plugs (`K/Bot P100`, `K/Coffee P100`, `K/Top P100`, `G/Printer P100`) and
+  a few contact sensors each show up as two entities with the same name —
+  one live, one `unavailable` — suggesting two integrations (cloud +
+  local) registered for the same physical device. Worth cleaning up in HA
+  directly before this repo starts depending on those entities.
+- **Malformed entity names**: `"Tapo C420 - East Wall Tapo C420 East
+  Wall"` and `"Tapo C420 - South Wall Tapo C420 - South Wall"` switches
+  appear to have the device name duplicated inside the entity name.
+- **Devices that appear fully offline** at snapshot time: the Presence
+  Multi-Sensor FP300 (whole device), the Primo 5.0-1 solar inverter (whole
+  device), the SolarNet integration (whole device), several living-room
+  and dining-room light fixtures, the "Tapo C420 - South Wall" camera's
+  sub-entities, and a couple of energy-monitor plugs. Confirm these are
+  intentionally offline/retired vs. actually broken before relying on them.
+- **Privacy-sensitive live state values**: a physical street address and
+  the home WiFi SSID both appear as literal sensor state values (redacted
+  in `docs/entity_inventory.md`). If any automation/dashboard needs to
+  reference these, treat the values as sensitive — do not paste them into
+  committed YAML/docs.
+- **Likely cloud-dependent integrations** present: Ring, TP-Link
+  Tapo/Kasa cloud connectivity, Electricity Maps, a solar production
+  forecast integration, Hue Bridge's own automation engine (not native HA
+  automations), the HA Companion App (iPhones/iPads), and possibly
+  Samsung/LG TV cloud features. Config for these typically needs API
+  keys/tokens kept out of git (e.g. via `secrets.yaml`, excluded from
+  version control).
+
 ## Blockers to resolve
 
 - [ ] **Dashboard config**: need the real Lovelace YAML/storage config
