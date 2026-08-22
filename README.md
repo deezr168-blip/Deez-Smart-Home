@@ -19,6 +19,8 @@ Configuration, documentation and tooling for a Home Assistant installation.
 - [`docs/health_report.md`](docs/health_report.md) — triage of unavailable
   entities, duplicate integrations and configuration defects found in the live
   system.
+- [`docs/improvement_backlog.md`](docs/improvement_backlog.md) — proposed
+  automations and dashboard work, and what currently blocks each item.
 
 ## Regenerating the entity inventory
 
