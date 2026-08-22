@@ -1,0 +1,27 @@
+# Secrets — never commit these
+.env
+.env.*
+!.env.example
+*.token
+*secret*
+*credential*
+*_token.yaml
+secrets.yaml
+
+# Home Assistant long-lived access tokens / SSH keys, if ever copied locally
+*.pem
+id_rsa
+id_rsa.*
+id_ed25519
+id_ed25519.*
+known_hosts
+
+# Local backups pulled from /config for inspection
+/config_backups/
+*.tar
+*.tar.gz
+
+# Editor / OS cruft
+.DS_Store
+.vscode/
+*.swp
