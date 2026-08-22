@@ -1,0 +1,45 @@
+# Home Assistant secrets — never commit
+secrets.yaml
+.storage/
+*.token
+*.pem
+*.key
+known_devices.yaml
+ip_bans.yaml
+
+# Environment / credentials
+.env
+.env.*
+credentials.json
+token.json
+
+# Home Assistant runtime state
+home-assistant_v2.db*
+home-assistant.log*
+.cloud/
+tts/
+deps/
+*.db-shm
+*.db-wal
+
+# Backups (may embed secrets)
+backups/
+*.tar
+*.tar.gz
+
+# Dated snapshots under snapshots/ are tracked on purpose: they are the input
+# that makes docs/entity_inventory.md reproducible. Scratch captures are not.
+snapshots/scratch-*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
