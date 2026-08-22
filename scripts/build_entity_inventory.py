@@ -17,68 +17,28 @@ from __future__ import annotations
 
 import argparse
 import collections
-import html
-import json
-import re
 import sys
 from pathlib import Path
 
-HEADER_RE = re.compile(r"^Live Context:")
-
-# Domains whose entities are stateless triggers or activators. Home Assistant
-# reports these as "unknown" until first use, which is normal and not a fault.
-STATELESS_DOMAINS = {"button", "event", "scene", "notify", "select", "time"}
-
-
-def load_context(path: Path) -> str:
-    raw = path.read_text(encoding="utf-8")
-    stripped = raw.lstrip()
-    if stripped.startswith("{"):
-        payload = json.loads(raw)
-        if not payload.get("success", True):
-            raise SystemExit(f"{path}: snapshot reports success=false")
-        return payload["result"]
-    return raw
-
-
-def parse(context: str) -> list[dict]:
-    entities: list[dict] = []
-    current: dict | None = None
-    in_attrs = False
-
-    for line in context.split("\n"):
-        if not line.strip() or HEADER_RE.match(line):
-            continue
-        if line.startswith("- names: "):
-            if current is not None:
-                entities.append(current)
-            current = {"name": html.unescape(line[len("- names: "):]).strip("'"),
-                       "domain": "", "state": "", "area": "", "attrs": {}}
-            in_attrs = False
-        elif current is None:
-            continue
-        elif line.startswith("  domain: "):
-            current["domain"] = line[len("  domain: "):]
-            in_attrs = False
-        elif line.startswith("  state: "):
-            current["state"] = line[len("  state: "):].strip().strip("'")
-            in_attrs = False
-        elif line.startswith("  areas: "):
-            current["area"] = line[len("  areas: "):]
-            in_attrs = False
-        elif line.strip() == "attributes:":
-            in_attrs = True
-        elif in_attrs and line.startswith("    "):
-            key, _, value = line.strip().partition(": ")
-            current["attrs"][key] = value.strip().strip("'")
-
-    if current is not None:
-        entities.append(current)
-    return entities
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from ha_snapshot import STATELESS_DOMAINS, load  # noqa: E402
 
 
 def escape_cell(text: str) -> str:
     return text.replace("|", r"\|")
+
+
+def repo_relative(path: Path) -> str:
+    """Path as written in the regenerate banner.
+
+    Kept relative to the repository root so the generated file is identical
+    whether the script was invoked with a relative or absolute path.
+    """
+    repo = Path(__file__).resolve().parent.parent
+    try:
+        return path.resolve().relative_to(repo).as_posix()
+    except ValueError:
+        return path.as_posix()
 
 
 def render(entities: list[dict], source: Path) -> str:
@@ -95,7 +55,8 @@ def render(entities: list[dict], source: Path) -> str:
     add("# Entity Inventory")
     add("")
     add("> **Generated file — do not edit by hand.**")
-    add(f"> Regenerate with `python3 scripts/build_entity_inventory.py {source}`.")
+    add("> Regenerate with "
+        f"`python3 scripts/build_entity_inventory.py {repo_relative(source)}`.")
     add("")
     add("## How this was produced")
     add("")
@@ -179,10 +140,7 @@ def main(argv: list[str]) -> int:
                         default=Path("docs/entity_inventory.md"))
     args = parser.parse_args(argv)
 
-    entities = parse(load_context(args.snapshot))
-    if not entities:
-        raise SystemExit(f"{args.snapshot}: no entities parsed — is this a snapshot?")
-
+    entities = load(args.snapshot)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(render(entities, args.snapshot), encoding="utf-8")
     print(f"Wrote {args.output} ({len(entities)} entities)")

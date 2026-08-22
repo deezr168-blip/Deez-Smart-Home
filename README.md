@@ -36,6 +36,26 @@ server's `GetLiveContext` call (or read the
 `homeassistant://assist/context-snapshot` resource) to
 `snapshots/YYYY-MM-DD-assist-context.json`, then rerun the command above.
 
+## Comparing two snapshots
+
+```sh
+python3 scripts/diff_snapshots.py snapshots/<older>.json snapshots/<newer>.json
+```
+
+Reports entities that became unavailable, recovered, appeared or disappeared,
+hiding routine state churn unless `--all-changes` is passed. It exits non-zero
+when something broke or vanished, so it can gate a check.
+
+## Tests
+
+```sh
+python3 scripts/test_snapshot_tools.py
+```
+
+No third-party dependencies. The suite also asserts that
+`docs/entity_inventory.md` still matches what the generator produces, so a stale
+committed inventory fails the run.
+
 ### Known limitation: entity IDs
 
 The Assist context does **not** expose canonical `domain.object_id` entity IDs —
