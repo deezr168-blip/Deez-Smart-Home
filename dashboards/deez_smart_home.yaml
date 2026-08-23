@@ -1,0 +1,4666 @@
+kiosk_mode:
+  hide_sidebar: true
+  hide_header: true
+  ignore_per_user: false
+theme: Deez Smart Home
+views:
+  - type: sections
+    title: Deez Smart Home
+    path: home
+    icon: mdi:home-assistant
+    max_columns: 4
+    sections:
+      - type: grid
+        cards:
+          - type: custom:mushroom-chips-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 2px 2px 0px 2px;
+                }
+                ha-card .chip-container {
+                  gap: 8px;
+                }
+            alignment: justify
+            chips:
+              - type: template
+                icon: mdi:home-flood
+                content: >-
+                  {{ '家' if is_state('input_boolean.chinese_dashboard','on')
+                  else 'Casa' }}
+                icon_color: blue
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/home
+              - type: template
+                icon: mdi:check-circle
+                content: >-
+                  {{ ('已连接' if is_state('input_boolean.chinese_dashboard','on')
+                  else 'Connected') if
+                  is_state('binary_sensor.eero_wan_status','on') else ('离线' if
+                  is_state('input_boolean.chinese_dashboard','on') else
+                  'Offline') }}
+                icon_color: >-
+                  {{ 'green' if is_state('binary_sensor.eero_wan_status','on')
+                  else 'red' }}
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/network
+          - type: grid
+            columns: 2
+            square: false
+            cards:
+              - type: custom:mushroom-template-card
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: linear-gradient(180deg,
+                        rgba(255,138,61,0.22) 0%,
+                        rgba(255,138,61,0.05) 100%);
+                      border: 1px solid rgba(255,138,61,0.35);
+                      border-radius: 22px;
+                      box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+                      min-height: 168px;
+                    }
+                primary: |-
+                  {% set doors = [
+                    states('binary_sensor.f_contact_sensor_door'),
+                    states('binary_sensor.m_contact_sensor_door'),
+                    states('binary_sensor.b_contact_sensor_door')
+                  ] %} {{ doors | select('eq','on') | list | count }} open
+                secondary: >-
+                  {{ '门禁' if is_state('input_boolean.chinese_dashboard','on')
+                  else 'Access' }}
+                icon: >-
+                  {% set doors = [
+                    states('binary_sensor.f_contact_sensor_door'),
+                    states('binary_sensor.m_contact_sensor_door'),
+                    states('binary_sensor.b_contact_sensor_door')
+                  ] %} {{ 'mdi:lock-open-variant' if (doors | select('eq','on')
+                  | list | count) > 0 else 'mdi:lock' }}
+                icon_color: >-
+                  {% set doors = [
+                    states('binary_sensor.f_contact_sensor_door'),
+                    states('binary_sensor.m_contact_sensor_door'),
+                    states('binary_sensor.b_contact_sensor_door')
+                  ] %} {{ 'orange' if (doors | select('eq','on') | list | count)
+                  > 0 else 'green' }}
+                layout: vertical
+                fill_container: true
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/security
+              - type: vertical-stack
+                cards:
+                  - type: custom:mushroom-template-card
+                    card_mod:
+                      style: |
+                        ha-card {
+                          background: rgba(255,255,255,0.07);
+                          border: 1px solid rgba(255,255,255,0.12);
+                          border-radius: 18px;
+                          box-shadow: none;
+                          margin-bottom: 6px;
+                        }
+                    primary: >-
+                      {% set t =
+                      state_attr('weather.forecast_home','temperature') %} {{ (t
+                      | round(0) ~ '°C') if t is not none else
+                      states('weather.forecast_home') }}
+                    secondary: >-
+                      {{ states('weather.forecast_home') | replace('-',' ') |
+                      title }}
+                    icon: mdi:weather-partly-cloudy
+                    icon_color: cyan
+                    entity: weather.forecast_home
+                    tap_action:
+                      action: more-info
+                  - type: custom:mushroom-template-card
+                    card_mod:
+                      style: |
+                        ha-card {
+                          background: rgba(255,255,255,0.07);
+                          border: 1px solid rgba(255,255,255,0.12);
+                          border-radius: 18px;
+                          box-shadow: none;
+                          margin-bottom: 6px;
+                        }
+                    primary: >-
+                      {{ states('time.lph_se_dcd9_light_on')[:5] }} – {{
+                      states('time.lph_se_dcd9_light_off')[:5] }}
+                    secondary: >-
+                      {{ '种植灯' if
+                      is_state('input_boolean.chinese_dashboard','on') else
+                      'Grow light' }}
+                    icon: mdi:sprout
+                    icon_color: green
+                    tap_action:
+                      action: navigate
+                      navigation_path: /deez-smart-home/ray-bedroom
+                  - type: custom:mushroom-template-card
+                    card_mod:
+                      style: |
+                        ha-card {
+                          background: rgba(255,255,255,0.07);
+                          border: 1px solid rgba(255,255,255,0.12);
+                          border-radius: 18px;
+                          box-shadow: none;
+                        }
+                    primary: >-
+                      {% set b =
+                      states('sensor.backup_next_scheduled_automatic_backup') %}
+                      {{ as_timestamp(b) | timestamp_custom('%a %H:%M', true) if
+                      b not in ['unknown','unavailable','none'] else '—' }}
+                    secondary: >-
+                      {{ '下次备份' if
+                      is_state('input_boolean.chinese_dashboard','on') else
+                      'Next backup' }}
+                    icon: mdi:backup-restore
+                    icon_color: indigo
+                    tap_action:
+                      action: navigate
+                      navigation_path: /deez-smart-home/status
+          - type: grid
+            columns: 3
+            square: false
+            cards:
+              - type: custom:mushroom-template-card
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(255,255,255,0.07);
+                      border: 1px solid rgba(255,255,255,0.12);
+                      border-radius: 18px;
+                      box-shadow: none;
+                    }
+                primary: |-
+                  {% set doors = [
+                    states('binary_sensor.f_contact_sensor_door'),
+                    states('binary_sensor.m_contact_sensor_door'),
+                    states('binary_sensor.b_contact_sensor_door')
+                  ] %} {{ doors | select('eq','on') | list | count }} open
+                secondary: >-
+                  {{ '门禁' if is_state('input_boolean.chinese_dashboard','on')
+                  else 'Access' }}
+                icon: mdi:lock-open-variant
+                icon_color: >-
+                  {% set doors = [
+                    states('binary_sensor.f_contact_sensor_door'),
+                    states('binary_sensor.m_contact_sensor_door'),
+                    states('binary_sensor.b_contact_sensor_door')
+                  ] %} {{ 'orange' if (doors | select('eq','on') | list | count)
+                  > 0 else 'green' }}
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/security
+              - type: custom:mushroom-template-card
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(255,255,255,0.07);
+                      border: 1px solid rgba(255,255,255,0.12);
+                      border-radius: 18px;
+                      box-shadow: none;
+                    }
+                primary: >-
+                  {{ states.light | selectattr('state','eq','on') | list | count
+                  }} on
+                secondary: >-
+                  {{ '灯光' if is_state('input_boolean.chinese_dashboard','on')
+                  else 'Lights' }}
+                icon: mdi:lightbulb
+                icon_color: >-
+                  {{ 'amber' if (states.light | selectattr('state','eq','on') |
+                  list | count) > 0 else 'grey' }}
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/lights
+              - type: custom:mushroom-template-card
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(255,255,255,0.07);
+                      border: 1px solid rgba(255,255,255,0.12);
+                      border-radius: 18px;
+                      box-shadow: none;
+                    }
+                primary: >-
+                  {{ states('sensor.powerpal_gateway_powerpal_daily_energy') |
+                  float(0) | round(1) }} kWh
+                secondary: >-
+                  {{ '今日' if is_state('input_boolean.chinese_dashboard','on')
+                  else 'Today' }}
+                icon: mdi:chart-line
+                icon_color: green
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/energy
+          - type: grid
+            columns: 4
+            square: false
+            cards:
+              - type: custom:mushroom-template-card
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(255,255,255,0.07);
+                      border: 1px solid rgba(255,255,255,0.12);
+                      border-radius: 22px;
+                      box-shadow: none;
+                    }
+                primary: >-
+                  {{ '房间' if is_state('input_boolean.chinese_dashboard','on')
+                  else 'Rooms' }}
+                icon: mdi:view-grid
+                icon_color: blue
+                layout: vertical
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/home
+              - type: custom:mushroom-template-card
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(255,255,255,0.07);
+                      border: 1px solid rgba(255,255,255,0.12);
+                      border-radius: 22px;
+                      box-shadow: none;
+                    }
+                primary: >-
+                  {{ '控制' if is_state('input_boolean.chinese_dashboard','on')
+                  else 'Controls' }}
+                icon: mdi:tune-variant
+                icon_color: purple
+                layout: vertical
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/ipad-command-center
+              - type: custom:mushroom-template-card
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(255,255,255,0.07);
+                      border: 1px solid rgba(255,255,255,0.12);
+                      border-radius: 22px;
+                      box-shadow: none;
+                    }
+                primary: >-
+                  {{ '摄像头' if is_state('input_boolean.chinese_dashboard','on')
+                  else 'Cameras' }}
+                icon: mdi:camera
+                icon_color: cyan
+                layout: vertical
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/cameras
+              - type: custom:mushroom-template-card
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(255,255,255,0.07);
+                      border: 1px solid rgba(255,255,255,0.12);
+                      border-radius: 22px;
+                      box-shadow: none;
+                    }
+                primary: >-
+                  {{ '能源' if is_state('input_boolean.chinese_dashboard','on')
+                  else 'Energy' }}
+                icon: mdi:lightning-bolt
+                icon_color: amber
+                layout: vertical
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/energy
+          - type: conditional
+            conditions:
+              - condition: state
+                entity: climate.bedroom_parents_room_ac
+                state_not: 'off'
+              - condition: state
+                entity: climate.bedroom_parents_room_ac
+                state_not: unavailable
+              - condition: state
+                entity: climate.bedroom_parents_room_ac
+                state_not: unknown
+            card:
+              type: custom:mushroom-template-card
+              card_mod:
+                style: |
+                  ha-card {
+                    background: linear-gradient(90deg,
+                      rgba(52,216,224,0.20) 0%,
+                      rgba(52,216,224,0.05) 100%);
+                    border: 1px solid rgba(52,216,224,0.30);
+                    border-radius: 18px;
+                    box-shadow: none;
+                  }
+              primary: >-
+                {{ states('climate.bedroom_parents_room_ac') | title }} • {{
+                state_attr('climate.bedroom_parents_room_ac','temperature') }}°
+              secondary: >-
+                {{ '父母房空调运行中' if
+                is_state('input_boolean.chinese_dashboard','on') else 'Parents
+                AC running' }}
+              icon: mdi:air-conditioner
+              icon_color: cyan
+              tap_action:
+                action: navigate
+                navigation_path: /deez-smart-home/climate
+          - type: conditional
+            conditions:
+              - condition: state
+                entity: media_player.living_room_tv_samsung_q9_series_65
+                state: playing
+            card:
+              type: custom:mushroom-template-card
+              card_mod:
+                style: |
+                  ha-card {
+                    background: linear-gradient(90deg,
+                      rgba(192,66,255,0.20) 0%,
+                      rgba(192,66,255,0.05) 100%);
+                    border: 1px solid rgba(192,66,255,0.30);
+                    border-radius: 18px;
+                    box-shadow: none;
+                  }
+              primary: >-
+                {{
+                state_attr('media_player.living_room_tv_samsung_q9_series_65','media_title')
+                or 'Playing' }}
+              secondary: >-
+                {{ '客厅电视播放中' if is_state('input_boolean.chinese_dashboard','on')
+                else 'Living Room TV' }}
+              icon: mdi:television-play
+              icon_color: purple
+              tap_action:
+                action: navigate
+                navigation_path: /deez-smart-home/media
+          - type: conditional
+            conditions:
+              - condition: state
+                entity: binary_sensor.lph_se_dcd9_pump
+                state: 'on'
+            card:
+              type: custom:mushroom-template-card
+              card_mod:
+                style: |
+                  ha-card {
+                    background: linear-gradient(90deg,
+                      rgba(52,211,153,0.20) 0%,
+                      rgba(52,211,153,0.05) 100%);
+                    border: 1px solid rgba(52,211,153,0.30);
+                    border-radius: 18px;
+                    box-shadow: none;
+                  }
+              primary: >-
+                {{ '水泵运行中' if is_state('input_boolean.chinese_dashboard','on')
+                else 'Pump cycling' }}
+              secondary: >-
+                {{ 'LetPot 种植机' if
+                is_state('input_boolean.chinese_dashboard','on') else 'LetPot
+                garden' }}
+              icon: mdi:water-pump
+              icon_color: green
+              tap_action:
+                action: navigate
+                navigation_path: /deez-smart-home/ray-bedroom
+      - type: grid
+        cards:
+          - type: custom:mushroom-title-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 4px 4px 0px 4px;
+                  margin-bottom: -4px;
+                }
+            title: >-
+              {{ '🏠 Deez 智能家居' if
+              is_state('input_boolean.chinese_dashboard','on') else '🏠 Deez
+              Smart Home' }}
+            subtitle: >-
+              {{ '家庭控制中心' if is_state('input_boolean.chinese_dashboard','on')
+              else 'Home control centre' }}
+          - type: custom:mushroom-chips-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 0px;
+                }
+                ha-card .chip-container {
+                  gap: 8px;
+                }
+            alignment: start
+            chips:
+              - type: template
+                icon: mdi:translate
+                content: English
+                icon_color: >-
+                  {{ 'green' if
+                  is_state('input_boolean.chinese_dashboard','off') else 'grey'
+                  }}
+                tap_action:
+                  action: perform-action
+                  perform_action: input_boolean.turn_off
+                  target:
+                    entity_id: input_boolean.chinese_dashboard
+              - type: template
+                icon: mdi:translate
+                content: 中文
+                icon_color: >-
+                  {{ 'green' if is_state('input_boolean.chinese_dashboard','on')
+                  else 'grey' }}
+                tap_action:
+                  action: perform-action
+                  perform_action: input_boolean.turn_on
+                  target:
+                    entity_id: input_boolean.chinese_dashboard
+          - type: custom:mushroom-template-card
+            primary: >-
+              {{ '家庭状态' if is_state('input_boolean.chinese_dashboard','on') else
+              'House Pulse' }}
+            secondary: >-
+              {% set doors = [states('binary_sensor.m_contact_sensor_door'),
+              states('binary_sensor.f_contact_sensor_door'),
+              states('binary_sensor.b_contact_sensor_door')] %} {% set open =
+              doors | select('eq','on') | list | count %} {% set wan =
+              is_state('binary_sensor.eero_wan_status','on') %} {% set lights =
+              states.light | selectattr('state','eq','on') | list | count %} {%
+              set t = state_attr('weather.forecast_home','temperature') %} {% if
+              is_state('input_boolean.chinese_dashboard','on') %}
+                {{ open }} 扇门开启 • {{ lights }} 盏灯 • {{ t }}°C{{ ' • 网络离线' if not wan else '' }}
+              {% else %}
+                {{ open }} open • {{ lights }} lights • {{ t }}°C{{ ' • Offline' if not wan else '' }}
+              {% endif %}
+            icon: mdi:home-heart
+            icon_color: >-
+              {% set doors = [states('binary_sensor.m_contact_sensor_door'),
+              states('binary_sensor.f_contact_sensor_door'),
+              states('binary_sensor.b_contact_sensor_door')] %} {% set open =
+              doors | select('eq','on') | list | count %} {{ 'red' if open > 0
+              or not is_state('binary_sensor.eero_wan_status','on') else 'green'
+              }}
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/status
+          - type: custom:mushroom-chips-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 0px;
+                }
+                ha-card .chip-container {
+                  gap: 8px;
+                }
+            alignment: start
+            chips:
+              - type: template
+                icon: mdi:solar-power
+                content: >-
+                  {% set p = states('sensor.primo_5_0_1_1_ac_power') | float(0)
+                  %} {{ ((p / 1000) | round(1) ~ ' kW') if p >= 1000 else (p |
+                  round(0) ~ ' W') }}
+                icon_color: >-
+                  {{ 'amber' if (states('sensor.primo_5_0_1_1_ac_power') |
+                  float(0)) > 0 else 'grey' }}
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/energy
+              - type: template
+                icon: mdi:lightbulb-group
+                content: >-
+                  {{ states.light | selectattr('state','eq','on') | list | count
+                  }} on
+                icon_color: >-
+                  {{ 'amber' if (states.light | selectattr('state','eq','on') |
+                  list | count) > 0 else 'grey' }}
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/lights
+              - type: template
+                icon: mdi:door
+                content: >-
+                  {% set doors = [states('binary_sensor.m_contact_sensor_door'),
+                  states('binary_sensor.f_contact_sensor_door'),
+                  states('binary_sensor.b_contact_sensor_door')] %} {{ doors |
+                  select('eq','on') | list | count }} open
+                icon_color: >-
+                  {% set doors = [states('binary_sensor.m_contact_sensor_door'),
+                  states('binary_sensor.f_contact_sensor_door'),
+                  states('binary_sensor.b_contact_sensor_door')] %} {{ 'red' if
+                  (doors | select('eq','on') | list | count) > 0 else 'green' }}
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/security
+              - type: template
+                icon: mdi:cctv
+                content: Cameras
+                icon_color: blue
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/cameras
+              - type: template
+                icon: mdi:account
+                content: '{{ states(''person.raymond_du'') }}'
+                icon_color: >-
+                  {{ 'green' if is_state('person.raymond_du','home') else 'blue'
+                  }}
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/people-locations
+              - type: template
+                icon: mdi:weather-partly-cloudy
+                content: '{{ state_attr(''weather.forecast_home'',''temperature'') }}°'
+                icon_color: blue
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/status
+              - type: template
+                icon: mdi:receipt-text
+                content: >-
+                  {% set n = states('sensor.bills_unpaid_count') | int(0) %} {{
+                  n ~ ' due' if n > 0 else 'Bills' }}
+                icon_color: >-
+                  {% if states('sensor.bills_unpaid_count') | int(0) > 0
+                  %}orange{% else %}green{% endif %}
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/bills
+      - type: grid
+        cards:
+          - type: conditional
+            conditions:
+              - condition: state
+                entity: climate.bedroom_parents_room_ac
+                state_not: 'off'
+              - condition: state
+                entity: climate.bedroom_parents_room_ac
+                state_not: unavailable
+              - condition: state
+                entity: climate.bedroom_parents_room_ac
+                state_not: unknown
+            card:
+              type: custom:mushroom-template-card
+              primary: Air Conditioning
+              secondary: >-
+                {{ states('climate.bedroom_parents_room_ac') | title }} • {{
+                state_attr('climate.bedroom_parents_room_ac','current_temperature')
+                }}°C → {{
+                state_attr('climate.bedroom_parents_room_ac','temperature') }}°C
+              icon: mdi:air-conditioner
+              tap_action:
+                action: navigate
+                navigation_path: /deez-smart-home/climate
+              color: blue
+              features_position: bottom
+              vertical: true
+          - type: conditional
+            conditions:
+              - condition: state
+                entity: media_player.living_room_tv_samsung_q9_series_65
+                state: playing
+            card:
+              type: custom:mushroom-template-card
+              primary: Living Room TV
+              secondary: >-
+                {{
+                state_attr('media_player.living_room_tv_samsung_q9_series_65','media_title')
+                or 'Playing' }}
+              icon: mdi:television-play
+              tap_action:
+                action: navigate
+                navigation_path: /deez-smart-home/media
+              color: purple
+              features_position: bottom
+              vertical: true
+          - type: conditional
+            conditions:
+              - condition: numeric_state
+                entity: sensor.primo_5_0_1_1_ac_power
+                above: 100
+            card:
+              type: custom:mushroom-template-card
+              primary: Solar Producing
+              secondary: >-
+                {% set p = states('sensor.primo_5_0_1_1_ac_power') | float(0) %}
+                {{ ((p / 1000) | round(2) ~ ' kW') if p >= 1000 else (p |
+                round(0) ~ ' W') }} • {{
+                states('sensor.primo_5_0_1_1_energy_day') | float(0) | round(1)
+                }} Wh today
+              icon: mdi:solar-power-variant
+              tap_action:
+                action: navigate
+                navigation_path: /deez-smart-home/energy
+              color: amber
+              features_position: bottom
+              vertical: true
+          - type: conditional
+            conditions:
+              - condition: numeric_state
+                entity: sensor.bills_unpaid_count
+                above: 0
+            card:
+              type: custom:mushroom-template-card
+              primary: Bills Outstanding
+              secondary: >-
+                {{ states('sensor.bills_unpaid_count') }} unpaid • ${{
+                states('sensor.bills_outstanding_total') }}
+              icon: mdi:cash-clock
+              tap_action:
+                action: navigate
+                navigation_path: /deez-smart-home/bills
+              color: orange
+              features_position: bottom
+              vertical: true
+      - type: grid
+        cards:
+          - type: custom:mushroom-title-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 4px 4px 0px 4px;
+                  margin-bottom: -4px;
+                }
+            title: >-
+              {{ '快速控制' if is_state('input_boolean.chinese_dashboard','on') else
+              'Quick Control' }}
+            subtitle: >-
+              {{ '常用设备' if is_state('input_boolean.chinese_dashboard','on') else
+              'Most-used devices' }}
+          - type: custom:mushroom-light-card
+            entity: light.living_room
+            name: Living Room
+            use_light_color: true
+            show_brightness_control: true
+            collapsible_controls: true
+          - type: custom:mushroom-light-card
+            entity: light.dining
+            name: Dining
+            show_brightness_control: true
+            collapsible_controls: true
+            icon: mdi:light-recessed
+          - type: custom:mushroom-light-card
+            entity: light.bedroom_bedroom
+            name: Ray Bedroom
+            use_light_color: true
+            show_brightness_control: true
+            collapsible_controls: true
+          - type: custom:mushroom-entity-card
+            entity: switch.mainroomlight_switch_1
+            name: Parents Main Light
+            icon: mdi:light-switch
+      - type: grid
+        cards:
+          - type: custom:mushroom-title-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 4px 4px 0px 4px;
+                  margin-bottom: -4px;
+                }
+            title: >-
+              {{ '房间' if is_state('input_boolean.chinese_dashboard','on') else
+              'Rooms' }}
+            subtitle: >-
+              {{ '快速访问' if is_state('input_boolean.chinese_dashboard','on') else
+              'Quick access' }}
+          - type: custom:mushroom-template-card
+            primary: Living Room
+            secondary: >-
+              {{ states('sensor.living_room_living_hue_hue_sensor_temperature')
+              }} °C
+            icon: mdi:sofa
+            icon_color: '{{ ''amber'' if is_state(''light.living_room'',''on'') else ''grey'' }}'
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/living-room
+          - type: custom:mushroom-template-card
+            primary: Parents Room
+            secondary: >-
+              {{ states('sensor.bedroom_motion_sensor_temperature') }} °C • {{
+              states('sensor.bedroom_motion_sensor_humidity') }} %
+            icon: mdi:bed-king
+            icon_color: >-
+              {{ 'amber' if is_state('switch.mainroomlight_switch_1','on') else
+              'grey' }}
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/parents-room
+          - type: custom:mushroom-template-card
+            primary: Ray Bedroom
+            secondary: >-
+              {{ 'Shade open' if
+              is_state('cover.aqara_roller_shade_driver_e1','open') else 'Shade
+              closed' }}
+            icon: mdi:bed
+            icon_color: >-
+              {{ 'amber' if is_state('light.bedroom_bedroom','on') else 'grey'
+              }}
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/ray-bedroom
+          - type: custom:mushroom-template-card
+            primary: Kitchen
+            secondary: Fridge • power monitoring
+            icon: mdi:silverware-fork-knife
+            icon_color: >-
+              {{ 'amber' if
+              is_state('binary_sensor.k_motion_sensor_motion','on') else 'grey'
+              }}
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/kitchen
+          - type: custom:mushroom-template-card
+            primary: Dining
+            secondary: Lighting • feeder
+            icon: mdi:table-chair
+            icon_color: '{{ ''amber'' if is_state(''light.dining'',''on'') else ''grey'' }}'
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/dining
+          - type: custom:mushroom-template-card
+            primary: Garage
+            secondary: >-
+              Freezer {{
+              states('sensor.g_monitor_freezer_p110m_current_consumption') }} W
+            icon: mdi:garage
+            icon_color: grey
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/garage
+          - type: custom:mushroom-template-card
+            primary: Guest Room
+            secondary: Lighting • Pogo • printer
+            icon: mdi:bed-empty
+            icon_color: '{{ ''amber'' if is_state(''light.kogan_tv'',''on'') else ''grey'' }}'
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/guest-room
+      - type: grid
+        cards:
+          - type: custom:mushroom-title-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 4px 4px 0px 4px;
+                  margin-bottom: -4px;
+                }
+            title: >-
+              {{ '家庭系统' if is_state('input_boolean.chinese_dashboard','on') else
+              'Home Systems' }}
+            subtitle: >-
+              {{ '能源、安防及基础设施' if
+              is_state('input_boolean.chinese_dashboard','on') else 'Energy,
+              security and infrastructure' }}
+          - type: custom:mushroom-template-card
+            primary: Energy
+            secondary: >-
+              Solar {{ states('sensor.primo_5_0_1_1_ac_power') }} W • grid {{
+              states('sensor.powerpal_gateway_powerpal_power') }} W
+            icon: mdi:solar-power
+            icon_color: amber
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/energy
+          - type: custom:mushroom-template-card
+            primary: Lighting Studio
+            secondary: >-
+              {{ states.light | selectattr('state','eq','on') | list | count }}
+              lights currently on
+            icon: mdi:lightbulb-group
+            icon_color: >-
+              {{ 'amber' if (states.light | selectattr('state','eq','on') | list
+              | count) > 0 else 'grey' }}
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/lights
+          - type: custom:mushroom-template-card
+            primary: Cameras
+            secondary: Live views and camera status
+            icon: mdi:cctv
+            icon_color: blue
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/cameras
+          - type: custom:mushroom-template-card
+            primary: Security
+            secondary: >-
+              {% set doors = [states('binary_sensor.m_contact_sensor_door'),
+              states('binary_sensor.f_contact_sensor_door'),
+              states('binary_sensor.b_contact_sensor_door')] %} {% set open =
+              doors | select('eq','on') | list | count %} {{ open }} doors open
+              • motion monitoring
+            icon: mdi:shield-home
+            icon_color: >-
+              {% set doors = [states('binary_sensor.m_contact_sensor_door'),
+              states('binary_sensor.f_contact_sensor_door'),
+              states('binary_sensor.b_contact_sensor_door')] %} {{ 'red' if
+              (doors | select('eq','on') | list | count) > 0 else 'green' }}
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/security
+          - type: custom:mushroom-template-card
+            primary: Climate
+            secondary: Parents AC {{ states('climate.bedroom_parents_room_ac') }}
+            icon: mdi:thermostat
+            icon_color: >-
+              {{ 'blue' if states('climate.bedroom_parents_room_ac') not in
+              ['off','unavailable','unknown'] else 'grey' }}
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/climate
+          - type: custom:mushroom-template-card
+            primary: People & Locations
+            secondary: Family presence • distance • routes
+            icon: mdi:map-marker-account
+            icon_color: green
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/people-locations
+          - type: custom:mushroom-template-card
+            primary: Bills
+            secondary: >-
+              {% set n = states('sensor.bills_unpaid_count') | int(0) %} {{ n ~
+              ' unpaid • $' ~ states('sensor.bills_outstanding_total') if n > 0
+              else 'All bills paid' }}
+            icon: mdi:receipt-text
+            icon_color: >-
+              {% if states('sensor.bills_unpaid_count') | int(0) > 0 %}orange{%
+              else %}green{% endif %}
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/bills
+          - type: custom:mushroom-chips-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 0px;
+                }
+                ha-card .chip-container {
+                  gap: 8px;
+                }
+            alignment: start
+            chips:
+              - type: template
+                icon: mdi:play-box-multiple
+                content: Media
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/media
+              - type: template
+                icon: mdi:lan
+                content: Network
+                icon_color: >-
+                  {{ 'green' if is_state('binary_sensor.eero_wan_status','on')
+                  else 'red' }}
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/network
+              - type: template
+                icon: mdi:tablet-dashboard
+                content: iPad
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/ipad-command-center
+              - type: template
+                icon: mdi:heart-pulse
+                content: Status
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/status
+              - type: template
+                icon: mdi:cog
+                content: Settings
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/settings
+  - type: sections
+    title: Parents Room
+    path: parents-room
+    icon: mdi:bed-king
+    max_columns: 4
+    sections:
+      - type: grid
+        cards:
+          - type: custom:mushroom-title-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 4px 4px 0px 4px;
+                  margin-bottom: -4px;
+                }
+            title: 🛏️ Parents Room
+            subtitle: Climate, safety and room controls
+          - type: custom:mushroom-chips-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 0px;
+                }
+                ha-card .chip-container {
+                  gap: 8px;
+                }
+            alignment: start
+            chips:
+              - type: entity
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(255,255,255,0.10);
+                      border-radius: 20px;
+                      border: 1px solid rgba(255,255,255,0.18);
+                      box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+                    }
+                entity: sensor.bedroom_motion_sensor_temperature
+              - type: entity
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(255,255,255,0.10);
+                      border-radius: 20px;
+                      border: 1px solid rgba(255,255,255,0.18);
+                      box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+                    }
+                entity: sensor.bedroom_motion_sensor_humidity
+              - type: template
+                icon: mdi:motion-sensor
+                content: >-
+                  {{ 'Motion' if
+                  is_state('binary_sensor.bedroom_motion_sensor_motion','on')
+                  else 'Clear' }}
+                icon_color: >-
+                  {{ 'amber' if
+                  is_state('binary_sensor.bedroom_motion_sensor_motion','on')
+                  else 'green' }}
+              - type: template
+                icon: mdi:door
+                content: >-
+                  {{ 'Open' if
+                  is_state('binary_sensor.m_contact_sensor_door','on') else
+                  'Closed' }}
+                icon_color: >-
+                  {{ 'red' if
+                  is_state('binary_sensor.m_contact_sensor_door','on') else
+                  'green' }}
+          - type: heading
+            heading: Temperature
+            icon: mdi:thermometer-lines
+            grid_options:
+              columns: 6
+              rows: 1
+          - type: heading
+            heading: Lights
+            icon: mdi:lightbulb-group
+            grid_options:
+              columns: 6
+              rows: 1
+          - type: custom:mushroom-climate-card
+            entity: climate.bedroom_parents_room_ac
+            name: Parents AC
+            show_temperature_control: true
+            collapsible_controls: true
+            grid_options:
+              columns: 6
+              rows: 1
+          - type: custom:mushroom-entity-card
+            entity: switch.mainroomlight_switch_1
+            name: Main Room Light
+            icon: mdi:light-switch
+          - type: heading
+            heading: Thermostat
+            icon: mdi:thermostat
+          - type: thermostat
+            entity: climate.bedroom_parents_room_ac
+            name: Parents Room AC
+            show_current_as_primary: false
+            features:
+              - type: climate-hvac-modes
+                hvac_modes:
+                  - heat_cool
+                  - cool
+                  - heat
+                  - dry
+                  - fan_only
+                  - 'off'
+              - type: climate-fan-modes
+                style: icons
+              - type: climate-swing-modes
+                style: icons
+              - type: climate-preset-modes
+                style: icons
+          - type: heading
+            heading: Thermostat Controls
+            icon: mdi:tune-vertical-variant
+          - type: entities
+            title: AC Controls & Maintenance
+            show_header_toggle: false
+            entities:
+              - entity: switch.bedroom_parents_room_ac_climate_react
+                name: Climate React
+              - entity: switch.bedroom_parents_room_ac_timer
+                name: Timer
+              - entity: sensor.bedroom_parents_room_ac_timer_end_time
+                name: Timer Ends
+              - entity: binary_sensor.bedroom_parents_room_ac_room_occupied
+                name: Room Occupied
+              - type: divider
+              - entity: binary_sensor.bedroom_parents_room_ac_filter_clean_required
+                name: Filter Clean Required
+              - entity: sensor.bedroom_parents_room_ac_filter_last_reset
+                name: Filter Last Reset
+              - entity: button.bedroom_parents_room_ac_reset_filter
+                name: Reset Filter
+              - entity: update.bedroom_parents_room_ac_firmware
+                name: Firmware
+          - type: heading
+            heading: Entertainment
+            icon: mdi:television
+          - type: custom:mushroom-media-player-card
+            entity: media_player.55_qled_4k_ai
+            name: Parents Samsung TV
+            use_media_info: true
+            show_volume_level: true
+            collapsible_controls: true
+            icon: ''
+            primary_info: name
+            media_controls:
+              - on_off
+          - type: media-control
+            entity: media_player.55_qled_4k_ai
+      - type: grid
+        cards:
+          - type: heading
+            heading: Controls
+            icon: mdi:tune-variant
+          - type: markdown
+            content: '*No blinds, fans or other controls in the Parents Room yet.*'
+          - type: heading
+            heading: Power Boards
+            icon: mdi:power-socket-au
+          - type: custom:mushroom-entity-card
+            entity: switch.genio_power_board_with_usb_livingroom_socket_1
+            name: Power Board 1
+          - type: custom:mushroom-entity-card
+            entity: switch.genio_power_board_with_usb_livingroom_socket_2
+            name: Power Board 2
+          - type: custom:mushroom-entity-card
+            entity: switch.genio_power_board_with_usb_livingroom_socket_3
+            name: Power Board 3
+          - type: custom:mushroom-entity-card
+            entity: switch.genio_power_board_with_usb_livingroom_socket_4
+            name: Power Board 4
+          - type: custom:mushroom-entity-card
+            entity: switch.genio_power_board_with_usb_livingroom_socket_5
+            name: Power Board 5
+      - type: grid
+        cards:
+          - type: heading
+            heading: Emergency
+            icon: mdi:medical-bag
+          - type: entities
+            title: Emergency Button Status
+            entities:
+              - entity: binary_sensor.emergency_button_dad_cloud_connection
+                name: Dad Button
+              - entity: binary_sensor.emergency_button_mum_cloud_connection
+                name: Mum Button
+              - entity: sensor.emergency_button_dad_signal_level
+                name: Dad Signal
+              - entity: sensor.emergency_button_mum_signal_level
+                name: Mum Signal
+  - type: sections
+    title: Ray Bedroom
+    path: ray-bedroom
+    icon: mdi:bed
+    max_columns: 4
+    sections:
+      - type: grid
+        cards:
+          - type: custom:mushroom-title-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 4px 4px 0px 4px;
+                  margin-bottom: -4px;
+                }
+            title: 🛏️ Ray Bedroom
+            subtitle: Lighting, shade, power and LetPot
+          - type: heading
+            heading: Lights
+            icon: mdi:lightbulb-group
+          - type: custom:mushroom-light-card
+            entity: light.bedroom_bedroom
+            name: Bedroom Lights
+            use_light_color: true
+            show_brightness_control: true
+            show_color_temp_control: true
+            collapsible_controls: true
+          - type: heading
+            heading: Controls
+            icon: mdi:tune-variant
+          - type: custom:mushroom-cover-card
+            entity: cover.aqara_roller_shade_driver_e1
+            name: Roller Shade
+            show_position_control: true
+            show_buttons_control: true
+          - type: custom:mushroom-chips-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 0px;
+                }
+                ha-card .chip-container {
+                  gap: 8px;
+                }
+            alignment: start
+            chips:
+              - type: entity
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(255,255,255,0.10);
+                      border-radius: 20px;
+                      border: 1px solid rgba(255,255,255,0.18);
+                      box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+                    }
+                entity: sensor.aqara_roller_shade_driver_e1_battery
+              - type: entity
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(255,255,255,0.10);
+                      border-radius: 20px;
+                      border: 1px solid rgba(255,255,255,0.18);
+                      box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+                    }
+                entity: sensor.r_energy_monitor_p110m_current_consumption
+              - type: entity
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(255,255,255,0.10);
+                      border-radius: 20px;
+                      border: 1px solid rgba(255,255,255,0.18);
+                      box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+                    }
+                entity: sensor.r_energy_monitor_p110m_today_s_consumption
+          - type: heading
+            heading: Power Board
+            icon: mdi:power-socket-au
+          - type: custom:mushroom-entity-card
+            entity: switch.r_energy_monitor_p110m
+            name: Bedroom Smart Plug
+          - type: custom:mushroom-entity-card
+            entity: switch.bedroomlight_switch_1
+            name: Bedroom Wall Switch
+      - type: grid
+        cards:
+          - type: heading
+            heading: LetPot
+            icon: mdi:sprout
+          - type: custom:mushroom-entity-card
+            entity: switch.lph_se_dcd9_power
+            name: LetPot Power
+          - type: custom:mushroom-template-card
+            primary: Grow Light
+            secondary: >-
+              {{ states('select.lph_se_dcd9_light_mode') }} • {{
+              states('select.lph_se_dcd9_light_brightness') }}
+            icon: mdi:led-strip-variant
+          - type: entities
+            title: LetPot Details
+            entities:
+              - binary_sensor.lph_se_dcd9_pump
+              - switch.lph_se_dcd9_pump_cycling
+              - number.lph_se_dcd9_plants_age
+              - time.lph_se_dcd9_light_on
+              - time.lph_se_dcd9_light_off
+      - type: grid
+        cards:
+          - type: heading
+            heading: Climate
+            icon: mdi:thermometer
+          - type: markdown
+            content: >-
+              *No climate sensor in this room yet. Once a temperature/humidity
+              sensor is added, its cards belong here.*
+          - type: heading
+            heading: Thermostat
+            icon: mdi:thermostat
+          - type: markdown
+            content: >-
+              *No thermostat paired to this room yet. A `climate` entity card
+              goes here once one is added.*
+      - type: grid
+        cards:
+          - type: heading
+            heading: Entertainment
+            icon: mdi:television
+          - type: markdown
+            content: >-
+              *No media player assigned to Ray Bedroom yet. A media card belongs
+              here once a TV or speaker is added.*
+  - type: sections
+    title: Guest Room
+    path: guest-room
+    icon: mdi:bed-empty
+    max_columns: 4
+    sections:
+      - type: grid
+        cards:
+          - type: custom:mushroom-title-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 4px 4px 0px 4px;
+                  margin-bottom: -4px;
+                }
+            title: 🛏️ Guest Room
+            subtitle: Lighting, entertainment and power
+          - type: heading
+            heading: Lights
+            icon: mdi:lightbulb-group
+          - type: custom:mushroom-light-card
+            entity: light.kogan_tv
+            name: Kogan TV Light
+            use_light_color: true
+            show_brightness_control: true
+            collapsible_controls: true
+      - type: grid
+        cards:
+          - type: heading
+            heading: Entertainment
+            icon: mdi:television
+          - type: custom:mushroom-media-player-card
+            entity: media_player.pogo
+            name: Pogo
+            use_media_info: true
+            show_volume_level: true
+            collapsible_controls: true
+          - type: media-control
+            entity: media_player.pogo
+      - type: grid
+        cards:
+          - type: heading
+            heading: Power Board
+            icon: mdi:power-socket-au
+          - type: custom:mushroom-entity-card
+            entity: switch.g_printer_p100
+            name: Printer Plug
+            icon: mdi:printer
+          - type: entities
+            title: Printer Plug Details
+            show_header_toggle: false
+            entities:
+              - entity: switch.g_printer_p100_led
+                name: LED
+              - entity: switch.g_printer_p100_auto_off_enabled
+                name: Auto-off enabled
+              - entity: number.g_printer_p100_turn_off_in
+                name: Turn off in
+              - entity: sensor.g_printer_p100_auto_off_at
+                name: Auto-off at
+              - entity: switch.g_printer_p100_auto_update_enabled
+                name: Auto-update
+      - type: grid
+        cards:
+          - type: heading
+            heading: Climate
+            icon: mdi:thermometer
+          - type: markdown
+            content: >-
+              *No climate sensor in the Guest Room yet. Temperature and humidity
+              cards belong here once one is added.*
+          - type: heading
+            heading: Thermostat
+            icon: mdi:thermostat
+          - type: markdown
+            content: >-
+              *No thermostat in the Guest Room yet. A `climate` entity card goes
+              here once one is added.*
+          - type: heading
+            heading: Controls
+            icon: mdi:tune-variant
+          - type: markdown
+            content: '*No blinds, fans or other controls in the Guest Room yet.*'
+  - type: sections
+    title: Living Room
+    path: living-room
+    icon: mdi:sofa
+    max_columns: 4
+    sections:
+      - type: grid
+        cards:
+          - type: custom:mushroom-title-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 4px 4px 0px 4px;
+                  margin-bottom: -4px;
+                }
+            title: 🛋️ Living Room
+            subtitle: Lighting, TV and room sensors
+          - type: custom:mushroom-light-card
+            entity: light.living_room
+            name: Living Room Lights
+            use_light_color: true
+            show_brightness_control: true
+            show_color_temp_control: true
+            collapsible_controls: true
+          - type: custom:mushroom-media-player-card
+            entity: media_player.living_room_tv_samsung_q9_series_65
+            name: Samsung 65" TV
+            use_media_info: true
+            show_volume_level: true
+            collapsible_controls: true
+          - type: custom:mushroom-chips-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 0px;
+                }
+                ha-card .chip-container {
+                  gap: 8px;
+                }
+            alignment: start
+            chips:
+              - type: entity
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(255,255,255,0.10);
+                      border-radius: 20px;
+                      border: 1px solid rgba(255,255,255,0.18);
+                      box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+                    }
+                entity: sensor.living_room_living_hue_hue_sensor_temperature
+              - type: entity
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(255,255,255,0.10);
+                      border-radius: 20px;
+                      border: 1px solid rgba(255,255,255,0.18);
+                      box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+                    }
+                entity: sensor.living_room_living_hue_hue_sensor_illuminance
+              - type: template
+                icon: mdi:motion-sensor
+                content: >-
+                  {{ 'Motion' if
+                  is_state('binary_sensor.living_room_living_hue_hue_sensor_motion','on')
+                  else 'Clear' }}
+                icon_color: >-
+                  {{ 'amber' if
+                  is_state('binary_sensor.living_room_living_hue_hue_sensor_motion','on')
+                  else 'green' }}
+              - type: template
+                icon: mdi:door
+                content: >-
+                  {{ 'Open' if
+                  is_state('binary_sensor.f_contact_sensor_door','on') else
+                  'Closed' }}
+                icon_color: >-
+                  {{ 'red' if
+                  is_state('binary_sensor.f_contact_sensor_door','on') else
+                  'green' }}
+      - type: grid
+        cards:
+          - type: heading
+            heading: Individual Lights
+            icon: mdi:lightbulb-group
+          - type: custom:mushroom-light-card
+            entity: light.living_room_hue_ambiance_spot_1
+            name: Inner Left
+          - type: custom:mushroom-light-card
+            entity: light.living_room_hue_ambiance_spot_2
+            name: Inner Right
+          - type: custom:mushroom-light-card
+            entity: light.living_room_hue_ambiance_spot_3
+            name: Outer Left
+          - type: custom:mushroom-light-card
+            entity: light.living_room_hue_ambiance_spot_4
+            name: Outer Right
+          - type: custom:mushroom-template-card
+            primary: Mitsubishi Electric AC
+            secondary: Wi-Fi module not integrated yet
+            icon: mdi:air-conditioner
+            icon_color: grey
+  - type: sections
+    title: Kitchen
+    path: kitchen
+    icon: mdi:silverware-fork-knife
+    max_columns: 4
+    sections:
+      - type: grid
+        cards:
+          - type: custom:mushroom-title-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 4px 4px 0px 4px;
+                  margin-bottom: -4px;
+                }
+            title: 🍳 Kitchen
+            subtitle: Fridge, power and motion
+          - type: custom:mushroom-chips-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 0px;
+                }
+                ha-card .chip-container {
+                  gap: 8px;
+                }
+            chips:
+              - type: template
+                icon: mdi:fridge-outline
+                content: >-
+                  {{ 'Door Open' if
+                  is_state('binary_sensor.lg_fridge_door','on') else 'Door
+                  Closed' }}
+                icon_color: >-
+                  {{ 'red' if is_state('binary_sensor.lg_fridge_door','on') else
+                  'green' }}
+              - type: template
+                icon: mdi:motion-sensor
+                content: >-
+                  {{ 'Motion' if
+                  is_state('binary_sensor.k_motion_sensor_motion','on') else
+                  'Clear' }}
+          - type: custom:mushroom-template-card
+            primary: LG Fridge
+            secondary: >-
+              Fridge {{ states('number.lg_fridge_fridge_temperature') }} °C •
+              Freezer {{ states('number.lg_fridge_freezer_temperature') }} °C
+            icon: mdi:fridge
+            icon_color: cyan
+          - type: custom:mushroom-entity-card
+            entity: switch.lg_fridge_express_mode
+            name: Fridge Express Mode
+      - type: grid
+        cards:
+          - type: heading
+            heading: Kitchen Smart Plugs
+            icon: mdi:power-socket-au
+          - type: custom:mushroom-entity-card
+            entity: switch.k_coffee_p100
+            name: Coffee
+          - type: custom:mushroom-entity-card
+            entity: switch.k_top_p100
+            name: Kitchen Top
+            icon: mdi:lightbulb-on-outline
+          - type: custom:mushroom-entity-card
+            entity: switch.k_bot_p100
+            icon: mdi:lightbulb-on-outline
+            card_mod:
+              style: |-
+                ha-card {
+                  filter: brightness(200%);
+                  transition: filter 0ms ease;
+                }
+
+                ha-state-icon {
+                  color: {{ 'var(--yellow-color)' if is_state('switch.k_bot_p100', 'on') else 'var(--pink-color)' }} !important;
+                }
+
+                ha-card {
+                  font-size: 16px;
+                  font-weight: normal;
+                  color: #e1e1e1;
+                }
+  - type: sections
+    title: Dining
+    path: dining
+    icon: mdi:table-chair
+    max_columns: 4
+    sections:
+      - type: grid
+        cards:
+          - type: custom:mushroom-title-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 4px 4px 0px 4px;
+                  margin-bottom: -4px;
+                }
+            title: 🍽️ Dining
+            subtitle: Lighting, motion and pet feeder
+          - type: custom:mushroom-light-card
+            entity: light.dining
+            name: Dining Lights
+            show_brightness_control: true
+            collapsible_controls: true
+          - type: custom:mushroom-entity-card
+            entity: switch.dinning_light_switch_1
+            name: Dining Wall Switch
+          - type: custom:mushroom-chips-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 0px;
+                }
+                ha-card .chip-container {
+                  gap: 8px;
+                }
+            chips:
+              - type: template
+                icon: mdi:motion-sensor
+                content: >-
+                  {{ 'Motion' if
+                  is_state('binary_sensor.sensor_group_motion','on') else
+                  'Clear' }}
+              - type: entity
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(255,255,255,0.10);
+                      border-radius: 20px;
+                      border: 1px solid rgba(255,255,255,0.18);
+                      box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+                    }
+                entity: sensor.sensor_group_illuminance
+      - type: grid
+        cards:
+          - type: heading
+            heading: Smart Pet Feeder
+            icon: mdi:cat
+          - type: picture-entity
+            entity: camera.smart_pet_feeder
+            name: Pet Feeder Camera
+            camera_view: auto
+            show_state: false
+          - type: custom:mushroom-entity-card
+            entity: light.smart_pet_feeder_indicator_light
+            name: Feeder Indicator
+          - type: custom:mushroom-entity-card
+            entity: switch.smart_pet_feeder_motion_alarm
+            name: Motion Alarm
+          - type: custom:mushroom-entity-card
+            entity: switch.smart_pet_feeder_privacy_mode
+            name: Privacy Mode
+  - type: sections
+    title: Garage
+    path: garage
+    icon: mdi:garage
+    max_columns: 4
+    sections:
+      - type: grid
+        cards:
+          - type: custom:mushroom-title-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 4px 4px 0px 4px;
+                  margin-bottom: -4px;
+                }
+            title: 🚗 Garage
+            subtitle: Freezer energy and future garage control
+          - type: custom:mushroom-template-card
+            primary: Garage Freezer
+            secondary: >-
+              {{ states('sensor.g_monitor_freezer_p110m_current_consumption') }}
+              W • {{
+              states('sensor.g_monitor_freezer_p110m_today_s_consumption') }}
+              kWh today
+            icon: mdi:fridge-outline
+            icon_color: cyan
+            entity: switch.g_monitor_freezer_p110m
+          - type: custom:mushroom-chips-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 0px;
+                }
+                ha-card .chip-container {
+                  gap: 8px;
+                }
+            chips:
+              - type: entity
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(255,255,255,0.10);
+                      border-radius: 20px;
+                      border: 1px solid rgba(255,255,255,0.18);
+                      box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+                    }
+                entity: sensor.g_monitor_freezer_p110m_voltage
+              - type: entity
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(255,255,255,0.10);
+                      border-radius: 20px;
+                      border: 1px solid rgba(255,255,255,0.18);
+                      box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+                    }
+                entity: sensor.g_monitor_freezer_p110m_current
+              - type: template
+                icon: mdi:alert
+                content: >-
+                  {{ 'Overload' if
+                  is_state('binary_sensor.g_monitor_freezer_p110m_overloaded','on')
+                  else 'Normal' }}
+                icon_color: >-
+                  {{ 'red' if
+                  is_state('binary_sensor.g_monitor_freezer_p110m_overloaded','on')
+                  else 'green' }}
+          - type: custom:mushroom-template-card
+            primary: Garage Door
+            secondary: Shelly / Chamberlain integration planned
+            icon: mdi:garage
+            icon_color: grey
+  - type: sections
+    title: Energy
+    path: energy
+    icon: mdi:lightning-bolt
+    theme: Deez Energy
+    max_columns: 4
+    sections:
+      - type: grid
+        cards:
+          - type: custom:mushroom-title-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 4px 4px 0px 4px;
+                  margin-bottom: -4px;
+                }
+            title: ⚡ Energy Now
+            subtitle: Live grid import, solar production and estimated house load
+          - type: custom:mushroom-template-card
+            primary: Grid Import
+            secondary: >-
+              {{ states('sensor.powerpal_gateway_powerpal_power') | float(0) |
+              round(0) }} W  •  measured
+            icon: mdi:transmission-tower-import
+            icon_color: >-
+              {% set w = states('sensor.powerpal_gateway_powerpal_power') |
+              float(0) %} {% if w > 4000 %}red{% elif w > 2000 %}orange{% elif w
+              > 0 %}blue{% else %}green{% endif %}
+            entity: sensor.powerpal_gateway_powerpal_power
+          - type: custom:mushroom-template-card
+            primary: Solar Now
+            secondary: >-
+              {{ states('sensor.primo_5_0_1_1_ac_power') | float(0) | round(0)
+              }} W  •  measured
+            icon: mdi:solar-power
+            icon_color: >-
+              {% if states('sensor.primo_5_0_1_1_ac_power') | float(0) > 0
+              %}amber{% else %}grey{% endif %}
+            entity: sensor.primo_5_0_1_1_ac_power
+          - type: custom:mushroom-template-card
+            primary: House Load (estimated)
+            secondary: >-
+              {% set grid = states('sensor.powerpal_gateway_powerpal_power') |
+              float(0) %} {% set solar = states('sensor.primo_5_0_1_1_ac_power')
+              | float(0) %} {{ (grid + solar) | round(0) }} W  •  calculated
+            icon: mdi:home-lightning-bolt
+            icon_color: >-
+              {% set load = (states('sensor.powerpal_gateway_powerpal_power') |
+              float(0)) + (states('sensor.primo_5_0_1_1_ac_power') | float(0))
+              %} {% if load > 4000 %}red{% elif load > 2000 %}orange{% else
+              %}green{% endif %}
+          - type: markdown
+            content: >-
+              *Powerpal reads the meter's optical port, so it reports **grid
+              import only** — not whole-house consumption. When solar covers the
+              house it can legitimately read 0 W. House Load is therefore
+              calculated as grid import + solar production. **Solar export
+              cannot be measured**: neither the Powerpal optical interface nor
+              the Fronius meter (in produce-only mode) reports it.*
+          - type: custom:mushroom-title-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 4px 4px 0px 4px;
+                  margin-bottom: -4px;
+                }
+            title: 📊 Today
+            subtitle: Grid import and solar generation since midnight
+          - type: custom:mushroom-template-card
+            primary: Grid Import Today
+            secondary: >-
+              {{ states('sensor.powerpal_gateway_powerpal_daily_energy') |
+              float(0) | round(2) }} kWh
+            icon: mdi:transmission-tower-import
+            icon_color: blue
+            entity: sensor.powerpal_gateway_powerpal_daily_energy
+          - type: custom:mushroom-template-card
+            primary: Solar Today
+            secondary: >-
+              {{ (states('sensor.primo_5_0_1_1_energy_day') | float(0) / 1000) |
+              round(2) }} kWh
+            icon: mdi:solar-panel-large
+            icon_color: amber
+            entity: sensor.primo_5_0_1_1_energy_day
+          - type: custom:mushroom-title-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 4px 4px 0px 4px;
+                  margin-bottom: -4px;
+                }
+            title: 🔢 Lifetime & Diagnostics
+            subtitle: Cumulative meters and inverter detail
+          - type: custom:mushroom-template-card
+            primary: Solar Year
+            secondary: >-
+              {{ (states('sensor.primo_5_0_1_1_energy_year') | float(0) / 1000)
+              | round(1) }} kWh
+            icon: mdi:calendar
+            entity: sensor.primo_5_0_1_1_energy_year
+          - type: custom:mushroom-template-card
+            primary: Total Solar
+            secondary: '{{ states(''sensor.primo_5_0_1_1_total_energy'') }}'
+            icon: mdi:counter
+            entity: sensor.primo_5_0_1_1_total_energy
+          - type: custom:mushroom-template-card
+            primary: Grid Import (lifetime)
+            secondary: >-
+              {{ states('sensor.powerpal_gateway_powerpal_total_energy') |
+              float(0) | round(2) }} kWh
+            icon: mdi:counter
+            entity: sensor.powerpal_gateway_powerpal_total_energy
+          - type: custom:mushroom-template-card
+            primary: Powerpal Gateway
+            secondary: Battery {{ states('sensor.powerpal_gateway_powerpal_battery') }}%
+            icon: mdi:battery-heart-variant
+            icon_color: >-
+              {% set b = states('sensor.powerpal_gateway_powerpal_battery') |
+              float(100) %} {% if b < 20 %}red{% elif b < 40 %}orange{% else
+              %}green{% endif %}
+            entity: sensor.powerpal_gateway_powerpal_battery
+      - type: grid
+        cards:
+          - type: energy-distribution
+          - type: energy-usage-graph
+          - type: solar-consumed-gauge
+          - type: energy-solar-graph
+  - type: sections
+    title: Cameras
+    path: cameras
+    icon: mdi:cctv
+    theme: Deez Cameras
+    max_columns: 3
+    sections:
+      - type: grid
+        cards:
+          - type: custom:mushroom-title-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 4px 4px 0px 4px;
+                  margin-bottom: -4px;
+                }
+            title: >-
+              {{ '📹 摄像头' if is_state('input_boolean.chinese_dashboard','on')
+              else '📹 Cameras' }}
+            subtitle: >-
+              {{ '实时监控 • 点按查看全屏' if
+              is_state('input_boolean.chinese_dashboard','on') else 'Live
+              surveillance • tap any camera for full view' }}
+          - type: custom:mushroom-chips-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 0px;
+                }
+                ha-card .chip-container {
+                  gap: 8px;
+                }
+            alignment: start
+            chips:
+              - type: template
+                icon: mdi:cctv
+                content: |-
+                  {% set cams = ['camera.front_door_live_view',
+                    'camera.tapo_c425_north_wall_hd_stream_direct',
+                    'camera.tapo_c200_stockroom_hd_stream_direct',
+                    'camera.tapo_c420_east_wall_hd_stream_direct',
+                    'camera.tapo_c420_south_wall_hd_stream_direct',
+                    'camera.smart_pet_feeder'] %}
+                  {% set ns = namespace(n=0) %} {% for c in cams %}
+                    {% if states(c) not in ['unavailable','unknown'] %}
+                      {% set ns.n = ns.n + 1 %}
+                    {% endif %}
+                  {% endfor %} {{ ns.n }}/6 online
+                icon_color: >-
+                  {% set cams = ['camera.front_door_live_view',
+                    'camera.tapo_c425_north_wall_hd_stream_direct',
+                    'camera.tapo_c200_stockroom_hd_stream_direct',
+                    'camera.tapo_c420_east_wall_hd_stream_direct',
+                    'camera.tapo_c420_south_wall_hd_stream_direct',
+                    'camera.smart_pet_feeder'] %}
+                  {% set ns = namespace(n=0) %} {% for c in cams %}
+                    {% if states(c) not in ['unavailable','unknown'] %}
+                      {% set ns.n = ns.n + 1 %}
+                    {% endif %}
+                  {% endfor %} {{ 'green' if ns.n == 6 else ('amber' if ns.n > 3
+                  else 'red') }}
+              - type: template
+                icon: mdi:door
+                content: |-
+                  {% set doors = [
+                    states('binary_sensor.f_contact_sensor_door'),
+                    states('binary_sensor.m_contact_sensor_door'),
+                    states('binary_sensor.b_contact_sensor_door')
+                  ] %} {{ doors | select('eq','on') | list | count }} open
+                icon_color: >-
+                  {% set doors = [
+                    states('binary_sensor.f_contact_sensor_door'),
+                    states('binary_sensor.m_contact_sensor_door'),
+                    states('binary_sensor.b_contact_sensor_door')
+                  ] %} {{ 'red' if (doors | select('eq','on') | list | count) >
+                  0 else 'green' }}
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/security
+              - type: template
+                icon: mdi:motion-sensor
+                content: >-
+                  {% set m = [
+                    states('binary_sensor.living_room_living_hue_hue_sensor_motion'),
+                    states('binary_sensor.bedroom_motion_sensor_motion'),
+                    states('binary_sensor.k_motion_sensor_motion'),
+                    states('binary_sensor.sensor_group_motion')
+                  ] %} {{ 'Motion' if (m | select('eq','on') | list | count) > 0
+                  else 'Quiet' }}
+                icon_color: >-
+                  {% set m = [
+                    states('binary_sensor.living_room_living_hue_hue_sensor_motion'),
+                    states('binary_sensor.bedroom_motion_sensor_motion'),
+                    states('binary_sensor.k_motion_sensor_motion'),
+                    states('binary_sensor.sensor_group_motion')
+                  ] %} {{ 'amber' if (m | select('eq','on') | list | count) > 0
+                  else 'grey' }}
+              - type: template
+                icon: mdi:wan
+                content: >-
+                  {{ 'WAN Online' if
+                  is_state('binary_sensor.eero_wan_status','on') else 'WAN
+                  Offline' }}
+                icon_color: >-
+                  {{ 'green' if is_state('binary_sensor.eero_wan_status','on')
+                  else 'red' }}
+          - type: picture-entity
+            card_mod:
+              style: |
+                ha-card {
+                  border-radius: 22px;
+                  border: 1px solid rgba(120,200,255,0.20);
+                  overflow: hidden;
+                  box-shadow: 0 10px 30px rgba(0,0,0,0.55);
+                }
+            entity: camera.front_door_live_view
+            name: Front Door
+            camera_view: live
+            show_state: false
+            show_name: true
+            aspect_ratio: '16:9'
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/camera-front-door
+            hold_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: rgba(120,200,255,0.08);
+                  border-radius: 20px;
+                  border: 1px solid rgba(120,200,255,0.18);
+                  box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+                }
+            primary: Front Door
+            secondary: >-
+              {{ 'Stream unavailable' if states('camera.front_door_live_view')
+              in ['unavailable','unknown'] else 'Live • tap for full screen +
+              PTZ' }}
+            icon: mdi:door-open
+            icon_color: >-
+              {{ 'red' if states('camera.front_door_live_view') in
+              ['unavailable','unknown'] else 'cyan' }}
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/camera-front-door
+      - type: grid
+        cards:
+          - type: heading
+            heading: All Cameras
+            icon: mdi:cctv
+          - type: grid
+            columns: 2
+            square: false
+            cards:
+              - type: picture-entity
+                card_mod:
+                  style: |
+                    ha-card {
+                      border-radius: 20px;
+                      border: 1px solid rgba(120,200,255,0.18);
+                      overflow: hidden;
+                      box-shadow: 0 8px 22px rgba(0,0,0,0.55);
+                    }
+                entity: camera.tapo_c425_north_wall_hd_stream_direct
+                name: North Wall
+                camera_view: auto
+                show_state: false
+                show_name: true
+                aspect_ratio: '16:9'
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/camera-north-wall
+                hold_action:
+                  action: more-info
+              - type: picture-entity
+                card_mod:
+                  style: |
+                    ha-card {
+                      border-radius: 20px;
+                      border: 1px solid rgba(120,200,255,0.18);
+                      overflow: hidden;
+                      box-shadow: 0 8px 22px rgba(0,0,0,0.55);
+                    }
+                entity: camera.tapo_c420_east_wall_hd_stream_direct
+                name: East Wall
+                camera_view: auto
+                show_state: false
+                show_name: true
+                aspect_ratio: '16:9'
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/camera-east-wall
+                hold_action:
+                  action: more-info
+              - type: picture-entity
+                card_mod:
+                  style: |
+                    ha-card {
+                      border-radius: 20px;
+                      border: 1px solid rgba(120,200,255,0.18);
+                      overflow: hidden;
+                      box-shadow: 0 8px 22px rgba(0,0,0,0.55);
+                    }
+                entity: camera.tapo_c420_south_wall_hd_stream_direct
+                name: South Wall
+                camera_view: auto
+                show_state: false
+                show_name: true
+                aspect_ratio: '16:9'
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/camera-south-wall
+                hold_action:
+                  action: more-info
+              - type: picture-entity
+                card_mod:
+                  style: |
+                    ha-card {
+                      border-radius: 20px;
+                      border: 1px solid rgba(120,200,255,0.18);
+                      overflow: hidden;
+                      box-shadow: 0 8px 22px rgba(0,0,0,0.55);
+                    }
+                entity: camera.tapo_c200_stockroom_hd_stream_direct
+                name: Stockroom
+                camera_view: auto
+                show_state: false
+                show_name: true
+                aspect_ratio: '16:9'
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/camera-stockroom
+                hold_action:
+                  action: more-info
+              - type: picture-entity
+                card_mod:
+                  style: |
+                    ha-card {
+                      border-radius: 20px;
+                      border: 1px solid rgba(120,200,255,0.18);
+                      overflow: hidden;
+                      box-shadow: 0 8px 22px rgba(0,0,0,0.55);
+                    }
+                entity: camera.smart_pet_feeder
+                name: Pet Feeder
+                camera_view: auto
+                show_state: false
+                show_name: true
+                aspect_ratio: '16:9'
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/camera-pet-feeder
+                hold_action:
+                  action: more-info
+          - type: custom:mushroom-chips-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 0px;
+                }
+                ha-card .chip-container {
+                  gap: 8px;
+                }
+            alignment: start
+            chips:
+              - type: template
+                icon: mdi:cctv
+                content: North
+                icon_color: >-
+                  {{ 'green' if
+                  states('camera.tapo_c425_north_wall_hd_stream_direct') not in
+                  ['unavailable','unknown'] else 'red' }}
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/camera-north-wall
+              - type: template
+                icon: mdi:cctv
+                content: East
+                icon_color: >-
+                  {{ 'green' if
+                  states('camera.tapo_c420_east_wall_hd_stream_direct') not in
+                  ['unavailable','unknown'] else 'red' }}
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/camera-east-wall
+              - type: template
+                icon: mdi:cctv
+                content: South
+                icon_color: >-
+                  {{ 'green' if
+                  states('camera.tapo_c420_south_wall_hd_stream_direct') not in
+                  ['unavailable','unknown'] else 'red' }}
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/camera-south-wall
+              - type: template
+                icon: mdi:cctv
+                content: Stock
+                icon_color: >-
+                  {{ 'green' if
+                  states('camera.tapo_c200_stockroom_hd_stream_direct') not in
+                  ['unavailable','unknown'] else 'red' }}
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/camera-stockroom
+              - type: template
+                icon: mdi:cat
+                content: Pet
+                icon_color: >-
+                  {{ 'green' if states('camera.smart_pet_feeder') not in
+                  ['unavailable','unknown'] else 'red' }}
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/camera-pet-feeder
+      - type: grid
+        cards:
+          - type: heading
+            heading: Pet Feeder Camera
+            icon: mdi:cat
+          - type: custom:mushroom-entity-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: rgba(120,200,255,0.08);
+                  border-radius: 20px;
+                  border: 1px solid rgba(120,200,255,0.18);
+                  box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+                }
+            entity: switch.smart_pet_feeder_motion_alarm
+            name: Motion Alarm
+            icon: mdi:motion-sensor
+          - type: custom:mushroom-entity-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: rgba(120,200,255,0.08);
+                  border-radius: 20px;
+                  border: 1px solid rgba(120,200,255,0.18);
+                  box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+                }
+            entity: switch.smart_pet_feeder_privacy_mode
+            name: Privacy Mode
+            icon: mdi:eye-off
+          - type: custom:mushroom-entity-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: rgba(120,200,255,0.08);
+                  border-radius: 20px;
+                  border: 1px solid rgba(120,200,255,0.18);
+                  box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+                }
+            entity: light.smart_pet_feeder_indicator_light
+            name: Indicator Light
+            icon: mdi:led-on
+          - type: heading
+            heading: Quick Access
+            icon: mdi:compass
+          - type: custom:mushroom-chips-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 0px;
+                }
+                ha-card .chip-container {
+                  gap: 8px;
+                }
+            alignment: start
+            chips:
+              - type: template
+                icon: mdi:shield-home
+                content: Security
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/security
+              - type: template
+                icon: mdi:home
+                content: Home
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/home
+              - type: template
+                icon: mdi:tablet-dashboard
+                content: iPad
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/ipad-command-center
+  - type: sections
+    title: Front Door
+    path: camera-front-door
+    icon: mdi:door-open
+    theme: Deez Cameras
+    subview: true
+    max_columns: 1
+    sections:
+      - type: grid
+        cards:
+          - type: custom:webrtc-camera
+            entity: camera.front_door_live_view
+            title: Front Door
+            mode: webrtc,webrtc/tcp,mse,hls,mjpeg
+            media: video,audio
+            muted: true
+            ui: true
+            background: true
+            intersection: 0
+            digital_ptz:
+              mouse_drag_pan: true
+              mouse_wheel_zoom: true
+              mouse_double_click_zoom: true
+              touch_drag_pan: true
+              touch_pinch_zoom: true
+              touch_tap_drag_zoom: true
+              persist: true
+            style: >-
+              video {aspect-ratio: 16/9; object-fit: contain; width: 100%;
+              max-height: 82vh;}
+  - type: sections
+    title: North Wall
+    path: camera-north-wall
+    icon: mdi:cctv
+    theme: Deez Cameras
+    subview: true
+    max_columns: 1
+    sections:
+      - type: grid
+        cards:
+          - type: custom:webrtc-camera
+            entity: camera.tapo_c425_north_wall_hd_stream_direct
+            title: North Wall
+            mode: webrtc,webrtc/tcp,mse,hls,mjpeg
+            media: video,audio
+            muted: true
+            ui: true
+            background: true
+            intersection: 0
+            digital_ptz:
+              mouse_drag_pan: true
+              mouse_wheel_zoom: true
+              mouse_double_click_zoom: true
+              touch_drag_pan: true
+              touch_pinch_zoom: true
+              touch_tap_drag_zoom: true
+              persist: true
+            style: >-
+              video {aspect-ratio: 16/9; object-fit: contain; width: 100%;
+              max-height: 82vh;}
+  - type: sections
+    title: Stockroom
+    path: camera-stockroom
+    icon: mdi:cctv
+    theme: Deez Cameras
+    subview: true
+    max_columns: 1
+    sections:
+      - type: grid
+        cards:
+          - type: custom:webrtc-camera
+            entity: camera.tapo_c200_stockroom_hd_stream_direct
+            title: Stockroom
+            mode: webrtc,webrtc/tcp,mse,hls,mjpeg
+            media: video,audio
+            muted: true
+            ui: true
+            background: true
+            intersection: 0
+            digital_ptz:
+              mouse_drag_pan: true
+              mouse_wheel_zoom: true
+              mouse_double_click_zoom: true
+              touch_drag_pan: true
+              touch_pinch_zoom: true
+              touch_tap_drag_zoom: true
+              persist: true
+            style: >-
+              video {aspect-ratio: 16/9; object-fit: contain; width: 100%;
+              max-height: 82vh;}
+  - type: sections
+    title: East Wall
+    path: camera-east-wall
+    icon: mdi:cctv
+    theme: Deez Cameras
+    subview: true
+    max_columns: 1
+    sections:
+      - type: grid
+        cards:
+          - type: custom:webrtc-camera
+            entity: camera.tapo_c420_east_wall_hd_stream_direct
+            title: East Wall
+            mode: webrtc,webrtc/tcp,mse,hls,mjpeg
+            media: video,audio
+            muted: true
+            ui: true
+            background: true
+            intersection: 0
+            digital_ptz:
+              mouse_drag_pan: true
+              mouse_wheel_zoom: true
+              mouse_double_click_zoom: true
+              touch_drag_pan: true
+              touch_pinch_zoom: true
+              touch_tap_drag_zoom: true
+              persist: true
+            style: >-
+              video {aspect-ratio: 16/9; object-fit: contain; width: 100%;
+              max-height: 82vh;}
+  - type: sections
+    title: South Wall
+    path: camera-south-wall
+    icon: mdi:cctv
+    theme: Deez Cameras
+    subview: true
+    max_columns: 1
+    sections:
+      - type: grid
+        cards:
+          - type: custom:webrtc-camera
+            entity: camera.tapo_c420_south_wall_hd_stream_direct
+            title: South Wall
+            mode: webrtc,webrtc/tcp,mse,hls,mjpeg
+            media: video,audio
+            muted: true
+            ui: true
+            background: true
+            intersection: 0
+            digital_ptz:
+              mouse_drag_pan: true
+              mouse_wheel_zoom: true
+              mouse_double_click_zoom: true
+              touch_drag_pan: true
+              touch_pinch_zoom: true
+              touch_tap_drag_zoom: true
+              persist: true
+            style: >-
+              video {aspect-ratio: 16/9; object-fit: contain; width: 100%;
+              max-height: 82vh;}
+  - type: sections
+    title: Pet Feeder
+    path: camera-pet-feeder
+    icon: mdi:cat
+    theme: Deez Cameras
+    subview: true
+    max_columns: 1
+    sections:
+      - type: grid
+        cards:
+          - type: custom:webrtc-camera
+            entity: camera.smart_pet_feeder
+            title: Pet Feeder
+            mode: webrtc,webrtc/tcp,mse,hls,mjpeg
+            media: video,audio
+            muted: true
+            ui: true
+            background: true
+            intersection: 0
+            digital_ptz:
+              mouse_drag_pan: true
+              mouse_wheel_zoom: true
+              mouse_double_click_zoom: true
+              touch_drag_pan: true
+              touch_pinch_zoom: true
+              touch_tap_drag_zoom: true
+              persist: true
+            style: >-
+              video {aspect-ratio: 16/9; object-fit: contain; width: 100%;
+              max-height: 82vh;}
+  - type: sections
+    title: Security
+    path: security
+    icon: mdi:shield-home
+    theme: Deez Security
+    max_columns: 4
+    sections:
+      - type: grid
+        cards:
+          - type: custom:mushroom-title-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 4px 4px 0px 4px;
+                  margin-bottom: -4px;
+                }
+            title: 🛡️ Security
+            subtitle: Doors, motion, emergency buttons and cameras
+          - type: custom:mushroom-template-card
+            primary: Living Room Door
+            secondary: >-
+              {{ 'Open' if is_state('binary_sensor.f_contact_sensor_door','on')
+              else 'Closed' }}
+            icon: mdi:door
+            icon_color: >-
+              {{ 'red' if is_state('binary_sensor.f_contact_sensor_door','on')
+              else 'green' }}
+          - type: custom:mushroom-template-card
+            primary: Main / Parents Door
+            secondary: >-
+              {{ 'Open' if is_state('binary_sensor.m_contact_sensor_door','on')
+              else 'Closed' }}
+            icon: mdi:door
+            icon_color: >-
+              {{ 'red' if is_state('binary_sensor.m_contact_sensor_door','on')
+              else 'green' }}
+          - type: custom:mushroom-template-card
+            primary: Back Door
+            secondary: >-
+              {{ 'Open' if is_state('binary_sensor.b_contact_sensor_door','on')
+              else 'Closed' }}
+            icon: mdi:door
+            icon_color: >-
+              {{ 'red' if is_state('binary_sensor.b_contact_sensor_door','on')
+              else 'green' }}
+          - type: custom:mushroom-template-card
+            primary: Dad Emergency Button
+            secondary: >-
+              {{ states('binary_sensor.emergency_button_dad_cloud_connection')
+              }}
+            icon: mdi:alarm-light
+            icon_color: red
+          - type: custom:mushroom-template-card
+            primary: Mum Emergency Button
+            secondary: >-
+              {{ states('binary_sensor.emergency_button_mum_cloud_connection')
+              }}
+            icon: mdi:alarm-light
+            icon_color: red
+          - type: custom:mushroom-template-card
+            primary: Cameras
+            secondary: View live cameras
+            icon: mdi:cctv
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/cameras
+  - type: sections
+    title: Climate
+    path: climate
+    icon: mdi:thermostat
+    theme: Deez Climate
+    max_columns: 4
+    sections:
+      - type: grid
+        cards:
+          - type: custom:mushroom-title-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 4px 4px 0px 4px;
+                  margin-bottom: -4px;
+                }
+            title: 🌡️ Climate
+            subtitle: Heating, cooling and room conditions
+          - type: custom:mushroom-climate-card
+            entity: climate.bedroom_parents_room_ac
+            name: Parents Room AC
+            show_temperature_control: true
+            collapsible_controls: true
+          - type: custom:mushroom-template-card
+            primary: Parents Room
+            secondary: >-
+              {{ states('sensor.bedroom_motion_sensor_temperature') }} °C • {{
+              states('sensor.bedroom_motion_sensor_humidity') }} %
+            icon: mdi:home-thermometer
+            icon_color: cyan
+          - type: custom:mushroom-template-card
+            primary: Living Room
+            secondary: >-
+              {{ states('sensor.living_room_living_hue_hue_sensor_temperature')
+              }} °C
+            icon: mdi:home-thermometer
+            icon_color: cyan
+          - type: custom:mushroom-template-card
+            primary: Living Room Mitsubishi AC
+            secondary: Wi-Fi module not integrated yet
+            icon: mdi:air-conditioner
+            icon_color: grey
+  - type: sections
+    title: Network
+    path: network
+    icon: mdi:network
+    max_columns: 4
+    sections:
+      - type: grid
+        cards:
+          - type: custom:mushroom-title-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 4px 4px 0px 4px;
+                  margin-bottom: -4px;
+                }
+            title: 🌐 Network
+            subtitle: Internet, hubs and remote access
+          - type: custom:mushroom-template-card
+            primary: eero Internet
+            secondary: >-
+              {{ 'Online' if is_state('binary_sensor.eero_wan_status','on') else
+              'Offline' }}
+            icon: mdi:router-wireless
+            icon_color: >-
+              {{ 'green' if is_state('binary_sensor.eero_wan_status','on') else
+              'red' }}
+          - type: custom:mushroom-template-card
+            primary: Home Assistant Remote Access
+            secondary: >-
+              {{ 'Connected' if is_state('binary_sensor.remote_ui','on') else
+              'Offline' }}
+            icon: mdi:cloud
+            icon_color: >-
+              {{ 'green' if is_state('binary_sensor.remote_ui','on') else 'red'
+              }}
+      - type: grid
+        cards:
+          - type: heading
+            heading: Infrastructure
+            icon: mdi:server-network
+          - type: custom:mushroom-template-card
+            primary: Aqara M100
+            secondary: Matter / Thread hub
+            icon: mdi:access-point-network
+            features_position: bottom
+            vertical: true
+          - type: custom:mushroom-template-card
+            primary: Philips Hue Bridge
+            secondary: Local lighting hub
+            icon: mdi:lightbulb-group
+            features_position: bottom
+            vertical: true
+          - type: custom:mushroom-template-card
+            primary: Home Assistant Green
+            secondary: Main controller
+            icon: mdi:home-assistant
+            features_position: bottom
+            vertical: true
+  - type: sections
+    title: Media
+    path: media
+    icon: mdi:play-box-multiple
+    max_columns: 4
+    sections:
+      - type: grid
+        cards:
+          - type: custom:mushroom-title-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 4px 4px 0px 4px;
+                  margin-bottom: -4px;
+                }
+            title: 📺 Media
+            subtitle: TVs and entertainment
+          - type: custom:mushroom-media-player-card
+            entity: media_player.living_room_tv_samsung_q9_series_65
+            name: Living Room Samsung TV
+            use_media_info: true
+            show_volume_level: true
+          - type: custom:mushroom-media-player-card
+            entity: media_player.55_qled_4k_ai
+            name: Parents Samsung TV
+            use_media_info: true
+            show_volume_level: true
+  - type: sections
+    title: Settings
+    path: settings
+    icon: mdi:cog
+    max_columns: 4
+    sections:
+      - type: grid
+        cards:
+          - type: custom:mushroom-title-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 4px 4px 0px 4px;
+                  margin-bottom: -4px;
+                }
+            title: ⚙️ Smart Home Settings
+            subtitle: Configuration and administration
+          - type: custom:mushroom-template-card
+            primary: Home Assistant
+            secondary: Settings
+            icon: mdi:home-assistant
+            tap_action:
+              action: navigate
+              navigation_path: /config
+          - type: custom:mushroom-template-card
+            primary: Integrations
+            secondary: Devices and services
+            icon: mdi:puzzle
+            tap_action:
+              action: navigate
+              navigation_path: /config/integrations
+          - type: custom:mushroom-template-card
+            primary: Automations
+            secondary: Home automation rules
+            icon: mdi:robot
+            tap_action:
+              action: navigate
+              navigation_path: /config/automation/dashboard
+          - type: custom:mushroom-template-card
+            primary: HACS
+            secondary: Community integrations
+            icon: mdi:store
+            tap_action:
+              action: navigate
+              navigation_path: /hacs
+  - type: sections
+    title: Smart Home Status
+    path: status
+    icon: mdi:home-assistant
+    max_columns: 4
+    sections:
+      - type: grid
+        cards:
+          - type: custom:mushroom-title-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 4px 4px 0px 4px;
+                  margin-bottom: -4px;
+                }
+            title: 🧠 Smart Home Status
+            subtitle: Connectivity, updates and backups
+          - type: custom:mushroom-template-card
+            primary: WAN
+            secondary: >-
+              {{ 'Online' if is_state('binary_sensor.eero_wan_status','on') else
+              'Offline' }}
+            icon: mdi:wan
+            icon_color: >-
+              {{ 'green' if is_state('binary_sensor.eero_wan_status','on') else
+              'red' }}
+          - type: custom:mushroom-template-card
+            primary: Home Assistant Core
+            secondary: >-
+              {{ 'Update available' if
+              is_state('update.home_assistant_core_update','on') else 'Up to
+              date' }}
+            icon: mdi:home-assistant
+            icon_color: >-
+              {{ 'amber' if is_state('update.home_assistant_core_update','on')
+              else 'green' }}
+          - type: custom:mushroom-template-card
+            primary: Automatic Backups
+            secondary: >-
+              Last success {{
+              states('sensor.backup_last_successful_automatic_backup') }}
+            icon: mdi:backup-restore
+          - type: custom:mushroom-template-card
+            primary: Next Backup
+            secondary: '{{ states(''sensor.backup_next_scheduled_automatic_backup'') }}'
+            icon: mdi:calendar-clock
+  - type: sections
+    title: People & Locations
+    path: people-locations
+    icon: mdi:map-marker-account
+    max_columns: 4
+    sections:
+      - type: grid
+        cards:
+          - type: custom:mushroom-title-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 4px 4px 0px 4px;
+                  margin-bottom: -4px;
+                }
+            title: 📍 People & Locations
+            subtitle: Family locations • Presence from Home Assistant
+          - type: custom:mushroom-chips-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 0px;
+                }
+                ha-card .chip-container {
+                  gap: 8px;
+                }
+            alignment: start
+            chips:
+              - type: template
+                icon: mdi:account
+                content: >-
+                  {% set d = distance('zone.home','person.raymond_du') |
+                  float(9999) %} {% if d <= 0.1 %}🟢{% elif d < 50 %}🟠{% else
+                  %}🔴{% endif %} Raymond Du
+                icon_color: >-
+                  {% set d = distance('zone.home','person.raymond_du') |
+                  float(9999) %} {% if d <= 0.1 %}green{% elif d < 50 %}orange{%
+                  else %}red{% endif %}
+                entity: person.raymond_du
+                tap_action:
+                  action: more-info
+              - type: template
+                icon: mdi:account
+                content: >-
+                  {% set d = distance('zone.home','person.vinh_du') |
+                  float(9999) %} {% if d <= 0.1 %}🟢{% elif d < 50 %}🟠{% else
+                  %}🔴{% endif %} Vinh Du
+                icon_color: >-
+                  {% set d = distance('zone.home','person.vinh_du') |
+                  float(9999) %} {% if d <= 0.1 %}green{% elif d < 50 %}orange{%
+                  else %}red{% endif %}
+                entity: person.vinh_du
+                tap_action:
+                  action: more-info
+              - type: template
+                icon: mdi:account
+                content: >-
+                  {% set d = distance('zone.home','person.ai_q_huang') |
+                  float(9999) %} {% if d <= 0.1 %}🟢{% elif d < 50 %}🟠{% else
+                  %}🔴{% endif %} Ai Q Huang
+                icon_color: >-
+                  {% set d = distance('zone.home','person.ai_q_huang') |
+                  float(9999) %} {% if d <= 0.1 %}green{% elif d < 50 %}orange{%
+                  else %}red{% endif %}
+                entity: person.ai_q_huang
+                tap_action:
+                  action: more-info
+          - type: grid
+            columns: 3
+            square: false
+            cards:
+              - type: custom:mushroom-template-card
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(255,255,255,0.10);
+                      border-radius: 20px;
+                      border: 1px solid rgba(255,255,255,0.18);
+                      box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+                    }
+                primary: Raymond Du
+                secondary: >-
+                  {% set d = distance('zone.home','person.raymond_du') |
+                  float(9999) %} {% if d <= 0.1 %}
+                    Home • within 100 m
+                  {% elif d < 50 %}
+                    {{ d | round(1) }} km from home
+                  {% else %}
+                    {{ d | round(1) }} km from home
+                  {% endif %}
+                icon: mdi:crosshairs-gps
+                icon_color: >-
+                  {% set d = distance('zone.home','person.raymond_du') |
+                  float(9999) %} {% if d <= 0.1 %}green{% elif d < 50 %}orange{%
+                  else %}red{% endif %}
+                entity: person.raymond_du
+                tap_action:
+                  action: more-info
+              - type: custom:mushroom-template-card
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(255,255,255,0.10);
+                      border-radius: 20px;
+                      border: 1px solid rgba(255,255,255,0.18);
+                      box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+                    }
+                primary: Vinh Du
+                secondary: >-
+                  {% set d = distance('zone.home','person.vinh_du') |
+                  float(9999) %} {% if d <= 0.1 %}
+                    Home • within 100 m
+                  {% elif d < 50 %}
+                    {{ d | round(1) }} km from home
+                  {% else %}
+                    {{ d | round(1) }} km from home
+                  {% endif %}
+                icon: mdi:crosshairs-gps
+                icon_color: >-
+                  {% set d = distance('zone.home','person.vinh_du') |
+                  float(9999) %} {% if d <= 0.1 %}green{% elif d < 50 %}orange{%
+                  else %}red{% endif %}
+                entity: person.vinh_du
+                tap_action:
+                  action: more-info
+              - type: custom:mushroom-template-card
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(255,255,255,0.10);
+                      border-radius: 20px;
+                      border: 1px solid rgba(255,255,255,0.18);
+                      box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+                    }
+                primary: Ai Q Huang
+                secondary: >-
+                  {% set d = distance('zone.home','person.ai_q_huang') |
+                  float(9999) %} {% if d <= 0.1 %}
+                    Home • within 100 m
+                  {% elif d < 50 %}
+                    {{ d | round(1) }} km from home
+                  {% else %}
+                    {{ d | round(1) }} km from home
+                  {% endif %}
+                icon: mdi:crosshairs-gps
+                icon_color: >-
+                  {% set d = distance('zone.home','person.ai_q_huang') |
+                  float(9999) %} {% if d <= 0.1 %}green{% elif d < 50 %}orange{%
+                  else %}red{% endif %}
+                entity: person.ai_q_huang
+                tap_action:
+                  action: more-info
+      - type: grid
+        cards:
+          - type: custom:mushroom-template-card
+            primary: Home
+            secondary: Home location reference
+            icon: mdi:home-map-marker
+            icon_color: green
+            entity: zone.home
+          - type: map
+            entities:
+              - entity: zone.home
+              - entity: person.raymond_du
+              - entity: person.vinh_du
+              - entity: person.ai_q_huang
+            auto_fit: true
+            fit_zones: true
+            cluster: false
+            hours_to_show: 0
+            theme_mode: dark
+            aspect_ratio: '16:9'
+          - type: heading
+            heading: Tracking Actions
+            icon: mdi:map-marker-path
+          - type: custom:mushroom-template-card
+            primary: Raymond Du
+            secondary: Distance • Route • Map
+            icon: mdi:account-arrow-right
+            icon_color: >-
+              {% set d = distance('zone.home','person.raymond_du') | float(9999)
+              %} {% if d <= 0.1 %}green{% elif d < 50 %}orange{% else %}red{%
+              endif %}
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/people-locations-distance
+            hold_action:
+              action: more-info
+            entity: person.raymond_du
+          - type: custom:mushroom-template-card
+            primary: Vinh Du
+            secondary: Distance • Route • Map
+            icon: mdi:account-arrow-right
+            icon_color: >-
+              {% set d = distance('zone.home','person.vinh_du') | float(9999) %}
+              {% if d <= 0.1 %}green{% elif d < 50 %}orange{% else %}red{% endif
+              %}
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/people-locations-distance
+            hold_action:
+              action: more-info
+            entity: person.vinh_du
+          - type: custom:mushroom-template-card
+            primary: Ai Q Huang
+            secondary: Distance • Route • Map
+            icon: mdi:account-arrow-right
+            icon_color: >-
+              {% set d = distance('zone.home','person.ai_q_huang') | float(9999)
+              %} {% if d <= 0.1 %}green{% elif d < 50 %}orange{% else %}red{%
+              endif %}
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/people-locations-distance
+            hold_action:
+              action: more-info
+            entity: person.ai_q_huang
+          - type: markdown
+            content: >-
+              {% set people = [
+                ('Raymond Du', 'person.raymond_du'),
+                ('Vinh Du', 'person.vinh_du'),
+                ('Ai Q Huang', 'person.ai_q_huang')
+              ] %} {% for name, p in people %} {% set lat =
+              state_attr(p,'latitude') %} {% set lon = state_attr(p,'longitude')
+              %} {% set d = distance('zone.home',p) | float(9999) %}
+
+              **{{ name }}**
+
+              {% if d <= 0.1 %} 🟢 **Home / within 100 m** {% elif d < 50 %} 🟠
+              **{{ d | round(1) }} km from home** {% else %} 🔴 **{{ d |
+              round(1) }} km from home** {% endif %}
+
+              {% if lat is not none and lon is not none %} [🧭
+              Route](https://maps.apple.com/?daddr={{ lat }},{{ lon }}&dirflg=d)
+              &nbsp;&nbsp; [🗺️ Map](https://maps.apple.com/?ll={{ lat }},{{ lon
+              }}) {% endif %}
+
+              ---
+
+              {% endfor %}
+  - type: sections
+    title: Distance
+    path: people-locations-distance
+    icon: mdi:map-search
+    subview: true
+    max_columns: 4
+    sections:
+      - type: grid
+        cards:
+          - type: custom:mushroom-title-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 4px 4px 0px 4px;
+                  margin-bottom: -4px;
+                }
+            title: 🔭 Distance View
+            subtitle: Family members and Home
+          - type: map
+            entities:
+              - entity: zone.home
+              - entity: person.raymond_du
+              - entity: person.vinh_du
+              - entity: person.ai_q_huang
+            auto_fit: true
+            fit_zones: true
+            cluster: false
+            default_zoom: 9
+            hours_to_show: 0
+            theme_mode: dark
+            aspect_ratio: '16:9'
+          - type: custom:mushroom-template-card
+            primary: Raymond Du
+            secondary: >-
+              {% set d = distance('zone.home','person.raymond_du') | float(9999)
+              %} {% if d <= 0.1 %}
+                Home • within 100 m
+              {% else %}
+                {{ d | round(1) }} km from home
+              {% endif %}
+            icon: mdi:map-marker-distance
+            icon_color: >-
+              {% set d = distance('zone.home','person.raymond_du') | float(9999)
+              %} {% if d <= 0.1 %}green{% elif d < 50 %}orange{% else %}red{%
+              endif %}
+            entity: person.raymond_du
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: Vinh Du
+            secondary: >-
+              {% set d = distance('zone.home','person.vinh_du') | float(9999) %}
+              {% if d <= 0.1 %}
+                Home • within 100 m
+              {% else %}
+                {{ d | round(1) }} km from home
+              {% endif %}
+            icon: mdi:map-marker-distance
+            icon_color: >-
+              {% set d = distance('zone.home','person.vinh_du') | float(9999) %}
+              {% if d <= 0.1 %}green{% elif d < 50 %}orange{% else %}red{% endif
+              %}
+            entity: person.vinh_du
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: Ai Q Huang
+            secondary: >-
+              {% set d = distance('zone.home','person.ai_q_huang') | float(9999)
+              %} {% if d <= 0.1 %}
+                Home • within 100 m
+              {% else %}
+                {{ d | round(1) }} km from home
+              {% endif %}
+            icon: mdi:map-marker-distance
+            icon_color: >-
+              {% set d = distance('zone.home','person.ai_q_huang') | float(9999)
+              %} {% if d <= 0.1 %}green{% elif d < 50 %}orange{% else %}red{%
+              endif %}
+            entity: person.ai_q_huang
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: Back to People & Locations
+            icon: mdi:arrow-left
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/people-locations
+  - type: sections
+    title: Lighting Studio
+    path: lights
+    icon: mdi:lightbulb-group
+    theme: Deez Lighting
+    max_columns: 3
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: Favourite Lights
+          - type: custom:mushroom-title-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 4px 4px 0px 4px;
+                  margin-bottom: -4px;
+                }
+            title: >-
+              {{ '💡 灯光工作室' if is_state('input_boolean.chinese_dashboard','on')
+              else '💡 Lighting Studio' }}
+            subtitle: >-
+              {{ '房间、亮度与氛围' if is_state('input_boolean.chinese_dashboard','on')
+              else 'Rooms, brightness & ambience' }}
+          - type: custom:mushroom-chips-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 0px;
+                }
+                ha-card .chip-container {
+                  gap: 8px;
+                }
+            alignment: justify
+            chips:
+              - type: template
+                icon: mdi:lightbulb-group
+                icon_color: >-
+                  {{ 'amber' if (states.light | selectattr('state','eq','on') |
+                  list | count) > 0 else 'grey' }}
+                content: >-
+                  {{ states.light | selectattr('state','eq','on') | list | count
+                  }} on
+              - type: template
+                icon: mdi:motion-sensor
+                icon_color: >-
+                  {{ 'amber' if
+                  is_state('binary_sensor.living_room_living_hue_hue_sensor_motion','on')
+                  or is_state('binary_sensor.bedroom_motion_sensor_motion','on')
+                  else 'grey' }}
+                content: >-
+                  {{ 'Motion' if
+                  is_state('binary_sensor.living_room_living_hue_hue_sensor_motion','on')
+                  or is_state('binary_sensor.bedroom_motion_sensor_motion','on')
+                  else 'Quiet' }}
+              - type: template
+                icon: mdi:weather-partly-cloudy
+                entity: weather.forecast_home
+                content: >-
+                  {% set t = state_attr('weather.forecast_home','temperature')
+                  %} {{ (t | round(0) ~ '°') if t is not none else
+                  states('weather.forecast_home') }}
+                tap_action:
+                  action: more-info
+              - type: template
+                icon: mdi:home
+                content: Home
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/home
+          - type: custom:mushroom-light-card
+            entity: light.living_room
+            name: Living Room
+            icon: mdi:sofa
+            use_light_color: true
+            show_brightness_control: true
+            show_color_temp_control: true
+            collapsible_controls: false
+            fill_container: true
+            tap_action:
+              action: toggle
+            hold_action:
+              action: more-info
+            double_tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/light-living-room
+          - type: custom:mushroom-light-card
+            entity: light.bedroom_bedroom
+            name: Ray Bedroom
+            icon: mdi:bed
+            use_light_color: true
+            show_brightness_control: true
+            show_color_temp_control: true
+            collapsible_controls: false
+            fill_container: true
+            tap_action:
+              action: toggle
+            hold_action:
+              action: more-info
+            double_tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/light-ray-bedroom
+          - type: custom:mushroom-light-card
+            entity: light.dining
+            name: Dining
+            icon: mdi:table-chair
+            show_brightness_control: true
+            collapsible_controls: false
+            fill_container: true
+            tap_action:
+              action: toggle
+            hold_action:
+              action: more-info
+          - type: custom:mushroom-entity-card
+            entity: switch.mainroomlight_switch_1
+            name: Parents Main Light
+            icon: mdi:bed-king
+            tap_action:
+              action: toggle
+            hold_action:
+              action: more-info
+      - type: grid
+        cards:
+          - type: heading
+            heading: Lighting Modes
+          - type: custom:mushroom-template-card
+            primary: Lighting Modes
+            secondary: Night • Relax • Evening • Bright
+            icon: mdi:creation
+            icon_color: purple
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/lighting-modes
+          - type: custom:mushroom-template-card
+            primary: All Primary Lights Off
+            secondary: Living • Dining • Ray • Parents
+            icon: mdi:lightbulb-group-off
+            icon_color: red
+            tap_action:
+              action: perform-action
+              perform_action: homeassistant.turn_off
+              target:
+                entity_id:
+                  - light.living_room
+                  - light.dining
+                  - light.bedroom_bedroom
+                  - switch.mainroomlight_switch_1
+          - type: custom:mushroom-chips-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 0px;
+                }
+                ha-card .chip-container {
+                  gap: 8px;
+                }
+            alignment: justify
+            chips:
+              - type: template
+                icon: mdi:brightness-4
+                content: Living 25%
+                tap_action:
+                  action: perform-action
+                  perform_action: light.turn_on
+                  target:
+                    entity_id: light.living_room
+                  data:
+                    brightness_pct: 25
+              - type: template
+                icon: mdi:brightness-6
+                content: Living 60%
+                tap_action:
+                  action: perform-action
+                  perform_action: light.turn_on
+                  target:
+                    entity_id: light.living_room
+                  data:
+                    brightness_pct: 60
+              - type: template
+                icon: mdi:brightness-7
+                content: Living 100%
+                tap_action:
+                  action: perform-action
+                  perform_action: light.turn_on
+                  target:
+                    entity_id: light.living_room
+                  data:
+                    brightness_pct: 100
+      - type: grid
+        cards:
+          - type: heading
+            heading: Room Context
+          - type: custom:mushroom-template-card
+            primary: Living Room
+            secondary: >-
+              {{ states('sensor.living_room_living_hue_hue_sensor_temperature')
+              }} °C • {{
+              states('sensor.living_room_living_hue_hue_sensor_illuminance') }}
+              lx • {{ 'Motion' if
+              is_state('binary_sensor.living_room_living_hue_hue_sensor_motion','on')
+              else 'Clear' }}
+            icon: mdi:sofa
+            icon_color: >-
+              {{ 'amber' if is_state('light.living_room','on') or
+              is_state('binary_sensor.living_room_living_hue_hue_sensor_motion','on')
+              else 'grey' }}
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/living-room
+          - type: custom:mushroom-template-card
+            primary: Parents Room
+            secondary: >-
+              {{ states('sensor.bedroom_motion_sensor_temperature') }} °C • {{
+              states('sensor.bedroom_motion_sensor_humidity') }} %
+            icon: mdi:bed-king
+            icon_color: >-
+              {{ 'amber' if is_state('switch.mainroomlight_switch_1','on') or
+              is_state('binary_sensor.bedroom_motion_sensor_motion','on') else
+              'grey' }}
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/parents-room
+          - type: custom:mushroom-template-card
+            primary: Ray Bedroom
+            secondary: >-
+              Shade {{ states('cover.aqara_roller_shade_driver_e1') }} • {{
+              states('sensor.r_energy_monitor_p110m_current_consumption') }} W
+            icon: mdi:bed
+            icon_color: >-
+              {{ 'amber' if is_state('light.bedroom_bedroom','on') else 'grey'
+              }}
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/ray-bedroom
+          - type: custom:mushroom-template-card
+            primary: Dining
+            secondary: >-
+              {{ states('sensor.sensor_group_illuminance') }} lx • {{ 'Motion'
+              if is_state('binary_sensor.sensor_group_motion','on') else 'Clear'
+              }}
+            icon: mdi:table-chair
+            icon_color: >-
+              {{ 'amber' if is_state('light.dining','on') or
+              is_state('binary_sensor.sensor_group_motion','on') else 'grey' }}
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/dining
+  - type: sections
+    title: Living Room Light
+    path: light-living-room
+    icon: mdi:ceiling-light-multiple
+    theme: Deez Lighting
+    subview: true
+    max_columns: 3
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: Main Light
+          - type: custom:mushroom-title-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 4px 4px 0px 4px;
+                  margin-bottom: -4px;
+                }
+            title: Living Room Light
+            subtitle: Power • brightness • temperature • capability
+          - type: custom:mushroom-light-card
+            entity: light.living_room
+            name: Living Room
+            use_light_color: true
+            show_brightness_control: true
+            show_color_temp_control: true
+            collapsible_controls: false
+            fill_container: true
+            tap_action:
+              action: toggle
+            hold_action:
+              action: more-info
+          - type: custom:mushroom-chips-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 0px;
+                }
+                ha-card .chip-container {
+                  gap: 8px;
+                }
+            alignment: justify
+            chips:
+              - type: template
+                entity: light.living_room
+                icon: mdi:power
+                icon_color: >-
+                  {{ 'amber' if is_state('light.living_room','on') else 'grey'
+                  }}
+                content: '{{ ''On'' if is_state(''light.living_room'',''on'') else ''Off'' }}'
+                tap_action:
+                  action: toggle
+              - type: template
+                icon: mdi:brightness-6
+                content: >-
+                  {% set b = state_attr('light.living_room','brightness') %} {{
+                  (((b | float / 255) * 100) | round(0) ~ '%') if b is not none
+                  else '—' }}
+              - type: template
+                icon: mdi:thermometer
+                content: >-
+                  {% set k = state_attr('light.living_room','color_temp_kelvin')
+                  %} {{ (k ~ ' K') if k is not none else 'Auto' }}
+              - type: template
+                entity: light.living_room
+                icon: mdi:information-outline
+                content: More
+                tap_action:
+                  action: more-info
+      - type: grid
+        cards:
+          - type: heading
+            heading: Four Hue Spots
+          - type: grid
+            columns: 2
+            square: false
+            cards:
+              - type: custom:mushroom-light-card
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(255,255,255,0.10);
+                      border-radius: 20px;
+                      border: 1px solid rgba(255,255,255,0.18);
+                      box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+                    }
+                entity: light.living_room_hue_ambiance_spot_1
+                name: Inner Left
+                show_brightness_control: true
+                collapsible_controls: true
+                tap_action:
+                  action: toggle
+                hold_action:
+                  action: more-info
+              - type: custom:mushroom-light-card
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(255,255,255,0.10);
+                      border-radius: 20px;
+                      border: 1px solid rgba(255,255,255,0.18);
+                      box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+                    }
+                entity: light.living_room_hue_ambiance_spot_2
+                name: Inner Right
+                show_brightness_control: true
+                collapsible_controls: true
+                tap_action:
+                  action: toggle
+                hold_action:
+                  action: more-info
+              - type: custom:mushroom-light-card
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(255,255,255,0.10);
+                      border-radius: 20px;
+                      border: 1px solid rgba(255,255,255,0.18);
+                      box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+                    }
+                entity: light.living_room_hue_ambiance_spot_3
+                name: Outer Left
+                show_brightness_control: true
+                collapsible_controls: true
+                tap_action:
+                  action: toggle
+                hold_action:
+                  action: more-info
+              - type: custom:mushroom-light-card
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(255,255,255,0.10);
+                      border-radius: 20px;
+                      border: 1px solid rgba(255,255,255,0.18);
+                      box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+                    }
+                entity: light.living_room_hue_ambiance_spot_4
+                name: Outer Right
+                show_brightness_control: true
+                collapsible_controls: true
+                tap_action:
+                  action: toggle
+                hold_action:
+                  action: more-info
+          - type: custom:mushroom-template-card
+            primary: All Four Spots Off
+            icon: mdi:lightbulb-multiple-off
+            icon_color: red
+            tap_action:
+              action: perform-action
+              perform_action: light.turn_off
+              target:
+                entity_id:
+                  - light.living_room_hue_ambiance_spot_1
+                  - light.living_room_hue_ambiance_spot_2
+                  - light.living_room_hue_ambiance_spot_3
+                  - light.living_room_hue_ambiance_spot_4
+      - type: grid
+        cards:
+          - type: heading
+            heading: Navigation
+          - type: custom:mushroom-template-card
+            primary: Living Room
+            secondary: Full room controls, TV and sensors
+            icon: mdi:sofa
+            icon_color: blue
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/living-room
+          - type: custom:mushroom-template-card
+            primary: Back to Lighting Studio
+            icon: mdi:arrow-left
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/lights
+  - type: sections
+    title: Ray Bedroom Light
+    path: light-ray-bedroom
+    icon: mdi:bed
+    theme: Deez Lighting
+    subview: true
+    max_columns: 3
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: Bedroom Light
+          - type: custom:mushroom-title-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 4px 4px 0px 4px;
+                  margin-bottom: -4px;
+                }
+            title: Ray Bedroom Light
+            subtitle: Power • brightness • temperature • capability
+          - type: custom:mushroom-light-card
+            entity: light.bedroom_bedroom
+            name: Ray Bedroom
+            use_light_color: true
+            show_brightness_control: true
+            show_color_temp_control: true
+            collapsible_controls: false
+            fill_container: true
+            tap_action:
+              action: toggle
+            hold_action:
+              action: more-info
+          - type: custom:mushroom-chips-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 0px;
+                }
+                ha-card .chip-container {
+                  gap: 8px;
+                }
+            alignment: justify
+            chips:
+              - type: template
+                entity: light.bedroom_bedroom
+                icon: mdi:power
+                icon_color: >-
+                  {{ 'amber' if is_state('light.bedroom_bedroom','on') else
+                  'grey' }}
+                content: >-
+                  {{ 'On' if is_state('light.bedroom_bedroom','on') else 'Off'
+                  }}
+                tap_action:
+                  action: toggle
+              - type: template
+                icon: mdi:brightness-6
+                content: >-
+                  {% set b = state_attr('light.bedroom_bedroom','brightness') %}
+                  {{ (((b | float / 255) * 100) | round(0) ~ '%') if b is not
+                  none else '—' }}
+              - type: template
+                icon: mdi:thermometer
+                content: >-
+                  {% set k =
+                  state_attr('light.bedroom_bedroom','color_temp_kelvin') %} {{
+                  (k ~ ' K') if k is not none else 'Auto' }}
+      - type: grid
+        cards:
+          - type: heading
+            heading: Bedroom Context
+          - type: custom:mushroom-template-card
+            primary: Roller Shade
+            secondary: >-
+              {{ states('cover.aqara_roller_shade_driver_e1') }} • Battery {{
+              states('sensor.aqara_roller_shade_driver_e1_battery') }}%
+            icon: mdi:roller-shade
+            icon_color: indigo
+            entity: cover.aqara_roller_shade_driver_e1
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: Bedroom Power
+            secondary: >-
+              {{ states('sensor.r_energy_monitor_p110m_current_consumption') }}
+              W
+            icon: mdi:flash
+            icon_color: amber
+            entity: switch.r_energy_monitor_p110m
+            tap_action:
+              action: more-info
+          - type: custom:mushroom-template-card
+            primary: Back to Lighting Studio
+            icon: mdi:arrow-left
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/lights
+  - type: sections
+    title: Lighting Modes
+    path: lighting-modes
+    icon: mdi:creation
+    theme: Deez Lighting
+    subview: true
+    max_columns: 3
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: Whole Home Presets
+          - type: custom:mushroom-title-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 4px 4px 0px 4px;
+                  margin-bottom: -4px;
+                }
+            title: Lighting Modes
+            subtitle: One-touch brightness presets using confirmed dimmable lights
+          - type: grid
+            columns: 2
+            square: false
+            cards:
+              - type: custom:mushroom-template-card
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(255,255,255,0.10);
+                      border-radius: 20px;
+                      border: 1px solid rgba(255,255,255,0.18);
+                      box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+                    }
+                primary: Night
+                secondary: Living • Ray • Dining at 10%
+                icon: mdi:weather-night
+                icon_color: indigo
+                tap_action:
+                  action: perform-action
+                  perform_action: light.turn_on
+                  target:
+                    entity_id:
+                      - light.living_room
+                      - light.bedroom_bedroom
+                      - light.dining
+                  data:
+                    brightness_pct: 10
+              - type: custom:mushroom-template-card
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(255,255,255,0.10);
+                      border-radius: 20px;
+                      border: 1px solid rgba(255,255,255,0.18);
+                      box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+                    }
+                primary: Relax
+                secondary: Living • Ray • Dining at 35%
+                icon: mdi:sofa-outline
+                icon_color: amber
+                tap_action:
+                  action: perform-action
+                  perform_action: light.turn_on
+                  target:
+                    entity_id:
+                      - light.living_room
+                      - light.bedroom_bedroom
+                      - light.dining
+                  data:
+                    brightness_pct: 35
+              - type: custom:mushroom-template-card
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(255,255,255,0.10);
+                      border-radius: 20px;
+                      border: 1px solid rgba(255,255,255,0.18);
+                      box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+                    }
+                primary: Evening
+                secondary: Living Room at 55%
+                icon: mdi:weather-sunset
+                icon_color: orange
+                tap_action:
+                  action: perform-action
+                  perform_action: light.turn_on
+                  target:
+                    entity_id: light.living_room
+                  data:
+                    brightness_pct: 55
+              - type: custom:mushroom-template-card
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(255,255,255,0.10);
+                      border-radius: 20px;
+                      border: 1px solid rgba(255,255,255,0.18);
+                      box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+                    }
+                primary: Bright
+                secondary: Living • Ray • Dining at 100%
+                icon: mdi:white-balance-sunny
+                icon_color: amber
+                tap_action:
+                  action: perform-action
+                  perform_action: light.turn_on
+                  target:
+                    entity_id:
+                      - light.living_room
+                      - light.bedroom_bedroom
+                      - light.dining
+                  data:
+                    brightness_pct: 100
+          - type: custom:mushroom-template-card
+            primary: All Primary Lights Off
+            secondary: Living • Dining • Ray • Parents
+            icon: mdi:lightbulb-group-off
+            icon_color: red
+            tap_action:
+              action: perform-action
+              perform_action: homeassistant.turn_off
+              target:
+                entity_id:
+                  - light.living_room
+                  - light.dining
+                  - light.bedroom_bedroom
+                  - switch.mainroomlight_switch_1
+      - type: grid
+        cards:
+          - type: heading
+            heading: Current State
+          - type: custom:mushroom-template-card
+            primary: Living Room
+            secondary: >-
+              {% set b = state_attr('light.living_room','brightness') %} {{
+              'Off' if is_state('light.living_room','off') else ((((b | float /
+              255) * 100) | round(0) ~ '%') if b is not none else 'On') }}
+            icon: mdi:sofa
+            icon_color: '{{ ''amber'' if is_state(''light.living_room'',''on'') else ''grey'' }}'
+          - type: custom:mushroom-template-card
+            primary: Ray Bedroom
+            secondary: >-
+              {% set b = state_attr('light.bedroom_bedroom','brightness') %} {{
+              'Off' if is_state('light.bedroom_bedroom','off') else ((((b |
+              float / 255) * 100) | round(0) ~ '%') if b is not none else 'On')
+              }}
+            icon: mdi:bed
+            icon_color: >-
+              {{ 'amber' if is_state('light.bedroom_bedroom','on') else 'grey'
+              }}
+          - type: custom:mushroom-template-card
+            primary: Dining
+            secondary: >-
+              {% set b = state_attr('light.dining','brightness') %} {{ 'Off' if
+              is_state('light.dining','off') else ((((b | float / 255) * 100) |
+              round(0) ~ '%') if b is not none else 'On') }}
+            icon: mdi:table-chair
+            icon_color: '{{ ''amber'' if is_state(''light.dining'',''on'') else ''grey'' }}'
+          - type: custom:mushroom-template-card
+            primary: Back to Lighting Studio
+            icon: mdi:arrow-left
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/lights
+  - type: sections
+    title: iPad Command Center
+    path: ipad-command-center
+    icon: mdi:tablet-dashboard
+    max_columns: 3
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: Home Pulse
+          - type: custom:mushroom-chips-card
+            alignment: center
+            chips:
+              - type: template
+                icon: mdi:shield-home
+                icon_color: >-
+                  {% set doors = [states('binary_sensor.f_contact_sensor_door'),
+                  states('binary_sensor.m_contact_sensor_door'),
+                  states('binary_sensor.b_contact_sensor_door')] %} {{ 'red' if
+                  (doors | select('eq','on') | list | count) > 0 else 'green' }}
+                content: >-
+                  {% set doors = [states('binary_sensor.f_contact_sensor_door'),
+                  states('binary_sensor.m_contact_sensor_door'),
+                  states('binary_sensor.b_contact_sensor_door')] %} {{ doors |
+                  select('eq','on') | list | count }} open
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/security
+              - type: template
+                icon: mdi:wan
+                icon_color: >-
+                  {{ 'green' if is_state('binary_sensor.eero_wan_status','on')
+                  else 'red' }}
+                content: >-
+                  {{ 'WAN Online' if
+                  is_state('binary_sensor.eero_wan_status','on') else 'WAN
+                  Offline' }}
+              - type: template
+                icon: mdi:solar-power
+                icon_color: amber
+                content: '{{ states(''sensor.primo_5_0_1_1_ac_power'') }} W'
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/energy
+              - type: template
+                icon: mdi:lightbulb-group
+                icon_color: >-
+                  {{ 'amber' if (states.light | selectattr('state','eq','on') |
+                  list | count) > 0 else 'grey' }}
+                content: >-
+                  {{ states.light | selectattr('state','eq','on') | list | count
+                  }} lights
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/lights
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 0px;
+                }
+                ha-card .chip-container {
+                  gap: 8px;
+                }
+          - square: false
+            type: grid
+            columns: 3
+            cards:
+              - type: custom:mushroom-template-card
+                primary: Front
+                secondary: >-
+                  {{ 'Open' if
+                  is_state('binary_sensor.f_contact_sensor_door','on') else
+                  'Closed' }}
+                icon: mdi:door
+                color: >-
+                  {{ 'red' if
+                  is_state('binary_sensor.f_contact_sensor_door','on') else
+                  'green' }}
+                features_position: bottom
+                vertical: true
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(255,255,255,0.10);
+                      border-radius: 20px;
+                      border: 1px solid rgba(255,255,255,0.18);
+                      box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+                    }
+              - type: custom:mushroom-template-card
+                primary: Parents
+                secondary: >-
+                  {{ 'Open' if
+                  is_state('binary_sensor.m_contact_sensor_door','on') else
+                  'Closed' }}
+                icon: mdi:door
+                color: >-
+                  {{ 'red' if
+                  is_state('binary_sensor.m_contact_sensor_door','on') else
+                  'green' }}
+                features_position: bottom
+                vertical: true
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(255,255,255,0.10);
+                      border-radius: 20px;
+                      border: 1px solid rgba(255,255,255,0.18);
+                      box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+                    }
+              - type: custom:mushroom-template-card
+                primary: Back
+                secondary: >-
+                  {{ 'Open' if
+                  is_state('binary_sensor.b_contact_sensor_door','on') else
+                  'Closed' }}
+                icon: mdi:door
+                color: >-
+                  {{ 'red' if
+                  is_state('binary_sensor.b_contact_sensor_door','on') else
+                  'green' }}
+                features_position: bottom
+                vertical: true
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(255,255,255,0.10);
+                      border-radius: 20px;
+                      border: 1px solid rgba(255,255,255,0.18);
+                      box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+                    }
+            grid_options:
+              columns: 12
+              rows: 1
+          - type: grid
+            columns: 2
+            square: false
+            cards:
+              - type: tile
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(255,255,255,0.10);
+                      border-radius: 20px;
+                      border: 1px solid rgba(255,255,255,0.18);
+                      box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+                    }
+                entity: light.living_room
+                name: Living Room
+                icon: mdi:sofa
+                color: amber
+                tap_action:
+                  action: toggle
+                hold_action:
+                  action: more-info
+                features:
+                  - type: light-brightness
+                features_position: bottom
+              - type: tile
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(255,255,255,0.10);
+                      border-radius: 20px;
+                      border: 1px solid rgba(255,255,255,0.18);
+                      box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+                    }
+                entity: light.dining
+                name: Dining
+                icon: mdi:table-chair
+                color: amber
+                tap_action:
+                  action: toggle
+                hold_action:
+                  action: more-info
+                features:
+                  - type: light-brightness
+                features_position: bottom
+              - type: tile
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(255,255,255,0.10);
+                      border-radius: 20px;
+                      border: 1px solid rgba(255,255,255,0.18);
+                      box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+                    }
+                entity: light.bedroom_bedroom
+                name: Ray Bedroom
+                icon: mdi:bed
+                color: amber
+                tap_action:
+                  action: toggle
+                hold_action:
+                  action: more-info
+                features:
+                  - type: light-brightness
+                features_position: bottom
+              - type: tile
+                card_mod:
+                  style: |
+                    ha-card {
+                      background: rgba(255,255,255,0.10);
+                      border-radius: 20px;
+                      border: 1px solid rgba(255,255,255,0.18);
+                      box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+                    }
+                entity: switch.mainroomlight_switch_1
+                name: Parents
+                icon: mdi:bed-king
+                color: amber
+                tap_action:
+                  action: toggle
+                hold_action:
+                  action: more-info
+          - type: custom:mushroom-climate-card
+            entity: climate.bedroom_parents_room_ac
+            name: Parents AC
+            show_temperature_control: true
+            collapsible_controls: true
+      - type: grid
+        cards:
+          - type: heading
+            heading: Control Centre
+          - type: custom:mushroom-media-player-card
+            entity: media_player.living_room_tv_samsung_q9_series_65
+            name: Living Room TV
+            use_media_info: true
+            show_volume_level: true
+            collapsible_controls: true
+          - type: custom:mushroom-template-card
+            primary: Lighting Modes
+            secondary: Night • Relax • Evening • Bright
+            icon: mdi:creation
+            icon_color: purple
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/lighting-modes
+          - type: custom:mushroom-template-card
+            primary: Raymond
+            secondary: >-
+              {% set d = distance('zone.home','person.raymond_du') | float(9999)
+              %} {% if d <= 0.1 %}Home{% else %}{{ d | round(1) }} km away{%
+              endif %}
+            icon: mdi:map-marker-account
+            icon_color: >-
+              {% set d = distance('zone.home','person.raymond_du') | float(9999)
+              %} {% if d <= 0.1 %}green{% elif d < 50 %}orange{% else %}red{%
+              endif %}
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/people-locations
+          - type: heading
+            heading: Active Loads
+            icon: mdi:flash
+          - type: custom:mushroom-chips-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 0px;
+                }
+                ha-card .chip-container {
+                  gap: 8px;
+                }
+            alignment: justify
+            chips:
+              - type: template
+                icon: mdi:bed
+                content: >-
+                  Ray {{
+                  states('sensor.r_energy_monitor_p110m_current_consumption') }}
+                  W
+                entity: switch.r_energy_monitor_p110m
+                tap_action:
+                  action: more-info
+              - type: template
+                icon: mdi:fridge-outline
+                content: >-
+                  Freezer {{
+                  states('sensor.g_monitor_freezer_p110m_current_consumption')
+                  }} W
+                entity: switch.g_monitor_freezer_p110m
+                tap_action:
+                  action: more-info
+          - type: custom:mushroom-chips-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 0px;
+                }
+                ha-card .chip-container {
+                  gap: 8px;
+                }
+            alignment: center
+            chips:
+              - type: template
+                icon: mdi:home
+                content: Home
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/home
+              - type: template
+                icon: mdi:lightbulb-group
+                content: Lights
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/lights
+              - type: template
+                icon: mdi:shield-home
+                content: Security
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/security
+              - type: template
+                icon: mdi:cctv
+                content: Cameras
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/cameras
+              - type: template
+                icon: mdi:receipt-text
+                content: Bills
+                icon_color: >-
+                  {% if states('sensor.bills_unpaid_count') | int(0) > 0
+                  %}orange{% else %}green{% endif %}
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/bills
+      - type: grid
+        cards:
+          - type: heading
+            heading: Live Cameras
+          - type: custom:mushroom-chips-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 0px;
+                }
+                ha-card .chip-container {
+                  gap: 8px;
+                }
+            alignment: justify
+            chips:
+              - type: template
+                icon: mdi:door-open
+                icon_color: >-
+                  {{ 'green' if states('camera.front_door_live_view') not in
+                  ['unavailable','unknown'] else 'red' }}
+                content: Front
+              - type: template
+                icon: mdi:cctv
+                icon_color: >-
+                  {{ 'green' if
+                  states('camera.tapo_c425_north_wall_hd_stream_direct') not in
+                  ['unavailable','unknown'] else 'red' }}
+                content: North
+              - type: template
+                icon: mdi:cctv
+                icon_color: >-
+                  {{ 'green' if
+                  states('camera.tapo_c420_east_wall_hd_stream_direct') not in
+                  ['unavailable','unknown'] else 'red' }}
+                content: East
+              - type: template
+                icon: mdi:cctv
+                icon_color: >-
+                  {{ 'green' if
+                  states('camera.tapo_c420_south_wall_hd_stream_direct') not in
+                  ['unavailable','unknown'] else 'red' }}
+                content: South
+              - type: template
+                icon: mdi:cctv
+                icon_color: >-
+                  {{ 'green' if
+                  states('camera.tapo_c200_stockroom_hd_stream_direct') not in
+                  ['unavailable','unknown'] else 'red' }}
+                content: Stock
+              - type: template
+                icon: mdi:cat
+                icon_color: >-
+                  {{ 'green' if states('camera.smart_pet_feeder') not in
+                  ['unavailable','unknown'] else 'red' }}
+                content: Pet
+          - type: grid
+            columns: 2
+            square: false
+            cards:
+              - type: picture-entity
+                card_mod:
+                  style: |
+                    ha-card {
+                      border-radius: 18px;
+                      border: 1px solid rgba(255,255,255,0.08);
+                      overflow: hidden;
+                      box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+                    }
+                entity: camera.front_door_live_view
+                name: Front Door
+                camera_view: auto
+                show_state: false
+                show_name: true
+                aspect_ratio: '16:9'
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/camera-front-door
+                hold_action:
+                  action: more-info
+              - type: picture-entity
+                card_mod:
+                  style: |
+                    ha-card {
+                      border-radius: 18px;
+                      border: 1px solid rgba(255,255,255,0.08);
+                      overflow: hidden;
+                      box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+                    }
+                entity: camera.tapo_c425_north_wall_hd_stream_direct
+                name: North Wall
+                camera_view: auto
+                show_state: false
+                show_name: true
+                aspect_ratio: '16:9'
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/camera-north-wall
+                hold_action:
+                  action: more-info
+              - type: picture-entity
+                card_mod:
+                  style: |
+                    ha-card {
+                      border-radius: 18px;
+                      border: 1px solid rgba(255,255,255,0.08);
+                      overflow: hidden;
+                      box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+                    }
+                entity: camera.tapo_c420_east_wall_hd_stream_direct
+                name: East Wall
+                camera_view: auto
+                show_state: false
+                show_name: true
+                aspect_ratio: '16:9'
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/camera-east-wall
+                hold_action:
+                  action: more-info
+              - type: picture-entity
+                card_mod:
+                  style: |
+                    ha-card {
+                      border-radius: 20px;
+                      border: 1px solid rgba(255,255,255,0.16);
+                      overflow: hidden;
+                      box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+                    }
+                entity: camera.tapo_c420_south_wall_hd_stream_direct
+                name: South Wall
+                camera_view: auto
+                show_state: false
+                show_name: true
+                aspect_ratio: '16:9'
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/camera-south-wall
+                hold_action:
+                  action: more-info
+              - type: picture-entity
+                card_mod:
+                  style: |
+                    ha-card {
+                      border-radius: 18px;
+                      border: 1px solid rgba(255,255,255,0.08);
+                      overflow: hidden;
+                      box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+                    }
+                entity: camera.tapo_c200_stockroom_hd_stream_direct
+                name: Stockroom
+                camera_view: auto
+                show_state: false
+                show_name: true
+                aspect_ratio: '16:9'
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/camera-stockroom
+                hold_action:
+                  action: more-info
+              - type: picture-entity
+                card_mod:
+                  style: |
+                    ha-card {
+                      border-radius: 18px;
+                      border: 1px solid rgba(255,255,255,0.08);
+                      overflow: hidden;
+                      box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+                    }
+                entity: camera.smart_pet_feeder
+                name: Pet Feeder
+                camera_view: auto
+                show_state: false
+                show_name: true
+                aspect_ratio: '16:9'
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/camera-pet-feeder
+                hold_action:
+                  action: more-info
+  - type: sections
+    title: Bills
+    path: bills
+    icon: mdi:receipt-text
+    theme: Deez Energy
+    max_columns: 4
+    sections:
+      - type: grid
+        cards:
+          - type: custom:mushroom-title-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 4px 4px 0px 4px;
+                  margin-bottom: -4px;
+                }
+            title: 🧾 Bills
+            subtitle: EnergyAustralia — Home 365 Solar (electricity) & Home 365 (gas)
+          - type: custom:mushroom-template-card
+            primary: '{{ states(''sensor.bills_unpaid_count'') }} unpaid'
+            secondary: ${{ states('sensor.bills_outstanding_total') }} outstanding
+            icon: mdi:cash-clock
+            icon_color: >-
+              {% if states('sensor.bills_unpaid_count') | int(0) == 0 %}green {%
+              else %}orange{% endif %}
+          - type: custom:mushroom-template-card
+            primary: Electricity
+            secondary: >-
+              {{ states('sensor.electricity_bill_status') }} • ${{
+              states('input_number.elec_bill_amount') }} • {% set d =
+              states('sensor.electricity_days_until_due') | int(999) %} {% if d
+              == 999 %}no due date {% elif d < 0 %}{{ d * -1 }}d overdue {% else
+              %}{{ d }}d to go{% endif %}
+            icon: mdi:transmission-tower
+            icon_color: >-
+              {% set s = states('sensor.electricity_bill_status') %} {% if s ==
+              'Paid' %}green{% elif s == 'Overdue' %}red {% elif s == 'Due soon'
+              %}orange{% else %}blue{% endif %}
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/bill-electricity
+          - type: custom:mushroom-template-card
+            primary: Gas
+            secondary: >-
+              {{ states('sensor.gas_bill_status') }} • ${{
+              states('input_number.gas_bill_amount') }} • {% set d =
+              states('sensor.gas_days_until_due') | int(999) %} {% if d == 999
+              %}no due date {% elif d < 0 %}{{ d * -1 }}d overdue {% else %}{{ d
+              }}d to go{% endif %}
+            icon: mdi:fire
+            icon_color: >-
+              {% set s = states('sensor.gas_bill_status') %} {% if s == 'Paid'
+              %}green{% elif s == 'Overdue' %}red {% elif s == 'Due soon'
+              %}orange{% else %}blue{% endif %}
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/bill-gas
+      - type: grid
+        cards:
+          - type: custom:mushroom-title-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 4px 4px 0px 4px;
+                  margin-bottom: -4px;
+                }
+            title: 📈 Running Estimates
+            subtitle: Current cycle to date — calculated, not a real invoice
+          - type: custom:mushroom-template-card
+            primary: Electricity (estimated)
+            secondary: >-
+              ${{ states('sensor.electricity_bill_estimate') }} • {{
+              states('sensor.electricity_billing_cycle') | float(0) | round(1)
+              }} kWh this quarter
+            icon: mdi:calculator-variant
+            icon_color: amber
+            entity: sensor.electricity_bill_estimate
+          - type: custom:mushroom-template-card
+            primary: Gas (estimated)
+            secondary: >-
+              ${{ states('sensor.gas_bill_estimate') }} • {{
+              states('input_number.gas_bill_mj') | float(0) | round(0) }} MJ
+              entered
+            icon: mdi:calculator-variant
+            icon_color: amber
+            entity: sensor.gas_bill_estimate
+          - type: markdown
+            content: >-
+              *Electricity estimate uses Powerpal grid import — the same thing
+              EnergyAustralia bills — at 27.34996 c/kWh incl GST less the 24%
+              discount, plus $1.191190/day supply. Gas has **no meter in Home
+              Assistant**, so MJ must be entered manually. Estimates exclude
+              solar credits, late fees and card surcharges.*
+      - type: grid
+        cards:
+          - type: custom:mushroom-title-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 4px 4px 0px 4px;
+                  margin-bottom: -4px;
+                }
+            title: ⚙️ Enter Bill Details
+            subtitle: Update when a bill arrives, then mark paid
+          - type: entities
+            title: Gas
+            show_header_toggle: false
+            entities:
+              - entity: input_number.gas_bill_amount
+                name: Amount due
+              - entity: input_number.gas_bill_mj
+                name: Usage (MJ)
+              - entity: input_datetime.gas_bill_due
+                name: Due date
+              - entity: input_datetime.gas_bill_period_start
+                name: Period start
+              - entity: input_boolean.gas_bill_paid
+                name: Paid
+              - type: divider
+              - entity: input_number.gas_last_bill_amount
+                name: Previous bill
+              - entity: input_text.gas_account_number
+                name: Account number
+      - type: grid
+        cards:
+          - type: heading
+            grid_options:
+              columns: 12
+              rows: 2
+            heading_style: title
+          - type: entities
+            title: Electricity
+            show_header_toggle: false
+            entities:
+              - entity: input_number.elec_bill_amount
+                name: Amount due
+              - entity: input_datetime.elec_bill_due
+                name: Due date
+              - entity: input_datetime.elec_bill_period_start
+                name: Period start
+              - entity: input_boolean.elec_bill_paid
+                name: Paid
+              - type: divider
+              - entity: input_number.elec_last_bill_amount
+                name: Previous bill
+              - entity: input_text.elec_account_number
+                name: Account number
+  - type: sections
+    title: Electricity Plan
+    path: bill-electricity
+    icon: mdi:transmission-tower
+    theme: Deez Energy
+    subview: true
+    max_columns: 2
+    sections:
+      - type: grid
+        cards:
+          - type: custom:mushroom-title-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 4px 4px 0px 4px;
+                  margin-bottom: -4px;
+                }
+            title: ⚡ Home 365 Solar
+            subtitle: EnergyAustralia • Distributor United Energy
+          - type: markdown
+            content: |-
+              ### Plan details
+
+              | Item | Rate |
+              |---|---|
+              | Peak usage (incl GST) | **27.34996 c/kWh** |
+              | Peak usage (excl GST) | 24.8636 c/kWh |
+              | Daily supply (incl GST) | **$1.191190** |
+              | Daily supply (excl GST) | $1.08290 |
+              | Guaranteed discount | **24%** |
+              | Solar buyback | 1.5 c/kWh (no GST) |
+              | Billing frequency | **Quarterly** |
+              | Contract term | 12 months from 31 Jul 2026 |
+              | Exit fee | None |
+              | Paper bill fee | $1.69 incl GST |
+
+              **Account** 2404251000 • **NMI** 6407640515
+
+              Card fees: Visa/Mastercard 0.36%, Amex 1.5%.
+          - type: custom:mushroom-template-card
+            primary: This quarter so far
+            secondary: >-
+              {{ states('sensor.electricity_billing_cycle') | float(0) |
+              round(1) }} kWh imported • est. ${{
+              states('sensor.electricity_bill_estimate') }}
+            icon: mdi:chart-line
+            icon_color: amber
+  - type: sections
+    title: Gas Plan
+    path: bill-gas
+    icon: mdi:fire
+    theme: Deez Energy
+    subview: true
+    max_columns: 2
+    sections:
+      - type: grid
+        cards:
+          - type: custom:mushroom-title-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: none;
+                  backdrop-filter: none;
+                  -webkit-backdrop-filter: none;
+                  border: none;
+                  box-shadow: none;
+                  padding: 4px 4px 0px 4px;
+                  margin-bottom: -4px;
+                }
+            title: 🔥 Home 365
+            subtitle: EnergyAustralia • Distributor Multinet
+          - type: markdown
+            content: |-
+              ### Plan details
+
+              | Item | Rate |
+              |---|---|
+              | Daily supply (incl GST) | **$1.271600** |
+              | Daily supply (excl GST) | $1.15600 |
+              | Guaranteed discount | **32%** |
+              | Billing frequency | **Bi-monthly** |
+              | Contract term | 12 months from 31 Jul 2026 |
+              | Exit fee | None |
+
+              **Account** 8764341000 • **MIRN** 5310552355
+          - type: markdown
+            content: >-
+              ### Tiered usage rates
+
+
+              Winter (1 May – 31 Oct) and Non-Winter (1 Nov – 30 Apr) rates are
+              **identical** on this plan.
+
+
+              | Daily tier | excl GST | incl GST |
+
+              |---|---|---|
+
+              | First 50 MJ/day | 4.7890 | **5.26790** |
+
+              | Next 50 MJ/day | 3.9050 | **4.29550** |
+
+              | Next 50 MJ/day | 3.1280 | **3.44080** |
+
+              | Next 100 MJ/day | 2.8140 | **3.09540** |
+
+              | Balance | 2.8120 | **3.09320** |
+
+
+              *All c/MJ. Tiers apply to average daily usage across the billing
+              period.*
