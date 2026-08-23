@@ -1,0 +1,121 @@
+# CasaRay summary helpers
+#
+# Purpose: provide the handful of "read the home in seconds" numbers that the
+# CasaRay-style Home view puts at the top (what is on, what is open, what needs
+# attention). These are derived by iterating live state objects -- no entity IDs
+# are hardcoded anywhere in this file, so it stays correct as devices come and
+# go, and it cannot reference an entity that does not exist.
+#
+# Install: see home-assistant/README.md. This file is a Home Assistant
+# "package" and is included via the packages: key in configuration.yaml.
+
+template:
+  - sensor:
+      # ---- What is on -------------------------------------------------
+      - name: "CasaRay Lights On"
+        unique_id: casaray_lights_on
+        icon: mdi:lightbulb-group
+        state: >-
+          {{ states.light | selectattr('state', 'eq', 'on') | list | count }}
+        state_class: measurement
+        attributes:
+          names: >-
+            {{ states.light | selectattr('state', 'eq', 'on')
+               | map(attribute='name') | list | sort | join(', ') }}
+
+      - name: "CasaRay Switches On"
+        unique_id: casaray_switches_on
+        icon: mdi:toggle-switch
+        state: >-
+          {{ states.switch | selectattr('state', 'eq', 'on') | list | count }}
+        state_class: measurement
+
+      - name: "CasaRay Media Playing"
+        unique_id: casaray_media_playing
+        icon: mdi:play-circle
+        state: >-
+          {{ states.media_player | selectattr('state', 'eq', 'playing')
+             | list | count }}
+        state_class: measurement
+
+      # ---- What is open -----------------------------------------------
+      - name: "CasaRay Doors Open"
+        unique_id: casaray_doors_open
+        icon: mdi:door-open
+        state: >-
+          {{ states.binary_sensor
+             | selectattr('attributes.device_class', 'defined')
+             | selectattr('attributes.device_class', 'in', ['door', 'window', 'garage_door', 'opening'])
+             | selectattr('state', 'eq', 'on') | list | count }}
+        state_class: measurement
+        attributes:
+          names: >-
+            {{ states.binary_sensor
+               | selectattr('attributes.device_class', 'defined')
+               | selectattr('attributes.device_class', 'in', ['door', 'window', 'garage_door', 'opening'])
+               | selectattr('state', 'eq', 'on')
+               | map(attribute='name') | list | sort | join(', ') }}
+
+      # ---- What needs attention ---------------------------------------
+      - name: "CasaRay Problems"
+        unique_id: casaray_problems
+        icon: mdi:alert-decagram
+        state: >-
+          {{ states.binary_sensor
+             | selectattr('attributes.device_class', 'defined')
+             | selectattr('attributes.device_class', 'in', ['problem', 'safety', 'smoke', 'gas', 'moisture', 'tamper'])
+             | selectattr('state', 'eq', 'on') | list | count }}
+        state_class: measurement
+        attributes:
+          names: >-
+            {{ states.binary_sensor
+               | selectattr('attributes.device_class', 'defined')
+               | selectattr('attributes.device_class', 'in', ['problem', 'safety', 'smoke', 'gas', 'moisture', 'tamper'])
+               | selectattr('state', 'eq', 'on')
+               | map(attribute='name') | list | sort | join(', ') }}
+
+      - name: "CasaRay Offline"
+        unique_id: casaray_offline
+        icon: mdi:lan-disconnect
+        state: >-
+          {% set ns = namespace(n=0) %}
+          {%- for s in states -%}
+            {%- if s.state in ['unavailable', 'unknown'] and s.domain not in ['scene', 'button', 'event', 'input_button'] -%}
+              {%- set ns.n = ns.n + 1 -%}
+            {%- endif -%}
+          {%- endfor -%}
+          {{ ns.n }}
+        state_class: measurement
+
+      - name: "CasaRay Low Batteries"
+        unique_id: casaray_low_batteries
+        icon: mdi:battery-alert-variant-outline
+        state: >-
+          {{ states.sensor
+             | selectattr('attributes.device_class', 'defined')
+             | selectattr('attributes.device_class', 'eq', 'battery')
+             | selectattr('state', 'is_number')
+             | map(attribute='state') | map('float')
+             | select('lt', 20) | list | count }}
+        state_class: measurement
+        attributes:
+          names: >-
+            {%- set ns = namespace(items=[]) -%}
+            {%- for s in states.sensor
+                  | selectattr('attributes.device_class', 'defined')
+                  | selectattr('attributes.device_class', 'eq', 'battery')
+                  | selectattr('state', 'is_number') -%}
+              {%- if s.state | float < 20 -%}
+                {%- set ns.items = ns.items + [s.name ~ ' (' ~ s.state ~ '%)'] -%}
+              {%- endif -%}
+            {%- endfor -%}
+            {{ ns.items | sort | join(', ') }}
+
+      # ---- Rolled-up attention count used by the Home view badge -------
+      - name: "CasaRay Needs Attention"
+        unique_id: casaray_needs_attention
+        icon: mdi:bell-badge
+        state: >-
+          {{ states('sensor.casaray_problems') | int(0)
+             + states('sensor.casaray_low_batteries') | int(0) }}
+        state_class: measurement

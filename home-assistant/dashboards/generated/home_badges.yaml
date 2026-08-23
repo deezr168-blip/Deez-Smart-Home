@@ -1,0 +1,62 @@
+# Badges for the CasaRay Home view.
+#
+# `python3 scripts/ha_verify.py --write` rewrites this file, inserting a
+# GENERATED HEAD block with your real weather and person entities read from the
+# live registry. Everything below that block is hand-maintained and is preserved
+# across runs.
+#
+# Until you run the script this file contains only the helper sensors defined by
+# ../../packages/casaray_summary.yaml -- their IDs are known because that
+# package creates them. No entity ID here is guessed.
+#
+# Each badge hides itself while its count is zero, so the row stays quiet when
+# the home is quiet. That is the CasaRay "what needs attention today" behaviour.
+
+- type: entity
+  entity: sensor.casaray_lights_on
+  name: Lights on
+  color: amber
+  visibility:
+    - condition: numeric_state
+      entity: sensor.casaray_lights_on
+      above: 0
+- type: entity
+  entity: sensor.casaray_switches_on
+  name: Switches on
+  color: orange
+  visibility:
+    - condition: numeric_state
+      entity: sensor.casaray_switches_on
+      above: 0
+- type: entity
+  entity: sensor.casaray_doors_open
+  name: Open
+  color: cyan
+  visibility:
+    - condition: numeric_state
+      entity: sensor.casaray_doors_open
+      above: 0
+- type: entity
+  entity: sensor.casaray_media_playing
+  name: Playing
+  color: purple
+  visibility:
+    - condition: numeric_state
+      entity: sensor.casaray_media_playing
+      above: 0
+- type: entity
+  entity: sensor.casaray_needs_attention
+  name: Attention
+  color: red
+  visibility:
+    - condition: numeric_state
+      entity: sensor.casaray_needs_attention
+      above: 0
+- type: entity
+  entity: sensor.casaray_offline
+  name: Offline
+  color: grey
+  visibility:
+    - condition: numeric_state
+      entity: sensor.casaray_offline
+      above: 0

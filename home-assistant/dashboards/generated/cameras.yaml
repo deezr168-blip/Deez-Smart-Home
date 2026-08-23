@@ -1,0 +1,43 @@
+# Sections for the CasaRay Cameras view.
+#
+# `python3 scripts/ha_verify.py --write` replaces this file with one
+# picture-glance card per camera, grouped by area, using entity IDs read from
+# the live registry.
+#
+# The stub below uses AREA cards in camera mode, so it works immediately with no
+# entity IDs at all. The catch: an area card surfaces only one camera per area,
+# so the four Tapo cameras sharing the "Network" area will not all appear until
+# the script has run.
+
+- type: grid
+  column_span: 3
+  cards:
+    - type: heading
+      heading: Cameras
+      heading_style: title
+      icon: mdi:cctv
+    - type: markdown
+      content: >-
+        Showing one camera per area. Run `python3 scripts/ha_verify.py --write`
+        to list every camera individually.
+- type: grid
+  cards:
+    - type: area
+      area: living_room
+      display_type: camera
+      camera_view: auto
+      navigation_path: /casaray/living_room
+- type: grid
+  cards:
+    - type: area
+      area: dining
+      display_type: camera
+      camera_view: auto
+      navigation_path: /casaray/dining
+- type: grid
+  cards:
+    - type: area
+      area: network
+      display_type: camera
+      camera_view: auto
+      navigation_path: /casaray/system

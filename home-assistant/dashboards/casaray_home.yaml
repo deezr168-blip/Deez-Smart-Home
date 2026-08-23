@@ -1,0 +1,669 @@
+# CasaRay-native Home Assistant dashboard
+#
+# Layout mirrors how CasaRay presents a home:
+#   summary first -> control groups -> active rooms -> individual devices,
+# with cameras and energy as first-class sections.
+#
+# SAFETY
+#   * This defines a NEW dashboard. It never edits or replaces an existing one.
+#     Install it alongside whatever you have today (see ../README.md), compare,
+#     and delete it again if you do not like it. Nothing else is touched.
+#   * No entity IDs are hardcoded in this file. Every card is driven by area
+#     IDs, domains, or the helper sensors defined in
+#     ../packages/casaray_summary.yaml. So no card here can point at an entity
+#     that does not exist, and the dashboard keeps working as devices are
+#     added, renamed, or removed.
+#   * The two !include files under generated/ hold the only entity-specific
+#     config (cameras, people, weather). They ship as safe stubs and are filled
+#     in from your live registry by:  python3 scripts/ha_verify.py --write
+#   * The only IDs this file itself depends on are AREA IDs. Verify them with
+#     scripts/ha_verify.py before first use.
+#
+# Requires Home Assistant 2025.2+ (sections views, heading card, redesigned
+# area card with area-controls, and the `area` view strategy).
+
+title: Home
+views:
+- title: Home
+  path: home
+  icon: mdi:home-variant
+  type: sections
+  max_columns: 3
+  dense_section_placement: true
+  badges: !include generated/home_badges.yaml
+  sections:
+  - type: grid
+    column_span: 3
+    cards:
+    - type: heading
+      heading: Everything
+      heading_style: title
+      icon: mdi:tune-variant
+    - type: horizontal-stack
+      cards:
+      - type: button
+        name: Lights off
+        icon: mdi:lightbulb-off-outline
+        show_state: false
+        tap_action:
+          action: perform-action
+          perform_action: light.turn_off
+          target:
+            entity_id: all
+      - type: button
+        name: Media off
+        icon: mdi:television-off
+        show_state: false
+        tap_action:
+          action: perform-action
+          perform_action: media_player.turn_off
+          target:
+            entity_id: all
+      - type: button
+        name: Fans off
+        icon: mdi:fan-off
+        show_state: false
+        tap_action:
+          action: perform-action
+          perform_action: fan.turn_off
+          target:
+            entity_id: all
+      - type: button
+        name: Close covers
+        icon: mdi:blinds-horizontal-closed
+        show_state: false
+        tap_action:
+          action: perform-action
+          perform_action: cover.close_cover
+          target:
+            entity_id: all
+  - type: grid
+    column_span: 3
+    cards:
+    - type: heading
+      heading: Rooms
+      heading_style: title
+      icon: mdi:floor-plan
+      tap_action:
+        action: navigate
+        navigation_path: /casaray/rooms
+    - type: area
+      area: living_room
+      display_type: compact
+      alert_classes:
+      - motion
+      - occupancy
+      - door
+      - window
+      - problem
+      - smoke
+      - gas
+      - moisture
+      sensor_classes:
+      - temperature
+      - humidity
+      - illuminance
+      navigation_path: /casaray/living_room
+      features:
+      - type: area-controls
+        controls:
+        - light
+        - switch
+        - fan
+        - cover
+    - type: area
+      area: dining
+      display_type: compact
+      alert_classes:
+      - motion
+      - occupancy
+      - door
+      - window
+      - problem
+      - smoke
+      - gas
+      - moisture
+      sensor_classes:
+      - temperature
+      - humidity
+      - illuminance
+      navigation_path: /casaray/dining
+      features:
+      - type: area-controls
+        controls:
+        - light
+        - switch
+        - fan
+        - cover
+    - type: area
+      area: kitchen
+      display_type: compact
+      alert_classes:
+      - motion
+      - occupancy
+      - door
+      - window
+      - problem
+      - smoke
+      - gas
+      - moisture
+      sensor_classes:
+      - temperature
+      - humidity
+      - illuminance
+      navigation_path: /casaray/kitchen
+      features:
+      - type: area-controls
+        controls:
+        - light
+        - switch
+        - fan
+        - cover
+    - type: area
+      area: parents_room
+      display_type: compact
+      alert_classes:
+      - motion
+      - occupancy
+      - door
+      - window
+      - problem
+      - smoke
+      - gas
+      - moisture
+      sensor_classes:
+      - temperature
+      - humidity
+      - illuminance
+      navigation_path: /casaray/parents_room
+      features:
+      - type: area-controls
+        controls:
+        - light
+        - switch
+        - fan
+        - cover
+    - type: area
+      area: ray_bedroom
+      display_type: compact
+      alert_classes:
+      - motion
+      - occupancy
+      - door
+      - window
+      - problem
+      - smoke
+      - gas
+      - moisture
+      sensor_classes:
+      - temperature
+      - humidity
+      - illuminance
+      navigation_path: /casaray/ray_bedroom
+      features:
+      - type: area-controls
+        controls:
+        - light
+        - switch
+        - fan
+        - cover
+    - type: area
+      area: guest_room
+      display_type: compact
+      alert_classes:
+      - motion
+      - occupancy
+      - door
+      - window
+      - problem
+      - smoke
+      - gas
+      - moisture
+      sensor_classes:
+      - temperature
+      - humidity
+      - illuminance
+      navigation_path: /casaray/guest_room
+      features:
+      - type: area-controls
+        controls:
+        - light
+        - switch
+        - fan
+        - cover
+    - type: area
+      area: garage
+      display_type: compact
+      alert_classes:
+      - motion
+      - occupancy
+      - door
+      - window
+      - problem
+      - smoke
+      - gas
+      - moisture
+      sensor_classes:
+      - temperature
+      - humidity
+      - illuminance
+      navigation_path: /casaray/garage
+      features:
+      - type: area-controls
+        controls:
+        - light
+        - switch
+        - fan
+        - cover
+    - type: area
+      area: backyard
+      display_type: compact
+      alert_classes:
+      - motion
+      - occupancy
+      - door
+      - window
+      - problem
+      - smoke
+      - gas
+      - moisture
+      sensor_classes:
+      - temperature
+      - humidity
+      - illuminance
+      navigation_path: /casaray/backyard
+      features:
+      - type: area-controls
+        controls:
+        - light
+        - switch
+        - fan
+        - cover
+  - type: grid
+    column_span: 3
+    cards:
+    - type: heading
+      heading: Needs attention
+      heading_style: title
+      icon: mdi:bell-badge
+    - type: entities
+      entities:
+      - entity: sensor.casaray_problems
+        name: Problems
+      - entity: sensor.casaray_offline
+        name: Offline / unavailable
+      - entity: sensor.casaray_low_batteries
+        name: Low batteries
+      - entity: sensor.casaray_doors_open
+        name: Doors open
+      state_color: true
+- title: Rooms
+  path: rooms
+  icon: mdi:floor-plan
+  type: sections
+  max_columns: 3
+  dense_section_placement: true
+  sections:
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Living Room
+      heading_style: subtitle
+      icon: mdi:sofa
+      tap_action:
+        action: navigate
+        navigation_path: /casaray/living_room
+    - type: area
+      area: living_room
+      display_type: compact
+      alert_classes:
+      - motion
+      - occupancy
+      - door
+      - window
+      - problem
+      - smoke
+      - gas
+      - moisture
+      sensor_classes:
+      - temperature
+      - humidity
+      - illuminance
+      navigation_path: /casaray/living_room
+      features:
+      - type: area-controls
+        controls:
+        - light
+        - switch
+        - fan
+        - cover
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Dining
+      heading_style: subtitle
+      icon: mdi:silverware-fork-knife
+      tap_action:
+        action: navigate
+        navigation_path: /casaray/dining
+    - type: area
+      area: dining
+      display_type: compact
+      alert_classes:
+      - motion
+      - occupancy
+      - door
+      - window
+      - problem
+      - smoke
+      - gas
+      - moisture
+      sensor_classes:
+      - temperature
+      - humidity
+      - illuminance
+      navigation_path: /casaray/dining
+      features:
+      - type: area-controls
+        controls:
+        - light
+        - switch
+        - fan
+        - cover
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Kitchen
+      heading_style: subtitle
+      icon: mdi:countertop
+      tap_action:
+        action: navigate
+        navigation_path: /casaray/kitchen
+    - type: area
+      area: kitchen
+      display_type: compact
+      alert_classes:
+      - motion
+      - occupancy
+      - door
+      - window
+      - problem
+      - smoke
+      - gas
+      - moisture
+      sensor_classes:
+      - temperature
+      - humidity
+      - illuminance
+      navigation_path: /casaray/kitchen
+      features:
+      - type: area-controls
+        controls:
+        - light
+        - switch
+        - fan
+        - cover
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Parents Room
+      heading_style: subtitle
+      icon: mdi:bed-king
+      tap_action:
+        action: navigate
+        navigation_path: /casaray/parents_room
+    - type: area
+      area: parents_room
+      display_type: compact
+      alert_classes:
+      - motion
+      - occupancy
+      - door
+      - window
+      - problem
+      - smoke
+      - gas
+      - moisture
+      sensor_classes:
+      - temperature
+      - humidity
+      - illuminance
+      navigation_path: /casaray/parents_room
+      features:
+      - type: area-controls
+        controls:
+        - light
+        - switch
+        - fan
+        - cover
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Ray Bedroom
+      heading_style: subtitle
+      icon: mdi:bed
+      tap_action:
+        action: navigate
+        navigation_path: /casaray/ray_bedroom
+    - type: area
+      area: ray_bedroom
+      display_type: compact
+      alert_classes:
+      - motion
+      - occupancy
+      - door
+      - window
+      - problem
+      - smoke
+      - gas
+      - moisture
+      sensor_classes:
+      - temperature
+      - humidity
+      - illuminance
+      navigation_path: /casaray/ray_bedroom
+      features:
+      - type: area-controls
+        controls:
+        - light
+        - switch
+        - fan
+        - cover
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Guest Room
+      heading_style: subtitle
+      icon: mdi:bed-single
+      tap_action:
+        action: navigate
+        navigation_path: /casaray/guest_room
+    - type: area
+      area: guest_room
+      display_type: compact
+      alert_classes:
+      - motion
+      - occupancy
+      - door
+      - window
+      - problem
+      - smoke
+      - gas
+      - moisture
+      sensor_classes:
+      - temperature
+      - humidity
+      - illuminance
+      navigation_path: /casaray/guest_room
+      features:
+      - type: area-controls
+        controls:
+        - light
+        - switch
+        - fan
+        - cover
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Garage
+      heading_style: subtitle
+      icon: mdi:garage
+      tap_action:
+        action: navigate
+        navigation_path: /casaray/garage
+    - type: area
+      area: garage
+      display_type: compact
+      alert_classes:
+      - motion
+      - occupancy
+      - door
+      - window
+      - problem
+      - smoke
+      - gas
+      - moisture
+      sensor_classes:
+      - temperature
+      - humidity
+      - illuminance
+      navigation_path: /casaray/garage
+      features:
+      - type: area-controls
+        controls:
+        - light
+        - switch
+        - fan
+        - cover
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Backyard
+      heading_style: subtitle
+      icon: mdi:tree
+      tap_action:
+        action: navigate
+        navigation_path: /casaray/backyard
+    - type: area
+      area: backyard
+      display_type: compact
+      alert_classes:
+      - motion
+      - occupancy
+      - door
+      - window
+      - problem
+      - smoke
+      - gas
+      - moisture
+      sensor_classes:
+      - temperature
+      - humidity
+      - illuminance
+      navigation_path: /casaray/backyard
+      features:
+      - type: area-controls
+        controls:
+        - light
+        - switch
+        - fan
+        - cover
+- title: Cameras
+  path: cameras
+  icon: mdi:cctv
+  type: sections
+  max_columns: 3
+  sections: !include generated/cameras.yaml
+- title: Energy
+  path: energy
+  icon: mdi:lightning-bolt
+  type: sections
+  max_columns: 2
+  sections:
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Energy
+      heading_style: title
+      icon: mdi:lightning-bolt
+    - type: energy-date-selection
+  - type: grid
+    cards:
+    - type: energy-usage-graph
+    - type: energy-sources-table
+  - type: grid
+    cards:
+    - type: energy-distribution
+      link_dashboard: true
+    - type: energy-carbon-consumed-gauge
+- title: Living Room
+  path: living_room
+  icon: mdi:sofa
+  subview: true
+  strategy:
+    type: area
+    area: living_room
+- title: Dining
+  path: dining
+  icon: mdi:silverware-fork-knife
+  subview: true
+  strategy:
+    type: area
+    area: dining
+- title: Kitchen
+  path: kitchen
+  icon: mdi:countertop
+  subview: true
+  strategy:
+    type: area
+    area: kitchen
+- title: Parents Room
+  path: parents_room
+  icon: mdi:bed-king
+  subview: true
+  strategy:
+    type: area
+    area: parents_room
+- title: Ray Bedroom
+  path: ray_bedroom
+  icon: mdi:bed
+  subview: true
+  strategy:
+    type: area
+    area: ray_bedroom
+- title: Guest Room
+  path: guest_room
+  icon: mdi:bed-single
+  subview: true
+  strategy:
+    type: area
+    area: guest_room
+- title: Garage
+  path: garage
+  icon: mdi:garage
+  subview: true
+  strategy:
+    type: area
+    area: garage
+- title: Backyard
+  path: backyard
+  icon: mdi:tree
+  subview: true
+  strategy:
+    type: area
+    area: backyard
+- title: System
+  path: system
+  icon: mdi:server-network
+  strategy:
+    type: area
+    area: network
