@@ -126,17 +126,23 @@ them.
 
 ## Repository layout
 
-- `dashboards/` — Lovelace dashboard YAML/config, once imported from live
-  HA. See "File conventions" below for the intended per-dashboard split.
-  Currently empty (no real dashboard config has been retrievable through
-  the connected tools yet — see `docs/live_ha_blockers.md`).
-- `automations/` — Automation definitions, one file per functional area.
-  Currently empty — see `docs/live_ha_blockers.md` (this connector cannot
-  currently confirm whether `automation.*` entities even exist on the live
-  instance).
-- `scripts/` — Home Assistant script definitions. Currently empty, same
-  reason.
-- `themes/` — Lovelace/UI themes. Currently empty, same reason.
+- `dashboards/`, `automations/`, `themes/` — **development-only**
+  scratch/reference directories at the repo root, not deployed anywhere.
+  Currently empty (no real dashboard/automation/theme config has been
+  retrievable through the connected tools yet — see
+  `docs/live_ha_blockers.md`). See "File conventions" below for the
+  intended per-file split if/when real config lands here.
+- `scripts/` — repo-local tooling (e.g. `scripts/validate_ha_config.sh`),
+  **not** HA script YAML. If real Home Assistant script definitions are
+  ever imported, they belong under `ha-config/scripts.yaml`, not here —
+  see `docs/architecture.md`.
+- `ha-config/` — **the deployment root.** Only this directory is meant to
+  ever be pulled into a live Home Assistant `/config` (e.g. via the
+  official Git Pull add-on). Nothing outside `ha-config/` should ever be
+  configured as a pull target. Currently contains only placeholder
+  subdirectories (`dashboards/`, `themes/`, `packages/`) and no
+  `configuration.yaml`/`automations.yaml`/`scripts.yaml`/`scenes.yaml` —
+  see `ha-config/README.md` and `docs/deployment_manifest.md` for why.
 - `docs/` — Project documentation.
   - `docs/entity_inventory.md` — Inventory of entities discovered on the
     live instance via the connector, kept factual and unfabricated.
@@ -149,6 +155,11 @@ them.
   - `docs/deployment.md` — The required change workflow for production
     dashboard/automation edits (backup → small edit → validate → deploy →
     verify → commit).
+  - `docs/deployment_manifest.md` — Path-by-path map of `ha-config/` to
+    its Home Assistant `/config` target, and whether each path is safe
+    for autonomous deployment.
+- `.gitignore` — Blocks `secrets.yaml`, `.storage/`, databases, logs,
+  backups, credentials, tokens, and SSH keys from ever being committed.
 - `CHANGELOG.md` — Human-readable log of notable changes to this repo.
 
 ## File conventions (for when real config can be imported)
@@ -196,6 +207,10 @@ been done from real, live data:
   refreshed and re-verified as of 2026-08-22.
 - `docs/live_ha_blockers.md` — a verified capability matrix for the
   connector, plus what's still needed to go further.
+- `ha-config/` — the deployment-root structure for a future Git Pull
+  add-on setup, deliberately created empty (see
+  `docs/deployment_manifest.md`) so it's safe to review before any pull
+  is ever configured.
 
 Do not create placeholder or example dashboards/automations/scripts that
 reference made-up entities — leave those directories empty (aside from a

@@ -39,3 +39,27 @@ All notable changes to this repository are documented here.
 - Added `docs/architecture.md` (repository/file conventions) and
   `docs/deployment.md` (the required backup → edit → validate → deploy →
   verify → commit workflow for future production changes).
+
+### Added (Git Pull deployment prep)
+- Added `ha-config/` as the dedicated deployment root for a future
+  official Git Pull add-on setup, with placeholder `dashboards/`,
+  `themes/`, and `packages/` subdirectories and a `README.md` explaining
+  why `configuration.yaml`/`automations.yaml`/`scripts.yaml`/
+  `scenes.yaml` were deliberately **not** created (no verified content
+  exists, and a Git Pull sync would overwrite live production files with
+  unverified scaffolding).
+- Added `docs/deployment_manifest.md` — the authoritative path-by-path
+  map of `ha-config/` to its Home Assistant `/config` target, deployment
+  safety status per path, and open blockers.
+- Added `.gitignore` (none existed before) covering `secrets.yaml`,
+  `.storage/`, databases, logs, backups, credentials/tokens, and SSH keys.
+- Added `scripts/validate_ha_config.sh` — non-destructive validation
+  (YAML syntax + duplicate-key detection via PyYAML, `git diff --check`,
+  forbidden secret-file/`.storage` detection, private-key detection).
+  Documents what it does *not* run (Home Assistant's own config checker,
+  yamllint) rather than pretending to.
+- Updated `CLAUDE.md` and `docs/architecture.md` to distinguish the
+  repo-root `dashboards/`/`automations/`/`themes/` (development-only,
+  never deployed) from `ha-config/` (the only directory ever meant to be
+  pulled into `/config`), and clarified that repo-root `scripts/` holds
+  repo tooling, not HA script YAML.

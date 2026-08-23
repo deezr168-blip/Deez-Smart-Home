@@ -1,0 +1,57 @@
+# Home Assistant secrets and generated state — never commit these.
+secrets.yaml
+**/secrets.yaml
+.storage/
+**/.storage/
+.HA_VERSION
+.uuid
+
+# Databases (recorder, history)
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+home-assistant_v2.db*
+
+# Logs
+*.log
+*.log.*
+home-assistant.log*
+
+# Backups / snapshots
+*.tar
+*.tar.gz
+*.tgz
+*backup*.zip
+backups/
+snapshots/
+
+# Credentials, tokens, keys
+*.token
+.env
+.env.*
+*credentials*
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+known_hosts
+authorized_keys
+
+# Caches / generated files
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+*~
+
+# Editor/IDE noise
+.vscode/
+.idea/
