@@ -4589,7 +4589,7 @@ views:
               | Exit fee | None |
               | Paper bill fee | $1.69 incl GST |
 
-              **Account** 2404251000 • **NMI** 6407640515
+              **Account** {{ states('input_text.elec_account_number') }} • **NMI** 6407640515
 
               Card fees: Visa/Mastercard 0.36%, Amex 1.5%.
           - type: custom:mushroom-template-card
@@ -4637,7 +4637,7 @@ views:
               | Contract term | 12 months from 31 Jul 2026 |
               | Exit fee | None |
 
-              **Account** 8764341000 • **MIRN** 5310552355
+              **Account** {{ states('input_text.gas_account_number') }} • **MIRN** 5310552355
           - type: markdown
             content: >-
               ### Tiered usage rates
