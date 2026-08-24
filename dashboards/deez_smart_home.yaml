@@ -295,7 +295,7 @@ views:
       title: '{{ ''🏠 Deez 智能家居'' if is_state(''input_boolean.chinese_dashboard'',''on'')
         else ''🏠 Deez Smart Home'' }}'
       subtitle: '{{ ''家庭控制中心'' if is_state(''input_boolean.chinese_dashboard'',''on'')
-        else ''Home control centre TEST'' }}'
+        else ''Home control centre'' }}'
     - type: custom:mushroom-chips-card
       card_mod:
         style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
