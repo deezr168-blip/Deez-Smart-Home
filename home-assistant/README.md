@@ -58,13 +58,13 @@ cannot read the instance's config files, so nothing here is automatically
 verified against what is actually running. When this directory and the live
 instance disagree, **the live instance is right.**
 
-If you add YAML here, run `scripts/validate.sh` before committing.
+If you add YAML here, run `bash scripts/validate.sh` before committing.
 
 ## Deploying a change
 
 1. Stage the YAML in this directory and commit it, so there is a diff to review
    and a commit to roll back to.
-2. Run `scripts/validate.sh` — parse errors, duplicate keys and stray secrets
+2. Run `bash scripts/validate.sh` — parse errors, duplicate keys and stray secrets
    are cheaper to find here than in the instance.
 3. Apply it to Home Assistant by hand.
 4. Validate **in Home Assistant** (Developer Tools → YAML → Check

@@ -5,7 +5,7 @@
 # Read-only: never contacts Home Assistant, never modifies a file, never runs a
 # git command that writes. Safe to run at any time.
 #
-#   ./scripts/validate.sh
+#   bash scripts/validate.sh
 #
 # Exits 0 if everything passes, 1 if any check fails.
 #

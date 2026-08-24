@@ -36,12 +36,16 @@ Both scripts are read-only. Neither contacts Home Assistant, and neither
 modifies anything it inspects.
 
 ```bash
-./scripts/validate.sh          # run before committing config or deploying
+bash scripts/validate.sh       # run before committing config or deploying
 ```
 
 Checks YAML syntax, duplicate keys, accidentally committed secrets, whitespace
 and conflict markers, and broken relative links between docs. Exits non-zero on
 failure.
+
+Invoked via `bash` and `python3` rather than `./` because the scripts may arrive
+without the executable bit — commits made through the GitHub API cannot set file
+modes. `chmod +x scripts/*` locally if you prefer running them directly.
 
 ```bash
 python3 scripts/build_entity_inventory.py <capture.txt> > docs/entity_inventory.md
