@@ -467,6 +467,9 @@ views:
                   perform_action: input_boolean.turn_on
                   target:
                     entity_id: input_boolean.chinese_dashboard
+            grid_options:
+              columns: 12
+              rows: 1
           - type: custom:mushroom-template-card
             primary: >-
               {{ '家庭状态' if is_state('input_boolean.chinese_dashboard','on') else
@@ -3130,7 +3133,7 @@ views:
               action: more-info
           - type: custom:mushroom-template-card
             primary: Back to People & Locations
-            icon: mdi:arrow-left
+            icon: mdi:arrow-left-circle-outline
             tap_action:
               action: navigate
               navigation_path: /deez-smart-home/people-locations
@@ -3579,7 +3582,7 @@ views:
               navigation_path: /deez-smart-home/living-room
           - type: custom:mushroom-template-card
             primary: Back to Lighting Studio
-            icon: mdi:arrow-left
+            icon: mdi:arrow-left-circle-outline
             tap_action:
               action: navigate
               navigation_path: /deez-smart-home/lights
@@ -3686,7 +3689,7 @@ views:
               action: more-info
           - type: custom:mushroom-template-card
             primary: Back to Lighting Studio
-            icon: mdi:arrow-left
+            icon: mdi:arrow-left-circle-outline
             tap_action:
               action: navigate
               navigation_path: /deez-smart-home/lights
@@ -3856,7 +3859,7 @@ views:
             icon_color: '{{ ''amber'' if is_state(''light.dining'',''on'') else ''grey'' }}'
           - type: custom:mushroom-template-card
             primary: Back to Lighting Studio
-            icon: mdi:arrow-left
+            icon: mdi:arrow-left-circle-outline
             tap_action:
               action: navigate
               navigation_path: /deez-smart-home/lights
@@ -4407,47 +4410,153 @@ views:
                   padding: 4px 4px 0px 4px;
                   margin-bottom: -4px;
                 }
-            title: 🧾 Bills
-            subtitle: EnergyAustralia — Home 365 Solar (electricity) & Home 365 (gas)
-          - type: custom:mushroom-template-card
-            primary: '{{ states(''sensor.bills_unpaid_count'') }} unpaid'
-            secondary: ${{ states('sensor.bills_outstanding_total') }} outstanding
-            icon: mdi:cash-clock
-            icon_color: >-
-              {% if states('sensor.bills_unpaid_count') | int(0) == 0 %}green {%
-              else %}orange{% endif %}
-          - type: custom:mushroom-template-card
-            primary: Electricity
-            secondary: >-
-              {{ states('sensor.electricity_bill_status') }} • ${{
-              states('input_number.elec_bill_amount') }} • {% set d =
-              states('sensor.electricity_days_until_due') | int(999) %} {% if d
-              == 999 %}no due date {% elif d < 0 %}{{ d * -1 }}d overdue {% else
-              %}{{ d }}d to go{% endif %}
-            icon: mdi:transmission-tower
-            icon_color: >-
-              {% set s = states('sensor.electricity_bill_status') %} {% if s ==
-              'Paid' %}green{% elif s == 'Overdue' %}red {% elif s == 'Due soon'
-              %}orange{% else %}blue{% endif %}
-            tap_action:
-              action: navigate
-              navigation_path: /deez-smart-home/bill-electricity
-          - type: custom:mushroom-template-card
-            primary: Gas
-            secondary: >-
-              {{ states('sensor.gas_bill_status') }} • ${{
-              states('input_number.gas_bill_amount') }} • {% set d =
-              states('sensor.gas_days_until_due') | int(999) %} {% if d == 999
-              %}no due date {% elif d < 0 %}{{ d * -1 }}d overdue {% else %}{{ d
-              }}d to go{% endif %}
-            icon: mdi:fire
-            icon_color: >-
-              {% set s = states('sensor.gas_bill_status') %} {% if s == 'Paid'
-              %}green{% elif s == 'Overdue' %}red {% elif s == 'Due soon'
-              %}orange{% else %}blue{% endif %}
-            tap_action:
-              action: navigate
-              navigation_path: /deez-smart-home/bill-gas
+            title: 🧾 Bills & Payments
+            subtitle: Utilities • insurance • council rates • registration
+          - type: grid
+            columns: 2
+            square: false
+            cards:
+              - type: custom:mushroom-template-card
+                primary: Electricity
+                secondary: >-
+                  {{ states('sensor.electricity_bill_status') }} • ${{
+                  states('input_number.elec_bill_amount') }}
+                icon: mdi:flash
+                icon_color: >-
+                  {% set s = states('sensor.electricity_bill_status') %} {% if s
+                  == 'Paid' %}green {% elif s == 'Overdue' %}red {% elif s ==
+                  'Due soon' %}orange {% else %}blue{% endif %}
+                layout: vertical
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/bill-electricity
+                card_mod:
+                  style: |
+                    ha-card {
+                      min-height: 125px;
+                      border-radius: 22px;
+                      background: rgba(255,255,255,0.08);
+                      border: 1px solid rgba(255,255,255,0.14);
+                    }
+              - type: custom:mushroom-template-card
+                primary: Gas
+                secondary: >-
+                  {{ states('sensor.gas_bill_status') }} • ${{
+                  states('input_number.gas_bill_amount') }}
+                icon: mdi:fire-circle
+                icon_color: >-
+                  {% set s = states('sensor.gas_bill_status') %} {% if s ==
+                  'Paid' %}green {% elif s == 'Overdue' %}red {% elif s == 'Due
+                  soon' %}orange {% else %}blue{% endif %}
+                layout: vertical
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/bill-gas
+                card_mod:
+                  style: |
+                    ha-card {
+                      min-height: 125px;
+                      border-radius: 22px;
+                      background: rgba(255,255,255,0.08);
+                      border: 1px solid rgba(255,255,255,0.14);
+                    }
+              - type: custom:mushroom-template-card
+                primary: Car Insurance
+                secondary: |-
+                  {% if is_state('input_boolean.car_insurance_paid','on') %}
+                    Paid • ${{ states('input_number.car_insurance_amount') }}
+                  {% else %}
+                    Unpaid • ${{ states('input_number.car_insurance_amount') }}
+                  {% endif %}
+                icon: mdi:shield-car
+                icon_color: >-
+                  {{ 'green' if
+                  is_state('input_boolean.car_insurance_paid','on') else
+                  'orange' }}
+                layout: vertical
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/bill-car-insurance
+                card_mod:
+                  style: |
+                    ha-card {
+                      min-height: 125px;
+                      border-radius: 22px;
+                      background: rgba(255,255,255,0.08);
+                      border: 1px solid rgba(255,255,255,0.14);
+                    }
+              - type: custom:mushroom-template-card
+                primary: Council Rates
+                secondary: |-
+                  {% if is_state('input_boolean.council_rate_paid','on') %}
+                    Paid • ${{ states('input_number.council_rate_amount') }}
+                  {% else %}
+                    Unpaid • ${{ states('input_number.council_rate_amount') }}
+                  {% endif %}
+                icon: mdi:office-building
+                icon_color: >-
+                  {{ 'green' if is_state('input_boolean.council_rate_paid','on')
+                  else 'orange' }}
+                layout: vertical
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/bill-council-rates
+                card_mod:
+                  style: |
+                    ha-card {
+                      min-height: 125px;
+                      border-radius: 22px;
+                      background: rgba(255,255,255,0.08);
+                      border: 1px solid rgba(255,255,255,0.14);
+                    }
+              - type: custom:mushroom-template-card
+                primary: South East Water
+                secondary: |-
+                  {% if is_state('input_boolean.water_bill_paid','on') %}
+                    Paid • ${{ states('input_number.water_bill_amount') }}
+                  {% else %}
+                    Unpaid • ${{ states('input_number.water_bill_amount') }}
+                  {% endif %}
+                icon: mdi:water-circle
+                icon_color: >-
+                  {{ 'green' if is_state('input_boolean.water_bill_paid','on')
+                  else 'blue' }}
+                layout: vertical
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/bill-water
+                card_mod:
+                  style: |
+                    ha-card {
+                      min-height: 125px;
+                      border-radius: 22px;
+                      background: rgba(255,255,255,0.08);
+                      border: 1px solid rgba(255,255,255,0.14);
+                    }
+              - type: custom:mushroom-template-card
+                primary: VicRoads Rego
+                secondary: |-
+                  {% if is_state('input_boolean.rego_paid','on') %}
+                    Paid • ${{ states('input_number.rego_amount') }}
+                  {% else %}
+                    Unpaid • ${{ states('input_number.rego_amount') }}
+                  {% endif %}
+                icon: mdi:card-account-details-outline
+                icon_color: >-
+                  {{ 'green' if is_state('input_boolean.rego_paid','on') else
+                  'orange' }}
+                layout: vertical
+                tap_action:
+                  action: navigate
+                  navigation_path: /deez-smart-home/bill-rego
+                card_mod:
+                  style: |
+                    ha-card {
+                      min-height: 125px;
+                      border-radius: 22px;
+                      background: rgba(255,255,255,0.08);
+                      border: 1px solid rgba(255,255,255,0.14);
+                    }
       - type: grid
         cards:
           - type: custom:mushroom-title-card
@@ -4464,94 +4573,38 @@ views:
                 }
             title: 📈 Running Estimates
             subtitle: Current cycle to date — calculated, not a real invoice
-          - type: custom:mushroom-template-card
-            primary: Electricity (estimated)
-            secondary: >-
-              ${{ states('sensor.electricity_bill_estimate') }} • {{
-              states('sensor.electricity_billing_cycle') | float(0) | round(1)
-              }} kWh this quarter
-            icon: mdi:calculator-variant
-            icon_color: amber
-            entity: sensor.electricity_bill_estimate
-          - type: custom:mushroom-template-card
-            primary: Gas (estimated)
-            secondary: >-
-              ${{ states('sensor.gas_bill_estimate') }} • {{
-              states('input_number.gas_bill_mj') | float(0) | round(0) }} MJ
-              entered
-            icon: mdi:calculator-variant
-            icon_color: amber
-            entity: sensor.gas_bill_estimate
+          - type: grid
+            columns: 2
+            square: false
+            cards:
+              - type: custom:mushroom-template-card
+                primary: Electricity
+                secondary: >-
+                  ${{ states('sensor.electricity_bill_estimate') }} • {{
+                  states('sensor.electricity_billing_cycle') | float(0) |
+                  round(1) }} kWh this quarter
+                icon: mdi:calculator-variant
+                icon_color: amber
+                entity: sensor.electricity_bill_estimate
+              - type: custom:mushroom-template-card
+                primary: Gas
+                secondary: >-
+                  ${{ states('sensor.gas_bill_estimate') }} • {{
+                  states('input_number.gas_bill_mj') | float(0) | round(0) }} MJ
+                  entered
+                icon: mdi:calculator-variant
+                icon_color: amber
+                entity: sensor.gas_bill_estimate
           - type: markdown
             content: >-
-              *Electricity estimate uses Powerpal grid import — the same thing
-              EnergyAustralia bills — at 27.34996 c/kWh incl GST less the 24%
-              discount, plus $1.191190/day supply. Gas has **no meter in Home
-              Assistant**, so MJ must be entered manually. Estimates exclude
-              solar credits, late fees and card surcharges.*
-      - type: grid
-        cards:
-          - type: custom:mushroom-title-card
-            card_mod:
-              style: |
-                ha-card {
-                  background: none;
-                  backdrop-filter: none;
-                  -webkit-backdrop-filter: none;
-                  border: none;
-                  box-shadow: none;
-                  padding: 4px 4px 0px 4px;
-                  margin-bottom: -4px;
-                }
-            title: ⚙️ Enter Bill Details
-            subtitle: Update when a bill arrives, then mark paid
-          - type: entities
-            title: Gas
-            show_header_toggle: false
-            entities:
-              - entity: input_number.gas_bill_amount
-                name: Amount due
-              - entity: input_number.gas_bill_mj
-                name: Usage (MJ)
-              - entity: input_datetime.gas_bill_due
-                name: Due date
-              - entity: input_datetime.gas_bill_period_start
-                name: Period start
-              - entity: input_boolean.gas_bill_paid
-                name: Paid
-              - type: divider
-              - entity: input_number.gas_last_bill_amount
-                name: Previous bill
-              - entity: input_text.gas_account_number
-                name: Account number
-      - type: grid
-        cards:
-          - type: heading
-            grid_options:
-              columns: 12
-              rows: 2
-            heading_style: title
-          - type: entities
-            title: Electricity
-            show_header_toggle: false
-            entities:
-              - entity: input_number.elec_bill_amount
-                name: Amount due
-              - entity: input_datetime.elec_bill_due
-                name: Due date
-              - entity: input_datetime.elec_bill_period_start
-                name: Period start
-              - entity: input_boolean.elec_bill_paid
-                name: Paid
-              - type: divider
-              - entity: input_number.elec_last_bill_amount
-                name: Previous bill
-              - entity: input_text.elec_account_number
-                name: Account number
+              *Electricity uses the existing Powerpal current-cycle estimate.
+              Gas currently requires MJ to be entered manually. Insurance,
+              council rates, water and registration show the invoice or renewal
+              values entered on their individual billing pages.*
   - type: sections
     title: Electricity Plan
     path: bill-electricity
-    icon: mdi:transmission-tower
+    icon: mdi:flash
     theme: Deez Energy
     subview: true
     max_columns: 2
@@ -4589,7 +4642,7 @@ views:
               | Exit fee | None |
               | Paper bill fee | $1.69 incl GST |
 
-              **Account** {{ states('input_text.elec_account_number') }} • **NMI** 6407640515
+              **Account** 2404251000 • **NMI** 6407640515
 
               Card fees: Visa/Mastercard 0.36%, Amex 1.5%.
           - type: custom:mushroom-template-card
@@ -4600,10 +4653,46 @@ views:
               states('sensor.electricity_bill_estimate') }}
             icon: mdi:chart-line
             icon_color: amber
+          - type: heading
+            heading: Enter Bill Details
+            icon: mdi:file-document-edit-outline
+          - type: entities
+            title: Electricity
+            show_header_toggle: false
+            entities:
+              - entity: input_number.elec_bill_amount
+                name: Amount due
+              - entity: input_datetime.elec_bill_due
+                card_mod:
+                  style: |
+                    hui-generic-entity-row div {
+                      width: 50% !important;
+                    }
+                name: Due date
+              - entity: input_datetime.elec_bill_period_start
+                card_mod:
+                  style: |
+                    hui-generic-entity-row div {
+                      width: 50% !important;
+                    }
+                name: Period start
+              - entity: input_boolean.elec_bill_paid
+                name: Paid
+              - type: divider
+              - entity: input_number.elec_last_bill_amount
+                name: Previous bill
+              - entity: input_text.elec_account_number
+                name: Account number
+          - type: custom:mushroom-template-card
+            primary: Back to Bills
+            icon: mdi:arrow-left-circle-outline
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/bills
   - type: sections
     title: Gas Plan
     path: bill-gas
-    icon: mdi:fire
+    icon: mdi:fire-circle
     theme: Deez Energy
     subview: true
     max_columns: 2
@@ -4637,7 +4726,7 @@ views:
               | Contract term | 12 months from 31 Jul 2026 |
               | Exit fee | None |
 
-              **Account** {{ states('input_text.gas_account_number') }} • **MIRN** 5310552355
+              **Account** 8764341000 • **MIRN** 5310552355
           - type: markdown
             content: >-
               ### Tiered usage rates
@@ -4664,3 +4753,326 @@ views:
 
               *All c/MJ. Tiers apply to average daily usage across the billing
               period.*
+          - type: heading
+            heading: Enter Bill Details
+            icon: mdi:file-document-edit-outline
+          - type: entities
+            title: Gas
+            show_header_toggle: false
+            entities:
+              - entity: input_number.gas_bill_amount
+                name: Amount due
+              - entity: input_number.gas_bill_mj
+                name: Usage (MJ)
+              - entity: input_datetime.gas_bill_due
+                card_mod:
+                  style: |
+                    hui-generic-entity-row div {
+                      width: 50% !important;
+                    }
+                name: Due date
+              - entity: input_datetime.gas_bill_period_start
+                card_mod:
+                  style: |
+                    hui-generic-entity-row div {
+                      width: 50% !important;
+                    }
+                name: Period start
+              - entity: input_boolean.gas_bill_paid
+                name: Paid
+              - type: divider
+              - entity: input_number.gas_last_bill_amount
+                name: Previous bill
+              - entity: input_text.gas_account_number
+                name: Account number
+          - type: custom:mushroom-template-card
+            primary: Back to Bills
+            icon: mdi:arrow-left-circle-outline
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/bills
+  - type: sections
+    title: Car Insurance
+    path: bill-car-insurance
+    icon: mdi:shield-car
+    theme: Deez Energy
+    subview: true
+    max_columns: 2
+    sections:
+      - type: grid
+        cards:
+          - type: custom:mushroom-title-card
+            title: 🚘 Car Insurance
+            subtitle: Policy • premium • renewal • payment
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% if is_state('input_boolean.car_insurance_paid','on') %}
+                Paid
+              {% else %}
+                Payment Outstanding
+              {% endif %}
+            secondary: ${{ states('input_number.car_insurance_amount') }}
+            icon: mdi:shield-car
+            icon_color: >-
+              {{ 'green' if is_state('input_boolean.car_insurance_paid','on')
+              else 'orange' }}
+          - type: entities
+            title: Insurance Details
+            show_header_toggle: false
+            entities:
+              - entity: input_text.car_insurance_provider
+                icon: mdi:domain
+                name: Insurance provider
+              - entity: input_text.car_insurance_policy_number
+                icon: mdi:file-certificate-outline
+                name: Policy number
+              - entity: input_text.car_insurance_vehicle
+                icon: mdi:car
+                name: Vehicle
+              - entity: input_text.car_insurance_registration
+                icon: mdi:license
+                name: Registration
+              - type: divider
+              - entity: input_number.car_insurance_amount
+                name: Premium due
+              - entity: input_datetime.car_insurance_due
+                card_mod:
+                  style: |
+                    hui-generic-entity-row div {
+                      width: 50% !important;
+                    }
+                name: Due / renewal date
+              - entity: input_datetime.car_insurance_period_start
+                card_mod:
+                  style: |
+                    hui-generic-entity-row div {
+                      width: 50% !important;
+                    }
+                name: Cover start
+              - entity: input_datetime.car_insurance_period_end
+                card_mod:
+                  style: |
+                    hui-generic-entity-row div {
+                      width: 50% !important;
+                    }
+                name: Cover end
+              - entity: input_boolean.car_insurance_paid
+                name: Paid
+              - type: divider
+              - entity: input_number.car_insurance_last_amount
+                name: Previous premium
+          - type: custom:mushroom-template-card
+            primary: Back to Bills
+            icon: mdi:arrow-left-circle-outline
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/bills
+  - type: sections
+    title: South East Water
+    path: bill-water
+    icon: mdi:water-circle
+    theme: Deez Energy
+    subview: true
+    max_columns: 2
+    sections:
+      - type: grid
+        cards:
+          - type: custom:mushroom-title-card
+            title: 💧 South East Water
+            subtitle: Water usage • charges • billing period
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% if is_state('input_boolean.water_bill_paid','on') %}
+                Paid
+              {% else %}
+                Payment Outstanding
+              {% endif %}
+            secondary: >-
+              ${{ states('input_number.water_bill_amount') }} • {{
+              states('input_number.water_bill_usage_kl') }} kL
+            icon: mdi:water-circle
+            icon_color: >-
+              {{ 'green' if is_state('input_boolean.water_bill_paid','on') else
+              'blue' }}
+          - type: entities
+            title: Water Bill Details
+            show_header_toggle: false
+            entities:
+              - entity: input_text.water_provider
+                icon: mdi:water-pump
+                name: Provider
+              - entity: input_text.water_account_number
+                icon: mdi:account-key-outline
+                name: Account number
+              - entity: input_text.water_property
+                icon: mdi:home-map-marker
+                name: Property
+              - type: divider
+              - entity: input_number.water_bill_amount
+                name: Amount due
+              - entity: input_number.water_bill_usage_kl
+                name: Water usage (kL)
+              - entity: input_datetime.water_bill_due
+                card_mod:
+                  style: |
+                    hui-generic-entity-row div {
+                      width: 50% !important;
+                    }
+                name: Due date
+              - entity: input_datetime.water_bill_period_start
+                card_mod:
+                  style: |
+                    hui-generic-entity-row div {
+                      width: 50% !important;
+                    }
+                name: Period start
+              - entity: input_datetime.water_bill_period_end
+                card_mod:
+                  style: |
+                    hui-generic-entity-row div {
+                      width: 50% !important;
+                    }
+                name: Period end
+              - entity: input_boolean.water_bill_paid
+                name: Paid
+              - type: divider
+              - entity: input_number.water_last_bill_amount
+                name: Previous bill
+          - type: custom:mushroom-template-card
+            primary: Back to Bills
+            icon: mdi:arrow-left-circle-outline
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/bills
+  - type: sections
+    title: Council Rates
+    path: bill-council-rates
+    icon: mdi:office-building
+    theme: Deez Energy
+    subview: true
+    max_columns: 2
+    sections:
+      - type: grid
+        cards:
+          - type: custom:mushroom-title-card
+            title: 🏛️ Council Rates
+            subtitle: Property • assessment • rates • payment
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% if is_state('input_boolean.council_rate_paid','on') %}
+                Paid
+              {% else %}
+                Payment Outstanding
+              {% endif %}
+            secondary: ${{ states('input_number.council_rate_amount') }}
+            icon: mdi:office-building
+            icon_color: >-
+              {{ 'green' if is_state('input_boolean.council_rate_paid','on')
+              else 'orange' }}
+          - type: entities
+            title: Council Rate Details
+            show_header_toggle: false
+            entities:
+              - entity: input_text.council_rate_council
+                icon: mdi:office-building
+                name: Council
+              - entity: input_text.council_rate_assessment_number
+                icon: mdi:file-document-outline
+                name: Assessment number
+              - entity: input_text.council_rate_property
+                icon: mdi:home-city-outline
+                name: Property
+              - type: divider
+              - entity: input_number.council_rate_amount
+                name: Amount due
+              - entity: input_datetime.council_rate_due
+                card_mod:
+                  style: |
+                    hui-generic-entity-row div {
+                      width: 50% !important;
+                    }
+                name: Due date
+              - entity: input_datetime.council_rate_period_start
+                card_mod:
+                  style: |
+                    hui-generic-entity-row div {
+                      width: 50% !important;
+                    }
+                name: Rating period start
+              - entity: input_datetime.council_rate_period_end
+                card_mod:
+                  style: |
+                    hui-generic-entity-row div {
+                      width: 50% !important;
+                    }
+                name: Rating period end
+              - entity: input_boolean.council_rate_paid
+                name: Paid
+              - type: divider
+              - entity: input_number.council_rate_last_amount
+                name: Previous rates amount
+          - type: custom:mushroom-template-card
+            primary: Back to Bills
+            icon: mdi:arrow-left-circle-outline
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/bills
+  - type: sections
+    title: VicRoads Rego
+    path: bill-rego
+    icon: mdi:card-account-details-outline
+    theme: Deez Energy
+    subview: true
+    max_columns: 2
+    sections:
+      - type: grid
+        cards:
+          - type: custom:mushroom-title-card
+            title: 🚗 VicRoads Registration
+            subtitle: Vehicle • registration • renewal • payment
+          - type: custom:mushroom-template-card
+            primary: |-
+              {% if is_state('input_boolean.rego_paid','on') %}
+                Registration Paid
+              {% else %}
+                Registration Outstanding
+              {% endif %}
+            secondary: ${{ states('input_number.rego_amount') }}
+            icon: mdi:card-account-details-outline
+            icon_color: >-
+              {{ 'green' if is_state('input_boolean.rego_paid','on') else
+              'orange' }}
+          - type: entities
+            title: Registration Details
+            show_header_toggle: false
+            entities:
+              - entity: input_text.rego_vehicle
+                icon: mdi:car
+                name: Vehicle
+              - entity: input_text.rego_plate
+                icon: mdi:card-text-outline
+                name: Registration plate
+              - entity: input_text.rego_customer_number
+                icon: mdi:account-card-outline
+                name: VicRoads customer number
+              - type: divider
+              - entity: input_number.rego_amount
+                name: Renewal amount
+              - entity: input_datetime.rego_due
+                card_mod:
+                  style: |
+                    hui-generic-entity-row div {
+                      width: 50% !important;
+                    }
+                name: Registration expiry
+              - entity: input_boolean.rego_paid
+                name: Paid
+              - type: divider
+              - entity: input_number.rego_last_amount
+                name: Previous renewal
+          - type: custom:mushroom-template-card
+            primary: Back to Bills
+            icon: mdi:arrow-left-circle-outline
+            tap_action:
+              action: navigate
+              navigation_path: /deez-smart-home/bills
