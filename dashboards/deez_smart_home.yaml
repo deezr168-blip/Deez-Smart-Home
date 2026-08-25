@@ -380,80 +380,70 @@ views:
     - type: custom:mushroom-template-card
       grid_options:
         columns: 6
-      primary: Living Room
-      secondary: '{{ states(''sensor.living_room_living_hue_hue_sensor_temperature'')
-        }} °C'
+      primary: '{{ ''客厅'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Living Room'' }}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set bad = [''unavailable'',''unknown'',''none''] %}{% set t = states(''sensor.living_room_living_hue_hue_sensor_temperature'') %}{% set temp = ''—'' if t in bad else (t | float(0) | round(1) ~ ''°C'') %}{{ temp }}{{ (('' • 前门开启'' if cn else '' • Door open'')) if is_state(''binary_sensor.f_contact_sensor_door'',''on'') else '''' }}'
       icon: mdi:sofa
-      icon_color: '{{ ''amber'' if is_state(''light.living_room'',''on'') else ''grey''
-        }}'
+      icon_color: '{{ ''red'' if is_state(''binary_sensor.f_contact_sensor_door'',''on'') else (''amber'' if is_state(''light.living_room'',''on'') else ''grey'') }}'
       tap_action:
         action: navigate
         navigation_path: /deez-smart-home/living-room
     - type: custom:mushroom-template-card
       grid_options:
         columns: 6
-      primary: Parents Room
-      secondary: '{{ states(''sensor.bedroom_motion_sensor_temperature'') }} °C •
-        {{ states(''sensor.bedroom_motion_sensor_humidity'') }} %'
+      primary: '{{ ''父母房'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Parents Room'' }}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set bad = [''unavailable'',''unknown'',''none''] %}{% set t = states(''sensor.bedroom_motion_sensor_temperature'') %}{% set h = states(''sensor.bedroom_motion_sensor_humidity'') %}{% set ac = states(''climate.bedroom_parents_room_ac'') %}{% set temp = ''—'' if t in bad else (t | float(0) | round(1) ~ ''°C'') %}{% if ac not in bad and ac != ''off'' %}{{ temp }} • {{ ''空调'' if cn else ''AC'' }} {{ ac | replace(''_'','' '') | title }}{% else %}{{ temp }}{{ '''' if h in bad else '' • '' ~ (h | float(0) | round(0) | int) ~ ''%'' }}{% endif %}'
       icon: mdi:bed-king
-      icon_color: '{{ ''amber'' if is_state(''switch.mainroomlight_switch_1'',''on'')
-        else ''grey'' }}'
+      icon_color: '{% set ac = states(''climate.bedroom_parents_room_ac'') %}{{ ''cyan'' if ac not in [''off'',''unavailable'',''unknown''] else (''amber'' if is_state(''switch.mainroomlight_switch_1'',''on'') else ''grey'') }}'
       tap_action:
         action: navigate
         navigation_path: /deez-smart-home/parents-room
     - type: custom:mushroom-template-card
       grid_options:
         columns: 6
-      primary: Ray Bedroom
-      secondary: '{{ ''Shade open'' if is_state(''cover.aqara_roller_shade_driver_e1'',''open'')
-        else ''Shade closed'' }}'
+      primary: '{{ ''Ray 房间'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Ray Bedroom'' }}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set s = states(''cover.aqara_roller_shade_driver_e1'') %}{% if s == ''open'' %}{% set shade = ''窗帘开'' if cn else ''Shade open'' %}{% elif s == ''closed'' %}{% set shade = ''窗帘关'' if cn else ''Shade closed'' %}{% else %}{% set shade = ''—'' %}{% endif %}{{ shade }}{{ (('' • 种植机'' if cn else '' • Garden on'')) if is_state(''switch.lph_se_dcd9_power'',''on'') else '''' }}'
       icon: mdi:bed
-      icon_color: '{{ ''amber'' if is_state(''light.bedroom_bedroom'',''on'') else
-        ''grey'' }}'
+      icon_color: '{{ ''amber'' if is_state(''light.bedroom_bedroom'',''on'') else ''grey'' }}'
       tap_action:
         action: navigate
         navigation_path: /deez-smart-home/ray-bedroom
     - type: custom:mushroom-template-card
       grid_options:
         columns: 6
-      primary: Kitchen
-      secondary: Fridge • power
+      primary: '{{ ''厨房'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Kitchen'' }}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set bad = [''unavailable'',''unknown'',''none''] %}{% if is_state(''binary_sensor.lg_fridge_door'',''on'') %}{{ ''冰箱门开启'' if cn else ''Fridge door open'' }}{% else %}{% set f = states(''number.lg_fridge_fridge_temperature'') %}{{ ''—'' if f in bad else ((''冰箱 '' if cn else ''Fridge '') ~ (f | float(0) | round(0) | int) ~ ''°C'') }}{% endif %}'
       icon: mdi:silverware-fork-knife
-      icon_color: '{{ ''amber'' if is_state(''binary_sensor.k_motion_sensor_motion'',''on'')
-        else ''grey'' }}'
+      icon_color: '{% set plugs = [states(''switch.k_top_p100''), states(''switch.k_bot_p100''), states(''switch.k_coffee_p100'')] %}{{ ''red'' if is_state(''binary_sensor.lg_fridge_door'',''on'') else (''amber'' if (plugs | select(''eq'',''on'') | list | count) > 0 else ''grey'') }}'
       tap_action:
         action: navigate
         navigation_path: /deez-smart-home/kitchen
     - type: custom:mushroom-template-card
       grid_options:
         columns: 6
-      primary: Dining
-      secondary: Lighting • feeder
+      primary: '{{ ''餐厅'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Dining'' }}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set bad = [''unavailable'',''unknown'',''none''] %}{% set lx = states(''sensor.sensor_group_illuminance'') %}{{ ''—'' if lx in bad else (lx | float(0) | round(0) | int) ~ '' lx'' }}{{ (('' • 有人'' if cn else '' • Motion'')) if is_state(''binary_sensor.sensor_group_motion'',''on'') else '''' }}'
       icon: mdi:table-chair
-      icon_color: '{{ ''amber'' if is_state(''light.dining'',''on'') else ''grey''
-        }}'
+      icon_color: '{{ ''amber'' if is_state(''light.dining'',''on'') else ''grey'' }}'
       tap_action:
         action: navigate
         navigation_path: /deez-smart-home/dining
     - type: custom:mushroom-template-card
       grid_options:
         columns: 6
-      primary: Garage
-      secondary: Freezer {{ states('sensor.g_monitor_freezer_p110m_current_consumption')
-        }} W
+      primary: '{{ ''车库'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Garage'' }}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set bad = [''unavailable'',''unknown'',''none''] %}{% if is_state(''binary_sensor.g_monitor_freezer_p110m_overloaded'',''on'') %}{{ ''冰柜过载'' if cn else ''Freezer overload'' }}{% elif is_state(''switch.g_monitor_freezer_p110m'',''off'') %}{{ ''冰柜已关'' if cn else ''Freezer off'' }}{% else %}{% set w = states(''sensor.g_monitor_freezer_p110m_current_consumption'') %}{{ ''—'' if w in bad else ((''冰柜 '' if cn else ''Freezer '') ~ (w | float(0) | round(0) | int) ~ '' W'') }}{% endif %}'
       icon: mdi:garage
-      icon_color: grey
+      icon_color: '{{ ''red'' if is_state(''binary_sensor.g_monitor_freezer_p110m_overloaded'',''on'') else (''cyan'' if is_state(''switch.g_monitor_freezer_p110m'',''on'') else ''grey'') }}'
       tap_action:
         action: navigate
         navigation_path: /deez-smart-home/garage
     - type: custom:mushroom-template-card
       grid_options:
         columns: 6
-      primary: Guest Room
-      secondary: Lights • Pogo
+      primary: '{{ ''客房'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Guest Room'' }}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set bad = [''unavailable'',''unknown'',''none''] %}{% if states(''media_player.pogo'') in bad and states(''switch.g_printer_p100'') in bad and states(''light.kogan_tv'') in bad %}—{% elif is_state(''media_player.pogo'',''playing'') %}{{ ''Pogo 播放中'' if cn else ''Pogo playing'' }}{% elif is_state(''switch.g_printer_p100'',''on'') %}{{ ''打印机开启'' if cn else ''Printer on'' }}{% elif is_state(''light.kogan_tv'',''on'') %}{{ ''灯已开'' if cn else ''Lights on'' }}{% else %}{{ ''空闲'' if cn else ''Idle'' }}{% endif %}'
       icon: mdi:bed-empty
-      icon_color: '{{ ''amber'' if is_state(''light.kogan_tv'',''on'') else ''grey''
-        }}'
+      icon_color: '{{ ''purple'' if is_state(''media_player.pogo'',''playing'') else (''amber'' if is_state(''light.kogan_tv'',''on'') else ''grey'') }}'
       tap_action:
         action: navigate
         navigation_path: /deez-smart-home/guest-room
