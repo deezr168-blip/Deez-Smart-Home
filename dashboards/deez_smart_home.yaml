@@ -1912,16 +1912,14 @@ views:
         else ''green'' }}'
     - type: custom:mushroom-template-card
       primary: Dad Emergency Button
-      secondary: '{{ states(''binary_sensor.emergency_button_dad_cloud_connection'')
-        }}'
+      secondary: '{% set v = states(''binary_sensor.emergency_button_dad_cloud_connection'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}Status unavailable{% elif v == ''on'' %}Connected{% else %}Disconnected{% endif %}'
       icon: mdi:alarm-light
-      icon_color: red
+      icon_color: '{% set v = states(''binary_sensor.emergency_button_dad_cloud_connection'') %}{% if v == ''on'' %}green{% else %}red{% endif %}'
     - type: custom:mushroom-template-card
       primary: Mum Emergency Button
-      secondary: '{{ states(''binary_sensor.emergency_button_mum_cloud_connection'')
-        }}'
+      secondary: '{% set v = states(''binary_sensor.emergency_button_mum_cloud_connection'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}Status unavailable{% elif v == ''on'' %}Connected{% else %}Disconnected{% endif %}'
       icon: mdi:alarm-light
-      icon_color: red
+      icon_color: '{% set v = states(''binary_sensor.emergency_button_mum_cloud_connection'') %}{% if v == ''on'' %}green{% else %}red{% endif %}'
     - type: custom:mushroom-template-card
       primary: Cameras
       secondary: View live cameras
