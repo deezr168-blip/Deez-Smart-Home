@@ -143,6 +143,13 @@ checkpoint is pushed onto a history array rather than overwritten. The plan
 prints commands rather than running them — reverting a deployed dashboard is a
 production change, not a script side effect.
 
+> **Tags are local-only here.** `git push --tags` reports "Everything
+> up-to-date" while the remote keeps zero tags — the git proxy in this
+> environment does not accept tag refs. Since the container is ephemeral, a
+> tag-only checkpoint would not survive it. That is why the authoritative
+> record is `.maintenance/known_good.json`, which is a committed, pushed file.
+> The tag is a local convenience; **the JSON is the recovery artifact.**
+
 **Home Assistant backups: UNAVAILABLE.** No supervisor access. Take a full
 backup manually before any substantial change.
 
