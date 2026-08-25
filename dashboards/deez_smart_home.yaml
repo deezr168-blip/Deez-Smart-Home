@@ -262,79 +262,53 @@ views:
           action: navigate
           navigation_path: /deez-smart-home/network
     - type: grid
-      columns: 2
+      columns: 3
       square: false
       cards:
       - type: custom:mushroom-template-card
         card_mod:
-          style: "ha-card {\n  background: linear-gradient(180deg,\n    rgba(255,138,61,0.22)\
-            \ 0%,\n    rgba(255,138,61,0.05) 100%);\n  border: 1px solid rgba(255,138,61,0.35);\n\
-            \  border-radius: 18px;\n  box-shadow: 0 2px 10px rgba(0,0,0,0.30);\n\
-            \  min-height: 168px;\n}\n"
-        primary: "{% set doors = [\n  states('binary_sensor.f_contact_sensor_door'),\n\
-          \  states('binary_sensor.m_contact_sensor_door'),\n  states('binary_sensor.b_contact_sensor_door')\n\
-          ] %} {{ doors | select('eq','on') | list | count }} open"
-        secondary: '{{ ''门禁'' if is_state(''input_boolean.chinese_dashboard'',''on'')
-          else ''Access'' }}'
-        icon: "{% set doors = [\n  states('binary_sensor.f_contact_sensor_door'),\n\
-          \  states('binary_sensor.m_contact_sensor_door'),\n  states('binary_sensor.b_contact_sensor_door')\n\
-          ] %} {{ 'mdi:lock-open-variant' if (doors | select('eq','on') | list | count)\
-          \ > 0 else 'mdi:lock' }}"
-        icon_color: "{% set doors = [\n  states('binary_sensor.f_contact_sensor_door'),\n\
-          \  states('binary_sensor.m_contact_sensor_door'),\n  states('binary_sensor.b_contact_sensor_door')\n\
-          ] %} {{ 'orange' if (doors | select('eq','on') | list | count) > 0 else\
-          \ 'green' }}"
-        layout: vertical
-        fill_container: true
+          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border: 1px\
+            \ solid rgba(255,255,255,0.12);\n  border-radius: 18px;\n  box-shadow:\
+            \ none;\n  margin-bottom: 6px;\n}\n"
+        primary: '{% set t = state_attr(''weather.forecast_home'',''temperature'')
+          %} {{ (t | round(0) ~ ''°C'') if t is not none else states(''weather.forecast_home'')
+          }}'
+        secondary: '{{ states(''weather.forecast_home'') | replace(''-'','' '')
+          | title }}'
+        icon: mdi:weather-partly-cloudy
+        icon_color: cyan
+        entity: weather.forecast_home
+        tap_action:
+          action: more-info
+      - type: custom:mushroom-template-card
+        card_mod:
+          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border: 1px\
+            \ solid rgba(255,255,255,0.12);\n  border-radius: 18px;\n  box-shadow:\
+            \ none;\n  margin-bottom: 6px;\n}\n"
+        primary: '{{ states(''time.lph_se_dcd9_light_on'')[:5] }} – {{ states(''time.lph_se_dcd9_light_off'')[:5]
+          }}'
+        secondary: '{{ ''种植灯'' if is_state(''input_boolean.chinese_dashboard'',''on'')
+          else ''Grow light'' }}'
+        icon: mdi:sprout
+        icon_color: green
         tap_action:
           action: navigate
-          navigation_path: /deez-smart-home/security
-      - type: vertical-stack
-        cards:
-        - type: custom:mushroom-template-card
-          card_mod:
-            style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border: 1px\
-              \ solid rgba(255,255,255,0.12);\n  border-radius: 18px;\n  box-shadow:\
-              \ none;\n  margin-bottom: 6px;\n}\n"
-          primary: '{% set t = state_attr(''weather.forecast_home'',''temperature'')
-            %} {{ (t | round(0) ~ ''°C'') if t is not none else states(''weather.forecast_home'')
-            }}'
-          secondary: '{{ states(''weather.forecast_home'') | replace(''-'','' '')
-            | title }}'
-          icon: mdi:weather-partly-cloudy
-          icon_color: cyan
-          entity: weather.forecast_home
-          tap_action:
-            action: more-info
-        - type: custom:mushroom-template-card
-          card_mod:
-            style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border: 1px\
-              \ solid rgba(255,255,255,0.12);\n  border-radius: 18px;\n  box-shadow:\
-              \ none;\n  margin-bottom: 6px;\n}\n"
-          primary: '{{ states(''time.lph_se_dcd9_light_on'')[:5] }} – {{ states(''time.lph_se_dcd9_light_off'')[:5]
-            }}'
-          secondary: '{{ ''种植灯'' if is_state(''input_boolean.chinese_dashboard'',''on'')
-            else ''Grow light'' }}'
-          icon: mdi:sprout
-          icon_color: green
-          tap_action:
-            action: navigate
-            navigation_path: /deez-smart-home/ray-bedroom
-        - type: custom:mushroom-template-card
-          card_mod:
-            style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border: 1px\
-              \ solid rgba(255,255,255,0.12);\n  border-radius: 18px;\n  box-shadow:\
-              \ none;\n}\n"
-          primary: '{% set b = states(''sensor.backup_next_scheduled_automatic_backup'')
-            %} {{ as_timestamp(b) | timestamp_custom(''%a %H:%M'', true) if b not
-            in [''unknown'',''unavailable'',''none''] else ''—'' }}'
-          secondary: '{{ ''下次备份'' if is_state(''input_boolean.chinese_dashboard'',''on'')
-            else ''Next backup'' }}'
-          icon: mdi:backup-restore
-          icon_color: indigo
-          tap_action:
-            action: navigate
-            navigation_path: /deez-smart-home/status
+          navigation_path: /deez-smart-home/ray-bedroom
+      - type: custom:mushroom-template-card
+        card_mod:
+          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border: 1px\
+            \ solid rgba(255,255,255,0.12);\n  border-radius: 18px;\n  box-shadow:\
+            \ none;\n}\n"
+        primary: '{% set b = states(''sensor.backup_next_scheduled_automatic_backup'')
+          %} {{ as_timestamp(b) | timestamp_custom(''%a %H:%M'', true) if b not
+          in [''unknown'',''unavailable'',''none''] else ''—'' }}'
+        secondary: '{{ ''下次备份'' if is_state(''input_boolean.chinese_dashboard'',''on'')
+          else ''Next backup'' }}'
+        icon: mdi:backup-restore
+        icon_color: indigo
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/status
     - type: grid
       columns: 3
       square: false
@@ -1957,20 +1931,17 @@ views:
       primary: Aqara M100
       secondary: Matter / Thread hub
       icon: mdi:access-point-network
-      features_position: bottom
-      vertical: true
+      layout: vertical
     - type: custom:mushroom-template-card
       primary: Philips Hue Bridge
       secondary: Local lighting hub
       icon: mdi:lightbulb-group
-      features_position: bottom
-      vertical: true
+      layout: vertical
     - type: custom:mushroom-template-card
       primary: Home Assistant Green
       secondary: Main controller
       icon: mdi:home-assistant
-      features_position: bottom
-      vertical: true
+      layout: vertical
 - type: sections
   title: Media
   path: media
@@ -2975,8 +2946,7 @@ views:
         icon: mdi:door
         icon_color: '{{ ''red'' if is_state(''binary_sensor.f_contact_sensor_door'',''on'')
           else ''green'' }}'
-        features_position: bottom
-        vertical: true
+        layout: vertical
         card_mod:
           style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
             \ 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n  box-shadow: 0\
@@ -2988,8 +2958,7 @@ views:
         icon: mdi:door
         icon_color: '{{ ''red'' if is_state(''binary_sensor.m_contact_sensor_door'',''on'')
           else ''green'' }}'
-        features_position: bottom
-        vertical: true
+        layout: vertical
         card_mod:
           style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
             \ 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n  box-shadow: 0\
@@ -3001,8 +2970,7 @@ views:
         icon: mdi:door
         icon_color: '{{ ''red'' if is_state(''binary_sensor.b_contact_sensor_door'',''on'')
           else ''green'' }}'
-        features_position: bottom
-        vertical: true
+        layout: vertical
         card_mod:
           style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
             \ 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n  box-shadow: 0\
