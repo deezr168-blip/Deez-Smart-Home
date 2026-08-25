@@ -269,7 +269,7 @@ views:
         card_mod:
           style: "ha-card {\n  background: linear-gradient(180deg,\n    rgba(255,138,61,0.22)\
             \ 0%,\n    rgba(255,138,61,0.05) 100%);\n  border: 1px solid rgba(255,138,61,0.35);\n\
-            \  border-radius: 22px;\n  box-shadow: 0 8px 22px rgba(0,0,0,0.45);\n\
+            \  border-radius: 18px;\n  box-shadow: 0 2px 10px rgba(0,0,0,0.30);\n\
             \  min-height: 168px;\n}\n"
         primary: "{% set doors = [\n  states('binary_sensor.f_contact_sensor_door'),\n\
           \  states('binary_sensor.m_contact_sensor_door'),\n  states('binary_sensor.b_contact_sensor_door')\n\
@@ -392,7 +392,7 @@ views:
       - type: custom:mushroom-template-card
         card_mod:
           style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border: 1px\
-            \ solid rgba(255,255,255,0.12);\n  border-radius: 22px;\n  box-shadow:\
+            \ solid rgba(255,255,255,0.12);\n  border-radius: 18px;\n  box-shadow:\
             \ none;\n}\n"
         primary: '{{ ''房间'' if is_state(''input_boolean.chinese_dashboard'',''on'')
           else ''Rooms'' }}'
@@ -405,7 +405,7 @@ views:
       - type: custom:mushroom-template-card
         card_mod:
           style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border: 1px\
-            \ solid rgba(255,255,255,0.12);\n  border-radius: 22px;\n  box-shadow:\
+            \ solid rgba(255,255,255,0.12);\n  border-radius: 18px;\n  box-shadow:\
             \ none;\n}\n"
         primary: '{{ ''控制'' if is_state(''input_boolean.chinese_dashboard'',''on'')
           else ''Controls'' }}'
@@ -418,7 +418,7 @@ views:
       - type: custom:mushroom-template-card
         card_mod:
           style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border: 1px\
-            \ solid rgba(255,255,255,0.12);\n  border-radius: 22px;\n  box-shadow:\
+            \ solid rgba(255,255,255,0.12);\n  border-radius: 18px;\n  box-shadow:\
             \ none;\n}\n"
         primary: '{{ ''摄像头'' if is_state(''input_boolean.chinese_dashboard'',''on'')
           else ''Cameras'' }}'
@@ -431,7 +431,7 @@ views:
       - type: custom:mushroom-template-card
         card_mod:
           style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border: 1px\
-            \ solid rgba(255,255,255,0.12);\n  border-radius: 22px;\n  box-shadow:\
+            \ solid rgba(255,255,255,0.12);\n  border-radius: 18px;\n  box-shadow:\
             \ none;\n}\n"
         primary: '{{ ''能源'' if is_state(''input_boolean.chinese_dashboard'',''on'')
           else ''Energy'' }}'
@@ -689,15 +689,15 @@ views:
       chips:
       - type: entity
         card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.10);\n  border-radius:\
-            \ 20px;\n  border: 1px solid rgba(255,255,255,0.18);\n  box-shadow: 0\
-            \ 8px 22px rgba(0,0,0,0.45);\n}\n"
+          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
+            \ 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n  box-shadow: 0\
+            \ 2px 10px rgba(0,0,0,0.30);\n}\n"
         entity: sensor.bedroom_motion_sensor_temperature
       - type: entity
         card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.10);\n  border-radius:\
-            \ 20px;\n  border: 1px solid rgba(255,255,255,0.18);\n  box-shadow: 0\
-            \ 8px 22px rgba(0,0,0,0.45);\n}\n"
+          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
+            \ 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n  box-shadow: 0\
+            \ 2px 10px rgba(0,0,0,0.30);\n}\n"
         entity: sensor.bedroom_motion_sensor_humidity
       - type: template
         icon: mdi:motion-sensor
@@ -879,21 +879,21 @@ views:
       chips:
       - type: entity
         card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.10);\n  border-radius:\
-            \ 20px;\n  border: 1px solid rgba(255,255,255,0.18);\n  box-shadow: 0\
-            \ 8px 22px rgba(0,0,0,0.45);\n}\n"
+          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
+            \ 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n  box-shadow: 0\
+            \ 2px 10px rgba(0,0,0,0.30);\n}\n"
         entity: sensor.aqara_roller_shade_driver_e1_battery
       - type: entity
         card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.10);\n  border-radius:\
-            \ 20px;\n  border: 1px solid rgba(255,255,255,0.18);\n  box-shadow: 0\
-            \ 8px 22px rgba(0,0,0,0.45);\n}\n"
+          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
+            \ 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n  box-shadow: 0\
+            \ 2px 10px rgba(0,0,0,0.30);\n}\n"
         entity: sensor.r_energy_monitor_p110m_current_consumption
       - type: entity
         card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.10);\n  border-radius:\
-            \ 20px;\n  border: 1px solid rgba(255,255,255,0.18);\n  box-shadow: 0\
-            \ 8px 22px rgba(0,0,0,0.45);\n}\n"
+          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
+            \ 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n  box-shadow: 0\
+            \ 2px 10px rgba(0,0,0,0.30);\n}\n"
         entity: sensor.r_energy_monitor_p110m_today_s_consumption
     - type: heading
       heading: Power Board
@@ -1063,15 +1063,15 @@ views:
       chips:
       - type: entity
         card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.10);\n  border-radius:\
-            \ 20px;\n  border: 1px solid rgba(255,255,255,0.18);\n  box-shadow: 0\
-            \ 8px 22px rgba(0,0,0,0.45);\n}\n"
+          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
+            \ 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n  box-shadow: 0\
+            \ 2px 10px rgba(0,0,0,0.30);\n}\n"
         entity: sensor.living_room_living_hue_hue_sensor_temperature
       - type: entity
         card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.10);\n  border-radius:\
-            \ 20px;\n  border: 1px solid rgba(255,255,255,0.18);\n  box-shadow: 0\
-            \ 8px 22px rgba(0,0,0,0.45);\n}\n"
+          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
+            \ 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n  box-shadow: 0\
+            \ 2px 10px rgba(0,0,0,0.30);\n}\n"
         entity: sensor.living_room_living_hue_hue_sensor_illuminance
       - type: template
         icon: mdi:motion-sensor
@@ -1202,9 +1202,9 @@ views:
           else ''Clear'' }}'
       - type: entity
         card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.10);\n  border-radius:\
-            \ 20px;\n  border: 1px solid rgba(255,255,255,0.18);\n  box-shadow: 0\
-            \ 8px 22px rgba(0,0,0,0.45);\n}\n"
+          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
+            \ 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n  box-shadow: 0\
+            \ 2px 10px rgba(0,0,0,0.30);\n}\n"
         entity: sensor.sensor_group_illuminance
   - type: grid
     cards:
@@ -1256,15 +1256,15 @@ views:
       chips:
       - type: entity
         card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.10);\n  border-radius:\
-            \ 20px;\n  border: 1px solid rgba(255,255,255,0.18);\n  box-shadow: 0\
-            \ 8px 22px rgba(0,0,0,0.45);\n}\n"
+          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
+            \ 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n  box-shadow: 0\
+            \ 2px 10px rgba(0,0,0,0.30);\n}\n"
         entity: sensor.g_monitor_freezer_p110m_voltage
       - type: entity
         card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.10);\n  border-radius:\
-            \ 20px;\n  border: 1px solid rgba(255,255,255,0.18);\n  box-shadow: 0\
-            \ 8px 22px rgba(0,0,0,0.45);\n}\n"
+          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
+            \ 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n  box-shadow: 0\
+            \ 2px 10px rgba(0,0,0,0.30);\n}\n"
         entity: sensor.g_monitor_freezer_p110m_current
       - type: template
         icon: mdi:alert
@@ -1439,8 +1439,8 @@ views:
           else ''red'' }}'
     - type: picture-entity
       card_mod:
-        style: "ha-card {\n  border-radius: 22px;\n  border: 1px solid rgba(120,200,255,0.20);\n\
-          \  overflow: hidden;\n  box-shadow: 0 10px 30px rgba(0,0,0,0.55);\n}\n"
+        style: "ha-card {\n  border-radius: 18px;\n  border: 1px solid rgba(120,200,255,0.20);\n\
+          \  overflow: hidden;\n  box-shadow: 0 2px 10px rgba(0,0,0,0.30);\n}\n"
       entity: camera.front_door_live_view
       name: Front Door
       camera_view: live
@@ -1455,8 +1455,8 @@ views:
     - type: custom:mushroom-template-card
       card_mod:
         style: "ha-card {\n  background: rgba(120,200,255,0.08);\n  border-radius:\
-          \ 20px;\n  border: 1px solid rgba(120,200,255,0.18);\n  box-shadow: 0 8px\
-          \ 22px rgba(0,0,0,0.45);\n}\n"
+          \ 18px;\n  border: 1px solid rgba(120,200,255,0.18);\n  box-shadow: 0 2px\
+          \ 10px rgba(0,0,0,0.30);\n}\n"
       primary: Front Door
       secondary: '{{ ''Stream unavailable'' if states(''camera.front_door_live_view'')
         in [''unavailable'',''unknown''] else ''Live • tap for full screen + PTZ''
@@ -1478,8 +1478,8 @@ views:
       cards:
       - type: picture-entity
         card_mod:
-          style: "ha-card {\n  border-radius: 20px;\n  border: 1px solid rgba(120,200,255,0.18);\n\
-            \  overflow: hidden;\n  box-shadow: 0 8px 22px rgba(0,0,0,0.55);\n}\n"
+          style: "ha-card {\n  border-radius: 18px;\n  border: 1px solid rgba(120,200,255,0.18);\n\
+            \  overflow: hidden;\n  box-shadow: 0 2px 10px rgba(0,0,0,0.30);\n}\n"
         entity: camera.tapo_c425_north_wall_hd_stream_direct
         name: North Wall
         camera_view: auto
@@ -1493,8 +1493,8 @@ views:
           action: more-info
       - type: picture-entity
         card_mod:
-          style: "ha-card {\n  border-radius: 20px;\n  border: 1px solid rgba(120,200,255,0.18);\n\
-            \  overflow: hidden;\n  box-shadow: 0 8px 22px rgba(0,0,0,0.55);\n}\n"
+          style: "ha-card {\n  border-radius: 18px;\n  border: 1px solid rgba(120,200,255,0.18);\n\
+            \  overflow: hidden;\n  box-shadow: 0 2px 10px rgba(0,0,0,0.30);\n}\n"
         entity: camera.tapo_c420_east_wall_hd_stream_direct
         name: East Wall
         camera_view: auto
@@ -1508,8 +1508,8 @@ views:
           action: more-info
       - type: picture-entity
         card_mod:
-          style: "ha-card {\n  border-radius: 20px;\n  border: 1px solid rgba(120,200,255,0.18);\n\
-            \  overflow: hidden;\n  box-shadow: 0 8px 22px rgba(0,0,0,0.55);\n}\n"
+          style: "ha-card {\n  border-radius: 18px;\n  border: 1px solid rgba(120,200,255,0.18);\n\
+            \  overflow: hidden;\n  box-shadow: 0 2px 10px rgba(0,0,0,0.30);\n}\n"
         entity: camera.tapo_c420_south_wall_hd_stream_direct
         name: South Wall
         camera_view: auto
@@ -1523,8 +1523,8 @@ views:
           action: more-info
       - type: picture-entity
         card_mod:
-          style: "ha-card {\n  border-radius: 20px;\n  border: 1px solid rgba(120,200,255,0.18);\n\
-            \  overflow: hidden;\n  box-shadow: 0 8px 22px rgba(0,0,0,0.55);\n}\n"
+          style: "ha-card {\n  border-radius: 18px;\n  border: 1px solid rgba(120,200,255,0.18);\n\
+            \  overflow: hidden;\n  box-shadow: 0 2px 10px rgba(0,0,0,0.30);\n}\n"
         entity: camera.tapo_c200_stockroom_hd_stream_direct
         name: Stockroom
         camera_view: auto
@@ -1538,8 +1538,8 @@ views:
           action: more-info
       - type: picture-entity
         card_mod:
-          style: "ha-card {\n  border-radius: 20px;\n  border: 1px solid rgba(120,200,255,0.18);\n\
-            \  overflow: hidden;\n  box-shadow: 0 8px 22px rgba(0,0,0,0.55);\n}\n"
+          style: "ha-card {\n  border-radius: 18px;\n  border: 1px solid rgba(120,200,255,0.18);\n\
+            \  overflow: hidden;\n  box-shadow: 0 2px 10px rgba(0,0,0,0.30);\n}\n"
         entity: camera.smart_pet_feeder
         name: Pet Feeder
         camera_view: auto
@@ -1605,24 +1605,24 @@ views:
     - type: custom:mushroom-entity-card
       card_mod:
         style: "ha-card {\n  background: rgba(120,200,255,0.08);\n  border-radius:\
-          \ 20px;\n  border: 1px solid rgba(120,200,255,0.18);\n  box-shadow: 0 8px\
-          \ 22px rgba(0,0,0,0.45);\n}\n"
+          \ 18px;\n  border: 1px solid rgba(120,200,255,0.18);\n  box-shadow: 0 2px\
+          \ 10px rgba(0,0,0,0.30);\n}\n"
       entity: switch.smart_pet_feeder_motion_alarm
       name: Motion Alarm
       icon: mdi:motion-sensor
     - type: custom:mushroom-entity-card
       card_mod:
         style: "ha-card {\n  background: rgba(120,200,255,0.08);\n  border-radius:\
-          \ 20px;\n  border: 1px solid rgba(120,200,255,0.18);\n  box-shadow: 0 8px\
-          \ 22px rgba(0,0,0,0.45);\n}\n"
+          \ 18px;\n  border: 1px solid rgba(120,200,255,0.18);\n  box-shadow: 0 2px\
+          \ 10px rgba(0,0,0,0.30);\n}\n"
       entity: switch.smart_pet_feeder_privacy_mode
       name: Privacy Mode
       icon: mdi:eye-off
     - type: custom:mushroom-entity-card
       card_mod:
         style: "ha-card {\n  background: rgba(120,200,255,0.08);\n  border-radius:\
-          \ 20px;\n  border: 1px solid rgba(120,200,255,0.18);\n  box-shadow: 0 8px\
-          \ 22px rgba(0,0,0,0.45);\n}\n"
+          \ 18px;\n  border: 1px solid rgba(120,200,255,0.18);\n  box-shadow: 0 2px\
+          \ 10px rgba(0,0,0,0.30);\n}\n"
       entity: light.smart_pet_feeder_indicator_light
       name: Indicator Light
       icon: mdi:led-on
@@ -2132,9 +2132,9 @@ views:
       cards:
       - type: custom:mushroom-template-card
         card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.10);\n  border-radius:\
-            \ 20px;\n  border: 1px solid rgba(255,255,255,0.18);\n  box-shadow: 0\
-            \ 8px 22px rgba(0,0,0,0.45);\n}\n"
+          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
+            \ 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n  box-shadow: 0\
+            \ 2px 10px rgba(0,0,0,0.30);\n}\n"
         primary: Raymond Du
         secondary: "{% set d = distance('zone.home','person.raymond_du') | float(9999)\
           \ %} {% if d <= 0.1 %}\n  Home • within 100 m\n{% elif d < 50 %}\n  {{ d\
@@ -2148,9 +2148,9 @@ views:
           action: more-info
       - type: custom:mushroom-template-card
         card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.10);\n  border-radius:\
-            \ 20px;\n  border: 1px solid rgba(255,255,255,0.18);\n  box-shadow: 0\
-            \ 8px 22px rgba(0,0,0,0.45);\n}\n"
+          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
+            \ 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n  box-shadow: 0\
+            \ 2px 10px rgba(0,0,0,0.30);\n}\n"
         primary: Vinh Du
         secondary: "{% set d = distance('zone.home','person.vinh_du') | float(9999)\
           \ %} {% if d <= 0.1 %}\n  Home • within 100 m\n{% elif d < 50 %}\n  {{ d\
@@ -2164,9 +2164,9 @@ views:
           action: more-info
       - type: custom:mushroom-template-card
         card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.10);\n  border-radius:\
-            \ 20px;\n  border: 1px solid rgba(255,255,255,0.18);\n  box-shadow: 0\
-            \ 8px 22px rgba(0,0,0,0.45);\n}\n"
+          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
+            \ 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n  box-shadow: 0\
+            \ 2px 10px rgba(0,0,0,0.30);\n}\n"
         primary: Ai Q Huang
         secondary: "{% set d = distance('zone.home','person.ai_q_huang') | float(9999)\
           \ %} {% if d <= 0.1 %}\n  Home • within 100 m\n{% elif d < 50 %}\n  {{ d\
@@ -2604,9 +2604,9 @@ views:
       cards:
       - type: custom:mushroom-light-card
         card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.10);\n  border-radius:\
-            \ 20px;\n  border: 1px solid rgba(255,255,255,0.18);\n  box-shadow: 0\
-            \ 8px 22px rgba(0,0,0,0.45);\n}\n"
+          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
+            \ 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n  box-shadow: 0\
+            \ 2px 10px rgba(0,0,0,0.30);\n}\n"
         entity: light.living_room_hue_ambiance_spot_1
         name: Inner Left
         show_brightness_control: true
@@ -2617,9 +2617,9 @@ views:
           action: more-info
       - type: custom:mushroom-light-card
         card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.10);\n  border-radius:\
-            \ 20px;\n  border: 1px solid rgba(255,255,255,0.18);\n  box-shadow: 0\
-            \ 8px 22px rgba(0,0,0,0.45);\n}\n"
+          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
+            \ 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n  box-shadow: 0\
+            \ 2px 10px rgba(0,0,0,0.30);\n}\n"
         entity: light.living_room_hue_ambiance_spot_2
         name: Inner Right
         show_brightness_control: true
@@ -2630,9 +2630,9 @@ views:
           action: more-info
       - type: custom:mushroom-light-card
         card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.10);\n  border-radius:\
-            \ 20px;\n  border: 1px solid rgba(255,255,255,0.18);\n  box-shadow: 0\
-            \ 8px 22px rgba(0,0,0,0.45);\n}\n"
+          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
+            \ 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n  box-shadow: 0\
+            \ 2px 10px rgba(0,0,0,0.30);\n}\n"
         entity: light.living_room_hue_ambiance_spot_3
         name: Outer Left
         show_brightness_control: true
@@ -2643,9 +2643,9 @@ views:
           action: more-info
       - type: custom:mushroom-light-card
         card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.10);\n  border-radius:\
-            \ 20px;\n  border: 1px solid rgba(255,255,255,0.18);\n  box-shadow: 0\
-            \ 8px 22px rgba(0,0,0,0.45);\n}\n"
+          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
+            \ 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n  box-shadow: 0\
+            \ 2px 10px rgba(0,0,0,0.30);\n}\n"
         entity: light.living_room_hue_ambiance_spot_4
         name: Outer Right
         show_brightness_control: true
@@ -2794,9 +2794,9 @@ views:
       cards:
       - type: custom:mushroom-template-card
         card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.10);\n  border-radius:\
-            \ 20px;\n  border: 1px solid rgba(255,255,255,0.18);\n  box-shadow: 0\
-            \ 8px 22px rgba(0,0,0,0.45);\n}\n"
+          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
+            \ 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n  box-shadow: 0\
+            \ 2px 10px rgba(0,0,0,0.30);\n}\n"
         primary: Night
         secondary: Living • Ray • Dining at 10%
         icon: mdi:weather-night
@@ -2813,9 +2813,9 @@ views:
             brightness_pct: 10
       - type: custom:mushroom-template-card
         card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.10);\n  border-radius:\
-            \ 20px;\n  border: 1px solid rgba(255,255,255,0.18);\n  box-shadow: 0\
-            \ 8px 22px rgba(0,0,0,0.45);\n}\n"
+          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
+            \ 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n  box-shadow: 0\
+            \ 2px 10px rgba(0,0,0,0.30);\n}\n"
         primary: Relax
         secondary: Living • Ray • Dining at 35%
         icon: mdi:sofa-outline
@@ -2832,9 +2832,9 @@ views:
             brightness_pct: 35
       - type: custom:mushroom-template-card
         card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.10);\n  border-radius:\
-            \ 20px;\n  border: 1px solid rgba(255,255,255,0.18);\n  box-shadow: 0\
-            \ 8px 22px rgba(0,0,0,0.45);\n}\n"
+          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
+            \ 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n  box-shadow: 0\
+            \ 2px 10px rgba(0,0,0,0.30);\n}\n"
         primary: Evening
         secondary: Living Room at 55%
         icon: mdi:weather-sunset
@@ -2848,9 +2848,9 @@ views:
             brightness_pct: 55
       - type: custom:mushroom-template-card
         card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.10);\n  border-radius:\
-            \ 20px;\n  border: 1px solid rgba(255,255,255,0.18);\n  box-shadow: 0\
-            \ 8px 22px rgba(0,0,0,0.45);\n}\n"
+          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
+            \ 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n  box-shadow: 0\
+            \ 2px 10px rgba(0,0,0,0.30);\n}\n"
         primary: Bright
         secondary: Living • Ray • Dining at 100%
         icon: mdi:white-balance-sunny
@@ -2978,9 +2978,9 @@ views:
         features_position: bottom
         vertical: true
         card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.10);\n  border-radius:\
-            \ 20px;\n  border: 1px solid rgba(255,255,255,0.18);\n  box-shadow: 0\
-            \ 8px 22px rgba(0,0,0,0.45);\n}\n"
+          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
+            \ 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n  box-shadow: 0\
+            \ 2px 10px rgba(0,0,0,0.30);\n}\n"
       - type: custom:mushroom-template-card
         primary: Parents
         secondary: '{{ ''Open'' if is_state(''binary_sensor.m_contact_sensor_door'',''on'')
@@ -2991,9 +2991,9 @@ views:
         features_position: bottom
         vertical: true
         card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.10);\n  border-radius:\
-            \ 20px;\n  border: 1px solid rgba(255,255,255,0.18);\n  box-shadow: 0\
-            \ 8px 22px rgba(0,0,0,0.45);\n}\n"
+          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
+            \ 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n  box-shadow: 0\
+            \ 2px 10px rgba(0,0,0,0.30);\n}\n"
       - type: custom:mushroom-template-card
         primary: Back
         secondary: '{{ ''Open'' if is_state(''binary_sensor.b_contact_sensor_door'',''on'')
@@ -3004,9 +3004,9 @@ views:
         features_position: bottom
         vertical: true
         card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.10);\n  border-radius:\
-            \ 20px;\n  border: 1px solid rgba(255,255,255,0.18);\n  box-shadow: 0\
-            \ 8px 22px rgba(0,0,0,0.45);\n}\n"
+          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
+            \ 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n  box-shadow: 0\
+            \ 2px 10px rgba(0,0,0,0.30);\n}\n"
       grid_options:
         columns: 12
         rows: 1
@@ -3016,9 +3016,9 @@ views:
       cards:
       - type: tile
         card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.10);\n  border-radius:\
-            \ 20px;\n  border: 1px solid rgba(255,255,255,0.18);\n  box-shadow: 0\
-            \ 8px 22px rgba(0,0,0,0.45);\n}\n"
+          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
+            \ 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n  box-shadow: 0\
+            \ 2px 10px rgba(0,0,0,0.30);\n}\n"
         entity: light.living_room
         name: Living Room
         icon: mdi:sofa
@@ -3032,9 +3032,9 @@ views:
         features_position: bottom
       - type: tile
         card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.10);\n  border-radius:\
-            \ 20px;\n  border: 1px solid rgba(255,255,255,0.18);\n  box-shadow: 0\
-            \ 8px 22px rgba(0,0,0,0.45);\n}\n"
+          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
+            \ 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n  box-shadow: 0\
+            \ 2px 10px rgba(0,0,0,0.30);\n}\n"
         entity: light.dining
         name: Dining
         icon: mdi:table-chair
@@ -3048,9 +3048,9 @@ views:
         features_position: bottom
       - type: tile
         card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.10);\n  border-radius:\
-            \ 20px;\n  border: 1px solid rgba(255,255,255,0.18);\n  box-shadow: 0\
-            \ 8px 22px rgba(0,0,0,0.45);\n}\n"
+          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
+            \ 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n  box-shadow: 0\
+            \ 2px 10px rgba(0,0,0,0.30);\n}\n"
         entity: light.bedroom_bedroom
         name: Ray Bedroom
         icon: mdi:bed
@@ -3064,9 +3064,9 @@ views:
         features_position: bottom
       - type: tile
         card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.10);\n  border-radius:\
-            \ 20px;\n  border: 1px solid rgba(255,255,255,0.18);\n  box-shadow: 0\
-            \ 8px 22px rgba(0,0,0,0.45);\n}\n"
+          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
+            \ 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n  box-shadow: 0\
+            \ 2px 10px rgba(0,0,0,0.30);\n}\n"
         entity: switch.mainroomlight_switch_1
         name: Parents
         icon: mdi:bed-king
@@ -3217,8 +3217,8 @@ views:
       cards:
       - type: picture-entity
         card_mod:
-          style: "ha-card {\n  border-radius: 18px;\n  border: 1px solid rgba(255,255,255,0.08);\n\
-            \  overflow: hidden;\n  box-shadow: 0 4px 14px rgba(0,0,0,0.35);\n}\n"
+          style: "ha-card {\n  border-radius: 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n\
+            \  overflow: hidden;\n  box-shadow: 0 2px 10px rgba(0,0,0,0.30);\n}\n"
         entity: camera.front_door_live_view
         name: Front Door
         camera_view: auto
@@ -3232,8 +3232,8 @@ views:
           action: more-info
       - type: picture-entity
         card_mod:
-          style: "ha-card {\n  border-radius: 18px;\n  border: 1px solid rgba(255,255,255,0.08);\n\
-            \  overflow: hidden;\n  box-shadow: 0 4px 14px rgba(0,0,0,0.35);\n}\n"
+          style: "ha-card {\n  border-radius: 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n\
+            \  overflow: hidden;\n  box-shadow: 0 2px 10px rgba(0,0,0,0.30);\n}\n"
         entity: camera.tapo_c425_north_wall_hd_stream_direct
         name: North Wall
         camera_view: auto
@@ -3247,8 +3247,8 @@ views:
           action: more-info
       - type: picture-entity
         card_mod:
-          style: "ha-card {\n  border-radius: 18px;\n  border: 1px solid rgba(255,255,255,0.08);\n\
-            \  overflow: hidden;\n  box-shadow: 0 4px 14px rgba(0,0,0,0.35);\n}\n"
+          style: "ha-card {\n  border-radius: 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n\
+            \  overflow: hidden;\n  box-shadow: 0 2px 10px rgba(0,0,0,0.30);\n}\n"
         entity: camera.tapo_c420_east_wall_hd_stream_direct
         name: East Wall
         camera_view: auto
@@ -3262,8 +3262,8 @@ views:
           action: more-info
       - type: picture-entity
         card_mod:
-          style: "ha-card {\n  border-radius: 20px;\n  border: 1px solid rgba(255,255,255,0.16);\n\
-            \  overflow: hidden;\n  box-shadow: 0 8px 22px rgba(0,0,0,0.45);\n}\n"
+          style: "ha-card {\n  border-radius: 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n\
+            \  overflow: hidden;\n  box-shadow: 0 2px 10px rgba(0,0,0,0.30);\n}\n"
         entity: camera.tapo_c420_south_wall_hd_stream_direct
         name: South Wall
         camera_view: auto
@@ -3277,8 +3277,8 @@ views:
           action: more-info
       - type: picture-entity
         card_mod:
-          style: "ha-card {\n  border-radius: 18px;\n  border: 1px solid rgba(255,255,255,0.08);\n\
-            \  overflow: hidden;\n  box-shadow: 0 4px 14px rgba(0,0,0,0.35);\n}\n"
+          style: "ha-card {\n  border-radius: 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n\
+            \  overflow: hidden;\n  box-shadow: 0 2px 10px rgba(0,0,0,0.30);\n}\n"
         entity: camera.tapo_c200_stockroom_hd_stream_direct
         name: Stockroom
         camera_view: auto
@@ -3292,8 +3292,8 @@ views:
           action: more-info
       - type: picture-entity
         card_mod:
-          style: "ha-card {\n  border-radius: 18px;\n  border: 1px solid rgba(255,255,255,0.08);\n\
-            \  overflow: hidden;\n  box-shadow: 0 4px 14px rgba(0,0,0,0.35);\n}\n"
+          style: "ha-card {\n  border-radius: 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n\
+            \  overflow: hidden;\n  box-shadow: 0 2px 10px rgba(0,0,0,0.30);\n}\n"
         entity: camera.smart_pet_feeder
         name: Pet Feeder
         camera_view: auto
@@ -3338,8 +3338,8 @@ views:
           action: navigate
           navigation_path: /deez-smart-home/bill-electricity
         card_mod:
-          style: "ha-card {\n  min-height: 125px;\n  border-radius: 22px;\n  background:\
-            \ rgba(255,255,255,0.08);\n  border: 1px solid rgba(255,255,255,0.14);\n\
+          style: "ha-card {\n  min-height: 125px;\n  border-radius: 18px;\n  background:\
+            \ rgba(255,255,255,0.07);\n  border: 1px solid rgba(255,255,255,0.12);\n\
             }\n"
       - type: custom:mushroom-template-card
         primary: Gas
@@ -3354,8 +3354,8 @@ views:
           action: navigate
           navigation_path: /deez-smart-home/bill-gas
         card_mod:
-          style: "ha-card {\n  min-height: 125px;\n  border-radius: 22px;\n  background:\
-            \ rgba(255,255,255,0.08);\n  border: 1px solid rgba(255,255,255,0.14);\n\
+          style: "ha-card {\n  min-height: 125px;\n  border-radius: 18px;\n  background:\
+            \ rgba(255,255,255,0.07);\n  border: 1px solid rgba(255,255,255,0.12);\n\
             }\n"
       - type: custom:mushroom-template-card
         primary: Car Insurance
@@ -3371,8 +3371,8 @@ views:
           action: navigate
           navigation_path: /deez-smart-home/bill-car-insurance
         card_mod:
-          style: "ha-card {\n  min-height: 125px;\n  border-radius: 22px;\n  background:\
-            \ rgba(255,255,255,0.08);\n  border: 1px solid rgba(255,255,255,0.14);\n\
+          style: "ha-card {\n  min-height: 125px;\n  border-radius: 18px;\n  background:\
+            \ rgba(255,255,255,0.07);\n  border: 1px solid rgba(255,255,255,0.12);\n\
             }\n"
       - type: custom:mushroom-template-card
         primary: Council Rates
@@ -3387,8 +3387,8 @@ views:
           action: navigate
           navigation_path: /deez-smart-home/bill-council-rates
         card_mod:
-          style: "ha-card {\n  min-height: 125px;\n  border-radius: 22px;\n  background:\
-            \ rgba(255,255,255,0.08);\n  border: 1px solid rgba(255,255,255,0.14);\n\
+          style: "ha-card {\n  min-height: 125px;\n  border-radius: 18px;\n  background:\
+            \ rgba(255,255,255,0.07);\n  border: 1px solid rgba(255,255,255,0.12);\n\
             }\n"
       - type: custom:mushroom-template-card
         primary: South East Water
@@ -3403,8 +3403,8 @@ views:
           action: navigate
           navigation_path: /deez-smart-home/bill-water
         card_mod:
-          style: "ha-card {\n  min-height: 125px;\n  border-radius: 22px;\n  background:\
-            \ rgba(255,255,255,0.08);\n  border: 1px solid rgba(255,255,255,0.14);\n\
+          style: "ha-card {\n  min-height: 125px;\n  border-radius: 18px;\n  background:\
+            \ rgba(255,255,255,0.07);\n  border: 1px solid rgba(255,255,255,0.12);\n\
             }\n"
       - type: custom:mushroom-template-card
         primary: VicRoads Rego
@@ -3419,8 +3419,8 @@ views:
           action: navigate
           navigation_path: /deez-smart-home/bill-rego
         card_mod:
-          style: "ha-card {\n  min-height: 125px;\n  border-radius: 22px;\n  background:\
-            \ rgba(255,255,255,0.08);\n  border: 1px solid rgba(255,255,255,0.14);\n\
+          style: "ha-card {\n  min-height: 125px;\n  border-radius: 18px;\n  background:\
+            \ rgba(255,255,255,0.07);\n  border: 1px solid rgba(255,255,255,0.12);\n\
             }\n"
   - type: grid
     cards:
