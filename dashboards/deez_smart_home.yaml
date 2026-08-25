@@ -2974,7 +2974,7 @@ views:
         secondary: '{{ ''Open'' if is_state(''binary_sensor.f_contact_sensor_door'',''on'')
           else ''Closed'' }}'
         icon: mdi:door
-        color: '{{ ''red'' if is_state(''binary_sensor.f_contact_sensor_door'',''on'')
+        icon_color: '{{ ''red'' if is_state(''binary_sensor.f_contact_sensor_door'',''on'')
           else ''green'' }}'
         features_position: bottom
         vertical: true
@@ -2987,7 +2987,7 @@ views:
         secondary: '{{ ''Open'' if is_state(''binary_sensor.m_contact_sensor_door'',''on'')
           else ''Closed'' }}'
         icon: mdi:door
-        color: '{{ ''red'' if is_state(''binary_sensor.m_contact_sensor_door'',''on'')
+        icon_color: '{{ ''red'' if is_state(''binary_sensor.m_contact_sensor_door'',''on'')
           else ''green'' }}'
         features_position: bottom
         vertical: true
@@ -3000,7 +3000,7 @@ views:
         secondary: '{{ ''Open'' if is_state(''binary_sensor.b_contact_sensor_door'',''on'')
           else ''Closed'' }}'
         icon: mdi:door
-        color: '{{ ''red'' if is_state(''binary_sensor.b_contact_sensor_door'',''on'')
+        icon_color: '{{ ''red'' if is_state(''binary_sensor.b_contact_sensor_door'',''on'')
           else ''green'' }}'
         features_position: bottom
         vertical: true
