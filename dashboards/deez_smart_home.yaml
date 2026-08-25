@@ -472,7 +472,7 @@ views:
       collapsible_controls: true
     - type: custom:mushroom-entity-card
       entity: switch.mainroomlight_switch_1
-      name: Parents Main Light
+      name: Parents Main
       icon: mdi:light-switch
   - type: grid
     cards:
@@ -517,7 +517,7 @@ views:
         navigation_path: /deez-smart-home/ray-bedroom
     - type: custom:mushroom-template-card
       primary: Kitchen
-      secondary: Fridge • power monitoring
+      secondary: Fridge • power
       icon: mdi:silverware-fork-knife
       icon_color: '{{ ''amber'' if is_state(''binary_sensor.k_motion_sensor_motion'',''on'')
         else ''grey'' }}'
@@ -544,7 +544,7 @@ views:
         navigation_path: /deez-smart-home/garage
     - type: custom:mushroom-template-card
       primary: Guest Room
-      secondary: Lighting • Pogo • printer
+      secondary: Lights • Pogo
       icon: mdi:bed-empty
       icon_color: '{{ ''amber'' if is_state(''light.kogan_tv'',''on'') else ''grey''
         }}'
@@ -564,7 +564,7 @@ views:
         else ''Energy, security and infrastructure'' }}'
     - type: custom:mushroom-template-card
       primary: Energy
-      secondary: '{% set s = states(''sensor.primo_5_0_1_1_ac_power'') %}{% set g = states(''sensor.powerpal_gateway_powerpal_power'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}Solar {% if s in bad %}offline{% else %}{{ s | float(0) | round(0) | int }} W{% endif %} • grid {% if g in bad %}offline{% else %}{{ g | float(0) | round(0) | int }} W{% endif %}'
+      secondary: '{% set s = states(''sensor.primo_5_0_1_1_ac_power'') %}{% set g = states(''sensor.powerpal_gateway_powerpal_power'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}Solar {% if s in bad %}offline{% else %}{{ s | float(0) | round(0) | int }} W{% endif %}'
       icon: mdi:solar-power
       icon_color: amber
       tap_action:
@@ -572,8 +572,7 @@ views:
         navigation_path: /deez-smart-home/energy
     - type: custom:mushroom-template-card
       primary: Lighting Studio
-      secondary: '{{ states.light | selectattr(''state'',''eq'',''on'') | list | count
-        }} lights currently on'
+      secondary: '{% set n = states.light | selectattr(''state'',''eq'',''on'') | list | count %}{{ n }} light{{ ''s'' if n != 1 else '''' }} on'
       icon: mdi:lightbulb-group
       icon_color: '{{ ''amber'' if (states.light | selectattr(''state'',''eq'',''on'')
         | list | count) > 0 else ''grey'' }}'
@@ -582,7 +581,7 @@ views:
         navigation_path: /deez-smart-home/lights
     - type: custom:mushroom-template-card
       primary: Cameras
-      secondary: Live views and camera status
+      secondary: Live views
       icon: mdi:cctv
       icon_color: blue
       tap_action:
@@ -612,8 +611,8 @@ views:
         action: navigate
         navigation_path: /deez-smart-home/climate
     - type: custom:mushroom-template-card
-      primary: People & Locations
-      secondary: Family presence • distance • routes
+      primary: People
+      secondary: Presence • distance
       icon: mdi:map-marker-account
       icon_color: green
       tap_action:
