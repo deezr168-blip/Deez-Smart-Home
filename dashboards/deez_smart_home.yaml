@@ -243,11 +243,7 @@ views:
     - type: heading
       heading: '{{ ''今日概览'' if is_state(''input_boolean.chinese_dashboard'',''on'')
         else ''Today'' }}'
-      heading_style: subtitle
       icon: mdi:calendar-today
-      grid_options:
-        columns: 12
-        rows: 1
     - type: custom:mushroom-template-card
       card_mod:
         style: |
@@ -334,15 +330,9 @@ views:
         columns: 3
   - type: grid
     cards:
-    - type: custom:mushroom-title-card
-      card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 4px 4px 0px 4px;\n\
-          \  margin-bottom: -4px;\n}\n"
-      title: '{{ ''快速控制'' if is_state(''input_boolean.chinese_dashboard'',''on'')
-        else ''Quick Control'' }}'
-      subtitle: '{{ ''常用设备'' if is_state(''input_boolean.chinese_dashboard'',''on'')
-        else ''Most-used devices'' }}'
+    - type: heading
+      heading: '{{ ''快速控制'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Quick Control'' }}'
+      icon: mdi:tune-variant
     - type: custom:mushroom-light-card
       entity: light.living_room
       name: Living Room
@@ -368,15 +358,9 @@ views:
   - type: grid
     column_span: 2
     cards:
-    - type: custom:mushroom-title-card
-      card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 4px 4px 0px 4px;\n\
-          \  margin-bottom: -4px;\n}\n"
-      title: '{{ ''房间'' if is_state(''input_boolean.chinese_dashboard'',''on'') else
-        ''Rooms'' }}'
-      subtitle: '{{ ''快速访问'' if is_state(''input_boolean.chinese_dashboard'',''on'')
-        else ''Quick access'' }}'
+    - type: heading
+      heading: '{{ ''房间'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Rooms'' }}'
+      icon: mdi:view-grid
     - type: custom:mushroom-template-card
       grid_options:
         columns: 6
@@ -449,15 +433,9 @@ views:
         navigation_path: /deez-smart-home/guest-room
   - type: grid
     cards:
-    - type: custom:mushroom-title-card
-      card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 4px 4px 0px 4px;\n\
-          \  margin-bottom: -4px;\n}\n"
-      title: '{{ ''家庭系统'' if is_state(''input_boolean.chinese_dashboard'',''on'')
-        else ''Home Systems'' }}'
-      subtitle: '{{ ''能源、安防及基础设施'' if is_state(''input_boolean.chinese_dashboard'',''on'')
-        else ''Energy, security and infrastructure'' }}'
+    - type: heading
+      heading: '{{ ''家庭系统'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Home Systems'' }}'
+      icon: mdi:home-automation
     - type: custom:mushroom-template-card
       primary: Energy
       secondary: '{% set s = states(''sensor.primo_5_0_1_1_ac_power'') %}{% set g = states(''sensor.powerpal_gateway_powerpal_power'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}Solar {% if s in bad %}offline{% else %}{{ s | float(0) | round(0) | int }} W{% endif %}'
@@ -1212,13 +1190,9 @@ views:
         read 0 W. House Load is therefore calculated as grid import + solar production.
         **Solar export cannot be measured**: neither the Powerpal optical interface
         nor the Fronius meter (in produce-only mode) reports it.*'
-    - type: custom:mushroom-title-card
-      card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 4px 4px 0px 4px;\n\
-          \  margin-bottom: -4px;\n}\n"
-      title: 📊 Today
-      subtitle: Grid import and solar generation since midnight
+    - type: heading
+      heading: Today
+      icon: mdi:chart-box
     - type: custom:mushroom-template-card
       primary: Grid Import Today
       secondary: '{% set v = states(''sensor.powerpal_gateway_powerpal_daily_energy'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}Unavailable{% else %}{{ v | float(0) | round(2) }} kWh{% endif %}'
@@ -1231,13 +1205,9 @@ views:
       icon: mdi:solar-panel-large
       icon_color: amber
       entity: sensor.primo_5_0_1_1_energy_day
-    - type: custom:mushroom-title-card
-      card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 4px 4px 0px 4px;\n\
-          \  margin-bottom: -4px;\n}\n"
-      title: 🔢 Lifetime & Diagnostics
-      subtitle: Cumulative meters and inverter detail
+    - type: heading
+      heading: Lifetime & Diagnostics
+      icon: mdi:counter
     - type: custom:mushroom-template-card
       primary: Solar Year
       secondary: '{% set v = states(''sensor.primo_5_0_1_1_energy_year'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}Unavailable{% else %}{{ (v | float(0) / 1000) | round(1) }} kWh{% endif %}'
@@ -3314,13 +3284,9 @@ views:
             }\n"
   - type: grid
     cards:
-    - type: custom:mushroom-title-card
-      card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 4px 4px 0px 4px;\n\
-          \  margin-bottom: -4px;\n}\n"
-      title: 📈 Running Estimates
-      subtitle: Current cycle to date — calculated, not a real invoice
+    - type: heading
+      heading: Running Estimates — not an invoice
+      icon: mdi:chart-timeline-variant
     - type: grid
       columns: 2
       square: false
