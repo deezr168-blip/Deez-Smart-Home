@@ -409,10 +409,8 @@ views:
           navigation_path: /deez-smart-home/status
       - type: template
         icon: mdi:receipt-text
-        content: '{% set n = states(''sensor.bills_unpaid_count'') | int(0) %} {{
-          n ~ '' due'' if n > 0 else ''Bills'' }}'
-        icon_color: '{% if states(''sensor.bills_unpaid_count'') | int(0) > 0 %}orange{%
-          else %}green{% endif %}'
+        content: '{% set raw = states(''sensor.bills_unpaid_count'') %}{% if raw in [''unavailable'', ''unknown'', ''none''] %}Bills ?{% else %}{% set n = raw | int(0) %}{{ n ~ '' due'' if n > 0 else ''Bills'' }}{% endif %}'
+        icon_color: '{% set raw = states(''sensor.bills_unpaid_count'') %}{% if raw in [''unavailable'', ''unknown'', ''none''] %}grey{% elif raw | int(0) > 0 %}orange{% else %}green{% endif %}'
         tap_action:
           action: navigate
           navigation_path: /deez-smart-home/bills
@@ -487,8 +485,7 @@ views:
       card:
         type: custom:mushroom-template-card
         primary: Bills Outstanding
-        secondary: '{{ states(''sensor.bills_unpaid_count'') }} unpaid • ${{ states(''sensor.bills_outstanding_total'')
-          }}'
+        secondary: '{% set raw = states(''sensor.bills_unpaid_count'') %}{% if raw in [''unavailable'', ''unknown'', ''none''] %}Bills status unavailable{% else %}{{ raw }} unpaid • ${{ states(''sensor.bills_outstanding_total'') }}{% endif %}'
         icon: mdi:cash-clock
         tap_action:
           action: navigate
@@ -677,12 +674,9 @@ views:
         navigation_path: /deez-smart-home/people-locations
     - type: custom:mushroom-template-card
       primary: Bills
-      secondary: '{% set n = states(''sensor.bills_unpaid_count'') | int(0) %} {{
-        n ~ '' unpaid • $'' ~ states(''sensor.bills_outstanding_total'') if n > 0
-        else ''All bills paid'' }}'
+      secondary: '{% set raw = states(''sensor.bills_unpaid_count'') %}{% if raw in [''unavailable'', ''unknown'', ''none''] %}Bills status unavailable{% else %}{% set n = raw | int(0) %}{{ n ~ '' unpaid • $'' ~ states(''sensor.bills_outstanding_total'') if n > 0 else ''All bills paid'' }}{% endif %}'
       icon: mdi:receipt-text
-      icon_color: '{% if states(''sensor.bills_unpaid_count'') | int(0) > 0 %}orange{%
-        else %}green{% endif %}'
+      icon_color: '{% set raw = states(''sensor.bills_unpaid_count'') %}{% if raw in [''unavailable'', ''unknown'', ''none''] %}grey{% elif raw | int(0) > 0 %}orange{% else %}green{% endif %}'
       tap_action:
         action: navigate
         navigation_path: /deez-smart-home/bills
@@ -3232,8 +3226,7 @@ views:
       - type: template
         icon: mdi:receipt-text
         content: Bills
-        icon_color: '{% if states(''sensor.bills_unpaid_count'') | int(0) > 0 %}orange{%
-          else %}green{% endif %}'
+        icon_color: '{% set raw = states(''sensor.bills_unpaid_count'') %}{% if raw in [''unavailable'', ''unknown'', ''none''] %}grey{% elif raw | int(0) > 0 %}orange{% else %}green{% endif %}'
         tap_action:
           action: navigate
           navigation_path: /deez-smart-home/bills
