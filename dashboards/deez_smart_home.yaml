@@ -154,8 +154,7 @@ views:
           style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border: 1px\
             \ solid rgba(255,255,255,0.12);\n  border-radius: 18px;\n  box-shadow:\
             \ none;\n}\n"
-        primary: '{{ states(''sensor.powerpal_gateway_powerpal_daily_energy'') | float(0)
-          | round(1) }} kWh'
+        primary: '{% set v = states(''sensor.powerpal_gateway_powerpal_daily_energy'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}—{% else %}{{ v | float(0) | round(1) }} kWh{% endif %}'
         secondary: '{{ ''今日'' if is_state(''input_boolean.chinese_dashboard'',''on'')
           else ''Today'' }}'
         icon: mdi:chart-line
@@ -1372,15 +1371,13 @@ views:
       subtitle: Grid import and solar generation since midnight
     - type: custom:mushroom-template-card
       primary: Grid Import Today
-      secondary: '{{ states(''sensor.powerpal_gateway_powerpal_daily_energy'') | float(0)
-        | round(2) }} kWh'
+      secondary: '{% set v = states(''sensor.powerpal_gateway_powerpal_daily_energy'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}Unavailable{% else %}{{ v | float(0) | round(2) }} kWh{% endif %}'
       icon: mdi:transmission-tower-import
       icon_color: blue
       entity: sensor.powerpal_gateway_powerpal_daily_energy
     - type: custom:mushroom-template-card
       primary: Solar Today
-      secondary: '{{ (states(''sensor.primo_5_0_1_1_energy_day'') | float(0) / 1000)
-        | round(2) }} kWh'
+      secondary: '{% set v = states(''sensor.primo_5_0_1_1_energy_day'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}Unavailable{% else %}{{ (v | float(0) / 1000) | round(2) }} kWh{% endif %}'
       icon: mdi:solar-panel-large
       icon_color: amber
       entity: sensor.primo_5_0_1_1_energy_day
@@ -1393,8 +1390,7 @@ views:
       subtitle: Cumulative meters and inverter detail
     - type: custom:mushroom-template-card
       primary: Solar Year
-      secondary: '{{ (states(''sensor.primo_5_0_1_1_energy_year'') | float(0) / 1000)
-        | round(1) }} kWh'
+      secondary: '{% set v = states(''sensor.primo_5_0_1_1_energy_year'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}Unavailable{% else %}{{ (v | float(0) / 1000) | round(1) }} kWh{% endif %}'
       icon: mdi:calendar
       entity: sensor.primo_5_0_1_1_energy_year
     - type: custom:mushroom-template-card
@@ -1404,8 +1400,7 @@ views:
       entity: sensor.primo_5_0_1_1_total_energy
     - type: custom:mushroom-template-card
       primary: Grid Import (lifetime)
-      secondary: '{{ states(''sensor.powerpal_gateway_powerpal_total_energy'') | float(0)
-        | round(2) }} kWh'
+      secondary: '{% set v = states(''sensor.powerpal_gateway_powerpal_total_energy'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}Unavailable{% else %}{{ v | float(0) | round(2) }} kWh{% endif %}'
       icon: mdi:counter
       entity: sensor.powerpal_gateway_powerpal_total_energy
     - type: custom:mushroom-template-card
@@ -3490,15 +3485,13 @@ views:
       cards:
       - type: custom:mushroom-template-card
         primary: Electricity
-        secondary: ${{ states('sensor.electricity_bill_estimate') }} • {{ states('sensor.electricity_billing_cycle')
-          | float(0) | round(1) }} kWh this quarter
+        secondary: '{% set e = states(''sensor.electricity_bill_estimate'') %}{% set c = states(''sensor.electricity_billing_cycle'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}{% if e in bad %}Estimate unavailable{% else %}${{ e }}{% endif %} • {% if c in bad %}usage unavailable{% else %}{{ c | float(0) | round(1) }} kWh this quarter{% endif %}'
         icon: mdi:calculator-variant
         icon_color: amber
         entity: sensor.electricity_bill_estimate
       - type: custom:mushroom-template-card
         primary: Gas
-        secondary: ${{ states('sensor.gas_bill_estimate') }} • {{ states('input_number.gas_bill_mj')
-          | float(0) | round(0) }} MJ entered
+        secondary: '{% set e = states(''sensor.gas_bill_estimate'') %}{% set m = states(''input_number.gas_bill_mj'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}{% if e in bad %}Estimate unavailable{% else %}${{ e }}{% endif %} • {% if m in bad %}usage unavailable{% else %}{{ m | float(0) | round(0) | int }} MJ entered{% endif %}'
         icon: mdi:calculator-variant
         icon_color: amber
         entity: sensor.gas_bill_estimate
@@ -3559,8 +3552,7 @@ views:
         Card fees: Visa/Mastercard 0.36%, Amex 1.5%.'
     - type: custom:mushroom-template-card
       primary: This quarter so far
-      secondary: '{{ states(''sensor.electricity_billing_cycle'') | float(0) | round(1)
-        }} kWh imported • est. ${{ states(''sensor.electricity_bill_estimate'') }}'
+      secondary: '{% set c = states(''sensor.electricity_billing_cycle'') %}{% set e = states(''sensor.electricity_bill_estimate'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}{% if c in bad %}Usage unavailable{% else %}{{ c | float(0) | round(1) }} kWh imported{% endif %} • {% if e in bad %}estimate unavailable{% else %}est. ${{ e }}{% endif %}'
       icon: mdi:chart-line
       icon_color: amber
     - type: heading
