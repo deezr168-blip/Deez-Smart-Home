@@ -1,0 +1,10 @@
+{
+  "current": {
+    "commit": "5016c0598dbb17246c134efccea6216db4cbede0",
+    "tag": "known-good/20260825-041040",
+    "recorded_utc": "2026-08-25T04:10:40Z",
+    "note": "framework bootstrap: validated dashboard, 36 views, 162 entities",
+    "deploy_verified": "UNVERIFIED \u2014 no live-instance observation available"
+  },
+  "history": []
+}

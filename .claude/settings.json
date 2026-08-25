@@ -1,0 +1,48 @@
+{
+  "permissions": {
+    "deny": [
+      "mcp__Home_Assistant__HassTurnOn",
+      "mcp__Home_Assistant__HassTurnOff",
+      "mcp__Home_Assistant__HassLightSet",
+      "mcp__Home_Assistant__HassClimateSetTemperature",
+      "mcp__Home_Assistant__HassFanSetSpeed",
+      "mcp__Home_Assistant__HassSetPosition",
+      "mcp__Home_Assistant__HassStopMoving",
+      "mcp__Home_Assistant__HassSetVolume",
+      "mcp__Home_Assistant__HassSetVolumeRelative",
+      "mcp__Home_Assistant__HassMediaPause",
+      "mcp__Home_Assistant__HassMediaUnpause",
+      "mcp__Home_Assistant__HassMediaNext",
+      "mcp__Home_Assistant__HassMediaPrevious",
+      "mcp__Home_Assistant__HassMediaSearchAndPlay",
+      "mcp__Home_Assistant__HassMediaPlayerMute",
+      "mcp__Home_Assistant__HassMediaPlayerUnmute",
+      "mcp__Home_Assistant__HassBroadcast",
+      "mcp__Home_Assistant__HassCancelAllTimers",
+      "mcp__Home_Assistant__HassListAddItem",
+      "mcp__Home_Assistant__HassListCompleteItem",
+      "mcp__Home_Assistant__HassListRemoveItem",
+      "Bash(git push --force*)",
+      "Bash(git push -f*)",
+      "Bash(git reset --hard origin/*)",
+      "Bash(rm -rf /config*)",
+      "Edit(./secrets.yaml)",
+      "Edit(./.storage/**)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": ".*Hass.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 /home/user/Deez-Smart-Home/scripts/deny_device_control.py",
+            "timeout": 10,
+            "statusMessage": "Checking device-control guard"
+          }
+        ]
+      }
+    ]
+  }
+}
