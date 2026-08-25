@@ -575,16 +575,12 @@ views:
         entity: sensor.bedroom_motion_sensor_humidity
       - type: template
         icon: mdi:motion-sensor
-        content: '{{ ''Motion'' if is_state(''binary_sensor.bedroom_motion_sensor_motion'',''on'')
-          else ''Clear'' }}'
-        icon_color: '{{ ''amber'' if is_state(''binary_sensor.bedroom_motion_sensor_motion'',''on'')
-          else ''green'' }}'
+        content: '{% set v = states(''binary_sensor.bedroom_motion_sensor_motion'') %}{% if v in [''unavailable'',''unknown'',''none''] %}Offline{% elif v == ''on'' %}Motion{% else %}Clear{% endif %}'
+        icon_color: '{% set v = states(''binary_sensor.bedroom_motion_sensor_motion'') %}{% if v in [''unavailable'',''unknown'',''none''] %}grey{% elif v == ''on'' %}amber{% else %}green{% endif %}'
       - type: template
         icon: mdi:door
-        content: '{{ ''Open'' if is_state(''binary_sensor.m_contact_sensor_door'',''on'')
-          else ''Closed'' }}'
-        icon_color: '{{ ''red'' if is_state(''binary_sensor.m_contact_sensor_door'',''on'')
-          else ''green'' }}'
+        content: '{% set v = states(''binary_sensor.m_contact_sensor_door'') %}{% if v in [''unavailable'',''unknown'',''none''] %}Offline{% elif v == ''on'' %}Open{% else %}Closed{% endif %}'
+        icon_color: '{% set v = states(''binary_sensor.m_contact_sensor_door'') %}{% if v in [''unavailable'',''unknown'',''none''] %}grey{% elif v == ''on'' %}red{% else %}green{% endif %}'
     - type: heading
       heading: Temperature
       icon: mdi:thermometer-lines
@@ -949,16 +945,12 @@ views:
         entity: sensor.living_room_living_hue_hue_sensor_illuminance
       - type: template
         icon: mdi:motion-sensor
-        content: '{{ ''Motion'' if is_state(''binary_sensor.living_room_living_hue_hue_sensor_motion'',''on'')
-          else ''Clear'' }}'
-        icon_color: '{{ ''amber'' if is_state(''binary_sensor.living_room_living_hue_hue_sensor_motion'',''on'')
-          else ''green'' }}'
+        content: '{% set v = states(''binary_sensor.living_room_living_hue_hue_sensor_motion'') %}{% if v in [''unavailable'',''unknown'',''none''] %}Offline{% elif v == ''on'' %}Motion{% else %}Clear{% endif %}'
+        icon_color: '{% set v = states(''binary_sensor.living_room_living_hue_hue_sensor_motion'') %}{% if v in [''unavailable'',''unknown'',''none''] %}grey{% elif v == ''on'' %}amber{% else %}green{% endif %}'
       - type: template
         icon: mdi:door
-        content: '{{ ''Open'' if is_state(''binary_sensor.f_contact_sensor_door'',''on'')
-          else ''Closed'' }}'
-        icon_color: '{{ ''red'' if is_state(''binary_sensor.f_contact_sensor_door'',''on'')
-          else ''green'' }}'
+        content: '{% set v = states(''binary_sensor.f_contact_sensor_door'') %}{% if v in [''unavailable'',''unknown'',''none''] %}Offline{% elif v == ''on'' %}Open{% else %}Closed{% endif %}'
+        icon_color: '{% set v = states(''binary_sensor.f_contact_sensor_door'') %}{% if v in [''unavailable'',''unknown'',''none''] %}grey{% elif v == ''on'' %}red{% else %}green{% endif %}'
   - type: grid
     cards:
     - type: heading
@@ -1004,18 +996,14 @@ views:
       chips:
       - type: template
         icon: mdi:fridge-outline
-        content: '{{ ''Door Open'' if is_state(''binary_sensor.lg_fridge_door'',''on'')
-          else ''Door Closed'' }}'
-        icon_color: '{{ ''red'' if is_state(''binary_sensor.lg_fridge_door'',''on'')
-          else ''green'' }}'
+        content: '{% set v = states(''binary_sensor.lg_fridge_door'') %}{% if v in [''unavailable'',''unknown'',''none''] %}Offline{% elif v == ''on'' %}Door Open{% else %}Door Closed{% endif %}'
+        icon_color: '{% set v = states(''binary_sensor.lg_fridge_door'') %}{% if v in [''unavailable'',''unknown'',''none''] %}grey{% elif v == ''on'' %}red{% else %}green{% endif %}'
       - type: template
         icon: mdi:motion-sensor
-        content: '{{ ''Motion'' if is_state(''binary_sensor.k_motion_sensor_motion'',''on'')
-          else ''Clear'' }}'
+        content: '{% set v = states(''binary_sensor.k_motion_sensor_motion'') %}{% if v in [''unavailable'',''unknown'',''none''] %}Offline{% elif v == ''on'' %}Motion{% else %}Clear{% endif %}'
     - type: custom:mushroom-template-card
       primary: LG Fridge
-      secondary: Fridge {{ states('number.lg_fridge_fridge_temperature') }} °C • Freezer
-        {{ states('number.lg_fridge_freezer_temperature') }} °C
+      secondary: '{% set bad = [''unavailable'',''unknown'',''none''] %}{% set f = states(''number.lg_fridge_fridge_temperature'') %}{% set z = states(''number.lg_fridge_freezer_temperature'') %}Fridge {{ ''—'' if f in bad else (f|float(0)|round(0)|int ~ ''°C'') }} • Freezer {{ ''—'' if z in bad else (z|float(0)|round(0)|int ~ ''°C'') }}'
       icon: mdi:fridge
       icon_color: cyan
     - type: custom:mushroom-entity-card
@@ -1072,8 +1060,7 @@ views:
       chips:
       - type: template
         icon: mdi:motion-sensor
-        content: '{{ ''Motion'' if is_state(''binary_sensor.sensor_group_motion'',''on'')
-          else ''Clear'' }}'
+        content: '{% set v = states(''binary_sensor.sensor_group_motion'') %}{% if v in [''unavailable'',''unknown'',''none''] %}Offline{% elif v == ''on'' %}Motion{% else %}Clear{% endif %}'
       - type: entity
         card_mod:
           style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
@@ -1116,9 +1103,7 @@ views:
       subtitle: Freezer energy and future garage control
     - type: custom:mushroom-template-card
       primary: Garage Freezer
-      secondary: '{{ states(''sensor.g_monitor_freezer_p110m_current_consumption'')
-        }} W • {{ states(''sensor.g_monitor_freezer_p110m_today_s_consumption'') }}
-        kWh today'
+      secondary: '{% set bad = [''unavailable'',''unknown'',''none''] %}{% set w = states(''sensor.g_monitor_freezer_p110m_current_consumption'') %}{% set d = states(''sensor.g_monitor_freezer_p110m_today_s_consumption'') %}{{ ''—'' if w in bad else (w|float(0)|round(0)|int ~ '' W'') }} • {{ ''—'' if d in bad else (d|float(0)|round(2) ~ '' kWh today'') }}'
       icon: mdi:fridge-outline
       icon_color: cyan
       entity: switch.g_monitor_freezer_p110m
@@ -1142,10 +1127,8 @@ views:
         entity: sensor.g_monitor_freezer_p110m_current
       - type: template
         icon: mdi:alert
-        content: '{{ ''Overload'' if is_state(''binary_sensor.g_monitor_freezer_p110m_overloaded'',''on'')
-          else ''Normal'' }}'
-        icon_color: '{{ ''red'' if is_state(''binary_sensor.g_monitor_freezer_p110m_overloaded'',''on'')
-          else ''green'' }}'
+        content: '{% set v = states(''binary_sensor.g_monitor_freezer_p110m_overloaded'') %}{% if v in [''unavailable'',''unknown'',''none''] %}Offline{% elif v == ''on'' %}Overload{% else %}Normal{% endif %}'
+        icon_color: '{% set v = states(''binary_sensor.g_monitor_freezer_p110m_overloaded'') %}{% if v in [''unavailable'',''unknown'',''none''] %}grey{% elif v == ''on'' %}red{% else %}green{% endif %}'
     - type: custom:mushroom-template-card
       primary: Garage Door
       secondary: Shelly / Chamberlain integration planned
@@ -1828,14 +1811,12 @@ views:
       collapsible_controls: true
     - type: custom:mushroom-template-card
       primary: Parents Room
-      secondary: '{{ states(''sensor.bedroom_motion_sensor_temperature'') }} °C •
-        {{ states(''sensor.bedroom_motion_sensor_humidity'') }} %'
+      secondary: '{% set bad = [''unavailable'',''unknown'',''none''] %}{% set t = states(''sensor.bedroom_motion_sensor_temperature'') %}{% set h = states(''sensor.bedroom_motion_sensor_humidity'') %}{{ ''—'' if t in bad else (t|float(0)|round(1) ~ ''°C'') }}{{ '''' if h in bad else ('' • '' ~ (h|float(0)|round(0)|int) ~ ''%'') }}'
       icon: mdi:home-thermometer
       icon_color: cyan
     - type: custom:mushroom-template-card
       primary: Living Room
-      secondary: '{{ states(''sensor.living_room_living_hue_hue_sensor_temperature'')
-        }} °C'
+      secondary: '{% set v = states(''sensor.living_room_living_hue_hue_sensor_temperature'') %}{{ ''—'' if v in [''unavailable'',''unknown'',''none''] else ((v|float(0)|round(1)) ~ ''°C'') }}'
       icon: mdi:home-thermometer
       icon_color: cyan
     - type: custom:mushroom-template-card
@@ -2412,10 +2393,7 @@ views:
       heading: Room Context
     - type: custom:mushroom-template-card
       primary: Living Room
-      secondary: '{{ states(''sensor.living_room_living_hue_hue_sensor_temperature'')
-        }} °C • {{ states(''sensor.living_room_living_hue_hue_sensor_illuminance'')
-        }} lx • {{ ''Motion'' if is_state(''binary_sensor.living_room_living_hue_hue_sensor_motion'',''on'')
-        else ''Clear'' }}'
+      secondary: '{% set bad = [''unavailable'',''unknown'',''none''] %}{% set t = states(''sensor.living_room_living_hue_hue_sensor_temperature'') %}{% set lx = states(''sensor.living_room_living_hue_hue_sensor_illuminance'') %}{% set m = states(''binary_sensor.living_room_living_hue_hue_sensor_motion'') %}{{ ''—'' if t in bad else (t|float(0)|round(1) ~ ''°C'') }} • {{ ''—'' if lx in bad else (lx|float(0)|round(0)|int ~ '' lx'') }} • {% if m in bad %}Offline{% elif m == ''on'' %}Motion{% else %}Clear{% endif %}'
       icon: mdi:sofa
       icon_color: '{{ ''amber'' if is_state(''light.living_room'',''on'') or is_state(''binary_sensor.living_room_living_hue_hue_sensor_motion'',''on'')
         else ''grey'' }}'
@@ -2424,8 +2402,7 @@ views:
         navigation_path: /deez-smart-home/living-room
     - type: custom:mushroom-template-card
       primary: Parents Room
-      secondary: '{{ states(''sensor.bedroom_motion_sensor_temperature'') }} °C •
-        {{ states(''sensor.bedroom_motion_sensor_humidity'') }} %'
+      secondary: '{% set bad = [''unavailable'',''unknown'',''none''] %}{% set t = states(''sensor.bedroom_motion_sensor_temperature'') %}{% set h = states(''sensor.bedroom_motion_sensor_humidity'') %}{{ ''—'' if t in bad else (t|float(0)|round(1) ~ ''°C'') }}{{ '''' if h in bad else ('' • '' ~ (h|float(0)|round(0)|int) ~ ''%'') }}'
       icon: mdi:bed-king
       icon_color: '{{ ''amber'' if is_state(''switch.mainroomlight_switch_1'',''on'')
         or is_state(''binary_sensor.bedroom_motion_sensor_motion'',''on'') else ''grey''
@@ -2435,8 +2412,7 @@ views:
         navigation_path: /deez-smart-home/parents-room
     - type: custom:mushroom-template-card
       primary: Ray Bedroom
-      secondary: Shade {{ states('cover.aqara_roller_shade_driver_e1') }} • {{ states('sensor.r_energy_monitor_p110m_current_consumption')
-        }} W
+      secondary: '{% set bad = [''unavailable'',''unknown'',''none''] %}{% set s = states(''cover.aqara_roller_shade_driver_e1'') %}{% set w = states(''sensor.r_energy_monitor_p110m_current_consumption'') %}{% if s == ''open'' %}Shade open{% elif s == ''closed'' %}Shade closed{% else %}Shade —{% endif %} • {{ ''—'' if w in bad else (w|float(0)|round(0)|int ~ '' W'') }}'
       icon: mdi:bed
       icon_color: '{{ ''amber'' if is_state(''light.bedroom_bedroom'',''on'') else
         ''grey'' }}'
@@ -2445,8 +2421,7 @@ views:
         navigation_path: /deez-smart-home/ray-bedroom
     - type: custom:mushroom-template-card
       primary: Dining
-      secondary: '{{ states(''sensor.sensor_group_illuminance'') }} lx • {{ ''Motion''
-        if is_state(''binary_sensor.sensor_group_motion'',''on'') else ''Clear'' }}'
+      secondary: '{% set bad = [''unavailable'',''unknown'',''none''] %}{% set lx = states(''sensor.sensor_group_illuminance'') %}{% set m = states(''binary_sensor.sensor_group_motion'') %}{{ ''—'' if lx in bad else (lx|float(0)|round(0)|int ~ '' lx'') }} • {% if m in bad %}Offline{% elif m == ''on'' %}Motion{% else %}Clear{% endif %}'
       icon: mdi:table-chair
       icon_color: '{{ ''amber'' if is_state(''light.dining'',''on'') or is_state(''binary_sensor.sensor_group_motion'',''on'')
         else ''grey'' }}'
@@ -2677,8 +2652,7 @@ views:
         action: more-info
     - type: custom:mushroom-template-card
       primary: Bedroom Power
-      secondary: '{{ states(''sensor.r_energy_monitor_p110m_current_consumption'')
-        }} W'
+      secondary: '{% set v = states(''sensor.r_energy_monitor_p110m_current_consumption'') %}{{ ''—'' if v in [''unavailable'',''unknown'',''none''] else ((v|float(0)|round(0)|int) ~ '' W'') }}'
       icon: mdi:flash
       icon_color: amber
       entity: switch.r_energy_monitor_p110m
@@ -2891,11 +2865,9 @@ views:
       cards:
       - type: custom:mushroom-template-card
         primary: Front
-        secondary: '{{ ''Open'' if is_state(''binary_sensor.f_contact_sensor_door'',''on'')
-          else ''Closed'' }}'
+        secondary: '{% set v = states(''binary_sensor.f_contact_sensor_door'') %}{% if v in [''unavailable'',''unknown'',''none''] %}Offline{% elif v == ''on'' %}Open{% else %}Closed{% endif %}'
         icon: mdi:door
-        icon_color: '{{ ''red'' if is_state(''binary_sensor.f_contact_sensor_door'',''on'')
-          else ''green'' }}'
+        icon_color: '{% set v = states(''binary_sensor.f_contact_sensor_door'') %}{% if v in [''unavailable'',''unknown'',''none''] %}grey{% elif v == ''on'' %}red{% else %}green{% endif %}'
         layout: vertical
         card_mod:
           style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
@@ -2903,11 +2875,9 @@ views:
             \ 2px 10px rgba(0,0,0,0.30);\n}\n"
       - type: custom:mushroom-template-card
         primary: Parents
-        secondary: '{{ ''Open'' if is_state(''binary_sensor.m_contact_sensor_door'',''on'')
-          else ''Closed'' }}'
+        secondary: '{% set v = states(''binary_sensor.m_contact_sensor_door'') %}{% if v in [''unavailable'',''unknown'',''none''] %}Offline{% elif v == ''on'' %}Open{% else %}Closed{% endif %}'
         icon: mdi:door
-        icon_color: '{{ ''red'' if is_state(''binary_sensor.m_contact_sensor_door'',''on'')
-          else ''green'' }}'
+        icon_color: '{% set v = states(''binary_sensor.m_contact_sensor_door'') %}{% if v in [''unavailable'',''unknown'',''none''] %}grey{% elif v == ''on'' %}red{% else %}green{% endif %}'
         layout: vertical
         card_mod:
           style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
@@ -2915,11 +2885,9 @@ views:
             \ 2px 10px rgba(0,0,0,0.30);\n}\n"
       - type: custom:mushroom-template-card
         primary: Back
-        secondary: '{{ ''Open'' if is_state(''binary_sensor.b_contact_sensor_door'',''on'')
-          else ''Closed'' }}'
+        secondary: '{% set v = states(''binary_sensor.b_contact_sensor_door'') %}{% if v in [''unavailable'',''unknown'',''none''] %}Offline{% elif v == ''on'' %}Open{% else %}Closed{% endif %}'
         icon: mdi:door
-        icon_color: '{{ ''red'' if is_state(''binary_sensor.b_contact_sensor_door'',''on'')
-          else ''green'' }}'
+        icon_color: '{% set v = states(''binary_sensor.b_contact_sensor_door'') %}{% if v in [''unavailable'',''unknown'',''none''] %}grey{% elif v == ''on'' %}red{% else %}green{% endif %}'
         layout: vertical
         card_mod:
           style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
