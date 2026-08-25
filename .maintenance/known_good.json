@@ -1,10 +1,25 @@
 {
   "current": {
-    "commit": "5016c0598dbb17246c134efccea6216db4cbede0",
-    "tag": "known-good/20260825-041040",
-    "recorded_utc": "2026-08-25T04:10:40Z",
-    "note": "framework bootstrap: validated dashboard, 36 views, 162 entities",
+    "commit": "68b76e32f99d8ae7125e1d30340292c5a02c0abe",
+    "tag": "known-good/20260825-041406",
+    "recorded_utc": "2026-08-25T04:14:06Z",
+    "note": "post-bootstrap-test: framework verified, dashboard restored to known-good",
     "deploy_verified": "UNVERIFIED \u2014 no live-instance observation available"
   },
-  "history": []
+  "history": [
+    {
+      "commit": "5016c0598dbb17246c134efccea6216db4cbede0",
+      "tag": "known-good/20260825-041040",
+      "recorded_utc": "2026-08-25T04:10:40Z",
+      "note": "framework bootstrap: validated dashboard, 36 views, 162 entities",
+      "deploy_verified": "UNVERIFIED \u2014 no live-instance observation available"
+    },
+    {
+      "commit": "a901dd70d42ca2caa80ac6262ec955ae645753af",
+      "tag": "known-good/20260825-041313",
+      "recorded_utc": "2026-08-25T04:13:13Z",
+      "note": "pre-test state before bootstrap completion test",
+      "deploy_verified": "UNVERIFIED \u2014 no live-instance observation available"
+    }
+  ]
 }
