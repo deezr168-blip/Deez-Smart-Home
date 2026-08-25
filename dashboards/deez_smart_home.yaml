@@ -152,18 +152,19 @@ views:
         state_not: unknown
       card:
         type: custom:mushroom-template-card
-        primary: Air Conditioning
-        secondary: '{{ states(''climate.bedroom_parents_room_ac'') | title }} • {{
-          state_attr(''climate.bedroom_parents_room_ac'',''current_temperature'')
-          }}°C → {{ state_attr(''climate.bedroom_parents_room_ac'',''temperature'')
-          }}°C'
+        card_mod:
+          style: "ha-card {\n  background: linear-gradient(90deg,\n    rgba(52,216,224,0.20)\
+            \ 0%,\n    rgba(52,216,224,0.05) 100%);\n  border: 1px solid rgba(52,216,224,0.30);\n\
+            \  border-radius: 18px;\n  box-shadow: none;\n}\n"
+        primary: '{{ states(''climate.bedroom_parents_room_ac'') | title }} • {{ state_attr(''climate.bedroom_parents_room_ac'',''temperature'')
+          }}°'
+        secondary: '{{ ''父母房空调运行中'' if is_state(''input_boolean.chinese_dashboard'',''on'')
+          else ''Parents AC running'' }}'
         icon: mdi:air-conditioner
+        icon_color: cyan
         tap_action:
           action: navigate
           navigation_path: /deez-smart-home/climate
-        color: blue
-        features_position: bottom
-        vertical: true
     - type: conditional
       conditions:
       - condition: state
@@ -171,16 +172,39 @@ views:
         state: playing
       card:
         type: custom:mushroom-template-card
-        primary: Living Room TV
-        secondary: '{{ state_attr(''media_player.living_room_tv_samsung_q9_series_65'',''media_title'')
+        card_mod:
+          style: "ha-card {\n  background: linear-gradient(90deg,\n    rgba(192,66,255,0.20)\
+            \ 0%,\n    rgba(192,66,255,0.05) 100%);\n  border: 1px solid rgba(192,66,255,0.30);\n\
+            \  border-radius: 18px;\n  box-shadow: none;\n}\n"
+        primary: '{{ state_attr(''media_player.living_room_tv_samsung_q9_series_65'',''media_title'')
           or ''Playing'' }}'
+        secondary: '{{ ''客厅电视播放中'' if is_state(''input_boolean.chinese_dashboard'',''on'')
+          else ''Living Room TV'' }}'
         icon: mdi:television-play
+        icon_color: purple
         tap_action:
           action: navigate
           navigation_path: /deez-smart-home/media
-        color: purple
-        features_position: bottom
-        vertical: true
+    - type: conditional
+      conditions:
+      - condition: state
+        entity: binary_sensor.lph_se_dcd9_pump
+        state: 'on'
+      card:
+        type: custom:mushroom-template-card
+        card_mod:
+          style: "ha-card {\n  background: linear-gradient(90deg,\n    rgba(52,211,153,0.20)\
+            \ 0%,\n    rgba(52,211,153,0.05) 100%);\n  border: 1px solid rgba(52,211,153,0.30);\n\
+            \  border-radius: 18px;\n  box-shadow: none;\n}\n"
+        primary: '{{ ''水泵运行中'' if is_state(''input_boolean.chinese_dashboard'',''on'')
+          else ''Pump cycling'' }}'
+        secondary: '{{ ''LetPot 种植机'' if is_state(''input_boolean.chinese_dashboard'',''on'')
+          else ''LetPot garden'' }}'
+        icon: mdi:water-pump
+        icon_color: green
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/ray-bedroom
     - type: conditional
       conditions:
       - condition: numeric_state
@@ -188,15 +212,13 @@ views:
         above: 100
       card:
         type: custom:mushroom-template-card
-        primary: Solar Producing
-        secondary: '{% set raw = states(''sensor.primo_5_0_1_1_ac_power'') %}{% set d = states(''sensor.primo_5_0_1_1_energy_day'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}{% if raw in bad %}Inverter offline{% else %}{% set p = raw | float(0) %}{{ ((p / 1000) | round(2) ~ '' kW'') if p >= 1000 else (p | round(0) | int ~ '' W'') }} • {% if d in bad %}today unavailable{% else %}{{ d | float(0) | round(0) | int }} Wh today{% endif %}{% endif %}'
+        primary: '{% set raw = states(''sensor.primo_5_0_1_1_ac_power'') %}{% set d = states(''sensor.primo_5_0_1_1_energy_day'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}{% if raw in bad %}Inverter offline{% else %}{% set p = raw | float(0) %}{{ ((p / 1000) | round(2) ~ '' kW'') if p >= 1000 else (p | round(0) | int ~ '' W'') }} • {% if d in bad %}today unavailable{% else %}{{ d | float(0) | round(0) | int }} Wh today{% endif %}{% endif %}'
+        secondary: '{{ ''太阳能发电中'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Solar producing'' }}'
         icon: mdi:solar-power-variant
+        icon_color: amber
         tap_action:
           action: navigate
           navigation_path: /deez-smart-home/energy
-        color: amber
-        features_position: bottom
-        vertical: true
     - type: conditional
       conditions:
       - condition: numeric_state
@@ -204,15 +226,13 @@ views:
         above: 0
       card:
         type: custom:mushroom-template-card
-        primary: Bills Outstanding
-        secondary: '{% set raw = states(''sensor.bills_unpaid_count'') %}{% if raw in [''unavailable'', ''unknown'', ''none''] %}Bills status unavailable{% else %}{{ raw }} unpaid • ${{ states(''sensor.bills_outstanding_total'') }}{% endif %}'
+        primary: '{% set raw = states(''sensor.bills_unpaid_count'') %}{% if raw in [''unavailable'', ''unknown'', ''none''] %}Bills status unavailable{% else %}{{ raw }} unpaid • ${{ states(''sensor.bills_outstanding_total'') }}{% endif %}'
+        secondary: '{{ ''待付账单'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Bills outstanding'' }}'
         icon: mdi:cash-clock
+        icon_color: orange
         tap_action:
           action: navigate
           navigation_path: /deez-smart-home/bills
-        color: orange
-        features_position: bottom
-        vertical: true
   - type: grid
     cards:
     - type: custom:mushroom-chips-card
@@ -421,72 +441,6 @@ views:
         tap_action:
           action: navigate
           navigation_path: /deez-smart-home/energy
-    - type: conditional
-      conditions:
-      - condition: state
-        entity: climate.bedroom_parents_room_ac
-        state_not: 'off'
-      - condition: state
-        entity: climate.bedroom_parents_room_ac
-        state_not: unavailable
-      - condition: state
-        entity: climate.bedroom_parents_room_ac
-        state_not: unknown
-      card:
-        type: custom:mushroom-template-card
-        card_mod:
-          style: "ha-card {\n  background: linear-gradient(90deg,\n    rgba(52,216,224,0.20)\
-            \ 0%,\n    rgba(52,216,224,0.05) 100%);\n  border: 1px solid rgba(52,216,224,0.30);\n\
-            \  border-radius: 18px;\n  box-shadow: none;\n}\n"
-        primary: '{{ states(''climate.bedroom_parents_room_ac'') | title }} • {{ state_attr(''climate.bedroom_parents_room_ac'',''temperature'')
-          }}°'
-        secondary: '{{ ''父母房空调运行中'' if is_state(''input_boolean.chinese_dashboard'',''on'')
-          else ''Parents AC running'' }}'
-        icon: mdi:air-conditioner
-        icon_color: cyan
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/climate
-    - type: conditional
-      conditions:
-      - condition: state
-        entity: media_player.living_room_tv_samsung_q9_series_65
-        state: playing
-      card:
-        type: custom:mushroom-template-card
-        card_mod:
-          style: "ha-card {\n  background: linear-gradient(90deg,\n    rgba(192,66,255,0.20)\
-            \ 0%,\n    rgba(192,66,255,0.05) 100%);\n  border: 1px solid rgba(192,66,255,0.30);\n\
-            \  border-radius: 18px;\n  box-shadow: none;\n}\n"
-        primary: '{{ state_attr(''media_player.living_room_tv_samsung_q9_series_65'',''media_title'')
-          or ''Playing'' }}'
-        secondary: '{{ ''客厅电视播放中'' if is_state(''input_boolean.chinese_dashboard'',''on'')
-          else ''Living Room TV'' }}'
-        icon: mdi:television-play
-        icon_color: purple
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/media
-    - type: conditional
-      conditions:
-      - condition: state
-        entity: binary_sensor.lph_se_dcd9_pump
-        state: 'on'
-      card:
-        type: custom:mushroom-template-card
-        card_mod:
-          style: "ha-card {\n  background: linear-gradient(90deg,\n    rgba(52,211,153,0.20)\
-            \ 0%,\n    rgba(52,211,153,0.05) 100%);\n  border: 1px solid rgba(52,211,153,0.30);\n\
-            \  border-radius: 18px;\n  box-shadow: none;\n}\n"
-        primary: '{{ ''水泵运行中'' if is_state(''input_boolean.chinese_dashboard'',''on'')
-          else ''Pump cycling'' }}'
-        secondary: '{{ ''LetPot 种植机'' if is_state(''input_boolean.chinese_dashboard'',''on'')
-          else ''LetPot garden'' }}'
-        icon: mdi:water-pump
-        icon_color: green
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/ray-bedroom
   - type: grid
     cards:
     - type: custom:mushroom-title-card
