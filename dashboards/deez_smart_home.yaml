@@ -124,13 +124,6 @@ views:
           action: navigate
           navigation_path: /deez-smart-home/people-locations
       - type: template
-        icon: mdi:weather-partly-cloudy
-        content: '{{ state_attr(''weather.forecast_home'',''temperature'') }}°'
-        icon_color: blue
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/status
-      - type: template
         icon: mdi:receipt-text
         content: '{% set raw = states(''sensor.bills_unpaid_count'') %}{% if raw in [''unavailable'', ''unknown'', ''none''] %}Bills ?{% else %}{% set n = raw | int(0) %}{{ n ~ '' due'' if n > 0 else ''Bills'' }}{% endif %}'
         icon_color: '{% set raw = states(''sensor.bills_unpaid_count'') %}{% if raw in [''unavailable'', ''unknown'', ''none''] %}grey{% elif raw | int(0) > 0 %}orange{% else %}green{% endif %}'
@@ -138,8 +131,11 @@ views:
           action: navigate
           navigation_path: /deez-smart-home/bills
   - type: grid
+    column_span: 4
     cards:
     - type: conditional
+      grid_options:
+        columns: 6
       conditions:
       - condition: state
         entity: climate.bedroom_parents_room_ac
@@ -166,6 +162,8 @@ views:
           action: navigate
           navigation_path: /deez-smart-home/climate
     - type: conditional
+      grid_options:
+        columns: 6
       conditions:
       - condition: state
         entity: media_player.living_room_tv_samsung_q9_series_65
@@ -186,6 +184,8 @@ views:
           action: navigate
           navigation_path: /deez-smart-home/media
     - type: conditional
+      grid_options:
+        columns: 6
       conditions:
       - condition: state
         entity: binary_sensor.lph_se_dcd9_pump
@@ -206,6 +206,8 @@ views:
           action: navigate
           navigation_path: /deez-smart-home/ray-bedroom
     - type: conditional
+      grid_options:
+        columns: 6
       conditions:
       - condition: numeric_state
         entity: sensor.primo_5_0_1_1_ac_power
@@ -220,6 +222,8 @@ views:
           action: navigate
           navigation_path: /deez-smart-home/energy
     - type: conditional
+      grid_options:
+        columns: 6
       conditions:
       - condition: numeric_state
         entity: sensor.bills_unpaid_count
@@ -234,187 +238,100 @@ views:
           action: navigate
           navigation_path: /deez-smart-home/bills
   - type: grid
+    column_span: 4
     cards:
-    - type: custom:mushroom-chips-card
+    - type: heading
+      heading: '{{ ''今日概览'' if is_state(''input_boolean.chinese_dashboard'',''on'')
+        else ''Today'' }}'
+      heading_style: subtitle
+      icon: mdi:calendar-today
+      grid_options:
+        columns: 12
+        rows: 1
+    - type: custom:mushroom-template-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  border: none;\n  box-shadow: none;\n\
-          \  padding: 2px 2px 0px 2px;\n}\nha-card .chip-container {\n  gap: 8px;\n\
-          }\n"
-      alignment: justify
-      chips:
-      - type: template
-        icon: mdi:home-flood
-        content: '{{ ''家'' if is_state(''input_boolean.chinese_dashboard'',''on'')
-          else ''Casa'' }}'
-        icon_color: blue
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/home
-      - type: template
-        icon: mdi:check-circle
-        content: '{{ (''已连接'' if is_state(''input_boolean.chinese_dashboard'',''on'')
-          else ''Connected'') if is_state(''binary_sensor.eero_wan_status'',''on'')
-          else (''离线'' if is_state(''input_boolean.chinese_dashboard'',''on'') else
-          ''Offline'') }}'
-        icon_color: '{{ ''green'' if is_state(''binary_sensor.eero_wan_status'',''on'')
-          else ''red'' }}'
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/network
-    - type: grid
-      columns: 3
-      square: false
-      cards:
-      - type: custom:mushroom-template-card
-        card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border: 1px\
-            \ solid rgba(255,255,255,0.12);\n  border-radius: 18px;\n  box-shadow:\
-            \ none;\n  margin-bottom: 6px;\n}\n"
-        primary: '{% set t = state_attr(''weather.forecast_home'',''temperature'')
-          %} {{ (t | round(0) ~ ''°C'') if t is not none else states(''weather.forecast_home'')
-          }}'
-        secondary: '{{ states(''weather.forecast_home'') | replace(''-'','' '')
-          | title }}'
-        icon: mdi:weather-partly-cloudy
-        icon_color: cyan
-        entity: weather.forecast_home
-        tap_action:
-          action: more-info
-      - type: custom:mushroom-template-card
-        card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border: 1px\
-            \ solid rgba(255,255,255,0.12);\n  border-radius: 18px;\n  box-shadow:\
-            \ none;\n  margin-bottom: 6px;\n}\n"
-        primary: '{{ states(''time.lph_se_dcd9_light_on'')[:5] }} – {{ states(''time.lph_se_dcd9_light_off'')[:5]
-          }}'
-        secondary: '{{ ''种植灯'' if is_state(''input_boolean.chinese_dashboard'',''on'')
-          else ''Grow light'' }}'
-        icon: mdi:sprout
-        icon_color: green
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/ray-bedroom
-      - type: custom:mushroom-template-card
-        card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border: 1px\
-            \ solid rgba(255,255,255,0.12);\n  border-radius: 18px;\n  box-shadow:\
-            \ none;\n}\n"
-        primary: '{% set b = states(''sensor.backup_next_scheduled_automatic_backup'')
-          %} {{ as_timestamp(b) | timestamp_custom(''%a %H:%M'', true) if b not
-          in [''unknown'',''unavailable'',''none''] else ''—'' }}'
-        secondary: '{{ ''下次备份'' if is_state(''input_boolean.chinese_dashboard'',''on'')
-          else ''Next backup'' }}'
-        icon: mdi:backup-restore
-        icon_color: indigo
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/status
-    - type: grid
-      columns: 3
-      square: false
-      cards:
-      - type: custom:mushroom-template-card
-        card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border: 1px\
-            \ solid rgba(255,255,255,0.12);\n  border-radius: 18px;\n  box-shadow:\
-            \ none;\n}\n"
-        primary: "{% set doors = [\n  states('binary_sensor.f_contact_sensor_door'),\n\
-          \  states('binary_sensor.m_contact_sensor_door'),\n  states('binary_sensor.b_contact_sensor_door')\n\
-          ] %} {{ doors | select('eq','on') | list | count }} open"
-        secondary: '{{ ''门禁'' if is_state(''input_boolean.chinese_dashboard'',''on'')
-          else ''Access'' }}'
-        icon: mdi:lock-open-variant
-        icon_color: "{% set doors = [\n  states('binary_sensor.f_contact_sensor_door'),\n\
-          \  states('binary_sensor.m_contact_sensor_door'),\n  states('binary_sensor.b_contact_sensor_door')\n\
-          ] %} {{ 'orange' if (doors | select('eq','on') | list | count) > 0 else\
-          \ 'green' }}"
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/security
-      - type: custom:mushroom-template-card
-        card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border: 1px\
-            \ solid rgba(255,255,255,0.12);\n  border-radius: 18px;\n  box-shadow:\
-            \ none;\n}\n"
-        primary: '{{ states.light | selectattr(''state'',''eq'',''on'') | list | count
-          }} on'
-        secondary: '{{ ''灯光'' if is_state(''input_boolean.chinese_dashboard'',''on'')
-          else ''Lights'' }}'
-        icon: mdi:lightbulb
-        icon_color: '{{ ''amber'' if (states.light | selectattr(''state'',''eq'',''on'')
-          | list | count) > 0 else ''grey'' }}'
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/lights
-      - type: custom:mushroom-template-card
-        card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border: 1px\
-            \ solid rgba(255,255,255,0.12);\n  border-radius: 18px;\n  box-shadow:\
-            \ none;\n}\n"
-        primary: '{% set v = states(''sensor.powerpal_gateway_powerpal_daily_energy'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}—{% else %}{{ v | float(0) | round(1) }} kWh{% endif %}'
-        secondary: '{{ ''今日'' if is_state(''input_boolean.chinese_dashboard'',''on'')
-          else ''Today'' }}'
-        icon: mdi:chart-line
-        icon_color: green
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/energy
-    - type: grid
-      columns: 4
-      square: false
-      cards:
-      - type: custom:mushroom-template-card
-        card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border: 1px\
-            \ solid rgba(255,255,255,0.12);\n  border-radius: 18px;\n  box-shadow:\
-            \ none;\n}\n"
-        primary: '{{ ''房间'' if is_state(''input_boolean.chinese_dashboard'',''on'')
-          else ''Rooms'' }}'
-        icon: mdi:view-grid
-        icon_color: blue
-        layout: vertical
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/home
-      - type: custom:mushroom-template-card
-        card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border: 1px\
-            \ solid rgba(255,255,255,0.12);\n  border-radius: 18px;\n  box-shadow:\
-            \ none;\n}\n"
-        primary: '{{ ''控制'' if is_state(''input_boolean.chinese_dashboard'',''on'')
-          else ''Controls'' }}'
-        icon: mdi:tune-variant
-        icon_color: purple
-        layout: vertical
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/ipad-command-center
-      - type: custom:mushroom-template-card
-        card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border: 1px\
-            \ solid rgba(255,255,255,0.12);\n  border-radius: 18px;\n  box-shadow:\
-            \ none;\n}\n"
-        primary: '{{ ''摄像头'' if is_state(''input_boolean.chinese_dashboard'',''on'')
-          else ''Cameras'' }}'
-        icon: mdi:camera
-        icon_color: cyan
-        layout: vertical
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/cameras
-      - type: custom:mushroom-template-card
-        card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border: 1px\
-            \ solid rgba(255,255,255,0.12);\n  border-radius: 18px;\n  box-shadow:\
-            \ none;\n}\n"
-        primary: '{{ ''能源'' if is_state(''input_boolean.chinese_dashboard'',''on'')
-          else ''Energy'' }}'
-        icon: mdi:lightning-bolt
-        icon_color: amber
-        layout: vertical
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/energy
+        style: |
+          ha-card {
+            background: rgba(255,255,255,0.07);
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,0.12);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.30);
+          }
+      primary: '{% set t = state_attr(''weather.forecast_home'',''temperature'') %}{{
+        (t | round(0) ~ ''°C'') if t is not none else ''—'' }}'
+      secondary: '{% set c = states(''weather.forecast_home'') %}{{ ''—'' if c in
+        [''unavailable'',''unknown'',''none''] else c | replace(''-'','' '') | title
+        }}'
+      icon: mdi:weather-partly-cloudy
+      icon_color: cyan
+      entity: weather.forecast_home
+      tap_action:
+        action: more-info
+      grid_options:
+        columns: 3
+    - type: custom:mushroom-template-card
+      card_mod:
+        style: |
+          ha-card {
+            background: rgba(255,255,255,0.07);
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,0.12);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.30);
+          }
+      primary: '{% set v = states(''sensor.powerpal_gateway_powerpal_daily_energy'')
+        %}{{ ''—'' if v in [''unavailable'',''unknown'',''none''] else (v | float(0)
+        | round(1) ~ '' kWh'') }}'
+      secondary: '{{ ''今日用电'' if is_state(''input_boolean.chinese_dashboard'',''on'')
+        else ''Used today'' }}'
+      icon: mdi:chart-line
+      icon_color: green
+      tap_action:
+        action: navigate
+        navigation_path: /deez-smart-home/energy
+      grid_options:
+        columns: 3
+    - type: custom:mushroom-template-card
+      card_mod:
+        style: |
+          ha-card {
+            background: rgba(255,255,255,0.07);
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,0.12);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.30);
+          }
+      primary: '{% set a = states(''time.lph_se_dcd9_light_on'') %}{% set b = states(''time.lph_se_dcd9_light_off'')
+        %}{% set bad = [''unavailable'',''unknown'',''none''] %}{{ ''—'' if a in bad
+        or b in bad else a[:5] ~ '' – '' ~ b[:5] }}'
+      secondary: '{{ ''种植灯'' if is_state(''input_boolean.chinese_dashboard'',''on'')
+        else ''Grow light'' }}'
+      icon: mdi:sprout
+      icon_color: green
+      tap_action:
+        action: navigate
+        navigation_path: /deez-smart-home/ray-bedroom
+      grid_options:
+        columns: 3
+    - type: custom:mushroom-template-card
+      card_mod:
+        style: |
+          ha-card {
+            background: rgba(255,255,255,0.07);
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,0.12);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.30);
+          }
+      primary: '{% set b = states(''sensor.backup_next_scheduled_automatic_backup'')
+        %}{{ as_timestamp(b) | timestamp_custom(''%a %H:%M'', true) if b not in [''unknown'',''unavailable'',''none'']
+        else ''—'' }}'
+      secondary: '{{ ''下次备份'' if is_state(''input_boolean.chinese_dashboard'',''on'')
+        else ''Next backup'' }}'
+      icon: mdi:backup-restore
+      icon_color: indigo
+      tap_action:
+        action: navigate
+        navigation_path: /deez-smart-home/status
+      grid_options:
+        columns: 3
   - type: grid
     cards:
     - type: custom:mushroom-title-card
@@ -449,6 +366,7 @@ views:
       name: Parents Main
       icon: mdi:light-switch
   - type: grid
+    column_span: 2
     cards:
     - type: custom:mushroom-title-card
       card_mod:
@@ -460,6 +378,8 @@ views:
       subtitle: '{{ ''快速访问'' if is_state(''input_boolean.chinese_dashboard'',''on'')
         else ''Quick access'' }}'
     - type: custom:mushroom-template-card
+      grid_options:
+        columns: 6
       primary: Living Room
       secondary: '{{ states(''sensor.living_room_living_hue_hue_sensor_temperature'')
         }} °C'
@@ -470,6 +390,8 @@ views:
         action: navigate
         navigation_path: /deez-smart-home/living-room
     - type: custom:mushroom-template-card
+      grid_options:
+        columns: 6
       primary: Parents Room
       secondary: '{{ states(''sensor.bedroom_motion_sensor_temperature'') }} °C •
         {{ states(''sensor.bedroom_motion_sensor_humidity'') }} %'
@@ -480,6 +402,8 @@ views:
         action: navigate
         navigation_path: /deez-smart-home/parents-room
     - type: custom:mushroom-template-card
+      grid_options:
+        columns: 6
       primary: Ray Bedroom
       secondary: '{{ ''Shade open'' if is_state(''cover.aqara_roller_shade_driver_e1'',''open'')
         else ''Shade closed'' }}'
@@ -490,6 +414,8 @@ views:
         action: navigate
         navigation_path: /deez-smart-home/ray-bedroom
     - type: custom:mushroom-template-card
+      grid_options:
+        columns: 6
       primary: Kitchen
       secondary: Fridge • power
       icon: mdi:silverware-fork-knife
@@ -499,6 +425,8 @@ views:
         action: navigate
         navigation_path: /deez-smart-home/kitchen
     - type: custom:mushroom-template-card
+      grid_options:
+        columns: 6
       primary: Dining
       secondary: Lighting • feeder
       icon: mdi:table-chair
@@ -508,6 +436,8 @@ views:
         action: navigate
         navigation_path: /deez-smart-home/dining
     - type: custom:mushroom-template-card
+      grid_options:
+        columns: 6
       primary: Garage
       secondary: Freezer {{ states('sensor.g_monitor_freezer_p110m_current_consumption')
         }} W
@@ -517,6 +447,8 @@ views:
         action: navigate
         navigation_path: /deez-smart-home/garage
     - type: custom:mushroom-template-card
+      grid_options:
+        columns: 6
       primary: Guest Room
       secondary: Lights • Pogo
       icon: mdi:bed-empty
