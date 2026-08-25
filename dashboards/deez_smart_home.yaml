@@ -1698,9 +1698,10 @@ views:
   path: security
   icon: mdi:shield-home
   theme: Deez Security
-  max_columns: 1
+  max_columns: 3
   sections:
   - type: grid
+    column_span: 3
     cards:
     - type: custom:mushroom-title-card
       card_mod:
@@ -1709,41 +1710,98 @@ views:
           \  margin-bottom: -4px;\n}\n"
       title: 🛡️ Security
       subtitle: Doors, motion, emergency buttons and cameras
+  - type: grid
+    cards:
+    - type: heading
+      heading: Doors
+      icon: mdi:door
     - type: custom:mushroom-template-card
       primary: Living Room Door
-      secondary: '{{ ''Open'' if is_state(''binary_sensor.f_contact_sensor_door'',''on'')
-        else ''Closed'' }}'
-      icon: mdi:door
-      icon_color: '{{ ''red'' if is_state(''binary_sensor.f_contact_sensor_door'',''on'')
-        else ''green'' }}'
+      secondary: '{% set v = states(''binary_sensor.f_contact_sensor_door'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}Sensor offline{% else %}{{ ''Open'' if v == ''on'' else ''Closed'' }} • {{ relative_time(states.binary_sensor.f_contact_sensor_door.last_changed) }}{% endif %}'
+      icon: '{{ ''mdi:door-open'' if is_state(''binary_sensor.f_contact_sensor_door'',''on'') else ''mdi:door-closed'' }}'
+      icon_color: '{% set v = states(''binary_sensor.f_contact_sensor_door'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}grey{% elif v == ''on'' %}red{% else %}green{% endif %}'
+      entity: binary_sensor.f_contact_sensor_door
+      tap_action:
+        action: more-info
     - type: custom:mushroom-template-card
       primary: Main / Parents Door
-      secondary: '{{ ''Open'' if is_state(''binary_sensor.m_contact_sensor_door'',''on'')
-        else ''Closed'' }}'
-      icon: mdi:door
-      icon_color: '{{ ''red'' if is_state(''binary_sensor.m_contact_sensor_door'',''on'')
-        else ''green'' }}'
+      secondary: '{% set v = states(''binary_sensor.m_contact_sensor_door'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}Sensor offline{% else %}{{ ''Open'' if v == ''on'' else ''Closed'' }} • {{ relative_time(states.binary_sensor.m_contact_sensor_door.last_changed) }}{% endif %}'
+      icon: '{{ ''mdi:door-open'' if is_state(''binary_sensor.m_contact_sensor_door'',''on'') else ''mdi:door-closed'' }}'
+      icon_color: '{% set v = states(''binary_sensor.m_contact_sensor_door'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}grey{% elif v == ''on'' %}red{% else %}green{% endif %}'
+      entity: binary_sensor.m_contact_sensor_door
+      tap_action:
+        action: more-info
     - type: custom:mushroom-template-card
       primary: Back Door
-      secondary: '{{ ''Open'' if is_state(''binary_sensor.b_contact_sensor_door'',''on'')
-        else ''Closed'' }}'
-      icon: mdi:door
-      icon_color: '{{ ''red'' if is_state(''binary_sensor.b_contact_sensor_door'',''on'')
-        else ''green'' }}'
+      secondary: '{% set v = states(''binary_sensor.b_contact_sensor_door'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}Sensor offline{% else %}{{ ''Open'' if v == ''on'' else ''Closed'' }} • {{ relative_time(states.binary_sensor.b_contact_sensor_door.last_changed) }}{% endif %}'
+      icon: '{{ ''mdi:door-open'' if is_state(''binary_sensor.b_contact_sensor_door'',''on'') else ''mdi:door-closed'' }}'
+      icon_color: '{% set v = states(''binary_sensor.b_contact_sensor_door'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}grey{% elif v == ''on'' %}red{% else %}green{% endif %}'
+      entity: binary_sensor.b_contact_sensor_door
+      tap_action:
+        action: more-info
+  - type: grid
+    cards:
+    - type: heading
+      heading: Motion
+      icon: mdi:motion-sensor
+    - type: custom:mushroom-template-card
+      primary: Living Room
+      secondary: '{% set v = states(''binary_sensor.living_room_living_hue_hue_sensor_motion'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}Sensor offline{% elif v == ''on'' %}Motion now{% else %}Clear • {{ relative_time(states.binary_sensor.living_room_living_hue_hue_sensor_motion.last_changed) }}{% endif %}'
+      icon: mdi:motion-sensor
+      icon_color: '{% set v = states(''binary_sensor.living_room_living_hue_hue_sensor_motion'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}grey{% elif v == ''on'' %}amber{% else %}green{% endif %}'
+      entity: binary_sensor.living_room_living_hue_hue_sensor_motion
+      tap_action:
+        action: more-info
+    - type: custom:mushroom-template-card
+      primary: Parents Room
+      secondary: '{% set v = states(''binary_sensor.bedroom_motion_sensor_motion'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}Sensor offline{% elif v == ''on'' %}Motion now{% else %}Clear • {{ relative_time(states.binary_sensor.bedroom_motion_sensor_motion.last_changed) }}{% endif %}'
+      icon: mdi:motion-sensor
+      icon_color: '{% set v = states(''binary_sensor.bedroom_motion_sensor_motion'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}grey{% elif v == ''on'' %}amber{% else %}green{% endif %}'
+      entity: binary_sensor.bedroom_motion_sensor_motion
+      tap_action:
+        action: more-info
+    - type: custom:mushroom-template-card
+      primary: Kitchen
+      secondary: '{% set v = states(''binary_sensor.k_motion_sensor_motion'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}Sensor offline{% elif v == ''on'' %}Motion now{% else %}Clear • {{ relative_time(states.binary_sensor.k_motion_sensor_motion.last_changed) }}{% endif %}'
+      icon: mdi:motion-sensor
+      icon_color: '{% set v = states(''binary_sensor.k_motion_sensor_motion'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}grey{% elif v == ''on'' %}amber{% else %}green{% endif %}'
+      entity: binary_sensor.k_motion_sensor_motion
+      tap_action:
+        action: more-info
+    - type: custom:mushroom-template-card
+      primary: Dining
+      secondary: '{% set v = states(''binary_sensor.sensor_group_motion'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}Sensor offline{% elif v == ''on'' %}Motion now{% else %}Clear • {{ relative_time(states.binary_sensor.sensor_group_motion.last_changed) }}{% endif %}'
+      icon: mdi:motion-sensor
+      icon_color: '{% set v = states(''binary_sensor.sensor_group_motion'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}grey{% elif v == ''on'' %}amber{% else %}green{% endif %}'
+      entity: binary_sensor.sensor_group_motion
+      tap_action:
+        action: more-info
+  - type: grid
+    cards:
+    - type: heading
+      heading: Emergency & Cameras
+      icon: mdi:alarm-light
     - type: custom:mushroom-template-card
       primary: Dad Emergency Button
       secondary: '{% set v = states(''binary_sensor.emergency_button_dad_cloud_connection'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}Status unavailable{% elif v == ''on'' %}Connected{% else %}Disconnected{% endif %}'
       icon: mdi:alarm-light
-      icon_color: '{% set v = states(''binary_sensor.emergency_button_dad_cloud_connection'') %}{% if v == ''on'' %}green{% else %}red{% endif %}'
+      icon_color: '{% set v = states(''binary_sensor.emergency_button_dad_cloud_connection'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}grey{% elif v == ''on'' %}green{% else %}red{% endif %}'
+      entity: binary_sensor.emergency_button_dad_cloud_connection
+      tap_action:
+        action: more-info
     - type: custom:mushroom-template-card
       primary: Mum Emergency Button
       secondary: '{% set v = states(''binary_sensor.emergency_button_mum_cloud_connection'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}Status unavailable{% elif v == ''on'' %}Connected{% else %}Disconnected{% endif %}'
       icon: mdi:alarm-light
-      icon_color: '{% set v = states(''binary_sensor.emergency_button_mum_cloud_connection'') %}{% if v == ''on'' %}green{% else %}red{% endif %}'
+      icon_color: '{% set v = states(''binary_sensor.emergency_button_mum_cloud_connection'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}grey{% elif v == ''on'' %}green{% else %}red{% endif %}'
+      entity: binary_sensor.emergency_button_mum_cloud_connection
+      tap_action:
+        action: more-info
     - type: custom:mushroom-template-card
       primary: Cameras
-      secondary: View live cameras
+      secondary: Six live views
       icon: mdi:cctv
+      icon_color: blue
       tap_action:
         action: navigate
         navigation_path: /deez-smart-home/cameras
