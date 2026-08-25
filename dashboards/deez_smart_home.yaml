@@ -11,6 +11,209 @@ views:
   max_columns: 4
   sections:
   - type: grid
+    column_span: 4
+    cards:
+    - type: custom:mushroom-title-card
+      card_mod:
+        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
+          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 4px 4px 0px 4px;\n\
+          \  margin-bottom: -4px;\n}\n"
+      title: '{{ ''🏠 Deez 智能家居'' if is_state(''input_boolean.chinese_dashboard'',''on'')
+        else ''🏠 Deez Smart Home'' }}'
+      subtitle: '{{ ''家庭控制中心'' if is_state(''input_boolean.chinese_dashboard'',''on'')
+        else ''Home control centre'' }}'
+    - type: custom:mushroom-chips-card
+      card_mod:
+        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
+          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
+          \ .chip-container {\n  gap: 8px;\n}\n"
+      alignment: start
+      chips:
+      - type: template
+        icon: mdi:translate
+        content: English
+        icon_color: '{{ ''green'' if is_state(''input_boolean.chinese_dashboard'',''off'')
+          else ''grey'' }}'
+        tap_action:
+          action: perform-action
+          perform_action: input_boolean.turn_off
+          target:
+            entity_id: input_boolean.chinese_dashboard
+      - type: template
+        icon: mdi:translate
+        content: 中文
+        icon_color: '{{ ''green'' if is_state(''input_boolean.chinese_dashboard'',''on'')
+          else ''grey'' }}'
+        tap_action:
+          action: perform-action
+          perform_action: input_boolean.turn_on
+          target:
+            entity_id: input_boolean.chinese_dashboard
+      grid_options:
+        columns: 12
+        rows: 1
+    - type: custom:mushroom-template-card
+      primary: '{{ ''家庭状态'' if is_state(''input_boolean.chinese_dashboard'',''on'')
+        else ''House Pulse'' }}'
+      secondary: "{% set doors = [states('binary_sensor.m_contact_sensor_door'), states('binary_sensor.f_contact_sensor_door'),\
+        \ states('binary_sensor.b_contact_sensor_door')] %} {% set open = doors |\
+        \ select('eq','on') | list | count %} {% set wan = is_state('binary_sensor.eero_wan_status','on')\
+        \ %} {% set lights = states.light | selectattr('state','eq','on') | list |\
+        \ count %} {% set t = state_attr('weather.forecast_home','temperature') %}\
+        \ {% if is_state('input_boolean.chinese_dashboard','on') %}\n  {{ open }}\
+        \ 扇门开启 • {{ lights }} 盏灯 • {{ t }}°C{{ ' • 网络离线' if not wan else '' }}\n{%\
+        \ else %}\n  {{ open }} open • {{ lights }} lights • {{ t }}°C{{ ' • Offline'\
+        \ if not wan else '' }}\n{% endif %}"
+      icon: mdi:home-heart
+      icon_color: '{% set doors = [states(''binary_sensor.m_contact_sensor_door''),
+        states(''binary_sensor.f_contact_sensor_door''), states(''binary_sensor.b_contact_sensor_door'')]
+        %} {% set open = doors | select(''eq'',''on'') | list | count %} {{ ''red''
+        if open > 0 or not is_state(''binary_sensor.eero_wan_status'',''on'') else
+        ''green'' }}'
+      tap_action:
+        action: navigate
+        navigation_path: /deez-smart-home/status
+    - type: custom:mushroom-chips-card
+      card_mod:
+        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
+          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
+          \ .chip-container {\n  gap: 8px;\n}\n"
+      alignment: start
+      chips:
+      - type: template
+        icon: mdi:solar-power
+        content: '{% set raw = states(''sensor.primo_5_0_1_1_ac_power'') %}{% if raw in [''unavailable'', ''unknown'', ''none''] %}Offline{% else %}{% set p = raw | float(0) %}{{ ((p / 1000) | round(1) ~ '' kW'') if p >= 1000 else (p | round(0) | int ~ '' W'') }}{% endif %}'
+        icon_color: '{% set raw = states(''sensor.primo_5_0_1_1_ac_power'') %}{% if raw in [''unavailable'', ''unknown'', ''none''] %}red{% elif raw | float(0) > 0 %}amber{% else %}grey{% endif %}'
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/energy
+      - type: template
+        icon: mdi:lightbulb-group
+        content: '{{ states.light | selectattr(''state'',''eq'',''on'') | list | count
+          }} on'
+        icon_color: '{{ ''amber'' if (states.light | selectattr(''state'',''eq'',''on'')
+          | list | count) > 0 else ''grey'' }}'
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/lights
+      - type: template
+        icon: mdi:door
+        content: '{% set doors = [states(''binary_sensor.m_contact_sensor_door''),
+          states(''binary_sensor.f_contact_sensor_door''), states(''binary_sensor.b_contact_sensor_door'')]
+          %} {{ doors | select(''eq'',''on'') | list | count }} open'
+        icon_color: '{% set doors = [states(''binary_sensor.m_contact_sensor_door''),
+          states(''binary_sensor.f_contact_sensor_door''), states(''binary_sensor.b_contact_sensor_door'')]
+          %} {{ ''red'' if (doors | select(''eq'',''on'') | list | count) > 0 else
+          ''green'' }}'
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/security
+      - type: template
+        icon: mdi:cctv
+        content: Cameras
+        icon_color: blue
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/cameras
+      - type: template
+        icon: mdi:account
+        content: '{{ states(''person.raymond_du'') }}'
+        icon_color: '{{ ''green'' if is_state(''person.raymond_du'',''home'') else
+          ''blue'' }}'
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/people-locations
+      - type: template
+        icon: mdi:weather-partly-cloudy
+        content: '{{ state_attr(''weather.forecast_home'',''temperature'') }}°'
+        icon_color: blue
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/status
+      - type: template
+        icon: mdi:receipt-text
+        content: '{% set raw = states(''sensor.bills_unpaid_count'') %}{% if raw in [''unavailable'', ''unknown'', ''none''] %}Bills ?{% else %}{% set n = raw | int(0) %}{{ n ~ '' due'' if n > 0 else ''Bills'' }}{% endif %}'
+        icon_color: '{% set raw = states(''sensor.bills_unpaid_count'') %}{% if raw in [''unavailable'', ''unknown'', ''none''] %}grey{% elif raw | int(0) > 0 %}orange{% else %}green{% endif %}'
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/bills
+  - type: grid
+    cards:
+    - type: conditional
+      conditions:
+      - condition: state
+        entity: climate.bedroom_parents_room_ac
+        state_not: 'off'
+      - condition: state
+        entity: climate.bedroom_parents_room_ac
+        state_not: unavailable
+      - condition: state
+        entity: climate.bedroom_parents_room_ac
+        state_not: unknown
+      card:
+        type: custom:mushroom-template-card
+        primary: Air Conditioning
+        secondary: '{{ states(''climate.bedroom_parents_room_ac'') | title }} • {{
+          state_attr(''climate.bedroom_parents_room_ac'',''current_temperature'')
+          }}°C → {{ state_attr(''climate.bedroom_parents_room_ac'',''temperature'')
+          }}°C'
+        icon: mdi:air-conditioner
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/climate
+        color: blue
+        features_position: bottom
+        vertical: true
+    - type: conditional
+      conditions:
+      - condition: state
+        entity: media_player.living_room_tv_samsung_q9_series_65
+        state: playing
+      card:
+        type: custom:mushroom-template-card
+        primary: Living Room TV
+        secondary: '{{ state_attr(''media_player.living_room_tv_samsung_q9_series_65'',''media_title'')
+          or ''Playing'' }}'
+        icon: mdi:television-play
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/media
+        color: purple
+        features_position: bottom
+        vertical: true
+    - type: conditional
+      conditions:
+      - condition: numeric_state
+        entity: sensor.primo_5_0_1_1_ac_power
+        above: 100
+      card:
+        type: custom:mushroom-template-card
+        primary: Solar Producing
+        secondary: '{% set raw = states(''sensor.primo_5_0_1_1_ac_power'') %}{% set d = states(''sensor.primo_5_0_1_1_energy_day'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}{% if raw in bad %}Inverter offline{% else %}{% set p = raw | float(0) %}{{ ((p / 1000) | round(2) ~ '' kW'') if p >= 1000 else (p | round(0) | int ~ '' W'') }} • {% if d in bad %}today unavailable{% else %}{{ d | float(0) | round(0) | int }} Wh today{% endif %}{% endif %}'
+        icon: mdi:solar-power-variant
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/energy
+        color: amber
+        features_position: bottom
+        vertical: true
+    - type: conditional
+      conditions:
+      - condition: numeric_state
+        entity: sensor.bills_unpaid_count
+        above: 0
+      card:
+        type: custom:mushroom-template-card
+        primary: Bills Outstanding
+        secondary: '{% set raw = states(''sensor.bills_unpaid_count'') %}{% if raw in [''unavailable'', ''unknown'', ''none''] %}Bills status unavailable{% else %}{{ raw }} unpaid • ${{ states(''sensor.bills_outstanding_total'') }}{% endif %}'
+        icon: mdi:cash-clock
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/bills
+        color: orange
+        features_position: bottom
+        vertical: true
+  - type: grid
     cards:
     - type: custom:mushroom-chips-card
       card_mod:
@@ -284,208 +487,6 @@ views:
         tap_action:
           action: navigate
           navigation_path: /deez-smart-home/ray-bedroom
-  - type: grid
-    cards:
-    - type: custom:mushroom-title-card
-      card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 4px 4px 0px 4px;\n\
-          \  margin-bottom: -4px;\n}\n"
-      title: '{{ ''🏠 Deez 智能家居'' if is_state(''input_boolean.chinese_dashboard'',''on'')
-        else ''🏠 Deez Smart Home'' }}'
-      subtitle: '{{ ''家庭控制中心'' if is_state(''input_boolean.chinese_dashboard'',''on'')
-        else ''Home control centre'' }}'
-    - type: custom:mushroom-chips-card
-      card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
-      alignment: start
-      chips:
-      - type: template
-        icon: mdi:translate
-        content: English
-        icon_color: '{{ ''green'' if is_state(''input_boolean.chinese_dashboard'',''off'')
-          else ''grey'' }}'
-        tap_action:
-          action: perform-action
-          perform_action: input_boolean.turn_off
-          target:
-            entity_id: input_boolean.chinese_dashboard
-      - type: template
-        icon: mdi:translate
-        content: 中文
-        icon_color: '{{ ''green'' if is_state(''input_boolean.chinese_dashboard'',''on'')
-          else ''grey'' }}'
-        tap_action:
-          action: perform-action
-          perform_action: input_boolean.turn_on
-          target:
-            entity_id: input_boolean.chinese_dashboard
-      grid_options:
-        columns: 12
-        rows: 1
-    - type: custom:mushroom-template-card
-      primary: '{{ ''家庭状态'' if is_state(''input_boolean.chinese_dashboard'',''on'')
-        else ''House Pulse'' }}'
-      secondary: "{% set doors = [states('binary_sensor.m_contact_sensor_door'), states('binary_sensor.f_contact_sensor_door'),\
-        \ states('binary_sensor.b_contact_sensor_door')] %} {% set open = doors |\
-        \ select('eq','on') | list | count %} {% set wan = is_state('binary_sensor.eero_wan_status','on')\
-        \ %} {% set lights = states.light | selectattr('state','eq','on') | list |\
-        \ count %} {% set t = state_attr('weather.forecast_home','temperature') %}\
-        \ {% if is_state('input_boolean.chinese_dashboard','on') %}\n  {{ open }}\
-        \ 扇门开启 • {{ lights }} 盏灯 • {{ t }}°C{{ ' • 网络离线' if not wan else '' }}\n{%\
-        \ else %}\n  {{ open }} open • {{ lights }} lights • {{ t }}°C{{ ' • Offline'\
-        \ if not wan else '' }}\n{% endif %}"
-      icon: mdi:home-heart
-      icon_color: '{% set doors = [states(''binary_sensor.m_contact_sensor_door''),
-        states(''binary_sensor.f_contact_sensor_door''), states(''binary_sensor.b_contact_sensor_door'')]
-        %} {% set open = doors | select(''eq'',''on'') | list | count %} {{ ''red''
-        if open > 0 or not is_state(''binary_sensor.eero_wan_status'',''on'') else
-        ''green'' }}'
-      tap_action:
-        action: navigate
-        navigation_path: /deez-smart-home/status
-    - type: custom:mushroom-chips-card
-      card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
-      alignment: start
-      chips:
-      - type: template
-        icon: mdi:solar-power
-        content: '{% set raw = states(''sensor.primo_5_0_1_1_ac_power'') %}{% if raw in [''unavailable'', ''unknown'', ''none''] %}Offline{% else %}{% set p = raw | float(0) %}{{ ((p / 1000) | round(1) ~ '' kW'') if p >= 1000 else (p | round(0) | int ~ '' W'') }}{% endif %}'
-        icon_color: '{% set raw = states(''sensor.primo_5_0_1_1_ac_power'') %}{% if raw in [''unavailable'', ''unknown'', ''none''] %}red{% elif raw | float(0) > 0 %}amber{% else %}grey{% endif %}'
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/energy
-      - type: template
-        icon: mdi:lightbulb-group
-        content: '{{ states.light | selectattr(''state'',''eq'',''on'') | list | count
-          }} on'
-        icon_color: '{{ ''amber'' if (states.light | selectattr(''state'',''eq'',''on'')
-          | list | count) > 0 else ''grey'' }}'
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/lights
-      - type: template
-        icon: mdi:door
-        content: '{% set doors = [states(''binary_sensor.m_contact_sensor_door''),
-          states(''binary_sensor.f_contact_sensor_door''), states(''binary_sensor.b_contact_sensor_door'')]
-          %} {{ doors | select(''eq'',''on'') | list | count }} open'
-        icon_color: '{% set doors = [states(''binary_sensor.m_contact_sensor_door''),
-          states(''binary_sensor.f_contact_sensor_door''), states(''binary_sensor.b_contact_sensor_door'')]
-          %} {{ ''red'' if (doors | select(''eq'',''on'') | list | count) > 0 else
-          ''green'' }}'
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/security
-      - type: template
-        icon: mdi:cctv
-        content: Cameras
-        icon_color: blue
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/cameras
-      - type: template
-        icon: mdi:account
-        content: '{{ states(''person.raymond_du'') }}'
-        icon_color: '{{ ''green'' if is_state(''person.raymond_du'',''home'') else
-          ''blue'' }}'
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/people-locations
-      - type: template
-        icon: mdi:weather-partly-cloudy
-        content: '{{ state_attr(''weather.forecast_home'',''temperature'') }}°'
-        icon_color: blue
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/status
-      - type: template
-        icon: mdi:receipt-text
-        content: '{% set raw = states(''sensor.bills_unpaid_count'') %}{% if raw in [''unavailable'', ''unknown'', ''none''] %}Bills ?{% else %}{% set n = raw | int(0) %}{{ n ~ '' due'' if n > 0 else ''Bills'' }}{% endif %}'
-        icon_color: '{% set raw = states(''sensor.bills_unpaid_count'') %}{% if raw in [''unavailable'', ''unknown'', ''none''] %}grey{% elif raw | int(0) > 0 %}orange{% else %}green{% endif %}'
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/bills
-  - type: grid
-    cards:
-    - type: conditional
-      conditions:
-      - condition: state
-        entity: climate.bedroom_parents_room_ac
-        state_not: 'off'
-      - condition: state
-        entity: climate.bedroom_parents_room_ac
-        state_not: unavailable
-      - condition: state
-        entity: climate.bedroom_parents_room_ac
-        state_not: unknown
-      card:
-        type: custom:mushroom-template-card
-        primary: Air Conditioning
-        secondary: '{{ states(''climate.bedroom_parents_room_ac'') | title }} • {{
-          state_attr(''climate.bedroom_parents_room_ac'',''current_temperature'')
-          }}°C → {{ state_attr(''climate.bedroom_parents_room_ac'',''temperature'')
-          }}°C'
-        icon: mdi:air-conditioner
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/climate
-        color: blue
-        features_position: bottom
-        vertical: true
-    - type: conditional
-      conditions:
-      - condition: state
-        entity: media_player.living_room_tv_samsung_q9_series_65
-        state: playing
-      card:
-        type: custom:mushroom-template-card
-        primary: Living Room TV
-        secondary: '{{ state_attr(''media_player.living_room_tv_samsung_q9_series_65'',''media_title'')
-          or ''Playing'' }}'
-        icon: mdi:television-play
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/media
-        color: purple
-        features_position: bottom
-        vertical: true
-    - type: conditional
-      conditions:
-      - condition: numeric_state
-        entity: sensor.primo_5_0_1_1_ac_power
-        above: 100
-      card:
-        type: custom:mushroom-template-card
-        primary: Solar Producing
-        secondary: '{% set raw = states(''sensor.primo_5_0_1_1_ac_power'') %}{% set d = states(''sensor.primo_5_0_1_1_energy_day'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}{% if raw in bad %}Inverter offline{% else %}{% set p = raw | float(0) %}{{ ((p / 1000) | round(2) ~ '' kW'') if p >= 1000 else (p | round(0) | int ~ '' W'') }} • {% if d in bad %}today unavailable{% else %}{{ d | float(0) | round(0) | int }} Wh today{% endif %}{% endif %}'
-        icon: mdi:solar-power-variant
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/energy
-        color: amber
-        features_position: bottom
-        vertical: true
-    - type: conditional
-      conditions:
-      - condition: numeric_state
-        entity: sensor.bills_unpaid_count
-        above: 0
-      card:
-        type: custom:mushroom-template-card
-        primary: Bills Outstanding
-        secondary: '{% set raw = states(''sensor.bills_unpaid_count'') %}{% if raw in [''unavailable'', ''unknown'', ''none''] %}Bills status unavailable{% else %}{{ raw }} unpaid • ${{ states(''sensor.bills_outstanding_total'') }}{% endif %}'
-        icon: mdi:cash-clock
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/bills
-        color: orange
-        features_position: bottom
-        vertical: true
   - type: grid
     cards:
     - type: custom:mushroom-title-card
