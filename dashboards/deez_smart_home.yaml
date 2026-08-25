@@ -543,7 +543,7 @@ views:
   title: Parents Room
   path: parents-room
   icon: mdi:bed-king
-  max_columns: 4
+  max_columns: 3
   sections:
   - type: grid
     cards:
@@ -904,7 +904,7 @@ views:
   title: Living Room
   path: living-room
   icon: mdi:sofa
-  max_columns: 4
+  max_columns: 2
   sections:
   - type: grid
     cards:
@@ -985,7 +985,7 @@ views:
   title: Kitchen
   path: kitchen
   icon: mdi:silverware-fork-knife
-  max_columns: 4
+  max_columns: 2
   sections:
   - type: grid
     cards:
@@ -1045,7 +1045,7 @@ views:
   title: Dining
   path: dining
   icon: mdi:table-chair
-  max_columns: 4
+  max_columns: 2
   sections:
   - type: grid
     cards:
@@ -1103,7 +1103,7 @@ views:
   title: Garage
   path: garage
   icon: mdi:garage
-  max_columns: 4
+  max_columns: 1
   sections:
   - type: grid
     cards:
@@ -1156,7 +1156,7 @@ views:
   path: energy
   icon: mdi:lightning-bolt
   theme: Deez Energy
-  max_columns: 4
+  max_columns: 2
   sections:
   - type: grid
     cards:
@@ -1698,7 +1698,7 @@ views:
   path: security
   icon: mdi:shield-home
   theme: Deez Security
-  max_columns: 4
+  max_columns: 1
   sections:
   - type: grid
     cards:
@@ -1752,7 +1752,7 @@ views:
   path: climate
   icon: mdi:thermostat
   theme: Deez Climate
-  max_columns: 4
+  max_columns: 1
   sections:
   - type: grid
     cards:
@@ -1789,7 +1789,7 @@ views:
   title: Network
   path: network
   icon: mdi:network
-  max_columns: 4
+  max_columns: 2
   sections:
   - type: grid
     cards:
@@ -1838,7 +1838,7 @@ views:
   title: Media
   path: media
   icon: mdi:play-box-multiple
-  max_columns: 4
+  max_columns: 1
   sections:
   - type: grid
     cards:
@@ -1863,7 +1863,7 @@ views:
   title: Settings
   path: settings
   icon: mdi:cog
-  max_columns: 4
+  max_columns: 1
   sections:
   - type: grid
     cards:
@@ -1906,7 +1906,7 @@ views:
   title: Smart Home Status
   path: status
   icon: mdi:home-assistant
-  max_columns: 4
+  max_columns: 1
   sections:
   - type: grid
     cards:
@@ -1944,7 +1944,7 @@ views:
   title: People & Locations
   path: people-locations
   icon: mdi:map-marker-account
-  max_columns: 4
+  max_columns: 2
   sections:
   - type: grid
     cards:
@@ -2116,7 +2116,7 @@ views:
   path: people-locations-distance
   icon: mdi:map-search
   subview: true
-  max_columns: 4
+  max_columns: 1
   sections:
   - type: grid
     cards:
@@ -2554,7 +2554,7 @@ views:
   icon: mdi:bed
   theme: Deez Lighting
   subview: true
-  max_columns: 3
+  max_columns: 2
   sections:
   - type: grid
     cards:
@@ -2638,7 +2638,7 @@ views:
   icon: mdi:creation
   theme: Deez Lighting
   subview: true
-  max_columns: 3
+  max_columns: 2
   sections:
   - type: grid
     cards:
@@ -3170,7 +3170,7 @@ views:
   path: bills
   icon: mdi:receipt-text
   theme: Deez Energy
-  max_columns: 4
+  max_columns: 2
   sections:
   - type: grid
     cards:
@@ -3314,7 +3314,7 @@ views:
   icon: mdi:flash
   theme: Deez Energy
   subview: true
-  max_columns: 2
+  max_columns: 1
   sections:
   - type: grid
     cards:
@@ -3399,7 +3399,7 @@ views:
   icon: mdi:fire-circle
   theme: Deez Energy
   subview: true
-  max_columns: 2
+  max_columns: 1
   sections:
   - type: grid
     cards:
@@ -3494,7 +3494,7 @@ views:
   icon: mdi:shield-car
   theme: Deez Energy
   subview: true
-  max_columns: 2
+  max_columns: 1
   sections:
   - type: grid
     cards:
@@ -3556,7 +3556,7 @@ views:
   icon: mdi:water-circle
   theme: Deez Energy
   subview: true
-  max_columns: 2
+  max_columns: 1
   sections:
   - type: grid
     cards:
@@ -3618,7 +3618,7 @@ views:
   icon: mdi:office-building
   theme: Deez Energy
   subview: true
-  max_columns: 2
+  max_columns: 1
   sections:
   - type: grid
     cards:
@@ -3677,7 +3677,7 @@ views:
   icon: mdi:card-account-details-outline
   theme: Deez Energy
   subview: true
-  max_columns: 2
+  max_columns: 1
   sections:
   - type: grid
     cards:
