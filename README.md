@@ -1,10 +1,21 @@
-# `ha-deploy` — Home Assistant configuration backup branch
+# `ha-deploy` — Home Assistant dashboard deployment branch
 
 This branch mirrors the layout of Home Assistant's `/config` directory. Its
 root corresponds to `/config`, with no `ha-config/` wrapper.
 
-**It is a backup and rollback baseline — not an automatic deployment
-source.** See the architecture decision below.
+**It is the live deployment source for the Deez Smart Home dashboard.** A
+deployment script on the Home Assistant host watches this branch, validates
+what it finds and applies the dashboard. It remains the rollback baseline as
+well — those two roles are not in conflict.
+
+> **Superseded (2026-08-25).** This branch was originally documented as a
+> backup-only branch that could not deploy, on the reasoning that a
+> storage-mode dashboard ignores files placed in `/config`. That reasoning
+> was correct about *Git Pull* and is no longer the architecture in use: the
+> current path does not rely on HA reading a file from disk. See
+> [Deployment architecture](#deployment-architecture-current) below. The
+> superseded text is retained in `DEPLOYMENT_BLOCKERS.md` under Blocker 1 so
+> the change of approach stays traceable.
 
 - Branch: `ha-deploy`
 - Never merge this branch into `main`, and never merge `main` into it.
@@ -14,45 +25,100 @@ source.** See the architecture decision below.
 - `main` is untouched by this work. All deployment work is isolated to
   `ha-deploy`.
 
-## Architecture decision — Option A (storage mode), adopted 2026-08-23
+## Deployment architecture (current)
 
-The Deez Smart Home dashboard stays in **Lovelace storage mode**. Git's
-role is:
+<a id="deployment-architecture-current"></a>
 
-- **source-control backup** of the dashboard configuration,
-- **rollback baseline** to restore from if a change goes wrong,
-- **development copy** for reviewing changes as diffs before applying them.
+The dashboard stays in **Lovelace storage mode**. Deployment is **automated**
+from this branch by a script on the Home Assistant host:
 
-Deployment stays **manual**, via Home Assistant's Raw configuration editor.
+```
+/config/deploy_deez_dashboard.sh
+```
+
+### The flow
+
+```
+commit pushed to origin/ha-deploy
+        |
+        v
+  script fetches origin/ha-deploy
+        |
+        v
+  resolves a candidate commit
+        |
+        v
+  validates the dashboard YAML   --- invalid --> stops, nothing applied
+        |
+        v
+  compares against current content
+        |
+        +--- no change --> stops, nothing applied
+        |
+        v
+  applies the dashboard to the live instance
+```
+
+A successful run reported by the owner:
+
+```
+=== Deez dashboard deployment started ===
+Fetching origin/ha-deploy...
+Repository already current
+Validating YAML...
+YAML VALID
+Candidate commit: 26c3b148433919545f6df2b8cc99323cf75cc652
+No dashboard content change.
+```
+
+### What is independently verified, and what is not
+
+This repository cannot reach the Home Assistant host: `/config` is not
+mounted in the environment that maintains this branch, the script is not
+committed here, and direct REST/WebSocket access to the instance is blocked
+by network policy. The distinction below matters — do not read the whole
+flow as verified.
+
+| Element | Status |
+|---|---|
+| The pipeline reads `origin/ha-deploy` | **Verified.** `26c3b148…` is a real commit that exists only on this branch — `test(ha): verify automated dashboard deployment`, pushed 2026-08-24. Nothing off this branch could have produced that SHA. |
+| It resolves a specific candidate commit | **Verified** — the SHA is exact and correct. |
+| It validates YAML before applying | **Reported**, and consistent with the log. The validation implementation has not been read. |
+| It skips when content is unchanged | **Reported**, and consistent with the log. |
+| It applies the dashboard to the live instance | **Not independently verified.** The quoted run is a no-op ("Repository already current", "No dashboard content change"), so it exercises fetch, validation and comparison but performs no write. |
+| Its safety checks and rollback behaviour | **Not verified** — the script has not been read from here. |
+
+**Consequence for anyone editing this branch:** treat every push as reaching
+the live house, because the evidence supports that; but do not assume a
+particular safety net exists inside the script, because none of it has been
+read. The repository-side checks below are the ones known to run.
+
+### Confirming a deployment actually landed
+
+There is a cheap visual check. Commit `1bdd704` removed a `TEST` marker from
+the Home view subtitle. If the Home view still reads **"Home control centre
+TEST"**, no deployment has run since 2026-08-24 and everything after
+`26c3b148…` is still sitting in Git. If it reads **"Home control centre"**,
+deployment has run at least once since.
 
 ### Why not the alternatives
 
 **YAML mode was rejected as materially destructive.** A storage dashboard
 cannot be converted in place. Registering a dashboard under `lovelace:
 dashboards:` creates a *new* dashboard at a `url_path`, and a `url_path`
-already held by a storage dashboard is unavailable. All **97** in-dashboard
-links are hardcoded to `/deez-smart-home/`, so a YAML dashboard would have
-to claim exactly that path — which means deleting the working production
-dashboard first, modifying `configuration.yaml`, restarting HA, and
-permanently losing both UI editing and the Raw editor for the whole family.
-That is a large irreversible change to buy an automated deploy.
+already held by a storage dashboard is unavailable. All in-dashboard links
+are hardcoded to `/deez-smart-home/`, so a YAML dashboard would have to claim
+exactly that path — which means deleting the working production dashboard
+first, modifying `configuration.yaml`, restarting HA, and permanently losing
+both UI editing and the Raw editor for the whole family. That reasoning still
+stands, and the current script-based approach avoids it entirely: the
+dashboard stays in storage mode and the UI editor keeps working.
 
-**The WebSocket API (`lovelace/config/save`) remains a valid future
-upgrade** — it is the supported call the Raw editor itself makes, and it
-updates a storage dashboard without touching `.storage` directly. It needs
-a long-lived access token (a real secret, never committed) and network
-reachability to HA. Revisit once `/config` access exists. Not used today.
-
-### The Git Pull add-on is NOT used under this architecture
-
-Home Assistant has no convention that scans a `dashboards/` directory. A
-Lovelace YAML file loads *only* when registered under `lovelace:
-dashboards:` with `mode: yaml` and a `filename:`. Syncing this branch into
-`/config` would therefore place an **inert** file on disk — HA would ignore
-it entirely.
-
-Since Git Pull would deploy nothing while still writing into `/config`, it
-is deliberately not configured. Do not install or point it at this branch.
+**The Git Pull add-on is still not used, and should not be.** Git Pull writes
+files into `/config`, where a storage-mode dashboard would ignore them. It
+would deploy nothing while still overwriting `/config`. The current script is
+a different mechanism and does not depend on HA reading a file from disk. Do
+not install Git Pull or point it at this branch.
 
 ## Branch history — orphan by design, no repair needed
 
@@ -85,9 +151,10 @@ dashboards/deez_smart_home.yaml`) and open a normal PR. Never use
 |---|---|
 | Production dashboard baseline | **Present** — `dashboards/deez_smart_home.yaml` |
 | Dashboard mode | **Storage mode** (adopted; see verification caveat below) |
-| Deployment mechanism | **Manual** — Raw configuration editor |
-| Git Pull add-on | **Not used** |
-| Live deployment | **Has not occurred** |
+| Deployment mechanism | **Automated** — `/config/deploy_deez_dashboard.sh` from `origin/ha-deploy` |
+| Git Pull add-on | **Not used** — and must not be (see above) |
+| Live deployment | **Active.** Pipeline confirmed reading this branch on 2026-08-24 |
+| Manual paste-back | Still available as a fallback and for rollback |
 | `configuration.yaml` | **Deliberately not created or modified** |
 | `secrets.yaml` | Not created (and gitignored) |
 | Automations / scripts / scenes | Not imported — see `DEPLOYMENT_BLOCKERS.md` |
@@ -95,79 +162,130 @@ dashboards/deez_smart_home.yaml`) and open a normal PR. Never use
 
 ### The dashboard baseline
 
-`dashboards/deez_smart_home.yaml` contains the **imported production Deez
-Smart Home dashboard baseline** — the live dashboard configuration, taken
-verbatim from the Raw configuration editor and committed unmodified apart
-from one sanitisation pass (below).
+`dashboards/deez_smart_home.yaml` is the **live production dashboard**. It
+originated as a verbatim export from the Raw configuration editor and is now
+the deployed source of truth.
 
-It is 32 views (12 subviews), 130 distinct entity IDs, 113 `card_mod`
-blocks, `kiosk_mode`, five per-view themes, Mushroom cards, six
-`custom:webrtc-camera` cards, and the English/Chinese toggle — preserved
-as-is. **This file is the rollback point.** Treat it as production: no
+As of 2026-08-25 it is 36 views (16 subviews), 162 distinct entity IDs, 132
+`card_mod` blocks, `kiosk_mode`, five per-view themes (`Deez Cameras`, `Deez
+Climate`, `Deez Energy`, `Deez Lighting`, `Deez Security`), 236 Mushroom
+cards, six `custom:webrtc-camera` cards, and the English/Chinese toggle.
+
+**This file is also the rollback point.** Treat it as production: no
 redesign, no refactor, no reformatting. Changes go in as small, reviewable
-diffs against it.
+diffs.
 
 Dashboard identity: `url_path` **`deez-smart-home`**, title **Deez Smart
 Home**.
 
-### Sanitisation applied
+#### Changes made on this branch since import
 
-Two hardcoded utility account numbers were replaced with references to
-`input_text` helpers the dashboard already uses for that purpose in its
-Bills entry form. No new entity IDs were introduced.
+Six correctness fixes, all deployed:
 
-> ⚠️ **Verify before the first paste-back.** The Electricity Plan card
-> references `input_text.elec_account_number` — the ID this dashboard
-> already used. Confirm the real ID in Developer Tools → States. If the
-> helper is actually named `input_text.electricity_account_number`, correct
-> line 4592 first. Worst case is a card showing `unknown`; it cannot break
-> the dashboard.
+| Commit | Change |
+|---|---|
+| `1bdd704` | Removed a `TEST` marker from the Home view subtitle |
+| `4f590e7` | Energy Now cards: missing data no longer renders as a real zero |
+| `cc3cd42` | Bills cards: a dead sensor no longer reports "All bills paid" |
+| `a49ca72` | Solar readouts show "Offline" instead of "0 W" / "unavailable W" |
+| `25abc06` | Remaining energy totals and bill estimates guarded |
+| `1e889be` | Emergency button cards show real status instead of raw `on`/`off` |
 
-The electricity **NMI** and gas **MIRN** remain hardcoded — no existing
-entity holds them. **Keep this repository private** while they are present.
+All six share one root cause: values were piped through `| float(0)` or
+`| int(0)`, which turns `unavailable` into `0`. A missing reading became a
+plausible-looking measurement — and in the bills case, a green "All bills
+paid" produced by a sensor that was not reporting at all.
 
-## Deployment procedure (manual)
+### Sensitive values in this file
 
-Nothing here is automatic. Both procedures are deliberate, human-driven
-steps.
+> ⚠️ **The two utility account numbers are present in this file, in the
+> Electricity Plan and Gas Plan markdown cards.**
 
-### Applying a change from Git to Home Assistant
+An earlier commit (`a084482`) replaced them with `input_text` helper
+references. That sanitisation was **reverted** by `921315e`, which imported
+the raw production export verbatim at the owner's instruction. The literals
+are therefore live again at the branch tip, and they also remain in history
+at `a62d49e` — so removing them from the tip would not remove them from the
+repository.
 
-1. **Back up first.** Settings → System → Backups → Create backup (full),
-   downloaded off-device.
-2. Review the change as a diff in Git and confirm it is what you intend.
-3. Open the dashboard → ⋮ menu → **Raw configuration editor**.
-4. **Copy the current live contents out first** and keep them until the
-   change is verified — that is your immediate undo.
-5. Replace the contents with `dashboards/deez_smart_home.yaml`.
-6. Save. Reload the page.
-7. **Verify in the browser**: views render, cameras stream, kiosk mode
+Also hardcoded, and never sanitised: the electricity **NMI** and the gas
+**MIRN**. No existing entity holds either value.
+
+**Keep this repository private.** That is what makes the exposure
+acceptable. None of these are authentication credentials — an NMI or MIRN is
+a metering-point identifier — but they are account-identifying, and the
+dashboard additionally contains household device names, room layout, family
+members' personal device names and one partial street address.
+
+If the repository ever needs to be public, create helpers in Home Assistant
+for all four values first, then reference them the way `a084482` did, and
+rewrite the history that carries the literals.
+
+## Deployment procedure
+
+### Normal path — automated
+
+Pushing to `origin/ha-deploy` is the deployment. The script on the HA host
+fetches the branch, validates the dashboard YAML, skips if nothing changed,
+and applies it.
+
+**A push is a production change.** There is no staging step between this
+branch and the family's dashboard, so the review has to happen before the
+push, not after:
+
+1. Make the smallest change that accomplishes the goal.
+2. Validate locally — YAML parse, duplicate keys, `git diff --check`, and a
+   secret scan. `scripts/validate.sh` on `main` does all four.
+3. Read the whole diff. Confirm entity IDs, navigation paths, `kiosk_mode`
+   and the English/Chinese toggle are unchanged unless the change is
+   deliberately about one of them.
+4. Commit with a message explaining *why*, so a later rollback has context.
+5. Push.
+6. **Verify in the browser**: views render, cameras stream, kiosk mode
    behaves, the EN/ZH toggle works, no "Entity not available" or "Custom
    element doesn't exist" errors.
-8. If anything is wrong, paste back the copy from step 4.
 
-### Rolling back to the committed baseline
+Take a full backup (Settings → System → Backups, downloaded off-device)
+before any substantial change.
 
-1. `git show origin/ha-deploy:dashboards/deez_smart_home.yaml` (or check
-   out an earlier commit for an older state).
-2. Open the Raw configuration editor, replace the contents, save.
-3. Reload and verify as above.
+### Rolling back
+
+Roll back the same way you deploy — with Git, not by hand:
+
+1. `git revert <bad commit>` on `ha-deploy`.
+2. Validate as above.
+3. Push. The script picks up the revert like any other commit.
+
+`git revert` is preferred over force-pushing: it keeps the history that
+explains what happened, and never rewrites a branch a deployment script is
+watching.
+
+### Manual fallback
+
+Still valid if the script is unavailable, or to restore immediately without
+waiting for a deployment cycle:
+
+1. `git show origin/ha-deploy:dashboards/deez_smart_home.yaml`
+2. Open the dashboard → ⋮ menu → **Raw configuration editor**.
+3. Copy the current live contents out first — that is your immediate undo.
+4. Replace the contents, save, reload, verify.
 
 No Home Assistant restart is required — a storage-mode dashboard applies on
-save. Restarting is *not* a fix for a bad paste; restoring the previous
+save. Restarting is *not* a fix for a bad deploy; restoring the previous
 contents is.
 
-### Capturing a live change back into Git
+### Capturing a live UI change back into Git
 
-If the dashboard is edited in the UI, Git is now stale. Copy the Raw
-configuration editor contents back into
-`dashboards/deez_smart_home.yaml`, review the diff, and commit. Do this
-before making Git-side edits, or the two will diverge.
+If the dashboard is edited through the UI, Git is now stale — and because
+Git deploys, the next push would overwrite that UI edit. Copy the Raw
+configuration editor contents back into `dashboards/deez_smart_home.yaml`,
+review the diff, and commit **before** making any Git-side edit.
 
 ## Validation status
 
-The dashboard has passed every check this repository can run, and **no
-check that requires Home Assistant itself has been run at all.**
+Two layers of checking now exist: the repository-side checks below, and the
+YAML validation the deployment script performs on the HA host before it
+applies anything. Neither is a Home Assistant schema check.
 
 ### Verified (repository-side, static)
 
@@ -175,32 +293,41 @@ check that requires Home Assistant itself has been run at all.**
 |---|---|
 | YAML syntax | Parses as one valid YAML document |
 | Duplicate keys | None (strict duplicate-key loader) |
-| Navigation integrity | All 32 in-dashboard `navigation_path` targets resolve to real view paths; zero dangling links |
+| Template compilation | All 253 Jinja templates compile; no syntax errors, no unbalanced delimiters |
+| Navigation integrity | All 40 in-dashboard `navigation_path` targets resolve to real view paths; zero dangling links |
 | Repository structure | Only intended files tracked; no `.storage/`, databases, logs, backups or keys |
 | Secret scan (static) | No credentials, tokens, passwords, private keys, private URLs, hosts or IPs |
-| Baseline preservation | View count, entity IDs, navigation, card types, themes, `kiosk_mode` and `card_mod` verified unchanged against the pre-sanitisation file |
+| Baseline preservation | View count, entity IDs, navigation, card types, themes, `kiosk_mode` and `card_mod` verified unchanged on every commit |
 
-### NOT yet verified
+### Host-side (deployment script)
 
-Each requires the live Home Assistant instance.
+| Check | Status |
+|---|---|
+| YAML validation before applying | **Reported and consistent with the run log** (`Validating YAML... YAML VALID`). Implementation not read from here. |
+| No-op skip when content is unchanged | **Reported and consistent with the run log** (`No dashboard content change.`). |
+| Any further safety check or rollback | **Unknown** — the script is not committed to this branch and `/config` is not reachable from the environment that maintains it. |
+
+### NOT verified
 
 | Not verified | Why it matters |
 |---|---|
-| **Home Assistant schema validation** | HA's own config check has never been run. Valid YAML is not valid Lovelace config. |
-| **Existence of every entity** | The 130 entity IDs came from the live dashboard, but none has been confirmed against the entity registry. |
-| **Custom card / resource availability** | The nine `custom:` card types plus `card_mod` and `kiosk-mode` must be installed and registered as Lovelace resources. |
-| **Frontend rendering** | No view has been loaded in a browser. |
+| **Home Assistant schema validation** | Valid YAML is not valid Lovelace config. Card types, option names and nesting are unchecked against HA's schemas by either layer. |
+| **Existence of every entity** | The entity IDs came from the live dashboard, so they are almost certainly real, but the registry has never been read. Some referenced sensors are not exposed to Assist and cannot be confirmed at all. |
+| **Custom card / resource availability** | The `custom:` card types plus `card_mod` and `kiosk-mode` must be installed and registered as Lovelace resources. |
+| **Frontend rendering** | No view has been loaded in a browser from here. |
 | **Dashboard mode** | Storage mode is strongly indicated and has been adopted, but is not tooling-verified. Confirm at Settings → Dashboards. |
 
-**Do not read "validation passed" as "safe to paste in unattended."** It
-means the file is well-formed and internally consistent, nothing more —
-which is exactly why step 4 of the procedure above exists.
+**"Validation passed" means well-formed, not correct.** Both layers check
+that the file parses; neither checks that a card renders, that an entity
+exists, or that a template produces sensible output. Since a push now
+deploys, the browser check after a push is the step that actually catches
+those — it is not optional.
 
 ## Files on this branch
 
 | Path | Purpose | Parsed by HA? |
 |---|---|---|
-| `dashboards/deez_smart_home.yaml` | Production dashboard baseline | **No** — inert on disk; applied manually |
+| `dashboards/deez_smart_home.yaml` | Production dashboard — **deployed** | Applied by `/config/deploy_deez_dashboard.sh`, not read from `/config` by HA |
 | `themes/.gitkeep` | Reserved path for theme YAML | No |
 | `.gitignore` | Blocks secrets, `.storage/`, databases, logs, backups, keys | No |
 | `README.md` | This file | No |
@@ -215,7 +342,9 @@ which is exactly why step 4 of the procedure above exists.
 3. **Never commit secrets.** `secrets.yaml` stays out of git. Never commit
    `.storage/`, the recorder database, logs, or backups.
 4. **Never edit `.storage/` directly**, through Git or otherwise.
-5. **Validate YAML before committing**, and review the diff before pushing.
+5. **Validate YAML before committing**, and review the whole diff before
+   pushing. A push to this branch deploys to the live dashboard — there is
+   no staging step and no approval gate.
 6. **Keep changes small and reversible.** A dashboard redesign is built as
    a separate candidate file and promoted once reviewed — never as an
    in-place wholesale replacement of a working production dashboard.
