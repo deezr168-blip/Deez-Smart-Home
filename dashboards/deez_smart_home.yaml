@@ -1,3 +1,4 @@
+# maintenance-framework bootstrap test marker (reverted immediately)
 kiosk_mode:
   hide_sidebar: true
   hide_header: true
