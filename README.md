@@ -196,6 +196,29 @@ All six share one root cause: values were piped through `| float(0)` or
 plausible-looking measurement — and in the bills case, a green "All bills
 paid" produced by a sensor that was not reporting at all.
 
+#### Known hardware gaps
+
+Recorded here rather than as cards on the dashboard. Seven "nothing here yet"
+markdown placeholders used to occupy three room pages — on Ray Bedroom they
+filled two of the page's four columns — so they were removed and the same
+information kept in the repository, where a maintainer will actually look for
+it.
+
+| Room | Missing | Where its cards belong once it exists |
+|---|---|---|
+| Ray Bedroom | Temperature / humidity sensor | New Climate section |
+| Ray Bedroom | Thermostat (`climate` entity) | New Climate section |
+| Ray Bedroom | Media player (TV or speaker) | New Entertainment section |
+| Guest Room | Temperature / humidity sensor | New Climate section |
+| Guest Room | Thermostat (`climate` entity) | New Climate section |
+| Guest Room | Blinds, fans, other controls | New Controls section |
+| Parents Room | Blinds, fans, other controls | Section 2, above Power Boards |
+
+Two more gaps are still shown on the dashboard, deliberately, because they are
+about a device that is physically present but not reachable: the Living Room
+Mitsubishi AC ("Wi-Fi module not integrated yet", on Climate and Living Room)
+and the Garage door ("Shelly / Chamberlain integration planned").
+
 ### Sensitive values in this file
 
 > ⚠️ **The two utility account numbers are present in this file, in the

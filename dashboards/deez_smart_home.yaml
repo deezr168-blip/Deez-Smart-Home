@@ -661,11 +661,6 @@ views:
   - type: grid
     cards:
     - type: heading
-      heading: Controls
-      icon: mdi:tune-variant
-    - type: markdown
-      content: '*No blinds, fans or other controls in the Parents Room yet.*'
-    - type: heading
       heading: Power Boards
       icon: mdi:power-socket-au
     - type: custom:mushroom-entity-card
@@ -703,7 +698,7 @@ views:
   title: Ray Bedroom
   path: ray-bedroom
   icon: mdi:bed
-  max_columns: 4
+  max_columns: 2
   sections:
   - type: grid
     cards:
@@ -787,33 +782,11 @@ views:
       - number.lph_se_dcd9_plants_age
       - time.lph_se_dcd9_light_on
       - time.lph_se_dcd9_light_off
-  - type: grid
-    cards:
-    - type: heading
-      heading: Climate
-      icon: mdi:thermometer
-    - type: markdown
-      content: '*No climate sensor in this room yet. Once a temperature/humidity sensor
-        is added, its cards belong here.*'
-    - type: heading
-      heading: Thermostat
-      icon: mdi:thermostat
-    - type: markdown
-      content: '*No thermostat paired to this room yet. A `climate` entity card goes
-        here once one is added.*'
-  - type: grid
-    cards:
-    - type: heading
-      heading: Entertainment
-      icon: mdi:television
-    - type: markdown
-      content: '*No media player assigned to Ray Bedroom yet. A media card belongs
-        here once a TV or speaker is added.*'
 - type: sections
   title: Guest Room
   path: guest-room
   icon: mdi:bed-empty
-  max_columns: 4
+  max_columns: 3
   sections:
   - type: grid
     cards:
@@ -869,25 +842,6 @@ views:
         name: Auto-off at
       - entity: switch.g_printer_p100_auto_update_enabled
         name: Auto-update
-  - type: grid
-    cards:
-    - type: heading
-      heading: Climate
-      icon: mdi:thermometer
-    - type: markdown
-      content: '*No climate sensor in the Guest Room yet. Temperature and humidity
-        cards belong here once one is added.*'
-    - type: heading
-      heading: Thermostat
-      icon: mdi:thermostat
-    - type: markdown
-      content: '*No thermostat in the Guest Room yet. A `climate` entity card goes
-        here once one is added.*'
-    - type: heading
-      heading: Controls
-      icon: mdi:tune-variant
-    - type: markdown
-      content: '*No blinds, fans or other controls in the Guest Room yet.*'
 - type: sections
   title: Living Room
   path: living-room
@@ -1015,12 +969,8 @@ views:
       icon: mdi:lightbulb-on-outline
     - type: custom:mushroom-entity-card
       entity: switch.k_bot_p100
+      name: Kitchen Bottom
       icon: mdi:lightbulb-on-outline
-      card_mod:
-        style: "ha-card {\n  filter: brightness(200%);\n  transition: filter 0ms ease;\n\
-          }\n\nha-state-icon {\n  color: {{ 'var(--yellow-color)' if is_state('switch.k_bot_p100',\
-          \ 'on') else 'var(--pink-color)' }} !important;\n}\n\nha-card {\n  font-size:\
-          \ 16px;\n  font-weight: normal;\n  color: #e1e1e1;\n}"
 - type: sections
   title: Dining
   path: dining
