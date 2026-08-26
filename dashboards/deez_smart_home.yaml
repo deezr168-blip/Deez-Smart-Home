@@ -55,15 +55,7 @@ views:
     - type: custom:mushroom-template-card
       primary: '{{ ''家庭状态'' if is_state(''input_boolean.chinese_dashboard'',''on'')
         else ''House Pulse'' }}'
-      secondary: "{% set doors = [states('binary_sensor.m_contact_sensor_door'), states('binary_sensor.f_contact_sensor_door'),\
-        \ states('binary_sensor.b_contact_sensor_door')] %} {% set open = doors |\
-        \ select('eq','on') | list | count %} {% set wan = is_state('binary_sensor.eero_wan_status','on')\
-        \ %} {% set lights = states.light | selectattr('state','eq','on') | list |\
-        \ count %} {% set t = state_attr('weather.forecast_home','temperature') %}\
-        \ {% if is_state('input_boolean.chinese_dashboard','on') %}\n  {{ open }}\
-        \ 扇门开启 • {{ lights }} 盏灯 • {{ t }}°C{{ ' • 网络离线' if not wan else '' }}\n{%\
-        \ else %}\n  {{ open }} open • {{ lights }} lights • {{ t }}°C{{ ' • Offline'\
-        \ if not wan else '' }}\n{% endif %}"
+      secondary: '{% set doors = [states(''binary_sensor.m_contact_sensor_door''), states(''binary_sensor.f_contact_sensor_door''), states(''binary_sensor.b_contact_sensor_door'')] %}{% set open = doors | select(''eq'',''on'') | list | count %}{% set wan = is_state(''binary_sensor.eero_wan_status'',''on'') %}{% set lights = states.light | selectattr(''state'',''eq'',''on'') | list | count %}{% set t = state_attr(''weather.forecast_home'',''temperature'') %}{% set temp = (t | round(0) | int ~ ''°C'') if t is number else ''—'' %}{% if is_state(''input_boolean.chinese_dashboard'',''on'') %}{{ open }} 扇门开启 • {{ lights }} 盏灯 • {{ temp }}{{ '' • 网络离线'' if not wan else '''' }}{% else %}{{ open }} open • {{ lights }} lights • {{ temp }}{{ '' • Offline'' if not wan else '''' }}{% endif %}'
       icon: mdi:home-heart
       icon_color: '{% set doors = [states(''binary_sensor.m_contact_sensor_door''),
         states(''binary_sensor.f_contact_sensor_door''), states(''binary_sensor.b_contact_sensor_door'')]
@@ -254,10 +246,10 @@ views:
             box-shadow: 0 2px 10px rgba(0,0,0,0.30);
           }
       primary: '{% set t = state_attr(''weather.forecast_home'',''temperature'') %}{{
-        (t | round(0) ~ ''°C'') if t is not none else ''—'' }}'
+        (t | round(0) ~ ''°C'') if t is number else ''—'' }}'
       secondary: '{% set c = states(''weather.forecast_home'') %}{{ ''—'' if c in
-        [''unavailable'',''unknown'',''none''] else c | replace(''-'','' '') | title
-        }}'
+        [''unavailable'',''unknown'',''none''] else c | replace(''-'','' '') | replace(''partlycloudy'',''partly cloudy'')
+        | title }}'
       icon: mdi:weather-partly-cloudy
       icon_color: cyan
       entity: weather.forecast_home
@@ -1793,9 +1785,10 @@ views:
   path: climate
   icon: mdi:thermostat
   theme: Deez Climate
-  max_columns: 1
+  max_columns: 2
   sections:
   - type: grid
+    column_span: 2
     cards:
     - type: custom:mushroom-title-card
       card_mod:
@@ -1804,21 +1797,91 @@ views:
           \  margin-bottom: -4px;\n}\n"
       title: 🌡️ Climate
       subtitle: Heating, cooling and room conditions
-    - type: custom:mushroom-climate-card
+  - type: grid
+    cards:
+    - type: heading
+      heading: Parents Room AC
+      icon: mdi:air-conditioner
+    - type: thermostat
       entity: climate.bedroom_parents_room_ac
       name: Parents Room AC
-      show_temperature_control: true
-      collapsible_controls: true
+      show_current_as_primary: false
+      features:
+      - type: climate-hvac-modes
+        hvac_modes:
+        - heat_cool
+        - cool
+        - heat
+        - dry
+        - fan_only
+        - 'off'
+      - type: climate-fan-modes
+        style: icons
+      - type: climate-swing-modes
+        style: icons
+      - type: climate-preset-modes
+        style: icons
+    - type: custom:mushroom-entity-card
+      entity: switch.bedroom_parents_room_ac_climate_react
+      name: Climate React
+      icon: mdi:auto-mode
+      grid_options:
+        columns: 6
+    - type: custom:mushroom-entity-card
+      entity: switch.bedroom_parents_room_ac_timer
+      name: Timer
+      icon: mdi:timer-outline
+      grid_options:
+        columns: 6
+    - type: custom:mushroom-template-card
+      primary: Room Occupied
+      secondary: '{% set v = states(''binary_sensor.bedroom_parents_room_ac_room_occupied'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}Offline{% elif v == ''on'' %}Occupied{% else %}Empty{% endif %}'
+      icon: mdi:account-check
+      icon_color: '{% set v = states(''binary_sensor.bedroom_parents_room_ac_room_occupied'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}grey{% elif v == ''on'' %}green{% else %}grey{% endif %}'
+      entity: binary_sensor.bedroom_parents_room_ac_room_occupied
+      tap_action:
+        action: more-info
+      grid_options:
+        columns: 6
+    - type: custom:mushroom-template-card
+      primary: Filter
+      secondary: '{% set v = states(''binary_sensor.bedroom_parents_room_ac_filter_clean_required'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}Offline{% elif v == ''on'' %}Clean required{% else %}Clean{% endif %}'
+      icon: mdi:air-filter
+      icon_color: '{% set v = states(''binary_sensor.bedroom_parents_room_ac_filter_clean_required'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}grey{% elif v == ''on'' %}orange{% else %}green{% endif %}'
+      entity: binary_sensor.bedroom_parents_room_ac_filter_clean_required
+      tap_action:
+        action: more-info
+      grid_options:
+        columns: 6
+  - type: grid
+    cards:
+    - type: heading
+      heading: Conditions
+      icon: mdi:home-thermometer
+    - type: custom:mushroom-template-card
+      primary: Outside
+      secondary: '{% set bad = [''unavailable'', ''unknown'', ''none''] %}{% set t = state_attr(''weather.forecast_home'',''temperature'') %}{% set c = states(''weather.forecast_home'') %}{{ ''—'' if t is not number else (t | round(1) ~ ''°C'') }}{{ '''' if c in bad else ('' • '' ~ c | replace(''-'','' '') | replace(''partlycloudy'',''partly cloudy'') | title) }}'
+      icon: mdi:weather-partly-cloudy
+      icon_color: cyan
+      entity: weather.forecast_home
+      tap_action:
+        action: more-info
     - type: custom:mushroom-template-card
       primary: Parents Room
       secondary: '{% set bad = [''unavailable'',''unknown'',''none''] %}{% set t = states(''sensor.bedroom_motion_sensor_temperature'') %}{% set h = states(''sensor.bedroom_motion_sensor_humidity'') %}{{ ''—'' if t in bad else (t|float(0)|round(1) ~ ''°C'') }}{{ '''' if h in bad else ('' • '' ~ (h|float(0)|round(0)|int) ~ ''%'') }}'
       icon: mdi:home-thermometer
       icon_color: cyan
+      entity: sensor.bedroom_motion_sensor_temperature
+      tap_action:
+        action: more-info
     - type: custom:mushroom-template-card
       primary: Living Room
       secondary: '{% set v = states(''sensor.living_room_living_hue_hue_sensor_temperature'') %}{{ ''—'' if v in [''unavailable'',''unknown'',''none''] else ((v|float(0)|round(1)) ~ ''°C'') }}'
       icon: mdi:home-thermometer
       icon_color: cyan
+      entity: sensor.living_room_living_hue_hue_sensor_temperature
+      tap_action:
+        action: more-info
     - type: custom:mushroom-template-card
       primary: Living Room Mitsubishi AC
       secondary: Wi-Fi module not integrated yet
@@ -1945,9 +2008,10 @@ views:
   title: Smart Home Status
   path: status
   icon: mdi:home-assistant
-  max_columns: 1
+  max_columns: 2
   sections:
   - type: grid
+    column_span: 2
     cards:
     - type: custom:mushroom-title-card
       card_mod:
@@ -1956,29 +2020,57 @@ views:
           \  margin-bottom: -4px;\n}\n"
       title: 🧠 Smart Home Status
       subtitle: Connectivity, updates and backups
+  - type: grid
+    cards:
+    - type: heading
+      heading: Connectivity
+      icon: mdi:wan
     - type: custom:mushroom-template-card
       primary: WAN
-      secondary: '{{ ''Online'' if is_state(''binary_sensor.eero_wan_status'',''on'')
-        else ''Offline'' }}'
+      secondary: '{% set v = states(''binary_sensor.eero_wan_status'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}Not reporting{% elif v == ''on'' %}Online{% else %}Offline{% endif %}'
       icon: mdi:wan
-      icon_color: '{{ ''green'' if is_state(''binary_sensor.eero_wan_status'',''on'')
-        else ''red'' }}'
+      icon_color: '{% set v = states(''binary_sensor.eero_wan_status'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}grey{% elif v == ''on'' %}green{% else %}red{% endif %}'
+      entity: binary_sensor.eero_wan_status
+      tap_action:
+        action: navigate
+        navigation_path: /deez-smart-home/network
     - type: custom:mushroom-template-card
-      primary: Home Assistant Core
-      secondary: '{{ ''Update available'' if is_state(''update.home_assistant_core_update'',''on'')
-        else ''Up to date'' }}'
-      icon: mdi:home-assistant
-      icon_color: '{{ ''amber'' if is_state(''update.home_assistant_core_update'',''on'')
-        else ''green'' }}'
-    - type: custom:mushroom-template-card
-      primary: Automatic Backups
-      secondary: Last success {{ states('sensor.backup_last_successful_automatic_backup')
-        }}
+      primary: Remote Access
+      secondary: '{% set v = states(''binary_sensor.remote_ui'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}Not reporting{% elif v == ''on'' %}Connected{% else %}Offline{% endif %}'
+      icon: mdi:cloud-check-outline
+      icon_color: '{% set v = states(''binary_sensor.remote_ui'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}grey{% elif v == ''on'' %}green{% else %}red{% endif %}'
+      entity: binary_sensor.remote_ui
+      tap_action:
+        action: more-info
+  - type: grid
+    cards:
+    - type: heading
+      heading: Updates & Backups
       icon: mdi:backup-restore
     - type: custom:mushroom-template-card
+      primary: Home Assistant Core
+      secondary: '{% set v = states(''update.home_assistant_core_update'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}Not reporting{% elif v == ''on'' %}Update available{% else %}Up to date{% endif %}'
+      icon: mdi:home-assistant
+      icon_color: '{% set v = states(''update.home_assistant_core_update'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}grey{% elif v == ''on'' %}amber{% else %}green{% endif %}'
+      entity: update.home_assistant_core_update
+      tap_action:
+        action: more-info
+    - type: custom:mushroom-template-card
+      primary: Last Backup
+      secondary: '{% set v = states(''sensor.backup_last_successful_automatic_backup'') %}{{ ''Never'' if v in [''unavailable'', ''unknown'', ''none''] else (as_timestamp(v) | timestamp_custom(''%a %d %b, %H:%M'', true)) }}'
+      icon: mdi:backup-restore
+      icon_color: '{{ ''grey'' if states(''sensor.backup_last_successful_automatic_backup'') in [''unavailable'', ''unknown'', ''none''] else ''green'' }}'
+      entity: sensor.backup_last_successful_automatic_backup
+      tap_action:
+        action: more-info
+    - type: custom:mushroom-template-card
       primary: Next Backup
-      secondary: '{{ states(''sensor.backup_next_scheduled_automatic_backup'') }}'
+      secondary: '{% set v = states(''sensor.backup_next_scheduled_automatic_backup'') %}{{ ''Not scheduled'' if v in [''unavailable'', ''unknown'', ''none''] else (as_timestamp(v) | timestamp_custom(''%a %d %b, %H:%M'', true)) }}'
       icon: mdi:calendar-clock
+      icon_color: '{{ ''grey'' if states(''sensor.backup_next_scheduled_automatic_backup'') in [''unavailable'', ''unknown'', ''none''] else ''indigo'' }}'
+      entity: sensor.backup_next_scheduled_automatic_backup
+      tap_action:
+        action: more-info
 - type: sections
   title: People & Locations
   path: people-locations
