@@ -1454,6 +1454,23 @@ views:
   sections:
   - type: grid
     cards:
+    - type: custom:mushroom-chips-card
+      card_mod:
+        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
+          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
+          \ .chip-container {\n  gap: 8px;\n}\n"
+      alignment: start
+      chips:
+      - type: template
+        icon: mdi:arrow-left
+        content: Cameras
+        icon_color: blue
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/cameras
+      grid_options:
+        columns: 12
+        rows: 1
     - type: custom:webrtc-camera
       entity: camera.front_door_live_view
       title: Front Door
@@ -1483,6 +1500,23 @@ views:
   sections:
   - type: grid
     cards:
+    - type: custom:mushroom-chips-card
+      card_mod:
+        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
+          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
+          \ .chip-container {\n  gap: 8px;\n}\n"
+      alignment: start
+      chips:
+      - type: template
+        icon: mdi:arrow-left
+        content: Cameras
+        icon_color: blue
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/cameras
+      grid_options:
+        columns: 12
+        rows: 1
     - type: custom:webrtc-camera
       entity: camera.tapo_c425_north_wall_hd_stream_direct
       title: North Wall
@@ -1512,6 +1546,23 @@ views:
   sections:
   - type: grid
     cards:
+    - type: custom:mushroom-chips-card
+      card_mod:
+        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
+          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
+          \ .chip-container {\n  gap: 8px;\n}\n"
+      alignment: start
+      chips:
+      - type: template
+        icon: mdi:arrow-left
+        content: Cameras
+        icon_color: blue
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/cameras
+      grid_options:
+        columns: 12
+        rows: 1
     - type: custom:webrtc-camera
       entity: camera.tapo_c200_stockroom_hd_stream_direct
       title: Stockroom
@@ -1541,6 +1592,23 @@ views:
   sections:
   - type: grid
     cards:
+    - type: custom:mushroom-chips-card
+      card_mod:
+        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
+          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
+          \ .chip-container {\n  gap: 8px;\n}\n"
+      alignment: start
+      chips:
+      - type: template
+        icon: mdi:arrow-left
+        content: Cameras
+        icon_color: blue
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/cameras
+      grid_options:
+        columns: 12
+        rows: 1
     - type: custom:webrtc-camera
       entity: camera.tapo_c420_east_wall_hd_stream_direct
       title: East Wall
@@ -1570,6 +1638,23 @@ views:
   sections:
   - type: grid
     cards:
+    - type: custom:mushroom-chips-card
+      card_mod:
+        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
+          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
+          \ .chip-container {\n  gap: 8px;\n}\n"
+      alignment: start
+      chips:
+      - type: template
+        icon: mdi:arrow-left
+        content: Cameras
+        icon_color: blue
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/cameras
+      grid_options:
+        columns: 12
+        rows: 1
     - type: custom:webrtc-camera
       entity: camera.tapo_c420_south_wall_hd_stream_direct
       title: South Wall
@@ -1599,6 +1684,23 @@ views:
   sections:
   - type: grid
     cards:
+    - type: custom:mushroom-chips-card
+      card_mod:
+        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
+          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
+          \ .chip-container {\n  gap: 8px;\n}\n"
+      alignment: start
+      chips:
+      - type: template
+        icon: mdi:arrow-left
+        content: Cameras
+        icon_color: blue
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/cameras
+      grid_options:
+        columns: 12
+        rows: 1
     - type: custom:webrtc-camera
       entity: camera.smart_pet_feeder
       title: Pet Feeder
@@ -2269,8 +2371,6 @@ views:
   sections:
   - type: grid
     cards:
-    - type: heading
-      heading: Favourite Lights
     - type: custom:mushroom-title-card
       card_mod:
         style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
@@ -2304,9 +2404,7 @@ views:
       - type: template
         icon: mdi:weather-partly-cloudy
         entity: weather.forecast_home
-        content: '{% set t = state_attr(''weather.forecast_home'',''temperature'')
-          %} {{ (t | round(0) ~ ''°'') if t is not none else states(''weather.forecast_home'')
-          }}'
+        content: '{% set t = state_attr(''weather.forecast_home'',''temperature'') %}{{ (t | round(0) | int ~ ''°'') if t is number else ''—'' }}'
         tap_action:
           action: more-info
       - type: template
@@ -2315,6 +2413,8 @@ views:
         tap_action:
           action: navigate
           navigation_path: /deez-smart-home/home
+    - type: heading
+      heading: Favourite Lights
     - type: custom:mushroom-light-card
       entity: light.living_room
       name: Living Room
@@ -2480,8 +2580,6 @@ views:
   sections:
   - type: grid
     cards:
-    - type: heading
-      heading: Main Light
     - type: custom:mushroom-title-card
       card_mod:
         style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
@@ -2489,6 +2587,8 @@ views:
           \  margin-bottom: -4px;\n}\n"
       title: Living Room Light
       subtitle: Power • brightness • temperature • capability
+    - type: heading
+      heading: Main Light
     - type: custom:mushroom-light-card
       entity: light.living_room
       name: Living Room
@@ -2633,8 +2733,6 @@ views:
   sections:
   - type: grid
     cards:
-    - type: heading
-      heading: Bedroom Light
     - type: custom:mushroom-title-card
       card_mod:
         style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
@@ -2642,6 +2740,8 @@ views:
           \  margin-bottom: -4px;\n}\n"
       title: Ray Bedroom Light
       subtitle: Power • brightness • temperature • capability
+    - type: heading
+      heading: Bedroom Light
     - type: custom:mushroom-light-card
       entity: light.bedroom_bedroom
       name: Ray Bedroom
@@ -2716,8 +2816,6 @@ views:
   sections:
   - type: grid
     cards:
-    - type: heading
-      heading: Whole Home Presets
     - type: custom:mushroom-title-card
       card_mod:
         style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
@@ -2725,6 +2823,8 @@ views:
           \  margin-bottom: -4px;\n}\n"
       title: Lighting Modes
       subtitle: One-touch brightness presets using confirmed dimmable lights
+    - type: heading
+      heading: Whole Home Presets
     - type: grid
       columns: 2
       square: false
