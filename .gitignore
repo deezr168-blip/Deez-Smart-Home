@@ -82,3 +82,13 @@ Thumbs.db
 *~
 .vscode/
 .idea/
+
+# Deployment credentials — see DEPLOY_AUTH.md. These live on the Home Assistant
+# host under /config and must never be tracked. Listed here as a second line of
+# defence in case the clone path and the repo root ever coincide.
+.deez_deploy.env
+*deploy*.env
+.deez_gitconfig
+.git-credentials
+.ssh/
+deploy_askpass_local.sh

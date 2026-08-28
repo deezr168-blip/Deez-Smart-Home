@@ -54,13 +54,17 @@ jwt='eyJ[A-Za-z0-9_-]{16,}\.[A-Za-z0-9_-]{16,}'
 pk='-----BEGIN[ A-Z]*PRIVATE KEY-----'
 url='[a-z]+://[^[:space:]"]*:[^[:space:]"@]*@'
 nabu='[a-z0-9-]+\.ui\.nabu\.casa'
+# GitHub tokens: the deploy path uses one (see DEPLOY_AUTH.md), so the gate
+# must refuse to let one reach a tracked file. Length-bounded so short
+# placeholders in documentation do not trip it.
+ghtok='gh[pousr]_[A-Za-z0-9]{36,}|github_pat_[A-Za-z0-9_]{40,}'
 hits=0
 for f in "${files[@]:-}"; do
   [ -f "$f" ] || continue
   case "$f" in scripts/ha_validate.sh) continue ;; esac
   while IFS=: read -r ln _; do
     [ -n "$ln" ] || continue; printf '        %s:%s\n' "$f" "$ln"; hits=$((hits+1))
-  done < <(grep -InE "$jwt|$pk|$url|$nabu" "$f" 2>/dev/null || true)
+  done < <(grep -InE "$jwt|$pk|$url|$nabu|$ghtok" "$f" 2>/dev/null || true)
 done
 [ "$hits" -gt 0 ] && fail "$hits credential-shaped line(s) (locations only; values not printed)" \
                   || pass "no credential-shaped literals"
