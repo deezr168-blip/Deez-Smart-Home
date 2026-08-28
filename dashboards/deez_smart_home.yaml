@@ -1203,6 +1203,7 @@ views:
   max_columns: 2
   sections:
   - type: grid
+    column_span: 2
     cards:
     - type: custom:mushroom-chips-card
       card_mod:
@@ -1226,8 +1227,19 @@ views:
         style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
           \ none;\n  border: none;\n  box-shadow: none;\n  padding: 4px 4px 0px 4px;\n\
           \  margin-bottom: -4px;\n}\n"
-      title: ⚡ Energy Now
-      subtitle: Live grid import, solar production and estimated house load
+      title: ⚡ Energy
+      subtitle: Live power, daily totals and lifetime meters
+    - type: markdown
+      content: '*Powerpal reads the meter''s optical port, so it reports **grid import
+        only** — not whole-house consumption. When solar covers the house it can legitimately
+        read 0 W. House Load is therefore calculated as grid import + solar production.
+        **Solar export cannot be measured**: neither the Powerpal optical interface
+        nor the Fronius meter (in produce-only mode) reports it.*'
+  - type: grid
+    cards:
+    - type: heading
+      heading: Now
+      icon: mdi:flash
     - type: custom:mushroom-template-card
       primary: Grid Import
       secondary: '{% set g = states(''sensor.powerpal_gateway_powerpal_power'') %}{% if g in [''unavailable'', ''unknown'', ''none''] %}Unavailable  •  meter not reporting{% else %}{{ g | float(0) | round(0) | int }} W  •  measured{% endif %}'
@@ -1245,12 +1257,8 @@ views:
       secondary: '{% set g = states(''sensor.powerpal_gateway_powerpal_power'') %}{% set s = states(''sensor.primo_5_0_1_1_ac_power'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}{% if g in bad %}Unavailable  •  grid meter not reporting{% elif s in bad %}{{ g | float(0) | round(0) | int }} W  •  grid only, solar data unavailable{% else %}{{ (g | float(0) + s | float(0)) | round(0) | int }} W  •  calculated{% endif %}'
       icon: mdi:home-lightning-bolt
       icon_color: '{% set g = states(''sensor.powerpal_gateway_powerpal_power'') %}{% set s = states(''sensor.primo_5_0_1_1_ac_power'') %}{% if g in [''unavailable'', ''unknown'', ''none''] %}red{% else %}{% set load = g | float(0) + (s | float(0)) %}{% if load > 4000 %}red{% elif load > 2000 %}orange{% else %}green{% endif %}{% endif %}'
-    - type: markdown
-      content: '*Powerpal reads the meter''s optical port, so it reports **grid import
-        only** — not whole-house consumption. When solar covers the house it can legitimately
-        read 0 W. House Load is therefore calculated as grid import + solar production.
-        **Solar export cannot be measured**: neither the Powerpal optical interface
-        nor the Fronius meter (in produce-only mode) reports it.*'
+  - type: grid
+    cards:
     - type: heading
       heading: Today
       icon: mdi:chart-box
@@ -1258,46 +1266,67 @@ views:
       primary: Grid Import Today
       secondary: '{% set v = states(''sensor.powerpal_gateway_powerpal_daily_energy'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}Unavailable{% else %}{{ v | float(0) | round(2) }} kWh{% endif %}'
       icon: mdi:transmission-tower-import
-      icon_color: blue
+      icon_color: '{% set v = states(''sensor.powerpal_gateway_powerpal_daily_energy'') %}{{ ''grey'' if v in [''unavailable'', ''unknown'', ''none''] else ''blue'' }}'
       entity: sensor.powerpal_gateway_powerpal_daily_energy
     - type: custom:mushroom-template-card
       primary: Solar Today
       secondary: '{% set v = states(''sensor.primo_5_0_1_1_energy_day'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}Unavailable{% else %}{{ (v | float(0) / 1000) | round(2) }} kWh{% endif %}'
       icon: mdi:solar-panel-large
-      icon_color: amber
+      icon_color: '{% set v = states(''sensor.primo_5_0_1_1_energy_day'') %}{{ ''grey'' if v in [''unavailable'', ''unknown'', ''none''] else ''amber'' }}'
       entity: sensor.primo_5_0_1_1_energy_day
+  - type: grid
+    column_span: 2
+    cards:
     - type: heading
       heading: Lifetime & Diagnostics
       icon: mdi:counter
     - type: custom:mushroom-template-card
+      grid_options:
+        columns: 3
       primary: Solar Year
       secondary: '{% set v = states(''sensor.primo_5_0_1_1_energy_year'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}Unavailable{% else %}{{ (v | float(0) / 1000) | round(1) }} kWh{% endif %}'
       icon: mdi:calendar
       entity: sensor.primo_5_0_1_1_energy_year
     - type: custom:mushroom-template-card
+      grid_options:
+        columns: 3
       primary: Total Solar
-      secondary: '{{ states(''sensor.primo_5_0_1_1_total_energy'') }}'
+      secondary: '{% set v = states(''sensor.primo_5_0_1_1_total_energy'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}Unavailable{% else %}{{ (v | float(0) / 1000) | round(1) }} kWh{% endif %}'
       icon: mdi:counter
       entity: sensor.primo_5_0_1_1_total_energy
     - type: custom:mushroom-template-card
+      grid_options:
+        columns: 3
       primary: Grid Import (lifetime)
       secondary: '{% set v = states(''sensor.powerpal_gateway_powerpal_total_energy'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}Unavailable{% else %}{{ v | float(0) | round(2) }} kWh{% endif %}'
       icon: mdi:counter
       entity: sensor.powerpal_gateway_powerpal_total_energy
     - type: custom:mushroom-template-card
+      grid_options:
+        columns: 3
       primary: Powerpal Gateway
-      secondary: Battery {{ states('sensor.powerpal_gateway_powerpal_battery') }}%
+      secondary: '{% set b = states(''sensor.powerpal_gateway_powerpal_battery'') %}{% if b in [''unavailable'', ''unknown'', ''none''] %}Battery not reporting{% else %}Battery {{ b | float(0) | round(0) | int }}%{% endif %}'
       icon: mdi:battery-heart-variant
-      icon_color: '{% set b = states(''sensor.powerpal_gateway_powerpal_battery'')
-        | float(100) %} {% if b < 20 %}red{% elif b < 40 %}orange{% else %}green{%
-        endif %}'
+      icon_color: '{% set b = states(''sensor.powerpal_gateway_powerpal_battery'') %}{% if b in [''unavailable'', ''unknown'', ''none''] %}grey{% else %}{% set v = b | float(0) %}{% if v < 20 %}red{% elif v < 40 %}orange{% else %}green{% endif %}{% endif %}'
       entity: sensor.powerpal_gateway_powerpal_battery
   - type: grid
+    column_span: 2
     cards:
+    - type: heading
+      heading: Charts
+      icon: mdi:chart-areaspline
     - type: energy-distribution
+      grid_options:
+        columns: 6
     - type: energy-usage-graph
+      grid_options:
+        columns: 6
     - type: solar-consumed-gauge
+      grid_options:
+        columns: 6
     - type: energy-solar-graph
+      grid_options:
+        columns: 6
 - type: sections
   title: Cameras
   path: cameras
