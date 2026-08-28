@@ -2404,100 +2404,47 @@ views:
           \  margin-bottom: -4px;\n}\n"
       title: 📍 People & Locations
       subtitle: Family locations • Presence from Home Assistant
-    - type: custom:mushroom-chips-card
-      card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
-      alignment: start
-      chips:
-      - type: template
-        icon: mdi:account
-        content: '{% set d = distance(''zone.home'',''person.raymond_du'') | float(9999)
-          %} {% if d <= 0.1 %}🟢{% elif d < 50 %}🟠{% else %}🔴{% endif %} Raymond Du'
-        icon_color: '{% set d = distance(''zone.home'',''person.raymond_du'') | float(9999)
-          %} {% if d <= 0.1 %}green{% elif d < 50 %}orange{% else %}red{% endif %}'
-        entity: person.raymond_du
-        tap_action:
-          action: more-info
-      - type: template
-        icon: mdi:account
-        content: '{% set d = distance(''zone.home'',''person.vinh_du'') | float(9999)
-          %} {% if d <= 0.1 %}🟢{% elif d < 50 %}🟠{% else %}🔴{% endif %} Vinh Du'
-        icon_color: '{% set d = distance(''zone.home'',''person.vinh_du'') | float(9999)
-          %} {% if d <= 0.1 %}green{% elif d < 50 %}orange{% else %}red{% endif %}'
-        entity: person.vinh_du
-        tap_action:
-          action: more-info
-      - type: template
-        icon: mdi:account
-        content: '{% set d = distance(''zone.home'',''person.ai_q_huang'') | float(9999)
-          %} {% if d <= 0.1 %}🟢{% elif d < 50 %}🟠{% else %}🔴{% endif %} Ai Q Huang'
-        icon_color: '{% set d = distance(''zone.home'',''person.ai_q_huang'') | float(9999)
-          %} {% if d <= 0.1 %}green{% elif d < 50 %}orange{% else %}red{% endif %}'
-        entity: person.ai_q_huang
-        tap_action:
-          action: more-info
-    - type: grid
-      columns: 3
-      square: false
-      cards:
-      - type: custom:mushroom-template-card
-        card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
-            \ 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n  box-shadow: 0\
-            \ 2px 10px rgba(0,0,0,0.30);\n}\n"
-        primary: Raymond Du
-        secondary: "{% set d = distance('zone.home','person.raymond_du') | float(9999)\
-          \ %} {% if d <= 0.1 %}\n  Home • within 100 m\n{% elif d < 50 %}\n  {{ d\
-          \ | round(1) }} km from home\n{% else %}\n  {{ d | round(1) }} km from home\n\
-          {% endif %}"
-        icon: mdi:crosshairs-gps
-        icon_color: '{% set d = distance(''zone.home'',''person.raymond_du'') | float(9999)
-          %} {% if d <= 0.1 %}green{% elif d < 50 %}orange{% else %}red{% endif %}'
-        entity: person.raymond_du
-        tap_action:
-          action: more-info
-      - type: custom:mushroom-template-card
-        card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
-            \ 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n  box-shadow: 0\
-            \ 2px 10px rgba(0,0,0,0.30);\n}\n"
-        primary: Vinh Du
-        secondary: "{% set d = distance('zone.home','person.vinh_du') | float(9999)\
-          \ %} {% if d <= 0.1 %}\n  Home • within 100 m\n{% elif d < 50 %}\n  {{ d\
-          \ | round(1) }} km from home\n{% else %}\n  {{ d | round(1) }} km from home\n\
-          {% endif %}"
-        icon: mdi:crosshairs-gps
-        icon_color: '{% set d = distance(''zone.home'',''person.vinh_du'') | float(9999)
-          %} {% if d <= 0.1 %}green{% elif d < 50 %}orange{% else %}red{% endif %}'
-        entity: person.vinh_du
-        tap_action:
-          action: more-info
-      - type: custom:mushroom-template-card
-        card_mod:
-          style: "ha-card {\n  background: rgba(255,255,255,0.07);\n  border-radius:\
-            \ 18px;\n  border: 1px solid rgba(255,255,255,0.12);\n  box-shadow: 0\
-            \ 2px 10px rgba(0,0,0,0.30);\n}\n"
-        primary: Ai Q Huang
-        secondary: "{% set d = distance('zone.home','person.ai_q_huang') | float(9999)\
-          \ %} {% if d <= 0.1 %}\n  Home • within 100 m\n{% elif d < 50 %}\n  {{ d\
-          \ | round(1) }} km from home\n{% else %}\n  {{ d | round(1) }} km from home\n\
-          {% endif %}"
-        icon: mdi:crosshairs-gps
-        icon_color: '{% set d = distance(''zone.home'',''person.ai_q_huang'') | float(9999)
-          %} {% if d <= 0.1 %}green{% elif d < 50 %}orange{% else %}red{% endif %}'
-        entity: person.ai_q_huang
-        tap_action:
-          action: more-info
+    - type: heading
+      heading: Family
+      icon: mdi:account-group
+    - type: custom:mushroom-template-card
+      primary: Raymond Du
+      secondary: '{% set bad = [''unavailable'',''unknown'',''none''] %}{% set d = distance(''zone.home'',''person.raymond_du'') %}{% set z = states(''person.raymond_du'') %}{% if d is not number %}{% if z in bad or z == ''not_home'' %}Location unknown{% else %}{{ z | replace(''_'','' '') | title }}{% endif %}{% elif d <= 0.1 %}Home • within 100 m{% else %}{{ d | round(1) }} km away{% if z not in bad and z not in [''not_home'',''home''] %} • {{ z | replace(''_'','' '') | title }}{% endif %}{% endif %}'
+      icon: mdi:account
+      icon_color: '{% set d = distance(''zone.home'',''person.raymond_du'') %}{% if d is not number %}grey{% elif d <= 0.1 %}green{% elif d < 50 %}orange{% else %}red{% endif %}'
+      entity: person.raymond_du
+      tap_action:
+        action: navigate
+        navigation_path: /deez-smart-home/people-locations-distance
+      hold_action:
+        action: more-info
+    - type: custom:mushroom-template-card
+      primary: Vinh Du
+      secondary: '{% set bad = [''unavailable'',''unknown'',''none''] %}{% set d = distance(''zone.home'',''person.vinh_du'') %}{% set z = states(''person.vinh_du'') %}{% if d is not number %}{% if z in bad or z == ''not_home'' %}Location unknown{% else %}{{ z | replace(''_'','' '') | title }}{% endif %}{% elif d <= 0.1 %}Home • within 100 m{% else %}{{ d | round(1) }} km away{% if z not in bad and z not in [''not_home'',''home''] %} • {{ z | replace(''_'','' '') | title }}{% endif %}{% endif %}'
+      icon: mdi:account
+      icon_color: '{% set d = distance(''zone.home'',''person.vinh_du'') %}{% if d is not number %}grey{% elif d <= 0.1 %}green{% elif d < 50 %}orange{% else %}red{% endif %}'
+      entity: person.vinh_du
+      tap_action:
+        action: navigate
+        navigation_path: /deez-smart-home/people-locations-distance
+      hold_action:
+        action: more-info
+    - type: custom:mushroom-template-card
+      primary: Ai Q Huang
+      secondary: '{% set bad = [''unavailable'',''unknown'',''none''] %}{% set d = distance(''zone.home'',''person.ai_q_huang'') %}{% set z = states(''person.ai_q_huang'') %}{% if d is not number %}{% if z in bad or z == ''not_home'' %}Location unknown{% else %}{{ z | replace(''_'','' '') | title }}{% endif %}{% elif d <= 0.1 %}Home • within 100 m{% else %}{{ d | round(1) }} km away{% if z not in bad and z not in [''not_home'',''home''] %} • {{ z | replace(''_'','' '') | title }}{% endif %}{% endif %}'
+      icon: mdi:account
+      icon_color: '{% set d = distance(''zone.home'',''person.ai_q_huang'') %}{% if d is not number %}grey{% elif d <= 0.1 %}green{% elif d < 50 %}orange{% else %}red{% endif %}'
+      entity: person.ai_q_huang
+      tap_action:
+        action: navigate
+        navigation_path: /deez-smart-home/people-locations-distance
+      hold_action:
+        action: more-info
   - type: grid
     cards:
-    - type: custom:mushroom-template-card
-      primary: Home
-      secondary: Home location reference
-      icon: mdi:home-map-marker
-      icon_color: green
-      entity: zone.home
+    - type: heading
+      heading: Map & Routes
+      icon: mdi:map-marker-path
     - type: map
       entities:
       - entity: zone.home
@@ -2510,56 +2457,15 @@ views:
       hours_to_show: 0
       theme_mode: dark
       aspect_ratio: '16:9'
-    - type: heading
-      heading: Tracking Actions
-      icon: mdi:map-marker-path
-    - type: custom:mushroom-template-card
-      primary: Raymond Du
-      secondary: Distance • Route • Map
-      icon: mdi:account-arrow-right
-      icon_color: '{% set d = distance(''zone.home'',''person.raymond_du'') | float(9999)
-        %} {% if d <= 0.1 %}green{% elif d < 50 %}orange{% else %}red{% endif %}'
-      tap_action:
-        action: navigate
-        navigation_path: /deez-smart-home/people-locations-distance
-      hold_action:
-        action: more-info
-      entity: person.raymond_du
-    - type: custom:mushroom-template-card
-      primary: Vinh Du
-      secondary: Distance • Route • Map
-      icon: mdi:account-arrow-right
-      icon_color: '{% set d = distance(''zone.home'',''person.vinh_du'') | float(9999)
-        %} {% if d <= 0.1 %}green{% elif d < 50 %}orange{% else %}red{% endif %}'
-      tap_action:
-        action: navigate
-        navigation_path: /deez-smart-home/people-locations-distance
-      hold_action:
-        action: more-info
-      entity: person.vinh_du
-    - type: custom:mushroom-template-card
-      primary: Ai Q Huang
-      secondary: Distance • Route • Map
-      icon: mdi:account-arrow-right
-      icon_color: '{% set d = distance(''zone.home'',''person.ai_q_huang'') | float(9999)
-        %} {% if d <= 0.1 %}green{% elif d < 50 %}orange{% else %}red{% endif %}'
-      tap_action:
-        action: navigate
-        navigation_path: /deez-smart-home/people-locations-distance
-      hold_action:
-        action: more-info
-      entity: person.ai_q_huang
     - type: markdown
-      content: "{% set people = [\n  ('Raymond Du', 'person.raymond_du'),\n  ('Vinh\
-        \ Du', 'person.vinh_du'),\n  ('Ai Q Huang', 'person.ai_q_huang')\n] %} {%\
-        \ for name, p in people %} {% set lat = state_attr(p,'latitude') %} {% set\
-        \ lon = state_attr(p,'longitude') %} {% set d = distance('zone.home',p) |\
-        \ float(9999) %}\n**{{ name }}**\n{% if d <= 0.1 %} \U0001F7E2 **Home / within\
-        \ 100 m** {% elif d < 50 %} \U0001F7E0 **{{ d | round(1) }} km from home**\
-        \ {% else %} \U0001F534 **{{ d | round(1) }} km from home** {% endif %}\n\
-        {% if lat is not none and lon is not none %} [\U0001F9ED Route](https://maps.apple.com/?daddr={{\
-        \ lat }},{{ lon }}&dirflg=d) &nbsp;&nbsp; [\U0001F5FA️ Map](https://maps.apple.com/?ll={{\
-        \ lat }},{{ lon }}) {% endif %}\n---\n{% endfor %}"
+      content: |
+        {%- set people = [('Raymond Du', 'person.raymond_du'), ('Vinh Du', 'person.vinh_du'), ('Ai Q Huang', 'person.ai_q_huang')] -%}
+        {%- for name, p in people %}{% set lat = state_attr(p,'latitude') %}{% set lon = state_attr(p,'longitude') %}{% set d = distance('zone.home',p) %}
+        **{{ name }}** — {% if d is not number %}location unknown{% elif d <= 0.1 %}🟢 home{% elif d < 50 %}🟠 {{ d | round(1) }} km away{% else %}🔴 {{ d | round(1) }} km away{% endif %}
+        {% if lat is number and lon is number %}
+        [🧭 Route](https://maps.apple.com/?daddr={{ lat }},{{ lon }}&dirflg=d) &nbsp;&nbsp; [🗺️ Map](https://maps.apple.com/?ll={{ lat }},{{ lon }})
+        {%- endif %}
+        {% endfor %}
 - type: sections
   title: Distance
   path: people-locations-distance
@@ -2591,34 +2497,25 @@ views:
       aspect_ratio: '16:9'
     - type: custom:mushroom-template-card
       primary: Raymond Du
-      secondary: "{% set d = distance('zone.home','person.raymond_du') | float(9999)\
-        \ %} {% if d <= 0.1 %}\n  Home • within 100 m\n{% else %}\n  {{ d | round(1)\
-        \ }} km from home\n{% endif %}"
+      secondary: '{% set d = distance(''zone.home'',''person.raymond_du'') %}{% if d is not number %}Location unknown{% elif d <= 0.1 %}Home • within 100 m{% else %}{{ d | round(1) }} km from home{% endif %}'
       icon: mdi:map-marker-distance
-      icon_color: '{% set d = distance(''zone.home'',''person.raymond_du'') | float(9999)
-        %} {% if d <= 0.1 %}green{% elif d < 50 %}orange{% else %}red{% endif %}'
+      icon_color: '{% set d = distance(''zone.home'',''person.raymond_du'') %}{% if d is not number %}grey{% elif d <= 0.1 %}green{% elif d < 50 %}orange{% else %}red{% endif %}'
       entity: person.raymond_du
       tap_action:
         action: more-info
     - type: custom:mushroom-template-card
       primary: Vinh Du
-      secondary: "{% set d = distance('zone.home','person.vinh_du') | float(9999)\
-        \ %} {% if d <= 0.1 %}\n  Home • within 100 m\n{% else %}\n  {{ d | round(1)\
-        \ }} km from home\n{% endif %}"
+      secondary: '{% set d = distance(''zone.home'',''person.vinh_du'') %}{% if d is not number %}Location unknown{% elif d <= 0.1 %}Home • within 100 m{% else %}{{ d | round(1) }} km from home{% endif %}'
       icon: mdi:map-marker-distance
-      icon_color: '{% set d = distance(''zone.home'',''person.vinh_du'') | float(9999)
-        %} {% if d <= 0.1 %}green{% elif d < 50 %}orange{% else %}red{% endif %}'
+      icon_color: '{% set d = distance(''zone.home'',''person.vinh_du'') %}{% if d is not number %}grey{% elif d <= 0.1 %}green{% elif d < 50 %}orange{% else %}red{% endif %}'
       entity: person.vinh_du
       tap_action:
         action: more-info
     - type: custom:mushroom-template-card
       primary: Ai Q Huang
-      secondary: "{% set d = distance('zone.home','person.ai_q_huang') | float(9999)\
-        \ %} {% if d <= 0.1 %}\n  Home • within 100 m\n{% else %}\n  {{ d | round(1)\
-        \ }} km from home\n{% endif %}"
+      secondary: '{% set d = distance(''zone.home'',''person.ai_q_huang'') %}{% if d is not number %}Location unknown{% elif d <= 0.1 %}Home • within 100 m{% else %}{{ d | round(1) }} km from home{% endif %}'
       icon: mdi:map-marker-distance
-      icon_color: '{% set d = distance(''zone.home'',''person.ai_q_huang'') | float(9999)
-        %} {% if d <= 0.1 %}green{% elif d < 50 %}orange{% else %}red{% endif %}'
+      icon_color: '{% set d = distance(''zone.home'',''person.ai_q_huang'') %}{% if d is not number %}grey{% elif d <= 0.1 %}green{% elif d < 50 %}orange{% else %}red{% endif %}'
       entity: person.ai_q_huang
       tap_action:
         action: more-info
@@ -3422,11 +3319,9 @@ views:
         navigation_path: /deez-smart-home/lighting-modes
     - type: custom:mushroom-template-card
       primary: Raymond
-      secondary: '{% set d = distance(''zone.home'',''person.raymond_du'') | float(9999)
-        %} {% if d <= 0.1 %}Home{% else %}{{ d | round(1) }} km away{% endif %}'
+      secondary: '{% set d = distance(''zone.home'',''person.raymond_du'') %}{% if d is not number %}Unknown{% elif d <= 0.1 %}Home{% else %}{{ d | round(1) }} km away{% endif %}'
       icon: mdi:map-marker-account
-      icon_color: '{% set d = distance(''zone.home'',''person.raymond_du'') | float(9999)
-        %} {% if d <= 0.1 %}green{% elif d < 50 %}orange{% else %}red{% endif %}'
+      icon_color: '{% set d = distance(''zone.home'',''person.raymond_du'') %}{% if d is not number %}grey{% elif d <= 0.1 %}green{% elif d < 50 %}orange{% else %}red{% endif %}'
       tap_action:
         action: navigate
         navigation_path: /deez-smart-home/people-locations
