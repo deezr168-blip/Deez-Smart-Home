@@ -539,6 +539,23 @@ views:
   sections:
   - type: grid
     cards:
+    - type: custom:mushroom-chips-card
+      card_mod:
+        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
+          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
+          \ .chip-container {\n  gap: 8px;\n}\n"
+      alignment: start
+      chips:
+      - type: template
+        icon: mdi:arrow-left
+        content: '{{ ''首页'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Home'' }}'
+        icon_color: blue
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/home
+      grid_options:
+        columns: 12
+        rows: 1
     - type: custom:mushroom-title-card
       card_mod:
         style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
@@ -702,6 +719,23 @@ views:
   sections:
   - type: grid
     cards:
+    - type: custom:mushroom-chips-card
+      card_mod:
+        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
+          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
+          \ .chip-container {\n  gap: 8px;\n}\n"
+      alignment: start
+      chips:
+      - type: template
+        icon: mdi:arrow-left
+        content: '{{ ''首页'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Home'' }}'
+        icon_color: blue
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/home
+      grid_options:
+        columns: 12
+        rows: 1
     - type: custom:mushroom-title-card
       card_mod:
         style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
@@ -790,6 +824,23 @@ views:
   sections:
   - type: grid
     cards:
+    - type: custom:mushroom-chips-card
+      card_mod:
+        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
+          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
+          \ .chip-container {\n  gap: 8px;\n}\n"
+      alignment: start
+      chips:
+      - type: template
+        icon: mdi:arrow-left
+        content: '{{ ''首页'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Home'' }}'
+        icon_color: blue
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/home
+      grid_options:
+        columns: 12
+        rows: 1
     - type: custom:mushroom-title-card
       card_mod:
         style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
@@ -850,6 +901,23 @@ views:
   sections:
   - type: grid
     cards:
+    - type: custom:mushroom-chips-card
+      card_mod:
+        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
+          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
+          \ .chip-container {\n  gap: 8px;\n}\n"
+      alignment: start
+      chips:
+      - type: template
+        icon: mdi:arrow-left
+        content: '{{ ''首页'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Home'' }}'
+        icon_color: blue
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/home
+      grid_options:
+        columns: 12
+        rows: 1
     - type: custom:mushroom-title-card
       card_mod:
         style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
@@ -927,6 +995,23 @@ views:
   sections:
   - type: grid
     cards:
+    - type: custom:mushroom-chips-card
+      card_mod:
+        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
+          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
+          \ .chip-container {\n  gap: 8px;\n}\n"
+      alignment: start
+      chips:
+      - type: template
+        icon: mdi:arrow-left
+        content: '{{ ''首页'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Home'' }}'
+        icon_color: blue
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/home
+      grid_options:
+        columns: 12
+        rows: 1
     - type: custom:mushroom-title-card
       card_mod:
         style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
@@ -979,6 +1064,23 @@ views:
   sections:
   - type: grid
     cards:
+    - type: custom:mushroom-chips-card
+      card_mod:
+        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
+          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
+          \ .chip-container {\n  gap: 8px;\n}\n"
+      alignment: start
+      chips:
+      - type: template
+        icon: mdi:arrow-left
+        content: '{{ ''首页'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Home'' }}'
+        icon_color: blue
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/home
+      grid_options:
+        columns: 12
+        rows: 1
     - type: custom:mushroom-title-card
       card_mod:
         style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
@@ -1036,6 +1138,23 @@ views:
   sections:
   - type: grid
     cards:
+    - type: custom:mushroom-chips-card
+      card_mod:
+        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
+          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
+          \ .chip-container {\n  gap: 8px;\n}\n"
+      alignment: start
+      chips:
+      - type: template
+        icon: mdi:arrow-left
+        content: '{{ ''首页'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Home'' }}'
+        icon_color: blue
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/home
+      grid_options:
+        columns: 12
+        rows: 1
     - type: custom:mushroom-title-card
       card_mod:
         style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
@@ -1085,6 +1204,23 @@ views:
   sections:
   - type: grid
     cards:
+    - type: custom:mushroom-chips-card
+      card_mod:
+        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
+          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
+          \ .chip-container {\n  gap: 8px;\n}\n"
+      alignment: start
+      chips:
+      - type: template
+        icon: mdi:arrow-left
+        content: '{{ ''首页'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Home'' }}'
+        icon_color: blue
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/home
+      grid_options:
+        columns: 12
+        rows: 1
     - type: custom:mushroom-title-card
       card_mod:
         style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
@@ -1171,6 +1307,23 @@ views:
   sections:
   - type: grid
     cards:
+    - type: custom:mushroom-chips-card
+      card_mod:
+        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
+          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
+          \ .chip-container {\n  gap: 8px;\n}\n"
+      alignment: start
+      chips:
+      - type: template
+        icon: mdi:arrow-left
+        content: '{{ ''首页'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Home'' }}'
+        icon_color: blue
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/home
+      grid_options:
+        columns: 12
+        rows: 1
     - type: custom:mushroom-title-card
       card_mod:
         style: "ha-card {\n  background: none;\n  border: none;\n  box-shadow: none;\n\
@@ -1432,12 +1585,6 @@ views:
         tap_action:
           action: navigate
           navigation_path: /deez-smart-home/security
-      - type: template
-        icon: mdi:home
-        content: Home
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/home
       - type: template
         icon: mdi:tablet-dashboard
         content: iPad
@@ -1730,6 +1877,23 @@ views:
   - type: grid
     column_span: 3
     cards:
+    - type: custom:mushroom-chips-card
+      card_mod:
+        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
+          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
+          \ .chip-container {\n  gap: 8px;\n}\n"
+      alignment: start
+      chips:
+      - type: template
+        icon: mdi:arrow-left
+        content: '{{ ''首页'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Home'' }}'
+        icon_color: blue
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/home
+      grid_options:
+        columns: 12
+        rows: 1
     - type: custom:mushroom-title-card
       card_mod:
         style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
@@ -1842,6 +2006,23 @@ views:
   - type: grid
     column_span: 2
     cards:
+    - type: custom:mushroom-chips-card
+      card_mod:
+        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
+          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
+          \ .chip-container {\n  gap: 8px;\n}\n"
+      alignment: start
+      chips:
+      - type: template
+        icon: mdi:arrow-left
+        content: '{{ ''首页'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Home'' }}'
+        icon_color: blue
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/home
+      grid_options:
+        columns: 12
+        rows: 1
     - type: custom:mushroom-title-card
       card_mod:
         style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
@@ -1947,6 +2128,23 @@ views:
   sections:
   - type: grid
     cards:
+    - type: custom:mushroom-chips-card
+      card_mod:
+        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
+          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
+          \ .chip-container {\n  gap: 8px;\n}\n"
+      alignment: start
+      chips:
+      - type: template
+        icon: mdi:arrow-left
+        content: '{{ ''首页'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Home'' }}'
+        icon_color: blue
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/home
+      grid_options:
+        columns: 12
+        rows: 1
     - type: custom:mushroom-title-card
       card_mod:
         style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
@@ -1996,6 +2194,23 @@ views:
   sections:
   - type: grid
     cards:
+    - type: custom:mushroom-chips-card
+      card_mod:
+        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
+          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
+          \ .chip-container {\n  gap: 8px;\n}\n"
+      alignment: start
+      chips:
+      - type: template
+        icon: mdi:arrow-left
+        content: '{{ ''首页'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Home'' }}'
+        icon_color: blue
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/home
+      grid_options:
+        columns: 12
+        rows: 1
     - type: custom:mushroom-title-card
       card_mod:
         style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
@@ -2021,6 +2236,23 @@ views:
   sections:
   - type: grid
     cards:
+    - type: custom:mushroom-chips-card
+      card_mod:
+        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
+          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
+          \ .chip-container {\n  gap: 8px;\n}\n"
+      alignment: start
+      chips:
+      - type: template
+        icon: mdi:arrow-left
+        content: '{{ ''首页'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Home'' }}'
+        icon_color: blue
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/home
+      grid_options:
+        columns: 12
+        rows: 1
     - type: custom:mushroom-title-card
       card_mod:
         style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
@@ -2065,6 +2297,23 @@ views:
   - type: grid
     column_span: 2
     cards:
+    - type: custom:mushroom-chips-card
+      card_mod:
+        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
+          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
+          \ .chip-container {\n  gap: 8px;\n}\n"
+      alignment: start
+      chips:
+      - type: template
+        icon: mdi:arrow-left
+        content: '{{ ''首页'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Home'' }}'
+        icon_color: blue
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/home
+      grid_options:
+        columns: 12
+        rows: 1
     - type: custom:mushroom-title-card
       card_mod:
         style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
@@ -2131,6 +2380,23 @@ views:
   sections:
   - type: grid
     cards:
+    - type: custom:mushroom-chips-card
+      card_mod:
+        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
+          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
+          \ .chip-container {\n  gap: 8px;\n}\n"
+      alignment: start
+      chips:
+      - type: template
+        icon: mdi:arrow-left
+        content: '{{ ''首页'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Home'' }}'
+        icon_color: blue
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/home
+      grid_options:
+        columns: 12
+        rows: 1
     - type: custom:mushroom-title-card
       card_mod:
         style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
@@ -2371,6 +2637,23 @@ views:
   sections:
   - type: grid
     cards:
+    - type: custom:mushroom-chips-card
+      card_mod:
+        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
+          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
+          \ .chip-container {\n  gap: 8px;\n}\n"
+      alignment: start
+      chips:
+      - type: template
+        icon: mdi:arrow-left
+        content: '{{ ''首页'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Home'' }}'
+        icon_color: blue
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/home
+      grid_options:
+        columns: 12
+        rows: 1
     - type: custom:mushroom-title-card
       card_mod:
         style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
@@ -2407,12 +2690,6 @@ views:
         content: '{% set t = state_attr(''weather.forecast_home'',''temperature'') %}{{ (t | round(0) | int ~ ''°'') if t is number else ''—'' }}'
         tap_action:
           action: more-info
-      - type: template
-        icon: mdi:home
-        content: Home
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/home
     - type: heading
       heading: Favourite Lights
     - type: custom:mushroom-light-card
@@ -2958,6 +3235,23 @@ views:
   sections:
   - type: grid
     cards:
+    - type: custom:mushroom-chips-card
+      card_mod:
+        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
+          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
+          \ .chip-container {\n  gap: 8px;\n}\n"
+      alignment: start
+      chips:
+      - type: template
+        icon: mdi:arrow-left
+        content: '{{ ''首页'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Home'' }}'
+        icon_color: blue
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/home
+      grid_options:
+        columns: 12
+        rows: 1
     - type: heading
       heading: Home Pulse
     - type: custom:mushroom-chips-card
@@ -3168,12 +3462,6 @@ views:
       alignment: center
       chips:
       - type: template
-        icon: mdi:home
-        content: Home
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/home
-      - type: template
         icon: mdi:lightbulb-group
         content: Lights
         tap_action:
@@ -3342,6 +3630,23 @@ views:
   sections:
   - type: grid
     cards:
+    - type: custom:mushroom-chips-card
+      card_mod:
+        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
+          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
+          \ .chip-container {\n  gap: 8px;\n}\n"
+      alignment: start
+      chips:
+      - type: template
+        icon: mdi:arrow-left
+        content: '{{ ''首页'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Home'' }}'
+        icon_color: blue
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/home
+      grid_options:
+        columns: 12
+        rows: 1
     - type: custom:mushroom-title-card
       card_mod:
         style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
