@@ -17,8 +17,17 @@ area · objective · state · dependencies/blockers · verification requirement.
 
 ## Active queue
 
-Ordered by priority, then by ID. Priority definitions and selection rules are
-in `PROJECT_STATE.md`.
+Priority first, then Selection Score within a priority. Scores are a
+tie-breaker, not a ranking of worth — see `PROJECT_STATE.md` for the scales,
+the formula and the safeguards.
+
+| ID | P | Owner | Area | I | E | R | Score | State |
+|---|---|---|---|---|---|---|---|---|
+| `BILL-001` | P1 | Billing | `bill-electricity`, `bill-gas` | 5 | 3 | 3 | **4** | actionable |
+| `UI-011` | P1 | Main | `energy` | — | — | — | — | `LIVE_VERIFICATION_REQUIRED` — excluded |
+| `BILL-002` | P2 | Billing | `bills` + six subviews | 4 | 4 | 3 | **1** | actionable |
+| `BILL-003` | P2 | Billing | ingestion architecture | 4 | 5 | 4 | **−1** | blocked on `BILL-001` |
+| `DR-001` | P3 | Main | `ipad-command-center` | 3 | 4 | 4 | **−2** | actionable |
 
 ### P1 — High
 
@@ -28,33 +37,37 @@ in `PROJECT_STATE.md`.
 - **Objective:** remove the hardcoded account numbers, NMI and MIRN from the
   two markdown cards so they are not carried in Git.
 - **State:** `PLANNED` — actionable
+- **Score:** Impact 5 · Effort 3 · Risk 3 → **4**
 - **Blockers:** owner decision on whether the *live card* should still display
   these identifiers. Repository removal is safe either way; if the card must
   keep showing them, source them from a helper or `secrets.yaml` rather than
   a literal.
 - **Verification:** secret scan clean, plus a live look at both bill subviews
   to confirm nothing reads empty.
-- **Notes:** the earlier sanitisation (`a084482`) was **not** deliberately
-  reversed — it was lost when `921315e` re-imported the owner's authoritative
-  live export wholesale. Re-sanitising is therefore consistent with prior
-  intent, not a reversal of an owner decision. Three further `name: Account
-  number` strings (`bill-electricity`, `bill-gas`, `bill-water`) are form-field
-  labels carrying no value and are **not** part of this item.
+- **Notes:** Impact 5 is the privacy band and is **not** reduced by the effort
+  of remediation (scoring safeguard 7), nor is the item demoted from P1 for
+  implementation cost. It is Billing's only actionable P1, so the score does
+  not affect selection here. The earlier sanitisation (`a084482`) was not
+  deliberately reversed; `921315e` re-imported the owner's authoritative live
+  export wholesale and the literals came back with it. Three further
+  `name: Account number` strings are form-field labels carrying no value and
+  are not part of this item.
 
 #### `UI-011` — Total Solar unit assumption
 - **Owner:** Main CasaRay Upgrade
 - **Area:** `energy` — Total Solar
 - **Objective:** confirm the Wh→kWh conversion applied in `df457e3` matches
   what the Fronius total actually reports.
-- **State:** `LIVE_VERIFICATION_REQUIRED` — **not actionable in the repository**
-- **Blockers:** needs one look at the live card by the owner. Nothing to
-  implement until then.
+- **State:** `LIVE_VERIFICATION_REQUIRED` — **excluded from autonomous
+  selection** (scoring safeguard 3); deliberately not scored.
+- **Blockers:** needs one look at the live card by the owner.
 - **Verification:** owner reads the live Total Solar figure and compares it to
   its two sibling Primo sensors.
 - **Notes:** if the Fronius total reports kWh directly, the figure reads 1000×
-  low. Per queue rule 4 this item does not block lower-priority work.
+  low. Per queue rule 4 this does not gate lower-priority work.
 
 ### P2 — Improvement
+
 
 #### `BILL-002` — bill history and analytics
 - **Owner:** Billing Dashboard Upgrade
@@ -62,23 +75,31 @@ in `PROJECT_STATE.md`.
 - **Objective:** bill history and analytics supporting the parent-friendly
   workflow — global priority 3.
 - **State:** `PLANNED` — scope not yet written
+- **Score:** Impact 4 · Effort 4 · Risk 3 → **1**
 - **Blockers:** bill sensors (`sensor.bills_unpaid_count`,
   `sensor.bills_outstanding_total`) are not exposed to Assist and cannot be
   read from this environment, so figures cannot be confirmed here.
 - **Verification:** live look; figures confirmed by the owner.
+- **Notes:** Effort 4 is honest for unwritten scope — revise it down once the
+  scope is written and proves smaller (scoring safeguard 9).
 
 #### `BILL-003` — automatic utility-bill ingestion
 - **Owner:** Billing Dashboard Upgrade
 - **Area:** ingestion architecture; billing-supporting repository files
 - **Objective:** design, then implement, automatic utility-bill ingestion —
   global priority 4.
-- **State:** `PLANNED` — design stage
-- **Blockers:** depends on BILL-001 landing first (do not build ingestion on
-  top of an unresolved privacy exposure). External account actions, bill
-  payment and email sending are protected and out of scope.
+- **State:** `PLANNED` — design stage; blocked
+- **Score:** Impact 4 · Effort 5 · Risk 4 → **−1**
+- **Blockers:** depends on `BILL-001` landing first — do not build ingestion
+  over an unresolved privacy exposure. External account actions, bill payment
+  and email sending are protected and out of scope.
 - **Verification:** design reviewed by the owner before implementation.
+- **Notes:** a negative score is not a deletion signal (safeguard 5). This is
+  global priority 4 and stays queued; the score only says it should not be
+  picked ahead of `BILL-002` at the same priority.
 
 ### P3 — Polish
+
 
 #### `DR-001` — iPad Command Center density
 - **Owner:** Main CasaRay Upgrade (raised by CasaRay Design Reviewer)
@@ -86,12 +107,13 @@ in `PROJECT_STATE.md`.
 - **Objective:** review information density — 52 cards, never reviewed end to
   end for hierarchy.
 - **State:** `PLANNED` — advisory item, no implementation agreed
-- **Blockers:** should follow the P1/P2 items above; respects Active Change
-  Windows per queue rule 8.
+- **Score:** Impact 3 · Effort 4 · Risk 4 → **−2**
+- **Blockers:** respects Active Change Windows per queue rule 8.
 - **Verification:** design review, then a live look on the iPad itself.
-- **Notes:** the structural complaints from UI-015 (nested grids, duplicated
-  camera chip row) are already fixed by `99a77b4` and `9b28fdb`. What remains
-  is a hierarchy question, not a defect.
+- **Notes:** Risk 4 because the view was rebuilt recently (`99a77b4`) and a
+  hierarchy rework would touch all four of its sections. The structural
+  defects from UI-015 are already fixed; what remains is a judgment question —
+  exactly the kind of item a score should not be used to settle.
 
 ---
 
@@ -125,3 +147,5 @@ Verified by the owner and closed: UI-025, UI-026.
   the evidence and status from both — do not delete the losing entry's history.
 - Move completed work out of the active queue in the same commit that
   completes it.
+- Re-score an item when repository evidence changes its expected scope
+  (scoring safeguard 9). Never adjust a score to justify preferred work.
