@@ -18,7 +18,7 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 ## Next recommended priorities
 
 1. **UI-027** — heading-card contrast; needs a theme rule and a live look.
-2. **UI-028** — bilingual pass two: per-card status text.
+2. **UI-029** — bilingual pass three: number-glued status fragments.
 3. **UI-012** — bilingual gap: 33 of 36 views are English-only while Home,
    Cameras and Lighting Studio respond to the toggle.
 4. **UI-013** — Parents Room and Guest Room each stack a Mushroom media card
@@ -31,6 +31,39 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 ---
 
 ## Batches
+
+### `__SHA__` — status text answers the toggle too (UI-028)
+Area: 58 guarded templates across every view. Purpose: the chrome pass made
+titles and headings bilingual, leaving the actual state words in English —
+a Chinese dashboard reading "Sensor offline" under a Chinese heading.
+39 whole-branch phrases translated: Offline, Sensor offline, Open/Closed,
+Motion/Clear, Motion now, Occupied/Empty, Clean required/Clean, Connected/
+Disconnected, Up to date/Update available, Overload/Normal, Shade open/
+closed, Location unknown, Paid/Payment Outstanding, Battery not reporting,
+and the Unavailable/Not reporting family.
+Method matters here, because these are the templates carrying this branch's
+correctness work. Each template was tokenised on its Jinja tags and only the
+literal text BETWEEN tags was rewritten — no condition, no guard, no entity
+reference was touched. A `cn` variable is prepended only where one was not
+already defined.
+Verified by differential rendering rather than inspection: every one of the
+257 templates was rendered from HEAD and from the new file across five entity
+states, and the English output compared. After whitespace normalisation the
+difference is zero — the 20 raw diffs were newline-versus-space inside folded
+scalars, which collapse identically in HTML. The guards behave exactly as
+before; only a new Chinese branch was added.
+One apparent failure was chased down rather than waved through: a shade card
+looked untranslated because the test never exercised the cover's open/closed
+states. It renders Chinese correctly; its "Shade —" fallback was the only
+real gap and is translated now.
+Not done, deliberately, and logged as UI-029: fragments glued to a number or
+unit — "{{ d }} km away", "N of 6 offline", "W • measured". Chinese orders
+the unit and qualifier differently, so translating the fragment alone
+produces broken grammar. Those need whole-sentence restructuring per
+language.
+Validated: 384 templates, 36/36 links, 0 broken, no entity loss.
+Expect: with the toggle on, card status text reads Chinese as well as the
+headings above it.
 
 ### `f4e7ec3` — every view now answers the language toggle (UI-012)
 Area: all 36 views. Purpose: the Chinese toggle existed on Home, Cameras and
