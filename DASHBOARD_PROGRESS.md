@@ -17,17 +17,12 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 
 ## Next recommended priorities
 
-1. **UI-027** — heading-card contrast; needs a theme rule and a live look.
-2. **UI-011** and **UI-027** both need a live look now, not more repository
-   work — see the open table.
-3. **UI-012** — bilingual gap: 33 of 36 views are English-only while Home,
-   Cameras and Lighting Studio respond to the toggle.
-4. **UI-013** — Parents Room and Guest Room each stack a Mushroom media card
-   and a native `media-control` for the same player. Confirm intent first.
-5. iPad Command Center — 52 cards, never reviewed; nested 3-column grid in a
-   third-width section.
-6. Bills — nested 2-column grids; six bill subviews unreviewed.
-7. **UI-011** — verify the Total Solar unit assumption against the live card.
+**Superseded.** The authoritative work queue is now `DASHBOARD_BACKLOG.md`,
+selected under the priority model and queue-selection rules in
+`PROJECT_STATE.md`. This section previously listed seven items, four of which
+had already shipped (UI-012 in `f4e7ec3`, UI-013 in `56c7656`, and the nested
+`bills` and iPad grids in `9b28fdb`), so it is no longer maintained here.
+Nothing below this line changes: the batch record is history and stays intact.
 
 ---
 
