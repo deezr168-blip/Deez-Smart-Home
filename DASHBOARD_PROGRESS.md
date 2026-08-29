@@ -28,7 +28,7 @@ Nothing below this line changes: the batch record is history and stays intact.
 
 ## Batches
 
-### `PENDING` — the last three bare-English fragments close the bilingual thread (BILING-RESID)
+### `dff00f3` — the last three bare-English fragments close the bilingual thread (BILING-RESID)
 Area: `people-locations` (~L2879), `ipad-command-center` WAN chip (~L3675),
 `home` Energy tile (~L450). Purpose: closes REG-004/005/006, the residue left
 after the UI-012 → UI-028 → UI-029 sequence and the REG-001/002/003 batch.
