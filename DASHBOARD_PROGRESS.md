@@ -18,7 +18,7 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 ## Next recommended priorities
 
 1. **UI-027** — heading-card contrast; needs a theme rule and a live look.
-2. Tile pass part two: the 25 `mushroom-entity-card` switch controls.
+2. Spacing, typography and section hierarchy across the remaining views.
 3. **UI-012** — bilingual gap: 33 of 36 views are English-only while Home,
    Cameras and Lighting Studio respond to the toggle.
 4. **UI-013** — Parents Room and Guest Room each stack a Mushroom media card
@@ -31,6 +31,25 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 ---
 
 ## Batches
+
+### `__SHA__` — switch and cover controls become native Tile cards
+Area: 26 cards across home, parents-room, ray-bedroom, guest-room, kitchen,
+dining, cameras, climate, lights. Purpose: completes the control-card pass
+started in the previous batch. All 25 `mushroom-entity-card` switch controls
+and the one `mushroom-cover-card` are now `type: tile`.
+The switch conversion was a clean 1:1 — zero Mushroom-only keys had to be
+dropped, because those cards used nothing a tile does not do natively. The
+roller shade needed two features to keep what it had: `cover-open-close` for
+the buttons and `cover-position` for the slider, replacing
+`show_buttons_control` and `show_position_control`.
+50 tile cards on the dashboard now. Two card types stay Mushroom on purpose,
+because there a tile would lose something real: the two climate cards
+(temperature control) and the six media-player cards (media info and volume).
+That is the "Mushroom only where it genuinely improves functionality" line.
+Validated: 268 templates, 36/36 links, 0 broken, no entity loss, 0 inert
+card properties.
+Expect: switch rows read as one consistent native control across every room
+page, and toggle from the icon as well as opening more-info.
 
 ### `c6a8118` — light controls become native Tile cards
 Area: 20 cards across home, ray-bedroom, guest-room, living-room, dining,

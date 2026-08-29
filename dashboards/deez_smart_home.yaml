@@ -358,7 +358,7 @@ views:
       features_position: inline
       features:
       - type: light-brightness
-    - type: custom:mushroom-entity-card
+    - type: tile
       entity: switch.mainroomlight_switch_1
       name: Parents Main
       icon: mdi:light-switch
@@ -669,7 +669,7 @@ views:
       grid_options:
         columns: 6
         rows: 1
-    - type: custom:mushroom-entity-card
+    - type: tile
       entity: switch.mainroomlight_switch_1
       name: Main Room Light
       icon: mdi:light-switch
@@ -739,19 +739,19 @@ views:
     - type: heading
       heading: Power Boards
       icon: mdi:power-socket-au
-    - type: custom:mushroom-entity-card
+    - type: tile
       entity: switch.genio_power_board_with_usb_livingroom_socket_1
       name: Power Board 1
-    - type: custom:mushroom-entity-card
+    - type: tile
       entity: switch.genio_power_board_with_usb_livingroom_socket_2
       name: Power Board 2
-    - type: custom:mushroom-entity-card
+    - type: tile
       entity: switch.genio_power_board_with_usb_livingroom_socket_3
       name: Power Board 3
-    - type: custom:mushroom-entity-card
+    - type: tile
       entity: switch.genio_power_board_with_usb_livingroom_socket_4
       name: Power Board 4
-    - type: custom:mushroom-entity-card
+    - type: tile
       entity: switch.genio_power_board_with_usb_livingroom_socket_5
       name: Power Board 5
   - type: grid
@@ -832,11 +832,12 @@ views:
     - type: heading
       heading: Controls
       icon: mdi:tune-variant
-    - type: custom:mushroom-cover-card
+    - type: tile
       entity: cover.aqara_roller_shade_driver_e1
       name: Roller Shade
-      show_position_control: true
-      show_buttons_control: true
+      features:
+      - type: cover-open-close
+      - type: cover-position
     - type: custom:mushroom-chips-card
       card_mod:
         style: |
@@ -863,10 +864,10 @@ views:
     - type: heading
       heading: Power Board
       icon: mdi:power-socket-au
-    - type: custom:mushroom-entity-card
+    - type: tile
       entity: switch.r_energy_monitor_p110m
       name: Bedroom Smart Plug
-    - type: custom:mushroom-entity-card
+    - type: tile
       entity: switch.bedroomlight_switch_1
       name: Bedroom Wall Switch
   - type: grid
@@ -874,7 +875,7 @@ views:
     - type: heading
       heading: LetPot
       icon: mdi:sprout
-    - type: custom:mushroom-entity-card
+    - type: tile
       entity: switch.lph_se_dcd9_power
       name: LetPot Power
     - type: custom:mushroom-template-card
@@ -967,7 +968,7 @@ views:
     - type: heading
       heading: Power Board
       icon: mdi:power-socket-au
-    - type: custom:mushroom-entity-card
+    - type: tile
       entity: switch.g_printer_p100
       name: Printer Plug
       icon: mdi:printer
@@ -1188,7 +1189,7 @@ views:
       secondary: '{% set bad = [''unavailable'',''unknown'',''none''] %}{% set f = states(''number.lg_fridge_fridge_temperature'') %}{% set z = states(''number.lg_fridge_freezer_temperature'') %}Fridge {{ ''—'' if f in bad else (f|float(0)|round(0)|int ~ ''°C'') }} • Freezer {{ ''—'' if z in bad else (z|float(0)|round(0)|int ~ ''°C'') }}'
       icon: mdi:fridge
       icon_color: cyan
-    - type: custom:mushroom-entity-card
+    - type: tile
       entity: switch.lg_fridge_express_mode
       name: Fridge Express Mode
   - type: grid
@@ -1196,14 +1197,14 @@ views:
     - type: heading
       heading: Kitchen Smart Plugs
       icon: mdi:power-socket-au
-    - type: custom:mushroom-entity-card
+    - type: tile
       entity: switch.k_coffee_p100
       name: Coffee
-    - type: custom:mushroom-entity-card
+    - type: tile
       entity: switch.k_top_p100
       name: Kitchen Top
       icon: mdi:lightbulb-on-outline
-    - type: custom:mushroom-entity-card
+    - type: tile
       entity: switch.k_bot_p100
       name: Kitchen Bottom
       icon: mdi:lightbulb-on-outline
@@ -1263,7 +1264,7 @@ views:
       features_position: inline
       features:
       - type: light-brightness
-    - type: custom:mushroom-entity-card
+    - type: tile
       entity: switch.dinning_light_switch_1
       name: Dining Wall Switch
     - type: custom:mushroom-chips-card
@@ -1297,13 +1298,13 @@ views:
       name: Pet Feeder Camera
       camera_view: auto
       show_state: false
-    - type: custom:mushroom-entity-card
+    - type: tile
       entity: light.smart_pet_feeder_indicator_light
       name: Feeder Indicator
-    - type: custom:mushroom-entity-card
+    - type: tile
       entity: switch.smart_pet_feeder_motion_alarm
       name: Motion Alarm
-    - type: custom:mushroom-entity-card
+    - type: tile
       entity: switch.smart_pet_feeder_privacy_mode
       name: Privacy Mode
 - type: sections
@@ -1768,15 +1769,15 @@ views:
     - type: heading
       heading: Pet Feeder Camera
       icon: mdi:cat
-    - type: custom:mushroom-entity-card
+    - type: tile
       entity: switch.smart_pet_feeder_motion_alarm
       name: Motion Alarm
       icon: mdi:motion-sensor
-    - type: custom:mushroom-entity-card
+    - type: tile
       entity: switch.smart_pet_feeder_privacy_mode
       name: Privacy Mode
       icon: mdi:eye-off
-    - type: custom:mushroom-entity-card
+    - type: tile
       entity: light.smart_pet_feeder_indicator_light
       name: Indicator Light
       icon: mdi:led-on
@@ -2371,13 +2372,13 @@ views:
         style: icons
       - type: climate-preset-modes
         style: icons
-    - type: custom:mushroom-entity-card
+    - type: tile
       entity: switch.bedroom_parents_room_ac_climate_react
       name: Climate React
       icon: mdi:auto-mode
       grid_options:
         columns: 6
-    - type: custom:mushroom-entity-card
+    - type: tile
       entity: switch.bedroom_parents_room_ac_timer
       name: Timer
       icon: mdi:timer-outline
@@ -3091,7 +3092,7 @@ views:
       features_position: inline
       features:
       - type: light-brightness
-    - type: custom:mushroom-entity-card
+    - type: tile
       entity: switch.mainroomlight_switch_1
       name: Parents Main Light
       icon: mdi:bed-king
