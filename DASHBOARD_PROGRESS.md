@@ -33,7 +33,7 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 
 ## Batches
 
-### `__SHA__` — legible text where cards deliberately have no surface
+### `cbec78b` — legible text where cards deliberately have no surface
 Area: 69 cards across all views. Purpose: with the photograph live, the cards
 that intentionally strip their own surface — 25 page titles, 44 chip rows —
 render their text directly on the sky. Over the bright horizon band and the
