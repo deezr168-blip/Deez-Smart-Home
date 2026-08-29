@@ -32,7 +32,7 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 
 ## Batches
 
-### `__SHA__` — the wall panel itself: iPad Command Center rebuilt (UI-015)
+### `99a77b4` — the wall panel itself: iPad Command Center rebuilt (UI-015)
 Area: `ipad-command-center`. Purpose: the view the wall iPad actually runs was
 the last one never reviewed — 52 cards, three nested `grid` cards inside
 half-width sections, and the heaviest single section on the dashboard.
