@@ -339,24 +339,25 @@ views:
     - type: heading
       heading: '{{ ''快速控制'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Quick Control'' }}'
       icon: mdi:tune-variant
-    - type: custom:mushroom-light-card
+    - type: tile
       entity: light.living_room
       name: Living Room
-      use_light_color: true
-      show_brightness_control: true
-      collapsible_controls: true
-    - type: custom:mushroom-light-card
+      features_position: inline
+      features:
+      - type: light-brightness
+    - type: tile
       entity: light.dining
       name: Dining
-      show_brightness_control: true
-      collapsible_controls: true
       icon: mdi:light-recessed
-    - type: custom:mushroom-light-card
+      features_position: inline
+      features:
+      - type: light-brightness
+    - type: tile
       entity: light.bedroom_bedroom
       name: Ray Bedroom
-      use_light_color: true
-      show_brightness_control: true
-      collapsible_controls: true
+      features_position: inline
+      features:
+      - type: light-brightness
     - type: custom:mushroom-entity-card
       entity: switch.mainroomlight_switch_1
       name: Parents Main
@@ -822,13 +823,12 @@ views:
     - type: heading
       heading: Lights
       icon: mdi:lightbulb-group
-    - type: custom:mushroom-light-card
+    - type: tile
       entity: light.bedroom_bedroom
       name: Bedroom Lights
-      use_light_color: true
-      show_brightness_control: true
-      show_color_temp_control: true
-      collapsible_controls: true
+      features:
+      - type: light-brightness
+      - type: light-color-temp
     - type: heading
       heading: Controls
       icon: mdi:tune-variant
@@ -943,12 +943,12 @@ views:
     - type: heading
       heading: Lights
       icon: mdi:lightbulb-group
-    - type: custom:mushroom-light-card
+    - type: tile
       entity: light.kogan_tv
       name: Kogan TV Light
-      use_light_color: true
-      show_brightness_control: true
-      collapsible_controls: true
+      features_position: inline
+      features:
+      - type: light-brightness
   - type: grid
     cards:
     - type: heading
@@ -1035,13 +1035,12 @@ views:
           }
       title: 🛋️ Living Room
       subtitle: Lighting, TV and room sensors
-    - type: custom:mushroom-light-card
+    - type: tile
       entity: light.living_room
       name: Living Room Lights
-      use_light_color: true
-      show_brightness_control: true
-      show_color_temp_control: true
-      collapsible_controls: true
+      features:
+      - type: light-brightness
+      - type: light-color-temp
     - type: custom:mushroom-media-player-card
       entity: media_player.living_room_tv_samsung_q9_series_65
       name: Samsung 65" TV
@@ -1082,18 +1081,30 @@ views:
     - type: heading
       heading: Individual Lights
       icon: mdi:lightbulb-group
-    - type: custom:mushroom-light-card
+    - type: tile
       entity: light.living_room_hue_ambiance_spot_1
       name: Inner Left
-    - type: custom:mushroom-light-card
+      features_position: inline
+      features:
+      - type: light-brightness
+    - type: tile
       entity: light.living_room_hue_ambiance_spot_2
       name: Inner Right
-    - type: custom:mushroom-light-card
+      features_position: inline
+      features:
+      - type: light-brightness
+    - type: tile
       entity: light.living_room_hue_ambiance_spot_3
       name: Outer Left
-    - type: custom:mushroom-light-card
+      features_position: inline
+      features:
+      - type: light-brightness
+    - type: tile
       entity: light.living_room_hue_ambiance_spot_4
       name: Outer Right
+      features_position: inline
+      features:
+      - type: light-brightness
     - type: custom:mushroom-template-card
       primary: Mitsubishi Electric AC
       secondary: Wi-Fi module not integrated yet
@@ -1246,11 +1257,12 @@ views:
           }
       title: 🍽️ Dining
       subtitle: Lighting, motion and pet feeder
-    - type: custom:mushroom-light-card
+    - type: tile
       entity: light.dining
       name: Dining Lights
-      show_brightness_control: true
-      collapsible_controls: true
+      features_position: inline
+      features:
+      - type: light-brightness
     - type: custom:mushroom-entity-card
       entity: switch.dinning_light_switch_1
       name: Dining Wall Switch
@@ -3040,15 +3052,10 @@ views:
           action: more-info
     - type: heading
       heading: Favourite Lights
-    - type: custom:mushroom-light-card
+    - type: tile
       entity: light.living_room
       name: Living Room
       icon: mdi:sofa
-      use_light_color: true
-      show_brightness_control: true
-      show_color_temp_control: true
-      collapsible_controls: false
-      fill_container: true
       tap_action:
         action: toggle
       hold_action:
@@ -3056,15 +3063,13 @@ views:
       double_tap_action:
         action: navigate
         navigation_path: /deez-smart-home/light-living-room
-    - type: custom:mushroom-light-card
+      features:
+      - type: light-brightness
+      - type: light-color-temp
+    - type: tile
       entity: light.bedroom_bedroom
       name: Ray Bedroom
       icon: mdi:bed
-      use_light_color: true
-      show_brightness_control: true
-      show_color_temp_control: true
-      collapsible_controls: false
-      fill_container: true
       tap_action:
         action: toggle
       hold_action:
@@ -3072,17 +3077,20 @@ views:
       double_tap_action:
         action: navigate
         navigation_path: /deez-smart-home/light-ray-bedroom
-    - type: custom:mushroom-light-card
+      features:
+      - type: light-brightness
+      - type: light-color-temp
+    - type: tile
       entity: light.dining
       name: Dining
       icon: mdi:table-chair
-      show_brightness_control: true
-      collapsible_controls: false
-      fill_container: true
       tap_action:
         action: toggle
       hold_action:
         action: more-info
+      features_position: inline
+      features:
+      - type: light-brightness
     - type: custom:mushroom-entity-card
       entity: switch.mainroomlight_switch_1
       name: Parents Main Light
@@ -3232,18 +3240,16 @@ views:
       subtitle: Power • brightness • temperature • capability
     - type: heading
       heading: Main Light
-    - type: custom:mushroom-light-card
+    - type: tile
       entity: light.living_room
       name: Living Room
-      use_light_color: true
-      show_brightness_control: true
-      show_color_temp_control: true
-      collapsible_controls: false
-      fill_container: true
       tap_action:
         action: toggle
       hold_action:
         action: more-info
+      features:
+      - type: light-brightness
+      - type: light-color-temp
     - type: custom:mushroom-chips-card
       card_mod:
         style: |
@@ -3293,42 +3299,46 @@ views:
       columns: 2
       square: false
       cards:
-      - type: custom:mushroom-light-card
+      - type: tile
         entity: light.living_room_hue_ambiance_spot_1
         name: Inner Left
-        show_brightness_control: true
-        collapsible_controls: true
         tap_action:
           action: toggle
         hold_action:
           action: more-info
-      - type: custom:mushroom-light-card
+        features_position: inline
+        features:
+        - type: light-brightness
+      - type: tile
         entity: light.living_room_hue_ambiance_spot_2
         name: Inner Right
-        show_brightness_control: true
-        collapsible_controls: true
         tap_action:
           action: toggle
         hold_action:
           action: more-info
-      - type: custom:mushroom-light-card
+        features_position: inline
+        features:
+        - type: light-brightness
+      - type: tile
         entity: light.living_room_hue_ambiance_spot_3
         name: Outer Left
-        show_brightness_control: true
-        collapsible_controls: true
         tap_action:
           action: toggle
         hold_action:
           action: more-info
-      - type: custom:mushroom-light-card
+        features_position: inline
+        features:
+        - type: light-brightness
+      - type: tile
         entity: light.living_room_hue_ambiance_spot_4
         name: Outer Right
-        show_brightness_control: true
-        collapsible_controls: true
         tap_action:
           action: toggle
         hold_action:
           action: more-info
+        features_position: inline
+        features:
+        - type: light-brightness
     - type: custom:mushroom-template-card
       primary: All Four Spots Off
       icon: mdi:lightbulb-multiple-off
@@ -3387,18 +3397,16 @@ views:
       subtitle: Power • brightness • temperature • capability
     - type: heading
       heading: Bedroom Light
-    - type: custom:mushroom-light-card
+    - type: tile
       entity: light.bedroom_bedroom
       name: Ray Bedroom
-      use_light_color: true
-      show_brightness_control: true
-      show_color_temp_control: true
-      collapsible_controls: false
-      fill_container: true
       tap_action:
         action: toggle
       hold_action:
         action: more-info
+      features:
+      - type: light-brightness
+      - type: light-color-temp
     - type: custom:mushroom-chips-card
       card_mod:
         style: |
@@ -3725,7 +3733,7 @@ views:
           action: more-info
         features:
         - type: light-brightness
-        features_position: bottom
+        features_position: inline
       - type: tile
         entity: light.dining
         name: Dining
@@ -3737,7 +3745,7 @@ views:
           action: more-info
         features:
         - type: light-brightness
-        features_position: bottom
+        features_position: inline
       - type: tile
         entity: light.bedroom_bedroom
         name: Ray Bedroom
@@ -3749,7 +3757,7 @@ views:
           action: more-info
         features:
         - type: light-brightness
-        features_position: bottom
+        features_position: inline
       - type: tile
         entity: switch.mainroomlight_switch_1
         name: Parents

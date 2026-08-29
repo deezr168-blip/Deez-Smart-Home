@@ -18,8 +18,7 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 ## Next recommended priorities
 
 1. **UI-027** — heading-card contrast; needs a theme rule and a live look.
-2. Tile-card pass: replace Mushroom template cards with native Tiles where
-   Mushroom is not earning its keep.
+2. Tile pass part two: the 25 `mushroom-entity-card` switch controls.
 3. **UI-012** — bilingual gap: 33 of 36 views are English-only while Home,
    Cameras and Lighting Studio respond to the toggle.
 4. **UI-013** — Parents Room and Guest Room each stack a Mushroom media card
@@ -32,6 +31,32 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 ---
 
 ## Batches
+
+### `__SHA__` — light controls become native Tile cards
+Area: 20 cards across home, ray-bedroom, guest-room, living-room, dining,
+lights, light-living-room, light-ray-bedroom. Purpose: the brief asks for
+native Tiles where practical and for compact, calm controls; the Mushroom
+light cards with their own brightness sliders were the bulkiest thing on the
+Home view.
+All 20 are now `type: tile` with a native `light-brightness` feature. 17 use
+`features_position: inline`, so the slider shares the row instead of adding
+one — a one-row control rather than a two-row card. The three tiles already
+native on the iPad Command Center were switched from `bottom` to `inline`
+too, so all 24 tiles now behave the same way on the view where vertical space
+is tightest.
+Functionality preserved, not traded for appearance: six of the twenty offered
+`show_color_temp_control` — the two dimmable room lights on their detail
+pages. Inline position takes a single feature, so those six stack
+`light-brightness` + `light-color-temp` instead, keeping the colour
+temperature control that would otherwise have been silently dropped. Home's
+copies of the same two lights never had it and stay compact and inline.
+Mushroom-only rendering options that the tile reproduces natively or that no
+longer apply were dropped: use_light_color, collapsible_controls,
+fill_container, show_brightness_control, show_color_temp_control.
+Validated: 268 templates, 36/36 links, 0 broken, no entity loss, 0 inert
+card properties.
+Expect: shorter, flatter light controls; tapping the icon toggles and tapping
+the card opens more-info, where the Mushroom card only did the latter.
 
 ### `cbec78b` — legible text where cards deliberately have no surface
 Area: 69 cards across all views. Purpose: with the photograph live, the cards
