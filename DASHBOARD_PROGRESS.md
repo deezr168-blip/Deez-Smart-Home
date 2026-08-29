@@ -32,7 +32,7 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 
 ## Batches
 
-### `__SHA__` — light controls become native Tile cards
+### `c6a8118` — light controls become native Tile cards
 Area: 20 cards across home, ray-bedroom, guest-room, living-room, dining,
 lights, light-living-room, light-ray-bedroom. Purpose: the brief asks for
 native Tiles where practical and for compact, calm controls; the Mushroom
