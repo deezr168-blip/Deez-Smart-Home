@@ -47,6 +47,10 @@ themes, an English/Chinese toggle on `input_boolean.chinese_dashboard`.
   "Everything up-to-date" and the commit silently never deploys.
 - Commit tracking-document updates together with the dashboard change they
   describe.
+- A commit cannot contain its own hash. Write the batch's dashboard change
+  and its tracking entries in one commit with the SHA left as a placeholder,
+  then stamp the real SHA in a one-line `docs: stamp` commit immediately
+  after. Do not amend to insert it — amending changes the hash again.
 
 ## Do not touch without an explicit instruction
 

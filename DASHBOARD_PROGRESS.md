@@ -30,7 +30,7 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 
 ## Batches
 
-### `f055482` — Cameras: one uniform grid, no camera listed three times
+### `ae89134` — Cameras: one uniform grid, no camera listed three times
 Area: `cameras` view. Purpose: every camera appeared in up to three places at
 once — a "N/6 online" summary chip, a picture-entity tile, and a per-camera
 status chip below the tiles. Front Door additionally had both a live preview
