@@ -17,15 +17,12 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 
 ## Next recommended priorities
 
-1. **REG-004/005/006** — three LOW residual untranslated fragments
-   (`people-locations` "home", `ipad-command-center` "WAN —",
-   `home` Energy tile "offline"). Small, queued, unowned.
-2. **UI-027** — heading-card contrast; needs a theme rule and a live look.
-3. **UI-011** and **UI-027** both need a live look now, not more repository
-   work — see the open table.
-4. iPad Command Center — 52 cards, never reviewed; nested 3-column grid in a
-   third-width section.
-5. Bills — owned by the Billing Dashboard routine; not Main's to redesign.
+**Superseded.** The authoritative work queue is now `DASHBOARD_BACKLOG.md`,
+selected under the priority model and queue-selection rules in
+`PROJECT_STATE.md`. This section previously listed seven items, four of which
+had already shipped (UI-012 in `f4e7ec3`, UI-013 in `56c7656`, and the nested
+`bills` and iPad grids in `9b28fdb`), so it is no longer maintained here.
+Nothing below this line changes: the batch record is history and stays intact.
 
 ---
 
