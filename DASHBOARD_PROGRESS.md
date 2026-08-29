@@ -32,7 +32,7 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 
 ## Batches
 
-### `__SHA__` — two media players stop being controlled twice (UI-013)
+### `56c7656` — two media players stop being controlled twice (UI-013)
 Area: `parents-room`, `guest-room`. Purpose: each stacked a Mushroom media
 card directly above a native `media-control` for the same player. Checked
 rather than assumed before removing anything: the native card carries
