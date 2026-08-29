@@ -107,6 +107,17 @@ deez_base: &deez_base
     .header, app-toolbar {
       background: transparent !important;
     }
+  # Native `heading` cards render no `ha-card` wrapper, so `card-mod-card`
+  # above never reaches them — the 52 of them on this dashboard sit straight
+  # on the photograph with no surface at all (UI-027). card-mod's per-type
+  # theme key targets the card's own host element instead, and text-shadow is
+  # an inherited property, so it reaches the label/icon text without needing
+  # to know the card's internal DOM. Same treatment cbec78b already gave the
+  # title and chip cards via their own card_mod blocks.
+  card-mod-card-heading: |
+    :host {
+      text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+    }
 
 "Deez Smart Home":
   <<: *deez_base

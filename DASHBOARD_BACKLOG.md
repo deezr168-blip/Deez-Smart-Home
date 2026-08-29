@@ -56,19 +56,6 @@ in `PROJECT_STATE.md`.
 
 ### P2 — Improvement
 
-#### `UI-027` — heading-card contrast
-- **Owner:** Main CasaRay Upgrade
-- **Area:** 52 native `heading` cards; `themes/deez_your_name.yaml`
-- **Objective:** give heading cards a theme-level surface or text-shadow rule
-  so section labels stay legible over the bright horizon band of the
-  background photograph.
-- **State:** `PLANNED` — actionable
-- **Blockers:** none to implement; confirming the result needs a live look.
-- **Verification:** live look at a view whose headings sit over the bright band.
-- **Notes:** theme-level per the global-first design rule — not 52 `card_mod`
-  blocks. The 69 title and chip cards were already fixed in the dashboard.
-  Priority is arguable: see the open question in `PROJECT_STATE.md`.
-
 #### `BILL-002` — bill history and analytics
 - **Owner:** Billing Dashboard Upgrade
 - **Area:** `bills` and the six `bill-*` subviews
@@ -133,6 +120,7 @@ active queue work** — no routine should re-implement these. Full records in
 
 | Area | Items | Last commit |
 |---|---|---|
+| Heading-card contrast (theme-level `card-mod-card-heading` rule) | UI-027 | pending stamp |
 | Reassuring/false-safe status + bilingual door text | REG-001, REG-002, REG-003 | `b5eee22` |
 | Bilingual pass (chrome, status text, number-glued fragments) | UI-012, UI-028, UI-029 | `f04a59f` |
 | Back / previous-page navigation | UI-009, UI-017 | `34a92e7` |
