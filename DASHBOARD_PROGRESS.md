@@ -35,7 +35,7 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 
 ## Batches
 
-### `__SHA__` — the per-card glass retires; the theme paints the surface
+### `0f620f2` — the per-card glass retires; the theme paints the surface
 Area: all views, 32 cards. Purpose: every card carried its own
 `background: rgba(255,255,255,0.07)` panel with a drop shadow. Over a
 photographic background a white tint washes out rather than frosts, and it
