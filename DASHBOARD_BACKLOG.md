@@ -25,7 +25,6 @@ the formula and the safeguards.
 |---|---|---|---|---|---|---|---|---|
 | `BILL-001` | P1 | Billing | `bill-electricity`, `bill-gas` | 5 | 3 | 3 | **4** | actionable |
 | `UI-011` | P1 | Main | `energy` | — | — | — | — | `LIVE_VERIFICATION_REQUIRED` — excluded |
-| `UI-027` | P2 | Main | 52 heading cards + theme | 4 | 2 | 3 | **3** | actionable |
 | `BILL-002` | P2 | Billing | `bills` + six subviews | 4 | 4 | 3 | **1** | actionable |
 | `BILL-003` | P2 | Billing | ingestion architecture | 4 | 5 | 4 | **−1** | blocked on `BILL-001` |
 | `BILING-RESID` | P3 | Main | 3 views | 2 | 1 | 1 | **2** | actionable |
@@ -70,22 +69,6 @@ the formula and the safeguards.
 
 ### P2 — Improvement
 
-#### `UI-027` — heading-card contrast
-- **Owner:** Main CasaRay Upgrade
-- **Area:** 52 native `heading` cards; `themes/deez_your_name.yaml`
-- **Objective:** give heading cards a theme-level surface or text-shadow rule
-  so section labels stay legible over the bright horizon band of the
-  background photograph.
-- **State:** `PLANNED` — actionable
-- **Score:** Impact 4 · Effort 2 · Risk 3 → **3**
-- **Blockers:** none to implement; confirming the result needs a live look.
-- **Verification:** live look at a view whose headings sit over the bright band.
-- **Notes:** Risk 3 because a theme rule reaches every view and card type —
-  broad blast radius despite small effort. Implementing it as a theme rule
-  (global-first) also keeps it clear of the Active Change Window `b5eee22`
-  opened on four view templates. Priority stays P2 on repository evidence; the
-  accessibility argument for P1 is an open question recorded in
-  `PROJECT_STATE.md` and is not settled by scoring.
 
 #### `BILL-002` — bill history and analytics
 - **Owner:** Billing Dashboard Upgrade
@@ -131,11 +114,13 @@ the formula and the safeguards.
   Recent Change Protection rule 5, but this is P3 and ranks below `UI-027`
   anyway, so the question does not currently bite.
 - **Verification:** live look with the language toggle on.
-- **Notes:** REG-001 was part of this group and is now fixed in `b5eee22`, so
-  the group is REG-004/005/006. **REG-005 stays unresolved by design** —
-  whether the untranslated `WAN —` placeholder is intentional is an open owner
-  question, not a scoring matter. Per-finding evidence stays in
-  `DASHBOARD_ISSUES.md`.
+- **Notes:** grouped because they are one continuation of the UI-012 →
+  UI-028 → UI-029 sequence, not three independent defects. REG-001, originally
+  grouped here (the three `security` door cards' Open/Closed clause), was
+  fixed with REG-002/REG-003 in `b5eee22` and moved to "Awaiting live
+  verification" below. **REG-005 stays unresolved by design** — whether the
+  untranslated `WAN —` placeholder is intentional is an open owner question,
+  not a scoring matter. Per-finding evidence stays in `DASHBOARD_ISSUES.md`.
 
 #### `DR-001` — iPad Command Center density
 - **Owner:** Main CasaRay Upgrade (raised by CasaRay Design Reviewer)
@@ -161,12 +146,13 @@ active queue work** — no routine should re-implement these. Full records in
 
 | Area | Items | Last commit |
 |---|---|---|
+| Heading-card contrast (theme-level `card-mod-card-heading` rule) | UI-027 | `9926233` |
+| Reassuring/false-safe status + bilingual door text | REG-001, REG-002, REG-003 | `b5eee22` |
 | Bilingual pass (chrome, status text, number-glued fragments) | UI-012, UI-028, UI-029 | `f04a59f` |
 | Back / previous-page navigation | UI-009, UI-017 | `34a92e7` |
 | Guarded fallbacks / false-state removal | UI-002, UI-005, UI-006, UI-008, UI-018, UI-020, UI-022 | `a5dc914` |
 | Layout: nested grids dissolved, duplicate controls removed | UI-013, UI-014, UI-015, UI-016, UI-019, UI-021 | `9b28fdb` |
 | Presentation and placeholders | UI-007, UI-010, UI-023, UI-024 | `3048e54` |
-| Reassuring / untranslated status regressions | REG-001, REG-002, REG-003 | `b5eee22` |
 
 Verified by the owner and closed: UI-025, UI-026.
 

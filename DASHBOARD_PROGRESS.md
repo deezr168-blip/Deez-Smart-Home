@@ -28,6 +28,29 @@ Nothing below this line changes: the batch record is history and stays intact.
 
 ## Batches
 
+### `9926233` — heading cards get their contrast back (UI-027)
+Area: `themes/deez_your_name.yaml` (one rule, shared base). Purpose: the 52
+native `heading` cards across every section render with no `ha-card` wrapper,
+so the theme's existing `card-mod-card` rule — the one place `cbec78b` put
+the frosted-glass and text-shadow treatment — never reaches them. They sit
+straight on the photograph, and lose contrast over the bright horizon band
+exactly as UI-027 described.
+`card-mod-card-heading` is card-mod's documented per-card-type theme key: it
+targets that one card type's own host element instead of assuming an
+`ha-card` child exists. `text-shadow` is an inherited CSS property, so
+setting it on `:host` reaches the label and icon text underneath without
+needing to know the heading card's internal DOM — the same
+`0 1px 3px rgba(4, 10, 20, 0.55)` value the 69 title and chip cards already
+carry, so all three chrome types now read with one consistent edge.
+One rule at the theme base, not 52 per-card `card_mod` blocks, per the
+global-first design direction in `CLAUDE.md`.
+Validated: dashboard YAML/templates untouched (0% size change on the
+dashboard file), theme YAML parses with no duplicate keys.
+Expect: every section heading keeps a legible edge over the comet and city
+lights, matching the page titles and chip rows above and below it. This
+environment cannot render Lovelace or card-mod's shadow-DOM behaviour, so
+this stays AWAITING LIVE VERIFICATION until checked on the iPad.
+
 ### `b5eee22` — three reassuring/untranslated regressions closed (REG-001/002/003)
 Area: `security` (3 door cards), `lights` + `cameras` (motion-aggregate quick
 chips), `home` (Network nav chip). Purpose: closes the three MEDIUM findings
