@@ -35,7 +35,7 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 
 ## Batches
 
-### `__SHA__` — design target moves to CasaRay × Your Name (theme layer)
+### `88be895` — design target moves to CasaRay × Your Name (theme layer)
 Area: `themes/deez_your_name.yaml` (new), `THEME_INSTALL.md` (new),
 `scripts/yaml_check.py`. No dashboard file touched, so nothing in this batch
 can affect the live dashboard until the theme is installed by hand.
