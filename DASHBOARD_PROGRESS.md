@@ -32,7 +32,7 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 
 ## Batches
 
-### `__SHA__` — every view now answers the language toggle (UI-012)
+### `f4e7ec3` — every view now answers the language toggle (UI-012)
 Area: all 36 views. Purpose: the Chinese toggle existed on Home, Cameras and
 Lighting Studio and nowhere else, so switching language left 33 views in
 English — the toggle looked broken rather than partial.
