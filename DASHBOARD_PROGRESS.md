@@ -18,7 +18,8 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 ## Next recommended priorities
 
 1. **UI-027** — heading-card contrast; needs a theme rule and a live look.
-2. **UI-029** — bilingual pass three: number-glued status fragments.
+2. **UI-011** and **UI-027** both need a live look now, not more repository
+   work — see the open table.
 3. **UI-012** — bilingual gap: 33 of 36 views are English-only while Home,
    Cameras and Lighting Studio respond to the toggle.
 4. **UI-013** — Parents Room and Guest Room each stack a Mushroom media card
@@ -31,6 +32,34 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 ---
 
 ## Batches
+
+### `__SHA__` — the number-glued status fragments (UI-029)
+Area: 34 templates across home, kitchen, garage, energy, cameras, climate,
+status, people-locations, lights, light-ray-bedroom, ipad-command-center and
+bills. Purpose: closes the bilingual work. These were left out of the previous
+pass on purpose — a fragment glued to a number cannot be swapped word for word
+when the target language orders it differently.
+Split by whether Chinese keeps the English position:
+  - Position-stable, so fragment-swapped: "Fridge {{ t }}°C" -> 冰箱,
+    "W • measured" -> W • 实测, "Paid • $" -> 已付 • $, "Battery {{ b }}%" ->
+    电量, "Never"/"Not scheduled" -> 从未/未安排, the three energy
+    "Unavailable • X not reporting" sentences, and 20 more.
+  - Genuinely reordered, so rewritten as a whole clause per language:
+    "{{ d }} km away" and "km from home" become 距家 {{ d }} 公里 — the
+    qualifier moves in front of the value; "{{ n }} of 6 offline" becomes
+    {{ n }}/6 离线; and the offline-camera list joins on 、 rather than a
+    comma, which is the correct Chinese list separator.
+One real gap was caught by rendering rather than reading: the iPad presence
+card printed "Home" in both languages, because that branch had never been in
+any phrase map. Fixed.
+Verified the same way as the previous pass and with distance added to the
+matrix: all 257 templates rendered from HEAD and from the new file across five
+entity states x four distances. English output difference after whitespace
+normalisation: zero. Every edited template produces Chinese in at least one
+reachable branch.
+Validated: 384 templates, 36/36 links, 0 broken, no entity loss.
+Expect: no English left in card status text when the toggle is on, and the
+Chinese reads in Chinese order rather than transliterated English order.
 
 ### `fa286de` — status text answers the toggle too (UI-028)
 Area: 58 guarded templates across every view. Purpose: the chrome pass made

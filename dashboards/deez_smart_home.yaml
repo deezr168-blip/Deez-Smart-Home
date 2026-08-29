@@ -145,7 +145,7 @@ views:
           navigation_path: /deez-smart-home/people-locations
       - type: template
         icon: mdi:receipt-text
-        content: '{% set raw = states(''sensor.bills_unpaid_count'') %}{% if raw in [''unavailable'', ''unknown'', ''none''] %}Bills ?{% else %}{% set n = raw | int(0) %}{{ n ~ '' due'' if n > 0 else ''Bills'' }}{% endif %}'
+        content: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set raw = states(''sensor.bills_unpaid_count'') %}{% if raw in [''unavailable'', ''unknown'', ''none''] %}{{ ''账单 ?'' if cn else ''Bills ?'' }}{% else %}{% set n = raw | int(0) %}{{ n ~ '' due'' if n > 0 else ''Bills'' }}{% endif %}'
         icon_color: '{% set raw = states(''sensor.bills_unpaid_count'') %}{% if raw in [''unavailable'', ''unknown'', ''none''] %}grey{% elif raw | int(0) > 0 %}orange{% else %}green{% endif %}'
         tap_action:
           action: navigate
@@ -252,7 +252,7 @@ views:
         above: 100
       card:
         type: custom:mushroom-template-card
-        primary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set raw = states(''sensor.primo_5_0_1_1_ac_power'') %}{% set d = states(''sensor.primo_5_0_1_1_energy_day'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}{% if raw in bad %}{{ ''逆变器离线'' if cn else ''Inverter offline'' }}{% else %}{% set p = raw | float(0) %}{{ ((p / 1000) | round(2) ~ '' kW'') if p >= 1000 else (p | round(0) | int ~ '' W'') }} • {% if d in bad %}today unavailable{% else %}{{ d | float(0) | round(0) | int }} Wh today{% endif %}{% endif %}'
+        primary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set raw = states(''sensor.primo_5_0_1_1_ac_power'') %}{% set d = states(''sensor.primo_5_0_1_1_energy_day'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}{% if raw in bad %}{{ ''逆变器离线'' if cn else ''Inverter offline'' }}{% else %}{% set p = raw | float(0) %}{{ ((p / 1000) | round(2) ~ '' kW'') if p >= 1000 else (p | round(0) | int ~ '' W'') }} • {% if d in bad %}{{ ''今日数据不可用'' if cn else ''today unavailable'' }}{% else %}{{ d | float(0) | round(0) | int }} {{ ''Wh 今日'' if cn else ''Wh today'' }}{% endif %}{% endif %}'
         secondary: '{{ ''太阳能发电中'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Solar producing'' }}'
         icon: mdi:solar-power-variant
         icon_color: amber
@@ -268,7 +268,7 @@ views:
         above: 0
       card:
         type: custom:mushroom-template-card
-        primary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set raw = states(''sensor.bills_unpaid_count'') %}{% if raw in [''unavailable'', ''unknown'', ''none''] %}{{ ''账单状态不可用'' if cn else ''Bills status unavailable'' }}{% else %}{{ raw }} unpaid • ${{ states(''sensor.bills_outstanding_total'') }}{% endif %}'
+        primary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set raw = states(''sensor.bills_unpaid_count'') %}{% if raw in [''unavailable'', ''unknown'', ''none''] %}{{ ''账单状态不可用'' if cn else ''Bills status unavailable'' }}{% else %}{{ raw }} {{ ''笔未付 • $'' if cn else ''unpaid • $'' }}{{ states(''sensor.bills_outstanding_total'') }}{% endif %}'
         secondary: '{{ ''待付账单'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Bills outstanding'' }}'
         icon: mdi:cash-clock
         icon_color: orange
@@ -447,7 +447,7 @@ views:
       grid_options:
         columns: 3
       primary: Energy
-      secondary: '{% set s = states(''sensor.primo_5_0_1_1_ac_power'') %}{% set g = states(''sensor.powerpal_gateway_powerpal_power'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}Solar {% if s in bad %}offline{% else %}{{ s | float(0) | round(0) | int }} W{% endif %}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set s = states(''sensor.primo_5_0_1_1_ac_power'') %}{% set g = states(''sensor.powerpal_gateway_powerpal_power'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}{{ ''太阳能'' if cn else ''Solar'' }} {% if s in bad %}offline{% else %}{{ s | float(0) | round(0) | int }} W{% endif %}'
       icon: mdi:solar-power
       icon_color: amber
       tap_action:
@@ -478,10 +478,7 @@ views:
       grid_options:
         columns: 3
       primary: Security
-      secondary: '{% set doors = [states(''binary_sensor.m_contact_sensor_door''),
-        states(''binary_sensor.f_contact_sensor_door''), states(''binary_sensor.b_contact_sensor_door'')]
-        %} {% set open = doors | select(''eq'',''on'') | list | count %} {{ open }}
-        doors open • motion monitoring'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set doors = [states(''binary_sensor.m_contact_sensor_door''), states(''binary_sensor.f_contact_sensor_door''), states(''binary_sensor.b_contact_sensor_door'')] %} {% set open = doors | select(''eq'',''on'') | list | count %} {{ open }} {{ ''扇门开启 • 移动监测'' if cn else ''doors open • motion monitoring'' }}'
       icon: mdi:shield-home
       icon_color: '{% set doors = [states(''binary_sensor.m_contact_sensor_door''),
         states(''binary_sensor.f_contact_sensor_door''), states(''binary_sensor.b_contact_sensor_door'')]
@@ -494,7 +491,7 @@ views:
       grid_options:
         columns: 3
       primary: Climate
-      secondary: Parents AC {{ states('climate.bedroom_parents_room_ac') }}
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{{ ''父母房空调'' if cn else ''Parents AC'' }} {{ states(''climate.bedroom_parents_room_ac'') }}'
       icon: mdi:thermostat
       icon_color: '{{ ''blue'' if states(''climate.bedroom_parents_room_ac'') not
         in [''off'',''unavailable'',''unknown''] else ''grey'' }}'
@@ -1170,7 +1167,7 @@ views:
         content: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set v = states(''binary_sensor.k_motion_sensor_motion'') %}{% if v in [''unavailable'',''unknown'',''none''] %}{{ ''离线'' if cn else ''Offline'' }}{% elif v == ''on'' %}{{ ''有人'' if cn else ''Motion'' }}{% else %}{{ ''无人'' if cn else ''Clear'' }}{% endif %}'
     - type: custom:mushroom-template-card
       primary: LG Fridge
-      secondary: '{% set bad = [''unavailable'',''unknown'',''none''] %}{% set f = states(''number.lg_fridge_fridge_temperature'') %}{% set z = states(''number.lg_fridge_freezer_temperature'') %}Fridge {{ ''—'' if f in bad else (f|float(0)|round(0)|int ~ ''°C'') }} • Freezer {{ ''—'' if z in bad else (z|float(0)|round(0)|int ~ ''°C'') }}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set bad = [''unavailable'',''unknown'',''none''] %}{% set f = states(''number.lg_fridge_fridge_temperature'') %}{% set z = states(''number.lg_fridge_freezer_temperature'') %}{{ ''冰箱'' if cn else ''Fridge'' }} {{ ''—'' if f in bad else (f|float(0)|round(0)|int ~ ''°C'') }} {{ ''• 冰柜'' if cn else ''• Freezer'' }} {{ ''—'' if z in bad else (z|float(0)|round(0)|int ~ ''°C'') }}'
       icon: mdi:fridge
       icon_color: cyan
     - type: tile
@@ -1441,19 +1438,19 @@ views:
       icon: mdi:flash
     - type: custom:mushroom-template-card
       primary: Grid Import
-      secondary: '{% set g = states(''sensor.powerpal_gateway_powerpal_power'') %}{% if g in [''unavailable'', ''unknown'', ''none''] %}Unavailable  •  meter not reporting{% else %}{{ g | float(0) | round(0) | int }} W  •  measured{% endif %}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set g = states(''sensor.powerpal_gateway_powerpal_power'') %}{% if g in [''unavailable'', ''unknown'', ''none''] %}{{ ''不可用 • 电表无数据'' if cn else ''Unavailable  •  meter not reporting'' }}{% else %}{{ g | float(0) | round(0) | int }} {{ ''W • 实测'' if cn else ''W  •  measured'' }}{% endif %}'
       icon: mdi:transmission-tower-import
       icon_color: '{% set g = states(''sensor.powerpal_gateway_powerpal_power'') %}{% if g in [''unavailable'', ''unknown'', ''none''] %}red{% else %}{% set w = g | float(0) %}{% if w > 4000 %}red{% elif w > 2000 %}orange{% elif w > 0 %}blue{% else %}green{% endif %}{% endif %}'
       entity: sensor.powerpal_gateway_powerpal_power
     - type: custom:mushroom-template-card
       primary: Solar Now
-      secondary: '{% set s = states(''sensor.primo_5_0_1_1_ac_power'') %}{% if s in [''unavailable'', ''unknown'', ''none''] %}Unavailable  •  inverter not reporting{% else %}{{ s | float(0) | round(0) | int }} W  •  measured{% endif %}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set s = states(''sensor.primo_5_0_1_1_ac_power'') %}{% if s in [''unavailable'', ''unknown'', ''none''] %}{{ ''不可用 • 逆变器无数据'' if cn else ''Unavailable  •  inverter not reporting'' }}{% else %}{{ s | float(0) | round(0) | int }} {{ ''W • 实测'' if cn else ''W  •  measured'' }}{% endif %}'
       icon: mdi:solar-power
       icon_color: '{% set s = states(''sensor.primo_5_0_1_1_ac_power'') %}{% if s in [''unavailable'', ''unknown'', ''none''] %}red{% elif s | float(0) > 0 %}amber{% else %}grey{% endif %}'
       entity: sensor.primo_5_0_1_1_ac_power
     - type: custom:mushroom-template-card
       primary: House Load (estimated)
-      secondary: '{% set g = states(''sensor.powerpal_gateway_powerpal_power'') %}{% set s = states(''sensor.primo_5_0_1_1_ac_power'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}{% if g in bad %}Unavailable  •  grid meter not reporting{% elif s in bad %}{{ g | float(0) | round(0) | int }} W  •  grid only, solar data unavailable{% else %}{{ (g | float(0) + s | float(0)) | round(0) | int }} W  •  calculated{% endif %}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set g = states(''sensor.powerpal_gateway_powerpal_power'') %}{% set s = states(''sensor.primo_5_0_1_1_ac_power'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}{% if g in bad %}{{ ''不可用 • 电网电表无数据'' if cn else ''Unavailable  •  grid meter not reporting'' }}{% elif s in bad %}{{ g | float(0) | round(0) | int }} {{ ''W • 仅电网，太阳能数据不可用'' if cn else ''W  •  grid only, solar data unavailable'' }}{% else %}{{ (g | float(0) + s | float(0)) | round(0) | int }} {{ ''W • 计算值'' if cn else ''W  •  calculated'' }}{% endif %}'
       icon: mdi:home-lightning-bolt
       icon_color: '{% set g = states(''sensor.powerpal_gateway_powerpal_power'') %}{% set s = states(''sensor.primo_5_0_1_1_ac_power'') %}{% if g in [''unavailable'', ''unknown'', ''none''] %}red{% else %}{% set load = g | float(0) + (s | float(0)) %}{% if load > 4000 %}red{% elif load > 2000 %}orange{% else %}green{% endif %}{% endif %}'
   - type: grid
@@ -1504,7 +1501,7 @@ views:
       grid_options:
         columns: 3
       primary: Powerpal Gateway
-      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set b = states(''sensor.powerpal_gateway_powerpal_battery'') %}{% if b in [''unavailable'', ''unknown'', ''none''] %}{{ ''电量无数据'' if cn else ''Battery not reporting'' }}{% else %}Battery {{ b | float(0) | round(0) | int }}%{% endif %}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set b = states(''sensor.powerpal_gateway_powerpal_battery'') %}{% if b in [''unavailable'', ''unknown'', ''none''] %}{{ ''电量无数据'' if cn else ''Battery not reporting'' }}{% else %}{{ ''电量'' if cn else ''Battery'' }} {{ b | float(0) | round(0) | int }}%{% endif %}'
       icon: mdi:battery-heart-variant
       icon_color: '{% set b = states(''sensor.powerpal_gateway_powerpal_battery'') %}{% if b in [''unavailable'', ''unknown'', ''none''] %}grey{% else %}{% set v = b | float(0) %}{% if v < 20 %}red{% elif v < 40 %}orange{% else %}green{% endif %}{% endif %}'
       entity: sensor.powerpal_gateway_powerpal_battery
@@ -1597,7 +1594,7 @@ views:
       chips:
       - type: template
         icon: mdi:cctv
-        content: '{% set cams = [(''Front Door'',''camera.front_door_live_view''), (''North Wall'',''camera.tapo_c425_north_wall_hd_stream_direct''), (''East Wall'',''camera.tapo_c420_east_wall_hd_stream_direct''), (''South Wall'',''camera.tapo_c420_south_wall_hd_stream_direct''), (''Stockroom'',''camera.tapo_c200_stockroom_hd_stream_direct''), (''Pet Feeder'',''camera.smart_pet_feeder'')] %}{% set ns = namespace(down=[]) %}{% for n,c in cams %}{% if states(c) in [''unavailable'',''unknown'',''none''] %}{% set ns.down = ns.down + [n] %}{% endif %}{% endfor %}{% if ns.down | count == 0 %}6/6 online{% elif ns.down | count <= 2 %}{{ ns.down | join('', '') }} offline{% else %}{{ ns.down | count }} of 6 offline{% endif %}'
+        content: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set cams = [(''Front Door'',''camera.front_door_live_view''), (''North Wall'',''camera.tapo_c425_north_wall_hd_stream_direct''), (''East Wall'',''camera.tapo_c420_east_wall_hd_stream_direct''), (''South Wall'',''camera.tapo_c420_south_wall_hd_stream_direct''), (''Stockroom'',''camera.tapo_c200_stockroom_hd_stream_direct''), (''Pet Feeder'',''camera.smart_pet_feeder'')] %}{% set ns = namespace(down=[]) %}{% for n,c in cams %}{% if states(c) in [''unavailable'',''unknown'',''none''] %}{% set ns.down = ns.down + [n] %}{% endif %}{% endfor %}{% if ns.down | count == 0 %}{{ ''6/6 在线'' if cn else ''6/6 online'' }}{% elif ns.down | count <= 2 %}{% if cn %}{{ ns.down | join(''、'') }} 离线{% else %}{{ ns.down | join('', '') }} offline{% endif %}{% else %}{% if cn %}{{ ns.down | count }}/6 离线{% else %}{{ ns.down | count }} of 6 offline{% endif %}{% endif %}'
         icon_color: '{% set cams = [(''Front Door'',''camera.front_door_live_view''), (''North Wall'',''camera.tapo_c425_north_wall_hd_stream_direct''), (''East Wall'',''camera.tapo_c420_east_wall_hd_stream_direct''), (''South Wall'',''camera.tapo_c420_south_wall_hd_stream_direct''), (''Stockroom'',''camera.tapo_c200_stockroom_hd_stream_direct''), (''Pet Feeder'',''camera.smart_pet_feeder'')] %}{% set ns = namespace(down=[]) %}{% for n,c in cams %}{% if states(c) in [''unavailable'',''unknown'',''none''] %}{% set ns.down = ns.down + [n] %}{% endif %}{% endfor %}{{ ''green'' if ns.down | count == 0 else (''amber'' if ns.down | count <= 2 else ''red'') }}'
       - type: template
         icon: mdi:door
@@ -2221,7 +2218,7 @@ views:
       icon: mdi:motion-sensor
     - type: custom:mushroom-template-card
       primary: Living Room
-      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set v = states(''binary_sensor.living_room_living_hue_hue_sensor_motion'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}{{ ''传感器离线'' if cn else ''Sensor offline'' }}{% elif v == ''on'' %}{{ ''有人活动'' if cn else ''Motion now'' }}{% else %}Clear • {{ relative_time(states.binary_sensor.living_room_living_hue_hue_sensor_motion.last_changed) }}{% endif %}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set v = states(''binary_sensor.living_room_living_hue_hue_sensor_motion'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}{{ ''传感器离线'' if cn else ''Sensor offline'' }}{% elif v == ''on'' %}{{ ''有人活动'' if cn else ''Motion now'' }}{% else %}{{ ''无人 •'' if cn else ''Clear •'' }} {{ relative_time(states.binary_sensor.living_room_living_hue_hue_sensor_motion.last_changed) }}{% endif %}'
       icon: mdi:motion-sensor
       icon_color: '{% set v = states(''binary_sensor.living_room_living_hue_hue_sensor_motion'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}grey{% elif v == ''on'' %}amber{% else %}green{% endif %}'
       entity: binary_sensor.living_room_living_hue_hue_sensor_motion
@@ -2229,7 +2226,7 @@ views:
         action: more-info
     - type: custom:mushroom-template-card
       primary: Parents Room
-      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set v = states(''binary_sensor.bedroom_motion_sensor_motion'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}{{ ''传感器离线'' if cn else ''Sensor offline'' }}{% elif v == ''on'' %}{{ ''有人活动'' if cn else ''Motion now'' }}{% else %}Clear • {{ relative_time(states.binary_sensor.bedroom_motion_sensor_motion.last_changed) }}{% endif %}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set v = states(''binary_sensor.bedroom_motion_sensor_motion'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}{{ ''传感器离线'' if cn else ''Sensor offline'' }}{% elif v == ''on'' %}{{ ''有人活动'' if cn else ''Motion now'' }}{% else %}{{ ''无人 •'' if cn else ''Clear •'' }} {{ relative_time(states.binary_sensor.bedroom_motion_sensor_motion.last_changed) }}{% endif %}'
       icon: mdi:motion-sensor
       icon_color: '{% set v = states(''binary_sensor.bedroom_motion_sensor_motion'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}grey{% elif v == ''on'' %}amber{% else %}green{% endif %}'
       entity: binary_sensor.bedroom_motion_sensor_motion
@@ -2237,7 +2234,7 @@ views:
         action: more-info
     - type: custom:mushroom-template-card
       primary: Kitchen
-      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set v = states(''binary_sensor.k_motion_sensor_motion'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}{{ ''传感器离线'' if cn else ''Sensor offline'' }}{% elif v == ''on'' %}{{ ''有人活动'' if cn else ''Motion now'' }}{% else %}Clear • {{ relative_time(states.binary_sensor.k_motion_sensor_motion.last_changed) }}{% endif %}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set v = states(''binary_sensor.k_motion_sensor_motion'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}{{ ''传感器离线'' if cn else ''Sensor offline'' }}{% elif v == ''on'' %}{{ ''有人活动'' if cn else ''Motion now'' }}{% else %}{{ ''无人 •'' if cn else ''Clear •'' }} {{ relative_time(states.binary_sensor.k_motion_sensor_motion.last_changed) }}{% endif %}'
       icon: mdi:motion-sensor
       icon_color: '{% set v = states(''binary_sensor.k_motion_sensor_motion'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}grey{% elif v == ''on'' %}amber{% else %}green{% endif %}'
       entity: binary_sensor.k_motion_sensor_motion
@@ -2245,7 +2242,7 @@ views:
         action: more-info
     - type: custom:mushroom-template-card
       primary: Dining
-      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set v = states(''binary_sensor.sensor_group_motion'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}{{ ''传感器离线'' if cn else ''Sensor offline'' }}{% elif v == ''on'' %}{{ ''有人活动'' if cn else ''Motion now'' }}{% else %}Clear • {{ relative_time(states.binary_sensor.sensor_group_motion.last_changed) }}{% endif %}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set v = states(''binary_sensor.sensor_group_motion'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}{{ ''传感器离线'' if cn else ''Sensor offline'' }}{% elif v == ''on'' %}{{ ''有人活动'' if cn else ''Motion now'' }}{% else %}{{ ''无人 •'' if cn else ''Clear •'' }} {{ relative_time(states.binary_sensor.sensor_group_motion.last_changed) }}{% endif %}'
       icon: mdi:motion-sensor
       icon_color: '{% set v = states(''binary_sensor.sensor_group_motion'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}grey{% elif v == ''on'' %}amber{% else %}green{% endif %}'
       entity: binary_sensor.sensor_group_motion
@@ -2821,7 +2818,7 @@ views:
       icon: mdi:account-group
     - type: custom:mushroom-template-card
       primary: Raymond Du
-      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set bad = [''unavailable'',''unknown'',''none''] %}{% set d = distance(''zone.home'',''person.raymond_du'') %}{% set z = states(''person.raymond_du'') %}{% if d is not number %}{% if z in bad or z == ''not_home'' %}{{ ''位置未知'' if cn else ''Location unknown'' }}{% else %}{{ z | replace(''_'','' '') | title }}{% endif %}{% elif d <= 0.1 %}Home • within 100 m{% else %}{{ d | round(1) }} km away{% if z not in bad and z not in [''not_home'',''home''] %} • {{ z | replace(''_'','' '') | title }}{% endif %}{% endif %}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set bad = [''unavailable'',''unknown'',''none''] %}{% set d = distance(''zone.home'',''person.raymond_du'') %}{% set z = states(''person.raymond_du'') %}{% if d is not number %}{% if z in bad or z == ''not_home'' %}{{ ''位置未知'' if cn else ''Location unknown'' }}{% else %}{{ z | replace(''_'','' '') | title }}{% endif %}{% elif d <= 0.1 %}{{ ''在家 • 100 米内'' if cn else ''Home • within 100 m'' }}{% else %}{% if cn %}距家 {{ d | round(1) }} 公里{% else %}{{ d | round(1) }} km away{% endif %}{% if z not in bad and z not in [''not_home'',''home''] %} • {{ z | replace(''_'','' '') | title }}{% endif %}{% endif %}'
       icon: mdi:account
       icon_color: '{% set d = distance(''zone.home'',''person.raymond_du'') %}{% if d is not number %}grey{% elif d <= 0.1 %}green{% elif d < 50 %}orange{% else %}red{% endif %}'
       entity: person.raymond_du
@@ -2832,7 +2829,7 @@ views:
         action: more-info
     - type: custom:mushroom-template-card
       primary: Vinh Du
-      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set bad = [''unavailable'',''unknown'',''none''] %}{% set d = distance(''zone.home'',''person.vinh_du'') %}{% set z = states(''person.vinh_du'') %}{% if d is not number %}{% if z in bad or z == ''not_home'' %}{{ ''位置未知'' if cn else ''Location unknown'' }}{% else %}{{ z | replace(''_'','' '') | title }}{% endif %}{% elif d <= 0.1 %}Home • within 100 m{% else %}{{ d | round(1) }} km away{% if z not in bad and z not in [''not_home'',''home''] %} • {{ z | replace(''_'','' '') | title }}{% endif %}{% endif %}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set bad = [''unavailable'',''unknown'',''none''] %}{% set d = distance(''zone.home'',''person.vinh_du'') %}{% set z = states(''person.vinh_du'') %}{% if d is not number %}{% if z in bad or z == ''not_home'' %}{{ ''位置未知'' if cn else ''Location unknown'' }}{% else %}{{ z | replace(''_'','' '') | title }}{% endif %}{% elif d <= 0.1 %}{{ ''在家 • 100 米内'' if cn else ''Home • within 100 m'' }}{% else %}{% if cn %}距家 {{ d | round(1) }} 公里{% else %}{{ d | round(1) }} km away{% endif %}{% if z not in bad and z not in [''not_home'',''home''] %} • {{ z | replace(''_'','' '') | title }}{% endif %}{% endif %}'
       icon: mdi:account
       icon_color: '{% set d = distance(''zone.home'',''person.vinh_du'') %}{% if d is not number %}grey{% elif d <= 0.1 %}green{% elif d < 50 %}orange{% else %}red{% endif %}'
       entity: person.vinh_du
@@ -2843,7 +2840,7 @@ views:
         action: more-info
     - type: custom:mushroom-template-card
       primary: Ai Q Huang
-      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set bad = [''unavailable'',''unknown'',''none''] %}{% set d = distance(''zone.home'',''person.ai_q_huang'') %}{% set z = states(''person.ai_q_huang'') %}{% if d is not number %}{% if z in bad or z == ''not_home'' %}{{ ''位置未知'' if cn else ''Location unknown'' }}{% else %}{{ z | replace(''_'','' '') | title }}{% endif %}{% elif d <= 0.1 %}Home • within 100 m{% else %}{{ d | round(1) }} km away{% if z not in bad and z not in [''not_home'',''home''] %} • {{ z | replace(''_'','' '') | title }}{% endif %}{% endif %}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set bad = [''unavailable'',''unknown'',''none''] %}{% set d = distance(''zone.home'',''person.ai_q_huang'') %}{% set z = states(''person.ai_q_huang'') %}{% if d is not number %}{% if z in bad or z == ''not_home'' %}{{ ''位置未知'' if cn else ''Location unknown'' }}{% else %}{{ z | replace(''_'','' '') | title }}{% endif %}{% elif d <= 0.1 %}{{ ''在家 • 100 米内'' if cn else ''Home • within 100 m'' }}{% else %}{% if cn %}距家 {{ d | round(1) }} 公里{% else %}{{ d | round(1) }} km away{% endif %}{% if z not in bad and z not in [''not_home'',''home''] %} • {{ z | replace(''_'','' '') | title }}{% endif %}{% endif %}'
       icon: mdi:account
       icon_color: '{% set d = distance(''zone.home'',''person.ai_q_huang'') %}{% if d is not number %}grey{% elif d <= 0.1 %}green{% elif d < 50 %}orange{% else %}red{% endif %}'
       entity: person.ai_q_huang
@@ -2870,14 +2867,13 @@ views:
       theme_mode: dark
       aspect_ratio: '16:9'
     - type: markdown
-      content: |
-        {%- set people = [('Raymond Du', 'person.raymond_du'), ('Vinh Du', 'person.vinh_du'), ('Ai Q Huang', 'person.ai_q_huang')] -%}
-        {%- for name, p in people %}{% set lat = state_attr(p,'latitude') %}{% set lon = state_attr(p,'longitude') %}{% set d = distance('zone.home',p) %}
-        **{{ name }}** — {% if d is not number %}location unknown{% elif d <= 0.1 %}🟢 home{% elif d < 50 %}🟠 {{ d | round(1) }} km away{% else %}🔴 {{ d | round(1) }} km away{% endif %}
-        {% if lat is number and lon is number %}
-        [🧭 Route](https://maps.apple.com/?daddr={{ lat }},{{ lon }}&dirflg=d) &nbsp;&nbsp; [🗺️ Map](https://maps.apple.com/?ll={{ lat }},{{ lon }})
-        {%- endif %}
-        {% endfor %}
+      content: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{%- set people = [(''Raymond Du'', ''person.raymond_du''), (''Vinh Du'', ''person.vinh_du''), (''Ai Q Huang'', ''person.ai_q_huang'')] -%}
+{%- for name, p in people %}{% set lat = state_attr(p,''latitude'') %}{% set lon = state_attr(p,''longitude'') %}{% set d = distance(''zone.home'',p) %}
+**{{ name }}** — {% if d is not number %}{{ ''位置未知'' if cn else ''location unknown'' }}{% elif d <= 0.1 %}🟢 home{% elif d < 50 %}🟠 {% if cn %}距家 {{ d | round(1) }} 公里{% else %}{{ d | round(1) }} km away{% endif %}{% else %}🔴 {% if cn %}距家 {{ d | round(1) }} 公里{% else %}{{ d | round(1) }} km away{% endif %}{% endif %}
+{% if lat is number and lon is number %}
+[🧭 Route](https://maps.apple.com/?daddr={{ lat }},{{ lon }}&dirflg=d) &nbsp;&nbsp; [🗺️ Map](https://maps.apple.com/?ll={{ lat }},{{ lon }})
+{%- endif %}
+{% endfor %}'
 - type: sections
   title: Distance
   path: people-locations-distance
@@ -2917,7 +2913,7 @@ views:
       aspect_ratio: '16:9'
     - type: custom:mushroom-template-card
       primary: Raymond Du
-      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set d = distance(''zone.home'',''person.raymond_du'') %}{% if d is not number %}{{ ''位置未知'' if cn else ''Location unknown'' }}{% elif d <= 0.1 %}Home • within 100 m{% else %}{{ d | round(1) }} km from home{% endif %}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set d = distance(''zone.home'',''person.raymond_du'') %}{% if d is not number %}{{ ''位置未知'' if cn else ''Location unknown'' }}{% elif d <= 0.1 %}{{ ''在家 • 100 米内'' if cn else ''Home • within 100 m'' }}{% else %}{% if cn %}距家 {{ d | round(1) }} 公里{% else %}{{ d | round(1) }} km from home{% endif %}{% endif %}'
       icon: mdi:map-marker-distance
       icon_color: '{% set d = distance(''zone.home'',''person.raymond_du'') %}{% if d is not number %}grey{% elif d <= 0.1 %}green{% elif d < 50 %}orange{% else %}red{% endif %}'
       entity: person.raymond_du
@@ -2925,7 +2921,7 @@ views:
         action: more-info
     - type: custom:mushroom-template-card
       primary: Vinh Du
-      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set d = distance(''zone.home'',''person.vinh_du'') %}{% if d is not number %}{{ ''位置未知'' if cn else ''Location unknown'' }}{% elif d <= 0.1 %}Home • within 100 m{% else %}{{ d | round(1) }} km from home{% endif %}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set d = distance(''zone.home'',''person.vinh_du'') %}{% if d is not number %}{{ ''位置未知'' if cn else ''Location unknown'' }}{% elif d <= 0.1 %}{{ ''在家 • 100 米内'' if cn else ''Home • within 100 m'' }}{% else %}{% if cn %}距家 {{ d | round(1) }} 公里{% else %}{{ d | round(1) }} km from home{% endif %}{% endif %}'
       icon: mdi:map-marker-distance
       icon_color: '{% set d = distance(''zone.home'',''person.vinh_du'') %}{% if d is not number %}grey{% elif d <= 0.1 %}green{% elif d < 50 %}orange{% else %}red{% endif %}'
       entity: person.vinh_du
@@ -2933,7 +2929,7 @@ views:
         action: more-info
     - type: custom:mushroom-template-card
       primary: Ai Q Huang
-      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set d = distance(''zone.home'',''person.ai_q_huang'') %}{% if d is not number %}{{ ''位置未知'' if cn else ''Location unknown'' }}{% elif d <= 0.1 %}Home • within 100 m{% else %}{{ d | round(1) }} km from home{% endif %}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set d = distance(''zone.home'',''person.ai_q_huang'') %}{% if d is not number %}{{ ''位置未知'' if cn else ''Location unknown'' }}{% elif d <= 0.1 %}{{ ''在家 • 100 米内'' if cn else ''Home • within 100 m'' }}{% else %}{% if cn %}距家 {{ d | round(1) }} 公里{% else %}{{ d | round(1) }} km from home{% endif %}{% endif %}'
       icon: mdi:map-marker-distance
       icon_color: '{% set d = distance(''zone.home'',''person.ai_q_huang'') %}{% if d is not number %}grey{% elif d <= 0.1 %}green{% elif d < 50 %}orange{% else %}red{% endif %}'
       entity: person.ai_q_huang
@@ -3437,8 +3433,7 @@ views:
       heading: '{{ ''卧室概况'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Bedroom Context'' }}'
     - type: custom:mushroom-template-card
       primary: Roller Shade
-      secondary: '{{ states(''cover.aqara_roller_shade_driver_e1'') }} • Battery {{
-        states(''sensor.aqara_roller_shade_driver_e1_battery'') }}%'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{{ states(''cover.aqara_roller_shade_driver_e1'') }} {{ ''• 电量'' if cn else ''• Battery'' }} {{ states(''sensor.aqara_roller_shade_driver_e1_battery'') }}%'
       icon: mdi:roller-shade
       icon_color: indigo
       entity: cover.aqara_roller_shade_driver_e1
@@ -3684,7 +3679,7 @@ views:
           navigation_path: /deez-smart-home/lights
       - type: template
         icon: mdi:cctv
-        content: '{% set cams = [(''Front Door'',''camera.front_door_live_view''), (''North Wall'',''camera.tapo_c425_north_wall_hd_stream_direct''), (''East Wall'',''camera.tapo_c420_east_wall_hd_stream_direct''), (''South Wall'',''camera.tapo_c420_south_wall_hd_stream_direct''), (''Stockroom'',''camera.tapo_c200_stockroom_hd_stream_direct''), (''Pet Feeder'',''camera.smart_pet_feeder'')] %}{% set ns = namespace(down=[]) %}{% for n,c in cams %}{% if states(c) in [''unavailable'',''unknown'',''none''] %}{% set ns.down = ns.down + [n] %}{% endif %}{% endfor %}{% if ns.down | count == 0 %}6 cams{% elif ns.down | count <= 2 %}{{ ns.down | join('', '') }} offline{% else %}{{ ns.down | count }} of 6 offline{% endif %}'
+        content: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set cams = [(''Front Door'',''camera.front_door_live_view''), (''North Wall'',''camera.tapo_c425_north_wall_hd_stream_direct''), (''East Wall'',''camera.tapo_c420_east_wall_hd_stream_direct''), (''South Wall'',''camera.tapo_c420_south_wall_hd_stream_direct''), (''Stockroom'',''camera.tapo_c200_stockroom_hd_stream_direct''), (''Pet Feeder'',''camera.smart_pet_feeder'')] %}{% set ns = namespace(down=[]) %}{% for n,c in cams %}{% if states(c) in [''unavailable'',''unknown'',''none''] %}{% set ns.down = ns.down + [n] %}{% endif %}{% endfor %}{% if ns.down | count == 0 %}{{ ''6 个摄像头'' if cn else ''6 cams'' }}{% elif ns.down | count <= 2 %}{% if cn %}{{ ns.down | join(''、'') }} 离线{% else %}{{ ns.down | join('', '') }} offline{% endif %}{% else %}{% if cn %}{{ ns.down | count }}/6 离线{% else %}{{ ns.down | count }} of 6 offline{% endif %}{% endif %}'
         icon_color: '{% set cams = [(''Front Door'',''camera.front_door_live_view''), (''North Wall'',''camera.tapo_c425_north_wall_hd_stream_direct''), (''East Wall'',''camera.tapo_c420_east_wall_hd_stream_direct''), (''South Wall'',''camera.tapo_c420_south_wall_hd_stream_direct''), (''Stockroom'',''camera.tapo_c200_stockroom_hd_stream_direct''), (''Pet Feeder'',''camera.smart_pet_feeder'')] %}{% set ns = namespace(down=[]) %}{% for n,c in cams %}{% if states(c) in [''unavailable'',''unknown'',''none''] %}{% set ns.down = ns.down + [n] %}{% endif %}{% endfor %}{{ ''green'' if ns.down | count == 0 else (''amber'' if ns.down | count <= 2 else ''red'') }}'
         tap_action:
           action: navigate
@@ -3814,7 +3809,7 @@ views:
         columns: 6
     - type: custom:mushroom-template-card
       primary: Raymond
-      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set d = distance(''zone.home'',''person.raymond_du'') %}{% if d is not number %}{{ ''未知'' if cn else ''Unknown'' }}{% elif d <= 0.1 %}Home{% else %}{{ d | round(1) }} km away{% endif %}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set d = distance(''zone.home'',''person.raymond_du'') %}{% if d is not number %}{{ ''未知'' if cn else ''Unknown'' }}{% elif d <= 0.1 %}{{ ''在家'' if cn else ''Home'' }}{% else %}{% if cn %}距家 {{ d | round(1) }} 公里{% else %}{{ d | round(1) }} km away{% endif %}{% endif %}'
       icon: mdi:map-marker-account
       icon_color: '{% set d = distance(''zone.home'',''person.raymond_du'') %}{% if d is not number %}grey{% elif d <= 0.1 %}green{% elif d < 50 %}orange{% else %}red{% endif %}'
       tap_action:
@@ -3850,7 +3845,7 @@ views:
           action: more-info
       - type: template
         icon: mdi:fridge-outline
-        content: '{% set v = states(''sensor.g_monitor_freezer_p110m_current_consumption'') %}{% if v in [''unavailable'',''unknown'',''none''] %}Freezer —{% else %}Freezer {{ v | float(0) | round(0) | int }} W{% endif %}'
+        content: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set v = states(''sensor.g_monitor_freezer_p110m_current_consumption'') %}{% if v in [''unavailable'',''unknown'',''none''] %}{{ ''冰柜 —'' if cn else ''Freezer —'' }}{% else %}{{ ''冰柜'' if cn else ''Freezer'' }} {{ v | float(0) | round(0) | int }} W{% endif %}'
         entity: switch.g_monitor_freezer_p110m
         tap_action:
           action: more-info
@@ -4098,7 +4093,11 @@ views:
         columns: 6
     - type: custom:mushroom-template-card
       primary: Car Insurance
-      secondary: "{% if is_state('input_boolean.car_insurance_paid','on') %}\n  Paid • ${{ states('input_number.car_insurance_amount') }}\n{% else %}\n  Unpaid • ${{ states('input_number.car_insurance_amount') }}\n{% endif %}"
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% if is_state(''input_boolean.car_insurance_paid'',''on'') %}
+  {{ ''已付 • $'' if cn else ''Paid • $'' }}{{ states(''input_number.car_insurance_amount'') }}
+{% else %}
+  {{ ''未付 • $'' if cn else ''Unpaid • $'' }}{{ states(''input_number.car_insurance_amount'') }}
+{% endif %}'
       icon: mdi:shield-car
       icon_color: '{{ ''green'' if is_state(''input_boolean.car_insurance_paid'',''on'') else ''orange'' }}'
       layout: vertical
@@ -4111,7 +4110,11 @@ views:
         columns: 6
     - type: custom:mushroom-template-card
       primary: Council Rates
-      secondary: "{% if is_state('input_boolean.council_rate_paid','on') %}\n  Paid • ${{ states('input_number.council_rate_amount') }}\n{% else %}\n  Unpaid • ${{ states('input_number.council_rate_amount') }}\n{% endif %}"
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% if is_state(''input_boolean.council_rate_paid'',''on'') %}
+  {{ ''已付 • $'' if cn else ''Paid • $'' }}{{ states(''input_number.council_rate_amount'') }}
+{% else %}
+  {{ ''未付 • $'' if cn else ''Unpaid • $'' }}{{ states(''input_number.council_rate_amount'') }}
+{% endif %}'
       icon: mdi:office-building
       icon_color: '{{ ''green'' if is_state(''input_boolean.council_rate_paid'',''on'') else ''orange'' }}'
       layout: vertical
@@ -4124,7 +4127,11 @@ views:
         columns: 6
     - type: custom:mushroom-template-card
       primary: South East Water
-      secondary: "{% if is_state('input_boolean.water_bill_paid','on') %}\n  Paid • ${{ states('input_number.water_bill_amount') }}\n{% else %}\n  Unpaid • ${{ states('input_number.water_bill_amount') }}\n{% endif %}"
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% if is_state(''input_boolean.water_bill_paid'',''on'') %}
+  {{ ''已付 • $'' if cn else ''Paid • $'' }}{{ states(''input_number.water_bill_amount'') }}
+{% else %}
+  {{ ''未付 • $'' if cn else ''Unpaid • $'' }}{{ states(''input_number.water_bill_amount'') }}
+{% endif %}'
       icon: mdi:water-circle
       icon_color: '{{ ''green'' if is_state(''input_boolean.water_bill_paid'',''on'') else ''blue'' }}'
       layout: vertical
@@ -4137,7 +4144,11 @@ views:
         columns: 6
     - type: custom:mushroom-template-card
       primary: VicRoads Rego
-      secondary: "{% if is_state('input_boolean.rego_paid','on') %}\n  Paid • ${{ states('input_number.rego_amount') }}\n{% else %}\n  Unpaid • ${{ states('input_number.rego_amount') }}\n{% endif %}"
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% if is_state(''input_boolean.rego_paid'',''on'') %}
+  {{ ''已付 • $'' if cn else ''Paid • $'' }}{{ states(''input_number.rego_amount'') }}
+{% else %}
+  {{ ''未付 • $'' if cn else ''Unpaid • $'' }}{{ states(''input_number.rego_amount'') }}
+{% endif %}'
       icon: mdi:card-account-details-outline
       icon_color: '{{ ''green'' if is_state(''input_boolean.rego_paid'',''on'') else ''orange'' }}'
       layout: vertical
@@ -4155,7 +4166,7 @@ views:
       icon: mdi:chart-timeline-variant
     - type: custom:mushroom-template-card
       primary: Electricity
-      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set e = states(''sensor.electricity_bill_estimate'') %}{% set c = states(''sensor.electricity_billing_cycle'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}{% if e in bad %}{{ ''预估不可用'' if cn else ''Estimate unavailable'' }}{% else %}${{ e }}{% endif %} • {% if c in bad %}usage unavailable{% else %}{{ c | float(0) | round(1) }} kWh this quarter{% endif %}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set e = states(''sensor.electricity_bill_estimate'') %}{% set c = states(''sensor.electricity_billing_cycle'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}{% if e in bad %}{{ ''预估不可用'' if cn else ''Estimate unavailable'' }}{% else %}${{ e }}{% endif %} • {% if c in bad %}{{ ''用量不可用'' if cn else ''usage unavailable'' }}{% else %}{{ c | float(0) | round(1) }} {{ ''kWh 本季度'' if cn else ''kWh this quarter'' }}{% endif %}'
       icon: mdi:calculator-variant
       icon_color: amber
       entity: sensor.electricity_bill_estimate
@@ -4163,7 +4174,7 @@ views:
         columns: 6
     - type: custom:mushroom-template-card
       primary: Gas
-      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set e = states(''sensor.gas_bill_estimate'') %}{% set m = states(''input_number.gas_bill_mj'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}{% if e in bad %}{{ ''预估不可用'' if cn else ''Estimate unavailable'' }}{% else %}${{ e }}{% endif %} • {% if m in bad %}usage unavailable{% else %}{{ m | float(0) | round(0) | int }} MJ entered{% endif %}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set e = states(''sensor.gas_bill_estimate'') %}{% set m = states(''input_number.gas_bill_mj'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}{% if e in bad %}{{ ''预估不可用'' if cn else ''Estimate unavailable'' }}{% else %}${{ e }}{% endif %} • {% if m in bad %}{{ ''用量不可用'' if cn else ''usage unavailable'' }}{% else %}{{ m | float(0) | round(0) | int }} {{ ''MJ 已录入'' if cn else ''MJ entered'' }}{% endif %}'
       icon: mdi:calculator-variant
       icon_color: amber
       entity: sensor.gas_bill_estimate
@@ -4234,7 +4245,7 @@ views:
         Card fees: Visa/Mastercard 0.36%, Amex 1.5%.'
     - type: custom:mushroom-template-card
       primary: This quarter so far
-      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set c = states(''sensor.electricity_billing_cycle'') %}{% set e = states(''sensor.electricity_bill_estimate'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}{% if c in bad %}{{ ''用量不可用'' if cn else ''Usage unavailable'' }}{% else %}{{ c | float(0) | round(1) }} kWh imported{% endif %} • {% if e in bad %}estimate unavailable{% else %}est. ${{ e }}{% endif %}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set c = states(''sensor.electricity_billing_cycle'') %}{% set e = states(''sensor.electricity_bill_estimate'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}{% if c in bad %}{{ ''用量不可用'' if cn else ''Usage unavailable'' }}{% else %}{{ c | float(0) | round(1) }} {{ ''kWh 用电'' if cn else ''kWh imported'' }}{% endif %} • {% if e in bad %}{{ ''预估不可用'' if cn else ''estimate unavailable'' }}{% else %}est. ${{ e }}{% endif %}'
       icon: mdi:chart-line
       icon_color: amber
     - type: heading
