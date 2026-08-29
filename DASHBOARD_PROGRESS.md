@@ -20,8 +20,8 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 1. **UI-025** — install the background image and theme on the host, then
    confirm `/local/your_name_night_sky.jpg` loads. Nothing else in this
    direction is visible until that is done.
-2. Retire the per-card glass `card_mod` (~100 blocks) so the theme's frosted
-   surface shows through instead of an opaque white-tinted panel.
+2. Tile-card pass: replace Mushroom template cards with native Tiles where
+   Mushroom is not earning its keep.
 3. **UI-012** — bilingual gap: 33 of 36 views are English-only while Home,
    Cameras and Lighting Studio respond to the toggle.
 4. **UI-013** — Parents Room and Guest Room each stack a Mushroom media card
@@ -34,6 +34,28 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 ---
 
 ## Batches
+
+### `__SHA__` — the per-card glass retires; the theme paints the surface
+Area: all views, 32 cards. Purpose: every card carried its own
+`background: rgba(255,255,255,0.07)` panel with a drop shadow. Over a
+photographic background a white tint washes out rather than frosts, and it
+would have sat on top of the theme's navy-tinted frosted surface and cancelled
+it. All 32 white and blue glass panels are gone; the surface now comes from
+`ha-card-background` and the theme's `card-mod-theme` blur, in one place.
+Kept, because a theme cannot express them: `overflow: hidden` on the twelve
+cards that clip an image to the corner radius, `min-height: 125px` on six,
+the 14 entity-row width rules, and the 69 chrome-stripping blocks that
+deliberately give title and chip cards no surface at all — without those they
+would each grow a frosted panel.
+The three active-state glows are retuned rather than removed, since a subtle
+glow on an active device is wanted: comet cyan (127,212,240) for the AC,
+violet (176,120,216) for the TV, sea green (126,214,176) for the pump, each
+matching a Mushroom ramp colour in the theme.
+card_mod blocks: 136 -> 104, distinct styles 12 -> 8. File 5% smaller.
+Validated: 268 templates, 36/36 links, 0 broken, no entity loss.
+Expect: **only correct once the theme is installed.** Until then cards render
+with Home Assistant's default opaque surface, which will look flatter than
+before, not better. Install the theme first.
 
 ### `366a894` — every view retuned for the iPad's two usable columns
 Area: all 36 views. Purpose: the dashboard declared up to four columns while
