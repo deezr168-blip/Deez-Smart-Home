@@ -618,8 +618,8 @@ views:
             margin-bottom: -4px;
             text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
           }
-      title: 🛏️ Parents Room
-      subtitle: Climate, safety and room controls
+      title: '{{ ''🛏️ 父母房'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''🛏️ Parents Room'' }}'
+      subtitle: '{{ ''空调、安全与房间控制'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Climate, safety and room controls'' }}'
     - type: custom:mushroom-chips-card
       card_mod:
         style: |
@@ -650,13 +650,13 @@ views:
         content: '{% set v = states(''binary_sensor.m_contact_sensor_door'') %}{% if v in [''unavailable'',''unknown'',''none''] %}Offline{% elif v == ''on'' %}Open{% else %}Closed{% endif %}'
         icon_color: '{% set v = states(''binary_sensor.m_contact_sensor_door'') %}{% if v in [''unavailable'',''unknown'',''none''] %}grey{% elif v == ''on'' %}red{% else %}green{% endif %}'
     - type: heading
-      heading: Temperature
+      heading: '{{ ''温度'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Temperature'' }}'
       icon: mdi:thermometer-lines
       grid_options:
         columns: 6
         rows: 1
     - type: heading
-      heading: Lights
+      heading: '{{ ''灯光'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Lights'' }}'
       icon: mdi:lightbulb-group
       grid_options:
         columns: 6
@@ -674,7 +674,7 @@ views:
       name: Main Room Light
       icon: mdi:light-switch
     - type: heading
-      heading: Thermostat
+      heading: '{{ ''恒温器'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Thermostat'' }}'
       icon: mdi:thermostat
     - type: thermostat
       entity: climate.bedroom_parents_room_ac
@@ -696,10 +696,10 @@ views:
       - type: climate-preset-modes
         style: icons
     - type: heading
-      heading: Thermostat Controls
+      heading: '{{ ''恒温器控制'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Thermostat Controls'' }}'
       icon: mdi:tune-vertical-variant
     - type: entities
-      title: AC Controls & Maintenance
+      title: '{{ ''空调控制与维护'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''AC Controls & Maintenance'' }}'
       show_header_toggle: false
       entities:
       - entity: switch.bedroom_parents_room_ac_climate_react
@@ -720,14 +720,14 @@ views:
       - entity: update.bedroom_parents_room_ac_firmware
         name: Firmware
     - type: heading
-      heading: Entertainment
+      heading: '{{ ''娱乐'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Entertainment'' }}'
       icon: mdi:television
     - type: media-control
       entity: media_player.55_qled_4k_ai
   - type: grid
     cards:
     - type: heading
-      heading: Power Boards
+      heading: '{{ ''排插'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Power Boards'' }}'
       icon: mdi:power-socket-au
     - type: tile
       entity: switch.genio_power_board_with_usb_livingroom_socket_1
@@ -747,10 +747,10 @@ views:
   - type: grid
     cards:
     - type: heading
-      heading: Emergency
+      heading: '{{ ''紧急'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Emergency'' }}'
       icon: mdi:medical-bag
     - type: entities
-      title: Emergency Button Status
+      title: '{{ ''紧急按钮状态'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Emergency Button Status'' }}'
       entities:
       - entity: binary_sensor.emergency_button_dad_cloud_connection
         name: Dad Button
@@ -808,10 +808,10 @@ views:
             margin-bottom: -4px;
             text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
           }
-      title: 🛏️ Ray Bedroom
-      subtitle: Lighting, shade, power and LetPot
+      title: '{{ ''🛏️ Ray 房间'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''🛏️ Ray Bedroom'' }}'
+      subtitle: '{{ ''灯光、窗帘、电源与 LetPot'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Lighting, shade, power and LetPot'' }}'
     - type: heading
-      heading: Lights
+      heading: '{{ ''灯光'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Lights'' }}'
       icon: mdi:lightbulb-group
     - type: tile
       entity: light.bedroom_bedroom
@@ -820,7 +820,7 @@ views:
       - type: light-brightness
       - type: light-color-temp
     - type: heading
-      heading: Controls
+      heading: '{{ ''控制'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Controls'' }}'
       icon: mdi:tune-variant
     - type: tile
       entity: cover.aqara_roller_shade_driver_e1
@@ -852,7 +852,7 @@ views:
       - type: entity
         entity: sensor.r_energy_monitor_p110m_today_s_consumption
     - type: heading
-      heading: Power Board
+      heading: '{{ ''排插'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Power Board'' }}'
       icon: mdi:power-socket-au
     - type: tile
       entity: switch.r_energy_monitor_p110m
@@ -874,7 +874,7 @@ views:
         }}'
       icon: mdi:led-strip-variant
     - type: entities
-      title: LetPot Details
+      title: '{{ ''LetPot 明细'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''LetPot Details'' }}'
       entities:
       - binary_sensor.lph_se_dcd9_pump
       - switch.lph_se_dcd9_pump_cycling
@@ -929,10 +929,10 @@ views:
             margin-bottom: -4px;
             text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
           }
-      title: 🛏️ Guest Room
-      subtitle: Lighting, entertainment and power
+      title: '{{ ''🛏️ 客房'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''🛏️ Guest Room'' }}'
+      subtitle: '{{ ''灯光、娱乐与电源'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Lighting, entertainment and power'' }}'
     - type: heading
-      heading: Lights
+      heading: '{{ ''灯光'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Lights'' }}'
       icon: mdi:lightbulb-group
     - type: tile
       entity: light.kogan_tv
@@ -943,21 +943,21 @@ views:
   - type: grid
     cards:
     - type: heading
-      heading: Entertainment
+      heading: '{{ ''娱乐'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Entertainment'' }}'
       icon: mdi:television
     - type: media-control
       entity: media_player.pogo
   - type: grid
     cards:
     - type: heading
-      heading: Power Board
+      heading: '{{ ''排插'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Power Board'' }}'
       icon: mdi:power-socket-au
     - type: tile
       entity: switch.g_printer_p100
       name: Printer Plug
       icon: mdi:printer
     - type: entities
-      title: Printer Plug Details
+      title: '{{ ''打印机插座明细'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Printer Plug Details'' }}'
       show_header_toggle: false
       entities:
       - entity: switch.g_printer_p100_led
@@ -1018,8 +1018,8 @@ views:
             margin-bottom: -4px;
             text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
           }
-      title: 🛋️ Living Room
-      subtitle: Lighting, TV and room sensors
+      title: '{{ ''🛋️ 客厅'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''🛋️ Living Room'' }}'
+      subtitle: '{{ ''灯光、电视与房间传感器'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Lighting, TV and room sensors'' }}'
     - type: tile
       entity: light.living_room
       name: Living Room Lights
@@ -1064,7 +1064,7 @@ views:
   - type: grid
     cards:
     - type: heading
-      heading: Individual Lights
+      heading: '{{ ''单独灯具'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Individual Lights'' }}'
       icon: mdi:lightbulb-group
     - type: tile
       entity: light.living_room_hue_ambiance_spot_1
@@ -1143,8 +1143,8 @@ views:
             margin-bottom: -4px;
             text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
           }
-      title: 🍳 Kitchen
-      subtitle: Fridge, power and motion
+      title: '{{ ''🍳 厨房'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''🍳 Kitchen'' }}'
+      subtitle: '{{ ''冰箱、电源与移动侦测'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Fridge, power and motion'' }}'
     - type: custom:mushroom-chips-card
       card_mod:
         style: |
@@ -1179,7 +1179,7 @@ views:
   - type: grid
     cards:
     - type: heading
-      heading: Kitchen Smart Plugs
+      heading: '{{ ''厨房智能插座'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Kitchen Smart Plugs'' }}'
       icon: mdi:power-socket-au
     - type: tile
       entity: switch.k_coffee_p100
@@ -1240,8 +1240,8 @@ views:
             margin-bottom: -4px;
             text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
           }
-      title: 🍽️ Dining
-      subtitle: Lighting, motion and pet feeder
+      title: '{{ ''🍽️ 餐厅'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''🍽️ Dining'' }}'
+      subtitle: '{{ ''灯光、移动侦测与喂食器'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Lighting, motion and pet feeder'' }}'
     - type: tile
       entity: light.dining
       name: Dining Lights
@@ -1275,7 +1275,7 @@ views:
   - type: grid
     cards:
     - type: heading
-      heading: Smart Pet Feeder
+      heading: '{{ ''智能喂食器'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Smart Pet Feeder'' }}'
       icon: mdi:cat
     - type: picture-entity
       entity: camera.smart_pet_feeder
@@ -1339,8 +1339,8 @@ views:
             margin-bottom: -4px;
             text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
           }
-      title: 🚗 Garage
-      subtitle: Freezer energy and future garage control
+      title: '{{ ''🚗 车库'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''🚗 Garage'' }}'
+      subtitle: '{{ ''冰柜用电与未来的车库控制'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Freezer energy and future garage control'' }}'
     - type: custom:mushroom-template-card
       primary: Garage Freezer
       secondary: '{% set bad = [''unavailable'',''unknown'',''none''] %}{% set w = states(''sensor.g_monitor_freezer_p110m_current_consumption'') %}{% set d = states(''sensor.g_monitor_freezer_p110m_today_s_consumption'') %}{{ ''—'' if w in bad else (w|float(0)|round(0)|int ~ '' W'') }} • {{ ''—'' if d in bad else (d|float(0)|round(2) ~ '' kWh today'') }}'
@@ -1426,8 +1426,8 @@ views:
             margin-bottom: -4px;
             text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
           }
-      title: ⚡ Energy
-      subtitle: Live power, daily totals and lifetime meters
+      title: '{{ ''⚡ 能源'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''⚡ Energy'' }}'
+      subtitle: '{{ ''实时功率、当日用量与累计读数'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Live power, daily totals and lifetime meters'' }}'
     - type: markdown
       content: '*Powerpal reads the meter''s optical port, so it reports **grid import
         only** — not whole-house consumption. When solar covers the house it can legitimately
@@ -1437,7 +1437,7 @@ views:
   - type: grid
     cards:
     - type: heading
-      heading: Now
+      heading: '{{ ''当前'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Now'' }}'
       icon: mdi:flash
     - type: custom:mushroom-template-card
       primary: Grid Import
@@ -1459,7 +1459,7 @@ views:
   - type: grid
     cards:
     - type: heading
-      heading: Today
+      heading: '{{ ''今日'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Today'' }}'
       icon: mdi:chart-box
     - type: custom:mushroom-template-card
       primary: Grid Import Today
@@ -1477,7 +1477,7 @@ views:
     column_span: 2
     cards:
     - type: heading
-      heading: Lifetime & Diagnostics
+      heading: '{{ ''累计与诊断'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Lifetime & Diagnostics'' }}'
       icon: mdi:counter
     - type: custom:mushroom-template-card
       grid_options:
@@ -1512,7 +1512,7 @@ views:
     column_span: 2
     cards:
     - type: heading
-      heading: Charts
+      heading: '{{ ''图表'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Charts'' }}'
       icon: mdi:chart-areaspline
     - type: energy-distribution
       grid_options:
@@ -1632,7 +1632,7 @@ views:
     column_span: 2
     cards:
     - type: heading
-      heading: Cameras
+      heading: '{{ ''摄像头'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Cameras'' }}'
       icon: mdi:cctv
     - type: picture-entity
       card_mod:
@@ -1751,7 +1751,7 @@ views:
   - type: grid
     cards:
     - type: heading
-      heading: Pet Feeder Camera
+      heading: '{{ ''喂食器摄像头'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Pet Feeder Camera'' }}'
       icon: mdi:cat
     - type: tile
       entity: switch.smart_pet_feeder_motion_alarm
@@ -1766,7 +1766,7 @@ views:
       name: Indicator Light
       icon: mdi:led-on
     - type: heading
-      heading: Quick Access
+      heading: '{{ ''快速访问'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Quick Access'' }}'
       icon: mdi:compass
     - type: custom:mushroom-chips-card
       card_mod:
@@ -1826,7 +1826,7 @@ views:
       chips:
       - type: template
         icon: mdi:arrow-left
-        content: Cameras
+        content: '{{ ''摄像头'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Cameras'' }}'
         icon_color: blue
         tap_action:
           action: navigate
@@ -1882,7 +1882,7 @@ views:
       chips:
       - type: template
         icon: mdi:arrow-left
-        content: Cameras
+        content: '{{ ''摄像头'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Cameras'' }}'
         icon_color: blue
         tap_action:
           action: navigate
@@ -1938,7 +1938,7 @@ views:
       chips:
       - type: template
         icon: mdi:arrow-left
-        content: Cameras
+        content: '{{ ''摄像头'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Cameras'' }}'
         icon_color: blue
         tap_action:
           action: navigate
@@ -1994,7 +1994,7 @@ views:
       chips:
       - type: template
         icon: mdi:arrow-left
-        content: Cameras
+        content: '{{ ''摄像头'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Cameras'' }}'
         icon_color: blue
         tap_action:
           action: navigate
@@ -2050,7 +2050,7 @@ views:
       chips:
       - type: template
         icon: mdi:arrow-left
-        content: Cameras
+        content: '{{ ''摄像头'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Cameras'' }}'
         icon_color: blue
         tap_action:
           action: navigate
@@ -2106,7 +2106,7 @@ views:
       chips:
       - type: template
         icon: mdi:arrow-left
-        content: Cameras
+        content: '{{ ''摄像头'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Cameras'' }}'
         icon_color: blue
         tap_action:
           action: navigate
@@ -2183,12 +2183,12 @@ views:
             margin-bottom: -4px;
             text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
           }
-      title: 🛡️ Security
-      subtitle: Doors, motion, emergency buttons and cameras
+      title: '{{ ''🛡️ 安防'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''🛡️ Security'' }}'
+      subtitle: '{{ ''门、移动侦测、紧急按钮与摄像头'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Doors, motion, emergency buttons and cameras'' }}'
   - type: grid
     cards:
     - type: heading
-      heading: Doors
+      heading: '{{ ''门'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Doors'' }}'
       icon: mdi:door
     - type: custom:mushroom-template-card
       primary: Living Room Door
@@ -2217,7 +2217,7 @@ views:
   - type: grid
     cards:
     - type: heading
-      heading: Motion
+      heading: '{{ ''移动侦测'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Motion'' }}'
       icon: mdi:motion-sensor
     - type: custom:mushroom-template-card
       primary: Living Room
@@ -2254,7 +2254,7 @@ views:
   - type: grid
     cards:
     - type: heading
-      heading: Emergency & Cameras
+      heading: '{{ ''紧急与摄像头'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Emergency & Cameras'' }}'
       icon: mdi:alarm-light
     - type: custom:mushroom-template-card
       primary: Dad Emergency Button
@@ -2330,12 +2330,12 @@ views:
             margin-bottom: -4px;
             text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
           }
-      title: 🌡️ Climate
-      subtitle: Heating, cooling and room conditions
+      title: '{{ ''🌡️ 温控'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''🌡️ Climate'' }}'
+      subtitle: '{{ ''制热、制冷与室内环境'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Heating, cooling and room conditions'' }}'
   - type: grid
     cards:
     - type: heading
-      heading: Parents Room AC
+      heading: '{{ ''父母房空调'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Parents Room AC'' }}'
       icon: mdi:air-conditioner
     - type: thermostat
       entity: climate.bedroom_parents_room_ac
@@ -2391,7 +2391,7 @@ views:
   - type: grid
     cards:
     - type: heading
-      heading: Conditions
+      heading: '{{ ''室内环境'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Conditions'' }}'
       icon: mdi:home-thermometer
     - type: custom:mushroom-template-card
       primary: Outside
@@ -2471,10 +2471,10 @@ views:
             margin-bottom: -4px;
             text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
           }
-      title: 🌐 Network
-      subtitle: Internet, hubs and remote access
+      title: '{{ ''🌐 网络'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''🌐 Network'' }}'
+      subtitle: '{{ ''互联网、中枢与远程访问'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Internet, hubs and remote access'' }}'
     - type: heading
-      heading: Connectivity
+      heading: '{{ ''连接'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Connectivity'' }}'
       icon: mdi:wan
     - type: custom:mushroom-template-card
       primary: eero Internet
@@ -2500,7 +2500,7 @@ views:
     column_span: 2
     cards:
     - type: heading
-      heading: Hardware
+      heading: '{{ ''硬件'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Hardware'' }}'
       icon: mdi:server-network
     - type: custom:mushroom-template-card
       primary: Aqara M100
@@ -2574,8 +2574,8 @@ views:
             margin-bottom: -4px;
             text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
           }
-      title: 📺 Media
-      subtitle: TVs and entertainment
+      title: '{{ ''📺 影音'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''📺 Media'' }}'
+      subtitle: '{{ ''电视与娱乐'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''TVs and entertainment'' }}'
     - type: custom:mushroom-media-player-card
       entity: media_player.living_room_tv_samsung_q9_series_65
       name: Living Room Samsung TV
@@ -2634,8 +2634,8 @@ views:
             margin-bottom: -4px;
             text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
           }
-      title: ⚙️ Smart Home Settings
-      subtitle: Configuration and administration
+      title: '{{ ''⚙️ 智能家居设置'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''⚙️ Smart Home Settings'' }}'
+      subtitle: '{{ ''配置与管理'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Configuration and administration'' }}'
     - type: custom:mushroom-template-card
       primary: Home Assistant
       secondary: Settings
@@ -2713,12 +2713,12 @@ views:
             margin-bottom: -4px;
             text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
           }
-      title: 🧠 Smart Home Status
-      subtitle: Connectivity, updates and backups
+      title: '{{ ''🧠 智能家居状态'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''🧠 Smart Home Status'' }}'
+      subtitle: '{{ ''连接、更新与备份'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Connectivity, updates and backups'' }}'
   - type: grid
     cards:
     - type: heading
-      heading: Connectivity
+      heading: '{{ ''连接'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Connectivity'' }}'
       icon: mdi:wan
     - type: custom:mushroom-template-card
       primary: WAN
@@ -2740,7 +2740,7 @@ views:
   - type: grid
     cards:
     - type: heading
-      heading: Updates & Backups
+      heading: '{{ ''更新与备份'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Updates & Backups'' }}'
       icon: mdi:backup-restore
     - type: custom:mushroom-template-card
       primary: Home Assistant Core
@@ -2814,10 +2814,10 @@ views:
             margin-bottom: -4px;
             text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
           }
-      title: 📍 People & Locations
-      subtitle: Family locations • Presence from Home Assistant
+      title: '{{ ''📍 人员与位置'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''📍 People & Locations'' }}'
+      subtitle: '{{ ''家人位置 • 来自 Home Assistant 的在家状态'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Family locations • Presence from Home Assistant'' }}'
     - type: heading
-      heading: Family
+      heading: '{{ ''家人'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Family'' }}'
       icon: mdi:account-group
     - type: custom:mushroom-template-card
       primary: Raymond Du
@@ -2855,7 +2855,7 @@ views:
   - type: grid
     cards:
     - type: heading
-      heading: Map & Routes
+      heading: '{{ ''地图与路线'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Map & Routes'' }}'
       icon: mdi:map-marker-path
     - type: map
       entities:
@@ -2900,8 +2900,8 @@ views:
             margin-bottom: -4px;
             text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
           }
-      title: 🔭 Distance View
-      subtitle: Family members and Home
+      title: '{{ ''🔭 距离视图'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''🔭 Distance View'' }}'
+      subtitle: '{{ ''家庭成员与住所'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Family members and Home'' }}'
     - type: map
       entities:
       - entity: zone.home
@@ -3036,7 +3036,7 @@ views:
         tap_action:
           action: more-info
     - type: heading
-      heading: Favourite Lights
+      heading: '{{ ''常用灯光'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Favourite Lights'' }}'
     - type: tile
       entity: light.living_room
       name: Living Room
@@ -3087,7 +3087,7 @@ views:
   - type: grid
     cards:
     - type: heading
-      heading: Lighting Modes
+      heading: '{{ ''灯光模式'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Lighting Modes'' }}'
     - type: custom:mushroom-template-card
       primary: Lighting Modes
       secondary: Night • Relax • Evening • Bright
@@ -3160,7 +3160,7 @@ views:
   - type: grid
     cards:
     - type: heading
-      heading: Room Context
+      heading: '{{ ''房间概况'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Room Context'' }}'
     - type: custom:mushroom-template-card
       primary: Living Room
       secondary: '{% set bad = [''unavailable'',''unknown'',''none''] %}{% set t = states(''sensor.living_room_living_hue_hue_sensor_temperature'') %}{% set lx = states(''sensor.living_room_living_hue_hue_sensor_illuminance'') %}{% set m = states(''binary_sensor.living_room_living_hue_hue_sensor_motion'') %}{{ ''—'' if t in bad else (t|float(0)|round(1) ~ ''°C'') }} • {{ ''—'' if lx in bad else (lx|float(0)|round(0)|int ~ '' lx'') }} • {% if m in bad %}Offline{% elif m == ''on'' %}Motion{% else %}Clear{% endif %}'
@@ -3221,10 +3221,10 @@ views:
             margin-bottom: -4px;
             text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
           }
-      title: Living Room Light
-      subtitle: Power • brightness • temperature • capability
+      title: '{{ ''客厅灯'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Living Room Light'' }}'
+      subtitle: '{{ ''开关 • 亮度 • 色温 • 能力'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Power • brightness • temperature • capability'' }}'
     - type: heading
-      heading: Main Light
+      heading: '{{ ''主灯'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Main Light'' }}'
     - type: tile
       entity: light.living_room
       name: Living Room
@@ -3279,7 +3279,7 @@ views:
   - type: grid
     cards:
     - type: heading
-      heading: Four Hue Spots
+      heading: '{{ ''四个 Hue 射灯'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Four Hue Spots'' }}'
     - type: tile
       entity: light.living_room_hue_ambiance_spot_1
       name: Inner Left
@@ -3344,7 +3344,7 @@ views:
   - type: grid
     cards:
     - type: heading
-      heading: Navigation
+      heading: '{{ ''导航'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Navigation'' }}'
     - type: custom:mushroom-template-card
       primary: Living Room
       secondary: Full room controls, TV and sensors
@@ -3382,10 +3382,10 @@ views:
             margin-bottom: -4px;
             text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
           }
-      title: Ray Bedroom Light
-      subtitle: Power • brightness • temperature • capability
+      title: '{{ ''Ray 房间灯'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Ray Bedroom Light'' }}'
+      subtitle: '{{ ''开关 • 亮度 • 色温 • 能力'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Power • brightness • temperature • capability'' }}'
     - type: heading
-      heading: Bedroom Light
+      heading: '{{ ''卧室灯'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Bedroom Light'' }}'
     - type: tile
       entity: light.bedroom_bedroom
       name: Ray Bedroom
@@ -3434,7 +3434,7 @@ views:
   - type: grid
     cards:
     - type: heading
-      heading: Bedroom Context
+      heading: '{{ ''卧室概况'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Bedroom Context'' }}'
     - type: custom:mushroom-template-card
       primary: Roller Shade
       secondary: '{{ states(''cover.aqara_roller_shade_driver_e1'') }} • Battery {{
@@ -3481,10 +3481,10 @@ views:
             margin-bottom: -4px;
             text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
           }
-      title: Lighting Modes
-      subtitle: One-touch brightness presets using confirmed dimmable lights
+      title: '{{ ''灯光模式'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Lighting Modes'' }}'
+      subtitle: '{{ ''使用已确认可调光灯具的一键亮度预设'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''One-touch brightness presets using confirmed dimmable lights'' }}'
     - type: heading
-      heading: Whole Home Presets
+      heading: '{{ ''全屋预设'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Whole Home Presets'' }}'
     - type: custom:mushroom-template-card
       primary: Night
       secondary: Living • Ray • Dining at 10%
@@ -3567,7 +3567,7 @@ views:
   - type: grid
     cards:
     - type: heading
-      heading: Current State
+      heading: '{{ ''当前状态'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Current State'' }}'
     - type: custom:mushroom-template-card
       primary: Living Room
       secondary: '{% set b = state_attr(''light.living_room'',''brightness'') %} {{
@@ -3635,7 +3635,7 @@ views:
         columns: 12
         rows: 1
     - type: heading
-      heading: Home Pulse
+      heading: '{{ ''家庭状态'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Home Pulse'' }}'
       icon: mdi:home-heart
     - type: custom:mushroom-chips-card
       card_mod:
@@ -3692,7 +3692,7 @@ views:
   - type: grid
     cards:
     - type: heading
-      heading: Doors
+      heading: '{{ ''门'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Doors'' }}'
       icon: mdi:door
     - type: custom:mushroom-template-card
       primary: Front
@@ -3728,7 +3728,7 @@ views:
       grid_options:
         columns: 4
     - type: heading
-      heading: Lights
+      heading: '{{ ''灯光'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Lights'' }}'
       icon: mdi:lightbulb-group
     - type: tile
       entity: light.living_room
@@ -3784,7 +3784,7 @@ views:
       grid_options:
         columns: 6
     - type: heading
-      heading: Climate
+      heading: '{{ ''温控'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Climate'' }}'
       icon: mdi:air-conditioner
     - type: custom:mushroom-climate-card
       entity: climate.bedroom_parents_room_ac
@@ -3794,7 +3794,7 @@ views:
   - type: grid
     cards:
     - type: heading
-      heading: Control Centre
+      heading: '{{ ''控制中心'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Control Centre'' }}'
       icon: mdi:tune-variant
     - type: custom:mushroom-media-player-card
       entity: media_player.living_room_tv_samsung_q9_series_65
@@ -3823,7 +3823,7 @@ views:
       grid_options:
         columns: 6
     - type: heading
-      heading: Active Loads
+      heading: '{{ ''用电设备'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Active Loads'' }}'
       icon: mdi:flash
     - type: custom:mushroom-chips-card
       card_mod:
@@ -3855,7 +3855,7 @@ views:
         tap_action:
           action: more-info
     - type: heading
-      heading: Go To
+      heading: '{{ ''前往'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Go To'' }}'
       icon: mdi:compass
     - type: custom:mushroom-chips-card
       card_mod:
@@ -3903,7 +3903,7 @@ views:
     column_span: 2
     cards:
     - type: heading
-      heading: Live Cameras
+      heading: '{{ ''实时摄像头'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Live Cameras'' }}'
       icon: mdi:cctv
     - type: picture-entity
       card_mod:
@@ -4068,8 +4068,8 @@ views:
             margin-bottom: -4px;
             text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
           }
-      title: 🧾 Bills & Payments
-      subtitle: Utilities • insurance • council rates • registration
+      title: '{{ ''🧾 账单与付款'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''🧾 Bills & Payments'' }}'
+      subtitle: '{{ ''水电 • 保险 • 市政费 • 车辆注册'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Utilities • insurance • council rates • registration'' }}'
     - type: custom:mushroom-template-card
       primary: Electricity
       secondary: '{{ states(''sensor.electricity_bill_status'') }} • ${{ states(''input_number.elec_bill_amount'') }}'
@@ -4151,7 +4151,7 @@ views:
   - type: grid
     cards:
     - type: heading
-      heading: Running Estimates — not an invoice
+      heading: '{{ ''预估费用 — 非正式账单'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Running Estimates — not an invoice'' }}'
       icon: mdi:chart-timeline-variant
     - type: custom:mushroom-template-card
       primary: Electricity
@@ -4198,7 +4198,7 @@ views:
             text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
           }
       title: ⚡ Home 365 Solar
-      subtitle: EnergyAustralia • Distributor United Energy
+      subtitle: '{{ ''EnergyAustralia • 配电商 United Energy'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''EnergyAustralia • Distributor United Energy'' }}'
     - type: markdown
       content: '### Plan details
 
@@ -4238,10 +4238,10 @@ views:
       icon: mdi:chart-line
       icon_color: amber
     - type: heading
-      heading: Enter Bill Details
+      heading: '{{ ''输入账单信息'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Enter Bill Details'' }}'
       icon: mdi:file-document-edit-outline
     - type: entities
-      title: Electricity
+      title: '{{ ''电费'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Electricity'' }}'
       show_header_toggle: false
       entities:
       - entity: input_number.elec_bill_amount
@@ -4291,7 +4291,7 @@ views:
             text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
           }
       title: 🔥 Home 365
-      subtitle: EnergyAustralia • Distributor Multinet
+      subtitle: '{{ ''EnergyAustralia • 配电商 Multinet'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''EnergyAustralia • Distributor Multinet'' }}'
     - type: markdown
       content: '### Plan details
 
@@ -4339,10 +4339,10 @@ views:
 
         *All c/MJ. Tiers apply to average daily usage across the billing period.*'
     - type: heading
-      heading: Enter Bill Details
+      heading: '{{ ''输入账单信息'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Enter Bill Details'' }}'
       icon: mdi:file-document-edit-outline
     - type: entities
-      title: Gas
+      title: '{{ ''燃气'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Gas'' }}'
       show_header_toggle: false
       entities:
       - entity: input_number.gas_bill_amount
@@ -4381,8 +4381,8 @@ views:
   - type: grid
     cards:
     - type: custom:mushroom-title-card
-      title: 🚘 Car Insurance
-      subtitle: Policy • premium • renewal • payment
+      title: '{{ ''🚘 车险'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''🚘 Car Insurance'' }}'
+      subtitle: '{{ ''保单 • 保费 • 续保 • 付款'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Policy • premium • renewal • payment'' }}'
     - type: custom:mushroom-template-card
       primary: "{% if is_state('input_boolean.car_insurance_paid','on') %}\n  Paid\n\
         {% else %}\n  Payment Outstanding\n{% endif %}"
@@ -4391,7 +4391,7 @@ views:
       icon_color: '{{ ''green'' if is_state(''input_boolean.car_insurance_paid'',''on'')
         else ''orange'' }}'
     - type: entities
-      title: Insurance Details
+      title: '{{ ''保险明细'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Insurance Details'' }}'
       show_header_toggle: false
       entities:
       - entity: input_text.car_insurance_provider
@@ -4444,7 +4444,7 @@ views:
     cards:
     - type: custom:mushroom-title-card
       title: 💧 South East Water
-      subtitle: Water usage • charges • billing period
+      subtitle: '{{ ''用水量 • 费用 • 账单周期'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Water usage • charges • billing period'' }}'
     - type: custom:mushroom-template-card
       primary: "{% if is_state('input_boolean.water_bill_paid','on') %}\n  Paid\n\
         {% else %}\n  Payment Outstanding\n{% endif %}"
@@ -4454,7 +4454,7 @@ views:
       icon_color: '{{ ''green'' if is_state(''input_boolean.water_bill_paid'',''on'')
         else ''blue'' }}'
     - type: entities
-      title: Water Bill Details
+      title: '{{ ''水费明细'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Water Bill Details'' }}'
       show_header_toggle: false
       entities:
       - entity: input_text.water_provider
@@ -4505,8 +4505,8 @@ views:
   - type: grid
     cards:
     - type: custom:mushroom-title-card
-      title: 🏛️ Council Rates
-      subtitle: Property • assessment • rates • payment
+      title: '{{ ''🏛️ 市政费'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''🏛️ Council Rates'' }}'
+      subtitle: '{{ ''房产 • 评估 • 费率 • 付款'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Property • assessment • rates • payment'' }}'
     - type: custom:mushroom-template-card
       primary: "{% if is_state('input_boolean.council_rate_paid','on') %}\n  Paid\n\
         {% else %}\n  Payment Outstanding\n{% endif %}"
@@ -4515,7 +4515,7 @@ views:
       icon_color: '{{ ''green'' if is_state(''input_boolean.council_rate_paid'',''on'')
         else ''orange'' }}'
     - type: entities
-      title: Council Rate Details
+      title: '{{ ''市政费明细'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Council Rate Details'' }}'
       show_header_toggle: false
       entities:
       - entity: input_text.council_rate_council
@@ -4564,8 +4564,8 @@ views:
   - type: grid
     cards:
     - type: custom:mushroom-title-card
-      title: 🚗 VicRoads Registration
-      subtitle: Vehicle • registration • renewal • payment
+      title: '{{ ''🚗 VicRoads 车辆注册'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''🚗 VicRoads Registration'' }}'
+      subtitle: '{{ ''车辆 • 注册 • 续期 • 付款'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Vehicle • registration • renewal • payment'' }}'
     - type: custom:mushroom-template-card
       primary: "{% if is_state('input_boolean.rego_paid','on') %}\n  Registration\
         \ Paid\n{% else %}\n  Registration Outstanding\n{% endif %}"
@@ -4574,7 +4574,7 @@ views:
       icon_color: '{{ ''green'' if is_state(''input_boolean.rego_paid'',''on'') else
         ''orange'' }}'
     - type: entities
-      title: Registration Details
+      title: '{{ ''注册明细'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Registration Details'' }}'
       show_header_toggle: false
       entities:
       - entity: input_text.rego_vehicle

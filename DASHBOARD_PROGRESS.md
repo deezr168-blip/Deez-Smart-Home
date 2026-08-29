@@ -18,7 +18,7 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 ## Next recommended priorities
 
 1. **UI-027** — heading-card contrast; needs a theme rule and a live look.
-2. **UI-012** — bilingual gap: 33 views stay English when the toggle is on.
+2. **UI-028** — bilingual pass two: per-card status text.
 3. **UI-012** — bilingual gap: 33 of 36 views are English-only while Home,
    Cameras and Lighting Studio respond to the toggle.
 4. **UI-013** — Parents Room and Guest Room each stack a Mushroom media card
@@ -31,6 +31,26 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 ---
 
 ## Batches
+
+### `__SHA__` — every view now answers the language toggle (UI-012)
+Area: all 36 views. Purpose: the Chinese toggle existed on Home, Cameras and
+Lighting Studio and nowhere else, so switching language left 33 views in
+English — the toggle looked broken rather than partial.
+Translated, 120 strings: 23 page titles, 26 subtitles, 55 section headings,
+10 `entities` card titles and the six camera-subview back chips. Every one of
+the 36 views now contains Chinese; CJK characters go from 171 to 742.
+Scope was chosen, not accidental. Brand and product names stay as they are —
+LetPot, Hue, Pogo, EnergyAustralia, United Energy, Multinet, South East
+Water, VicRoads, Home 365 — and so do device names, which is how bilingual
+Home Assistant dashboards normally read: the integration names the device,
+the dashboard names the room. The six webrtc camera overlays keep their
+location label for the same reason.
+Verified by rendering every bilingual chrome string in both languages and
+asserting the Chinese branch actually contains Chinese, with the brand-name
+exceptions allowed for explicitly.
+Validated: 384 templates, 36/36 links, 0 broken, no entity loss.
+Expect: flipping the toggle changes every page title, section heading and
+subtitle on every view instead of three.
 
 ### `56c7656` — two media players stop being controlled twice (UI-013)
 Area: `parents-room`, `guest-room`. Purpose: each stacked a Mushroom media

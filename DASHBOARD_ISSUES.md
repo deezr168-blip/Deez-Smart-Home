@@ -29,7 +29,7 @@ navigation · **S3** layout or readability · **S4** polish.
 | ID | Sev | View / component | Summary | Status |
 |---|---|---|---|---|
 | UI-011 | S3 | `energy` — Total Solar | Converted Wh→kWh to match its two sibling Primo sensors (`energy_day`, `energy_year`). If the Fronius total reports kWh directly the figure reads 1000× low. Needs one look at the live card. First seen `df457e3`. | OPEN |
-| UI-012 | S4 | 33 of 36 views | English-only while Home, Cameras and Lighting Studio respond to `input_boolean.chinese_dashboard`. Switching to Chinese leaves most of the dashboard in English. | OPEN |
+| UI-028 | S4 | status text across system and room views | Second half of the bilingual work: per-card secondary text ("Sensor offline", "Not reporting", "Clean required", "12.4 km away"). Larger and more delicate than the chrome pass because each string is inside a guarded template. Device and entity names stay English by design. | OPEN |
 | UI-027 | S3 | 52 `heading` cards | Native heading cards render straight onto the photograph with no surface and no text shadow, so section labels lose contrast over the bright horizon band. The 69 title and chip cards were fixed in the dashboard; headings need a theme-level rule and one live look. | OPEN |
 
 ---
@@ -62,6 +62,7 @@ been seen rendered.
 | UI-015 | S3 | `ipad-command-center` | 52 cards, three nested grids inside half-width sections, and a six-chip camera status row sitting directly above the six camera tiles it described. Two load chips were unguarded. | `99a77b4` | FIXED — AWAITING LIVE VERIFICATION |
 | UI-016 | S3 | `bills`, `light-living-room`, `lighting-modes` | The last four nested `grid` cards sizing themselves inside half-width sections. Dissolved into native `grid_options`; the dashboard now has none. The six bill subviews are reviewed and need no layout change — one section, one column each. | `9b28fdb` | FIXED — AWAITING LIVE VERIFICATION |
 | UI-013 | S4 | `parents-room`, `guest-room` | Each stacked a Mushroom media card and a native `media-control` for the same player. The native card is a superset — artwork, transport, volume and power — so the Mushroom card was removed from both. The four Mushroom media cards that are the ONLY card for their player were left alone. The parents-room climate pair was also left: there the compact card is half of a deliberate 2-up summary row, not a duplicate. | `56c7656` | FIXED — AWAITING LIVE VERIFICATION |
+| UI-012 | S4 | all 36 views | Only Home, Cameras and Lighting Studio responded to the language toggle; switching to Chinese left 33 views in English. The navigation-level chrome — 23 page titles, 26 subtitles, 55 section headings, 10 entities-card titles and the six camera back chips — is now bilingual. Every view responds. Device names and per-card status text are deliberately still English; see UI-028. | `__SHA__` | FIXED — AWAITING LIVE VERIFICATION |
 | UI-024 | S4 | `kitchen` | Third smart plug had no `name` (rendered its entity ID) and a one-off `brightness(200%)` pink/yellow card_mod unlike its two neighbours. | `3048e54` | FIXED — AWAITING LIVE VERIFICATION |
 
 ---
