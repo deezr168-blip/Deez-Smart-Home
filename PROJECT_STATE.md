@@ -107,6 +107,58 @@ authorized:
 
 ---
 
+## Recent Change Protection
+
+Stops routines from redesigning each other's freshly landed work before it has
+had a chance to reach the live dashboard.
+
+1. Before proposing or implementing work in an area, inspect the relevant
+   recent Git history and the shared progress / issue / backlog records.
+2. Treat an area substantially modified within the **last 6 hours** as
+   recently changed.
+3. Recently changed areas should normally be allowed to settle and reach live
+   verification before another speculative redesign.
+4. The 6-hour protection is **not an absolute lock.** Immediate changes remain
+   permitted for:
+   - P0 critical regressions
+   - broken functionality
+   - validation failures
+   - security / privacy exposure
+   - data-loss risk
+   - clearly documented P1 regressions
+5. A specialist owner may continue a planned multi-batch implementation in its
+   own recently changed area when `PROJECT_STATE.md`, the relevant progress
+   file, or Git history clearly shows the work is part of the same coherent
+   implementation sequence.
+6. Do not use Recent Change Protection to prevent legitimate continuation work
+   by the owning routine.
+7. Advisory routines may inspect recently changed areas, but should prefer
+   marking them `LIVE_VERIFICATION_REQUIRED` rather than immediately queuing
+   another redesign, unless evidence shows a real problem.
+8. When another routine owns an area, ownership takes precedence over general
+   design authority regardless of the age of the previous commit.
+9. Avoid multiple routines implementing competing solutions to the same
+   problem.
+10. Before changing recently modified code, record why overriding the
+    protection is justified, when the reason is not obvious from an existing
+    P0/P1 issue.
+
+### Active Change Windows
+
+Only areas under substantial active work. This is not a log of every dashboard
+edit. Writer routines update their own row after substantial implementation
+work; advisory routines may read this table but must not take ownership of a
+writer's entry. All times UTC.
+
+| Area | Owning Routine | Last Significant Commit | State | Protected Until | Notes |
+|---|---|---|---|---|---|
+| Bilingual template pass (status text across all 36 views) | Main CasaRay Upgrade | `f04a59f` — 2026-08-29 20:51 | `LIVE_VERIFICATION_REQUIRED` | 2026-08-30 02:51 | Third and final batch of one sequence (`f4e7ec3`, `fa286de`, `f04a59f`). Continuation by Main is permitted under rule 5; REG-001/004/005/006 are in-sequence fixes, not a redesign. |
+| Regression audit record (`DASHBOARD_ISSUES.md`) | Regression Auditor | `3116495` — 2026-08-29 22:49 | `PUSHED` | 2026-08-30 04:49 | Baseline REG-001..006 is fresh — do not re-audit the same range. Findings are queued for Main; the auditor does not implement them. |
+| Coordination state (`PROJECT_STATE.md`) | Shared — writer routines update their own rows | `STAMPSHA` — 2026-08-29 23:30 | `PUSHED` | 2026-08-30 05:30 | Structure is settled. Routines append to their own sections and rows rather than restructuring the file. |
+| Back / previous-page navigation (all views) | Billing Dashboard Upgrade (approved global pattern) | `34a92e7` — 2026-08-28 19:44 | `LIVE_VERIFICATION_REQUIRED` | expired 2026-08-29 01:44 | Protection expired, but implementation is **complete**: 35/36 views carry a parent-targeted `mdi:arrow-left` chip, `home` is root. Priority 1 needs a live look, not a redesign — rule 9 applies. |
+
+---
+
 ## Current Work / Blockers
 
 ### Main (CasaRay Upgrade)
@@ -165,8 +217,13 @@ authorized:
 
 ## Last Coordination Update
 
-- **Date/time:** 2026-08-29 23:14 UTC
+- **Date/time:** 2026-08-29 23:30 UTC
 - **Branch:** `ha-deploy`
-- **Commit SHA at time of writing:** `31164958ade23554ae69b77eac8d2fc591f871b7`
-  (`3116495` — "docs: regression audit 2026-08-29, six findings
-  (REG-001..006)"), i.e. the parent of the commit that introduced this file.
+- **`ha-deploy` HEAD before this update:** `618347f291a89d6db3f194f746d1a1184b104820`
+  (`618347f` — "docs: PROJECT_STATE.md as the coordination state for
+  autonomous routines")
+- **This update's commit:** `STAMPSHA` — adds Recent Change Protection and the
+  Active Change Windows table.
+
+Per `CLAUDE.md`, a commit cannot contain its own hash: this update's SHA is
+written by the `docs: stamp` commit that immediately follows it.
