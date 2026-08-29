@@ -32,7 +32,7 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 
 ## Batches
 
-### `__SHA__` — the last nested grids are gone (UI-016)
+### `9b28fdb` — the last nested grids are gone (UI-016)
 Area: `bills` (2), `light-living-room` (1), `lighting-modes` (1). Purpose:
 finishes a thread running through this whole branch. A `grid` card nested in
 a section sizes its children against a width it cannot measure, which is what
