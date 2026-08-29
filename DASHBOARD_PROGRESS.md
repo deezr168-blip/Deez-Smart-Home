@@ -28,7 +28,7 @@ Nothing below this line changes: the batch record is history and stays intact.
 
 ## Batches
 
-### `PENDING` — heading cards get their contrast back (UI-027)
+### `9926233` — heading cards get their contrast back (UI-027)
 Area: `themes/deez_your_name.yaml` (one rule, shared base). Purpose: the 52
 native `heading` cards across every section render with no `ha-card` wrapper,
 so the theme's existing `card-mod-card` rule — the one place `cbec78b` put
