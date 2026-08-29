@@ -8,10 +8,10 @@ views:
   title: Deez Smart Home
   path: home
   icon: mdi:home-assistant
-  max_columns: 4
+  max_columns: 2
   sections:
   - type: grid
-    column_span: 4
+    column_span: 2
     cards:
     - type: custom:mushroom-title-card
       card_mod:
@@ -123,7 +123,7 @@ views:
           action: navigate
           navigation_path: /deez-smart-home/bills
   - type: grid
-    column_span: 4
+    column_span: 2
     cards:
     - type: conditional
       grid_options:
@@ -230,7 +230,7 @@ views:
           action: navigate
           navigation_path: /deez-smart-home/bills
   - type: grid
-    column_span: 4
+    column_span: 2
     cards:
     - type: heading
       heading: '{{ ''今日概览'' if is_state(''input_boolean.chinese_dashboard'',''on'')
@@ -348,7 +348,6 @@ views:
       name: Parents Main
       icon: mdi:light-switch
   - type: grid
-    column_span: 2
     cards:
     - type: heading
       heading: '{{ ''房间'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Rooms'' }}'
@@ -424,11 +423,14 @@ views:
         action: navigate
         navigation_path: /deez-smart-home/guest-room
   - type: grid
+    column_span: 2
     cards:
     - type: heading
       heading: '{{ ''家庭系统'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Home Systems'' }}'
       icon: mdi:home-automation
     - type: custom:mushroom-template-card
+      grid_options:
+        columns: 3
       primary: Energy
       secondary: '{% set s = states(''sensor.primo_5_0_1_1_ac_power'') %}{% set g = states(''sensor.powerpal_gateway_powerpal_power'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}Solar {% if s in bad %}offline{% else %}{{ s | float(0) | round(0) | int }} W{% endif %}'
       icon: mdi:solar-power
@@ -437,6 +439,8 @@ views:
         action: navigate
         navigation_path: /deez-smart-home/energy
     - type: custom:mushroom-template-card
+      grid_options:
+        columns: 3
       primary: Lighting Studio
       secondary: '{% set n = states.light | selectattr(''state'',''eq'',''on'') | list | count %}{{ n }} light{{ ''s'' if n != 1 else '''' }} on'
       icon: mdi:lightbulb-group
@@ -446,6 +450,8 @@ views:
         action: navigate
         navigation_path: /deez-smart-home/lights
     - type: custom:mushroom-template-card
+      grid_options:
+        columns: 3
       primary: Cameras
       secondary: Live views
       icon: mdi:cctv
@@ -454,6 +460,8 @@ views:
         action: navigate
         navigation_path: /deez-smart-home/cameras
     - type: custom:mushroom-template-card
+      grid_options:
+        columns: 3
       primary: Security
       secondary: '{% set doors = [states(''binary_sensor.m_contact_sensor_door''),
         states(''binary_sensor.f_contact_sensor_door''), states(''binary_sensor.b_contact_sensor_door'')]
@@ -468,6 +476,8 @@ views:
         action: navigate
         navigation_path: /deez-smart-home/security
     - type: custom:mushroom-template-card
+      grid_options:
+        columns: 3
       primary: Climate
       secondary: Parents AC {{ states('climate.bedroom_parents_room_ac') }}
       icon: mdi:thermostat
@@ -477,6 +487,8 @@ views:
         action: navigate
         navigation_path: /deez-smart-home/climate
     - type: custom:mushroom-template-card
+      grid_options:
+        columns: 3
       primary: People
       secondary: Presence • distance
       icon: mdi:map-marker-account
@@ -485,6 +497,8 @@ views:
         action: navigate
         navigation_path: /deez-smart-home/people-locations
     - type: custom:mushroom-template-card
+      grid_options:
+        columns: 3
       primary: Bills
       secondary: '{% set raw = states(''sensor.bills_unpaid_count'') %}{% if raw in [''unavailable'', ''unknown'', ''none''] %}Bills status unavailable{% else %}{% set n = raw | int(0) %}{{ n ~ '' unpaid • $'' ~ states(''sensor.bills_outstanding_total'') if n > 0 else ''All bills paid'' }}{% endif %}'
       icon: mdi:receipt-text
@@ -535,7 +549,7 @@ views:
   title: Parents Room
   path: parents-room
   icon: mdi:bed-king
-  max_columns: 3
+  max_columns: 2
   sections:
   - type: grid
     cards:
@@ -820,7 +834,7 @@ views:
   title: Guest Room
   path: guest-room
   icon: mdi:bed-empty
-  max_columns: 3
+  max_columns: 2
   sections:
   - type: grid
     cards:
@@ -1332,10 +1346,10 @@ views:
   path: cameras
   icon: mdi:cctv
   theme: Deez Cameras
-  max_columns: 3
+  max_columns: 2
   sections:
   - type: grid
-    column_span: 3
+    column_span: 2
     cards:
     - type: custom:mushroom-chips-card
       card_mod:
@@ -1422,7 +1436,7 @@ views:
       hold_action:
         action: more-info
       grid_options:
-        columns: 6
+        columns: 4
     - type: picture-entity
       card_mod:
         style: "ha-card {\n  border-radius: 18px;\n  border: 1px solid rgba(120,200,255,0.18);\n\
@@ -1439,7 +1453,7 @@ views:
       hold_action:
         action: more-info
       grid_options:
-        columns: 6
+        columns: 4
     - type: picture-entity
       card_mod:
         style: "ha-card {\n  border-radius: 18px;\n  border: 1px solid rgba(120,200,255,0.18);\n\
@@ -1456,7 +1470,7 @@ views:
       hold_action:
         action: more-info
       grid_options:
-        columns: 6
+        columns: 4
     - type: picture-entity
       card_mod:
         style: "ha-card {\n  border-radius: 18px;\n  border: 1px solid rgba(120,200,255,0.18);\n\
@@ -1473,7 +1487,7 @@ views:
       hold_action:
         action: more-info
       grid_options:
-        columns: 6
+        columns: 4
     - type: picture-entity
       card_mod:
         style: "ha-card {\n  border-radius: 18px;\n  border: 1px solid rgba(120,200,255,0.18);\n\
@@ -1490,7 +1504,7 @@ views:
       hold_action:
         action: more-info
       grid_options:
-        columns: 6
+        columns: 4
     - type: picture-entity
       card_mod:
         style: "ha-card {\n  border-radius: 18px;\n  border: 1px solid rgba(120,200,255,0.18);\n\
@@ -1507,7 +1521,7 @@ views:
       hold_action:
         action: more-info
       grid_options:
-        columns: 6
+        columns: 4
   - type: grid
     cards:
     - type: heading
@@ -1840,10 +1854,10 @@ views:
   path: security
   icon: mdi:shield-home
   theme: Deez Security
-  max_columns: 3
+  max_columns: 2
   sections:
   - type: grid
-    column_span: 3
+    column_span: 2
     cards:
     - type: custom:mushroom-chips-card
       card_mod:
@@ -2518,7 +2532,7 @@ views:
   path: lights
   icon: mdi:lightbulb-group
   theme: Deez Lighting
-  max_columns: 3
+  max_columns: 2
   sections:
   - type: grid
     cards:
@@ -2738,7 +2752,7 @@ views:
   icon: mdi:ceiling-light-multiple
   theme: Deez Lighting
   subview: true
-  max_columns: 3
+  max_columns: 2
   sections:
   - type: grid
     cards:
@@ -3116,7 +3130,7 @@ views:
   title: iPad Command Center
   path: ipad-command-center
   icon: mdi:tablet-dashboard
-  max_columns: 3
+  max_columns: 2
   sections:
   - type: grid
     cards:

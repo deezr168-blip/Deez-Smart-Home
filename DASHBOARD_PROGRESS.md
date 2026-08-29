@@ -20,8 +20,8 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 1. **UI-025** — install the background image and theme on the host, then
    confirm `/local/your_name_night_sky.jpg` loads. Nothing else in this
    direction is visible until that is done.
-2. Dashboard side of the retheme: view backgrounds, iPad two-column retune,
-   then retire the per-card glass `card_mod` so the theme surface shows.
+2. Retire the per-card glass `card_mod` (~100 blocks) so the theme's frosted
+   surface shows through instead of an opaque white-tinted panel.
 3. **UI-012** — bilingual gap: 33 of 36 views are English-only while Home,
    Cameras and Lighting Studio respond to the toggle.
 4. **UI-013** — Parents Room and Guest Room each stack a Mushroom media card
@@ -34,6 +34,26 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 ---
 
 ## Batches
+
+### `__SHA__` — every view retuned for the iPad's two usable columns
+Area: all 36 views. Purpose: the dashboard declared up to four columns while
+the wall-mounted iPad renders about two, so eight views were dividing that
+width three or four ways. `max_columns` is capped at 2 everywhere (home,
+parents-room, guest-room, cameras, security, lights, light-living-room,
+ipad-command-center) and five `column_span` values wider than the grid were
+narrowed to match.
+Row packing rather than a blind cap: after the cap Home left Quick Control
+and Home Systems each alone on a half-empty row, so Rooms drops to half width
+to pair with Quick Control, and Home Systems takes the full width its eight
+tiles want, 4-across. Camera tiles were sized for a 2-of-3 section and would
+have ballooned to ~570px at full width, so they regrade from 2-across to
+3-across and keep their intended size.
+No background key was added to any view: the theme's `lovelace-background`
+covers every view globally, which is both the mechanism the brief asked for
+and zero schema risk on a live dashboard.
+Validated: 268 templates, 36/36 links, 0 broken, no entity loss.
+Expect: no view splits the iPad width more than two ways; Home reads header /
+alerts / today / (quick control | rooms) / home systems with no ragged rows.
 
 ### `88be895` — design target moves to CasaRay × Your Name (theme layer)
 Area: `themes/deez_your_name.yaml` (new), `THEME_INSTALL.md` (new),
