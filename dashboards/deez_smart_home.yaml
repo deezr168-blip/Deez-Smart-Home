@@ -3296,50 +3296,54 @@ views:
     cards:
     - type: heading
       heading: Four Hue Spots
-    - type: grid
-      columns: 2
-      square: false
-      cards:
-      - type: tile
-        entity: light.living_room_hue_ambiance_spot_1
-        name: Inner Left
-        tap_action:
-          action: toggle
-        hold_action:
-          action: more-info
-        features_position: inline
-        features:
-        - type: light-brightness
-      - type: tile
-        entity: light.living_room_hue_ambiance_spot_2
-        name: Inner Right
-        tap_action:
-          action: toggle
-        hold_action:
-          action: more-info
-        features_position: inline
-        features:
-        - type: light-brightness
-      - type: tile
-        entity: light.living_room_hue_ambiance_spot_3
-        name: Outer Left
-        tap_action:
-          action: toggle
-        hold_action:
-          action: more-info
-        features_position: inline
-        features:
-        - type: light-brightness
-      - type: tile
-        entity: light.living_room_hue_ambiance_spot_4
-        name: Outer Right
-        tap_action:
-          action: toggle
-        hold_action:
-          action: more-info
-        features_position: inline
-        features:
-        - type: light-brightness
+    - type: tile
+      entity: light.living_room_hue_ambiance_spot_1
+      name: Inner Left
+      tap_action:
+        action: toggle
+      hold_action:
+        action: more-info
+      features_position: inline
+      features:
+      - type: light-brightness
+      grid_options:
+        columns: 6
+    - type: tile
+      entity: light.living_room_hue_ambiance_spot_2
+      name: Inner Right
+      tap_action:
+        action: toggle
+      hold_action:
+        action: more-info
+      features_position: inline
+      features:
+      - type: light-brightness
+      grid_options:
+        columns: 6
+    - type: tile
+      entity: light.living_room_hue_ambiance_spot_3
+      name: Outer Left
+      tap_action:
+        action: toggle
+      hold_action:
+        action: more-info
+      features_position: inline
+      features:
+      - type: light-brightness
+      grid_options:
+        columns: 6
+    - type: tile
+      entity: light.living_room_hue_ambiance_spot_4
+      name: Outer Right
+      tap_action:
+        action: toggle
+      hold_action:
+        action: more-info
+      features_position: inline
+      features:
+      - type: light-brightness
+      grid_options:
+        columns: 6
     - type: custom:mushroom-template-card
       primary: All Four Spots Off
       icon: mdi:lightbulb-multiple-off
@@ -3497,67 +3501,71 @@ views:
       subtitle: One-touch brightness presets using confirmed dimmable lights
     - type: heading
       heading: Whole Home Presets
-    - type: grid
-      columns: 2
-      square: false
-      cards:
-      - type: custom:mushroom-template-card
-        primary: Night
-        secondary: Living • Ray • Dining at 10%
-        icon: mdi:weather-night
-        icon_color: indigo
-        tap_action:
-          action: perform-action
-          perform_action: light.turn_on
-          target:
-            entity_id:
-            - light.living_room
-            - light.bedroom_bedroom
-            - light.dining
-          data:
-            brightness_pct: 10
-      - type: custom:mushroom-template-card
-        primary: Relax
-        secondary: Living • Ray • Dining at 35%
-        icon: mdi:sofa-outline
-        icon_color: amber
-        tap_action:
-          action: perform-action
-          perform_action: light.turn_on
-          target:
-            entity_id:
-            - light.living_room
-            - light.bedroom_bedroom
-            - light.dining
-          data:
-            brightness_pct: 35
-      - type: custom:mushroom-template-card
-        primary: Evening
-        secondary: Living Room at 55%
-        icon: mdi:weather-sunset
-        icon_color: orange
-        tap_action:
-          action: perform-action
-          perform_action: light.turn_on
-          target:
-            entity_id: light.living_room
-          data:
-            brightness_pct: 55
-      - type: custom:mushroom-template-card
-        primary: Bright
-        secondary: Living • Ray • Dining at 100%
-        icon: mdi:white-balance-sunny
-        icon_color: amber
-        tap_action:
-          action: perform-action
-          perform_action: light.turn_on
-          target:
-            entity_id:
-            - light.living_room
-            - light.bedroom_bedroom
-            - light.dining
-          data:
-            brightness_pct: 100
+    - type: custom:mushroom-template-card
+      primary: Night
+      secondary: Living • Ray • Dining at 10%
+      icon: mdi:weather-night
+      icon_color: indigo
+      tap_action:
+        action: perform-action
+        perform_action: light.turn_on
+        target:
+          entity_id:
+          - light.living_room
+          - light.bedroom_bedroom
+          - light.dining
+        data:
+          brightness_pct: 10
+      grid_options:
+        columns: 6
+    - type: custom:mushroom-template-card
+      primary: Relax
+      secondary: Living • Ray • Dining at 35%
+      icon: mdi:sofa-outline
+      icon_color: amber
+      tap_action:
+        action: perform-action
+        perform_action: light.turn_on
+        target:
+          entity_id:
+          - light.living_room
+          - light.bedroom_bedroom
+          - light.dining
+        data:
+          brightness_pct: 35
+      grid_options:
+        columns: 6
+    - type: custom:mushroom-template-card
+      primary: Evening
+      secondary: Living Room at 55%
+      icon: mdi:weather-sunset
+      icon_color: orange
+      tap_action:
+        action: perform-action
+        perform_action: light.turn_on
+        target:
+          entity_id: light.living_room
+        data:
+          brightness_pct: 55
+      grid_options:
+        columns: 6
+    - type: custom:mushroom-template-card
+      primary: Bright
+      secondary: Living • Ray • Dining at 100%
+      icon: mdi:white-balance-sunny
+      icon_color: amber
+      tap_action:
+        action: perform-action
+        perform_action: light.turn_on
+        target:
+          entity_id:
+          - light.living_room
+          - light.bedroom_bedroom
+          - light.dining
+        data:
+          brightness_pct: 100
+      grid_options:
+        columns: 6
     - type: custom:mushroom-template-card
       primary: All Primary Lights Off
       secondary: Living • Dining • Ray • Parents
@@ -4078,134 +4086,105 @@ views:
           }
       title: 🧾 Bills & Payments
       subtitle: Utilities • insurance • council rates • registration
-    - type: grid
-      columns: 2
-      square: false
-      cards:
-      - type: custom:mushroom-template-card
-        primary: Electricity
-        secondary: '{{ states(''sensor.electricity_bill_status'') }} • ${{ states(''input_number.elec_bill_amount'')
-          }}'
-        icon: mdi:flash
-        icon_color: '{% set s = states(''sensor.electricity_bill_status'') %} {% if
-          s == ''Paid'' %}green {% elif s == ''Overdue'' %}red {% elif s == ''Due
-          soon'' %}orange {% else %}blue{% endif %}'
-        layout: vertical
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/bill-electricity
-        card_mod:
-          style: |
-            ha-card {
-              min-height: 125px;
-            }
-      - type: custom:mushroom-template-card
-        primary: Gas
-        secondary: '{{ states(''sensor.gas_bill_status'') }} • ${{ states(''input_number.gas_bill_amount'')
-          }}'
-        icon: mdi:fire-circle
-        icon_color: '{% set s = states(''sensor.gas_bill_status'') %} {% if s == ''Paid''
-          %}green {% elif s == ''Overdue'' %}red {% elif s == ''Due soon'' %}orange
-          {% else %}blue{% endif %}'
-        layout: vertical
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/bill-gas
-        card_mod:
-          style: |
-            ha-card {
-              min-height: 125px;
-            }
-      - type: custom:mushroom-template-card
-        primary: Car Insurance
-        secondary: "{% if is_state('input_boolean.car_insurance_paid','on') %}\n \
-          \ Paid • ${{ states('input_number.car_insurance_amount') }}\n{% else %}\n\
-          \  Unpaid • ${{ states('input_number.car_insurance_amount') }}\n{% endif\
-          \ %}"
-        icon: mdi:shield-car
-        icon_color: '{{ ''green'' if is_state(''input_boolean.car_insurance_paid'',''on'')
-          else ''orange'' }}'
-        layout: vertical
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/bill-car-insurance
-        card_mod:
-          style: |
-            ha-card {
-              min-height: 125px;
-            }
-      - type: custom:mushroom-template-card
-        primary: Council Rates
-        secondary: "{% if is_state('input_boolean.council_rate_paid','on') %}\n  Paid\
-          \ • ${{ states('input_number.council_rate_amount') }}\n{% else %}\n  Unpaid\
-          \ • ${{ states('input_number.council_rate_amount') }}\n{% endif %}"
-        icon: mdi:office-building
-        icon_color: '{{ ''green'' if is_state(''input_boolean.council_rate_paid'',''on'')
-          else ''orange'' }}'
-        layout: vertical
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/bill-council-rates
-        card_mod:
-          style: |
-            ha-card {
-              min-height: 125px;
-            }
-      - type: custom:mushroom-template-card
-        primary: South East Water
-        secondary: "{% if is_state('input_boolean.water_bill_paid','on') %}\n  Paid\
-          \ • ${{ states('input_number.water_bill_amount') }}\n{% else %}\n  Unpaid\
-          \ • ${{ states('input_number.water_bill_amount') }}\n{% endif %}"
-        icon: mdi:water-circle
-        icon_color: '{{ ''green'' if is_state(''input_boolean.water_bill_paid'',''on'')
-          else ''blue'' }}'
-        layout: vertical
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/bill-water
-        card_mod:
-          style: |
-            ha-card {
-              min-height: 125px;
-            }
-      - type: custom:mushroom-template-card
-        primary: VicRoads Rego
-        secondary: "{% if is_state('input_boolean.rego_paid','on') %}\n  Paid • ${{\
-          \ states('input_number.rego_amount') }}\n{% else %}\n  Unpaid • ${{ states('input_number.rego_amount')\
-          \ }}\n{% endif %}"
-        icon: mdi:card-account-details-outline
-        icon_color: '{{ ''green'' if is_state(''input_boolean.rego_paid'',''on'')
-          else ''orange'' }}'
-        layout: vertical
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/bill-rego
-        card_mod:
-          style: |
-            ha-card {
-              min-height: 125px;
-            }
+    - type: custom:mushroom-template-card
+      primary: Electricity
+      secondary: '{{ states(''sensor.electricity_bill_status'') }} • ${{ states(''input_number.elec_bill_amount'') }}'
+      icon: mdi:flash
+      icon_color: '{% set s = states(''sensor.electricity_bill_status'') %} {% if s == ''Paid'' %}green {% elif s == ''Overdue'' %}red {% elif s == ''Due soon'' %}orange {% else %}blue{% endif %}'
+      layout: vertical
+      tap_action:
+        action: navigate
+        navigation_path: /deez-smart-home/bill-electricity
+      card_mod:
+        style: "ha-card {\n  min-height: 125px;\n}\n"
+      grid_options:
+        columns: 6
+    - type: custom:mushroom-template-card
+      primary: Gas
+      secondary: '{{ states(''sensor.gas_bill_status'') }} • ${{ states(''input_number.gas_bill_amount'') }}'
+      icon: mdi:fire-circle
+      icon_color: '{% set s = states(''sensor.gas_bill_status'') %} {% if s == ''Paid'' %}green {% elif s == ''Overdue'' %}red {% elif s == ''Due soon'' %}orange {% else %}blue{% endif %}'
+      layout: vertical
+      tap_action:
+        action: navigate
+        navigation_path: /deez-smart-home/bill-gas
+      card_mod:
+        style: "ha-card {\n  min-height: 125px;\n}\n"
+      grid_options:
+        columns: 6
+    - type: custom:mushroom-template-card
+      primary: Car Insurance
+      secondary: "{% if is_state('input_boolean.car_insurance_paid','on') %}\n  Paid • ${{ states('input_number.car_insurance_amount') }}\n{% else %}\n  Unpaid • ${{ states('input_number.car_insurance_amount') }}\n{% endif %}"
+      icon: mdi:shield-car
+      icon_color: '{{ ''green'' if is_state(''input_boolean.car_insurance_paid'',''on'') else ''orange'' }}'
+      layout: vertical
+      tap_action:
+        action: navigate
+        navigation_path: /deez-smart-home/bill-car-insurance
+      card_mod:
+        style: "ha-card {\n  min-height: 125px;\n}\n"
+      grid_options:
+        columns: 6
+    - type: custom:mushroom-template-card
+      primary: Council Rates
+      secondary: "{% if is_state('input_boolean.council_rate_paid','on') %}\n  Paid • ${{ states('input_number.council_rate_amount') }}\n{% else %}\n  Unpaid • ${{ states('input_number.council_rate_amount') }}\n{% endif %}"
+      icon: mdi:office-building
+      icon_color: '{{ ''green'' if is_state(''input_boolean.council_rate_paid'',''on'') else ''orange'' }}'
+      layout: vertical
+      tap_action:
+        action: navigate
+        navigation_path: /deez-smart-home/bill-council-rates
+      card_mod:
+        style: "ha-card {\n  min-height: 125px;\n}\n"
+      grid_options:
+        columns: 6
+    - type: custom:mushroom-template-card
+      primary: South East Water
+      secondary: "{% if is_state('input_boolean.water_bill_paid','on') %}\n  Paid • ${{ states('input_number.water_bill_amount') }}\n{% else %}\n  Unpaid • ${{ states('input_number.water_bill_amount') }}\n{% endif %}"
+      icon: mdi:water-circle
+      icon_color: '{{ ''green'' if is_state(''input_boolean.water_bill_paid'',''on'') else ''blue'' }}'
+      layout: vertical
+      tap_action:
+        action: navigate
+        navigation_path: /deez-smart-home/bill-water
+      card_mod:
+        style: "ha-card {\n  min-height: 125px;\n}\n"
+      grid_options:
+        columns: 6
+    - type: custom:mushroom-template-card
+      primary: VicRoads Rego
+      secondary: "{% if is_state('input_boolean.rego_paid','on') %}\n  Paid • ${{ states('input_number.rego_amount') }}\n{% else %}\n  Unpaid • ${{ states('input_number.rego_amount') }}\n{% endif %}"
+      icon: mdi:card-account-details-outline
+      icon_color: '{{ ''green'' if is_state(''input_boolean.rego_paid'',''on'') else ''orange'' }}'
+      layout: vertical
+      tap_action:
+        action: navigate
+        navigation_path: /deez-smart-home/bill-rego
+      card_mod:
+        style: "ha-card {\n  min-height: 125px;\n}"
+      grid_options:
+        columns: 6
   - type: grid
     cards:
     - type: heading
       heading: Running Estimates — not an invoice
       icon: mdi:chart-timeline-variant
-    - type: grid
-      columns: 2
-      square: false
-      cards:
-      - type: custom:mushroom-template-card
-        primary: Electricity
-        secondary: '{% set e = states(''sensor.electricity_bill_estimate'') %}{% set c = states(''sensor.electricity_billing_cycle'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}{% if e in bad %}Estimate unavailable{% else %}${{ e }}{% endif %} • {% if c in bad %}usage unavailable{% else %}{{ c | float(0) | round(1) }} kWh this quarter{% endif %}'
-        icon: mdi:calculator-variant
-        icon_color: amber
-        entity: sensor.electricity_bill_estimate
-      - type: custom:mushroom-template-card
-        primary: Gas
-        secondary: '{% set e = states(''sensor.gas_bill_estimate'') %}{% set m = states(''input_number.gas_bill_mj'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}{% if e in bad %}Estimate unavailable{% else %}${{ e }}{% endif %} • {% if m in bad %}usage unavailable{% else %}{{ m | float(0) | round(0) | int }} MJ entered{% endif %}'
-        icon: mdi:calculator-variant
-        icon_color: amber
-        entity: sensor.gas_bill_estimate
+    - type: custom:mushroom-template-card
+      primary: Electricity
+      secondary: '{% set e = states(''sensor.electricity_bill_estimate'') %}{% set c = states(''sensor.electricity_billing_cycle'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}{% if e in bad %}Estimate unavailable{% else %}${{ e }}{% endif %} • {% if c in bad %}usage unavailable{% else %}{{ c | float(0) | round(1) }} kWh this quarter{% endif %}'
+      icon: mdi:calculator-variant
+      icon_color: amber
+      entity: sensor.electricity_bill_estimate
+      grid_options:
+        columns: 6
+    - type: custom:mushroom-template-card
+      primary: Gas
+      secondary: '{% set e = states(''sensor.gas_bill_estimate'') %}{% set m = states(''input_number.gas_bill_mj'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}{% if e in bad %}Estimate unavailable{% else %}${{ e }}{% endif %} • {% if m in bad %}usage unavailable{% else %}{{ m | float(0) | round(0) | int }} MJ entered{% endif %}'
+      icon: mdi:calculator-variant
+      icon_color: amber
+      entity: sensor.gas_bill_estimate
+      grid_options:
+        columns: 6
     - type: markdown
       content: '*Electricity uses the existing Powerpal current-cycle estimate. Gas
         currently requires MJ to be entered manually. Insurance, council rates, water

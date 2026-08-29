@@ -18,7 +18,7 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 ## Next recommended priorities
 
 1. **UI-027** — heading-card contrast; needs a theme rule and a live look.
-2. Bills and the remaining nested grids in light-living-room / lighting-modes.
+2. **UI-012** — bilingual gap: 33 views stay English when the toggle is on.
 3. **UI-012** — bilingual gap: 33 of 36 views are English-only while Home,
    Cameras and Lighting Studio respond to the toggle.
 4. **UI-013** — Parents Room and Guest Room each stack a Mushroom media card
@@ -31,6 +31,27 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 ---
 
 ## Batches
+
+### `__SHA__` — the last nested grids are gone (UI-016)
+Area: `bills` (2), `light-living-room` (1), `lighting-modes` (1). Purpose:
+finishes a thread running through this whole branch. A `grid` card nested in
+a section sizes its children against a width it cannot measure, which is what
+made the Home tiles 60px and the camera previews 185px earlier. These four
+were the last of them.
+Each dissolved into its children carrying native `grid_options: columns: 6` —
+the same two-across result, but decided by Home Assistant's section grid
+rather than by a card guessing inside a column. The dashboard now contains
+zero nested grid cards, down from eleven when this branch started.
+The moved cards were re-serialised, so the diff is large. Verified that this
+was purely mechanical: all 264 Jinja templates compare identical before and
+after, none changed, none appeared, none vanished.
+The six bill subviews were reviewed at the same time and need no layout
+change — one section and one column each is already right for a plan detail
+page.
+Validated: 264 templates, 36/36 links, 0 broken, no entity loss.
+Expect: no visible change to how these three pages are arranged; they are
+laid out by the same rules as every other view now instead of by a nested
+card.
 
 ### `99a77b4` — the wall panel itself: iPad Command Center rebuilt (UI-015)
 Area: `ipad-command-center`. Purpose: the view the wall iPad actually runs was
