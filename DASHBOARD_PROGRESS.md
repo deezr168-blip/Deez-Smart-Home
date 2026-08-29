@@ -18,7 +18,7 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 ## Next recommended priorities
 
 1. **UI-027** — heading-card contrast; needs a theme rule and a live look.
-2. Spacing, typography and section hierarchy across the remaining views.
+2. Bills and the remaining nested grids in light-living-room / lighting-modes.
 3. **UI-012** — bilingual gap: 33 of 36 views are English-only while Home,
    Cameras and Lighting Studio respond to the toggle.
 4. **UI-013** — Parents Room and Guest Room each stack a Mushroom media card
@@ -31,6 +31,33 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 ---
 
 ## Batches
+
+### `__SHA__` — the wall panel itself: iPad Command Center rebuilt (UI-015)
+Area: `ipad-command-center`. Purpose: the view the wall iPad actually runs was
+the last one never reviewed — 52 cards, three nested `grid` cards inside
+half-width sections, and the heaviest single section on the dashboard.
+Structure, four sections instead of three, every row filling the width:
+  Home Pulse   span 2  back bar, heading, one status strip
+  Doors/Lights/Climate   left column
+  Control Centre / Active Loads / Go To   right column
+  Live Cameras span 2  six previews 3-across at grid_options columns 4
+All three nested grids are gone, replaced by native `grid_options` on the
+cards themselves, so Home Assistant sizes them rather than a grid card
+guessing inside a column it cannot measure.
+Duplication removed: a six-chip camera status row sat directly above the six
+camera tiles it described. It is now one chip in the summary strip that names
+what is down — "North Wall, East Wall offline" — degrading to "N of 6
+offline" past two. Same treatment the Cameras page got, so the two views
+agree.
+Two unguarded readouts fixed: the Ray and Freezer load chips interpolated
+their sensor raw and rendered "Ray unavailable W". The WAN chip gained the
+third branch it was missing, and now navigates to Network like its twin on
+Cameras.
+Verified nothing was lost by diffing the parsed view before and after: no
+entity ID and no navigation target dropped; one added (Network).
+Rendered live, WAN down, all-silent and two-cameras-down.
+Expect: a shorter panel with a single status strip at the top, controls in two
+readable columns, and camera previews about 380px wide instead of 285px.
 
 ### `f7d5b13` — switch and cover controls become native Tile cards
 Area: 26 cards across home, parents-room, ray-bedroom, guest-room, kitchen,

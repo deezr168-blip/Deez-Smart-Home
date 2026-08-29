@@ -3613,6 +3613,7 @@ views:
   max_columns: 2
   sections:
   - type: grid
+    column_span: 2
     cards:
     - type: custom:mushroom-chips-card
       card_mod:
@@ -3643,43 +3644,8 @@ views:
         rows: 1
     - type: heading
       heading: Home Pulse
+      icon: mdi:home-heart
     - type: custom:mushroom-chips-card
-      alignment: center
-      chips:
-      - type: template
-        icon: mdi:shield-home
-        icon_color: '{% set doors = [states(''binary_sensor.f_contact_sensor_door''),
-          states(''binary_sensor.m_contact_sensor_door''), states(''binary_sensor.b_contact_sensor_door'')]
-          %} {{ ''red'' if (doors | select(''eq'',''on'') | list | count) > 0 else
-          ''green'' }}'
-        content: '{% set doors = [states(''binary_sensor.f_contact_sensor_door''),
-          states(''binary_sensor.m_contact_sensor_door''), states(''binary_sensor.b_contact_sensor_door'')]
-          %} {{ doors | select(''eq'',''on'') | list | count }} open'
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/security
-      - type: template
-        icon: mdi:wan
-        icon_color: '{{ ''green'' if is_state(''binary_sensor.eero_wan_status'',''on'')
-          else ''red'' }}'
-        content: '{{ ''WAN Online'' if is_state(''binary_sensor.eero_wan_status'',''on'')
-          else ''WAN Offline'' }}'
-      - type: template
-        icon: mdi:solar-power
-        icon_color: amber
-        content: '{% set raw = states(''sensor.primo_5_0_1_1_ac_power'') %}{% if raw in [''unavailable'', ''unknown'', ''none''] %}Offline{% else %}{{ raw | float(0) | round(0) | int }} W{% endif %}'
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/energy
-      - type: template
-        icon: mdi:lightbulb-group
-        icon_color: '{{ ''amber'' if (states.light | selectattr(''state'',''eq'',''on'')
-          | list | count) > 0 else ''grey'' }}'
-        content: '{{ states.light | selectattr(''state'',''eq'',''on'') | list | count
-          }} lights'
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/lights
       card_mod:
         style: |
           ha-card {
@@ -3694,80 +3660,140 @@ views:
           ha-card .chip-container {
             gap: 8px;
           }
-    - square: false
-      type: grid
-      columns: 3
-      cards:
-      - type: custom:mushroom-template-card
-        primary: Front
-        secondary: '{% set v = states(''binary_sensor.f_contact_sensor_door'') %}{% if v in [''unavailable'',''unknown'',''none''] %}Offline{% elif v == ''on'' %}Open{% else %}Closed{% endif %}'
-        icon: mdi:door
-        icon_color: '{% set v = states(''binary_sensor.f_contact_sensor_door'') %}{% if v in [''unavailable'',''unknown'',''none''] %}grey{% elif v == ''on'' %}red{% else %}green{% endif %}'
-        layout: vertical
-      - type: custom:mushroom-template-card
-        primary: Parents
-        secondary: '{% set v = states(''binary_sensor.m_contact_sensor_door'') %}{% if v in [''unavailable'',''unknown'',''none''] %}Offline{% elif v == ''on'' %}Open{% else %}Closed{% endif %}'
-        icon: mdi:door
-        icon_color: '{% set v = states(''binary_sensor.m_contact_sensor_door'') %}{% if v in [''unavailable'',''unknown'',''none''] %}grey{% elif v == ''on'' %}red{% else %}green{% endif %}'
-        layout: vertical
-      - type: custom:mushroom-template-card
-        primary: Back
-        secondary: '{% set v = states(''binary_sensor.b_contact_sensor_door'') %}{% if v in [''unavailable'',''unknown'',''none''] %}Offline{% elif v == ''on'' %}Open{% else %}Closed{% endif %}'
-        icon: mdi:door
-        icon_color: '{% set v = states(''binary_sensor.b_contact_sensor_door'') %}{% if v in [''unavailable'',''unknown'',''none''] %}grey{% elif v == ''on'' %}red{% else %}green{% endif %}'
-        layout: vertical
+      alignment: start
+      chips:
+      - type: template
+        icon: mdi:shield-home
+        icon_color: '{% set doors = [states(''binary_sensor.f_contact_sensor_door''), states(''binary_sensor.m_contact_sensor_door''), states(''binary_sensor.b_contact_sensor_door'')] %}{{ ''red'' if (doors | select(''eq'',''on'') | list | count) > 0 else ''green'' }}'
+        content: '{% set doors = [states(''binary_sensor.f_contact_sensor_door''), states(''binary_sensor.m_contact_sensor_door''), states(''binary_sensor.b_contact_sensor_door'')] %}{{ doors | select(''eq'',''on'') | list | count }} open'
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/security
+      - type: template
+        icon: mdi:wan
+        icon_color: '{% set v = states(''binary_sensor.eero_wan_status'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}grey{% elif v == ''on'' %}green{% else %}red{% endif %}'
+        content: '{% set v = states(''binary_sensor.eero_wan_status'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}WAN —{% elif v == ''on'' %}WAN Online{% else %}WAN Offline{% endif %}'
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/network
+      - type: template
+        icon: mdi:solar-power
+        icon_color: amber
+        content: '{% set raw = states(''sensor.primo_5_0_1_1_ac_power'') %}{% if raw in [''unavailable'', ''unknown'', ''none''] %}Offline{% else %}{{ raw | float(0) | round(0) | int }} W{% endif %}'
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/energy
+      - type: template
+        icon: mdi:lightbulb-group
+        icon_color: '{{ ''amber'' if (states.light | selectattr(''state'',''eq'',''on'') | list | count) > 0 else ''grey'' }}'
+        content: '{{ states.light | selectattr(''state'',''eq'',''on'') | list | count }} lights'
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/lights
+      - type: template
+        icon: mdi:cctv
+        content: '{% set cams = [(''Front Door'',''camera.front_door_live_view''), (''North Wall'',''camera.tapo_c425_north_wall_hd_stream_direct''), (''East Wall'',''camera.tapo_c420_east_wall_hd_stream_direct''), (''South Wall'',''camera.tapo_c420_south_wall_hd_stream_direct''), (''Stockroom'',''camera.tapo_c200_stockroom_hd_stream_direct''), (''Pet Feeder'',''camera.smart_pet_feeder'')] %}{% set ns = namespace(down=[]) %}{% for n,c in cams %}{% if states(c) in [''unavailable'',''unknown'',''none''] %}{% set ns.down = ns.down + [n] %}{% endif %}{% endfor %}{% if ns.down | count == 0 %}6 cams{% elif ns.down | count <= 2 %}{{ ns.down | join('', '') }} offline{% else %}{{ ns.down | count }} of 6 offline{% endif %}'
+        icon_color: '{% set cams = [(''Front Door'',''camera.front_door_live_view''), (''North Wall'',''camera.tapo_c425_north_wall_hd_stream_direct''), (''East Wall'',''camera.tapo_c420_east_wall_hd_stream_direct''), (''South Wall'',''camera.tapo_c420_south_wall_hd_stream_direct''), (''Stockroom'',''camera.tapo_c200_stockroom_hd_stream_direct''), (''Pet Feeder'',''camera.smart_pet_feeder'')] %}{% set ns = namespace(down=[]) %}{% for n,c in cams %}{% if states(c) in [''unavailable'',''unknown'',''none''] %}{% set ns.down = ns.down + [n] %}{% endif %}{% endfor %}{{ ''green'' if ns.down | count == 0 else (''amber'' if ns.down | count <= 2 else ''red'') }}'
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/cameras
+  - type: grid
+    cards:
+    - type: heading
+      heading: Doors
+      icon: mdi:door
+    - type: custom:mushroom-template-card
+      primary: Front
+      secondary: '{% set v = states(''binary_sensor.f_contact_sensor_door'') %}{% if v in [''unavailable'',''unknown'',''none''] %}Offline{% elif v == ''on'' %}Open{% else %}Closed{% endif %}'
+      icon: mdi:door
+      icon_color: '{% set v = states(''binary_sensor.f_contact_sensor_door'') %}{% if v in [''unavailable'',''unknown'',''none''] %}grey{% elif v == ''on'' %}red{% else %}green{% endif %}'
+      layout: vertical
+      entity: binary_sensor.f_contact_sensor_door
+      tap_action:
+        action: more-info
       grid_options:
-        columns: 12
-        rows: 1
-    - type: grid
-      columns: 2
-      square: false
-      cards:
-      - type: tile
-        entity: light.living_room
-        name: Living Room
-        icon: mdi:sofa
-        color: amber
-        tap_action:
-          action: toggle
-        hold_action:
-          action: more-info
-        features:
-        - type: light-brightness
-        features_position: inline
-      - type: tile
-        entity: light.dining
-        name: Dining
-        icon: mdi:table-chair
-        color: amber
-        tap_action:
-          action: toggle
-        hold_action:
-          action: more-info
-        features:
-        - type: light-brightness
-        features_position: inline
-      - type: tile
-        entity: light.bedroom_bedroom
-        name: Ray Bedroom
-        icon: mdi:bed
-        color: amber
-        tap_action:
-          action: toggle
-        hold_action:
-          action: more-info
-        features:
-        - type: light-brightness
-        features_position: inline
-      - type: tile
-        entity: switch.mainroomlight_switch_1
-        name: Parents
-        icon: mdi:bed-king
-        color: amber
-        tap_action:
-          action: toggle
-        hold_action:
-          action: more-info
+        columns: 4
+    - type: custom:mushroom-template-card
+      primary: Parents
+      secondary: '{% set v = states(''binary_sensor.m_contact_sensor_door'') %}{% if v in [''unavailable'',''unknown'',''none''] %}Offline{% elif v == ''on'' %}Open{% else %}Closed{% endif %}'
+      icon: mdi:door
+      icon_color: '{% set v = states(''binary_sensor.m_contact_sensor_door'') %}{% if v in [''unavailable'',''unknown'',''none''] %}grey{% elif v == ''on'' %}red{% else %}green{% endif %}'
+      layout: vertical
+      entity: binary_sensor.m_contact_sensor_door
+      tap_action:
+        action: more-info
+      grid_options:
+        columns: 4
+    - type: custom:mushroom-template-card
+      primary: Back
+      secondary: '{% set v = states(''binary_sensor.b_contact_sensor_door'') %}{% if v in [''unavailable'',''unknown'',''none''] %}Offline{% elif v == ''on'' %}Open{% else %}Closed{% endif %}'
+      icon: mdi:door
+      icon_color: '{% set v = states(''binary_sensor.b_contact_sensor_door'') %}{% if v in [''unavailable'',''unknown'',''none''] %}grey{% elif v == ''on'' %}red{% else %}green{% endif %}'
+      layout: vertical
+      entity: binary_sensor.b_contact_sensor_door
+      tap_action:
+        action: more-info
+      grid_options:
+        columns: 4
+    - type: heading
+      heading: Lights
+      icon: mdi:lightbulb-group
+    - type: tile
+      entity: light.living_room
+      name: Living Room
+      icon: mdi:sofa
+      color: amber
+      tap_action:
+        action: toggle
+      hold_action:
+        action: more-info
+      features_position: inline
+      features:
+      - type: light-brightness
+      grid_options:
+        columns: 6
+    - type: tile
+      entity: light.dining
+      name: Dining
+      icon: mdi:table-chair
+      color: amber
+      tap_action:
+        action: toggle
+      hold_action:
+        action: more-info
+      features_position: inline
+      features:
+      - type: light-brightness
+      grid_options:
+        columns: 6
+    - type: tile
+      entity: light.bedroom_bedroom
+      name: Ray Bedroom
+      icon: mdi:bed
+      color: amber
+      tap_action:
+        action: toggle
+      hold_action:
+        action: more-info
+      features_position: inline
+      features:
+      - type: light-brightness
+      grid_options:
+        columns: 6
+    - type: tile
+      entity: switch.mainroomlight_switch_1
+      name: Parents
+      icon: mdi:bed-king
+      color: amber
+      tap_action:
+        action: toggle
+      hold_action:
+        action: more-info
+      grid_options:
+        columns: 6
+    - type: heading
+      heading: Climate
+      icon: mdi:air-conditioner
     - type: custom:mushroom-climate-card
       entity: climate.bedroom_parents_room_ac
       name: Parents AC
@@ -3777,6 +3803,7 @@ views:
     cards:
     - type: heading
       heading: Control Centre
+      icon: mdi:tune-variant
     - type: custom:mushroom-media-player-card
       entity: media_player.living_room_tv_samsung_q9_series_65
       name: Living Room TV
@@ -3791,6 +3818,8 @@ views:
       tap_action:
         action: navigate
         navigation_path: /deez-smart-home/lighting-modes
+      grid_options:
+        columns: 6
     - type: custom:mushroom-template-card
       primary: Raymond
       secondary: '{% set d = distance(''zone.home'',''person.raymond_du'') %}{% if d is not number %}Unknown{% elif d <= 0.1 %}Home{% else %}{{ d | round(1) }} km away{% endif %}'
@@ -3799,6 +3828,8 @@ views:
       tap_action:
         action: navigate
         navigation_path: /deez-smart-home/people-locations
+      grid_options:
+        columns: 6
     - type: heading
       heading: Active Loads
       icon: mdi:flash
@@ -3817,22 +3848,23 @@ views:
           ha-card .chip-container {
             gap: 8px;
           }
-      alignment: justify
+      alignment: start
       chips:
       - type: template
         icon: mdi:bed
-        content: Ray {{ states('sensor.r_energy_monitor_p110m_current_consumption')
-          }} W
+        content: '{% set v = states(''sensor.r_energy_monitor_p110m_current_consumption'') %}{% if v in [''unavailable'',''unknown'',''none''] %}Ray —{% else %}Ray {{ v | float(0) | round(0) | int }} W{% endif %}'
         entity: switch.r_energy_monitor_p110m
         tap_action:
           action: more-info
       - type: template
         icon: mdi:fridge-outline
-        content: Freezer {{ states('sensor.g_monitor_freezer_p110m_current_consumption')
-          }} W
+        content: '{% set v = states(''sensor.g_monitor_freezer_p110m_current_consumption'') %}{% if v in [''unavailable'',''unknown'',''none''] %}Freezer —{% else %}Freezer {{ v | float(0) | round(0) | int }} W{% endif %}'
         entity: switch.g_monitor_freezer_p110m
         tap_action:
           action: more-info
+    - type: heading
+      heading: Go To
+      icon: mdi:compass
     - type: custom:mushroom-chips-card
       card_mod:
         style: |
@@ -3848,7 +3880,7 @@ views:
           ha-card .chip-container {
             gap: 8px;
           }
-      alignment: center
+      alignment: start
       chips:
       - type: template
         icon: mdi:lightbulb-group
@@ -3876,162 +3908,125 @@ views:
           action: navigate
           navigation_path: /deez-smart-home/bills
   - type: grid
+    column_span: 2
     cards:
     - type: heading
       heading: Live Cameras
-    - type: custom:mushroom-chips-card
+      icon: mdi:cctv
+    - type: picture-entity
       card_mod:
         style: |
           ha-card {
-            background: none;
-            backdrop-filter: none;
-            -webkit-backdrop-filter: none;
-            border: none;
-            box-shadow: none;
-            padding: 0px;
-            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+            overflow: hidden;
           }
-          ha-card .chip-container {
-            gap: 8px;
+      entity: camera.front_door_live_view
+      name: Front Door
+      camera_view: auto
+      show_state: false
+      show_name: true
+      aspect_ratio: '16:9'
+      tap_action:
+        action: navigate
+        navigation_path: /deez-smart-home/camera-front-door
+      hold_action:
+        action: more-info
+      grid_options:
+        columns: 4
+    - type: picture-entity
+      card_mod:
+        style: |
+          ha-card {
+            overflow: hidden;
           }
-      alignment: justify
-      chips:
-      - type: template
-        icon: mdi:door-open
-        icon_color: '{{ ''green'' if states(''camera.front_door_live_view'') not in
-          [''unavailable'',''unknown''] else ''red'' }}'
-        content: Front
-      - type: template
-        icon: mdi:cctv
-        icon_color: '{{ ''green'' if states(''camera.tapo_c425_north_wall_hd_stream_direct'')
-          not in [''unavailable'',''unknown''] else ''red'' }}'
-        content: North
-      - type: template
-        icon: mdi:cctv
-        icon_color: '{{ ''green'' if states(''camera.tapo_c420_east_wall_hd_stream_direct'')
-          not in [''unavailable'',''unknown''] else ''red'' }}'
-        content: East
-      - type: template
-        icon: mdi:cctv
-        icon_color: '{{ ''green'' if states(''camera.tapo_c420_south_wall_hd_stream_direct'')
-          not in [''unavailable'',''unknown''] else ''red'' }}'
-        content: South
-      - type: template
-        icon: mdi:cctv
-        icon_color: '{{ ''green'' if states(''camera.tapo_c200_stockroom_hd_stream_direct'')
-          not in [''unavailable'',''unknown''] else ''red'' }}'
-        content: Stock
-      - type: template
-        icon: mdi:cat
-        icon_color: '{{ ''green'' if states(''camera.smart_pet_feeder'') not in [''unavailable'',''unknown'']
-          else ''red'' }}'
-        content: Pet
-    - type: grid
-      columns: 2
-      square: false
-      cards:
-      - type: picture-entity
-        card_mod:
-          style: |
-            ha-card {
-              overflow: hidden;
-            }
-        entity: camera.front_door_live_view
-        name: Front Door
-        camera_view: auto
-        show_state: false
-        show_name: true
-        aspect_ratio: '16:9'
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/camera-front-door
-        hold_action:
-          action: more-info
-      - type: picture-entity
-        card_mod:
-          style: |
-            ha-card {
-              overflow: hidden;
-            }
-        entity: camera.tapo_c425_north_wall_hd_stream_direct
-        name: North Wall
-        camera_view: auto
-        show_state: false
-        show_name: true
-        aspect_ratio: '16:9'
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/camera-north-wall
-        hold_action:
-          action: more-info
-      - type: picture-entity
-        card_mod:
-          style: |
-            ha-card {
-              overflow: hidden;
-            }
-        entity: camera.tapo_c420_east_wall_hd_stream_direct
-        name: East Wall
-        camera_view: auto
-        show_state: false
-        show_name: true
-        aspect_ratio: '16:9'
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/camera-east-wall
-        hold_action:
-          action: more-info
-      - type: picture-entity
-        card_mod:
-          style: |
-            ha-card {
-              overflow: hidden;
-            }
-        entity: camera.tapo_c420_south_wall_hd_stream_direct
-        name: South Wall
-        camera_view: auto
-        show_state: false
-        show_name: true
-        aspect_ratio: '16:9'
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/camera-south-wall
-        hold_action:
-          action: more-info
-      - type: picture-entity
-        card_mod:
-          style: |
-            ha-card {
-              overflow: hidden;
-            }
-        entity: camera.tapo_c200_stockroom_hd_stream_direct
-        name: Stockroom
-        camera_view: auto
-        show_state: false
-        show_name: true
-        aspect_ratio: '16:9'
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/camera-stockroom
-        hold_action:
-          action: more-info
-      - type: picture-entity
-        card_mod:
-          style: |
-            ha-card {
-              overflow: hidden;
-            }
-        entity: camera.smart_pet_feeder
-        name: Pet Feeder
-        camera_view: auto
-        show_state: false
-        show_name: true
-        aspect_ratio: '16:9'
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/camera-pet-feeder
-        hold_action:
-          action: more-info
+      entity: camera.tapo_c425_north_wall_hd_stream_direct
+      name: North Wall
+      camera_view: auto
+      show_state: false
+      show_name: true
+      aspect_ratio: '16:9'
+      tap_action:
+        action: navigate
+        navigation_path: /deez-smart-home/camera-north-wall
+      hold_action:
+        action: more-info
+      grid_options:
+        columns: 4
+    - type: picture-entity
+      card_mod:
+        style: |
+          ha-card {
+            overflow: hidden;
+          }
+      entity: camera.tapo_c420_east_wall_hd_stream_direct
+      name: East Wall
+      camera_view: auto
+      show_state: false
+      show_name: true
+      aspect_ratio: '16:9'
+      tap_action:
+        action: navigate
+        navigation_path: /deez-smart-home/camera-east-wall
+      hold_action:
+        action: more-info
+      grid_options:
+        columns: 4
+    - type: picture-entity
+      card_mod:
+        style: |
+          ha-card {
+            overflow: hidden;
+          }
+      entity: camera.tapo_c420_south_wall_hd_stream_direct
+      name: South Wall
+      camera_view: auto
+      show_state: false
+      show_name: true
+      aspect_ratio: '16:9'
+      tap_action:
+        action: navigate
+        navigation_path: /deez-smart-home/camera-south-wall
+      hold_action:
+        action: more-info
+      grid_options:
+        columns: 4
+    - type: picture-entity
+      card_mod:
+        style: |
+          ha-card {
+            overflow: hidden;
+          }
+      entity: camera.tapo_c200_stockroom_hd_stream_direct
+      name: Stockroom
+      camera_view: auto
+      show_state: false
+      show_name: true
+      aspect_ratio: '16:9'
+      tap_action:
+        action: navigate
+        navigation_path: /deez-smart-home/camera-stockroom
+      hold_action:
+        action: more-info
+      grid_options:
+        columns: 4
+    - type: picture-entity
+      card_mod:
+        style: |
+          ha-card {
+            overflow: hidden;
+          }
+      entity: camera.smart_pet_feeder
+      name: Pet Feeder
+      camera_view: auto
+      show_state: false
+      show_name: true
+      aspect_ratio: '16:9'
+      tap_action:
+        action: navigate
+        navigation_path: /deez-smart-home/camera-pet-feeder
+      hold_action:
+        action: more-info
+      grid_options:
+        columns: 4
 - type: sections
   title: Bills
   path: bills
