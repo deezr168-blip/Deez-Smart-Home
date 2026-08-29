@@ -17,21 +17,47 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 
 ## Next recommended priorities
 
-1. **UI-027** — heading-card contrast; needs a theme rule and a live look.
-2. **UI-011** and **UI-027** both need a live look now, not more repository
+1. **REG-004/005/006** — three LOW residual untranslated fragments
+   (`people-locations` "home", `ipad-command-center` "WAN —",
+   `home` Energy tile "offline"). Small, queued, unowned.
+2. **UI-027** — heading-card contrast; needs a theme rule and a live look.
+3. **UI-011** and **UI-027** both need a live look now, not more repository
    work — see the open table.
-3. **UI-012** — bilingual gap: 33 of 36 views are English-only while Home,
-   Cameras and Lighting Studio respond to the toggle.
-4. **UI-013** — Parents Room and Guest Room each stack a Mushroom media card
-   and a native `media-control` for the same player. Confirm intent first.
-5. iPad Command Center — 52 cards, never reviewed; nested 3-column grid in a
+4. iPad Command Center — 52 cards, never reviewed; nested 3-column grid in a
    third-width section.
-6. Bills — nested 2-column grids; six bill subviews unreviewed.
-7. **UI-011** — verify the Total Solar unit assumption against the live card.
+5. Bills — owned by the Billing Dashboard routine; not Main's to redesign.
 
 ---
 
 ## Batches
+
+### `PENDING` — three reassuring/untranslated regressions closed (REG-001/002/003)
+Area: `security` (3 door cards), `lights` + `cameras` (motion-aggregate quick
+chips), `home` (Network nav chip). Purpose: closes the three MEDIUM findings
+from the 2026-08-29 regression audit, queued for Main.
+REG-001: the three door cards' Open/Closed clause was bare English inside an
+otherwise-bilingual template — the same gap `fa286de` closed on five other
+door cards but missed here. Now reads `开启`/`关闭` when the toggle is on,
+matching the existing pattern elsewhere in the file byte-for-byte.
+REG-002: the `lights` (2-sensor) and `cameras` (4-sensor) motion-aggregate
+chips had no unavailable branch, so a dropout showed a confident "Quiet" —
+this project's own recurring false-safe-state root cause (see Process note).
+Both now report "Sensor offline" when every watched sensor in the group is
+unavailable/unknown/none, honest "Motion"/"Quiet" otherwise, and bilingual
+either way.
+REG-003: the `home` page's own Network nav chip was a bare two-branch
+`green`/`red`, unlike the dedicated `network` view which already guards this
+exact sensor (`a5dc914`). Added the same third grey branch.
+Verified each new branch by rendering the extracted Jinja logic standalone
+across all state combinations (on/off/unavailable/unknown/none, both
+languages) rather than by inspection alone: REG-001's ternary reproduces the
+existing five-instance pattern exactly on English; REG-002's guard confirmed
+to report offline only when *every* sensor in its group is unavailable, and
+real Motion/Quiet otherwise — never "Quiet" from a dropout.
+Validated: 384 templates, 36/36 links, 0 broken, no entity loss.
+Expect: no visible change when sensors are healthy; a dropped door/motion/WAN
+sensor now shows grey "offline" instead of a confident wrong colour, in
+either language.
 
 ### `f04a59f` — the number-glued status fragments (UI-029)
 Area: 34 templates across home, kitchen, garage, energy, cameras, climate,

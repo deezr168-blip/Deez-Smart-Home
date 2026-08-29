@@ -544,8 +544,9 @@ views:
       - type: template
         icon: mdi:lan
         content: Network
-        icon_color: '{{ ''green'' if is_state(''binary_sensor.eero_wan_status'',''on'')
-          else ''red'' }}'
+        icon_color: '{% set v = states(''binary_sensor.eero_wan_status'') %}{% if
+          v in [''unavailable'', ''unknown'', ''none''] %}grey{% elif v == ''on''
+          %}green{% else %}red{% endif %}'
         tap_action:
           action: navigate
           navigation_path: /deez-smart-home/network
@@ -1610,14 +1611,20 @@ views:
           navigation_path: /deez-smart-home/security
       - type: template
         icon: mdi:motion-sensor
-        content: "{% set m = [\n  states('binary_sensor.living_room_living_hue_hue_sensor_motion'),\n\
+        content: "{% set cn = is_state('input_boolean.chinese_dashboard','on') %}{%\
+          \ set m = [\n  states('binary_sensor.living_room_living_hue_hue_sensor_motion'),\n\
           \  states('binary_sensor.bedroom_motion_sensor_motion'),\n  states('binary_sensor.k_motion_sensor_motion'),\n\
-          \  states('binary_sensor.sensor_group_motion')\n] %} {{ 'Motion' if (m |\
-          \ select('eq','on') | list | count) > 0 else 'Quiet' }}"
+          \  states('binary_sensor.sensor_group_motion')\n] %}{% set bad = ['unavailable',\
+          \ 'unknown', 'none'] %}{% if m | reject('in', bad) | list | count == 0\
+          \ %}{{ '传感器离线' if cn else 'Sensor offline' }}{% elif (m | select('eq','on')\
+          \ | list | count) > 0 %}{{ '侦测到移动' if cn else 'Motion' }}{% else %}{{\
+          \ '安静' if cn else 'Quiet' }}{% endif %}"
         icon_color: "{% set m = [\n  states('binary_sensor.living_room_living_hue_hue_sensor_motion'),\n\
           \  states('binary_sensor.bedroom_motion_sensor_motion'),\n  states('binary_sensor.k_motion_sensor_motion'),\n\
-          \  states('binary_sensor.sensor_group_motion')\n] %} {{ 'amber' if (m |\
-          \ select('eq','on') | list | count) > 0 else 'grey' }}"
+          \  states('binary_sensor.sensor_group_motion')\n] %}{% set bad = ['unavailable',\
+          \ 'unknown', 'none'] %}{% if m | reject('in', bad) | list | count == 0\
+          \ %}grey{% elif (m | select('eq','on') | list | count) > 0 %}amber{% else\
+          \ %}grey{% endif %}"
       - type: template
         icon: mdi:wan
         content: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set v = states(''binary_sensor.eero_wan_status'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}{{ ''网络无数据'' if cn else ''WAN not reporting'' }}{% elif v == ''on'' %}{{ ''网络在线'' if cn else ''WAN Online'' }}{% else %}{{ ''网络离线'' if cn else ''WAN Offline'' }}{% endif %}'
@@ -2189,7 +2196,7 @@ views:
       icon: mdi:door
     - type: custom:mushroom-template-card
       primary: Living Room Door
-      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set v = states(''binary_sensor.f_contact_sensor_door'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}{{ ''传感器离线'' if cn else ''Sensor offline'' }}{% else %}{{ ''Open'' if v == ''on'' else ''Closed'' }} • {{ relative_time(states.binary_sensor.f_contact_sensor_door.last_changed) }}{% endif %}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set v = states(''binary_sensor.f_contact_sensor_door'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}{{ ''传感器离线'' if cn else ''Sensor offline'' }}{% else %}{{ (''开启'' if cn else ''Open'') if v == ''on'' else (''关闭'' if cn else ''Closed'') }} • {{ relative_time(states.binary_sensor.f_contact_sensor_door.last_changed) }}{% endif %}'
       icon: '{{ ''mdi:door-open'' if is_state(''binary_sensor.f_contact_sensor_door'',''on'') else ''mdi:door-closed'' }}'
       icon_color: '{% set v = states(''binary_sensor.f_contact_sensor_door'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}grey{% elif v == ''on'' %}red{% else %}green{% endif %}'
       entity: binary_sensor.f_contact_sensor_door
@@ -2197,7 +2204,7 @@ views:
         action: more-info
     - type: custom:mushroom-template-card
       primary: Main / Parents Door
-      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set v = states(''binary_sensor.m_contact_sensor_door'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}{{ ''传感器离线'' if cn else ''Sensor offline'' }}{% else %}{{ ''Open'' if v == ''on'' else ''Closed'' }} • {{ relative_time(states.binary_sensor.m_contact_sensor_door.last_changed) }}{% endif %}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set v = states(''binary_sensor.m_contact_sensor_door'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}{{ ''传感器离线'' if cn else ''Sensor offline'' }}{% else %}{{ (''开启'' if cn else ''Open'') if v == ''on'' else (''关闭'' if cn else ''Closed'') }} • {{ relative_time(states.binary_sensor.m_contact_sensor_door.last_changed) }}{% endif %}'
       icon: '{{ ''mdi:door-open'' if is_state(''binary_sensor.m_contact_sensor_door'',''on'') else ''mdi:door-closed'' }}'
       icon_color: '{% set v = states(''binary_sensor.m_contact_sensor_door'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}grey{% elif v == ''on'' %}red{% else %}green{% endif %}'
       entity: binary_sensor.m_contact_sensor_door
@@ -2205,7 +2212,7 @@ views:
         action: more-info
     - type: custom:mushroom-template-card
       primary: Back Door
-      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set v = states(''binary_sensor.b_contact_sensor_door'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}{{ ''传感器离线'' if cn else ''Sensor offline'' }}{% else %}{{ ''Open'' if v == ''on'' else ''Closed'' }} • {{ relative_time(states.binary_sensor.b_contact_sensor_door.last_changed) }}{% endif %}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set v = states(''binary_sensor.b_contact_sensor_door'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}{{ ''传感器离线'' if cn else ''Sensor offline'' }}{% else %}{{ (''开启'' if cn else ''Open'') if v == ''on'' else (''关闭'' if cn else ''Closed'') }} • {{ relative_time(states.binary_sensor.b_contact_sensor_door.last_changed) }}{% endif %}'
       icon: '{{ ''mdi:door-open'' if is_state(''binary_sensor.b_contact_sensor_door'',''on'') else ''mdi:door-closed'' }}'
       icon_color: '{% set v = states(''binary_sensor.b_contact_sensor_door'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}grey{% elif v == ''on'' %}red{% else %}green{% endif %}'
       entity: binary_sensor.b_contact_sensor_door
@@ -3019,12 +3026,18 @@ views:
           }} on'
       - type: template
         icon: mdi:motion-sensor
-        icon_color: '{{ ''amber'' if is_state(''binary_sensor.living_room_living_hue_hue_sensor_motion'',''on'')
-          or is_state(''binary_sensor.bedroom_motion_sensor_motion'',''on'') else
-          ''grey'' }}'
-        content: '{{ ''Motion'' if is_state(''binary_sensor.living_room_living_hue_hue_sensor_motion'',''on'')
-          or is_state(''binary_sensor.bedroom_motion_sensor_motion'',''on'') else
-          ''Quiet'' }}'
+        icon_color: '{% set a = states(''binary_sensor.living_room_living_hue_hue_sensor_motion'')
+          %}{% set b = states(''binary_sensor.bedroom_motion_sensor_motion'') %}{%
+          set bad = [''unavailable'', ''unknown'', ''none''] %}{% if a in bad and
+          b in bad %}grey{% elif a == ''on'' or b == ''on'' %}amber{% else %}grey{%
+          endif %}'
+        content: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'')
+          %}{% set a = states(''binary_sensor.living_room_living_hue_hue_sensor_motion'')
+          %}{% set b = states(''binary_sensor.bedroom_motion_sensor_motion'') %}{%
+          set bad = [''unavailable'', ''unknown'', ''none''] %}{% if a in bad and
+          b in bad %}{{ ''传感器离线'' if cn else ''Sensor offline'' }}{% elif a == ''on''
+          or b == ''on'' %}{{ ''侦测到移动'' if cn else ''Motion'' }}{% else %}{{ ''安静''
+          if cn else ''Quiet'' }}{% endif %}'
       - type: template
         icon: mdi:weather-partly-cloudy
         entity: weather.forecast_home
