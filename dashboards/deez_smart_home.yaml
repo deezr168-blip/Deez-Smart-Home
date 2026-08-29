@@ -722,16 +722,6 @@ views:
     - type: heading
       heading: Entertainment
       icon: mdi:television
-    - type: custom:mushroom-media-player-card
-      entity: media_player.55_qled_4k_ai
-      name: Parents Samsung TV
-      use_media_info: true
-      show_volume_level: true
-      collapsible_controls: true
-      icon: ''
-      primary_info: name
-      media_controls:
-      - on_off
     - type: media-control
       entity: media_player.55_qled_4k_ai
   - type: grid
@@ -955,12 +945,6 @@ views:
     - type: heading
       heading: Entertainment
       icon: mdi:television
-    - type: custom:mushroom-media-player-card
-      entity: media_player.pogo
-      name: Pogo
-      use_media_info: true
-      show_volume_level: true
-      collapsible_controls: true
     - type: media-control
       entity: media_player.pogo
   - type: grid

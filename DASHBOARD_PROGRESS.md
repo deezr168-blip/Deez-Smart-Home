@@ -32,6 +32,24 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 
 ## Batches
 
+### `__SHA__` — two media players stop being controlled twice (UI-013)
+Area: `parents-room`, `guest-room`. Purpose: each stacked a Mushroom media
+card directly above a native `media-control` for the same player. Checked
+rather than assumed before removing anything: the native card carries
+artwork, transport, volume and a power button, so it is a strict superset of
+what each Mushroom card offered — `media_controls: [on_off]` on the Parents
+TV, media info plus volume on Pogo. Removing them costs no control.
+Deliberately not touched, because there the second card is not a duplicate:
+  - the four Mushroom media cards in living-room, dining and media are the
+    only card for their player;
+  - the parents-room climate pair, where the compact Mushroom card is one
+    half of a 2-up "Temperature | Lights" summary row and the thermostat
+    below is the detailed control. Removing the compact card would leave a
+    heading with nothing under it.
+Validated: 264 templates, 36/36 links, 0 broken, no entity loss.
+Expect: both rooms lose a redundant player card; every media player still has
+a full control card.
+
 ### `9b28fdb` — the last nested grids are gone (UI-016)
 Area: `bills` (2), `light-living-room` (1), `lighting-modes` (1). Purpose:
 finishes a thread running through this whole branch. A `grid` card nested in
