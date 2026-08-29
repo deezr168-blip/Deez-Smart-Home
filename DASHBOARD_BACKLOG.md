@@ -17,39 +17,21 @@ area · objective · state · dependencies/blockers · verification requirement.
 
 ## Active queue
 
-Ordered by priority, then by ID. Priority definitions and selection rules are
-in `PROJECT_STATE.md`.
+Priority first, then Selection Score within a priority. Scores are a
+tie-breaker, not a ranking of worth — see `PROJECT_STATE.md` for the scales,
+the formula and the safeguards.
+
+| ID | P | Owner | Area | I | E | R | Score | State |
+|---|---|---|---|---|---|---|---|---|
+| `BILL-001` | P1 | Billing | `bill-electricity`, `bill-gas` | 5 | 3 | 3 | **4** | actionable |
+| `UI-011` | P1 | Main | `energy` | — | — | — | — | `LIVE_VERIFICATION_REQUIRED` — excluded |
+| `UI-027` | P2 | Main | 52 heading cards + theme | 4 | 2 | 3 | **3** | actionable |
+| `BILL-002` | P2 | Billing | `bills` + six subviews | 4 | 4 | 3 | **1** | actionable |
+| `BILL-003` | P2 | Billing | ingestion architecture | 4 | 5 | 4 | **−1** | blocked on `BILL-001` |
+| `BILING-RESID` | P3 | Main | 3 views | 2 | 1 | 1 | **2** | actionable |
+| `DR-001` | P3 | Main | `ipad-command-center` | 3 | 4 | 4 | **−2** | actionable |
 
 ### P1 — High
-
-#### `REG-002` — false-safe motion chips
-- **Owner:** Main CasaRay Upgrade
-- **Area:** `lights` quick-status chip (~L3020-3027), `cameras` quick-status
-  chip (~L1611-1620)
-- **Objective:** add an `unavailable / unknown / none` branch ahead of the
-  `select('eq','on') | count > 0` test, and make the text bilingual.
-- **State:** `PLANNED` — actionable
-- **Blockers:** none
-- **Verification:** live look at both chips with the watched motion sensors
-  unavailable; must not read "Quiet".
-- **Notes:** highest-severity open item. Both chips currently report a
-  confident "Quiet" when *every* watched sensor is unavailable — the
-  reassuring-false-state anti-pattern `CLAUDE.md` prohibits and the shared
-  root cause of UI-002/005/006/008/018/020. Predates tracked history; not
-  introduced by any recent batch.
-
-#### `REG-003` — Network nav chip has no unavailable branch
-- **Owner:** Main CasaRay Upgrade
-- **Area:** `home` — Network nav chip (~L547-548)
-- **Objective:** add a third grey branch for unavailable/unknown, mirroring
-  the treatment `a5dc914` applied to the `network` view.
-- **State:** `PLANNED` — actionable
-- **Blockers:** none
-- **Verification:** live look with `binary_sensor.eero_wan_status` unavailable;
-  must not read confident red.
-- **Notes:** same class as REG-002, narrower blast radius (one chip, colour
-  only). `a5dc914` fixed the `network` view and missed this duplicate summary
-  chip on `home`.
 
 #### `BILL-001` — billing privacy remediation
 - **Owner:** Billing Dashboard Upgrade
@@ -57,31 +39,34 @@ in `PROJECT_STATE.md`.
 - **Objective:** remove the hardcoded account numbers, NMI and MIRN from the
   two markdown cards so they are not carried in Git.
 - **State:** `PLANNED` — actionable
+- **Score:** Impact 5 · Effort 3 · Risk 3 → **4**
 - **Blockers:** owner decision on whether the *live card* should still display
   these identifiers. Repository removal is safe either way; if the card must
   keep showing them, source them from a helper or `secrets.yaml` rather than
   a literal.
 - **Verification:** secret scan clean, plus a live look at both bill subviews
   to confirm nothing reads empty.
-- **Notes:** the earlier sanitisation (`a084482`) was **not** deliberately
-  reversed — it was lost when `921315e` re-imported the owner's authoritative
-  live export wholesale. Re-sanitising is therefore consistent with prior
-  intent, not a reversal of an owner decision. Three further `name: Account
-  number` strings (`bill-electricity`, `bill-gas`, `bill-water`) are form-field
-  labels carrying no value and are **not** part of this item.
+- **Notes:** Impact 5 is the privacy band and is **not** reduced by the effort
+  of remediation (scoring safeguard 7), nor is the item demoted from P1 for
+  implementation cost. It is Billing's only actionable P1, so the score does
+  not affect selection here. The earlier sanitisation (`a084482`) was not
+  deliberately reversed; `921315e` re-imported the owner's authoritative live
+  export wholesale and the literals came back with it. Three further
+  `name: Account number` strings are form-field labels carrying no value and
+  are not part of this item.
 
 #### `UI-011` — Total Solar unit assumption
 - **Owner:** Main CasaRay Upgrade
 - **Area:** `energy` — Total Solar
 - **Objective:** confirm the Wh→kWh conversion applied in `df457e3` matches
   what the Fronius total actually reports.
-- **State:** `LIVE_VERIFICATION_REQUIRED` — **not actionable in the repository**
-- **Blockers:** needs one look at the live card by the owner. Nothing to
-  implement until then.
+- **State:** `LIVE_VERIFICATION_REQUIRED` — **excluded from autonomous
+  selection** (scoring safeguard 3); deliberately not scored.
+- **Blockers:** needs one look at the live card by the owner.
 - **Verification:** owner reads the live Total Solar figure and compares it to
   its two sibling Primo sensors.
 - **Notes:** if the Fronius total reports kWh directly, the figure reads 1000×
-  low. Per queue rule 4 this item does not block lower-priority work.
+  low. Per queue rule 4 this does not gate lower-priority work.
 
 ### P2 — Improvement
 
@@ -92,11 +77,15 @@ in `PROJECT_STATE.md`.
   so section labels stay legible over the bright horizon band of the
   background photograph.
 - **State:** `PLANNED` — actionable
+- **Score:** Impact 4 · Effort 2 · Risk 3 → **3**
 - **Blockers:** none to implement; confirming the result needs a live look.
 - **Verification:** live look at a view whose headings sit over the bright band.
-- **Notes:** theme-level per the global-first design rule — not 52 `card_mod`
-  blocks. The 69 title and chip cards were already fixed in the dashboard.
-  Priority is arguable: see the open question in `PROJECT_STATE.md`.
+- **Notes:** Risk 3 because a theme rule reaches every view and card type —
+  broad blast radius despite small effort. Implementing it as a theme rule
+  (global-first) also keeps it clear of the Active Change Window `b5eee22`
+  opened on four view templates. Priority stays P2 on repository evidence; the
+  accessibility argument for P1 is an open question recorded in
+  `PROJECT_STATE.md` and is not settled by scoring.
 
 #### `BILL-002` — bill history and analytics
 - **Owner:** Billing Dashboard Upgrade
@@ -104,39 +93,49 @@ in `PROJECT_STATE.md`.
 - **Objective:** bill history and analytics supporting the parent-friendly
   workflow — global priority 3.
 - **State:** `PLANNED` — scope not yet written
+- **Score:** Impact 4 · Effort 4 · Risk 3 → **1**
 - **Blockers:** bill sensors (`sensor.bills_unpaid_count`,
   `sensor.bills_outstanding_total`) are not exposed to Assist and cannot be
   read from this environment, so figures cannot be confirmed here.
 - **Verification:** live look; figures confirmed by the owner.
+- **Notes:** Effort 4 is honest for unwritten scope — revise it down once the
+  scope is written and proves smaller (scoring safeguard 9).
 
 #### `BILL-003` — automatic utility-bill ingestion
 - **Owner:** Billing Dashboard Upgrade
 - **Area:** ingestion architecture; billing-supporting repository files
 - **Objective:** design, then implement, automatic utility-bill ingestion —
   global priority 4.
-- **State:** `PLANNED` — design stage
-- **Blockers:** depends on BILL-001 landing first (do not build ingestion on
-  top of an unresolved privacy exposure). External account actions, bill
-  payment and email sending are protected and out of scope.
+- **State:** `PLANNED` — design stage; blocked
+- **Score:** Impact 4 · Effort 5 · Risk 4 → **−1**
+- **Blockers:** depends on `BILL-001` landing first — do not build ingestion
+  over an unresolved privacy exposure. External account actions, bill payment
+  and email sending are protected and out of scope.
 - **Verification:** design reviewed by the owner before implementation.
+- **Notes:** a negative score is not a deletion signal (safeguard 5). This is
+  global priority 4 and stays queued; the score only says it should not be
+  picked ahead of `BILL-002` at the same priority.
 
 ### P3 — Polish
 
-#### `BILING-RESID` — residual bilingual gaps (REG-001, REG-004, REG-005, REG-006)
+#### `BILING-RESID` — residual bilingual gaps (REG-004, REG-005, REG-006)
 - **Owner:** Main CasaRay Upgrade
-- **Area:** `security` three door cards (~L2192/2200/2208); `people-locations`
-  (~L2872); `ipad-command-center` WAN chip (~L3662); `home` Energy tile
-  (~L450)
-- **Objective:** wrap the four remaining bare-English fragments the way the
+- **Area:** `people-locations` (~L2872); `ipad-command-center` WAN chip
+  (~L3662); `home` Energy tile (~L450)
+- **Objective:** wrap the three remaining bare-English fragments the way the
   rest of the file already does.
 - **State:** `PLANNED` — actionable
-- **Blockers:** none
+- **Score:** Impact 2 · Effort 1 · Risk 1 → **2**
+- **Blockers:** none. `home` sits inside the Active Change Window opened by
+  `b5eee22`; as owner of this bilingual sequence Main may continue under
+  Recent Change Protection rule 5, but this is P3 and ranks below `UI-027`
+  anyway, so the question does not currently bite.
 - **Verification:** live look with the language toggle on.
-- **Notes:** grouped because they are one continuation of the UI-012 →
-  UI-028 → UI-029 sequence, not four independent defects. Individual REG IDs
-  and their per-finding evidence stay in `DASHBOARD_ISSUES.md`; REG-005 may
-  instead be closed as intentional if the owner confirms an untranslated dash
-  is wanted.
+- **Notes:** REG-001 was part of this group and is now fixed in `b5eee22`, so
+  the group is REG-004/005/006. **REG-005 stays unresolved by design** —
+  whether the untranslated `WAN —` placeholder is intentional is an open owner
+  question, not a scoring matter. Per-finding evidence stays in
+  `DASHBOARD_ISSUES.md`.
 
 #### `DR-001` — iPad Command Center density
 - **Owner:** Main CasaRay Upgrade (raised by CasaRay Design Reviewer)
@@ -144,12 +143,13 @@ in `PROJECT_STATE.md`.
 - **Objective:** review information density — 52 cards, never reviewed end to
   end for hierarchy.
 - **State:** `PLANNED` — advisory item, no implementation agreed
-- **Blockers:** should follow the P1/P2 items above; respects Active Change
-  Windows per queue rule 8.
+- **Score:** Impact 3 · Effort 4 · Risk 4 → **−2**
+- **Blockers:** respects Active Change Windows per queue rule 8.
 - **Verification:** design review, then a live look on the iPad itself.
-- **Notes:** the structural complaints from UI-015 (nested grids, duplicated
-  camera chip row) are already fixed by `99a77b4` and `9b28fdb`. What remains
-  is a hierarchy question, not a defect.
+- **Notes:** Risk 4 because the view was rebuilt recently (`99a77b4`) and a
+  hierarchy rework would touch all four of its sections. The structural
+  defects from UI-015 are already fixed; what remains is a judgment question —
+  exactly the kind of item a score should not be used to settle.
 
 ---
 
@@ -166,6 +166,7 @@ active queue work** — no routine should re-implement these. Full records in
 | Guarded fallbacks / false-state removal | UI-002, UI-005, UI-006, UI-008, UI-018, UI-020, UI-022 | `a5dc914` |
 | Layout: nested grids dissolved, duplicate controls removed | UI-013, UI-014, UI-015, UI-016, UI-019, UI-021 | `9b28fdb` |
 | Presentation and placeholders | UI-007, UI-010, UI-023, UI-024 | `3048e54` |
+| Reassuring / untranslated status regressions | REG-001, REG-002, REG-003 | `b5eee22` |
 
 Verified by the owner and closed: UI-025, UI-026.
 
@@ -180,3 +181,5 @@ Verified by the owner and closed: UI-025, UI-026.
   the evidence and status from both — do not delete the losing entry's history.
 - Move completed work out of the active queue in the same commit that
   completes it.
+- Re-score an item when repository evidence changes its expected scope
+  (scoring safeguard 9). Never adjust a score to justify preferred work.

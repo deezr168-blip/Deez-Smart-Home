@@ -101,6 +101,50 @@ authorized:
     priority · owning routine · affected area · concise objective · current
     state · dependencies/blockers · verification requirement.
 
+### Impact / Effort / Risk scoring
+
+A lightweight tie-breaker for choosing between several actionable items at the
+same priority owned by the same routine. It is not a substitute for
+engineering judgment and never reorders anything above itself.
+
+**Authoritative ordering: ownership → P0/P1/P2/P3 priority → actionability →
+Selection Score.**
+
+**Impact** — 5 major whole-dashboard, safety/privacy, core workflow or
+frequently used UX · 4 substantial improvement to an important view or
+workflow · 3 meaningful localized improvement · 2 minor improvement ·
+1 negligible or cosmetic benefit.
+
+**Effort** — 1 very small local change · 2 small contained change ·
+3 moderate multi-card or multi-file work · 4 substantial implementation ·
+5 major architecture or broad redesign.
+
+**Risk** — 1 highly isolated and easily reversible · 2 low risk · 3 moderate
+regression potential · 4 high interaction or regression potential ·
+5 protected, core or high-risk change.
+
+**Selection Score = (Impact × 2) − Effort − Risk.**
+
+Safeguards:
+
+1. Priority always outranks Selection Score. A high-scoring P2/P3 item never
+   jumps ahead of an actionable P0/P1 item owned by the same routine.
+2. Ownership always outranks Selection Score.
+3. `BLOCKED` and purely `LIVE_VERIFICATION_REQUIRED` items are excluded from
+   autonomous implementation selection, and need not be scored.
+4. Recent Change Protection and Active Change Windows still apply.
+5. A low or negative score never means delete the item — it only affects
+   ordering within its priority.
+6. P0 work is handled on urgency and correctness, not score optimization.
+7. Security, privacy and data-loss problems must not be down-ranked because
+   remediation is difficult. Effort and Risk describe the work; they never
+   reduce Impact.
+8. Do not inflate Impact or deflate Effort/Risk to justify preferred work.
+9. Re-score when repository evidence changes the expected scope.
+10. On an equal score at the same priority, prefer: an existing regression
+    over a speculative enhancement · then the smaller blast radius · then work
+    that unblocks other queued work · then the older actionable item.
+
 ---
 
 ## Verification States
@@ -188,7 +232,8 @@ writer's entry. All times UTC.
 |---|---|---|---|---|---|
 | Bilingual template pass (status text across all 36 views) | Main CasaRay Upgrade | `f04a59f` — 2026-08-29 20:51 | `LIVE_VERIFICATION_REQUIRED` | 2026-08-30 02:51 | Third and final batch of one sequence (`f4e7ec3`, `fa286de`, `f04a59f`). Continuation by Main is permitted under rule 5; REG-001/004/005/006 are in-sequence fixes, not a redesign. |
 | Regression audit record (`DASHBOARD_ISSUES.md`) | Regression Auditor | `3116495` — 2026-08-29 22:49 | `PUSHED` | 2026-08-30 04:49 | Baseline REG-001..006 is fresh — do not re-audit the same range. Findings are queued for Main; the auditor does not implement them. |
-| Coordination state (`PROJECT_STATE.md`, `DASHBOARD_BACKLOG.md`) | Shared — writer routines update their own rows and items | `ecc8af7` — 2026-08-29 23:35 | `PUSHED` | 2026-08-30 05:35 | Structure is settled. Routines append to their own sections, rows and backlog items rather than restructuring the files. |
+| Status-guard fixes (`security`, `lights`, `cameras`, `home` templates) | Main CasaRay Upgrade | `b5eee22` — 2026-08-29 23:37 | `LIVE_VERIFICATION_REQUIRED` | 2026-08-30 05:37 | Closes REG-001/002/003. Continuation of the same guard/bilingual sequence is Main's under RCP rule 5; other routines let it settle. |
+| Coordination state (`PROJECT_STATE.md`, `DASHBOARD_BACKLOG.md`) | Shared — writer routines update their own rows and items | `STAMPSHA` — 2026-08-29 23:40 | `PUSHED` | 2026-08-30 05:40 | Structure is settled. Routines append to their own sections, rows and backlog items rather than restructuring the files. |
 | Back / previous-page navigation (all views) | Billing Dashboard Upgrade (approved global pattern) | `34a92e7` — 2026-08-28 19:44 | `LIVE_VERIFICATION_REQUIRED` | expired 2026-08-29 01:44 | Protection expired, but implementation is **complete**: 35/36 views carry a parent-targeted `mdi:arrow-left` chip, `home` is root. Priority 1 needs a live look, not a redesign — rule 9 applies. |
 
 ---
@@ -199,20 +244,23 @@ Coordination pointer to each writer's current highest actionable item — not a
 duplicate backlog. Full items live in `DASHBOARD_BACKLOG.md`. Advisory
 routines may update a pointer when evidence changes priority or status;
 ownership stays with the writer. Writers refresh their own pointer after
-completing work.
+completing work. Within a priority, ties are broken by Selection Score; the
+score never changes which priority is selected.
 
 | Routine | Item | Priority | State | Reason Selected |
 |---|---|---|---|---|
-| Main CasaRay Upgrade | `REG-002` — false-safe motion chips on `lights` and `cameras` | P1 | `PLANNED` — actionable | Highest actionable Main-owned item. Both chips read a confident "Quiet" when every watched sensor is unavailable, which is incorrect state presentation with concrete evidence, so queue rule 7 permits proceeding inside the open bilingual window; the chips were untouched by that pass. `UI-011` is also P1 but purely `LIVE_VERIFICATION_REQUIRED` (rule 4). `BILL-001` is P1 and outranks Main's P2 work, but is Billing-owned — rule 9 leaves it alone. |
-| Billing Dashboard Upgrade | `BILL-001` — remove hardcoded account / NMI / MIRN from `bill-electricity` and `bill-gas` | P1 | `PLANNED` — actionable | Highest actionable Billing-owned item, and named explicitly in the P1 class. Blocks `BILL-003`: ingestion should not be built over an unresolved privacy exposure. Repository removal is safe now; only the question of what the live card displays needs the owner. |
+| Main CasaRay Upgrade | `UI-027` — heading-card contrast, as a theme rule | P2 | `PLANNED` — actionable | `REG-002` and `REG-003` were implemented in `b5eee22` and are now awaiting live verification, so Main has no actionable P1 left: `UI-011` is P1 but purely `LIVE_VERIFICATION_REQUIRED` (rule 4), and `BILL-001` is Billing-owned (rule 9). `UI-027` is Main's only actionable P2 and outranks both P3 items on priority, so its score 3 is not what selected it. Doing it global-first as a theme rule keeps it clear of the window `b5eee22` opened. |
+| Billing Dashboard Upgrade | `BILL-001` — remove hardcoded account / NMI / MIRN from `bill-electricity` and `bill-gas` | P1 | `PLANNED` — actionable | Highest actionable Billing-owned item, and named explicitly in the P1 class. Blocks `BILL-003`: ingestion should not be built over an unresolved privacy exposure. Repository removal is safe now; only the question of what the live card displays needs the owner. Unchanged by scoring — it is Billing's only actionable P1 (score 4). |
 
 ---
 
 ## Current Work / Blockers
 
 ### Main (CasaRay Upgrade)
-- Queue: `REG-002` (P1) → `REG-003` (P1) → `UI-027` (P2) → `BILING-RESID`
-  (P3) → `DR-001` (P3). Detail in `DASHBOARD_BACKLOG.md`.
+- Queue: `UI-027` (P2, score 3) → `BILING-RESID` (P3, score 2) → `DR-001`
+  (P3, score −2). Detail in `DASHBOARD_BACKLOG.md`.
+- `REG-001`, `REG-002` and `REG-003` were implemented in `b5eee22` and are
+  `LIVE_VERIFICATION_REQUIRED`. Main has no actionable P1 remaining.
 - Back-navigation pattern is implemented in the repository: 35 of 36 views
   carry a parent-targeted `mdi:arrow-left` chip; `home` is the root and
   correctly has none. Remaining work on priority 1 is live verification, not
@@ -222,6 +270,9 @@ completing work.
   `LIVE_VERIFICATION_REQUIRED`.
 - `UI-011` is P1 but purely `LIVE_VERIFICATION_REQUIRED` — blocked on one
   owner look, not on code, and per queue rule 4 it does not gate the rest.
+- Live-verification debt is now six batches deep (UI-012/028/029, the
+  navigation and guard passes, and `b5eee22`). Nothing in this environment can
+  clear it; per queue rule 5 implementation continues regardless.
 
 ### Billing
 - Six bill subviews (`bill-electricity`, `-gas`, `-car-insurance`, `-water`,
@@ -247,10 +298,11 @@ completing work.
   Network chip with no unavailable branch. REG-002 is the P0-adjacent one —
   it shows false-safe state.
 - REG-004/005/006 LOW: three residual untranslated fragments.
-- Queued as backlog items: REG-002 and REG-003 as standalone P1s;
-  REG-001/004/005/006 merged into `BILING-RESID` (P3) as one continuation of
-  the UI-012 → UI-028 → UI-029 sequence. Per-finding evidence stays in
-  `DASHBOARD_ISSUES.md`.
+- REG-001, REG-002 and REG-003 are fixed in `b5eee22` and awaiting live
+  verification. `BILING-RESID` (P3) now covers REG-004/005/006 only.
+  Per-finding evidence stays in `DASHBOARD_ISSUES.md`.
+- REG-005 remains an open owner question — whether the untranslated `WAN —`
+  placeholder is intentional is deliberately not decided.
 - Auditor is advisory: these are queued for Main, not for the auditor to fix.
 
 ### Entity Scout
@@ -271,12 +323,12 @@ completing work.
 
 ## Last Coordination Update
 
-- **Date/time:** 2026-08-29 23:35 UTC
+- **Date/time:** 2026-08-29 23:40 UTC
 - **Branch:** `ha-deploy`
-- **`ha-deploy` HEAD before this update:** `6741ab885d67f4f104a20ce65e1bb859d07f378b`
-  (`6741ab8` — "docs: stamp 07d3ff2 into the coordination state")
-- **This update's commit:** `ecc8af7` — priority model, queue-selection
-  rules, Next Actionable Work, and `DASHBOARD_BACKLOG.md`.
+- **`ha-deploy` HEAD before this update:** `6c3fff5` (merge of `b5eee22` —
+  "fix(ha): three reassuring/untranslated status regressions")
+- **This update's commit:** `STAMPSHA` — Impact/Effort/Risk scoring, and
+  reconciliation against `b5eee22`.
 
 Per `CLAUDE.md`, a commit cannot contain its own hash: this update's SHA is
 written by the `docs: stamp` commit that immediately follows it.
