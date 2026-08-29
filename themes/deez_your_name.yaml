@@ -1,0 +1,145 @@
+# Deez Smart Home — CasaRay × Your Name
+#
+# One design system for all six dashboard themes. Colours are sampled from the
+# background image itself rather than invented: the midnight sky, the comet's
+# cyan core, the violet fragment beside it, the amber horizon glow and the warm
+# city lights along the water.
+#
+# INSTALL — see THEME_INSTALL.md. In short:
+#   1. cp the image to /config/www/your_name_night_sky.jpg
+#   2. cp this file to /config/themes/deez_your_name.yaml
+#   3. themes: !include_dir_merge_named themes  in configuration.yaml
+#   4. Restart Home Assistant (a first-time www/ folder needs a restart before
+#      /local/ resolves — this is the usual cause of a 404 here)
+#
+# Every anchored value below is shared; each theme then sets only its accent.
+
+# ---------------------------------------------------------------- palette ---
+# sky        #0b1524  deepest night, top of frame
+# navy       #101f36  midnight base
+# steel      #1b2f4d  cloud shadow
+# haze       #2c4568  cloud midtone
+# comet      #7fd4f0  comet core, primary accent
+# comet-dim  #3f9cc4  comet trail
+# violet     #b078d8  the magenta fragment
+# ember      #f0a860  horizon glow
+# citylight  #ffc98a  warm lights on the far shore
+# warm-white #eef3f9  starlight, primary text
+# muted      #9fb0c6  secondary text
+
+deez_base: &deez_base
+  # --- surfaces: frosted glass over the sky, never opaque -------------------
+  ha-card-background: "rgba(16, 31, 54, 0.52)"
+  card-background-color: "rgba(16, 31, 54, 0.52)"
+  ha-card-border-radius: "18px"
+  ha-card-border-width: "1px"
+  ha-card-border-color: "rgba(150, 200, 240, 0.16)"
+  ha-card-box-shadow: "none"
+  mini-media-player-base-color: "rgba(238, 243, 249, 0.9)"
+
+  # --- backgrounds ----------------------------------------------------------
+  # A restrained two-stop scrim keeps text legible over the bright horizon and
+  # city lights WITHOUT flattening the comet, stars or clouds: 40% at the top,
+  # only 15% across the middle band where the comet sits, 60% at the base where
+  # the cards land.
+  lovelace-background: >-
+    linear-gradient(180deg, rgba(8, 16, 30, 0.40) 0%, rgba(8, 16, 30, 0.15) 45%,
+    rgba(8, 16, 30, 0.60) 100%),
+    url('/local/your_name_night_sky.jpg') center center / cover no-repeat fixed
+  primary-background-color: "#0b1524"
+  secondary-background-color: "#101f36"
+  divider-color: "rgba(150, 200, 240, 0.12)"
+
+  # --- header: dissolved, the sky reads straight through --------------------
+  app-header-background-color: "transparent"
+  app-header-text-color: "#eef3f9"
+  app-header-edit-background-color: "#101f36"
+
+  # --- typography: warm white, softer secondary -----------------------------
+  primary-text-color: "#eef3f9"
+  secondary-text-color: "#9fb0c6"
+  text-primary-color: "#eef3f9"
+  disabled-text-color: "rgba(159, 176, 198, 0.55)"
+
+  # --- state ----------------------------------------------------------------
+  # Amber is reserved for genuinely active devices. Everything idle stays cool
+  # and understated so "on" is the thing that draws the eye.
+  state-icon-color: "#9fb0c6"
+  state-icon-active-color: "#ffc98a"
+  state-on-color: "#ffc98a"
+  state-off-color: "#6a7c93"
+  paper-item-icon-color: "#9fb0c6"
+  paper-item-icon-active-color: "#ffc98a"
+
+  # --- controls -------------------------------------------------------------
+  switch-checked-color: "#7fd4f0"
+  switch-unchecked-button-color: "#6a7c93"
+  slider-color: "#7fd4f0"
+  slider-secondary-color: "#3f9cc4"
+  slider-track-color: "rgba(150, 200, 240, 0.18)"
+  sidebar-selected-icon-color: "#7fd4f0"
+
+  # --- Mushroom colour ramp, retuned to the image ---------------------------
+  mush-rgb-blue: "111, 180, 232"
+  mush-rgb-cyan: "127, 212, 240"
+  mush-rgb-purple: "176, 120, 216"
+  mush-rgb-indigo: "132, 148, 224"
+  mush-rgb-amber: "255, 201, 138"
+  mush-rgb-orange: "240, 168, 96"
+  mush-rgb-green: "126, 214, 176"
+  mush-rgb-red: "240, 122, 122"
+  mush-rgb-grey: "159, 176, 198"
+  mush-rgb-disabled: "106, 124, 147"
+
+  # --- one global card treatment, so every future card inherits it ----------
+  # This is why the dashboard does not need a card_mod block per card. The
+  # blur is the frosted-glass effect; the border does the work a heavy shadow
+  # used to do. Browsers without backdrop-filter fall back to the translucent
+  # background alone, which still reads correctly.
+  card-mod-theme: deez_your_name
+  card-mod-card: |
+    ha-card {
+      backdrop-filter: blur(14px) saturate(118%);
+      -webkit-backdrop-filter: blur(14px) saturate(118%);
+      transition: border-color 220ms ease, background 220ms ease;
+    }
+  card-mod-root: |
+    .header, app-toolbar {
+      background: transparent !important;
+    }
+
+"Deez Smart Home":
+  <<: *deez_base
+  primary-color: "#7fd4f0"
+  accent-color: "#ffc98a"
+  label-badge-background-color: "rgba(16, 31, 54, 0.6)"
+
+"Deez Cameras":
+  <<: *deez_base
+  primary-color: "#6fb4e8"
+  accent-color: "#7fd4f0"
+  ha-card-border-color: "rgba(127, 212, 240, 0.20)"
+
+"Deez Climate":
+  <<: *deez_base
+  primary-color: "#5ec8e8"
+  accent-color: "#7fd4f0"
+  ha-card-border-color: "rgba(94, 200, 232, 0.20)"
+
+"Deez Energy":
+  <<: *deez_base
+  primary-color: "#f0a860"
+  accent-color: "#ffc98a"
+  ha-card-border-color: "rgba(240, 168, 96, 0.20)"
+
+"Deez Lighting":
+  <<: *deez_base
+  primary-color: "#ffc98a"
+  accent-color: "#f0a860"
+  ha-card-border-color: "rgba(255, 201, 138, 0.20)"
+
+"Deez Security":
+  <<: *deez_base
+  primary-color: "#b078d8"
+  accent-color: "#7fd4f0"
+  ha-card-border-color: "rgba(176, 120, 216, 0.20)"

@@ -67,7 +67,21 @@ build if one appears.
 
 ## Design direction
 
-Native-looking Home Assistant, CasaRay-adjacent: calm, minimal, Apple-like.
+**CasaRay × Your Name.** Cinematic, calm, premium, midnight-blue, slightly
+translucent, and still native to Home Assistant. The background is the Your
+Name night-sky frame at `/local/your_name_night_sky.jpg`, fixed and covering
+the viewport; the palette is sampled from that image (see
+`themes/deez_your_name.yaml`). Cards are frosted glass over the sky —
+translucent, light-bordered, no heavy shadows.
+
+Global first: put surface treatment in the theme so future cards inherit it,
+rather than adding a `card_mod` block per card. Reach for a native Tile or
+Section treatment before custom CSS.
+
+**iPad landscape renders about two usable columns.** Design for two,
+whatever `max_columns` says. Do not cram four narrow columns onto the iPad.
+
+Still true from the previous direction: calm, minimal, Apple-like.
 Sections layout with `grid_options`, not nested `grid` cards. One `heading`
 card per section; the single `mushroom-title-card` is the page title and
 comes first. Restrained amber for active state. Consistent 18px radius glass

@@ -59,10 +59,24 @@ for tag in HA_TAGS:
     HALoader.add_constructor(tag, _opaque)
 
 
+MERGE_TAG = "tag:yaml.org,2002:merge"
+
+
 def _no_duplicates(loader, node, deep=False):
+    """Build a mapping, rejecting keys written twice in the same block.
+
+    Duplicate detection runs over the keys literally present in this mapping,
+    BEFORE merge keys are flattened. That ordering matters: `<<: *anchor` is
+    valid YAML that Home Assistant supports and community themes rely on, and
+    flatten_mapping prepends the anchor's pairs to node.value. Checking after
+    the flatten would report every deliberate override of an inherited value
+    as a duplicate — e.g. a theme that inherits a base and then sets its own
+    accent colour.
+    """
     seen = set()
-    mapping = {}
-    for key_node, value_node in node.value:
+    for key_node, _ in node.value:
+        if key_node.tag == MERGE_TAG:
+            continue
         key = loader.construct_object(key_node, deep=deep)
         try:
             duplicate = key in seen
@@ -76,6 +90,19 @@ def _no_duplicates(loader, node, deep=False):
                 f"duplicate key {key!r}"
             )
         seen.add(key)
+
+    # Resolve `<<` into node.value. PyYAML places inherited pairs first, so
+    # iterating in order below gives explicit keys the final say, which is
+    # correct merge semantics.
+    loader.flatten_mapping(node)
+
+    mapping = {}
+    for key_node, value_node in node.value:
+        key = loader.construct_object(key_node, deep=deep)
+        try:
+            hash(key)
+        except TypeError:
+            key = str(key)
         mapping[key] = loader.construct_object(value_node, deep=deep)
     return mapping
 

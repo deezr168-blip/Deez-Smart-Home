@@ -31,6 +31,7 @@ navigation · **S3** layout or readability · **S4** polish.
 | UI-011 | S3 | `energy` — Total Solar | Converted Wh→kWh to match its two sibling Primo sensors (`energy_day`, `energy_year`). If the Fronius total reports kWh directly the figure reads 1000× low. Needs one look at the live card. First seen `df457e3`. | OPEN |
 | UI-012 | S4 | 33 of 36 views | English-only while Home, Cameras and Lighting Studio respond to `input_boolean.chinese_dashboard`. Switching to Chinese leaves most of the dashboard in English. | OPEN |
 | UI-013 | S4 | `parents-room`, `guest-room` | Each stacks a Mushroom media card **and** a native `media-control` for the same player. Reads as a deliberate compact-plus-full pairing, so not changed. Confirm intent. | OPEN |
+| UI-025 | S2 | theme / background asset | The Your Name background and the six-theme file cannot be installed from this environment — no `/config`, no route to the instance. Until the image is at `/config/www/your_name_night_sky.jpg` and the theme at `/config/themes/`, the retheme is invisible. `THEME_INSTALL.md` lists the 404/401 causes in the order they occur; the usual one is that `/local/` is registered at startup, so a `www/` folder created afterwards needs a restart. | OPEN |
 | UI-015 | S4 | `ipad-command-center` | 52 cards, never reviewed. Nested 3-column grid inside a third-width section; no page title card. | OPEN |
 | UI-016 | S4 | `bills` + six bill subviews | Nested 2-column grids; subviews never reviewed. | OPEN |
 

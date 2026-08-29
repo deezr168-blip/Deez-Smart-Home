@@ -17,18 +17,46 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 
 ## Next recommended priorities
 
-1. **UI-012** — bilingual gap: 33 of 36 views are English-only while Home,
+1. **UI-025** — install the background image and theme on the host, then
+   confirm `/local/your_name_night_sky.jpg` loads. Nothing else in this
+   direction is visible until that is done.
+2. Dashboard side of the retheme: view backgrounds, iPad two-column retune,
+   then retire the per-card glass `card_mod` so the theme surface shows.
+3. **UI-012** — bilingual gap: 33 of 36 views are English-only while Home,
    Cameras and Lighting Studio respond to the toggle.
-2. **UI-013** — Parents Room and Guest Room each stack a Mushroom media card
+4. **UI-013** — Parents Room and Guest Room each stack a Mushroom media card
    and a native `media-control` for the same player. Confirm intent first.
-3. iPad Command Center — 52 cards, never reviewed; nested 3-column grid in a
+5. iPad Command Center — 52 cards, never reviewed; nested 3-column grid in a
    third-width section.
-4. Bills — nested 2-column grids; six bill subviews unreviewed.
-5. **UI-011** — verify the Total Solar unit assumption against the live card.
+6. Bills — nested 2-column grids; six bill subviews unreviewed.
+7. **UI-011** — verify the Total Solar unit assumption against the live card.
 
 ---
 
 ## Batches
+
+### `__SHA__` — design target moves to CasaRay × Your Name (theme layer)
+Area: `themes/deez_your_name.yaml` (new), `THEME_INSTALL.md` (new),
+`scripts/yaml_check.py`. No dashboard file touched, so nothing in this batch
+can affect the live dashboard until the theme is installed by hand.
+Purpose: establish the palette and surface treatment as one design system
+rather than editing cards individually. One file defines all six themes the
+dashboard references, sharing a base via a YAML anchor and differing only in
+accent — cyan (comet), cool blue, teal, ember, warm gold, violet (the
+fragment). Colours are sampled from the image, not invented. The frosted
+glass is global: a `card-mod-theme` block in the theme gives every card the
+backdrop blur, so the ~100 per-card card_mod blocks in the dashboard become
+redundant and can be retired progressively.
+Background: `lovelace-background`, fixed / cover / centred / no-repeat, under
+a two-stop scrim that is 40% at the top, **15% across the middle band where
+the comet sits**, and 60% at the base where the cards land — legible without
+flattening the comet, stars or city lights.
+Validation gate fixed as part of this: the strict duplicate-key loader never
+called `flatten_mapping`, so it rejected `<<:` merge keys outright. It now
+resolves merges while still catching real duplicates, and checks BEFORE
+flattening so a deliberate override of an inherited value is not misreported.
+Negative-tested both ways.
+Expect: nothing, until `THEME_INSTALL.md` steps 1-2 are done on the host.
 
 ### `ae89134` — Cameras: one uniform grid, no camera listed three times
 Area: `cameras` view. Purpose: every camera appeared in up to three places at
