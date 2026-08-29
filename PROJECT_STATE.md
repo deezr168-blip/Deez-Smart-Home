@@ -268,7 +268,7 @@ recorded in `DASHBOARD_BACKLOG.md` or `DASHBOARD_ISSUES.md`.
 | Heading-card contrast (`themes/deez_your_name.yaml`) | Main | `9926233` — 08-29 23:42 | `LIVE_VERIFICATION_REQUIRED` | 08-30 05:42 | Closes UI-027; theme-level rule, no dashboard YAML. |
 | Residual bilingual gaps (`people-locations`, `ipad-command-center`, `home`) | Main | `dff00f3` — 08-29 23:45 | `LIVE_VERIFICATION_REQUIRED` | 08-30 05:45 | Closes REG-004/005/006. REG-005 changed English `WAN —` → "WAN not reporting" — owner may want to review. |
 | Regression audit record (`DASHBOARD_ISSUES.md`) | Regression Auditor | `3116495` — 08-29 22:49 | `PUSHED` | 08-30 04:49 | Baseline REG-001..006 fresh; do not re-audit that range. |
-| Coordination state (`PROJECT_STATE.md`, `DASHBOARD_BACKLOG.md`) | Shared | `STAMPSHA` — 08-29 23:55 | `PUSHED` | 08-30 05:55 | Structure settled. Append to your own sections; do not restructure. |
+| Coordination state (`PROJECT_STATE.md`, `DASHBOARD_BACKLOG.md`) | Shared | `5c96aeb` — 08-29 23:55 | `PUSHED` | 08-30 05:55 | Structure settled. Append to your own sections; do not restructure. |
 
 Back / previous-page navigation is **complete** (35/36 views, parent-targeted;
 `home` is root) and its window long expired — recorded under UI-009/UI-017 in
@@ -440,7 +440,7 @@ be implemented.
 - **Date/time:** 2026-08-29 23:55 UTC
 - **Branch:** `ha-deploy`
 - **`ha-deploy` HEAD before this update:** `de259a8`
-- **This update's commit:** `STAMPSHA` — tracking-system compaction and the
+- **This update's commit:** `5c96aeb` — tracking-system compaction and the
   Context Loading Strategy.
 
 Per `CLAUDE.md`, a commit cannot contain its own hash: this update's SHA is
