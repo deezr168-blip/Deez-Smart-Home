@@ -33,7 +33,7 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 
 ## Batches
 
-### `__SHA__` — the number-glued status fragments (UI-029)
+### `f04a59f` — the number-glued status fragments (UI-029)
 Area: 34 templates across home, kitchen, garage, energy, cameras, climate,
 status, people-locations, lights, light-ray-bedroom, ipad-command-center and
 bills. Purpose: closes the bilingual work. These were left out of the previous
