@@ -2156,6 +2156,7 @@ views:
   max_columns: 2
   sections:
   - type: grid
+    column_span: 2
     cards:
     - type: custom:mushroom-chips-card
       card_mod:
@@ -2181,40 +2182,59 @@ views:
           \  margin-bottom: -4px;\n}\n"
       title: 🌐 Network
       subtitle: Internet, hubs and remote access
+    - type: heading
+      heading: Connectivity
+      icon: mdi:wan
     - type: custom:mushroom-template-card
       primary: eero Internet
-      secondary: '{{ ''Online'' if is_state(''binary_sensor.eero_wan_status'',''on'')
-        else ''Offline'' }}'
+      secondary: '{% set v = states(''binary_sensor.eero_wan_status'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}Not reporting{% elif v == ''on'' %}Online{% else %}Offline{% endif %}'
       icon: mdi:router-wireless
-      icon_color: '{{ ''green'' if is_state(''binary_sensor.eero_wan_status'',''on'')
-        else ''red'' }}'
+      icon_color: '{% set v = states(''binary_sensor.eero_wan_status'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}grey{% elif v == ''on'' %}green{% else %}red{% endif %}'
+      entity: binary_sensor.eero_wan_status
+      tap_action:
+        action: more-info
+      grid_options:
+        columns: 6
     - type: custom:mushroom-template-card
-      primary: Home Assistant Remote Access
-      secondary: '{{ ''Connected'' if is_state(''binary_sensor.remote_ui'',''on'')
-        else ''Offline'' }}'
+      primary: Remote Access
+      secondary: '{% set v = states(''binary_sensor.remote_ui'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}Not reporting{% elif v == ''on'' %}Connected{% else %}Offline{% endif %}'
       icon: mdi:cloud
-      icon_color: '{{ ''green'' if is_state(''binary_sensor.remote_ui'',''on'') else
-        ''red'' }}'
+      icon_color: '{% set v = states(''binary_sensor.remote_ui'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}grey{% elif v == ''on'' %}green{% else %}red{% endif %}'
+      entity: binary_sensor.remote_ui
+      tap_action:
+        action: more-info
+      grid_options:
+        columns: 6
   - type: grid
+    column_span: 2
     cards:
     - type: heading
-      heading: Infrastructure
+      heading: Hardware
       icon: mdi:server-network
     - type: custom:mushroom-template-card
       primary: Aqara M100
-      secondary: Matter / Thread hub
+      secondary: Matter / Thread hub • no status entity
       icon: mdi:access-point-network
+      icon_color: grey
       layout: vertical
+      grid_options:
+        columns: 4
     - type: custom:mushroom-template-card
       primary: Philips Hue Bridge
-      secondary: Local lighting hub
+      secondary: Local lighting hub • no status entity
       icon: mdi:lightbulb-group
+      icon_color: grey
       layout: vertical
+      grid_options:
+        columns: 4
     - type: custom:mushroom-template-card
       primary: Home Assistant Green
-      secondary: Main controller
+      secondary: Main controller • no status entity
       icon: mdi:home-assistant
+      icon_color: grey
       layout: vertical
+      grid_options:
+        columns: 4
 - type: sections
   title: Media
   path: media
