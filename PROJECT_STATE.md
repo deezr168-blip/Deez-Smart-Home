@@ -233,7 +233,7 @@ writer's entry. All times UTC.
 | Bilingual template pass (status text across all 36 views) | Main CasaRay Upgrade | `f04a59f` — 2026-08-29 20:51 | `LIVE_VERIFICATION_REQUIRED` | 2026-08-30 02:51 | Third and final batch of one sequence (`f4e7ec3`, `fa286de`, `f04a59f`). Continuation by Main is permitted under rule 5; REG-001/004/005/006 are in-sequence fixes, not a redesign. |
 | Regression audit record (`DASHBOARD_ISSUES.md`) | Regression Auditor | `3116495` — 2026-08-29 22:49 | `PUSHED` | 2026-08-30 04:49 | Baseline REG-001..006 is fresh — do not re-audit the same range. Findings are queued for Main; the auditor does not implement them. |
 | Status-guard fixes (`security`, `lights`, `cameras`, `home` templates) | Main CasaRay Upgrade | `b5eee22` — 2026-08-29 23:37 | `LIVE_VERIFICATION_REQUIRED` | 2026-08-30 05:37 | Closes REG-001/002/003. Continuation of the same guard/bilingual sequence is Main's under RCP rule 5; other routines let it settle. |
-| Coordination state (`PROJECT_STATE.md`, `DASHBOARD_BACKLOG.md`) | Shared — writer routines update their own rows and items | `STAMPSHA` — 2026-08-29 23:40 | `PUSHED` | 2026-08-30 05:40 | Structure is settled. Routines append to their own sections, rows and backlog items rather than restructuring the files. |
+| Coordination state (`PROJECT_STATE.md`, `DASHBOARD_BACKLOG.md`) | Shared — writer routines update their own rows and items | `b8f61c6` — 2026-08-29 23:40 | `PUSHED` | 2026-08-30 05:40 | Structure is settled. Routines append to their own sections, rows and backlog items rather than restructuring the files. |
 | Back / previous-page navigation (all views) | Billing Dashboard Upgrade (approved global pattern) | `34a92e7` — 2026-08-28 19:44 | `LIVE_VERIFICATION_REQUIRED` | expired 2026-08-29 01:44 | Protection expired, but implementation is **complete**: 35/36 views carry a parent-targeted `mdi:arrow-left` chip, `home` is root. Priority 1 needs a live look, not a redesign — rule 9 applies. |
 
 ---
@@ -327,7 +327,7 @@ score never changes which priority is selected.
 - **Branch:** `ha-deploy`
 - **`ha-deploy` HEAD before this update:** `6c3fff5` (merge of `b5eee22` —
   "fix(ha): three reassuring/untranslated status regressions")
-- **This update's commit:** `STAMPSHA` — Impact/Effort/Risk scoring, and
+- **This update's commit:** `b8f61c6` — Impact/Effort/Risk scoring, and
   reconciliation against `b5eee22`.
 
 Per `CLAUDE.md`, a commit cannot contain its own hash: this update's SHA is
