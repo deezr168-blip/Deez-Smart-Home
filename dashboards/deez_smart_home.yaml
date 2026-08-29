@@ -15,18 +15,36 @@ views:
     cards:
     - type: custom:mushroom-title-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 4px 4px 0px 4px;\n\
-          \  margin-bottom: -4px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 4px 4px 0px 4px;
+            margin-bottom: -4px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
       title: '{{ ''🏠 Deez 智能家居'' if is_state(''input_boolean.chinese_dashboard'',''on'')
         else ''🏠 Deez Smart Home'' }}'
       subtitle: '{{ ''家庭控制中心'' if is_state(''input_boolean.chinese_dashboard'',''on'')
         else ''Home control centre'' }}'
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: start
       chips:
       - type: template
@@ -67,9 +85,19 @@ views:
         navigation_path: /deez-smart-home/status
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: start
       chips:
       - type: template
@@ -494,9 +522,19 @@ views:
         navigation_path: /deez-smart-home/bills
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: start
       chips:
       - type: template
@@ -541,9 +579,19 @@ views:
     cards:
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: start
       chips:
       - type: template
@@ -558,16 +606,34 @@ views:
         rows: 1
     - type: custom:mushroom-title-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 4px 4px 0px 4px;\n\
-          \  margin-bottom: -4px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 4px 4px 0px 4px;
+            margin-bottom: -4px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
       title: 🛏️ Parents Room
       subtitle: Climate, safety and room controls
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: start
       chips:
       - type: entity
@@ -713,9 +779,19 @@ views:
     cards:
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: start
       chips:
       - type: template
@@ -730,9 +806,17 @@ views:
         rows: 1
     - type: custom:mushroom-title-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 4px 4px 0px 4px;\n\
-          \  margin-bottom: -4px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 4px 4px 0px 4px;
+            margin-bottom: -4px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
       title: 🛏️ Ray Bedroom
       subtitle: Lighting, shade, power and LetPot
     - type: heading
@@ -755,9 +839,19 @@ views:
       show_buttons_control: true
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: start
       chips:
       - type: entity
@@ -806,9 +900,19 @@ views:
     cards:
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: start
       chips:
       - type: template
@@ -823,9 +927,17 @@ views:
         rows: 1
     - type: custom:mushroom-title-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 4px 4px 0px 4px;\n\
-          \  margin-bottom: -4px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 4px 4px 0px 4px;
+            margin-bottom: -4px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
       title: 🛏️ Guest Room
       subtitle: Lighting, entertainment and power
     - type: heading
@@ -883,9 +995,19 @@ views:
     cards:
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: start
       chips:
       - type: template
@@ -900,9 +1022,17 @@ views:
         rows: 1
     - type: custom:mushroom-title-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 4px 4px 0px 4px;\n\
-          \  margin-bottom: -4px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 4px 4px 0px 4px;
+            margin-bottom: -4px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
       title: 🛋️ Living Room
       subtitle: Lighting, TV and room sensors
     - type: custom:mushroom-light-card
@@ -920,9 +1050,19 @@ views:
       collapsible_controls: true
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: start
       chips:
       - type: entity
@@ -969,9 +1109,19 @@ views:
     cards:
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: start
       chips:
       - type: template
@@ -986,16 +1136,34 @@ views:
         rows: 1
     - type: custom:mushroom-title-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 4px 4px 0px 4px;\n\
-          \  margin-bottom: -4px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 4px 4px 0px 4px;
+            margin-bottom: -4px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
       title: 🍳 Kitchen
       subtitle: Fridge, power and motion
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       chips:
       - type: template
         icon: mdi:fridge-outline
@@ -1038,9 +1206,19 @@ views:
     cards:
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: start
       chips:
       - type: template
@@ -1055,9 +1233,17 @@ views:
         rows: 1
     - type: custom:mushroom-title-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 4px 4px 0px 4px;\n\
-          \  margin-bottom: -4px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 4px 4px 0px 4px;
+            margin-bottom: -4px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
       title: 🍽️ Dining
       subtitle: Lighting, motion and pet feeder
     - type: custom:mushroom-light-card
@@ -1070,9 +1256,19 @@ views:
       name: Dining Wall Switch
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       chips:
       - type: template
         icon: mdi:motion-sensor
@@ -1108,9 +1304,19 @@ views:
     cards:
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: start
       chips:
       - type: template
@@ -1125,9 +1331,17 @@ views:
         rows: 1
     - type: custom:mushroom-title-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 4px 4px 0px 4px;\n\
-          \  margin-bottom: -4px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 4px 4px 0px 4px;
+            margin-bottom: -4px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
       title: 🚗 Garage
       subtitle: Freezer energy and future garage control
     - type: custom:mushroom-template-card
@@ -1138,9 +1352,19 @@ views:
       entity: switch.g_monitor_freezer_p110m
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       chips:
       - type: entity
         entity: sensor.g_monitor_freezer_p110m_voltage
@@ -1167,9 +1391,19 @@ views:
     cards:
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: start
       chips:
       - type: template
@@ -1184,9 +1418,17 @@ views:
         rows: 1
     - type: custom:mushroom-title-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 4px 4px 0px 4px;\n\
-          \  margin-bottom: -4px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 4px 4px 0px 4px;
+            margin-bottom: -4px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
       title: ⚡ Energy
       subtitle: Live power, daily totals and lifetime meters
     - type: markdown
@@ -1299,9 +1541,19 @@ views:
     cards:
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: start
       chips:
       - type: template
@@ -1325,14 +1577,25 @@ views:
             box-shadow: none;
             padding: 4px 4px 0px 4px;
             margin-bottom: -4px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
           }
       title: '{{ ''📹 摄像头'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''📹 Cameras'' }}'
       subtitle: '{{ ''实时监控 • 点按查看全屏'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Live surveillance • tap any camera for full view'' }}'
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: start
       chips:
       - type: template
@@ -1510,9 +1773,19 @@ views:
       icon: mdi:compass
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: start
       chips:
       - type: template
@@ -1539,9 +1812,19 @@ views:
     cards:
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: start
       chips:
       - type: template
@@ -1585,9 +1868,19 @@ views:
     cards:
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: start
       chips:
       - type: template
@@ -1631,9 +1924,19 @@ views:
     cards:
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: start
       chips:
       - type: template
@@ -1677,9 +1980,19 @@ views:
     cards:
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: start
       chips:
       - type: template
@@ -1723,9 +2036,19 @@ views:
     cards:
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: start
       chips:
       - type: template
@@ -1769,9 +2092,19 @@ views:
     cards:
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: start
       chips:
       - type: template
@@ -1815,9 +2148,19 @@ views:
     cards:
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: start
       chips:
       - type: template
@@ -1832,9 +2175,17 @@ views:
         rows: 1
     - type: custom:mushroom-title-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 4px 4px 0px 4px;\n\
-          \  margin-bottom: -4px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 4px 4px 0px 4px;
+            margin-bottom: -4px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
       title: 🛡️ Security
       subtitle: Doors, motion, emergency buttons and cameras
   - type: grid
@@ -1944,9 +2295,19 @@ views:
     cards:
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: start
       chips:
       - type: template
@@ -1961,9 +2322,17 @@ views:
         rows: 1
     - type: custom:mushroom-title-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 4px 4px 0px 4px;\n\
-          \  margin-bottom: -4px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 4px 4px 0px 4px;
+            margin-bottom: -4px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
       title: 🌡️ Climate
       subtitle: Heating, cooling and room conditions
   - type: grid
@@ -2067,9 +2436,19 @@ views:
     cards:
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: start
       chips:
       - type: template
@@ -2084,9 +2463,17 @@ views:
         rows: 1
     - type: custom:mushroom-title-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 4px 4px 0px 4px;\n\
-          \  margin-bottom: -4px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 4px 4px 0px 4px;
+            margin-bottom: -4px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
       title: 🌐 Network
       subtitle: Internet, hubs and remote access
     - type: heading
@@ -2152,9 +2539,19 @@ views:
     cards:
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: start
       chips:
       - type: template
@@ -2169,9 +2566,17 @@ views:
         rows: 1
     - type: custom:mushroom-title-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 4px 4px 0px 4px;\n\
-          \  margin-bottom: -4px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 4px 4px 0px 4px;
+            margin-bottom: -4px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
       title: 📺 Media
       subtitle: TVs and entertainment
     - type: custom:mushroom-media-player-card
@@ -2194,9 +2599,19 @@ views:
     cards:
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: start
       chips:
       - type: template
@@ -2211,9 +2626,17 @@ views:
         rows: 1
     - type: custom:mushroom-title-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 4px 4px 0px 4px;\n\
-          \  margin-bottom: -4px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 4px 4px 0px 4px;
+            margin-bottom: -4px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
       title: ⚙️ Smart Home Settings
       subtitle: Configuration and administration
     - type: custom:mushroom-template-card
@@ -2255,9 +2678,19 @@ views:
     cards:
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: start
       chips:
       - type: template
@@ -2272,9 +2705,17 @@ views:
         rows: 1
     - type: custom:mushroom-title-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 4px 4px 0px 4px;\n\
-          \  margin-bottom: -4px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 4px 4px 0px 4px;
+            margin-bottom: -4px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
       title: 🧠 Smart Home Status
       subtitle: Connectivity, updates and backups
   - type: grid
@@ -2338,9 +2779,19 @@ views:
     cards:
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: start
       chips:
       - type: template
@@ -2355,9 +2806,17 @@ views:
         rows: 1
     - type: custom:mushroom-title-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 4px 4px 0px 4px;\n\
-          \  margin-bottom: -4px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 4px 4px 0px 4px;
+            margin-bottom: -4px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
       title: 📍 People & Locations
       subtitle: Family locations • Presence from Home Assistant
     - type: heading
@@ -2433,9 +2892,17 @@ views:
     cards:
     - type: custom:mushroom-title-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 4px 4px 0px 4px;\n\
-          \  margin-bottom: -4px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 4px 4px 0px 4px;
+            margin-bottom: -4px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
       title: 🔭 Distance View
       subtitle: Family members and Home
     - type: map
@@ -2492,9 +2959,19 @@ views:
     cards:
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: start
       chips:
       - type: template
@@ -2509,18 +2986,36 @@ views:
         rows: 1
     - type: custom:mushroom-title-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 4px 4px 0px 4px;\n\
-          \  margin-bottom: -4px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 4px 4px 0px 4px;
+            margin-bottom: -4px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
       title: '{{ ''💡 灯光工作室'' if is_state(''input_boolean.chinese_dashboard'',''on'')
         else ''💡 Lighting Studio'' }}'
       subtitle: '{{ ''房间、亮度与氛围'' if is_state(''input_boolean.chinese_dashboard'',''on'')
         else ''Rooms, brightness & ambience'' }}'
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: justify
       chips:
       - type: template
@@ -2624,9 +3119,19 @@ views:
           - switch.mainroomlight_switch_1
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: justify
       chips:
       - type: template
@@ -2712,9 +3217,17 @@ views:
     cards:
     - type: custom:mushroom-title-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 4px 4px 0px 4px;\n\
-          \  margin-bottom: -4px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 4px 4px 0px 4px;
+            margin-bottom: -4px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
       title: Living Room Light
       subtitle: Power • brightness • temperature • capability
     - type: heading
@@ -2733,9 +3246,19 @@ views:
         action: more-info
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: justify
       chips:
       - type: template
@@ -2849,9 +3372,17 @@ views:
     cards:
     - type: custom:mushroom-title-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 4px 4px 0px 4px;\n\
-          \  margin-bottom: -4px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 4px 4px 0px 4px;
+            margin-bottom: -4px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
       title: Ray Bedroom Light
       subtitle: Power • brightness • temperature • capability
     - type: heading
@@ -2870,9 +3401,19 @@ views:
         action: more-info
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: justify
       chips:
       - type: template
@@ -2932,9 +3473,17 @@ views:
     cards:
     - type: custom:mushroom-title-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 4px 4px 0px 4px;\n\
-          \  margin-bottom: -4px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 4px 4px 0px 4px;
+            margin-bottom: -4px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
       title: Lighting Modes
       subtitle: One-touch brightness presets using confirmed dimmable lights
     - type: heading
@@ -3058,9 +3607,19 @@ views:
     cards:
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: start
       chips:
       - type: template
@@ -3113,9 +3672,19 @@ views:
           action: navigate
           navigation_path: /deez-smart-home/lights
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
     - square: false
       type: grid
       columns: 3
@@ -3226,9 +3795,19 @@ views:
       icon: mdi:flash
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: justify
       chips:
       - type: template
@@ -3247,9 +3826,19 @@ views:
           action: more-info
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: center
       chips:
       - type: template
@@ -3283,9 +3872,19 @@ views:
       heading: Live Cameras
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: justify
       chips:
       - type: template
@@ -3435,9 +4034,19 @@ views:
     cards:
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
-          \ .chip-container {\n  gap: 8px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+          ha-card .chip-container {
+            gap: 8px;
+          }
       alignment: start
       chips:
       - type: template
@@ -3452,9 +4061,17 @@ views:
         rows: 1
     - type: custom:mushroom-title-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 4px 4px 0px 4px;\n\
-          \  margin-bottom: -4px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 4px 4px 0px 4px;
+            margin-bottom: -4px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
       title: 🧾 Bills & Payments
       subtitle: Utilities • insurance • council rates • registration
     - type: grid
@@ -3602,9 +4219,17 @@ views:
     cards:
     - type: custom:mushroom-title-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 4px 4px 0px 4px;\n\
-          \  margin-bottom: -4px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 4px 4px 0px 4px;
+            margin-bottom: -4px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
       title: ⚡ Home 365 Solar
       subtitle: EnergyAustralia • Distributor United Energy
     - type: markdown
@@ -3687,9 +4312,17 @@ views:
     cards:
     - type: custom:mushroom-title-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
-          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 4px 4px 0px 4px;\n\
-          \  margin-bottom: -4px;\n}\n"
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 4px 4px 0px 4px;
+            margin-bottom: -4px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
       title: 🔥 Home 365
       subtitle: EnergyAustralia • Distributor Multinet
     - type: markdown

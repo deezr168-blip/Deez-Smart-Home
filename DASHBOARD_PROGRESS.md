@@ -17,9 +17,7 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 
 ## Next recommended priorities
 
-1. **UI-025** — install the background image and theme on the host, then
-   confirm `/local/your_name_night_sky.jpg` loads. Nothing else in this
-   direction is visible until that is done.
+1. **UI-027** — heading-card contrast; needs a theme rule and a live look.
 2. Tile-card pass: replace Mushroom template cards with native Tiles where
    Mushroom is not earning its keep.
 3. **UI-012** — bilingual gap: 33 of 36 views are English-only while Home,
@@ -34,6 +32,21 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 ---
 
 ## Batches
+
+### `__SHA__` — legible text where cards deliberately have no surface
+Area: 69 cards across all views. Purpose: with the photograph live, the cards
+that intentionally strip their own surface — 25 page titles, 44 chip rows —
+render their text directly on the sky. Over the bright horizon band and the
+city lights that is the worst contrast on the dashboard, and it only appeared
+once the background went in. Both chrome-strip styles gain
+`text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55)` — enough to hold an edge
+against the brightest part of the image, small enough to stay Apple-like
+rather than glowing.
+Two styles edited, 69 cards covered; no new card_mod block was added.
+Validated: 268 templates, 36/36 links, 0 broken, no entity loss.
+Expect: page titles and chip rows keep their edge over the comet and city
+lights. The 52 native heading cards are NOT covered — they have no card_mod
+and need a theme rule; logged as UI-027.
 
 ### `0f620f2` — the per-card glass retires; the theme paints the surface
 Area: all views, 32 cards. Purpose: every card carried its own

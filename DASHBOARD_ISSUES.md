@@ -31,8 +31,7 @@ navigation · **S3** layout or readability · **S4** polish.
 | UI-011 | S3 | `energy` — Total Solar | Converted Wh→kWh to match its two sibling Primo sensors (`energy_day`, `energy_year`). If the Fronius total reports kWh directly the figure reads 1000× low. Needs one look at the live card. First seen `df457e3`. | OPEN |
 | UI-012 | S4 | 33 of 36 views | English-only while Home, Cameras and Lighting Studio respond to `input_boolean.chinese_dashboard`. Switching to Chinese leaves most of the dashboard in English. | OPEN |
 | UI-013 | S4 | `parents-room`, `guest-room` | Each stacks a Mushroom media card **and** a native `media-control` for the same player. Reads as a deliberate compact-plus-full pairing, so not changed. Confirm intent. | OPEN |
-| UI-025 | S2 | theme / background asset | The Your Name background and the six-theme file cannot be installed from this environment — no `/config`, no route to the instance. Until the image is at `/config/www/your_name_night_sky.jpg` and the theme at `/config/themes/`, the retheme is invisible. `THEME_INSTALL.md` lists the 404/401 causes in the order they occur; the usual one is that `/local/` is registered at startup, so a `www/` folder created afterwards needs a restart. | OPEN |
-| UI-026 | S3 | all views | The per-card glass was removed in favour of the theme surface, so until `themes/deez_your_name.yaml` is installed the dashboard renders on Home Assistant's default opaque card background — flatter than before, not broken. Install the theme (UI-025) and this resolves with it. | OPEN |
+| UI-027 | S3 | 52 `heading` cards | Native heading cards render straight onto the photograph with no surface and no text shadow, so section labels lose contrast over the bright horizon band. The 69 title and chip cards were fixed in the dashboard; headings need a theme-level rule and one live look. | OPEN |
 | UI-015 | S4 | `ipad-command-center` | 52 cards, never reviewed. Nested 3-column grid inside a third-width section; no page title card. | OPEN |
 | UI-016 | S4 | `bills` + six bill subviews | Nested 2-column grids; subviews never reviewed. | OPEN |
 
@@ -69,8 +68,13 @@ been seen rendered.
 
 ## Verified
 
-None yet. Deployment was only confirmed working on 2026-08-29; no batch has
-been visually confirmed on the live dashboard.
+Confirmed by the owner on the live dashboard.
+
+| ID | Sev | View / component | Summary | Fixed in | Status |
+|---|---|---|---|---|---|
+| UI-025 | S2 | theme / background asset | Your Name background installed at `/local/your_name_night_sky.jpg` and the six-theme file at `/config/themes/`. | `88be895` | VERIFIED |
+| UI-026 | S3 | all views | Per-card glass retired in favour of the theme surface. Precondition met — the background renders, which is only possible with the theme installed, so cards are drawing on the themed surface rather than the default opaque one. | `0f620f2` | VERIFIED |
+
 
 ---
 
