@@ -205,7 +205,7 @@ completing work.
 
 | Routine | Item | Priority | State | Reason Selected |
 |---|---|---|---|---|
-| Main CasaRay Upgrade | `BILING-RESID` — residual bilingual gaps (REG-004/005/006) | P3 | `PLANNED` — actionable | `UI-027` (heading-card contrast) is fixed and pushed, now `LIVE_VERIFICATION_REQUIRED`. `UI-011` is P1 but purely `LIVE_VERIFICATION_REQUIRED` (rule 4) and `BILL-001` is P1 but Billing-owned (rule 9), so neither is Main's to take; no P2 item remains actionable in `DASHBOARD_BACKLOG.md`. `BILING-RESID` is Main's highest actionable owned item remaining, ahead of `DR-001` (also P3, but advisory-only with no implementation agreed). |
+| Main CasaRay Upgrade | none — active queue exhausted | — | — | `BILING-RESID` (REG-004/005/006) is fixed and pushed. `UI-011` is P1 but purely `LIVE_VERIFICATION_REQUIRED` (rule 4) and `BILL-001` is P1 but Billing-owned (rule 9), so neither is Main's to take. The only remaining Main-owned backlog entry, `DR-001`, is explicitly "advisory item, no implementation agreed" — a density *review* the CasaRay Design Reviewer should scope before Main implements anything, not a coded fix. See this section's "Exact next recommended task" for what a future run should actually do. |
 | Billing Dashboard Upgrade | `BILL-001` — remove hardcoded account / NMI / MIRN from `bill-electricity` and `bill-gas` | P1 | `PLANNED` — actionable | Highest actionable Billing-owned item, and named explicitly in the P1 class. Blocks `BILL-003`: ingestion should not be built over an unresolved privacy exposure. Repository removal is safe now; only the question of what the live card displays needs the owner. |
 
 ---
@@ -213,38 +213,60 @@ completing work.
 ## Current Work / Blockers
 
 ### Main (CasaRay Upgrade)
-- **Work completed this run:** `REG-002` (P1) and `REG-003` (P1) fixed —
-  the `lights`/`cameras` motion-aggregate chips now report an offline state
-  rather than a confident "Quiet" when every watched sensor is
-  unavailable/unknown/none, and the `home` Network nav chip gained the same
-  third grey branch its dedicated `network` view already has. `REG-001`
-  (bare-English Open/Closed on the three `security` door cards) was fixed in
-  the same batch since it touched the identical guarded-template pattern;
-  `BILING-RESID` in `DASHBOARD_BACKLOG.md` is narrowed to REG-004/005/006.
-  `UI-027` (heading-card contrast) also fixed: one theme-level
-  `card-mod-card-heading` rule in `themes/deez_your_name.yaml` (card-mod's
-  per-card-type key, targeting `:host` since heading cards carry no
-  `ha-card`), giving all 52 heading cards the same text-shadow the 69
-  title/chip cards already had, rather than 52 per-card blocks.
-- **Commit(s):** `b5eee22` (REG-001/002/003 fix), `6c3fff5` (merge with the
-  concurrent `ecc8af7` backlog-queue commit — no conflicting dashboard
-  content, only a `DASHBOARD_PROGRESS.md` prose section, resolved in favour
-  of the newer "Superseded" pointer), plus the pending UI-027 theme commit.
-- **Verification state:** `CODE_VALID` → `PUSHED`. REG-001/002/003's new
-  branches were verified by rendering the extracted Jinja logic standalone
-  across every state combination (on/off/unavailable/unknown/none, both
-  languages) before push. UI-027 is a CSS-only theme change with no
-  equivalent repository-side render check available (card-mod's shadow-DOM
-  `:host` inheritance is a browser behaviour); `ha_validate.sh` confirms the
-  dashboard YAML is untouched and the theme file parses. Nothing here is
-  `LIVE_VERIFIED` — all three need a look on the live dashboard.
-- **Blockers:** none on the next task.
-- **Exact next recommended task:** `BILING-RESID` (P3, actionable) — wrap the
-  three remaining bare-English fragments (`people-locations` "home" branch
-  ~L2872, `ipad-command-center` "WAN —" ~L3662, `home` Energy tile "offline"
-  ~L450) the same way the rest of the file already does. After that: `DR-001`
-  (P3, advisory — needs a design decision before implementation, not just
-  code).
+- **Work completed this run (three batches, all pushed):**
+  1. `REG-002`/`REG-003` (P1) — the `lights`/`cameras` motion-aggregate chips
+     now report an offline state rather than a confident "Quiet" when every
+     watched sensor is unavailable/unknown/none, and the `home` Network nav
+     chip gained the same third grey branch its dedicated `network` view
+     already has. `REG-001` (bare-English Open/Closed on the three
+     `security` door cards) was fixed in the same batch since it touched the
+     identical guarded-template pattern.
+  2. `UI-027` (P2) — one theme-level `card-mod-card-heading` rule in
+     `themes/deez_your_name.yaml` (card-mod's per-card-type key, targeting
+     `:host` since heading cards carry no `ha-card`), giving all 52 heading
+     cards the same text-shadow the 69 title/chip cards already had, rather
+     than 52 per-card blocks.
+  3. `BILING-RESID` (P3, REG-004/005/006) — the last three bare-English
+     fragments (`people-locations` "at home", the `ipad-command-center` WAN
+     chip's unavailable fallback, the `home` Energy tile's offline fallback)
+     now translate with the toggle, closing the UI-012 → UI-028 → UI-029 →
+     REG bilingual thread entirely. REG-005's fix intentionally changes the
+     English fallback text from "WAN —" to "WAN not reporting" to match an
+     identical existing case elsewhere in the file rather than translating a
+     dash in isolation — flag if the owner wanted the dash kept.
+  - Active queue for Main is now exhausted: every OPEN item in
+    `DASHBOARD_ISSUES.md` except `UI-011` (live-look only, no code) is fixed,
+    and every actionable Main-owned `DASHBOARD_BACKLOG.md` entry is closed.
+- **Commit(s):** `b5eee22`, `6c3fff5` (merge with the concurrent `ecc8af7`
+  backlog-queue commit — no conflicting dashboard content, only a
+  `DASHBOARD_PROGRESS.md` prose section, resolved in favour of the newer
+  "Superseded" pointer), `9926233`, `dff00f3`, plus one `docs: stamp` commit
+  after each.
+- **Verification state:** `CODE_VALID` → `PUSHED` on all three batches.
+  REG-001/002/003's and REG-004/005/006's new branches were each verified by
+  rendering the extracted Jinja logic standalone across every state
+  combination (on/off/unavailable/unknown/none, both languages) before push.
+  UI-027 is a CSS-only theme change with no equivalent repository-side render
+  check available (card-mod's shadow-DOM `:host` inheritance is a browser
+  behaviour); `ha_validate.sh` confirms the dashboard YAML is untouched and
+  the theme file parses. Nothing here is `LIVE_VERIFIED` — all of it needs a
+  look on the live dashboard, ideally with the language toggle on and a
+  watched sensor pulled unavailable.
+- **Blockers:** none blocking further code work; genuinely out of scoped,
+  actionable Main-owned items.
+- **Exact next recommended task:** no coded fix is queued and actionable for
+  Main right now. In order of value for the *next* run:
+  1. Live-verify this run's three batches (REG-001..006, UI-027) and the
+     still-open `UI-011` — these are blocking further confidence in the
+     bilingual/guard work, not code.
+  2. If the owner or a Design Review pass scopes `DR-001` (iPad Command
+     Center density) into a concrete brief, that becomes Main's next
+     actionable P3 item — do not start a 52-card redesign speculatively.
+  3. Failing either of those, run a fresh, narrow scan for the same
+     false-safe-state anti-pattern class (two-branch `is_state`/`count`
+     colour or text assertions with no unavailable branch) that REG-002/003
+     closed, since this run's search suggests the obvious instances are now
+     fixed but a full sweep was not exhaustively re-run this session.
 - Back-navigation pattern is implemented in the repository: 35 of 36 views
   carry a parent-targeted `mdi:arrow-left` chip; `home` is the root and
   correctly has none. Remaining work on priority 1 is live verification, not
