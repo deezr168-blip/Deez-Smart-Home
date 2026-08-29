@@ -35,7 +35,7 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 
 ## Batches
 
-### `__SHA__` — every view retuned for the iPad's two usable columns
+### `366a894` — every view retuned for the iPad's two usable columns
 Area: all 36 views. Purpose: the dashboard declared up to four columns while
 the wall-mounted iPad renders about two, so eight views were dividing that
 width three or four ways. `max_columns` is capped at 2 everywhere (home,
