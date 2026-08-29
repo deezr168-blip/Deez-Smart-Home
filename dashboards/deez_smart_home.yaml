@@ -1335,6 +1335,7 @@ views:
   max_columns: 3
   sections:
   - type: grid
+    column_span: 3
     cards:
     - type: custom:mushroom-chips-card
       card_mod:
@@ -1357,31 +1358,19 @@ views:
       card_mod:
         style: "ha-card {\n  background: none;\n  border: none;\n  box-shadow: none;\n\
           \  padding: 4px 4px 0px 4px;\n  margin-bottom: -4px;\n}\n"
-      title: '{{ ''📹 摄像头'' if is_state(''input_boolean.chinese_dashboard'',''on'')
-        else ''📹 Cameras'' }}'
-      subtitle: '{{ ''实时监控 • 点按查看全屏'' if is_state(''input_boolean.chinese_dashboard'',''on'')
-        else ''Live surveillance • tap any camera for full view'' }}'
+      title: '{{ ''📹 摄像头'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''📹 Cameras'' }}'
+      subtitle: '{{ ''实时监控 • 点按查看全屏'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Live surveillance • tap any camera for full view'' }}'
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  border: none;\n  box-shadow: none;\n\
-          \  padding: 0px;\n}\nha-card .chip-container {\n  gap: 8px;\n}\n"
+        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
+          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
+          \ .chip-container {\n  gap: 8px;\n}\n"
       alignment: start
       chips:
       - type: template
         icon: mdi:cctv
-        content: "{% set cams = ['camera.front_door_live_view',\n  'camera.tapo_c425_north_wall_hd_stream_direct',\n\
-          \  'camera.tapo_c200_stockroom_hd_stream_direct',\n  'camera.tapo_c420_east_wall_hd_stream_direct',\n\
-          \  'camera.tapo_c420_south_wall_hd_stream_direct',\n  'camera.smart_pet_feeder']\
-          \ %}\n{% set ns = namespace(n=0) %} {% for c in cams %}\n  {% if states(c)\
-          \ not in ['unavailable','unknown'] %}\n    {% set ns.n = ns.n + 1 %}\n \
-          \ {% endif %}\n{% endfor %} {{ ns.n }}/6 online"
-        icon_color: "{% set cams = ['camera.front_door_live_view',\n  'camera.tapo_c425_north_wall_hd_stream_direct',\n\
-          \  'camera.tapo_c200_stockroom_hd_stream_direct',\n  'camera.tapo_c420_east_wall_hd_stream_direct',\n\
-          \  'camera.tapo_c420_south_wall_hd_stream_direct',\n  'camera.smart_pet_feeder']\
-          \ %}\n{% set ns = namespace(n=0) %} {% for c in cams %}\n  {% if states(c)\
-          \ not in ['unavailable','unknown'] %}\n    {% set ns.n = ns.n + 1 %}\n \
-          \ {% endif %}\n{% endfor %} {{ 'green' if ns.n == 6 else ('amber' if ns.n\
-          \ > 3 else 'red') }}"
+        content: '{% set cams = [(''Front Door'',''camera.front_door_live_view''), (''North Wall'',''camera.tapo_c425_north_wall_hd_stream_direct''), (''East Wall'',''camera.tapo_c420_east_wall_hd_stream_direct''), (''South Wall'',''camera.tapo_c420_south_wall_hd_stream_direct''), (''Stockroom'',''camera.tapo_c200_stockroom_hd_stream_direct''), (''Pet Feeder'',''camera.smart_pet_feeder'')] %}{% set ns = namespace(down=[]) %}{% for n,c in cams %}{% if states(c) in [''unavailable'',''unknown'',''none''] %}{% set ns.down = ns.down + [n] %}{% endif %}{% endfor %}{% if ns.down | count == 0 %}6/6 online{% elif ns.down | count <= 2 %}{{ ns.down | join('', '') }} offline{% else %}{{ ns.down | count }} of 6 offline{% endif %}'
+        icon_color: '{% set cams = [(''Front Door'',''camera.front_door_live_view''), (''North Wall'',''camera.tapo_c425_north_wall_hd_stream_direct''), (''East Wall'',''camera.tapo_c420_east_wall_hd_stream_direct''), (''South Wall'',''camera.tapo_c420_south_wall_hd_stream_direct''), (''Stockroom'',''camera.tapo_c200_stockroom_hd_stream_direct''), (''Pet Feeder'',''camera.smart_pet_feeder'')] %}{% set ns = namespace(down=[]) %}{% for n,c in cams %}{% if states(c) in [''unavailable'',''unknown'',''none''] %}{% set ns.down = ns.down + [n] %}{% endif %}{% endfor %}{{ ''green'' if ns.down | count == 0 else (''amber'' if ns.down | count <= 2 else ''red'') }}'
       - type: template
         icon: mdi:door
         content: "{% set doors = [\n  states('binary_sensor.f_contact_sensor_door'),\n\
@@ -1406,13 +1395,20 @@ views:
           \ select('eq','on') | list | count) > 0 else 'grey' }}"
       - type: template
         icon: mdi:wan
-        content: '{{ ''WAN Online'' if is_state(''binary_sensor.eero_wan_status'',''on'')
-          else ''WAN Offline'' }}'
-        icon_color: '{{ ''green'' if is_state(''binary_sensor.eero_wan_status'',''on'')
-          else ''red'' }}'
+        content: '{% set v = states(''binary_sensor.eero_wan_status'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}WAN not reporting{% elif v == ''on'' %}WAN Online{% else %}WAN Offline{% endif %}'
+        icon_color: '{% set v = states(''binary_sensor.eero_wan_status'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}grey{% elif v == ''on'' %}green{% else %}red{% endif %}'
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/network
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Cameras
+      icon: mdi:cctv
     - type: picture-entity
       card_mod:
-        style: "ha-card {\n  border-radius: 18px;\n  border: 1px solid rgba(120,200,255,0.20);\n\
+        style: "ha-card {\n  border-radius: 18px;\n  border: 1px solid rgba(120,200,255,0.18);\n\
           \  overflow: hidden;\n  box-shadow: 0 2px 10px rgba(0,0,0,0.30);\n}\n"
       entity: camera.front_door_live_view
       name: Front Door
@@ -1425,151 +1421,93 @@ views:
         navigation_path: /deez-smart-home/camera-front-door
       hold_action:
         action: more-info
-    - type: custom:mushroom-template-card
+      grid_options:
+        columns: 6
+    - type: picture-entity
       card_mod:
-        style: "ha-card {\n  background: rgba(120,200,255,0.08);\n  border-radius:\
-          \ 18px;\n  border: 1px solid rgba(120,200,255,0.18);\n  box-shadow: 0 2px\
-          \ 10px rgba(0,0,0,0.30);\n}\n"
-      primary: Front Door
-      secondary: '{{ ''Stream unavailable'' if states(''camera.front_door_live_view'')
-        in [''unavailable'',''unknown''] else ''Live • tap for full screen + PTZ''
-        }}'
-      icon: mdi:door-open
-      icon_color: '{{ ''red'' if states(''camera.front_door_live_view'') in [''unavailable'',''unknown'']
-        else ''cyan'' }}'
+        style: "ha-card {\n  border-radius: 18px;\n  border: 1px solid rgba(120,200,255,0.18);\n\
+          \  overflow: hidden;\n  box-shadow: 0 2px 10px rgba(0,0,0,0.30);\n}\n"
+      entity: camera.tapo_c425_north_wall_hd_stream_direct
+      name: North Wall
+      camera_view: auto
+      show_state: false
+      show_name: true
+      aspect_ratio: '16:9'
       tap_action:
         action: navigate
-        navigation_path: /deez-smart-home/camera-front-door
-  - type: grid
-    cards:
-    - type: heading
-      heading: All Cameras
-      icon: mdi:cctv
-    - type: grid
-      columns: 2
-      square: false
-      cards:
-      - type: picture-entity
-        card_mod:
-          style: "ha-card {\n  border-radius: 18px;\n  border: 1px solid rgba(120,200,255,0.18);\n\
-            \  overflow: hidden;\n  box-shadow: 0 2px 10px rgba(0,0,0,0.30);\n}\n"
-        entity: camera.tapo_c425_north_wall_hd_stream_direct
-        name: North Wall
-        camera_view: auto
-        show_state: false
-        show_name: true
-        aspect_ratio: '16:9'
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/camera-north-wall
-        hold_action:
-          action: more-info
-      - type: picture-entity
-        card_mod:
-          style: "ha-card {\n  border-radius: 18px;\n  border: 1px solid rgba(120,200,255,0.18);\n\
-            \  overflow: hidden;\n  box-shadow: 0 2px 10px rgba(0,0,0,0.30);\n}\n"
-        entity: camera.tapo_c420_east_wall_hd_stream_direct
-        name: East Wall
-        camera_view: auto
-        show_state: false
-        show_name: true
-        aspect_ratio: '16:9'
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/camera-east-wall
-        hold_action:
-          action: more-info
-      - type: picture-entity
-        card_mod:
-          style: "ha-card {\n  border-radius: 18px;\n  border: 1px solid rgba(120,200,255,0.18);\n\
-            \  overflow: hidden;\n  box-shadow: 0 2px 10px rgba(0,0,0,0.30);\n}\n"
-        entity: camera.tapo_c420_south_wall_hd_stream_direct
-        name: South Wall
-        camera_view: auto
-        show_state: false
-        show_name: true
-        aspect_ratio: '16:9'
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/camera-south-wall
-        hold_action:
-          action: more-info
-      - type: picture-entity
-        card_mod:
-          style: "ha-card {\n  border-radius: 18px;\n  border: 1px solid rgba(120,200,255,0.18);\n\
-            \  overflow: hidden;\n  box-shadow: 0 2px 10px rgba(0,0,0,0.30);\n}\n"
-        entity: camera.tapo_c200_stockroom_hd_stream_direct
-        name: Stockroom
-        camera_view: auto
-        show_state: false
-        show_name: true
-        aspect_ratio: '16:9'
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/camera-stockroom
-        hold_action:
-          action: more-info
-      - type: picture-entity
-        card_mod:
-          style: "ha-card {\n  border-radius: 18px;\n  border: 1px solid rgba(120,200,255,0.18);\n\
-            \  overflow: hidden;\n  box-shadow: 0 2px 10px rgba(0,0,0,0.30);\n}\n"
-        entity: camera.smart_pet_feeder
-        name: Pet Feeder
-        camera_view: auto
-        show_state: false
-        show_name: true
-        aspect_ratio: '16:9'
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/camera-pet-feeder
-        hold_action:
-          action: more-info
-    - type: custom:mushroom-chips-card
+        navigation_path: /deez-smart-home/camera-north-wall
+      hold_action:
+        action: more-info
+      grid_options:
+        columns: 6
+    - type: picture-entity
       card_mod:
-        style: "ha-card {\n  background: none;\n  border: none;\n  box-shadow: none;\n\
-          \  padding: 0px;\n}\nha-card .chip-container {\n  gap: 8px;\n}\n"
-      alignment: start
-      chips:
-      - type: template
-        icon: mdi:cctv
-        content: North
-        icon_color: '{{ ''green'' if states(''camera.tapo_c425_north_wall_hd_stream_direct'')
-          not in [''unavailable'',''unknown''] else ''red'' }}'
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/camera-north-wall
-      - type: template
-        icon: mdi:cctv
-        content: East
-        icon_color: '{{ ''green'' if states(''camera.tapo_c420_east_wall_hd_stream_direct'')
-          not in [''unavailable'',''unknown''] else ''red'' }}'
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/camera-east-wall
-      - type: template
-        icon: mdi:cctv
-        content: South
-        icon_color: '{{ ''green'' if states(''camera.tapo_c420_south_wall_hd_stream_direct'')
-          not in [''unavailable'',''unknown''] else ''red'' }}'
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/camera-south-wall
-      - type: template
-        icon: mdi:cctv
-        content: Stock
-        icon_color: '{{ ''green'' if states(''camera.tapo_c200_stockroom_hd_stream_direct'')
-          not in [''unavailable'',''unknown''] else ''red'' }}'
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/camera-stockroom
-      - type: template
-        icon: mdi:cat
-        content: Pet
-        icon_color: '{{ ''green'' if states(''camera.smart_pet_feeder'') not in [''unavailable'',''unknown'']
-          else ''red'' }}'
-        tap_action:
-          action: navigate
-          navigation_path: /deez-smart-home/camera-pet-feeder
+        style: "ha-card {\n  border-radius: 18px;\n  border: 1px solid rgba(120,200,255,0.18);\n\
+          \  overflow: hidden;\n  box-shadow: 0 2px 10px rgba(0,0,0,0.30);\n}\n"
+      entity: camera.tapo_c420_east_wall_hd_stream_direct
+      name: East Wall
+      camera_view: auto
+      show_state: false
+      show_name: true
+      aspect_ratio: '16:9'
+      tap_action:
+        action: navigate
+        navigation_path: /deez-smart-home/camera-east-wall
+      hold_action:
+        action: more-info
+      grid_options:
+        columns: 6
+    - type: picture-entity
+      card_mod:
+        style: "ha-card {\n  border-radius: 18px;\n  border: 1px solid rgba(120,200,255,0.18);\n\
+          \  overflow: hidden;\n  box-shadow: 0 2px 10px rgba(0,0,0,0.30);\n}\n"
+      entity: camera.tapo_c420_south_wall_hd_stream_direct
+      name: South Wall
+      camera_view: auto
+      show_state: false
+      show_name: true
+      aspect_ratio: '16:9'
+      tap_action:
+        action: navigate
+        navigation_path: /deez-smart-home/camera-south-wall
+      hold_action:
+        action: more-info
+      grid_options:
+        columns: 6
+    - type: picture-entity
+      card_mod:
+        style: "ha-card {\n  border-radius: 18px;\n  border: 1px solid rgba(120,200,255,0.18);\n\
+          \  overflow: hidden;\n  box-shadow: 0 2px 10px rgba(0,0,0,0.30);\n}\n"
+      entity: camera.tapo_c200_stockroom_hd_stream_direct
+      name: Stockroom
+      camera_view: auto
+      show_state: false
+      show_name: true
+      aspect_ratio: '16:9'
+      tap_action:
+        action: navigate
+        navigation_path: /deez-smart-home/camera-stockroom
+      hold_action:
+        action: more-info
+      grid_options:
+        columns: 6
+    - type: picture-entity
+      card_mod:
+        style: "ha-card {\n  border-radius: 18px;\n  border: 1px solid rgba(120,200,255,0.18);\n\
+          \  overflow: hidden;\n  box-shadow: 0 2px 10px rgba(0,0,0,0.30);\n}\n"
+      entity: camera.smart_pet_feeder
+      name: Pet Feeder
+      camera_view: auto
+      show_state: false
+      show_name: true
+      aspect_ratio: '16:9'
+      tap_action:
+        action: navigate
+        navigation_path: /deez-smart-home/camera-pet-feeder
+      hold_action:
+        action: more-info
+      grid_options:
+        columns: 6
   - type: grid
     cards:
     - type: heading
@@ -1604,8 +1542,9 @@ views:
       icon: mdi:compass
     - type: custom:mushroom-chips-card
       card_mod:
-        style: "ha-card {\n  background: none;\n  border: none;\n  box-shadow: none;\n\
-          \  padding: 0px;\n}\nha-card .chip-container {\n  gap: 8px;\n}\n"
+        style: "ha-card {\n  background: none;\n  backdrop-filter: none;\n  -webkit-backdrop-filter:\
+          \ none;\n  border: none;\n  box-shadow: none;\n  padding: 0px;\n}\nha-card\
+          \ .chip-container {\n  gap: 8px;\n}\n"
       alignment: start
       chips:
       - type: template

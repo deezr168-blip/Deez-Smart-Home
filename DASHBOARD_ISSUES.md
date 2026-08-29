@@ -31,7 +31,6 @@ navigation · **S3** layout or readability · **S4** polish.
 | UI-011 | S3 | `energy` — Total Solar | Converted Wh→kWh to match its two sibling Primo sensors (`energy_day`, `energy_year`). If the Fronius total reports kWh directly the figure reads 1000× low. Needs one look at the live card. First seen `df457e3`. | OPEN |
 | UI-012 | S4 | 33 of 36 views | English-only while Home, Cameras and Lighting Studio respond to `input_boolean.chinese_dashboard`. Switching to Chinese leaves most of the dashboard in English. | OPEN |
 | UI-013 | S4 | `parents-room`, `guest-room` | Each stacks a Mushroom media card **and** a native `media-control` for the same player. Reads as a deliberate compact-plus-full pairing, so not changed. Confirm intent. | OPEN |
-| UI-014 | S3 | `cameras` | Front Door rendered twice (picture-entity + template card); five per-camera chips duplicate the tiles above them; "All Cameras" heading sits over a grid excluding Front Door; 2-up nested grid in a third-width section gives ~185px previews. | IN PROGRESS |
 | UI-015 | S4 | `ipad-command-center` | 52 cards, never reviewed. Nested 3-column grid inside a third-width section; no page title card. | OPEN |
 | UI-016 | S4 | `bills` + six bill subviews | Nested 2-column grids; subviews never reviewed. | OPEN |
 
@@ -61,6 +60,7 @@ been seen rendered.
 | UI-021 | S3 | `energy` | 14 cards in one column; the four native energy cards squeezed into half a page. | `df457e3` | FIXED — AWAITING LIVE VERIFICATION |
 | UI-022 | S1 | `network` | Three Infrastructure cards with no entity, no state and no tap action rendered identically to real status cards, so three of five could never say anything but "fine". | `a5dc914` | FIXED — AWAITING LIVE VERIFICATION |
 | UI-023 | S3 | room pages | Seven "nothing here yet" markdown placeholders under their own headings, filling two of Ray Bedroom's four columns. Moved to `README.md`. | `3048e54` | FIXED — AWAITING LIVE VERIFICATION |
+| UI-014 | S3 | `cameras` | Front Door rendered twice (picture-entity plus a template card doing the same navigation); five per-camera chips duplicated the tiles above them; the "All Cameras" heading sat over a grid excluding Front Door; a 2-up nested grid in a third-width section gave ~185px previews. | `f055482` | FIXED — AWAITING LIVE VERIFICATION |
 | UI-024 | S4 | `kitchen` | Third smart plug had no `name` (rendered its entity ID) and a one-off `brightness(200%)` pink/yellow card_mod unlike its two neighbours. | `3048e54` | FIXED — AWAITING LIVE VERIFICATION |
 
 ---

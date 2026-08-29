@@ -17,20 +17,35 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 
 ## Next recommended priorities
 
-1. **UI-014** — Cameras: Front Door rendered twice, per-camera chips
-   duplicate the tiles, previews cramped. Batch drafted, not yet applied.
-2. **UI-012** — bilingual gap: 33 of 36 views are English-only while Home,
+1. **UI-012** — bilingual gap: 33 of 36 views are English-only while Home,
    Cameras and Lighting Studio respond to the toggle.
-3. **UI-013** — Parents Room and Guest Room each stack a Mushroom media card
+2. **UI-013** — Parents Room and Guest Room each stack a Mushroom media card
    and a native `media-control` for the same player. Confirm intent first.
-4. iPad Command Center — 52 cards, never reviewed; nested 3-column grid in a
+3. iPad Command Center — 52 cards, never reviewed; nested 3-column grid in a
    third-width section.
-5. Bills — nested 2-column grids; six bill subviews unreviewed.
-6. **UI-011** — verify the Total Solar unit assumption against the live card.
+4. Bills — nested 2-column grids; six bill subviews unreviewed.
+5. **UI-011** — verify the Total Solar unit assumption against the live card.
 
 ---
 
 ## Batches
+
+### `f055482` — Cameras: one uniform grid, no camera listed three times
+Area: `cameras` view. Purpose: every camera appeared in up to three places at
+once — a "N/6 online" summary chip, a picture-entity tile, and a per-camera
+status chip below the tiles. Front Door additionally had both a live preview
+and a Mushroom card doing the same navigation, and the "All Cameras" heading
+sat over a grid that excluded it. Now one grid of six identical tiles at
+grid_options columns 6 in a span-2 section; the five duplicate chips are gone.
+The summary chip absorbed what they carried: it names the offline cameras
+("North Wall, Stockroom offline") rather than only counting, and degrades to
+"4 of 6 offline" instead of truncating. The WAN chip gained an unavailable
+branch. Front Door's one-off 0.20 border was unified to the 0.18 used by the
+other five.
+Validated: 268 templates, 36/36 links, all six camera entities and all six
+subview links intact. Chip rendered at zero, one, two and four cameras down.
+Expect: two-across previews roughly double their old width, one row of status
+chips instead of two, and a named camera when one drops.
 
 ### `a5dc914` — Network: static labels stop impersonating live status
 Area: `network` view. Purpose: three Infrastructure cards (Aqara M100, Hue
