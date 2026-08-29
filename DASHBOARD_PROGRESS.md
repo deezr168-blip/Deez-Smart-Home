@@ -32,7 +32,7 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 
 ## Batches
 
-### `__SHA__` — switch and cover controls become native Tile cards
+### `f7d5b13` — switch and cover controls become native Tile cards
 Area: 26 cards across home, parents-room, ray-bedroom, guest-room, kitchen,
 dining, cameras, climate, lights. Purpose: completes the control-card pass
 started in the previous batch. All 25 `mushroom-entity-card` switch controls
