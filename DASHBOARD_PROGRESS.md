@@ -32,7 +32,7 @@ minutes. Confirmed working 2026-08-29 (manual deploy of `e06d0ce` at
 
 ## Batches
 
-### `__SHA__` — status text answers the toggle too (UI-028)
+### `fa286de` — status text answers the toggle too (UI-028)
 Area: 58 guarded templates across every view. Purpose: the chrome pass made
 titles and headings bilingual, leaving the actual state words in English —
 a Chinese dashboard reading "Sensor offline" under a Chinese heading.
