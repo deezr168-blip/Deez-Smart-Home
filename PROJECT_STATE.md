@@ -182,6 +182,8 @@ Safeguards:
 - Advisory routines queue work rather than implementing production dashboard
   changes.
 - Do not claim live verification solely from repository validation.
+- Serialize write sequences per the Concurrency / Serialization Policy:
+  fetch before writing, fetch again before committing, never force-push.
 
 ---
 
@@ -235,8 +237,92 @@ writer's entry. All times UTC.
 | Heading-card contrast (`themes/deez_your_name.yaml`) | Main CasaRay Upgrade | `9926233` — 2026-08-29 23:42 | `LIVE_VERIFICATION_REQUIRED` | 2026-08-30 05:42 | Closes UI-027. One theme-level `card-mod-card-heading` rule; no dashboard YAML touched. |
 | Residual bilingual gaps (`people-locations`, `ipad-command-center`, `home`) | Main CasaRay Upgrade | `dff00f3` — 2026-08-29 23:45 | `LIVE_VERIFICATION_REQUIRED` | 2026-08-30 05:45 | Closes REG-004/005/006. REG-005 changed the English text from `WAN —` to "WAN not reporting" — a wording decision the owner may want to review. |
 | Regression audit record (`DASHBOARD_ISSUES.md`) | Regression Auditor | `3116495` — 2026-08-29 22:49 | `PUSHED` | 2026-08-30 04:49 | Baseline REG-001..006 is fresh — do not re-audit the same range. Findings are queued for Main; the auditor does not implement them. |
-| Coordination state (`PROJECT_STATE.md`, `DASHBOARD_BACKLOG.md`) | Shared — writer routines update their own rows and items | `a0b05ce` — 2026-08-29 23:48 | `PUSHED` | 2026-08-30 05:40 | Structure is settled. Routines append to their own sections, rows and backlog items rather than restructuring the files. |
+| Coordination state (`PROJECT_STATE.md`, `DASHBOARD_BACKLOG.md`) | Shared — writer routines update their own rows and items | `STAMPSHA` — 2026-08-29 23:50 | `PUSHED` | 2026-08-30 05:50 | Structure is settled. Routines append to their own sections, rows and backlog items rather than restructuring the files. |
 | Back / previous-page navigation (all views) | Billing Dashboard Upgrade (approved global pattern) | `34a92e7` — 2026-08-28 19:44 | `LIVE_VERIFICATION_REQUIRED` | expired 2026-08-29 01:44 | Protection expired, but implementation is **complete**: 35/36 views carry a parent-targeted `mdi:arrow-left` chip, `home` is root. Priority 1 needs a live look, not a redesign — rule 9 applies. |
+
+---
+
+## Concurrency / Serialization Policy
+
+Routines may run concurrently at the scheduler level. What must be
+serialized is the **write sequence** — only one routine at a time may be
+midway through writing shared project state or production implementation.
+
+### Reading
+
+1. Any routine may inspect or read the repository at any time. Reads are never
+   serialized.
+
+### Before any write
+
+2. Before making any repository write, a routine must:
+   - `git fetch origin ha-deploy`
+   - confirm its local branch is current
+   - inspect the commits added since the routine began
+   - re-read `PROJECT_STATE.md`
+   - re-check ownership, priority, Active Change Windows, Active Work Leases
+     and the current Next Actionable Work
+3. If `origin/ha-deploy` moved after the routine selected its task, it must
+   re-evaluate the task before writing. Never continue from stale assumptions.
+4. Fetch again immediately before committing.
+
+### If remote moved during implementation
+
+5. Never force-push and never rewrite published history. Inspect the new
+   commits and determine whether they overlap the same area, files or
+   objective.
+6. **Unrelated and safely reconcilable** — fast-forward or rebase the
+   uncommitted work onto current `ha-deploy`, re-run validation, continue.
+7. **Overlapping** the same feature, tracking section, ownership area or
+   production implementation:
+   - stop the conflicting write
+   - do not automatically merge competing implementations
+   - preserve the local work if it is worth reviewing
+   - record the conflict in the routine's own `Current Work / Blockers`
+     subsection
+   - re-evaluate from current branch state on the next run
+
+### Leases
+
+8. Two production writer routines must never implement the same backlog or
+   issue ID concurrently.
+9. On beginning substantive implementation, a writer records the item in the
+   Active Work Leases table below as `IN_PROGRESS — <routine name>`, with the
+   item ID, owning routine, start commit and start timestamp. **A lease is a
+   coordination courtesy, not a permanent lock.**
+10. A routine encountering an `IN_PROGRESS` item owned by another routine must
+    not implement it.
+11. The owning routine clears or changes its lease as soon as the work becomes
+    `PUSHED`, `LIVE_VERIFICATION_REQUIRED`, `BLOCKED`, or is abandoned or
+    replanned.
+12. A lease older than **4 hours** with no supporting commits or progress
+    update is potentially stale. Advisory routines may flag it as stale; they
+    must not silently take ownership of it.
+13. Specialist ownership still overrides general ownership.
+
+### Write hygiene
+
+14. Documentation-only advisory routines should minimize writes to shared
+    files — update their own designated sections and avoid rewriting unrelated
+    formatting or content.
+15. `DASHBOARD_PROGRESS.md` is historical progress, not a second coordination
+    authority.
+16. `PROJECT_STATE.md` is the authoritative current coordination state.
+17. `DASHBOARD_BACKLOG.md` is the authoritative detailed work queue.
+18. **Avoid stamp races.** Only the routine that creates a content commit
+    creates its `docs: stamp` commit. Do not stamp another routine's batch
+    just because you encountered a `PENDING` placeholder — record the
+    unstamped entry for cleanup instead, unless you are explicitly performing
+    coordination maintenance.
+
+### Active Work Leases
+
+Genuinely active implementation only. Planned work and verification-only work
+do **not** belong here.
+
+| Item | Owning Routine | Start Commit | Started | State | Notes |
+|---|---|---|---|---|---|
+| _(none)_ | — | — | — | — | No routine holds an implementation lease. Main's queue is exhausted and pushed; `BILL-001` is actionable but unstarted, so it is not a lease. |
 
 ---
 
@@ -248,6 +334,12 @@ routines may update a pointer when evidence changes priority or status;
 ownership stays with the writer. Writers refresh their own pointer after
 completing work. Within a priority, ties are broken by Selection Score; the
 score never changes which priority is selected.
+
+**This pointer is advisory.** It records the correct selection as of the
+timestamp below, and this branch moves fast. A routine must revalidate it
+against current `HEAD` at execution time, per the Concurrency /
+Serialization Policy, before acting on it — the item named here may already
+be implemented.
 
 | Routine | Item | Priority | State | Reason Selected |
 |---|---|---|---|---|
@@ -385,12 +477,11 @@ score never changes which priority is selected.
 
 ## Last Coordination Update
 
-- **Date/time:** 2026-08-29 23:48 UTC
+- **Date/time:** 2026-08-29 23:50 UTC
 - **Branch:** `ha-deploy`
-- **`ha-deploy` HEAD before this update:** `dff00f3` (REG-004/005/006),
-  merged into this update's work.
-- **This update's commit:** `a0b05ce` — Impact/Effort/Risk scoring, merged
-  with the concurrent `b5eee22`, `9926233` and `dff00f3` batches.
+- **`ha-deploy` HEAD before this update:** `62a468f` (Main's run closeout)
+- **This update's commit:** `STAMPSHA` — Concurrency / Serialization Policy
+  and the Active Work Leases table.
 
 Per `CLAUDE.md`, a commit cannot contain its own hash: this update's SHA is
 written by the `docs: stamp` commit that immediately follows it.
