@@ -154,7 +154,7 @@ writer's entry. All times UTC.
 |---|---|---|---|---|---|
 | Bilingual template pass (status text across all 36 views) | Main CasaRay Upgrade | `f04a59f` — 2026-08-29 20:51 | `LIVE_VERIFICATION_REQUIRED` | 2026-08-30 02:51 | Third and final batch of one sequence (`f4e7ec3`, `fa286de`, `f04a59f`). Continuation by Main is permitted under rule 5; REG-001/004/005/006 are in-sequence fixes, not a redesign. |
 | Regression audit record (`DASHBOARD_ISSUES.md`) | Regression Auditor | `3116495` — 2026-08-29 22:49 | `PUSHED` | 2026-08-30 04:49 | Baseline REG-001..006 is fresh — do not re-audit the same range. Findings are queued for Main; the auditor does not implement them. |
-| Coordination state (`PROJECT_STATE.md`) | Shared — writer routines update their own rows | `STAMPSHA` — 2026-08-29 23:30 | `PUSHED` | 2026-08-30 05:30 | Structure is settled. Routines append to their own sections and rows rather than restructuring the file. |
+| Coordination state (`PROJECT_STATE.md`) | Shared — writer routines update their own rows | `07d3ff2` — 2026-08-29 23:30 | `PUSHED` | 2026-08-30 05:30 | Structure is settled. Routines append to their own sections and rows rather than restructuring the file. |
 | Back / previous-page navigation (all views) | Billing Dashboard Upgrade (approved global pattern) | `34a92e7` — 2026-08-28 19:44 | `LIVE_VERIFICATION_REQUIRED` | expired 2026-08-29 01:44 | Protection expired, but implementation is **complete**: 35/36 views carry a parent-targeted `mdi:arrow-left` chip, `home` is root. Priority 1 needs a live look, not a redesign — rule 9 applies. |
 
 ---
@@ -222,7 +222,7 @@ writer's entry. All times UTC.
 - **`ha-deploy` HEAD before this update:** `618347f291a89d6db3f194f746d1a1184b104820`
   (`618347f` — "docs: PROJECT_STATE.md as the coordination state for
   autonomous routines")
-- **This update's commit:** `STAMPSHA` — adds Recent Change Protection and the
+- **This update's commit:** `07d3ff2` — adds Recent Change Protection and the
   Active Change Windows table.
 
 Per `CLAUDE.md`, a commit cannot contain its own hash: this update's SHA is
