@@ -22,35 +22,6 @@ in `PROJECT_STATE.md`.
 
 ### P1 — High
 
-#### `REG-002` — false-safe motion chips
-- **Owner:** Main CasaRay Upgrade
-- **Area:** `lights` quick-status chip (~L3020-3027), `cameras` quick-status
-  chip (~L1611-1620)
-- **Objective:** add an `unavailable / unknown / none` branch ahead of the
-  `select('eq','on') | count > 0` test, and make the text bilingual.
-- **State:** `PLANNED` — actionable
-- **Blockers:** none
-- **Verification:** live look at both chips with the watched motion sensors
-  unavailable; must not read "Quiet".
-- **Notes:** highest-severity open item. Both chips currently report a
-  confident "Quiet" when *every* watched sensor is unavailable — the
-  reassuring-false-state anti-pattern `CLAUDE.md` prohibits and the shared
-  root cause of UI-002/005/006/008/018/020. Predates tracked history; not
-  introduced by any recent batch.
-
-#### `REG-003` — Network nav chip has no unavailable branch
-- **Owner:** Main CasaRay Upgrade
-- **Area:** `home` — Network nav chip (~L547-548)
-- **Objective:** add a third grey branch for unavailable/unknown, mirroring
-  the treatment `a5dc914` applied to the `network` view.
-- **State:** `PLANNED` — actionable
-- **Blockers:** none
-- **Verification:** live look with `binary_sensor.eero_wan_status` unavailable;
-  must not read confident red.
-- **Notes:** same class as REG-002, narrower blast radius (one chip, colour
-  only). `a5dc914` fixed the `network` view and missed this duplicate summary
-  chip on `home`.
-
 #### `BILL-001` — billing privacy remediation
 - **Owner:** Billing Dashboard Upgrade
 - **Area:** `bill-electricity` (~L4242), `bill-gas` (~L4327)
@@ -122,21 +93,22 @@ in `PROJECT_STATE.md`.
 
 ### P3 — Polish
 
-#### `BILING-RESID` — residual bilingual gaps (REG-001, REG-004, REG-005, REG-006)
+#### `BILING-RESID` — residual bilingual gaps (REG-004, REG-005, REG-006)
 - **Owner:** Main CasaRay Upgrade
-- **Area:** `security` three door cards (~L2192/2200/2208); `people-locations`
-  (~L2872); `ipad-command-center` WAN chip (~L3662); `home` Energy tile
-  (~L450)
-- **Objective:** wrap the four remaining bare-English fragments the way the
+- **Area:** `people-locations` (~L2872); `ipad-command-center` WAN chip
+  (~L3662); `home` Energy tile (~L450)
+- **Objective:** wrap the three remaining bare-English fragments the way the
   rest of the file already does.
 - **State:** `PLANNED` — actionable
 - **Blockers:** none
 - **Verification:** live look with the language toggle on.
 - **Notes:** grouped because they are one continuation of the UI-012 →
-  UI-028 → UI-029 sequence, not four independent defects. Individual REG IDs
+  UI-028 → UI-029 sequence, not three independent defects. Individual REG IDs
   and their per-finding evidence stay in `DASHBOARD_ISSUES.md`; REG-005 may
   instead be closed as intentional if the owner confirms an untranslated dash
-  is wanted.
+  is wanted. REG-001, originally grouped here (the three `security` door
+  cards' Open/Closed clause), was fixed together with REG-002/REG-003 in
+  `b5eee22` and moved to "Awaiting live verification" below.
 
 #### `DR-001` — iPad Command Center density
 - **Owner:** Main CasaRay Upgrade (raised by CasaRay Design Reviewer)
@@ -161,6 +133,7 @@ active queue work** — no routine should re-implement these. Full records in
 
 | Area | Items | Last commit |
 |---|---|---|
+| Reassuring/false-safe status + bilingual door text | REG-001, REG-002, REG-003 | `b5eee22` |
 | Bilingual pass (chrome, status text, number-glued fragments) | UI-012, UI-028, UI-029 | `f04a59f` |
 | Back / previous-page navigation | UI-009, UI-017 | `34a92e7` |
 | Guarded fallbacks / false-state removal | UI-002, UI-005, UI-006, UI-008, UI-018, UI-020, UI-022 | `a5dc914` |

@@ -186,7 +186,8 @@ writer's entry. All times UTC.
 
 | Area | Owning Routine | Last Significant Commit | State | Protected Until | Notes |
 |---|---|---|---|---|---|
-| Bilingual template pass (status text across all 36 views) | Main CasaRay Upgrade | `f04a59f` — 2026-08-29 20:51 | `LIVE_VERIFICATION_REQUIRED` | 2026-08-30 02:51 | Third and final batch of one sequence (`f4e7ec3`, `fa286de`, `f04a59f`). Continuation by Main is permitted under rule 5; REG-001/004/005/006 are in-sequence fixes, not a redesign. |
+| Bilingual template pass (status text across all 36 views) | Main CasaRay Upgrade | `f04a59f` — 2026-08-29 20:51 | `LIVE_VERIFICATION_REQUIRED` | 2026-08-30 02:51 | Third and final batch of one sequence (`f4e7ec3`, `fa286de`, `f04a59f`). Continuation by Main is permitted under rule 5; REG-004/005/006 are in-sequence fixes, not a redesign. |
+| Reassuring/false-safe status regressions (`security` doors, `lights`/`cameras` motion chips, `home` Network chip) | Main CasaRay Upgrade | `b5eee22` — 2026-08-29 23:50 | `LIVE_VERIFICATION_REQUIRED` | 2026-08-30 05:50 | Closes REG-001/002/003. Small, guarded-template fixes matching an existing pattern elsewhere in the file — not a redesign. |
 | Regression audit record (`DASHBOARD_ISSUES.md`) | Regression Auditor | `3116495` — 2026-08-29 22:49 | `PUSHED` | 2026-08-30 04:49 | Baseline REG-001..006 is fresh — do not re-audit the same range. Findings are queued for Main; the auditor does not implement them. |
 | Coordination state (`PROJECT_STATE.md`, `DASHBOARD_BACKLOG.md`) | Shared — writer routines update their own rows and items | `ecc8af7` — 2026-08-29 23:35 | `PUSHED` | 2026-08-30 05:35 | Structure is settled. Routines append to their own sections, rows and backlog items rather than restructuring the files. |
 | Back / previous-page navigation (all views) | Billing Dashboard Upgrade (approved global pattern) | `34a92e7` — 2026-08-28 19:44 | `LIVE_VERIFICATION_REQUIRED` | expired 2026-08-29 01:44 | Protection expired, but implementation is **complete**: 35/36 views carry a parent-targeted `mdi:arrow-left` chip, `home` is root. Priority 1 needs a live look, not a redesign — rule 9 applies. |
@@ -203,7 +204,7 @@ completing work.
 
 | Routine | Item | Priority | State | Reason Selected |
 |---|---|---|---|---|
-| Main CasaRay Upgrade | `REG-002` — false-safe motion chips on `lights` and `cameras` | P1 | `PLANNED` — actionable | Highest actionable Main-owned item. Both chips read a confident "Quiet" when every watched sensor is unavailable, which is incorrect state presentation with concrete evidence, so queue rule 7 permits proceeding inside the open bilingual window; the chips were untouched by that pass. `UI-011` is also P1 but purely `LIVE_VERIFICATION_REQUIRED` (rule 4). `BILL-001` is P1 and outranks Main's P2 work, but is Billing-owned — rule 9 leaves it alone. |
+| Main CasaRay Upgrade | `UI-027` — heading-card contrast (theme-level rule) | P2 | `PLANNED` — actionable | `REG-002` and `REG-003` (the two standalone P1s) are fixed and pushed in `b5eee22`, now `LIVE_VERIFICATION_REQUIRED`. `UI-011` is P1 but purely `LIVE_VERIFICATION_REQUIRED` (rule 4) and `BILL-001` is P1 but Billing-owned (rule 9), so neither is Main's to take. `UI-027` is Main's highest actionable owned item remaining. |
 | Billing Dashboard Upgrade | `BILL-001` — remove hardcoded account / NMI / MIRN from `bill-electricity` and `bill-gas` | P1 | `PLANNED` — actionable | Highest actionable Billing-owned item, and named explicitly in the P1 class. Blocks `BILL-003`: ingestion should not be built over an unresolved privacy exposure. Repository removal is safe now; only the question of what the live card displays needs the owner. |
 
 ---
@@ -211,8 +212,29 @@ completing work.
 ## Current Work / Blockers
 
 ### Main (CasaRay Upgrade)
-- Queue: `REG-002` (P1) → `REG-003` (P1) → `UI-027` (P2) → `BILING-RESID`
-  (P3) → `DR-001` (P3). Detail in `DASHBOARD_BACKLOG.md`.
+- **Work completed this run:** `REG-002` (P1) and `REG-003` (P1) fixed —
+  the `lights`/`cameras` motion-aggregate chips now report an offline state
+  rather than a confident "Quiet" when every watched sensor is
+  unavailable/unknown/none, and the `home` Network nav chip gained the same
+  third grey branch its dedicated `network` view already has. `REG-001`
+  (bare-English Open/Closed on the three `security` door cards) was fixed in
+  the same batch since it touched the identical guarded-template pattern;
+  `BILING-RESID` in `DASHBOARD_BACKLOG.md` is narrowed to REG-004/005/006.
+- **Commit(s):** `b5eee22` (fix), `6c3fff5` (merge with the concurrent
+  `ecc8af7` backlog-queue commit — no conflicting dashboard content, only a
+  `DASHBOARD_PROGRESS.md` prose section, resolved in favour of the newer
+  "Superseded" pointer).
+- **Verification state:** `CODE_VALID` → `PUSHED`. Each new branch was
+  verified by rendering the extracted Jinja logic standalone across every
+  state combination (on/off/unavailable/unknown/none, both languages) before
+  push, but nothing here is `LIVE_VERIFIED` — needs a live look with a watched
+  sensor pulled unavailable, per `DASHBOARD_BACKLOG.md`'s verification notes.
+- **Blockers:** none on the next task.
+- **Exact next recommended task:** `UI-027` (P2, actionable) — a theme-level
+  surface or text-shadow rule in `themes/deez_your_name.yaml` so the 52 native
+  `heading` cards stay legible over the bright horizon band, per the
+  global-first design rule in `CLAUDE.md`. After that: `BILING-RESID` (P3,
+  REG-004/005/006) then `DR-001` (P3).
 - Back-navigation pattern is implemented in the repository: 35 of 36 views
   carry a parent-targeted `mdi:arrow-left` chip; `home` is the root and
   correctly has none. Remaining work on priority 1 is live verification, not
