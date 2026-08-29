@@ -28,6 +28,29 @@ Nothing below this line changes: the batch record is history and stays intact.
 
 ## Batches
 
+### `PENDING` — the last three bare-English fragments close the bilingual thread (BILING-RESID)
+Area: `people-locations` (~L2879), `ipad-command-center` WAN chip (~L3675),
+`home` Energy tile (~L450). Purpose: closes REG-004/005/006, the residue left
+after the UI-012 → UI-028 → UI-029 sequence and the REG-001/002/003 batch.
+REG-004: the "at home" (🟢) branch of the per-person distance loop printed
+bare `home` while its own "away" branches on the same line were already
+bilingual. Now `{{ '在家' if cn else 'home' }}`.
+REG-005: the WAN chip's unavailable fallback read literal `WAN —` in both
+languages. Rather than translate the dash in isolation, matched the wording
+an equivalent unavailable case already uses elsewhere in the file
+(`~L1636`, "网络无数据"): now `{{ '网络无数据' if cn else 'WAN not reporting' }}`.
+This changes the English text from "WAN —" to "WAN not reporting" — a
+deliberate consistency choice per the audit's own recommendation, not a pure
+translation; flag if the owner wanted the dash kept literally.
+REG-006: the Energy tile's `offline` fallback sat untranslated beside its own
+already-bilingual "Solar"/"太阳能" label. Now `{{ '离线' if cn else 'offline' }}`.
+Verified each branch by rendering the extracted Jinja logic standalone: all
+three reproduce their existing English exactly (REG-005's fallback text
+change aside, which is intentional) and produce Chinese when the toggle is on.
+Validated: 384 templates, 36/36 links, 0 broken, no entity loss.
+Expect: no visible change in English; with the toggle on, the three remaining
+gaps in the bilingual pass are closed.
+
 ### `9926233` — heading cards get their contrast back (UI-027)
 Area: `themes/deez_your_name.yaml` (one rule, shared base). Purpose: the 52
 native `heading` cards across every section render with no `ha-card` wrapper,

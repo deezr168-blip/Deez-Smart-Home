@@ -80,23 +80,6 @@ in `PROJECT_STATE.md`.
 
 ### P3 — Polish
 
-#### `BILING-RESID` — residual bilingual gaps (REG-004, REG-005, REG-006)
-- **Owner:** Main CasaRay Upgrade
-- **Area:** `people-locations` (~L2872); `ipad-command-center` WAN chip
-  (~L3662); `home` Energy tile (~L450)
-- **Objective:** wrap the three remaining bare-English fragments the way the
-  rest of the file already does.
-- **State:** `PLANNED` — actionable
-- **Blockers:** none
-- **Verification:** live look with the language toggle on.
-- **Notes:** grouped because they are one continuation of the UI-012 →
-  UI-028 → UI-029 sequence, not three independent defects. Individual REG IDs
-  and their per-finding evidence stay in `DASHBOARD_ISSUES.md`; REG-005 may
-  instead be closed as intentional if the owner confirms an untranslated dash
-  is wanted. REG-001, originally grouped here (the three `security` door
-  cards' Open/Closed clause), was fixed together with REG-002/REG-003 in
-  `b5eee22` and moved to "Awaiting live verification" below.
-
 #### `DR-001` — iPad Command Center density
 - **Owner:** Main CasaRay Upgrade (raised by CasaRay Design Reviewer)
 - **Area:** `ipad-command-center`
@@ -120,6 +103,7 @@ active queue work** — no routine should re-implement these. Full records in
 
 | Area | Items | Last commit |
 |---|---|---|
+| Residual bilingual gaps (per-person "at home", WAN chip fallback, Energy tile fallback) | REG-004, REG-005, REG-006 | pending stamp |
 | Heading-card contrast (theme-level `card-mod-card-heading` rule) | UI-027 | `9926233` |
 | Reassuring/false-safe status + bilingual door text | REG-001, REG-002, REG-003 | `b5eee22` |
 | Bilingual pass (chrome, status text, number-glued fragments) | UI-012, UI-028, UI-029 | `f04a59f` |
