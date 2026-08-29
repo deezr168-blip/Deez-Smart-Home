@@ -447,7 +447,7 @@ views:
       grid_options:
         columns: 3
       primary: Energy
-      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set s = states(''sensor.primo_5_0_1_1_ac_power'') %}{% set g = states(''sensor.powerpal_gateway_powerpal_power'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}{{ ''太阳能'' if cn else ''Solar'' }} {% if s in bad %}offline{% else %}{{ s | float(0) | round(0) | int }} W{% endif %}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set s = states(''sensor.primo_5_0_1_1_ac_power'') %}{% set g = states(''sensor.powerpal_gateway_powerpal_power'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}{{ ''太阳能'' if cn else ''Solar'' }} {% if s in bad %}{{ ''离线'' if cn else ''offline'' }}{% else %}{{ s | float(0) | round(0) | int }} W{% endif %}'
       icon: mdi:solar-power
       icon_color: amber
       tap_action:
@@ -2876,7 +2876,7 @@ views:
     - type: markdown
       content: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{%- set people = [(''Raymond Du'', ''person.raymond_du''), (''Vinh Du'', ''person.vinh_du''), (''Ai Q Huang'', ''person.ai_q_huang'')] -%}
 {%- for name, p in people %}{% set lat = state_attr(p,''latitude'') %}{% set lon = state_attr(p,''longitude'') %}{% set d = distance(''zone.home'',p) %}
-**{{ name }}** — {% if d is not number %}{{ ''位置未知'' if cn else ''location unknown'' }}{% elif d <= 0.1 %}🟢 home{% elif d < 50 %}🟠 {% if cn %}距家 {{ d | round(1) }} 公里{% else %}{{ d | round(1) }} km away{% endif %}{% else %}🔴 {% if cn %}距家 {{ d | round(1) }} 公里{% else %}{{ d | round(1) }} km away{% endif %}{% endif %}
+**{{ name }}** — {% if d is not number %}{{ ''位置未知'' if cn else ''location unknown'' }}{% elif d <= 0.1 %}🟢 {{ ''在家'' if cn else ''home'' }}{% elif d < 50 %}🟠 {% if cn %}距家 {{ d | round(1) }} 公里{% else %}{{ d | round(1) }} km away{% endif %}{% else %}🔴 {% if cn %}距家 {{ d | round(1) }} 公里{% else %}{{ d | round(1) }} km away{% endif %}{% endif %}
 {% if lat is number and lon is number %}
 [🧭 Route](https://maps.apple.com/?daddr={{ lat }},{{ lon }}&dirflg=d) &nbsp;&nbsp; [🗺️ Map](https://maps.apple.com/?ll={{ lat }},{{ lon }})
 {%- endif %}
@@ -3672,7 +3672,7 @@ views:
       - type: template
         icon: mdi:wan
         icon_color: '{% set v = states(''binary_sensor.eero_wan_status'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}grey{% elif v == ''on'' %}green{% else %}red{% endif %}'
-        content: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set v = states(''binary_sensor.eero_wan_status'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}WAN —{% elif v == ''on'' %}{{ ''网络在线'' if cn else ''WAN Online'' }}{% else %}{{ ''网络离线'' if cn else ''WAN Offline'' }}{% endif %}'
+        content: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set v = states(''binary_sensor.eero_wan_status'') %}{% if v in [''unavailable'', ''unknown'', ''none''] %}{{ ''网络无数据'' if cn else ''WAN not reporting'' }}{% elif v == ''on'' %}{{ ''网络在线'' if cn else ''WAN Online'' }}{% else %}{{ ''网络离线'' if cn else ''WAN Offline'' }}{% endif %}'
         tap_action:
           action: navigate
           navigation_path: /deez-smart-home/network

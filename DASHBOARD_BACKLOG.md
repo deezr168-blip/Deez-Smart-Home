@@ -27,7 +27,6 @@ the formula and the safeguards.
 | `UI-011` | P1 | Main | `energy` | — | — | — | — | `LIVE_VERIFICATION_REQUIRED` — excluded |
 | `BILL-002` | P2 | Billing | `bills` + six subviews | 4 | 4 | 3 | **1** | actionable |
 | `BILL-003` | P2 | Billing | ingestion architecture | 4 | 5 | 4 | **−1** | blocked on `BILL-001` |
-| `BILING-RESID` | P3 | Main | 3 views | 2 | 1 | 1 | **2** | actionable |
 | `DR-001` | P3 | Main | `ipad-command-center` | 3 | 4 | 4 | **−2** | actionable |
 
 ### P1 — High
@@ -101,26 +100,6 @@ the formula and the safeguards.
 
 ### P3 — Polish
 
-#### `BILING-RESID` — residual bilingual gaps (REG-004, REG-005, REG-006)
-- **Owner:** Main CasaRay Upgrade
-- **Area:** `people-locations` (~L2872); `ipad-command-center` WAN chip
-  (~L3662); `home` Energy tile (~L450)
-- **Objective:** wrap the three remaining bare-English fragments the way the
-  rest of the file already does.
-- **State:** `PLANNED` — actionable
-- **Score:** Impact 2 · Effort 1 · Risk 1 → **2**
-- **Blockers:** none. `home` sits inside the Active Change Window opened by
-  `b5eee22`; as owner of this bilingual sequence Main may continue under
-  Recent Change Protection rule 5, but this is P3 and ranks below `UI-027`
-  anyway, so the question does not currently bite.
-- **Verification:** live look with the language toggle on.
-- **Notes:** grouped because they are one continuation of the UI-012 →
-  UI-028 → UI-029 sequence, not three independent defects. REG-001, originally
-  grouped here (the three `security` door cards' Open/Closed clause), was
-  fixed with REG-002/REG-003 in `b5eee22` and moved to "Awaiting live
-  verification" below. **REG-005 stays unresolved by design** — whether the
-  untranslated `WAN —` placeholder is intentional is an open owner question,
-  not a scoring matter. Per-finding evidence stays in `DASHBOARD_ISSUES.md`.
 
 #### `DR-001` — iPad Command Center density
 - **Owner:** Main CasaRay Upgrade (raised by CasaRay Design Reviewer)
@@ -146,6 +125,7 @@ active queue work** — no routine should re-implement these. Full records in
 
 | Area | Items | Last commit |
 |---|---|---|
+| Residual bilingual gaps (per-person "at home", WAN chip fallback, Energy tile fallback) | REG-004, REG-005, REG-006 | `dff00f3` |
 | Heading-card contrast (theme-level `card-mod-card-heading` rule) | UI-027 | `9926233` |
 | Reassuring/false-safe status + bilingual door text | REG-001, REG-002, REG-003 | `b5eee22` |
 | Bilingual pass (chrome, status text, number-glued fragments) | UI-012, UI-028, UI-029 | `f04a59f` |

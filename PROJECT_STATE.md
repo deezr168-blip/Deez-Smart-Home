@@ -233,8 +233,9 @@ writer's entry. All times UTC.
 | Bilingual template pass (status text across all 36 views) | Main CasaRay Upgrade | `f04a59f` — 2026-08-29 20:51 | `LIVE_VERIFICATION_REQUIRED` | 2026-08-30 02:51 | Third and final batch of one sequence (`f4e7ec3`, `fa286de`, `f04a59f`). Continuation by Main is permitted under rule 5; REG-004/005/006 are in-sequence fixes, not a redesign. |
 | Reassuring/false-safe status regressions (`security` doors, `lights`/`cameras` motion chips, `home` Network chip) | Main CasaRay Upgrade | `b5eee22` — 2026-08-29 23:37 | `LIVE_VERIFICATION_REQUIRED` | 2026-08-30 05:37 | Closes REG-001/002/003. Small, guarded-template fixes matching an existing pattern elsewhere in the file — not a redesign. |
 | Heading-card contrast (`themes/deez_your_name.yaml`) | Main CasaRay Upgrade | `9926233` — 2026-08-29 23:42 | `LIVE_VERIFICATION_REQUIRED` | 2026-08-30 05:42 | Closes UI-027. One theme-level `card-mod-card-heading` rule; no dashboard YAML touched. |
+| Residual bilingual gaps (`people-locations`, `ipad-command-center`, `home`) | Main CasaRay Upgrade | `dff00f3` — 2026-08-29 23:45 | `LIVE_VERIFICATION_REQUIRED` | 2026-08-30 05:45 | Closes REG-004/005/006. REG-005 changed the English text from `WAN —` to "WAN not reporting" — a wording decision the owner may want to review. |
 | Regression audit record (`DASHBOARD_ISSUES.md`) | Regression Auditor | `3116495` — 2026-08-29 22:49 | `PUSHED` | 2026-08-30 04:49 | Baseline REG-001..006 is fresh — do not re-audit the same range. Findings are queued for Main; the auditor does not implement them. |
-| Coordination state (`PROJECT_STATE.md`, `DASHBOARD_BACKLOG.md`) | Shared — writer routines update their own rows and items | `5dca7f0` — 2026-08-29 23:45 | `PUSHED` | 2026-08-30 05:40 | Structure is settled. Routines append to their own sections, rows and backlog items rather than restructuring the files. |
+| Coordination state (`PROJECT_STATE.md`, `DASHBOARD_BACKLOG.md`) | Shared — writer routines update their own rows and items | `STAMPSHA` — 2026-08-29 23:48 | `PUSHED` | 2026-08-30 05:40 | Structure is settled. Routines append to their own sections, rows and backlog items rather than restructuring the files. |
 | Back / previous-page navigation (all views) | Billing Dashboard Upgrade (approved global pattern) | `34a92e7` — 2026-08-28 19:44 | `LIVE_VERIFICATION_REQUIRED` | expired 2026-08-29 01:44 | Protection expired, but implementation is **complete**: 35/36 views carry a parent-targeted `mdi:arrow-left` chip, `home` is root. Priority 1 needs a live look, not a redesign — rule 9 applies. |
 
 ---
@@ -250,7 +251,7 @@ score never changes which priority is selected.
 
 | Routine | Item | Priority | State | Reason Selected |
 |---|---|---|---|---|
-| Main CasaRay Upgrade | `BILING-RESID` — residual bilingual gaps (REG-004/005/006) | P3 | `PLANNED` — actionable | `UI-027` (heading-card contrast) is fixed and pushed, now `LIVE_VERIFICATION_REQUIRED`. `UI-011` is P1 but purely `LIVE_VERIFICATION_REQUIRED` (rule 4) and `BILL-001` is P1 but Billing-owned (rule 9), so neither is Main's to take; no P2 item remains actionable in `DASHBOARD_BACKLOG.md`. `BILING-RESID` is Main's highest actionable owned item remaining, ahead of `DR-001` (also P3, but advisory-only with no implementation agreed). Both remaining Main items are P3, so the Selection Score decides between them: `BILING-RESID` scores **2** (Impact 2, Effort 1, Risk 1) against `DR-001`'s **−2** (Impact 3, Effort 4, Risk 4). |
+| Main CasaRay Upgrade | `DR-001` — iPad Command Center density | P3 | `PLANNED` — needs a design decision before implementation | `BILING-RESID` was implemented in `dff00f3`, so `DR-001` is the only item left in Main's queue and the Selection Score no longer has anything to choose between — it scores **−2** (Impact 3, Effort 4, Risk 4) and is selected by being the sole remainder, not by rank. It is an advisory item with no implementation agreed: Main should get a design decision before writing code. Everything else Main owns is `LIVE_VERIFICATION_REQUIRED` and waiting on the owner. |
 | Billing Dashboard Upgrade | `BILL-001` — remove hardcoded account / NMI / MIRN from `bill-electricity` and `bill-gas` | P1 | `PLANNED` — actionable | Highest actionable Billing-owned item, and named explicitly in the P1 class. Blocks `BILL-003`: ingestion should not be built over an unresolved privacy exposure. Repository removal is safe now; only the question of what the live card displays needs the owner. Unchanged by scoring — Billing's only actionable P1 (score 4). |
 
 ---
@@ -258,9 +259,9 @@ score never changes which priority is selected.
 ## Current Work / Blockers
 
 ### Main (CasaRay Upgrade)
-- Queue: `BILING-RESID` (P3, score 2) → `DR-001` (P3, score −2). No
-  actionable P1 or P2 remains for Main; `UI-011` is P1 but purely
-  `LIVE_VERIFICATION_REQUIRED` (rule 4). Detail in `DASHBOARD_BACKLOG.md`.
+- Queue: `DR-001` (P3, score −2) only. No actionable P1 or P2 remains for
+  Main, and `UI-011` is P1 but purely `LIVE_VERIFICATION_REQUIRED` (rule 4).
+  Main's implementable queue is effectively drained — see the note below.
 - **Work completed this run:** `REG-002` (P1) and `REG-003` (P1) fixed —
   the `lights`/`cameras` motion-aggregate chips now report an offline state
   rather than a confident "Quiet" when every watched sensor is
@@ -293,6 +294,12 @@ score never changes which priority is selected.
   ~L450) the same way the rest of the file already does. After that: `DR-001`
   (P3, advisory — needs a design decision before implementation, not just
   code).
+- **Main's queue is effectively drained.** Five batches landed in the last
+  hour (`b5eee22`, `9926233`, `dff00f3`) and every remaining Main item is
+  either awaiting the owner's live verification or, in `DR-001`'s case,
+  awaiting a design decision. Per queue rule 5 this does not stall the
+  project, but no further autonomous Main implementation is warranted until
+  the owner verifies or a new evidence-based item is raised.
 - Back-navigation pattern is implemented in the repository: 35 of 36 views
   carry a parent-targeted `mdi:arrow-left` chip; `home` is the root and
   correctly has none. Remaining work on priority 1 is live verification, not
@@ -355,12 +362,12 @@ score never changes which priority is selected.
 
 ## Last Coordination Update
 
-- **Date/time:** 2026-08-29 23:45 UTC
+- **Date/time:** 2026-08-29 23:48 UTC
 - **Branch:** `ha-deploy`
-- **`ha-deploy` HEAD before this update:** `9926233` (UI-027 theme rule),
+- **`ha-deploy` HEAD before this update:** `dff00f3` (REG-004/005/006),
   merged into this update's work.
-- **This update's commit:** `5dca7f0` — Impact/Effort/Risk scoring, merged
-  with the concurrent `b5eee22` and `9926233` batches.
+- **This update's commit:** `STAMPSHA` — Impact/Effort/Risk scoring, merged
+  with the concurrent `b5eee22`, `9926233` and `dff00f3` batches.
 
 Per `CLAUDE.md`, a commit cannot contain its own hash: this update's SHA is
 written by the `docs: stamp` commit that immediately follows it.
