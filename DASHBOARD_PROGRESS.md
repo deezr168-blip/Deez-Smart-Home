@@ -28,7 +28,7 @@ Nothing below this line changes: the batch record is history and stays intact.
 
 ## Batches
 
-### `PENDING` — three reassuring/untranslated regressions closed (REG-001/002/003)
+### `b5eee22` — three reassuring/untranslated regressions closed (REG-001/002/003)
 Area: `security` (3 door cards), `lights` + `cameras` (motion-aggregate quick
 chips), `home` (Network nav chip). Purpose: closes the three MEDIUM findings
 from the 2026-08-29 regression audit, queued for Main.
