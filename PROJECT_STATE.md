@@ -1523,6 +1523,33 @@ be implemented.
   is itself the notable fact here — the owner disabling it (outside this
   repository) is the actual unblock, not further repository work. A future
   run should again re-fetch and re-read the top of this file first.
+- **2026-08-30 21:35 UTC (this run) — third re-check, pause still in
+  effect, no code change:** fetched `origin/ha-deploy` — `HEAD` unchanged at
+  `e83920b` (the Regression Auditor's second clean-audit stamp, which itself
+  recommended pausing this routine's schedule), tree clean before and after.
+  The **Schedule Status: PAUSED** section is still unmodified: no dated lift
+  note, so the owner-directed pause still applies. No new commits touch
+  `dashboards/deez_smart_home.yaml`, `DASHBOARD_ISSUES.md` or
+  `DASHBOARD_BACKLOG.md` since the last Main check-in — only two more
+  documentation-only re-check commits and the Regression Auditor's clean
+  sweep landed, and that audit independently reached the same conclusion
+  this note would. No human verification results recorded. Made no
+  dashboard-code change and did not start any queued item, per the pause.
+  Did **not** send a push notification — this is now the fifth consecutive
+  external-trigger fire since the pause was recorded (two Main
+  re-check commits plus this one, plus the Regression Auditor's own two
+  check-ins), nothing has changed since the original alert, and the
+  Regression Auditor's latest audit reached the identical "recommend
+  pausing this schedule" conclusion independently — a fourth notification
+  would be redundant noise. **Exact next recommended task:** unchanged —
+  none from this routine until the owner lifts the pause (dated note
+  replacing the Schedule Status section); at that point resume from
+  `DR-001` / the `CFG-003` host recovery status. Two independent routines
+  (Main and the Regression Auditor) have now each recommended the owner
+  disable the external recurring trigger outside this repository — that is
+  the actual unblock, not further repository work. A future run should
+  again re-fetch and re-read the top of this file first before doing
+  anything else.
 
 ### Billing
 - **2026-08-30 (this run) — `BILL-005` fixed (title-card text-shadow guard)
