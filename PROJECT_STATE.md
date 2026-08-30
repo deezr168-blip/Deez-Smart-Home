@@ -1895,9 +1895,37 @@ be implemented.
 
 ## Last Coordination Update
 
-- **Date/time:** 2026-08-30 (this run) — CFG-003 filed, UI-032 blocked
+- **Date/time:** 2026-08-30 (this run) — CFG-003 root cause found
 - **Branch:** `ha-deploy`
 - **`ha-deploy` HEAD before this update:** `6d5acd1`
+- **This update's commit:** `PENDING` — `CFG-003` confirmed by the owner and
+  **root cause established**. `ha-deploy` was replaced with an **unrelated
+  history on 2026-08-29** and the Home Assistant host's clone was left on the
+  old one. Proof: `git merge-base 26c3b14 HEAD` — the deploy log's own
+  candidate commit against the current tip — returns nothing, and `6c3fff5`
+  is a **parentless root commit** despite its merge-shaped message. A branch
+  cannot fast-forward across disjoint roots, so the host's commit never
+  advances, the content never differs, and the apply step is never reached.
+  The propagation stops **at the host's local clone**, not in the script's
+  validate/compare/apply stages, which are all behaving correctly on stale
+  input. This also reframes Blocker 1: the apply step is **not proven
+  broken — it has never been given anything to apply.** Recovery procedure
+  written for the owner (protected area, not executed from here), including
+  the warning to check `git log origin/ha-deploy..HEAD` for host-only commits
+  before any reset. `DEPLOY_AUTH.md`'s credential fault is **independent and
+  still outstanding** — fixing the clone may leave manual deploys working and
+  scheduled ones still failing. No dashboard YAML change; the probe is
+  preserved as the bridge test instrument, per instruction.
+  `CFG-001`/`CFG-002` untouched. Validation 7/7.
+- **Correction to the record:** the earlier note that "nothing the owner has
+  reported seeing is unique to a commit after `6c3fff5`" pointed the right
+  way but named the wrong boundary. The real boundary is the history split
+  itself — the live dashboard is serving the **pre-2026-08-29 history**, which
+  is why `6c3fff5`-era content looked like a match: both histories were
+  independently derived from the same production export.
+
+### Superseded — previous update
+
 - **This update's commit:** `d200945` — the `UI-032` probe did not render
   either. An unconditional card's absence cannot be explained by any gate,
   template, entity or schema question, so the fault is not in this file's

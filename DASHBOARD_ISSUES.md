@@ -45,7 +45,7 @@ close goes through the same gate as everything else.
 | ID | Sev | View / component | Summary | Status |
 |---|---|---|---|---|
 | CFG-001 | S1 | Home Assistant **Energy dashboard configuration** (`.storage/energy`) — *not* `dashboards/deez_smart_home.yaml` | Energy → Totals reports Grid total **47.83 kWh** costing **A$437.60**, an implied **A$9.1491/kWh** and about **31.8×** the real tariff. Observed live by the owner 30 Aug 2026 while verifying `UI-011`. **Not a scaling bug — an accumulation read as a period total.** The one exposed monetary entity is named literally `sensor Cost` (`device_class: monetary`, `AUD`, no area) and read **451.1649** the same day; `451.1649 − 437.60 = 13.5649`, and A$13.5649 over 47.83 kWh is **0.2836 AUD/kWh** — an entirely ordinary rate, within 1.6% of the `SolarNet Grid import tariff` entity (0.2880 AUD/kWh) and 3.7% of the contracted peak rate (0.2734996 incl GST, per the `bill-electricity` view). So today's true cost is ≈A$13.56 sitting inside a wrong figure; the ≈A$437.60 on screen is the cost entity's accumulated total, not its increase across the selected period. That also explains why the factor is an odd 31.8× rather than a clean power of ten. **Leading hypothesis, stated as a hypothesis:** grid-consumption cost is set to *use an entity tracking the total costs*, pointed at a cumulative lifetime cost sensor whose statistic history effectively begins inside the current period, so its whole accumulated total was recorded as one jump and attributed to today. `451.16 ÷ 0.288 ≈ 1567 kWh` ≈ 33 days of import, consistent with a counter that started about a month ago. The sensor's name is itself a signal: HA auto-names a cost sensor `<source name> Cost`, so a bare `sensor Cost` means the source-name half resolved to nothing — consistent with a renamed source or a hand-made sensor. A `state_class: total` without `last_reset`, or a `total_increasing` sensor that reset, would produce similar symptoms by a different route. **Not diagnosable from here and deliberately not changed:** the cost source lives in `.storage/energy`, which this environment cannot read (`/config` unmounted, REST/WebSocket blocked — `DEPLOYMENT_BLOCKERS.md` Blockers 2/3), and the grid source entity itself is a Powerpal sensor, not exposed to Assist. Editing a production money figure blind is exactly what the owner's instruction ruled out. **Owner action to unblock:** Settings → Dashboards → Energy → Grid consumption → its cost setting. Report (1) which entity is the grid consumption source; (2) which cost option is selected — *do not track costs* / *static price* / *entity with the current price* / *entity tracking the total costs*; (3) if an entity is named, which one, plus its `state_class`, `device_class`, unit and current state from Developer Tools → States (≈451 if it is the `sensor Cost` above); (4) from Developer Tools → Statistics, whether that entity is flagged with a units/reset issue and when its history starts. **Nothing in this repository changes as part of the fix** — the Energy dashboard's configuration is not under version control here. Take a full backup first; HA backups are unavailable from this environment (`MAINTENANCE.md`). | OPEN — blocked on owner diagnosis |
-| CFG-003 | S1 | **Deployment bridge / dashboard source of truth** — `/config/deploy_deez_dashboard.sh` and the storage-mode dashboard registry. *Not* `dashboards/deez_smart_home.yaml`, which is by all repository-side evidence correct | **Changes pushed to `ha-deploy` are not reaching the live dashboard.** Established 2026-08-30 after three consecutive `UI-032` attempts produced no visible change, the third being `UI-032 PROBE v1` — a card with **no condition of any kind**, whose absence therefore cannot be explained by any gate, template, entity or schema question. **The evidence that this is deployment, not YAML:** (1) every Home element the owner reports seeing — the `Home Systems` heading, its 7 cards, and the exact 5-chip row Media/Network/iPad/Status/Settings — has existed unchanged since merge `6c3fff5`; **nothing the owner has ever reported seeing is unique to any commit after it**, so every observation to date is equally consistent with the live dashboard being frozen at `6c3fff5`-era content. (2) **No change to `dashboards/deez_smart_home.yaml` has ever been independently confirmed live.** All three `VERIFIED` rows are something else: `UI-025` is a theme file plus a `/local/` image; `UI-026` was inferred from the background rendering, which is evidence about the theme, not this file; `UI-011` was read off Home Assistant's **native Energy panel**, a built-in page this Lovelace config does not produce. (3) **12 commits have touched the dashboard file since `26c3b14`**, the only deployment run on record — and that run was a no-op that wrote nothing, which is exactly `DEPLOYMENT_BLOCKERS.md` Blocker 1: the apply step has never been observed to write. **Confound that must be eliminated first, honestly stated:** the area the owner inspected — Energy, Lighting, Cameras, Security, Climate, People, Bills, Media, Network, iPad, Status, Settings — is `sections[5]`, `Home Systems`, at the **bottom** of the page. The probe is in `sections[1]`, the **second block from the top**, above `Today` and `Rooms`. The probe's location may not have been in view. This does not weaken points (1)–(3), but it is cheap to rule out and must be ruled out before the deployment bridge is touched. **Owner diagnosis, in order** — the first item is decisive on its own and bypasses rendering entirely: (a) open the dashboard's **Raw configuration editor** and search for the literal string `UI-032 PROBE v1`; absent = the deployed config is not at `2183177` and this is confirmed deployment failure; present = the config is current and the fault is rendering, not delivery. (b) Search the same raw config for `front_door_battery`. (c) Scroll `Home` to the block directly under the page header and say whether **any** alert card is there — `Solar producing` should be, its gate is `above: 100` and solar read 983 W. (d) Run `/config/deploy_deez_dashboard.sh` by hand and capture the full output, especially the candidate commit and whether it reports a write or a skip. (e) Settings → Dashboards: how many entries exist, their `url_path` values, whether any duplicate claims `deez-smart-home`, and which one the phone actually has open. **Do not modify the deployment bridge from here** — it is protected under `CLAUDE.md` and `MAINTENANCE.md` and requires an explicit instruction. | OPEN — blocks `UI-032` and every other unverified dashboard change |
+| CFG-003 | S1 | **Deployment bridge / dashboard source of truth** — `/config/deploy_deez_dashboard.sh` and the storage-mode dashboard registry. *Not* `dashboards/deez_smart_home.yaml`, which is by all repository-side evidence correct | **Changes pushed to `ha-deploy` are not reaching the live dashboard.** Established 2026-08-30 after three consecutive `UI-032` attempts produced no visible change, the third being `UI-032 PROBE v1` — a card with **no condition of any kind**, whose absence therefore cannot be explained by any gate, template, entity or schema question. **The evidence that this is deployment, not YAML:** (1) every Home element the owner reports seeing — the `Home Systems` heading, its 7 cards, and the exact 5-chip row Media/Network/iPad/Status/Settings — has existed unchanged since merge `6c3fff5`; **nothing the owner has ever reported seeing is unique to any commit after it**, so every observation to date is equally consistent with the live dashboard being frozen at `6c3fff5`-era content. (2) **No change to `dashboards/deez_smart_home.yaml` has ever been independently confirmed live.** All three `VERIFIED` rows are something else: `UI-025` is a theme file plus a `/local/` image; `UI-026` was inferred from the background rendering, which is evidence about the theme, not this file; `UI-011` was read off Home Assistant's **native Energy panel**, a built-in page this Lovelace config does not produce. (3) **12 commits have touched the dashboard file since `26c3b14`**, the only deployment run on record — and that run was a no-op that wrote nothing, which is exactly `DEPLOYMENT_BLOCKERS.md` Blocker 1: the apply step has never been observed to write. **Confound that must be eliminated first, honestly stated:** the area the owner inspected — Energy, Lighting, Cameras, Security, Climate, People, Bills, Media, Network, iPad, Status, Settings — is `sections[5]`, `Home Systems`, at the **bottom** of the page. The probe is in `sections[1]`, the **second block from the top**, above `Today` and `Rooms`. The probe's location may not have been in view. This does not weaken points (1)–(3), but it is cheap to rule out and must be ruled out before the deployment bridge is touched. **Owner diagnosis, in order** — the first item is decisive on its own and bypasses rendering entirely: (a) open the dashboard's **Raw configuration editor** and search for the literal string `UI-032 PROBE v1`; absent = the deployed config is not at `2183177` and this is confirmed deployment failure; present = the config is current and the fault is rendering, not delivery. (b) Search the same raw config for `front_door_battery`. (c) Scroll `Home` to the block directly under the page header and say whether **any** alert card is there — `Solar producing` should be, its gate is `above: 100` and solar read 983 W. (d) Run `/config/deploy_deez_dashboard.sh` by hand and capture the full output, especially the candidate commit and whether it reports a write or a skip. (e) Settings → Dashboards: how many entries exist, their `url_path` values, whether any duplicate claims `deez-smart-home`, and which one the phone actually has open. **Do not modify the deployment bridge from here** — it is protected under `CLAUDE.md` and `MAINTENANCE.md` and requires an explicit instruction. | **CONFIRMED 2026-08-30** — owner checked the live Raw Configuration Editor: `sensor.front_door_battery` is **absent**. Root cause established, see the section below. Blocks `UI-032` and every other unverified dashboard change |
 | CFG-002 | S4 | Fronius / SolarNet integration — *not* `dashboards/deez_smart_home.yaml` | The `SolarNet Grid import tariff` entity reads **0.2880 AUD/kWh** while the contracted Home 365 Solar peak rate shown on the `bill-electricity` view is **0.2734996 incl GST** — a 1.45 c/kWh gap, about 5% on every cost figure derived from the entity. Possibly a deliberate rounded-up estimate, possibly stale from a previous plan; the current contract began 31 Jul 2026, recently enough for a stale rate to be plausible. Lives in the integration, not in this repository, so there is nothing to change on this branch. **Logged separately so it is not mistaken for part of `CFG-001`** — it is a ~5% difference, not a 31.8× one, and correcting it would not move A$437.60 anywhere near A$13. | OPEN — owner decision |
 
 ---
@@ -324,6 +324,125 @@ isolates the gate precisely.
 Only these six entities. Other live battery entities (the Hue sensors, the
 contact sensors, the Aqara shade, the Powerpal gateway) have not been
 owner-verified as entity IDs, and the never-invent rule still applies to them.
+
+---
+
+## CFG-003 root cause — the branch history was replaced and the host's clone was left behind
+
+**Confirmed, not hypothesised.** The owner's Raw Configuration Editor check
+settled the delivery question: `sensor.front_door_battery` is absent from the
+live config. Git then settled the cause.
+
+### The proof
+
+`26c3b14` is the candidate commit the deployment script itself reported
+resolving. It is **not reachable from the current branch at all**:
+
+```
+$ git merge-base 26c3b14 HEAD
+(no output — unrelated histories)
+```
+
+Three commits the repository's own documentation refers to are all outside the
+current history: `26c3b14` (the deploy log's candidate), `1bdd704` (the
+README's landing-check marker) and `5608b5f`. None is an ancestor of `HEAD`.
+
+The reason is visible in the roots:
+
+| History | Root commit | Tip | Contains |
+|---|---|---|---|
+| **Old** — what the host cloned | `2d4b295`, 2026-08-23 | `5608b5f`, 2026-08-25 | `26c3b14`, `1bdd704` |
+| **Current** — what we push to | `6c3fff5`, **2026-08-29** | `376f3d8`+ | every commit since |
+
+`6c3fff5` is **a root commit with no parents**, despite its message reading
+"Merge remote-tracking branch 'origin/ha-deploy'". So on **2026-08-29 the
+`ha-deploy` branch on GitHub was replaced with an unrelated history.** A
+non-fast-forward update on that ref was directly observed from this
+environment (`+ 5608b5f...ca1fa32 ha-deploy -> origin/ha-deploy (forced
+update)`).
+
+### Why that stops propagation, exactly
+
+The Home Assistant host cloned before 2026-08-29 and its working branch still
+sits on the old history. From there:
+
+- `git fetch` succeeds and downloads the new objects, but
+- **nothing can fast-forward a branch across disjoint roots.** `merge`/`pull`
+  either refuses ("unrelated histories") or is a no-op, so the checked-out
+  commit never advances.
+
+Which is precisely the log on record:
+
+```
+Fetching origin/ha-deploy...
+Repository already current          <- cannot advance, not "nothing to do"
+Candidate commit: 26c3b148…         <- still the old history's commit
+No dashboard content change.        <- content compares equal, so…
+                                    <- …the apply step never runs
+```
+
+**The exact point where repo YAML stops propagating is the host's local
+clone**, between `origin/ha-deploy` on GitHub and the file the script reads.
+Every stage downstream — validate, compare, apply — is behaving correctly
+given the stale input it is handed. The apply step is not broken; **it is
+never reached**, because the content never changes, because the commit never
+advances.
+
+This also explains why `DEPLOYMENT_BLOCKERS.md` could only ever record a
+no-op run: there has never been a run with anything new to apply.
+
+### Two independent faults, and the order to fix them
+
+1. **This one — the clone is orphaned from its branch.** Fix first; nothing
+   else can work until it is.
+2. **`DEPLOY_AUTH.md`'s credential fault** — the scheduled `git fetch` under
+   HA's `shell_command` has no git credentials for a private repo. Independent
+   of (1) and still outstanding. Fixing (1) alone may leave *manual* deploys
+   working and *scheduled* ones still failing.
+
+### Owner recovery, on the host, in the clone the script uses
+
+Find the clone with `grep -n 'cd \|git ' /config/deploy_deez_dashboard.sh`,
+then, in that directory:
+
+```sh
+git rev-parse --short HEAD                    # expect an old-history commit
+git fetch origin ha-deploy
+git merge-base HEAD origin/ha-deploy          # EMPTY confirms the split
+git status --short                            # must be clean
+git log --oneline origin/ha-deploy..HEAD      # MUST be empty — see warning
+```
+
+**Check that last command before going further.** If it lists commits, the
+host clone carries work that exists nowhere else — captured live UI changes,
+per `README.md` "Capturing a live UI change back into Git". Save those first
+(`git bundle create /config/host-clone-backup.bundle --all`) and say so;
+do not discard them.
+
+Only once it is empty:
+
+```sh
+git checkout ha-deploy 2>/dev/null || git checkout -b ha-deploy
+git reset --hard origin/ha-deploy
+git rev-parse --short HEAD                    # expect 376f3d8 or later
+```
+
+Then run `/config/deploy_deez_dashboard.sh` by hand and capture the output.
+The candidate commit should no longer be `26c3b14`, and the run should report
+a content change and an apply rather than a skip.
+
+**Not done from here.** The deployment bridge and its clone are protected
+under `CLAUDE.md` and `MAINTENANCE.md`; this section is a procedure for the
+owner, not a change.
+
+### How the bridge gets verified afterwards
+
+`UI-032 PROBE v1` is deliberately left in place as the test instrument. Once
+delivery is fixed, it verifies the whole chain end to end in one look: the raw
+config should contain the literal string `UI-032 PROBE v1`, and the purple
+bug-icon card should appear in the block directly under the Home page header.
+The probe is removed only after that, and `UI-032`'s own conditionals can then
+be judged on their merits for the first time.
 
 ## Fixed — tracking only (no live dashboard component)
 

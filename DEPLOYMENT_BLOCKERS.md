@@ -152,8 +152,22 @@ Two further facts point the same way:
 **12 commits have touched the dashboard file since `26c3b14`**, the single
 deployment run on record, and that run wrote nothing.
 
-Tracked as `CFG-003` in `DASHBOARD_ISSUES.md`, which carries the owner
-diagnostic procedure. Until it is settled, treat every
+**Root cause found and confirmed, 2026-08-30.** The owner's Raw Configuration
+Editor check settled delivery (`sensor.front_door_battery` absent), and git
+settled the cause: **`ha-deploy` was replaced with an unrelated history on
+2026-08-29**, and the host's clone was left on the old one.
+`git merge-base 26c3b14 HEAD` — the deploy log's own candidate commit against
+the current tip — returns nothing. `6c3fff5` is a **parentless root commit**
+despite its merge-shaped message. A branch cannot fast-forward across
+disjoint roots, so the host's checked-out commit never advances, the content
+never differs, and the apply step is never reached.
+
+So Blocker 1's open question resolves in an unexpected direction: **the apply
+step is not proven broken — it has never been given anything to apply.** The
+single run on record was a no-op because it could only ever be a no-op.
+
+Tracked as `CFG-003` in `DASHBOARD_ISSUES.md`, which carries the proof and
+the owner recovery procedure. Until it is settled, treat every
 `FIXED — AWAITING LIVE VERIFICATION` row in this repository as **unproven at
 the delivery step**, not merely unobserved: they may be sitting in Git.
 
