@@ -805,6 +805,24 @@ be implemented.
   a second look at the six camera subviews' `webrtc-camera` config itself
   (not template content) for a UX-only improvement, are the next plausible
   low-risk sources if nothing above unblocks first.
+- **2026-08-30 (same run) — `float(0)` sentinel re-check (no code change):**
+  ran option (3) from the note above before ending the run: grepped every
+  `| float(0)` cast in the file (39 occurrences, one more than the previous
+  session's count of the combined `float(0)`/`float(100)`/`float(9999)`
+  patterns, since this batch's own Roller Shade fix added one). Read each in
+  context — **all 39 are already inside an `in bad`/`in [...]` guard branch**,
+  none used as a bare unguarded sentinel; confirmed zero remaining
+  `float(100)`/`float(9999)` instances anywhere in the file. Clean — no fix
+  needed or made. No new actionable Main item exists after this: `DR-001`
+  still needs a design brief, `UI-011` is still purely
+  `LIVE_VERIFICATION_REQUIRED`, and the `bills`/`bill-*` raw-interpolation
+  pass remains Billing-owned. Ending this run here — the coded-fix surface
+  this session could reach (raw-interpolation class, false-safe class,
+  float-sentinel class) is now swept clean; further identical sweeps are
+  unlikely to be productive without new repository evidence or an owner
+  decision. **Next recommended work, unchanged from above:** owner
+  live-verification of the 42-row queue, or a `DR-001` design brief, are what
+  unblock Main's next batch.
 
 ### Billing
 - **Queue:** `BILL-001` (P1, partial/blocked) → `BILL-002` (P2, scoped) →
