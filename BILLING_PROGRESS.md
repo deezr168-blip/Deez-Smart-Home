@@ -54,6 +54,50 @@ Main's `UI-`/`REG-` fixes.
 
 ## Recent batches
 
+### (no commit) — clean verification sweep, 2026-08-30
+
+Fetched `origin/ha-deploy` (HEAD `c9429b1`), confirmed tree clean before and
+after. Read `CLAUDE.md`, `PROJECT_STATE.md` in full, this file,
+`DASHBOARD_ISSUES.md`, `DASHBOARD_BACKLOG.md` and recent `ha-deploy` history
+before starting. Re-confirmed via `GetLiveContext` (`name: nmi`,
+`name: mirn`, `name: bill` — no matches) that `BILL-001`'s NMI/MIRN portion,
+`BILL-002`'s read side and `BILL-003` are all still genuinely blocked on
+owner decisions this routine cannot make, unchanged since the last run.
+
+Rather than only re-log the standing blockers, read all seven billing views
+(`bills`, `bill-electricity`, `bill-gas`, `bill-car-insurance`,
+`bill-water`, `bill-council-rates`, `bill-rego`) end to end, line by line,
+instead of grepping for known patterns — to check whether anything survived
+the `BILL-004`/`BILL-005` sweeps:
+
+- All ten `BILL-004`-guarded fields and both `BILL-005` title-card
+  text-shadow blocks remain in place and correctly guarded.
+- All six `bill-*` subviews still carry a working "Back to Bills" chip
+  targeting `/deez-smart-home/bills` — no missing or broken case.
+- Every paid/unpaid `icon_color` and primary-text branch (Car Insurance,
+  Water, Council Rates, Rego) already fails cautious — orange/"Payment
+  Outstanding" — rather than a reassuring green, when its `input_boolean`
+  is `unavailable`. No false-safe instance found.
+- A fresh privacy sweep for any 5+ digit literal across the *whole*
+  dashboard file (not just the `bill-*` blocks, to catch anything a
+  bill-scoped grep might miss) turned up only the already-tracked,
+  already-`BLOCKED` NMI (`bill-electricity`) and MIRN (`bill-gas`)
+  literals. No new identifier exposure.
+- `billing/schema.json` (unchanged, valid) and `billing/history.json`
+  (still `[]`) re-checked — nothing fabricated, nothing written.
+
+`bash scripts/ha_validate.sh` passes clean (7/7, 386 templates, 36/36
+views, no drift). **No fix made — nothing found to fix.** This is the third
+consecutive billing run to sweep for new unblocked work (after `BILL-004`
+and `BILL-005`), and the first to come back clean on a full line-by-line
+read rather than finding something. The coded-fix surface reachable
+without an owner decision now appears genuinely exhausted, not merely
+unattempted — a future run should check whether either owner decision
+(`BILL-001` NMI/MIRN, `BILL-002` exposure mechanism) has landed before
+repeating this same full-file read.
+
+No dashboard, theme or `billing/` commit this run — documentation only.
+
 ### `73813e8` — title-card text-shadow guard (`BILL-005`) + `DASHBOARD_ISSUES.md` tracking backfill (`REG-014`)
 Area: `bill-car-insurance`, `bill-water`, `bill-council-rates`, `bill-rego`
 page titles; `DASHBOARD_ISSUES.md` tracking only.
@@ -364,7 +408,14 @@ made this run; there was nothing safe yet for them to feed.
 
 ## Exact next billing task
 
-0. **This run's `BILL-005` batch is `FIXED — AWAITING LIVE VERIFICATION`** —
+-1. **Confirmed clean, 2026-08-30 verification sweep:** a full line-by-line
+   read of all seven billing views found no further coded work reachable
+   without an owner decision — `BILL-004`/`BILL-005` already cover every
+   guard/shadow gap, and a fresh whole-file 5+-digit-literal sweep found no
+   new privacy exposure beyond the already-tracked NMI/MIRN pair. A future
+   run should check whether item 1 or 2 below has moved before repeating
+   this same full-file read.
+0. **`BILL-005`'s batch is `FIXED — AWAITING LIVE VERIFICATION`** —
    nothing further to code; needs a live look at the four re-styled titles
    (`bill-car-insurance`, `bill-water`, `bill-council-rates`, `bill-rego`) for
    the same drop-shadow every other page title has. `BILL-004`'s ten guarded

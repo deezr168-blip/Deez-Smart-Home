@@ -640,7 +640,7 @@ be implemented.
 | Routine | Item | Priority | State | Reason Selected |
 |---|---|---|---|---|
 | Main CasaRay Upgrade | `DR-001` — iPad Command Center density | P3 | `PLANNED` — needs a design decision before implementation | Still the only scoped item in Main's queue after five consecutive clean sweeps this session (raw-interpolation, false-safe aggregate, float-sentinel, icon_color/attribute/int/cover/structural, state_attr/comparison/bare-float/navigation) — score **−2** (Impact 3, Effort 4, Risk 4), selected by being the sole remainder, not by rank. Explicitly "advisory item, no implementation agreed": needs a CasaRay Design Reviewer brief before Main writes code. Everything else Main owns (the REG-001..013/UI-027/UI-030/UI-031 batches) is `LIVE_VERIFICATION_REQUIRED` and waiting on the owner. **The verification drought has broken:** the owner recorded the queue's first-ever live result on 2026-08-30 — `UI-011` `PASS` — taking it to `LIVE_VERIFIED` and the queue from 44 pending to 43. That verification also surfaced `CFG-001` (Energy → Totals grid cost ~31.8× too high), which is **not Main's work and not implementable from here**: it lives in HA's own Energy configuration, is blocked on owner diagnosis, and never enters the verification queue. Main's selection is unchanged by both. |
-| Billing Dashboard Upgrade | `BILL-002` — Home Assistant exposure decision for `billing/history.json` (storage now exists, see `billing/README.md`) | P2 | `PARTIAL` — storage scaffolded (`5147eb0`/`ff25626`), read side needs owner direction | `BILL-001`'s account-number portion is fixed and pushed (`23c0301`); its NMI/MIRN portion is `BLOCKED` on an owner decision (no helper exists, cannot invent one) and is excluded from selection (queue rule 4). `BILL-002`'s storage layer (`billing/schema.json`, empty `billing/history.json`) exists; its read side is still blocked on which HA-side mechanism exposes the file to Lovelace (`billing/README.md` point 2). `BILL-003` stays blocked on both. Two consecutive runs now (`BILL-004`, then this run's `BILL-005` + `REG-014`) have found and fixed unblocked work instead, since nothing in `BILL-001`/`002`/`003` is actionable without an owner decision; `BILL-002`'s exposure question is still the next thing that unblocks real dashboard-history work once decided. |
+| Billing Dashboard Upgrade | `BILL-002` — Home Assistant exposure decision for `billing/history.json` (storage now exists, see `billing/README.md`) | P2 | `PARTIAL` — storage scaffolded (`5147eb0`/`ff25626`), read side needs owner direction | `BILL-001`'s account-number portion is fixed and pushed (`23c0301`); its NMI/MIRN portion is `BLOCKED` on an owner decision (no helper exists, cannot invent one) and is excluded from selection (queue rule 4). `BILL-002`'s storage layer (`billing/schema.json`, empty `billing/history.json`) exists; its read side is still blocked on which HA-side mechanism exposes the file to Lovelace (`billing/README.md` point 2). `BILL-003` stays blocked on both. Two runs (`BILL-004`, then `BILL-005` + `REG-014`) found and fixed unblocked work instead of re-deriving the same blocker notes; this run's own full re-read of all seven billing views plus a fresh 5+-digit-literal privacy sweep found nothing further — the coded-fix surface is now genuinely clean, not merely unattempted. `BILL-002`'s exposure question remains the next thing that unblocks real dashboard-history work once decided. |
 
 ---
 
@@ -1180,6 +1180,50 @@ be implemented.
   owner decision. This run found and fixed unblocked, unscored `BILL-004`
   (S3/S4 raw-interpolation guard, see below) instead of re-deriving the same
   blocker notes again.
+- **2026-08-30 (this run) — clean verification sweep, no code change:**
+  fetched `origin/ha-deploy` — `HEAD` unchanged at `c9429b1`, tree clean
+  before and after. Read `CLAUDE.md`, `PROJECT_STATE.md` in full,
+  `BILLING_PROGRESS.md`, `DASHBOARD_ISSUES.md`, `DASHBOARD_BACKLOG.md` and
+  recent `ha-deploy` history before starting. Re-confirmed via
+  `GetLiveContext` (`name: nmi`, `name: mirn`, `name: bill` — no matches)
+  that `BILL-001`'s NMI/MIRN portion, `BILL-002`'s read side and `BILL-003`
+  are all still genuinely blocked on owner decisions this routine cannot
+  make, unchanged since the last run, and that no other routine had touched
+  billing files since. Rather than only re-log the standing blockers, read
+  every one of the seven billing views (`bills`, `bill-electricity`,
+  `bill-gas`, `bill-car-insurance`, `bill-water`, `bill-council-rates`,
+  `bill-rego`) end to end line by line — not just grepped — to check
+  whether anything survived the `BILL-004`/`BILL-005` sweeps. Confirmed: all
+  landing tiles and subview status cards already guard against
+  `unavailable`/`unknown`/`none`; all six subviews still carry a working
+  "Back to Bills" chip; every paid/unpaid `icon_color` and primary-text
+  branch already fails cautious (orange/"Payment Outstanding"), never a
+  reassuring green, when its `input_boolean` is unavailable — no false-safe
+  instance found. Ran a fresh privacy sweep for any 5+ digit literal across
+  the whole dashboard file (not just the `bill-*` blocks) — the only
+  matches are the already-tracked, already-`BLOCKED` NMI
+  (`bill-electricity`) and MIRN (`bill-gas`) literals; no new identifier
+  exposure found. Also re-checked `billing/schema.json` (unchanged, valid)
+  and `billing/history.json` (still `[]`, nothing fabricated). `bash
+  scripts/ha_validate.sh` passes clean (7/7, 386 templates, 36/36 views, no
+  drift). **No fix made — nothing found to fix.** This is the third
+  consecutive billing run to sweep for new unblocked work (after
+  `BILL-004` and `BILL-005`), and the first to come back clean on a full
+  line-by-line read rather than finding something — the coded-fix surface
+  reachable without an owner decision now appears genuinely exhausted, not
+  merely unattempted. No dashboard/theme/billing-storage commit this run
+  (documentation-only update to this section and `BILLING_PROGRESS.md`).
+- **Exact next recommended billing task (unchanged, now confirmed rather
+  than assumed):** (1) the owner decides `BILL-001`'s NMI/MIRN direction —
+  create `input_text.elec_nmi`/`input_text.gas_mirn`, or approve removing
+  the text from the two cards; (2) the owner picks `BILL-002`'s
+  HA-exposure mechanism for `billing/history.json` (template/RESTful sensor
+  vs. ingestion into HA statistics — see `billing/README.md` point 2); (3)
+  `BILL-003` stays not-yet-actionable until (1) and (2) move, plus a design
+  review before any Gmail/Drive read-only call is made — none were made
+  this run, there being nothing safe yet for ingestion to write to. A
+  future billing run should check whether either owner decision has landed
+  before repeating this run's now-clean full-file sweep.
 - **2026-08-30 (this run) — `BILL-004` fixed, no owner decision needed:**
   fetched `origin/ha-deploy` (HEAD `0081429`), confirmed tree clean before and
   after. Read `CLAUDE.md`, `PROJECT_STATE.md` in full, `DASHBOARD_PROGRESS.md`,
