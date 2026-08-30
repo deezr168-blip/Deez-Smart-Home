@@ -700,7 +700,7 @@ be implemented.
 - **Date/time:** 2026-08-30 00:30 UTC
 - **Branch:** `ha-deploy`
 - **`ha-deploy` HEAD before this update:** `88c345b`
-- **This update's commit:** `STAMPSHA` — Daily Project Coordinator added to
+- **This update's commit:** `c5584c2` — Daily Project Coordinator added to
   the ownership map, protected areas, stamp rule 18 and the startup profiles.
   Final framework correction. No priority, backlog item, issue status,
   verification result, score, change window or Next Actionable Work altered.
