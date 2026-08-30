@@ -377,7 +377,7 @@ recorded in `DASHBOARD_BACKLOG.md` or `DASHBOARD_ISSUES.md`.
 | False-safe status regressions (`security`, `lights`, `cameras`, `home`) | Main | `b5eee22` — 08-29 23:37 | `LIVE_VERIFICATION_REQUIRED` | 08-30 05:37 | Closes REG-001/002/003. |
 | Heading-card contrast (`themes/deez_your_name.yaml`) | Main | `9926233` — 08-29 23:42 | `LIVE_VERIFICATION_REQUIRED` | 08-30 05:42 | Closes UI-027; theme-level rule, no dashboard YAML. |
 | Residual bilingual gaps (`people-locations`, `ipad-command-center`, `home`) | Main | `dff00f3` — 08-29 23:45 | `LIVE_VERIFICATION_REQUIRED` | 08-30 05:45 | Closes REG-004/005/006. REG-005 changed English `WAN —` → "WAN not reporting" — owner may want to review. |
-| Regression audit record (`DASHBOARD_ISSUES.md`) | Regression Auditor | `3116495` — 08-29 22:49 | `PUSHED` | 08-30 04:49 | Baseline REG-001..006 fresh; do not re-audit that range. |
+| Regression audit record (`DASHBOARD_ISSUES.md`) | Regression Auditor | `<PENDING_SHA>` — 2026-08-30 | `PUSHED` | 2026-08-30 +6h from push | Audited `3116495..ea7289f` (45 commits); filed `REG-012` (verification-queue upkeep gap). REG-001..011/UI-027/UI-030/BILL-001 confirmed correctly tracked, no premature `VERIFIED` claims, no cross-routine conflicts. Do not re-audit that range; next scope is `ea7289f..HEAD`. |
 | Coordination state (`PROJECT_STATE.md`, `CLAUDE.md` startup block) | Shared | `0351007` — 08-30 00:25 | `PUSHED` | 08-30 06:25 | Structure settled. Append to your own sections; do not restructure. |
 
 Back / previous-page navigation is **complete** (35/36 views, parent-targeted;
@@ -798,7 +798,55 @@ be implemented.
 - Baseline audit `3116495` against `7f304ad`: REG-001..006, **all six now
   fixed** and awaiting live verification. Evidence in `DASHBOARD_ISSUES.md`;
   full audit detail in `archive/DASHBOARD_ISSUES_ARCHIVE.md`.
-- No open regressions. Next audit should re-sweep the false-safe-state class.
+- **2026-08-30 audit (this run) — scope `3116495..ea7289f` (45 commits):**
+  read every commit touching `dashboards/deez_smart_home.yaml` or
+  `themes/deez_your_name.yaml` in range (`b5eee22`, `9926233`, `dff00f3`,
+  `b058006`, `d592692`, `23c0301`, `691689a`) plus the merge commits that
+  crossed those files (`a0b05ce`, `5dca7f0`) to check for a bad conflict
+  resolution. Each diffed cleanly against its stated purpose in
+  `DASHBOARD_ISSUES.md`/`DASHBOARD_PROGRESS.md`; no routine undid another's
+  work, no cross-ownership boundary violation found (Billing's `23c0301`
+  touched only `bill-electricity`/`bill-gas` plus its own `PROJECT_STATE.md`
+  section; Main's batches stayed general-dashboard). REG-008's
+  `ipad-command-center`→`cameras` self-correction verified against the file
+  (the chip is at L1595–1601, inside the `cameras` view, path confirmed by
+  line position). The still-hardcoded NMI/MIRN in `bill-electricity`/
+  `bill-gas` was checked against the privacy-flagging brief: it is already
+  correctly tracked as `BILL-001`'s `BLOCKED` remainder in
+  `DASHBOARD_BACKLOG.md` with a documented reason (no helper entity exists,
+  `!secret` does not work in storage mode, inventing an entity is
+  forbidden) — not re-logged here, per "do not manufacture issues."
+- **New issue: `REG-012`** (MED) — `LIVE_VERIFICATION_QUEUE.md` upkeep fell
+  behind the REG-007..011/UI-030 batch: `691689a` (UI-030) added no queue
+  row at all, and the queue's "N checks pending" footer was never
+  incremented for the five REG-007..011 rows (`b058006`/`d592692`), then
+  `23c0301` bumped 33→34 accounting only for its own new `BILL-001` row.
+  Actual pending rows counted directly from the table: **39**, not 34. Full
+  evidence and suspected commits in `DASHBOARD_ISSUES.md`. Not self-fixed —
+  advisory only; recommended owner is Main (who pushed the under-tracked
+  batch) or the Daily Project Coordinator.
+- **Resolved/stale issues identified:** none. REG-001..011, UI-027, UI-030
+  and BILL-001's account-number portion remain correctly
+  `FIXED — AWAITING LIVE VERIFICATION` / `LIVE_VERIFICATION_REQUIRED` per
+  repository evidence — no premature `VERIFIED` claims found anywhere in
+  `DASHBOARD_ISSUES.md`, `DASHBOARD_BACKLOG.md` or this file.
+- **Cross-routine conflicts:** none found in this range. No routine
+  overwrote another's completed work; no billing change outside Billing's
+  ownership; no unrelated dashboard edit from Billing.
+- **Verification requirements:** none of REG-001..011/UI-027/UI-030/BILL-001
+  can become `LIVE_VERIFIED` from this environment — human check only, per
+  `LIVE_VERIFICATION_QUEUE.md`. Existing Back/previous-page navigation is
+  substantially implemented (35/36 views, parent-targeted) and was not
+  touched by any commit in this audit range; treated as
+  `LIVE_VERIFICATION_REQUIRED` only, no new navigation regression opened —
+  no repository evidence of a defect surfaced this run.
+- **Next recommended audit focus:** once `REG-012` is corrected, re-check
+  that future batches add both a queue row and an updated pending-count in
+  the same commit as the dashboard fix (write-hygiene gap, not a one-off);
+  otherwise the next audit's default scope is `ea7289f..HEAD` for whatever
+  Main/Billing push next, plus a fresh look at `UI-011` (Energy — Total
+  Solar) if it is ever coded, since it remains the only open dashboard
+  (non-tracking) issue.
 - Auditor is advisory: findings queue for Main, never self-implemented.
 
 ### Entity Scout
