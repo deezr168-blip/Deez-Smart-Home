@@ -941,6 +941,59 @@ be implemented.
   file here; by definition no push to this branch can close one, and they do
   not enter the verification queue, which is for deployed changes awaiting a
   look.
+- **2026-08-30 — sixth Main sweep, no code change:** fetched
+  `origin/ha-deploy` — found `HEAD` had moved past this routine's initial read
+  (to `7df2f5b`, the `UI-011` reconciliation + result-syntax cleanup above),
+  re-fetched and re-read this file, `DASHBOARD_ISSUES.md` and
+  `DASHBOARD_BACKLOG.md` fresh per the Concurrency policy before writing
+  anything. Confirmed the reconciliation didn't change what's actionable for
+  Main: `UI-011` is now `VERIFIED` and gone from the queue entirely (not
+  merely `LIVE_VERIFICATION_REQUIRED`), and `CFG-001`/`CFG-002` are Home
+  Assistant configuration defects outside this repository — not implementable
+  from here regardless of severity, and explicitly excluded from the
+  verification queue by their own new ID series. `DR-001` remains the only
+  scoped Main item and still needs a design brief before code. Cleaned one
+  piece of drift the reconciliation commit left behind: `DASHBOARD_BACKLOG.md`
+  still listed `UI-011` in the active queue table as
+  `LIVE_VERIFICATION_REQUIRED` — removed it (queue rule 12, completed items
+  must not remain in the active queue) and added it to the closed one-line
+  summary alongside `UI-025`/`UI-026`. Then ran three grep classes not yet
+  tried by the prior five sweeps: (1) a structural scan for nested `type:
+  grid` cards (a `grid` card whose own `cards:` list contains another `grid`
+  card) — `CLAUDE.md`'s Sections convention calls for `grid_options` on leaf
+  cards, not nested grids for column layout; scripted an indent-based pass
+  over all 74 `type: grid` occurrences — **zero nested instances**, every
+  grid is a top-level per-view section; (2) re-checked the one
+  `state_attr(...)` read gated by a `conditional` card rather than an inline
+  guard (the `home` Living Room TV "now playing" card, ~L199) — its
+  `conditional` requires `state: playing` before the template card renders at
+  all, so `media_title` cannot read on an idle/unavailable player, and the
+  existing `or 'Playing'` already covers a null title; no fix needed; (3)
+  audited static (non-templated) `icon_color:` literals dashboard-wide (29
+  blue / 9 amber / 7 cyan / 6 grey / 4 green / 3 red / 3 purple / 3 indigo /
+  2 orange) against `CLAUDE.md`'s "restrained amber for active state"
+  direction — the palette is not amber-exclusive, but most of these are
+  stable identity colors (media = purple, water = blue/cyan, alerts = red),
+  not competing active-state indicators; recoloring ~29 static icons on
+  Main's own unilateral judgment would be exactly the speculative visual
+  change `DR-001`'s own note warns against, so **not touched** — flagged here
+  as a candidate question for a future `DR-001`/design-brief discussion
+  instead. `bash scripts/ha_validate.sh` passes clean (7/7, 386 templates,
+  36/36 views, no drift). **No dashboard-code fix made this run** — the
+  grep-sweep surface (raw-interpolation, false-safe aggregate, float-sentinel,
+  icon_color/attribute/int/cover/structural, state_attr/comparison/bare-float/
+  navigation, nested-grid/conditional-guard/color-palette) is six-for-six
+  clean or non-actionable without a design decision. **Next recommended
+  work:** (1) `UI-011`'s `PASS` shows the owner is now actively working
+  through the verification queue — the highest-value unblock is simply
+  continuing that: `UI-020`/`UI-021` are the two remaining `energy`-group
+  `PENDING` rows, then the rest of the ~43-row queue; (2) `CFG-001` (S1, grid
+  cost ~31.8× too high) needs the owner to read four specific values out of
+  Settings → Dashboards → Energy per `DASHBOARD_ISSUES.md` — genuinely
+  outside any autonomous routine's reach; (3) a concrete `DR-001` design
+  brief would become Main's next actionable P3. A future run should check for
+  new verification results or a design brief before repeating this session's
+  now six-times-clean sweep classes.
 
 ### Billing
 - **Queue:** `BILL-001` (P1, partial/blocked) → `BILL-002` (P2, partial) →

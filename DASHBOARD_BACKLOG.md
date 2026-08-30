@@ -19,7 +19,6 @@ priority or ownership.
 | ID | P | Owner | Area | Objective | State | I | E | R | Score | Blocker / verification |
 |---|---|---|---|---|---|---|---|---|---|---|
 | `BILL-001` | P1 | Billing | `bill-electricity` (~L4238), `bill-gas` (~L4323) | Remove hardcoded NMI and MIRN so they are not carried in Git (account numbers already resolved) | `BLOCKED` — needs owner decision | 5 | 3 | 3 | **4** | No `input_text` helper exists for NMI/MIRN and one must not be invented (never-invent-entity-IDs rule). Owner must either (a) create `input_text.elec_nmi` / `input_text.gas_mirn` helpers in HA so the dashboard can reference them, or (b) approve removing the NMI/MIRN text from the card outright. Verify once resolved: secret scan clean + live look at both subviews |
-| `UI-011` | P1 | Main | `energy` — Total Solar | Confirm the Wh→kWh conversion from `df457e3` matches what the Fronius total reports | `LIVE_VERIFICATION_REQUIRED` — excluded from selection, unscored | — | — | — | — | Needs one owner look; if the total reports kWh the figure reads 1000× low |
 | `BILL-002` | P2 | Billing | `billing/` (storage, done) + `bills` + six `bill-*` subviews (read side, blocked) | Bill history and analytics for the parent-friendly workflow (global priority 3) | `PARTIAL` — storage layer scaffolded (`billing/schema.json`, `billing/history.json`, empty); dashboard read side `BLOCKED` on owner decision | 4 | 4 | 3 | **1** | Bill sensors (`sensor.electricity_bill_status`, `*_bill_estimate`, etc.) are not exposed to Assist (confirmed via `GetLiveContext`, no match) — figures unconfirmable from here. Storage no longer blocks progress; the remaining blocker is purely the HA-exposure mechanism (see `billing/README.md` point 2) — owner must pick one before any `bills-history` dashboard work starts. Verify: live look, figures confirmed by owner |
 | `BILL-003` | P2 | Billing | Ingestion architecture | Design then implement automatic utility-bill ingestion (global priority 4) | `PLANNED` — design stage, blocked | 4 | 5 | 4 | **−1** | Blocked on `BILL-001` (NMI/MIRN portion still open) and on `BILL-002`'s storage model. Verify: design reviewed by owner before implementation |
 | `DR-001` | P3 | Main | `ipad-command-center` | Review information density — 52 cards, never reviewed end to end for hierarchy | `PLANNED` — advisory, no implementation agreed | 3 | 4 | 4 | **−2** | Needs a design brief first. Verify: design review, then a live look on the iPad |
@@ -77,7 +76,9 @@ active queue work** — no routine should re-implement these. Full records in
 | Layout: nested grids dissolved, duplicate controls removed | UI-013, UI-014, UI-015, UI-016, UI-019, UI-021 | `9b28fdb` |
 | Presentation and placeholders | UI-007, UI-010, UI-023, UI-024 | `3048e54` |
 
-Verified by the owner and closed: UI-025, UI-026.
+Verified by the owner and closed: UI-025, UI-026, UI-011 (Total Solar
+Wh→kWh conversion — see `DASHBOARD_ISSUES.md`; removed from the active queue
+per rule 12, no longer `LIVE_VERIFICATION_REQUIRED`).
 
 ---
 
