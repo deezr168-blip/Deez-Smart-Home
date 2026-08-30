@@ -1395,6 +1395,42 @@ be implemented.
   `LIVE_VERIFICATION_QUEUE.md`; (4) a concrete `DR-001` design brief. A
   future autonomous run should re-check `CFG-003`'s status before resuming
   any dashboard-code batch, not merely before resuming a sweep.
+- **2026-08-30 (this run) — re-check after `CFG-003` root cause, no code
+  change:** fetched `origin/ha-deploy` — `HEAD` unchanged at `56d6dd0` (the
+  `CFG-003` root-cause stamp commit), tree clean before and after. Re-read
+  `CLAUDE.md` and this file in full, `DASHBOARD_ISSUES.md`'s `CFG-003`
+  root-cause section and Open section (`CFG-001`/`CFG-002`/`CFG-003`, all
+  outside this repository's reach), and `DASHBOARD_BACKLOG.md`'s active
+  queue (unchanged: `DR-001` the sole item, still gated on a design brief
+  this routine should not write itself). `bash scripts/ha_validate.sh`
+  passes clean (7/7, 424 templates, 36/36 views, no drift). **No
+  dashboard-code change made.** `CFG-003` is now root-caused, not merely
+  filed: `ha-deploy`'s history was force-replaced on 2026-08-29, and the
+  Home Assistant host's clone is still on the old, disjoint history, so
+  **no push since `376f3d8` has ever reached the live dashboard** — every
+  `FIXED`/`PUSHED` row for that entire range is unproven at the delivery
+  step, not merely unobserved. A five-step owner recovery procedure is
+  recorded in `DASHBOARD_ISSUES.md` (`git fetch`, confirm the disjoint
+  merge-base, check for host-only commits worth saving, then
+  `git reset --hard origin/ha-deploy` on the host). That recovery is
+  git/deployment infrastructure on the HA host itself — protected under
+  `CLAUDE.md`/`MAINTENANCE.md`, not something this routine executes. No new
+  evidence since `ec10656`/`56d6dd0`: no live-verification result recorded,
+  no `DR-001` brief, no owner confirmation the host recovery has run. Sent
+  the owner a push notification this run with the confirmed root cause and
+  the exact recovery commands, since the prior notification (fourteenth
+  check) predates this finding. **Recommendation: hold dashboard-code
+  batches until the owner completes the `CFG-003` host recovery** — the
+  coded-fix surface was already exhausted before `CFG-003`, and pushing
+  further work into a pipe confirmed not to be delivering is not
+  productive. **Exact next recommended task:** (1) owner runs the `CFG-003`
+  recovery procedure on the HA host and confirms `git rev-parse --short
+  HEAD` there advances past `376f3d8`; (2) owner (or a future run once
+  confirmed) runs `/config/deploy_deez_dashboard.sh` by hand and checks for
+  `UI-032 PROBE v1` live, closing the loop `CFG-003` describes; (3) failing
+  owner action, no new dashboard-code work is warranted this run — `DR-001`
+  remains blocked on a design brief only the owner can supply, and no other
+  actionable Main-owned item exists.
 
 ### Billing
 - **2026-08-30 (this run) — `BILL-005` fixed (title-card text-shadow guard)
