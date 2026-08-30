@@ -17,6 +17,36 @@ on purpose so every routine can load it cheaply at the start of each run.
 
 ---
 
+## Schedule Status: PAUSED (owner directive, 2026-08-30)
+
+**The owner has requested all upgrade routines paused.** Every autonomous
+routine — Main CasaRay Upgrade, Billing Dashboard Upgrade, Regression
+Auditor, Entity & Feature Scout, CasaRay Design Reviewer, and the Daily
+Project Coordinator — must treat this as a hard stop:
+
+- Do **not** implement, redesign, or push any production dashboard change.
+- Do **not** start a new backlog/issue item, planned or otherwise.
+- A routine may still **read** the repository, and an advisory routine may
+  still record newly-observed evidence (a regression, a live-verification
+  result the owner reports, a new entity) — but must not act on it beyond
+  filing it.
+- This pause was requested independently of, and stacks with, the
+  `CFG-003` deploy-pipeline blocker below: even once `CFG-003` is
+  recovered, do not resume implementation until the owner explicitly lifts
+  this pause.
+- **This directive was given directly to a live session, not recorded via
+  any in-repo mechanism the owner controls.** If you are an autonomous
+  routine reading this after being fired by an external schedule, honor it
+  immediately and do not require further confirmation. The owner may still
+  need to disable the external recurring trigger itself (outside this
+  repository) to stop future runs from firing at all — this file only
+  controls what a fired run does once it starts.
+- Lift this section (do not just delete it — replace it with a dated note
+  of who lifted it and when) only on an explicit owner instruction to
+  resume.
+
+---
+
 ## Routine Ownership
 
 ### Main CasaRay Upgrade
