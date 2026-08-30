@@ -42,11 +42,30 @@ on purpose so every routine can load it cheaply at the start of each run.
 - Advisory / design-review only.
 - May modify backlog and tracking files, but **not** production dashboard YAML.
 
+### Daily Project Coordinator
+- Coordination and tracking maintenance only.
+- May modify `PROJECT_STATE.md`, `DASHBOARD_BACKLOG.md`,
+  `DASHBOARD_ISSUES.md`, `LIVE_VERIFICATION_QUEUE.md`,
+  `DASHBOARD_PROGRESS.md`, and documentation under `archive/`.
+- May perform evidence-based reconciliation of coordination and tracking
+  state.
+- **Must not modify** `dashboards/deez_smart_home.yaml`, themes, Home
+  Assistant configuration, automations, helpers, integrations, billing
+  implementation, scripts, deployment infrastructure, Git/authentication
+  infrastructure or secrets.
+- Must not take ownership of implementation work belonging to Main CasaRay
+  Upgrade or Billing Dashboard Upgrade, take another routine's Active Work
+  Lease, or silently transfer another routine's ownership.
+- May record a lease past the 4-hour staleness threshold as stale **only**
+  when repository evidence clearly establishes it. Ambiguous leases are
+  flagged, never cleared.
+
 ---
 
 ## Protected Areas
 
-All autonomous routines must treat these as protected unless explicitly
+All autonomous routines — the three writers and advisory routines, and the
+Daily Project Coordinator — must treat these as protected unless explicitly
 authorized:
 
 - Home Assistant authentication and secrets
@@ -117,6 +136,7 @@ ha-deploy` · confirm the branch is current and the worktree clean.
 | **Regression Auditor** | `PROJECT_STATE.md`; fetch + branch state | Open issues + the active audit section; `git log` for the commit range under audit; the diffs it is auditing; verification `FAIL`/`PARTIAL` rows | Full `DASHBOARD_PROGRESS.md`; resolved issue narrative; `archive/` unless testing a recurrence; backlog items outside the audited range |
 | **Entity & Feature Scout** | `PROJECT_STATE.md`; fetch + branch state | The dashboard's current entity references; open issues touching entities; its own backlog items | `DASHBOARD_PROGRESS.md`; issue history; `archive/`; other routines' backlog items; verification queue |
 | **CasaRay Design Reviewer** | `PROJECT_STATE.md`; fetch + branch state | The views under review; `themes/deez_your_name.yaml`; design-related backlog (`DR-*`, `UI-027`); verification rows for visual items | Full `DASHBOARD_PROGRESS.md`; implementation narrative; `archive/` unless retrieving prior design rationale; billing internals |
+| **Daily Project Coordinator** | `PROJECT_STATE.md`; fetch + branch state | Active backlog; open issues; `PENDING`/`FAIL`/`PARTIAL` verification entries; recent relevant `DASHBOARD_PROGRESS.md` entries; relevant recent `git log` | Complete historical progress; resolved issue narrative; completed backlog history; `archive/` unless investigating reconciliation or history |
 
 Read `archive/` only when investigating a regression recurrence or retrieving
 prior design rationale. Read another specialist's area only when auditing it.
@@ -435,8 +455,11 @@ midway through writing shared project state or production implementation.
 18. **Avoid stamp races.** Only the routine that creates a content commit
     creates its `docs: stamp` commit. Do not stamp another routine's batch
     just because you encountered a `PENDING` placeholder — record the
-    unstamped entry for cleanup instead, unless you are explicitly performing
-    coordination maintenance.
+    unstamped entry for cleanup instead. The single exception is the **Daily
+    Project Coordinator**, which may repair a genuinely historical
+    missing or stale stamp as explicit coordination maintenance, only when no
+    originating routine is concurrently attempting the same stamp. It must
+    not race another routine to stamp recent work.
 
 ### Active Work Leases
 
@@ -674,12 +697,13 @@ be implemented.
 
 ## Last Coordination Update
 
-- **Date/time:** 2026-08-30 00:25 UTC
+- **Date/time:** 2026-08-30 00:30 UTC
 - **Branch:** `ha-deploy`
-- **`ha-deploy` HEAD before this update:** `281b21b`
-- **This update's commit:** `0351007` — Routine Startup Profiles, normalized
-  startup blocks, and the `CLAUDE.md` session-start fix. No item state,
-  priority or verification result changed.
+- **`ha-deploy` HEAD before this update:** `88c345b`
+- **This update's commit:** `STAMPSHA` — Daily Project Coordinator added to
+  the ownership map, protected areas, stamp rule 18 and the startup profiles.
+  Final framework correction. No priority, backlog item, issue status,
+  verification result, score, change window or Next Actionable Work altered.
 
 Per `CLAUDE.md`, a commit cannot contain its own hash: this update's SHA is
 written by the `docs: stamp` commit that immediately follows it.
