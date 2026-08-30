@@ -80,8 +80,9 @@ stop when you have what the task needs.
    or revisiting a past design decision.
 8. Read `LIVE_VERIFICATION_QUEUE.md` only when: deciding whether a
    verification-blocked item has changed state, working on an affected view,
-   or reconciling a user-supplied `PASS`/`FAIL`/`PARTIAL` result. Not every
-   run.
+   or reconciling a user-supplied result. Not every run — and when you do,
+   read the `PENDING`, `FAIL` and `PARTIAL` rows. Historical `PASS` rows
+   matter only when investigating a recurrence or regression.
 
 Cheapness never licenses stale state: the Concurrency / Serialization Policy
 still requires a fetch and a re-read of this file before any write, and the
@@ -273,7 +274,7 @@ recorded in `DASHBOARD_BACKLOG.md` or `DASHBOARD_ISSUES.md`.
 | Heading-card contrast (`themes/deez_your_name.yaml`) | Main | `9926233` — 08-29 23:42 | `LIVE_VERIFICATION_REQUIRED` | 08-30 05:42 | Closes UI-027; theme-level rule, no dashboard YAML. |
 | Residual bilingual gaps (`people-locations`, `ipad-command-center`, `home`) | Main | `dff00f3` — 08-29 23:45 | `LIVE_VERIFICATION_REQUIRED` | 08-30 05:45 | Closes REG-004/005/006. REG-005 changed English `WAN —` → "WAN not reporting" — owner may want to review. |
 | Regression audit record (`DASHBOARD_ISSUES.md`) | Regression Auditor | `3116495` — 08-29 22:49 | `PUSHED` | 08-30 04:49 | Baseline REG-001..006 fresh; do not re-audit that range. |
-| Coordination state (`PROJECT_STATE.md`, `DASHBOARD_BACKLOG.md`) | Shared | `88024e3` — 08-30 00:05 | `PUSHED` | 08-30 06:05 | Structure settled. Append to your own sections; do not restructure. |
+| Coordination state (`PROJECT_STATE.md`, `DASHBOARD_BACKLOG.md`) | Shared | `STAMPSHA` — 08-30 00:12 | `PUSHED` | 08-30 06:12 | Structure settled. Append to your own sections; do not restructure. |
 
 Back / previous-page navigation is **complete** (35/36 views, parent-targeted;
 `home` is root) and its window long expired — recorded under UI-009/UI-017 in
@@ -386,6 +387,68 @@ person looking at the live dashboard can close a verification item.
   excluded from autonomous selection (queue rule 4) and does not become
   actionable implementation work just because it is unverified.
 
+### Result syntax
+
+One result per line. Case-insensitive. Batches are accepted — process them
+atomically where practical and report any ID that could not be matched.
+
+```
+<ID> <RESULT>
+<ID> <RESULT> — <short note>
+```
+
+- `<ID>` — an existing stable ID (`UI-011`, `REG-005`). Never invent one.
+- `<RESULT>` — `PASS` · `FAIL` · `PARTIAL` · `PENDING` (to un-record).
+- `<note>` — optional, after `—`, `-` or `:`. Preserve the user's wording
+  where it carries the symptom; keep the tracking record concise.
+
+```
+UI-027 PASS — readable on iPad landscape
+UI-011 FAIL — Total Solar is about 1000× too small
+REG-005 PARTIAL — English wording works, Chinese is inconsistent
+```
+
+### Reconciliation procedure
+
+Before editing: fetch `origin/ha-deploy` and re-read this file, per the
+Concurrency / Serialization Policy. Then locate the ID in
+`LIVE_VERIFICATION_QUEUE.md`, `DASHBOARD_ISSUES.md`, `DASHBOARD_BACKLOG.md`
+(if present) and this file (if referenced), and reconcile consistently across
+all of them.
+
+| | `PASS` | `FAIL` | `PARTIAL` |
+|---|---|---|---|
+| **Queue** | Result → `PASS` | Result → `FAIL` | Result → `PARTIAL` |
+| **Issue record** | `LIVE_VERIFICATION_REQUIRED` → `LIVE_VERIFIED` | Reopen the **same stable ID**; state → actionable | Keep the confirmed portion; reopen only the failing part |
+| **Priority** | — | Preserve, unless evidence clearly justifies reclassification | Preserve |
+| **Owner** | — | Assign the correct owning routine | Assign the correct owning routine |
+| **Backlog** | Do not recreate implementation work | Add as actionable, scored per the normal rules | Add only the narrow follow-up |
+| **Evidence** | Note optional | Record the observed live symptom | Record which half failed |
+
+- **`PASS`** — remove it from active verification blockers and preserve its
+  historical record. Never delete the trail.
+- **`FAIL`** — reuse the existing ID rather than minting a duplicate. Update
+  Next Actionable Work only if the reopened item now outranks the owning
+  routine's current selection, respecting ownership, scoring and concurrency
+  rules. **Do not implement the fix during a reconciliation task** unless the
+  user asks, or the routine's normal writer workflow later selects it.
+- **`PARTIAL`** — reuse the stable ID when the failure is the same underlying
+  issue; mint a new linked ID only when the failing portion is genuinely a
+  distinct defect. Never let a partial result trigger a wholesale redesign.
+
+### What may never produce LIVE_VERIFIED
+
+A human result is the only source. Never infer `PASS` from a passing
+`ha_validate.sh` run, a successful deploy, a screenshot nobody actually
+reviewed, or the plausibility of the diff.
+
+### Queue upkeep
+
+Keep `PASS` rows for traceability. Once a page group has no `PENDING`,
+`FAIL` or `PARTIAL` rows left, it may collapse into a one-line completed
+summary naming the IDs and the date. Do not delete useful history merely to
+shorten the file.
+
 ---
 
 ## Next Actionable Work
@@ -463,11 +526,11 @@ be implemented.
 
 ## Last Coordination Update
 
-- **Date/time:** 2026-08-30 00:05 UTC
+- **Date/time:** 2026-08-30 00:12 UTC
 - **Branch:** `ha-deploy`
-- **`ha-deploy` HEAD before this update:** `4dc566a`
-- **This update's commit:** `88024e3` — `LIVE_VERIFICATION_QUEUE.md` and the
-  Live Verification coordination rules.
+- **`ha-deploy` HEAD before this update:** `0c7ca4e`
+- **This update's commit:** `STAMPSHA` — Verification Result Reconciliation
+  policy. No verification result was recorded; all 33 checks remain `PENDING`.
 
 Per `CLAUDE.md`, a commit cannot contain its own hash: this update's SHA is
 written by the `docs: stamp` commit that immediately follows it.

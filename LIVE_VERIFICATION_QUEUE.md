@@ -116,13 +116,30 @@ on the iPad, landscape.
 
 ## Recording results
 
-- Replace `PENDING` with `PASS`, `FAIL` or `PARTIAL`. A short note after the
-  result is welcome.
+Either edit the Result cell directly, or just tell the routine — one result
+per line, batches fine:
+
+```
+UI-027 PASS — readable on iPad landscape
+UI-011 FAIL — Total Solar is about 1000× too small
+REG-005 PARTIAL — English wording works, Chinese is inconsistent
+```
+
+`PASS` · `FAIL` · `PARTIAL` · `PENDING`. The note after `—` is optional and
+is kept where it carries the symptom. Full reconciliation rules — what each
+result does to the issue record, the backlog and ownership — are in
+`PROJECT_STATE.md` under **Live Verification**.
+
+- A short note after the result is welcome.
 - A routine reconciling results applies the rules in `PROJECT_STATE.md`:
   `PASS` may move the item to `LIVE_VERIFIED`; `FAIL` reopens an actionable
   regression under the same stable ID; `PARTIAL` keeps the passing portion and
   creates a narrowly scoped follow-up rather than a wholesale reimplementation.
-- Creating or reading this queue is **not** verification.
+- Creating or reading this queue is **not** verification, and neither is a
+  passing validation run, a successful deploy, or an unreviewed screenshot.
+  A human result is the only source of `LIVE_VERIFIED`.
+- `PASS` rows stay for traceability. A page group with nothing left
+  outstanding may collapse to a one-line summary naming its IDs and date.
 
 **33 checks pending.** UI-025 and UI-026 are already `VERIFIED` and are not
 listed. `BILL-001` (billing privacy) and `DR-001` (iPad density) are
