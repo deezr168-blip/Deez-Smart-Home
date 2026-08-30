@@ -53,7 +53,7 @@ for live-verification state; billing items do not yet have dedicated rows in
 
 ## Recent batches
 
-### `<PENDING>` — ten bill status/amount cards guarded against raw interpolation (`BILL-004`)
+### `d570a82` — ten bill status/amount cards guarded against raw interpolation (`BILL-004`)
 Area: `bills` landing tiles (Electricity, Gas, Car Insurance, Council Rates,
 South East Water, VicRoads Rego) and the status card on
 `bill-car-insurance`/`bill-water`/`bill-council-rates`/`bill-rego`.
