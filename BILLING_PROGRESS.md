@@ -53,6 +53,68 @@ for live-verification state; billing items do not yet have dedicated rows in
 
 ## Recent batches
 
+### `<PENDING>` — ten bill status/amount cards guarded against raw interpolation (`BILL-004`)
+Area: `bills` landing tiles (Electricity, Gas, Car Insurance, Council Rates,
+South East Water, VicRoads Rego) and the status card on
+`bill-car-insurance`/`bill-water`/`bill-council-rates`/`bill-rego`.
+
+Found while inspecting the current billing YAML per this run's brief (all
+coded billing backlog items — `BILL-001`'s NMI/MIRN portion, `BILL-002`'s
+read side, `BILL-003` — are genuinely `BLOCKED` on owner decisions, so this
+was a fresh sweep for new, actionable, unblocked billing work rather than a
+re-check of the same blockers). Ten `custom:mushroom-template-card` secondary
+fields printed a raw `states('sensor.…')` or `states('input_number.…')` value
+with no guard at all — the same raw-interpolation class this project has
+repeatedly fixed elsewhere (`UI-006`, `UI-030`, `UI-031`), just never swept in
+`bills`/`bill-*` because those views are Billing-owned and explicitly out of
+scope for Main's own sweeps (see `PROJECT_STATE.md` Main notes). An
+`input_number` helper going `unknown` after a restart, or a template sensor
+going `unavailable`, would have rendered a literal `$unavailable` or bare
+`unavailable` on the parent-facing bill tiles — exactly the kind of thing
+this routine's brief asks to avoid ("Current bills should clearly show...
+final payable amount", "Avoid unnecessary technical controls" — a raw sensor
+string is the opposite of parent-friendly).
+
+Fixed, reusing only entities already referenced elsewhere in the same views
+(none invented):
+- **`bills` landing — Electricity / Gas tiles**: `sensor.electricity_bill_status`
+  / `sensor.gas_bill_status` and their paired `input_number.*_bill_amount` were
+  both bare. Now guarded with the same `bad = ['unavailable', 'unknown',
+  'none']` convention used throughout the file; falls back to bilingual
+  "Status unavailable" / "状态不可用" (matching this same view's existing
+  "Estimate unavailable" wording one section down) and "Not entered" /
+  "未输入" for the amount (matching the account-number field's existing "Not
+  entered" convention from `BILL-001`).
+- **`bills` landing — Car Insurance / Council Rates / South East Water /
+  VicRoads Rego tiles**: each already computed a `cn` bilingual variable for
+  its Paid/Unpaid branch but glued a bare `states(...)` amount onto the same
+  line. Now the amount is guarded once into a local `amt` variable reused by
+  both branches, bilingual either way.
+- **Subview status cards** (`bill-car-insurance`, `bill-council-rates`,
+  `bill-rego`): same guard applied to each view's own top status card.
+- **`bill-water` subview status card**: guarded both the amount *and* the
+  usage-in-kL figure, which were concatenated on one unguarded line.
+
+Deliberately **not** touched: the electricity/gas icon_color logic (already
+falls back to neutral blue, not a reassuring color, for any status other than
+the three known values — not a false-safe case) and the hardcoded NMI/MIRN
+literals in `bill-electricity`/`bill-gas`, which remain `BILL-001`'s own
+`BLOCKED` scope, not part of this batch.
+
+Validated: `bash scripts/ha_validate.sh` passes clean (7/7); 386 templates
+(unchanged — existing template fields were edited, not added), 36/36 views
+resolve, no entity/view loss, no protected path touched, no credential-shaped
+literal introduced. Diff touches only the ten `secondary:` fields described
+above.
+
+Expect: no visible change with every bill entity healthy (the common case);
+if an `input_number`/`sensor` briefly goes `unknown`/`unavailable`, the
+affected tile now reads "Not entered" / "未输入" (or "Status unavailable" for
+the electricity/gas status word) instead of a raw `$unavailable`. Added
+`BILL-004` to `LIVE_VERIFICATION_QUEUE.md` (Bills & rooms, footer 43→44) and
+to `DASHBOARD_BACKLOG.md`'s "Awaiting live verification" table in the same
+commit. **FIXED — AWAITING LIVE VERIFICATION.**
+
 ### `23c0301` — NMI/MIRN blocked, account numbers de-hardcoded (`BILL-001`, partial)
 Area: `bill-electricity` (~L4238), `bill-gas` (~L4323).
 Both subviews' plan-details `markdown` cards carried the real, live account
@@ -241,6 +303,10 @@ made this run; there was nothing safe yet for them to feed.
 
 ## Exact next billing task
 
+0. **This run's `BILL-004` batch is `FIXED — AWAITING LIVE VERIFICATION`** —
+   nothing further to code; needs a live look at the ten guarded cards (or,
+   more practically, temporarily disabling one `input_number`/`sensor` to
+   confirm the guard fires — see `LIVE_VERIFICATION_QUEUE.md`).
 1. **If the owner has looked at `BILL-001`:** either create
    `input_text.elec_nmi` and `input_text.gas_mirn` helpers in Home Assistant
    (then a follow-up batch wires them into `bill-electricity`/`bill-gas`

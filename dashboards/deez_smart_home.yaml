@@ -4055,7 +4055,7 @@ views:
       subtitle: '{{ ''水电 • 保险 • 市政费 • 车辆注册'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Utilities • insurance • council rates • registration'' }}'
     - type: custom:mushroom-template-card
       primary: Electricity
-      secondary: '{{ states(''sensor.electricity_bill_status'') }} • ${{ states(''input_number.elec_bill_amount'') }}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set s = states(''sensor.electricity_bill_status'') %}{% set a = states(''input_number.elec_bill_amount'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}{{ s if s not in bad else (''状态不可用'' if cn else ''Status unavailable'') }} • {% if a in bad %}{{ ''未输入'' if cn else ''Not entered'' }}{% else %}${{ a }}{% endif %}'
       icon: mdi:flash
       icon_color: '{% set s = states(''sensor.electricity_bill_status'') %} {% if s == ''Paid'' %}green {% elif s == ''Overdue'' %}red {% elif s == ''Due soon'' %}orange {% else %}blue{% endif %}'
       layout: vertical
@@ -4068,7 +4068,7 @@ views:
         columns: 6
     - type: custom:mushroom-template-card
       primary: Gas
-      secondary: '{{ states(''sensor.gas_bill_status'') }} • ${{ states(''input_number.gas_bill_amount'') }}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set s = states(''sensor.gas_bill_status'') %}{% set a = states(''input_number.gas_bill_amount'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}{{ s if s not in bad else (''状态不可用'' if cn else ''Status unavailable'') }} • {% if a in bad %}{{ ''未输入'' if cn else ''Not entered'' }}{% else %}${{ a }}{% endif %}'
       icon: mdi:fire-circle
       icon_color: '{% set s = states(''sensor.gas_bill_status'') %} {% if s == ''Paid'' %}green {% elif s == ''Overdue'' %}red {% elif s == ''Due soon'' %}orange {% else %}blue{% endif %}'
       layout: vertical
@@ -4081,10 +4081,10 @@ views:
         columns: 6
     - type: custom:mushroom-template-card
       primary: Car Insurance
-      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% if is_state(''input_boolean.car_insurance_paid'',''on'') %}
-  {{ ''已付 • $'' if cn else ''Paid • $'' }}{{ states(''input_number.car_insurance_amount'') }}
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set a = states(''input_number.car_insurance_amount'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}{% set amt = (''未输入'' if cn else ''Not entered'') if a in bad else (''$'' ~ a) %}{% if is_state(''input_boolean.car_insurance_paid'',''on'') %}
+  {{ ''已付 • '' if cn else ''Paid • '' }}{{ amt }}
 {% else %}
-  {{ ''未付 • $'' if cn else ''Unpaid • $'' }}{{ states(''input_number.car_insurance_amount'') }}
+  {{ ''未付 • '' if cn else ''Unpaid • '' }}{{ amt }}
 {% endif %}'
       icon: mdi:shield-car
       icon_color: '{{ ''green'' if is_state(''input_boolean.car_insurance_paid'',''on'') else ''orange'' }}'
@@ -4098,10 +4098,10 @@ views:
         columns: 6
     - type: custom:mushroom-template-card
       primary: Council Rates
-      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% if is_state(''input_boolean.council_rate_paid'',''on'') %}
-  {{ ''已付 • $'' if cn else ''Paid • $'' }}{{ states(''input_number.council_rate_amount'') }}
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set a = states(''input_number.council_rate_amount'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}{% set amt = (''未输入'' if cn else ''Not entered'') if a in bad else (''$'' ~ a) %}{% if is_state(''input_boolean.council_rate_paid'',''on'') %}
+  {{ ''已付 • '' if cn else ''Paid • '' }}{{ amt }}
 {% else %}
-  {{ ''未付 • $'' if cn else ''Unpaid • $'' }}{{ states(''input_number.council_rate_amount'') }}
+  {{ ''未付 • '' if cn else ''Unpaid • '' }}{{ amt }}
 {% endif %}'
       icon: mdi:office-building
       icon_color: '{{ ''green'' if is_state(''input_boolean.council_rate_paid'',''on'') else ''orange'' }}'
@@ -4115,10 +4115,10 @@ views:
         columns: 6
     - type: custom:mushroom-template-card
       primary: South East Water
-      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% if is_state(''input_boolean.water_bill_paid'',''on'') %}
-  {{ ''已付 • $'' if cn else ''Paid • $'' }}{{ states(''input_number.water_bill_amount'') }}
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set a = states(''input_number.water_bill_amount'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}{% set amt = (''未输入'' if cn else ''Not entered'') if a in bad else (''$'' ~ a) %}{% if is_state(''input_boolean.water_bill_paid'',''on'') %}
+  {{ ''已付 • '' if cn else ''Paid • '' }}{{ amt }}
 {% else %}
-  {{ ''未付 • $'' if cn else ''Unpaid • $'' }}{{ states(''input_number.water_bill_amount'') }}
+  {{ ''未付 • '' if cn else ''Unpaid • '' }}{{ amt }}
 {% endif %}'
       icon: mdi:water-circle
       icon_color: '{{ ''green'' if is_state(''input_boolean.water_bill_paid'',''on'') else ''blue'' }}'
@@ -4132,10 +4132,10 @@ views:
         columns: 6
     - type: custom:mushroom-template-card
       primary: VicRoads Rego
-      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% if is_state(''input_boolean.rego_paid'',''on'') %}
-  {{ ''已付 • $'' if cn else ''Paid • $'' }}{{ states(''input_number.rego_amount'') }}
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set a = states(''input_number.rego_amount'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}{% set amt = (''未输入'' if cn else ''Not entered'') if a in bad else (''$'' ~ a) %}{% if is_state(''input_boolean.rego_paid'',''on'') %}
+  {{ ''已付 • '' if cn else ''Paid • '' }}{{ amt }}
 {% else %}
-  {{ ''未付 • $'' if cn else ''Unpaid • $'' }}{{ states(''input_number.rego_amount'') }}
+  {{ ''未付 • '' if cn else ''Unpaid • '' }}{{ amt }}
 {% endif %}'
       icon: mdi:card-account-details-outline
       icon_color: '{{ ''green'' if is_state(''input_boolean.rego_paid'',''on'') else ''orange'' }}'
@@ -4388,7 +4388,7 @@ views:
 {% else %}
   {{ ''待付款'' if cn else ''Payment Outstanding'' }}
 {% endif %}'
-      secondary: ${{ states('input_number.car_insurance_amount') }}
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set a = states(''input_number.car_insurance_amount'') %}{% if a in [''unavailable'', ''unknown'', ''none''] %}{{ ''未输入'' if cn else ''Not entered'' }}{% else %}${{ a }}{% endif %}'
       icon: mdi:shield-car
       icon_color: '{{ ''green'' if is_state(''input_boolean.car_insurance_paid'',''on'')
         else ''orange'' }}'
@@ -4453,8 +4453,7 @@ views:
 {% else %}
   {{ ''待付款'' if cn else ''Payment Outstanding'' }}
 {% endif %}'
-      secondary: ${{ states('input_number.water_bill_amount') }} • {{ states('input_number.water_bill_usage_kl')
-        }} kL
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}{% set a = states(''input_number.water_bill_amount'') %}{% set u = states(''input_number.water_bill_usage_kl'') %}{% if a in bad %}{{ ''未输入'' if cn else ''Not entered'' }}{% else %}${{ a }}{% endif %} • {% if u in bad %}{{ ''未输入'' if cn else ''not entered'' }}{% else %}{{ u }} kL{% endif %}'
       icon: mdi:water-circle
       icon_color: '{{ ''green'' if is_state(''input_boolean.water_bill_paid'',''on'')
         else ''blue'' }}'
@@ -4518,7 +4517,7 @@ views:
 {% else %}
   {{ ''待付款'' if cn else ''Payment Outstanding'' }}
 {% endif %}'
-      secondary: ${{ states('input_number.council_rate_amount') }}
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set a = states(''input_number.council_rate_amount'') %}{% if a in [''unavailable'', ''unknown'', ''none''] %}{{ ''未输入'' if cn else ''Not entered'' }}{% else %}${{ a }}{% endif %}'
       icon: mdi:office-building
       icon_color: '{{ ''green'' if is_state(''input_boolean.council_rate_paid'',''on'')
         else ''orange'' }}'
@@ -4580,7 +4579,7 @@ views:
 {% else %}
   {{ ''注册待付'' if cn else ''Registration Outstanding'' }}
 {% endif %}'
-      secondary: ${{ states('input_number.rego_amount') }}
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set a = states(''input_number.rego_amount'') %}{% if a in [''unavailable'', ''unknown'', ''none''] %}{{ ''未输入'' if cn else ''Not entered'' }}{% else %}${{ a }}{% endif %}'
       icon: mdi:card-account-details-outline
       icon_color: '{{ ''green'' if is_state(''input_boolean.rego_paid'',''on'') else
         ''orange'' }}'

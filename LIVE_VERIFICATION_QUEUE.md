@@ -103,6 +103,7 @@ on the iPad, landscape.
 | ID | What changed | What to check live | Expected result | Commit | P | Result |
 |---|---|---|---|---|---|---|
 | BILL-001 | Account-number literal replaced with `input_text.elec_account_number`/`..._gas_account_number` **[guard]** | `bill-electricity` and `bill-gas` plan-details cards | Same account number as entered in the Bills form (or "Not entered" if the helper is empty), not a hardcoded number that no longer matches. NMI/MIRN unchanged — not part of this check | `23c0301` | P1 | PENDING |
+| BILL-004 | Bill status/amount cards guarded against raw `unavailable`/`unknown` interpolation **[guard][中]** | `bills` landing tiles (Electricity, Gas, Car Insurance, Council Rates, South East Water, VicRoads Rego) and the status card on `bill-car-insurance`/`bill-water`/`bill-council-rates`/`bill-rego`, with the underlying `input_number`/`sensor` disabled | Shows "Not entered" / 未输入 (or "Status unavailable" / 状态不可用 for the electricity/gas status word), never a literal `$unavailable` or raw `unavailable` status | `<PENDING>` | P3 | PENDING |
 | UI-016 | Last nested grids dissolved on `bills`, `light-living-room`, `lighting-modes` | All three page layouts | Cards sized normally, not squeezed inside half-width sections; the six bill subviews each read as one clean column | `9b28fdb` | P2 | PENDING |
 | UI-013 | Duplicate media cards removed | Parents Room and Guest Room | One media control per player, not a Mushroom card stacked on a native one | `56c7656` | P3 | PENDING |
 | UI-023 | Placeholder cards removed | Ray Bedroom and other room pages | No "nothing here yet" cards taking up columns | `3048e54` | P2 | PENDING |
@@ -151,12 +152,12 @@ result does to the issue record, the backlog and ownership — are in
 - `PASS` rows stay for traceability. A page group with nothing left
   outstanding may collapse to a one-line summary naming its IDs and date.
 
-**43 checks pending** (42 carried forward + 1 row added by the Daily Project
-Coordinator: `UI-030`, the LetPot Grow Light guard from `691689a` that
-`REG-012` in `DASHBOARD_ISSUES.md` found had never received a queue row —
-closing that gap; see `DASHBOARD_ISSUES.md` for the full history). UI-025 and
-UI-026 are already `VERIFIED` and are not listed. `BILL-001`'s account-number
-fix is now pushed and listed above under Bills & rooms; its still-`BLOCKED`
-NMI/MIRN portion is implementation work, not a verification item, and stays
-in `DASHBOARD_BACKLOG.md`. `DR-001` (iPad density) is also implementation
-work, not yet coded, and stays in `DASHBOARD_BACKLOG.md`.
+**44 checks pending** (43 carried forward + 1 row added this run by the
+Billing Dashboard Upgrade routine: `BILL-004`, guarding ten bill status/amount
+cards on `bills` and four `bill-*` subviews against raw `unavailable`/
+`unknown` interpolation — see `BILLING_PROGRESS.md` for the full batch).
+UI-025 and UI-026 are already `VERIFIED` and are not listed. `BILL-001`'s
+account-number fix is now pushed and listed above under Bills & rooms; its
+still-`BLOCKED` NMI/MIRN portion is implementation work, not a verification
+item, and stays in `DASHBOARD_BACKLOG.md`. `DR-001` (iPad density) is also
+implementation work, not yet coded, and stays in `DASHBOARD_BACKLOG.md`.

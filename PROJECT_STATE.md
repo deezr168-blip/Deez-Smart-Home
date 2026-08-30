@@ -640,7 +640,7 @@ be implemented.
 | Routine | Item | Priority | State | Reason Selected |
 |---|---|---|---|---|
 | Main CasaRay Upgrade | `DR-001` — iPad Command Center density | P3 | `PLANNED` — needs a design decision before implementation | Still the only scoped item in Main's queue after five consecutive clean sweeps this session (raw-interpolation, false-safe aggregate, float-sentinel, icon_color/attribute/int/cover/structural, state_attr/comparison/bare-float/navigation) — score **−2** (Impact 3, Effort 4, Risk 4), selected by being the sole remainder, not by rank. Explicitly "advisory item, no implementation agreed": needs a CasaRay Design Reviewer brief before Main writes code. Everything else Main owns (`UI-011`, and the REG-001..013/UI-027/UI-030/UI-031 batches) is `LIVE_VERIFICATION_REQUIRED` and waiting on the owner — the 42-row verification queue has had zero results recorded across at least five runs. |
-| Billing Dashboard Upgrade | `BILL-002` — Home Assistant exposure decision for `billing/history.json` (storage now exists, see `billing/README.md`) | P2 | `PARTIAL` — storage scaffolded (`5147eb0`/`ff25626`), read side needs owner direction | `BILL-001`'s account-number portion is fixed and pushed (`23c0301`); its NMI/MIRN portion is `BLOCKED` on an owner decision (no helper exists, cannot invent one) and is excluded from selection (queue rule 4). This run built `BILL-002`'s storage layer (`billing/schema.json`, empty `billing/history.json`) since it doesn't depend on the owner's read-side decision — no dashboard YAML touched, nothing fabricated. The remaining blocker is purely which HA-side mechanism exposes the file to Lovelace (`billing/README.md` point 2); that decision is what unblocks real dashboard work. `BILL-003` stays blocked on both. |
+| Billing Dashboard Upgrade | `BILL-002` — Home Assistant exposure decision for `billing/history.json` (storage now exists, see `billing/README.md`) | P2 | `PARTIAL` — storage scaffolded (`5147eb0`/`ff25626`), read side needs owner direction | `BILL-001`'s account-number portion is fixed and pushed (`23c0301`); its NMI/MIRN portion is `BLOCKED` on an owner decision (no helper exists, cannot invent one) and is excluded from selection (queue rule 4). `BILL-002`'s storage layer (`billing/schema.json`, empty `billing/history.json`) exists; its read side is still blocked on which HA-side mechanism exposes the file to Lovelace (`billing/README.md` point 2). `BILL-003` stays blocked on both. This run instead found and fixed unblocked `BILL-004` (raw-interpolation guard on ten bill status/amount cards, `<PENDING>` — see Billing's own section below) since nothing in `BILL-001`/`002`/`003` is actionable without an owner decision; `BILL-002`'s exposure question is still the next thing that unblocks real dashboard-history work once decided. |
 
 ---
 
@@ -905,8 +905,55 @@ be implemented.
 
 ### Billing
 - **Queue:** `BILL-001` (P1, partial/blocked) → `BILL-002` (P2, partial) →
-  `BILL-003` (P2, blocked). All three are now blocked-or-partial pending an
-  owner decision; no further coded billing work is actionable without one.
+  `BILL-003` (P2, blocked). All three remain blocked-or-partial pending an
+  owner decision. This run found and fixed unblocked, unscored `BILL-004`
+  (S3/S4 raw-interpolation guard, see below) instead of re-deriving the same
+  blocker notes again.
+- **2026-08-30 (this run) — `BILL-004` fixed, no owner decision needed:**
+  fetched `origin/ha-deploy` (HEAD `0081429`), confirmed tree clean before and
+  after. Read `CLAUDE.md`, `PROJECT_STATE.md` in full, `DASHBOARD_PROGRESS.md`,
+  `DASHBOARD_ISSUES.md`, `DASHBOARD_BACKLOG.md`, `BILLING_PROGRESS.md` and
+  recent `ha-deploy` history before starting. Confirmed `BILL-001`'s NMI/MIRN
+  portion, `BILL-002`'s read side and `BILL-003` are all still genuinely
+  `BLOCKED`/`PARTIAL` on owner decisions this routine cannot make (queue rule
+  4 excludes them from selection), and that no other routine had touched
+  billing files since the last update — so rather than log another
+  "still blocked" re-check, inspected the live `bills`/`bill-*` YAML directly
+  for new, actionable, unblocked work. Found ten `custom:mushroom-template-card`
+  secondary fields (six on the `bills` landing tiles, four on `bill-*`
+  subview status cards) printing a raw `states(...)` value with no guard —
+  the same raw-interpolation class `UI-006`/`UI-030`/`UI-031` fixed elsewhere,
+  never swept here because `bills`/`bill-*` is Billing-owned and explicitly
+  out of scope for Main. Guarded all ten against `unavailable`/`unknown`/
+  `none`, reusing only entities already referenced in the same views (none
+  invented) and the existing "Not entered" / bilingual-fallback conventions
+  already established by `BILL-001` and `UI-030`/`UI-031`. Did **not** touch
+  the hardcoded NMI/MIRN literals (still `BILL-001`'s own `BLOCKED` scope) or
+  any protected path. `bash scripts/ha_validate.sh` passed clean (7/7) both
+  before committing and after the stamp; 386 templates (unchanged),
+  36/36 views resolve, no entity/view loss. Added a `BILL-004` row to
+  `LIVE_VERIFICATION_QUEUE.md` (Bills & rooms, footer 43→44) and to
+  `DASHBOARD_BACKLOG.md`'s "Awaiting live verification" table in the same
+  commit as the dashboard change, per the write-hygiene rule `REG-012`
+  exists to prevent. Full narrative in `BILLING_PROGRESS.md`. Fetched again
+  immediately before pushing — no drift. Pushed to `ha-deploy` and
+  `claude/ha-dashboard-upgrades-wui7ig`.
+- **Verification state:** `BILL-004` is `FIXED — AWAITING LIVE VERIFICATION`
+  — repository validation only, nothing here can confirm what renders.
+- **Blockers (unchanged by this run):** `BILL-001`'s NMI/MIRN portion needs
+  the owner to either create `input_text.elec_nmi`/`input_text.gas_mirn` or
+  approve removing that text from the cards. `BILL-002`'s dashboard read side
+  needs the owner to pick an HA-exposure mechanism for `billing/history.json`.
+  `BILL-003` stays blocked on both, plus a design review before any Gmail/
+  Drive read-only calls are made — none were made this run; `BILL-004` did
+  not need them.
+- **Exact next recommended billing task:** (1) a live look at `BILL-004`'s
+  ten guarded cards (or disable one `input_number`/`sensor` to confirm the
+  guard fires); (2) if the owner has looked at `BILL-001`, act on whichever
+  NMI/MIRN direction they choose; (3) otherwise, react to `BILL-002`'s open
+  read-side question in `billing/README.md`; (4) `BILL-003` stays not-yet-
+  actionable until (2) and (3) move. See `BILLING_PROGRESS.md` → "Exact next
+  billing task" for the fuller version.
 - **2026-08-30 (this run) — `BILL-002` storage layer scaffolded
   (`5147eb0`/`ff25626`), no code change to any dashboard YAML:** re-read
   `CLAUDE.md`, `PROJECT_STATE.md`, `BILLING_PROGRESS.md`,
