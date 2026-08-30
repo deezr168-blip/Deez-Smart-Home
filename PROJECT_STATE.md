@@ -1854,7 +1854,7 @@ be implemented.
 - **Date/time:** 2026-08-30 (this run) — UI-032 second FAIL, probe shipped
 - **Branch:** `ha-deploy`
 - **`ha-deploy` HEAD before this update:** `6d5acd1`
-- **This update's commit:** `PENDING` — `UI-032` failed live a second time
+- **This update's commit:** `2183177` — `UI-032` failed live a second time
   after `0fec9bb`. The flat per-entity conditionals fail exactly as the `or`
   version did, so **`condition: or` was not the cause** — that first diagnosis
   was reasoning by elimination stated with more confidence than one unverified
