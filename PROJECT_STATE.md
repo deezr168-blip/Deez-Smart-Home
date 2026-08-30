@@ -1271,6 +1271,43 @@ be implemented.
   productive Main run is one that reacts to a new human verification result,
   entity export, or design brief, and this state should be surfaced to the
   owner rather than silently re-confirmed indefinitely.
+- **2026-08-30 — fourteenth Main check, no code change:** fetched
+  `origin/ha-deploy` — `HEAD` unchanged at `8f07bb4`, tree clean before and
+  after. Re-read `CLAUDE.md` and this file in full, `DASHBOARD_ISSUES.md`'s
+  Open section (unchanged: only `CFG-001`/`CFG-002`, both Home Assistant
+  Energy configuration outside this repository) and `DASHBOARD_BACKLOG.md`'s
+  active queue (unchanged: `UI-032` `BLOCKED` on a States export, `DR-001`
+  gated on a design brief). `LIVE_VERIFICATION_QUEUE.md` unchanged: still no
+  new `PASS`/`FAIL`/`PARTIAL` beyond the one `UI-011` result. Per the
+  thirteenth check's own conclusion, did not manufacture a twelfth
+  static-repository grep class; instead ran three narrow, targeted checks
+  aimed specifically at gaps the prior twelve sweep classes could plausibly
+  have missed: (1) cross-referenced every `action: navigate` occurrence (119)
+  against an immediately-following `navigation_path:` — 119/119 paired, no
+  orphaned navigate action; (2) inventoried every `custom:` card type used
+  (six: `mushroom-chips-card`, `mushroom-climate-card`,
+  `mushroom-media-player-card`, `mushroom-template-card`,
+  `mushroom-title-card`, `webrtc-camera`) — stable, consistent with
+  `CLAUDE.md`'s stated stack, nothing to cross-check further since Lovelace
+  resource registration lives outside this repository; (3) checked whether
+  any `primary:`/`secondary:` field on a templated card holds a bare,
+  untemplated English literal alongside sibling cards that do use the
+  `chinese_dashboard` bilingual ternary — found none; every non-empty
+  `primary`/`secondary` value in the file is already a template. All three
+  clean. `bash scripts/ha_validate.sh` passes clean (7/7, 386 templates,
+  36/36 views, no drift). **No dashboard-code fix made this run — genuinely
+  no safe, actionable, unblocked Main-owned work exists**, fourteen
+  consecutive runs now. Notified the owner directly this run (push
+  notification) that `CFG-001` (real money, ~31.8× overstated Energy cost)
+  and the now-dormant 47-row verification queue need their attention, since
+  this file's own thirteenth-check note asked for exactly that escalation
+  and no prior run appears to have sent one. **Next recommended work,
+  unchanged:** (1) owner works `CFG-001`'s four-point diagnostic in
+  `DASHBOARD_ISSUES.md`; (2) owner clears any of the 47-row
+  `LIVE_VERIFICATION_QUEUE.md` backlog; (3) a concrete `DR-001` design brief;
+  (4) a Developer Tools → States export unblocks `UI-032`. A future
+  autonomous run should check for movement on any of these four before
+  attempting a fifteenth static-repository sweep.
 
 ### Billing
 - **2026-08-30 (this run) — `BILL-005` fixed (title-card text-shadow guard)
