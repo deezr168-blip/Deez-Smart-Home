@@ -1170,6 +1170,44 @@ be implemented.
   check now appears exhausted for Main; the next productive Main run is one
   that reacts to a new human verification result or design brief, not one
   that invents an eleventh grep class.
+- **2026-08-30 — eleventh Main sweep, no code change:** fetched
+  `origin/ha-deploy` — `HEAD` unchanged at `e9a22fc`, tree clean before and
+  after. Re-read `CLAUDE.md` and this file in full. `DASHBOARD_ISSUES.md`'s
+  Open section is unchanged: only `CFG-001`/`CFG-002` (Home Assistant Energy
+  configuration, outside this repository, blocked on owner diagnosis).
+  `DASHBOARD_BACKLOG.md`'s active queue is unchanged: `DR-001` (still gated
+  on a design brief this routine should not write itself) and `UI-032`
+  (still `BLOCKED` on a Developer Tools → States export the owner must
+  supply) remain the only Main-owned items; `BILL-001/002/003` stay
+  Billing-owned. `LIVE_VERIFICATION_QUEUE.md` is unchanged since the last
+  run: 44 rows, all `PENDING`, zero `PASS`/`FAIL`/`PARTIAL` recorded (the
+  single `UI-011` `PASS` already reconciled off the queue previously) — no
+  new human result to react to. Per the prior note's own explicit guidance
+  not to invent another grep-sweep class, ran two bounded, genuinely new
+  compliance checks instead of repeating one of the ten already-clean
+  classes: (1) every `icon:` field in the file (excluding templated
+  `{{ }}` values) — confirmed 100% use a valid `mdi:` prefix, zero bare or
+  malformed icon literals; (2) audited every `column_span:` value (16
+  occurrences) against `CLAUDE.md`'s explicit "iPad landscape renders about
+  two usable columns... design for two" rule — all 16 are exactly `2`, zero
+  violations, so no card claims a wider span than the design direction
+  allows. Both clean. `bash scripts/ha_validate.sh` passes clean (7/7, 386
+  templates, 36/36 views, no drift). **No dashboard-code fix made this
+  run** — eleven consecutive sweeps this session are now clean or
+  non-actionable without a design decision or a human verification result.
+  **Next recommended work, unchanged and now significantly overdue for
+  owner attention:** (1) the `LIVE_VERIFICATION_QUEUE.md` backlog (44 rows,
+  one `PASS` recorded across eleven consecutive autonomous runs) remains
+  the single highest-value unblock — `UI-020`/`UI-021` are the natural next
+  two in the same `energy` group as the verified `UI-011`; (2) `CFG-001`
+  (S1, grid cost ~31.8× too high) needs the owner to read four specific
+  values out of Settings → Dashboards → Energy per `DASHBOARD_ISSUES.md`,
+  genuinely outside any autonomous routine's reach; (3) a concrete `DR-001`
+  design brief would become Main's next actionable P3; (4) `UI-032` (device
+  battery coverage) stays `BLOCKED` on a States export. A future autonomous
+  run should not attempt further static-repository-inspection sweeps
+  without new evidence — the next productive Main run is one that reacts to
+  a new human verification result, entity export, or design brief.
 
 ### Billing
 - **2026-08-30 (this run) — `BILL-005` fixed (title-card text-shadow guard)
