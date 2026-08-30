@@ -28,7 +28,7 @@ minutes.
 
 Detailed. These are the batches current work and open verification depend on.
 
-### `<PENDING>` — camera-subview sweep (clean); raw-interpolation fixes (UI-031); one new false-safe finding (REG-013)
+### `ccfb0c8` — camera-subview sweep (clean); raw-interpolation fixes (UI-031); one new false-safe finding (REG-013)
 Purpose: continued the 691689a note's own recommendation — a fresh
 raw-interpolation (UI-006/UI-030 class) pass across the six `camera-*`
 subviews, since the bill subviews flagged alongside them are Billing-owned

@@ -36,7 +36,7 @@ on the iPad, landscape.
 | REG-007 | House Pulse door count/colour guarded **[guard]** | House Pulse hero with all three door sensors disabled | Text calls out "N door sensor(s) offline" / "N 个门传感器离线" and the icon turns grey, not a confident green "0 open" | `b058006` | P2 | PENDING |
 | REG-009 | Quick-control Doors chip guarded and translated **[guard][中]** | Home view's own Doors chip (in the row under the language toggle, not the hero) with all three door sensors disabled | Reads "Sensor offline" / 传感器离线 and turns grey, not a confident bare-English "0 open" / green | `d592692` | P2 | PENDING |
 | REG-010 | Rooms → Security card door count guarded **[中]** | The "Security" card in the Rooms grid, with a door sensor disabled | Appends "N unknown" / "N 离线" after the door count instead of silently omitting the sensor; icon turns grey, not green | `d592692` | P2 | PENDING |
-| UI-031 | Quick-control Person chip and Rooms → Climate card guarded, bilingual **[guard][中]** | The Person chip (quick-control row) and the Climate card (Rooms grid), with `person.raymond_du` / `climate.bedroom_parents_room_ac` disabled | Person chip shows a distance-based bilingual label (在家/未知/X km away), never the raw entity-state string; Climate card shows "—", never a bare lowercase HVAC mode or a literal `unavailable` | `<PENDING>` | P3 | PENDING |
+| UI-031 | Quick-control Person chip and Rooms → Climate card guarded, bilingual **[guard][中]** | The Person chip (quick-control row) and the Climate card (Rooms grid), with `person.raymond_du` / `climate.bedroom_parents_room_ac` disabled | Person chip shows a distance-based bilingual label (在家/未知/X km away), never the raw entity-state string; Climate card shows "—", never a bare lowercase HVAC mode or a literal `unavailable` | `ccfb0c8` | P3 | PENDING |
 
 ## Security — `/deez-smart-home/security`
 
@@ -73,8 +73,8 @@ on the iPad, landscape.
 |---|---|---|---|---|---|---|
 | REG-002 | Motion quick-status chips guarded, on **both** Lights and Cameras **[guard]** | Both chips with their motion sensors disabled | Reads offline/—, never a confident "Quiet". Check both pages before recording | `b5eee22` | P1 | PENDING |
 | UI-010 | Page title moved above the section heading | Open each of the 4 lighting pages | Page opens with its own title, not a section label | `e06d0ce` | P2 | PENDING |
-| REG-013 | `lighting-modes` Current State cards stopped asserting "On" for an unavailable light **[guard][中]** | Current State section (Living Room, Ray Bedroom, Dining), with a light entity made unavailable/unknown | Shows "Offline"/"离线", never a confident "On" | `<PENDING>` | P2 | PENDING |
-| UI-031 | `light-ray-bedroom` Roller Shade card guarded, bilingual **[guard][中]** | Roller Shade card, with the cover or its battery sensor disabled | Shows "—" for an unrecognised shade state and "—" (not "unavailable%") for a dropped battery reading; bilingual open/closed text | `<PENDING>` | P4 | PENDING |
+| REG-013 | `lighting-modes` Current State cards stopped asserting "On" for an unavailable light **[guard][中]** | Current State section (Living Room, Ray Bedroom, Dining), with a light entity made unavailable/unknown | Shows "Offline"/"离线", never a confident "On" | `ccfb0c8` | P2 | PENDING |
+| UI-031 | `light-ray-bedroom` Roller Shade card guarded, bilingual **[guard][中]** | Roller Shade card, with the cover or its battery sensor disabled | Shows "—" for an unrecognised shade state and "—" (not "unavailable%") for a dropped battery reading; bilingual open/closed text | `ccfb0c8` | P4 | PENDING |
 
 ## People & Locations — `/deez-smart-home/people-locations`
 
