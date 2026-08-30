@@ -1540,7 +1540,7 @@ be implemented.
 - **Date/time:** 2026-08-30 (this run) — CFG-001/CFG-002 diagnostic protocol
 - **Branch:** `ha-deploy`
 - **`ha-deploy` HEAD before this update:** `6d5acd1`
-- **This update's commit:** `PENDING` — recorded, at the owner's direction,
+- **This update's commit:** `09eb377` — recorded, at the owner's direction,
   the seven determinations `CFG-001` must answer once Energy Dashboard
   evidence is supplied, the correction options ranked by how much Energy
   history each preserves, and an explicit split between what is **established
