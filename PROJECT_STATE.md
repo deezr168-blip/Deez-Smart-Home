@@ -1074,6 +1074,42 @@ be implemented.
   concrete `DR-001` design brief would become Main's next actionable P3. A
   future run should check for new verification results or a design brief
   before attempting further sweeps of this shape.
+- **2026-08-30 — ninth Main sweep, no code change:** fetched
+  `origin/ha-deploy` — `HEAD` unchanged at `f9cb18a`, tree clean before and
+  after. Re-read `CLAUDE.md` and this file in full. `DASHBOARD_ISSUES.md`'s
+  Open section is unchanged: only `CFG-001`/`CFG-002` (Home Assistant
+  configuration, outside this repository). `DASHBOARD_BACKLOG.md`'s active
+  queue is unchanged: `DR-001` is still the only Main-owned item, still
+  gated on a design brief this routine should not write itself;
+  `BILL-001/002/003` remain Billing-owned and blocked/partial.
+  `LIVE_VERIFICATION_QUEUE.md` still shows exactly one recorded result
+  (`UI-011` `PASS`) across nine consecutive autonomous runs — 44 rows,
+  no new `PASS`/`FAIL`/`PARTIAL` to reconcile. Rather than repeat one of
+  the eight already-clean sweep classes, ran a genuinely new one: a
+  repository-wide credential/PII exposure scan beyond the already-tracked
+  billing account-number/NMI/MIRN checks. Grepped the whole dashboard and
+  theme file for API-key/token/password/bearer/client-secret-shaped
+  literals outside `!secret` usage — zero hits. Separately scanned for
+  hardcoded GPS coordinate pairs, IPv4 addresses, email addresses and phone
+  numbers that could leak a home address or personal contact detail outside
+  the already-tracked, entity-driven person-location cards — zero hits; the
+  only decimal-pair matches found were billing tariff/rate figures (e.g.
+  `27.34996`), not coordinates. `bash scripts/ha_validate.sh` passes clean
+  (7/7, 386 templates, 36/36 views, no drift). **No dashboard-code fix made
+  this run** — nine consecutive sweeps this session are now clean or
+  non-actionable without a design decision or a human verification result.
+  **Next recommended work, unchanged and now increasingly overdue for owner
+  attention:** (1) the `LIVE_VERIFICATION_QUEUE.md` backlog (44 rows, one
+  `PASS` recorded across nine consecutive autonomous runs) remains the
+  single highest-value unblock — `UI-020`/`UI-021` are the natural next two
+  in the same `energy` group as the verified `UI-011`; (2) `CFG-001` (S1,
+  grid cost ~31.8× too high) needs the owner to read four specific values
+  out of Settings → Dashboards → Energy per `DASHBOARD_ISSUES.md`, outside
+  any autonomous routine's reach; (3) a concrete `DR-001` design brief would
+  become Main's next actionable P3. A future autonomous run should check for
+  new verification results or a design brief before attempting further
+  identical sweep classes — static-repository-inspection sweeps of this
+  shape now appear exhausted for this session without new evidence.
 
 ### Billing
 - **2026-08-30 (this run) — `BILL-005` fixed (title-card text-shadow guard)
