@@ -107,6 +107,7 @@ on the iPad, landscape.
 | UI-013 | Duplicate media cards removed | Parents Room and Guest Room | One media control per player, not a Mushroom card stacked on a native one | `56c7656` | P3 | PENDING |
 | UI-023 | Placeholder cards removed | Ray Bedroom and other room pages | No "nothing here yet" cards taking up columns | `3048e54` | P2 | PENDING |
 | UI-024 | Third kitchen plug named and restyled | Kitchen plugs | All three named (no raw entity ID) and styled alike | `3048e54` | P3 | PENDING |
+| UI-030 | LetPot Grow Light card guarded **[guard]** | Ray Bedroom room page — Grow Light card, with `select.lph_se_dcd9_light_mode`/`..._light_brightness` disabled | Shows "— • —" or bilingual "Offline"/"离线", never the literal word "unavailable" | `691689a` | P4 | PENDING |
 
 ## Global — check on any two or three views
 
@@ -150,13 +151,12 @@ result does to the issue record, the backlog and ownership — are in
 - `PASS` rows stay for traceability. A page group with nothing left
   outstanding may collapse to a one-line summary naming its IDs and date.
 
-**42 checks pending** (39 carried forward + 3 rows added this batch: `REG-013`,
-and `UI-031` which spans two rows — Home's Person/Climate check and Lights'
-Roller Shade check — the previous "34" figure was stale; see `REG-012` in
-`DASHBOARD_ISSUES.md` for that undercount's history, which this batch does
-not otherwise correct). UI-025 and UI-026 are already `VERIFIED` and are not
-listed. `BILL-001`'s account-number fix is now pushed and listed above under
-Bills & rooms; its still-`BLOCKED` NMI/MIRN portion is implementation work,
-not a verification item, and stays in `DASHBOARD_BACKLOG.md`. `DR-001`
-(iPad density) is also implementation work, not yet coded, and stays in
-`DASHBOARD_BACKLOG.md`.
+**43 checks pending** (42 carried forward + 1 row added by the Daily Project
+Coordinator: `UI-030`, the LetPot Grow Light guard from `691689a` that
+`REG-012` in `DASHBOARD_ISSUES.md` found had never received a queue row —
+closing that gap; see `DASHBOARD_ISSUES.md` for the full history). UI-025 and
+UI-026 are already `VERIFIED` and are not listed. `BILL-001`'s account-number
+fix is now pushed and listed above under Bills & rooms; its still-`BLOCKED`
+NMI/MIRN portion is implementation work, not a verification item, and stays
+in `DASHBOARD_BACKLOG.md`. `DR-001` (iPad density) is also implementation
+work, not yet coded, and stays in `DASHBOARD_BACKLOG.md`.

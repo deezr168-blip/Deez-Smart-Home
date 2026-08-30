@@ -374,11 +374,7 @@ recorded in `DASHBOARD_BACKLOG.md` or `DASHBOARD_ISSUES.md`.
 | False-safe door-count aggregates (`home` hero + quick chip + Security card, `cameras` chip row, `ipad-command-center` chip row) | Main | `b058006` + follow-up — 08-30 01:50 | `LIVE_VERIFICATION_REQUIRED` | 08-30 07:50 | Closes REG-007..011. Continuation of the REG-001..006 false-safe-state sequence under RCP rule 5/7 — the same three-sensor door list was copy-pasted unguarded into 5 cards across 3 views; all 5 now guarded. REG-008 was corrected from an initial mislog against `ipad-command-center` to its actual location on `cameras` — see `DASHBOARD_ISSUES.md`. |
 | LetPot Grow Light raw-interpolation guard (`ray-bedroom`, ~L859) | Main | `691689a` — 2026-08-30 | `LIVE_VERIFICATION_REQUIRED` | 2026-08-30 +6h from push | Closes `UI-030`. Found while widening the REG-007..011 aggregate sweep to `climate`/`network`/`status`/room views — that sweep itself was clean, no new false-safe instance found anywhere. |
 | Raw-interpolation fixes (`home` Person chip, `home` Climate card, `light-ray-bedroom` Roller Shade) + one false-safe fix (`lighting-modes` Current State) | Main | `ccfb0c8` — 2026-08-30 | `LIVE_VERIFICATION_REQUIRED` | 2026-08-30 +6h from push | Closes `UI-031` and `REG-013`. Camera-subview sweep the previous note recommended was clean (six subviews are just back chip + webrtc card); widened to a whole-file raw-interpolation grep instead. See `DASHBOARD_PROGRESS.md` for full detail. |
-| Bilingual template pass (all 36 views) | Main | `f04a59f` — 08-29 20:51 | `LIVE_VERIFICATION_REQUIRED` | 08-30 02:51 | Sequence `f4e7ec3`→`fa286de`→`f04a59f`; Main may continue under RCP rule 5. |
-| False-safe status regressions (`security`, `lights`, `cameras`, `home`) | Main | `b5eee22` — 08-29 23:37 | `LIVE_VERIFICATION_REQUIRED` | 08-30 05:37 | Closes REG-001/002/003. |
-| Heading-card contrast (`themes/deez_your_name.yaml`) | Main | `9926233` — 08-29 23:42 | `LIVE_VERIFICATION_REQUIRED` | 08-30 05:42 | Closes UI-027; theme-level rule, no dashboard YAML. |
-| Residual bilingual gaps (`people-locations`, `ipad-command-center`, `home`) | Main | `dff00f3` — 08-29 23:45 | `LIVE_VERIFICATION_REQUIRED` | 08-30 05:45 | Closes REG-004/005/006. REG-005 changed English `WAN —` → "WAN not reporting" — owner may want to review. |
-| Regression audit record (`DASHBOARD_ISSUES.md`) | Regression Auditor | `f52a27b` — 2026-08-30 | `PUSHED` | 2026-08-30 +6h from push | Audited `3116495..ea7289f` (45 commits); filed `REG-012` (verification-queue upkeep gap). REG-001..011/UI-027/UI-030/BILL-001 confirmed correctly tracked, no premature `VERIFIED` claims, no cross-routine conflicts. Do not re-audit that range; next scope is `ea7289f..HEAD`. |
+| Regression audit record (`DASHBOARD_ISSUES.md`) | Regression Auditor | `f52a27b` — 2026-08-30 | `PUSHED` | 2026-08-30 +6h from push | Audited `3116495..ea7289f` (45 commits); filed `REG-012` (verification-queue upkeep gap, now closed by the Daily Project Coordinator — see `DASHBOARD_ISSUES.md`). REG-001..011/UI-027/UI-030/BILL-001 confirmed correctly tracked, no premature `VERIFIED` claims, no cross-routine conflicts. Do not re-audit that range; next scope is `ea7289f..HEAD`. |
 | Coordination state (`PROJECT_STATE.md`, `CLAUDE.md` startup block) | Shared | `0351007` — 08-30 00:25 | `PUSHED` | 08-30 06:25 | Structure settled. Append to your own sections; do not restructure. |
 
 Back / previous-page navigation is **complete** (35/36 views, parent-targeted;
@@ -1065,19 +1061,76 @@ be implemented.
 - Standing item: `DR-001` (P3, Main-owned) — needs a brief, not a redesign.
 - `UI-027` is implemented (`9926233`) and awaiting live verification.
 
+### Daily Project Coordinator
+- **2026-08-30 05:47 UTC run — reconciliation only, no dashboard YAML
+  touched:** fetched `origin/ha-deploy`, confirmed local branch matched
+  remote (`20a468d`) with a clean tree before and after. Read
+  `PROJECT_STATE.md` in full, the active section of `DASHBOARD_BACKLOG.md`,
+  the Open section of `DASHBOARD_ISSUES.md`, all `PENDING` rows in
+  `LIVE_VERIFICATION_QUEUE.md`, and recent `DASHBOARD_PROGRESS.md`/git
+  history per the Context Loading Strategy.
+- **Coordination health:** good. No cross-routine conflicts found in the
+  commits reviewed this run; no routine has crossed its ownership boundary;
+  no duplicate or contradictory issue/backlog entries found.
+- **Stale leases:** none found or cleared — the Active Work Leases table was
+  already empty; no routine currently holds a lease.
+- **Stale change windows found/cleared:** 4 removed — their 6-hour
+  protection had expired (checked against actual commit timestamps, not
+  calendar dates) and their work is already recorded in
+  `DASHBOARD_BACKLOG.md`'s "Awaiting live verification" table and
+  `DASHBOARD_ISSUES.md`'s fixed tables, per this file's own drop rule:
+  bilingual template pass (`f04a59f`, protected until 08-30 02:51), false-safe
+  status regressions (`b5eee22`, REG-001/002/003, until 05:37), heading-card
+  contrast (`9926233`, UI-027, until 05:42), and residual bilingual gaps
+  (`dff00f3`, REG-004/005/006, until 05:45). The remaining rows (billing
+  privacy, the REG-007..011 batch, `UI-030`, `UI-031`/`REG-013`, the
+  regression-audit record, and this file's own coordination-state row) are
+  all still inside their 6-hour window and were left as-is.
+- **Backlog/issues reconciled:** closed `REG-012` (verification-queue upkeep
+  gap). Its recommended corrective action had only been half-done by a later
+  batch — the "N checks pending" footer arithmetic became internally
+  consistent (39→42) as a side effect of `ccfb0c8` adding two unrelated rows,
+  but the actual missing `UI-030` row (LetPot Grow Light guard, `691689a`)
+  was still absent, confirmed by grepping the queue for
+  `LetPot`/`ray-bedroom`/`UI-030` before touching anything. Added that row to
+  `LIVE_VERIFICATION_QUEUE.md` under Bills & rooms and corrected the footer
+  to 43; closed `REG-012` in `DASHBOARD_ISSUES.md` with the fixing detail
+  under a new "tracking only" status, since there is no live-dashboard
+  component to this fix — it does not go through
+  `LIVE_VERIFIED`/live-verification. No dashboard YAML, theme, backlog
+  score, priority, or ownership altered.
+- **Current Main next actionable item:** unchanged — `DR-001` (P3), still
+  gated on a design brief; every other Main-owned item is
+  `LIVE_VERIFICATION_REQUIRED` with zero human results recorded.
+- **Current Billing next actionable item:** unchanged — `BILL-002`'s
+  HA-exposure decision (P2, `PARTIAL`); `BILL-001`'s NMI/MIRN portion and
+  `BILL-003` remain genuinely `BLOCKED` on owner decisions.
+- **Cross-routine conflicts:** none found.
+- **Verification backlog summary:** 43 rows in `LIVE_VERIFICATION_QUEUE.md`,
+  all `PENDING` — zero human results recorded across at least six
+  consecutive autonomous runs now. This remains the single highest-value
+  unblock available; `UI-011` (Total Solar, P1, possibly reading 1000× low)
+  is the only open non-tracking dashboard issue.
+- **Unresolved ambiguity requiring human input:** none new from this run.
+  Standing items already on record: `UI-011` needs one look at the Energy
+  card; `BILL-001`'s NMI/MIRN helper decision; `BILL-002`'s HA-exposure
+  mechanism; `REG-005`'s reworded English text ("WAN not reporting") may want
+  review; `DR-001` needs a design brief.
+
 ---
 
 ## Last Coordination Update
 
-- **Date/time:** 2026-08-30 (this run) UTC
+- **Date/time:** 2026-08-30 05:47 UTC (this run)
 - **Branch:** `ha-deploy`
-- **`ha-deploy` HEAD before this update:** `975a2b1`
-- **This update's commit:** `966e6ff` — Main's fifth consecutive clean sweep
-  this session (state_attr guards, direct numeric comparisons, bare `| float`
-  defaults, full navigation-graph diff — all clean, 36/36 views, no broken
-  links). No dashboard YAML touched. No priority, backlog item, issue status,
-  verification result, score, change window or ownership altered beyond
-  Main's own progress note and Next Actionable Work reason text.
+- **`ha-deploy` HEAD before this update:** `20a468d`
+- **This update's commit:** `PENDING_SHA` — Daily Project Coordinator
+  reconciliation run: closed `REG-012` by adding the missing `UI-030` row to
+  `LIVE_VERIFICATION_QUEUE.md` (footer corrected to 43) and reconciling
+  `DASHBOARD_ISSUES.md`; removed 4 expired Active Change Window rows whose
+  work was already recorded elsewhere; added this file's own Daily Project
+  Coordinator section. No dashboard YAML, theme, priority, score, ownership
+  or `LIVE_VERIFIED` state touched.
 
 Per `CLAUDE.md`, a commit cannot contain its own hash: this update's SHA is
 written by the `docs: stamp` commit that immediately follows it.
