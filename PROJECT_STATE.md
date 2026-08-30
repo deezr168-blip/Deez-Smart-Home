@@ -1924,6 +1924,61 @@ be implemented.
   verification result (`PASS`/`FAIL`/`PARTIAL`) has finally landed in
   `LIVE_VERIFICATION_QUEUE.md` beyond `UI-011`, since a `FAIL`/`PARTIAL`
   would need reconciliation against the right stable ID.
+- **2026-08-30 audit (this run) — scope `291a976..HEAD` (27 commits,
+  `6d951dc`):** fetched `origin/ha-deploy`, confirmed local matched remote
+  with a clean tree before writing. **Read the owner-directive pause section
+  at the top of this file first**, per this run's own instruction to treat
+  it as authoritative; honored it as an advisory-only run — read and file,
+  no implementation. Of the 27 commits in range, only three touch
+  `dashboards/deez_smart_home.yaml`: `a183d5f`, `0fec9bb` and `2183177`, all
+  three Main's own `UI-032` attempts (feat → fix → diagnostic probe), diffed
+  directly against the view-boundary line map. All three stay entirely
+  inside the `home` view's Active Now strip (`sections[1]`); no other view
+  touched, no billing surface touched. **No cross-routine boundary
+  violation, no undone work, no billing change by Main, no unrelated change
+  by Billing.** The repeated `UI-032` rewrites are not
+  reimplementation-of-already-completed-work: each carries a distinct,
+  falsified hypothesis (consolidated `condition: or` → per-entity flat
+  conditions → an unconditional probe) and the commit trail says so
+  explicitly — this is live debugging of a still-open item, not churn on a
+  closed one. Independently re-derived the `CFG-003` root-cause chain
+  (`d200945` → `ec10656`) against the raw evidence rather than trusting the
+  prose: `git merge-base 26c3b14 HEAD` in this worktree returns nothing,
+  confirming `ha-deploy`'s current history and the deploy script's last
+  candidate commit are unrelated roots — the disjoint-history diagnosis
+  holds. `CFG-003`'s `DASHBOARD_ISSUES.md` row is accurately `CONFIRMED`
+  (owner-verified `sensor.front_door_battery` absent live), not prematurely
+  closed, and already carries the recovery procedure — nothing to add.
+  Re-checked `DASHBOARD_ISSUES.md`'s Open table and `UI-032`'s own entry
+  against the file: both correctly state `BLOCKED on CFG-003`, matching the
+  three commits' own record. Re-verified the three post-pause "no code
+  change" check-ins (`2b71373`, `a0df98a`, `6d951dc`) each touch only
+  `PROJECT_STATE.md` — confirmed no dashboard/theme/billing file in any of
+  their diffs, so the pause is being honored in practice, not just in
+  prose. No repository-visible billing identifier found in range (`9f75c79`
+  billing sweep is docs-only, no new digits). Back/previous-page navigation
+  untouched by any commit in range: still `LIVE_VERIFICATION_REQUIRED` only,
+  no new regression opened.
+- **New issues this run:** none.
+- **Resolved/stale issues identified this run:** none; `CFG-003` correctly
+  remains open pending owner recovery action, not marked resolved anywhere.
+- **Cross-routine conflicts this run:** none.
+- **Verification requirements:** unchanged — every `FIXED — AWAITING LIVE
+  VERIFICATION` row remains unproven at the delivery step per `CFG-003`
+  until the owner's recovery procedure (`DEPLOYMENT_BLOCKERS.md`) runs and
+  the host clone is confirmed to fast-forward. `UI-032` itself cannot be
+  live-verified while blocked.
+- **Two consecutive clean audits now** (this run and the prior
+  `50fc733..HEAD` run): no actionable regression found in either. Combined
+  with the owner's explicit cross-routine pause already in effect above,
+  **recommend the external schedule for this routine be paused** alongside
+  the others until the pause is lifted or `CFG-003` produces new
+  dashboard-facing evidence to audit — a fresh audit pass adds no value
+  while implementation itself is halted.
+- **Next recommended audit focus:** once the owner lifts the pause and/or
+  `CFG-003` is recovered, resume at `6d951dc..HEAD` for whatever Main/Billing
+  push next; re-check `UI-032`'s eventual live result first, since it is the
+  only item with three prior live `FAIL`s on record.
 
 ### Entity Scout
 - File findings in `DASHBOARD_BACKLOG.md` as evidence-based items.
