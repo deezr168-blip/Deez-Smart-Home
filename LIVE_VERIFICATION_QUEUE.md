@@ -132,7 +132,7 @@ per line, batches fine:
 
 ```
 UI-027 PASS — readable on iPad landscape
-UI-011 FAIL — Total Solar is about 1000× too small
+UI-020 FAIL — Total Solar shows a bare number with no unit
 REG-005 PARTIAL — English wording works, Chinese is inconsistent
 ```
 
