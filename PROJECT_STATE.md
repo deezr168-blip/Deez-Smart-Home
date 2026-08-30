@@ -370,7 +370,7 @@ recorded in `DASHBOARD_BACKLOG.md` or `DASHBOARD_ISSUES.md`.
 
 | Area | Owner | Last Significant Commit | State | Protected Until | Notes |
 |---|---|---|---|---|---|
-| False-safe door-count aggregates (`home` hero, `ipad-command-center` Doors chip) | Main | `b058006` — 08-30 01:35 | `LIVE_VERIFICATION_REQUIRED` | 08-30 07:35 | Closes REG-007/008. Continuation of the REG-001..006 false-safe-state sequence under RCP rule 5/7 — same recurring defect class (Process note in `DASHBOARD_ISSUES.md`), found on two aggregate cards the REG-001..006 batch never touched. |
+| False-safe door-count aggregates (`home` hero + quick chip + Security card, `cameras` chip row, `ipad-command-center` chip row) | Main | `b058006` + follow-up — 08-30 01:50 | `LIVE_VERIFICATION_REQUIRED` | 08-30 07:50 | Closes REG-007..011. Continuation of the REG-001..006 false-safe-state sequence under RCP rule 5/7 — the same three-sensor door list was copy-pasted unguarded into 5 cards across 3 views; all 5 now guarded. REG-008 was corrected from an initial mislog against `ipad-command-center` to its actual location on `cameras` — see `DASHBOARD_ISSUES.md`. |
 | Bilingual template pass (all 36 views) | Main | `f04a59f` — 08-29 20:51 | `LIVE_VERIFICATION_REQUIRED` | 08-30 02:51 | Sequence `f4e7ec3`→`fa286de`→`f04a59f`; Main may continue under RCP rule 5. |
 | False-safe status regressions (`security`, `lights`, `cameras`, `home`) | Main | `b5eee22` — 08-29 23:37 | `LIVE_VERIFICATION_REQUIRED` | 08-30 05:37 | Closes REG-001/002/003. |
 | Heading-card contrast (`themes/deez_your_name.yaml`) | Main | `9926233` — 08-29 23:42 | `LIVE_VERIFICATION_REQUIRED` | 08-30 05:42 | Closes UI-027; theme-level rule, no dashboard YAML. |
@@ -682,27 +682,38 @@ be implemented.
   brief — either unblocks Main's next batch. Until one of those lands, a
   future run should re-fetch and re-check this same gate rather than
   re-deriving it from scratch.
-- **2026-08-30 01:35 UTC — REG-007/REG-008 `b058006`:** performed the
-  fresh narrow false-safe-state sweep recommended by the 00:35 re-check,
-  scoped to aggregate cards (multiple sensors combined into one count/color)
-  rather than the single-sensor cards REG-001..006 already covered. Found two:
-  the `home` House Pulse hero's door-open count/icon_color, and the
-  `ipad-command-center` Doors status chip — both silently dropped an
-  unavailable door sensor from the tally instead of flagging it, and the
-  iPad chip additionally had no guard at all and was still bare English,
-  unlike its Motion/WAN siblings in the same chip row. Fixed both to match
-  the existing guarded/bilingual convention used elsewhere in the file (see
-  `DASHBOARD_ISSUES.md`). `bash scripts/ha_validate.sh` passes clean (7/7,
-  384 templates compile, 36/36 views resolve). Pushed to `ha-deploy` and
-  `claude/ha-dashboard-upgrades-wui7ig`. Treated as a legitimate RCP override
-  (rules 5 and 7): same recurring defect class as the just-landed REG-001..006
-  sequence, found by design authority Main holds, not a redesign of anyone
-  else's recent work. **Next recommended work:** queue is exhausted again —
-  same as the 00:35 note, the owner live-verifying the growing
-  `LIVE_VERIFICATION_QUEUE.md` backlog (now 35 rows) or a `DR-001` design
-  brief are what unblock Main's next batch. A future run could widen this
-  same aggregate-card sweep to `climate`, `status`, `network` and the room
-  pages, which were not part of this pass.
+- **2026-08-30 01:35-01:50 UTC — REG-007..011 (`b058006` + follow-up):**
+  performed the fresh narrow false-safe-state sweep recommended by the 00:35
+  re-check, scoped to aggregate cards (multiple sensors combined into one
+  count/color) rather than the single-sensor cards REG-001..006 already
+  covered. First pass (`b058006`) found and fixed two: the `home` House
+  Pulse hero's door-open count/icon_color (REG-007), and a Doors status chip
+  that was logged as `ipad-command-center` but is actually on `cameras`
+  (REG-008 — see the correction note in `DASHBOARD_ISSUES.md`). Grepping
+  the raw three-sensor door list afterward turned up three more unguarded
+  copies of the identical template: the `home` view's own quick-control
+  Doors chip (REG-009), the `home` Rooms grid's Security card
+  (REG-010), and the genuine `ipad-command-center` Home Pulse chip row
+  (REG-011) — sitting right beside its already-guarded REG-005 WAN sibling.
+  All five silently dropped an unavailable door sensor from the tally
+  instead of flagging it; three had no guard or bilingual text at all,
+  unlike their Motion/WAN chip-row siblings. Fixed all five to the existing
+  guarded/bilingual convention (see `DASHBOARD_ISSUES.md`); a final grep for
+  the raw sensor list confirms every instance is now guarded.
+  `bash scripts/ha_validate.sh` passes clean on both passes (7/7, 36/36
+  views resolve). Pushed to `ha-deploy` and
+  `claude/ha-dashboard-upgrades-wui7ig`. Treated as a legitimate RCP
+  override (rules 5 and 7): same recurring defect class as the just-landed
+  REG-001..006 sequence, found by design authority Main holds, not a
+  redesign of anyone else's recent work. **Next recommended work:** queue is
+  exhausted again — same as the 00:35 note, the owner live-verifying the
+  growing `LIVE_VERIFICATION_QUEUE.md` backlog (now 38 rows) or a `DR-001`
+  design brief are what unblock Main's next batch. A future run could widen
+  this same aggregate-card sweep to `climate`, `status`, `network` and the
+  room pages, which were not part of this pass — this run's own experience
+  (5 instances of one bug, one mislabeled on first log) argues for grepping
+  the exact sensor/entity list across the whole file rather than trusting a
+  single spot-checked card.
 
 ### Billing
 - **Queue:** `BILL-001` (P1) → `BILL-002` (P2) → `BILL-003` (P2).

@@ -38,13 +38,27 @@ A narrow re-sweep for the recurring false-safe-state class (see Process note)
 beyond the REG-001..006 baseline, targeting cards that aggregate multiple
 sensors — the per-sensor guards already fixed under REG-001..003 don't
 automatically cover an aggregate that silently drops an unavailable sensor
-from its count instead of flagging it. Two instances found, both on cards
-never touched by the REG-001..006 batch.
+from its count instead of flagging it. This was the exact same
+three-door-sensor list (`m_contact_sensor_door`, `f_contact_sensor_door`,
+`b_contact_sensor_door`) copy-pasted into five separate cards across three
+views, of which only REG-003 (a different chip on the same list) had ever
+been guarded. All five instances found and fixed; grepping the raw sensor
+list afterward confirms none remain.
+
+**Correction:** REG-008 was first logged against `ipad-command-center`. The
+chip is actually on the `cameras` view's status chip row (line ~1590) — the
+`ipad-command-center` view starts later in the file, at a different chip row
+entirely (which turned out to have its own, distinct instance of the same
+bug — see REG-011). Corrected below; `LIVE_VERIFICATION_QUEUE.md` was moved
+to the right page section in the same commit as REG-009..011.
 
 | ID | Sev | View / component | Summary | Fixed in | Status |
 |---|---|---|---|---|---|
 | REG-007 | MED | `home` — House Pulse hero card | The door-open count and its icon_color silently dropped any door sensor reporting `unavailable`/`unknown`/`none` from the tally instead of flagging it, so all three sensors going offline showed a confident "0 open" and (with WAN up) a green icon — the same false-safe pattern REG-003 fixed on the sibling Network nav chip two cards away. Now surfaces "N door sensor(s) offline" / "N 个门传感器离线" and the icon falls back to grey rather than green when any door state is unknown. | `b058006` | FIXED — AWAITING LIVE VERIFICATION |
-| REG-008 | MED | `ipad-command-center` — Doors status chip | Same root cause as REG-007, worse: the chip had no unavailable guard at all and was still bare English ("N open"), unlike its two siblings in the same chip row (Motion, WAN) which were already guarded. All three door sensors offline showed "0 open" / green. Now matches the Motion chip's own guard convention: all-unknown → "Sensor offline" / grey, bilingual. | `b058006` | FIXED — AWAITING LIVE VERIFICATION |
+| REG-008 | MED | `cameras` — status chip row Doors chip | Same root cause as REG-007, worse: the chip had no unavailable guard at all and was still bare English ("N open"), unlike its two siblings in the same chip row (Motion, WAN) which were already guarded. All three door sensors offline showed "0 open" / green. Now matches the Motion chip's own guard convention: all-unknown → "Sensor offline" / grey, bilingual. **View corrected from an initial mislog against `ipad-command-center` — see note above.** | `b058006` | FIXED — AWAITING LIVE VERIFICATION |
+| REG-009 | MED | `home` — quick-control chip row Doors chip | Same unguarded template as REG-008, also still bare English, on the `home` view's own quick-control chip row (separate card from the House Pulse hero). Fixed to the same guarded/bilingual convention. | (this commit) | FIXED — AWAITING LIVE VERIFICATION |
+| REG-010 | MED | `home` — Rooms section Security card | The "N doors open • motion monitoring" summary silently dropped unavailable door sensors from its count/colour. Now appends "N unknown" / "N 离线" when any door sensor is unavailable and the icon falls back to grey instead of a confident green. | (this commit) | FIXED — AWAITING LIVE VERIFICATION |
+| REG-011 | MED | `ipad-command-center` — Home Pulse chip row Doors chip | The genuine `ipad-command-center` instance (see correction note): unguarded and still bare English, sitting beside an already-guarded WAN chip (REG-005) in the same row. Fixed to the same guarded/bilingual convention as REG-008/009. | (this commit) | FIXED — AWAITING LIVE VERIFICATION |
 
 ---
 

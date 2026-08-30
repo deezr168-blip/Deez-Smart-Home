@@ -34,6 +34,8 @@ on the iPad, landscape.
 | REG-003 | Network nav chip gained an unavailable branch **[guard]** | The Network chip's colour | Green when WAN is up; grey — not red — when the WAN sensor is unavailable | `b5eee22` | P1 | PENDING |
 | REG-006 | Energy tile fallback translated **[中]** | Energy tile secondary text with the toggle on | Reads 离线, not bare English `offline`, beside 太阳能 | `dff00f3` | P3 | PENDING |
 | REG-007 | House Pulse door count/colour guarded **[guard]** | House Pulse hero with all three door sensors disabled | Text calls out "N door sensor(s) offline" / "N 个门传感器离线" and the icon turns grey, not a confident green "0 open" | `b058006` | P2 | PENDING |
+| REG-009 | Quick-control Doors chip guarded and translated **[guard][中]** | Home view's own Doors chip (in the row under the language toggle, not the hero) with all three door sensors disabled | Reads "Sensor offline" / 传感器离线 and turns grey, not a confident bare-English "0 open" / green | (this run's follow-up commit) | P2 | PENDING |
+| REG-010 | Rooms → Security card door count guarded **[中]** | The "Security" card in the Rooms grid, with a door sensor disabled | Appends "N unknown" / "N 离线" after the door count instead of silently omitting the sensor; icon turns grey, not green | (this run's follow-up commit) | P2 | PENDING |
 
 ## Security — `/deez-smart-home/security`
 
@@ -62,6 +64,7 @@ on the iPad, landscape.
 |---|---|---|---|---|---|---|
 | UI-014 | Camera grid deduplicated | Count the camera entries | Front Door appears once; all six in one uniform grid; previews wider than ~185px | `ae89134` | P2 | PENDING |
 | UI-009 | Back chip added to each camera subview | Open a camera, tap the back chip | Returns to Cameras — not stranded with the header hidden by kiosk mode | `e06d0ce` | P1 | PENDING |
+| REG-008 | Status chip row Doors chip guarded and translated **[guard][中]** | Doors status chip at the top of the Cameras page, with all three door sensors disabled | Reads "Sensor offline" / 传感器离线 and turns grey, not a confident bare-English "0 open" / green. **Was first logged against `ipad-command-center` — it's actually here, on Cameras** | `b058006` | P2 | PENDING |
 
 ## Lights — `/deez-smart-home/lights` and lighting subviews
 
@@ -84,7 +87,7 @@ on the iPad, landscape.
 |---|---|---|---|---|---|---|
 | UI-015 | View rebuilt into four sections | Overall layout on the iPad itself | No nested grids; camera chips not duplicating the tiles below them; load chips guarded | `99a77b4` | P2 | PENDING |
 | REG-005 | WAN fallback reworded **[中]** | WAN chip when the sensor is unavailable | Now reads "WAN not reporting" / 网络无数据. **Was `WAN —`. If you wanted the dash kept, mark FAIL** | `dff00f3` | P3 | PENDING |
-| REG-008 | Doors chip guarded and translated **[guard][中]** | Doors status chip with all three door sensors disabled | Reads "Sensor offline" / 传感器离线 and turns grey, not a confident bare-English "0 open" / green | `b058006` | P2 | PENDING |
+| REG-011 | Home Pulse chip row Doors chip guarded and translated **[guard][中]** | Doors status chip in the Home Pulse row (beside the already-guarded WAN chip), with all three door sensors disabled | Reads "Sensor offline" / 传感器离线 and turns grey, not a confident bare-English "0 open" / green | (this run's follow-up commit) | P2 | PENDING |
 
 ## Climate & Status
 
