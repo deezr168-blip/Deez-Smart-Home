@@ -134,8 +134,8 @@ never on the arithmetic alone.
 
 ## UI-032 — battery health had no surface at all
 
-**Implemented 2026-08-30 (`a183d5f`). Status: FIXED — AWAITING LIVE
-VERIFICATION.** Sev S2: not a false statement, but a maintenance condition the
+**First attempt `a183d5f` returned a live FAIL. Reworked in `PENDING-SHA`.
+Status: FIXED — AWAITING LIVE VERIFICATION (second attempt).** Sev S2: not a false statement, but a maintenance condition the
 household could not see. Front Door and RingRing are entry devices and the
 C425 is an outdoor camera; all three run flat without warning.
 
@@ -148,12 +148,11 @@ about charge — a camera at 28% is still online right up until it isn't.
 
 ### What was added
 
-**One** card: a `type: conditional` in the `home` view's **Active Now** strip
-(after the Bills alert, before the Rooms grid), following the strip's existing
-pattern exactly — `grid_options` + `conditions` + a bilingual
-`custom:mushroom-template-card`. It is `columns: 12` rather than the strip's
-usual 6 because its longest realistic line is ~72 characters and the design
-direction forbids truncated labels on iPad landscape.
+Conditional cards in the `home` view's **Active Now** strip (after the Bills
+alert, before the Rooms grid), following the strip's existing pattern —
+`grid_options` + `conditions` + a bilingual `custom:mushroom-template-card`.
+The first attempt used one consolidated card; see the rework section below for
+why it is now one card per entity per situation.
 
 It is **contextual, not a panel**: the card does not exist on screen at all
 unless a battery is genuinely below 30% or genuinely not reporting. With every
@@ -161,9 +160,9 @@ battery healthy the Active Now strip looks exactly as it did before.
 
 | Property | Behaviour |
 |---|---|
-| Shows | Names and percentages of low batteries, at most three, then `+N more` |
-| Unreadable | One → "East Wall not reporting"; several → "N not reporting" |
-| Icon colour | `red` if any is low · `orange` if only unreadable · `green` otherwise |
+| Low | "Front Door 20%" / "Battery low", icon `red` |
+| Unreadable | "Front Door not reporting" / "Battery not reporting", icon `orange` |
+| Healthy | "Front Door 100%" / "Battery OK", icon `green` — reachable only if the state changes after the gate fires |
 | Tap | Navigates to `/deez-smart-home/cameras` |
 | Language | Full bilingual pair on every branch, per the toggle convention |
 
@@ -204,13 +203,61 @@ all six low; a mixed `unknown`/`none`/non-numeric-string case; and the
 bounded length (12–72 chars). The 30 boundary is exclusive in both the gate
 and the text, so they cannot disagree about it.
 
+### Live FAIL on the first attempt, and the rework
+
+**Observed 2026-08-30 (owner):** no battery alert appeared on Home at all,
+with Front Door at 20%, RingRing at 21% and C425 North Wall at 28%. The card
+did not render.
+
+**Cause: `condition: or`.** It was the single construct in `a183d5f` that
+did not already exist anywhere in this dashboard, it was flagged at the time
+as the thing to check first if the card failed to appear, and it is the only
+part of the change that governs whether the card renders at all — the
+templates cannot suppress a card, they only fill one in. Confirmed by
+elimination rather than by observation: Lovelace schema still cannot be
+checked from this environment.
+
+**The lesson is the one the repository already had written down.** A
+construct with no precedent in the file cannot be validated here, so
+introducing one puts the whole change on a single unverifiable bet. The
+existing strip had a working pattern and it should have been used first.
+
+**Rework (`PENDING-SHA`): one conditional card per entity per situation, each
+with a single flat condition** — exactly the shape the Active Now strip's
+Solar, Bills, Climate and Media alerts already use, and which the live
+dashboard therefore demonstrably renders. Twelve cards, six entities × two
+gates:
+
+| Gate | Condition | Fires when |
+|---|---|---|
+| Low | `condition: numeric_state` · `below: 30` | The reading is numeric and under 30 |
+| Not reporting | `condition: state` · `state: unavailable` | The entity is unavailable |
+
+No `conditions:` list has more than one entry and none is nested, so nothing
+in the new structure depends on a construct this file has not already proven.
+Verified by parsing the committed YAML: 12 cards, 6 distinct entities, zero
+nested condition blocks.
+
+Each card is `columns: 6` (the strip's own half-width default) rather than the
+first attempt's `columns: 12`, because each now carries one short line
+("Front Door 20%") instead of a combined sentence.
+
+**The card body is identical for both gates**, and still carries the full
+guard: it re-derives the state itself and re-checks `unavailable`/`unknown`/
+`none` and `is_number` before rendering a percentage or comparing against 30.
+So whichever gate fires, the card reports the entity's *current* truth — an
+entity that goes unreadable between gate evaluation and render says "not
+reporting" in orange, never a stale percentage and never red "low".
+
+With four alerts able to appear at once the strip is busier than the single
+consolidated card would have been. That is the deliberate trade: the
+consolidated version cannot be expressed without `or`, and a card that
+renders beats a tidier one that does not.
+
 ### Still to confirm live
 
-- `condition: or` is the one construct **new to this file**. It is core Home
-  Assistant conditional-card schema and this instance is demonstrably modern
-  (it uses `grid_options`, HA 2024.11+), but Lovelace schema is not verifiable
-  from here — see `DEPLOYMENT_BLOCKERS.md`. If the card never appears despite
-  three batteries being under 30%, this is the first thing to check.
+- That the four expected cards now appear at all. This is the whole point of
+  the rework.
 - Per the owner: close `UI-032` only once all three verified low batteries
   display correctly **and clear correctly when no longer low**. The clearing
   half cannot be observed from here at all.

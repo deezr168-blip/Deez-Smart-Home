@@ -1851,9 +1851,32 @@ be implemented.
 
 ## Last Coordination Update
 
-- **Date/time:** 2026-08-30 (this run) — UI-032 implemented
+- **Date/time:** 2026-08-30 (this run) — UI-032 FAIL reworked
 - **Branch:** `ha-deploy`
 - **`ha-deploy` HEAD before this update:** `6d5acd1`
+- **This update's commit:** `PENDING` — reconciled a live `FAIL` on `UI-032`
+  and shipped the rework. The owner reported no battery alert on Home despite
+  batteries at 20/21/28%. Cause: `condition: or`, the one construct in
+  `a183d5f` with no precedent anywhere in this file, flagged at the time as
+  the first thing to check. Replaced with **one conditional card per entity
+  per situation, each with a single flat condition** — the exact shape the
+  Active Now strip's existing Solar/Bills/Climate/Media alerts use and which
+  the live dashboard demonstrably renders. 12 cards, 6 entities × 2 gates
+  (`numeric_state below: 30`, `state: unavailable`); verified by parsing the
+  YAML that no `conditions:` list has more than one entry and none is nested.
+  Template guard logic, `is_number` handling, unavailable behaviour and the
+  six verified entity IDs are all preserved unchanged; the stale
+  `_battery_2` duplicate stays excluded. Reconciled per the `FAIL` column:
+  same stable ID reused, observed symptom recorded, queue row reset to
+  `PENDING` naming the failed attempt. `CFG-001`/`CFG-002` untouched.
+  Validation 7/7, no entity or view loss.
+- **Standing lesson recorded in `DASHBOARD_ISSUES.md`:** a construct with no
+  precedent in this file cannot be validated from this environment, so
+  introducing one stakes the whole change on a single unverifiable bet. Prefer
+  a pattern the file already proves, even when it is more verbose.
+
+### Superseded — previous update
+
 - **This update's commit:** `a183d5f` — implemented `UI-032` on owner-verified
   entity IDs. One conditional card added to the `home` Active Now strip;
   contextual, so it is absent from the screen entirely when no battery is low
