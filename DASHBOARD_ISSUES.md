@@ -134,7 +134,7 @@ never on the arithmetic alone.
 
 ## UI-032 — battery health had no surface at all
 
-**First attempt `a183d5f` returned a live FAIL. Reworked in `PENDING-SHA`.
+**First attempt `a183d5f` returned a live FAIL. Reworked in `0fec9bb`.
 Status: FIXED — AWAITING LIVE VERIFICATION (second attempt).** Sev S2: not a false statement, but a maintenance condition the
 household could not see. Front Door and RingRing are entry devices and the
 C425 is an outdoor camera; all three run flat without warning.
@@ -222,7 +222,7 @@ construct with no precedent in the file cannot be validated here, so
 introducing one puts the whole change on a single unverifiable bet. The
 existing strip had a working pattern and it should have been used first.
 
-**Rework (`PENDING-SHA`): one conditional card per entity per situation, each
+**Rework (`0fec9bb`): one conditional card per entity per situation, each
 with a single flat condition** — exactly the shape the Active Now strip's
 Solar, Bills, Climate and Media alerts already use, and which the live
 dashboard therefore demonstrably renders. Twelve cards, six entities × two

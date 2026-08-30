@@ -1854,7 +1854,7 @@ be implemented.
 - **Date/time:** 2026-08-30 (this run) — UI-032 FAIL reworked
 - **Branch:** `ha-deploy`
 - **`ha-deploy` HEAD before this update:** `6d5acd1`
-- **This update's commit:** `PENDING` — reconciled a live `FAIL` on `UI-032`
+- **This update's commit:** `0fec9bb` — reconciled a live `FAIL` on `UI-032`
   and shipped the rework. The owner reported no battery alert on Home despite
   batteries at 20/21/28%. Cause: `condition: or`, the one construct in
   `a183d5f` with no precedent anywhere in this file, flagged at the time as
