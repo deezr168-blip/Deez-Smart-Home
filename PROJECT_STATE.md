@@ -1564,7 +1564,7 @@ be implemented.
 - **Date/time:** 2026-08-30 (this run) — Entity Scout live sensor sweep
 - **Branch:** `ha-deploy`
 - **`ha-deploy` HEAD before this update:** `6d5acd1`
-- **This update's commit:** `PENDING` — Entity Scout: first live
+- **This update's commit:** `9abf860` — Entity Scout: first live
   `sensor`-domain sweep. Unit/scale cross-check across all 34 `sensor.`
   references came back **clean**; filed `UI-032` (P2, battery coverage —
   2 of ~12 battery entities surfaced, three already low: Front Door 21%,
