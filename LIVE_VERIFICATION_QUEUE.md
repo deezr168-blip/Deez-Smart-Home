@@ -99,6 +99,7 @@ on the iPad, landscape.
 
 | ID | What changed | What to check live | Expected result | Commit | P | Result |
 |---|---|---|---|---|---|---|
+| BILL-001 | Account-number literal replaced with `input_text.elec_account_number`/`..._gas_account_number` **[guard]** | `bill-electricity` and `bill-gas` plan-details cards | Same account number as entered in the Bills form (or "Not entered" if the helper is empty), not a hardcoded number that no longer matches. NMI/MIRN unchanged — not part of this check | `<PENDING_SHA>` | P1 | PENDING |
 | UI-016 | Last nested grids dissolved on `bills`, `light-living-room`, `lighting-modes` | All three page layouts | Cards sized normally, not squeezed inside half-width sections; the six bill subviews each read as one clean column | `9b28fdb` | P2 | PENDING |
 | UI-013 | Duplicate media cards removed | Parents Room and Guest Room | One media control per player, not a Mushroom card stacked on a native one | `56c7656` | P3 | PENDING |
 | UI-023 | Placeholder cards removed | Ray Bedroom and other room pages | No "nothing here yet" cards taking up columns | `3048e54` | P2 | PENDING |
@@ -146,7 +147,9 @@ result does to the issue record, the backlog and ownership — are in
 - `PASS` rows stay for traceability. A page group with nothing left
   outstanding may collapse to a one-line summary naming its IDs and date.
 
-**33 checks pending.** UI-025 and UI-026 are already `VERIFIED` and are not
-listed. `BILL-001` (billing privacy) and `DR-001` (iPad density) are
-implementation work, not verification items, and stay in
+**34 checks pending.** UI-025 and UI-026 are already `VERIFIED` and are not
+listed. `BILL-001`'s account-number fix is now pushed and listed above under
+Bills & rooms; its still-`BLOCKED` NMI/MIRN portion is implementation work,
+not a verification item, and stays in `DASHBOARD_BACKLOG.md`. `DR-001`
+(iPad density) is also implementation work, not yet coded, and stays in
 `DASHBOARD_BACKLOG.md`.

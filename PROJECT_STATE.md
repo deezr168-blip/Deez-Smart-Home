@@ -370,6 +370,7 @@ recorded in `DASHBOARD_BACKLOG.md` or `DASHBOARD_ISSUES.md`.
 
 | Area | Owner | Last Significant Commit | State | Protected Until | Notes |
 |---|---|---|---|---|---|
+| Billing privacy (`bill-electricity`, `bill-gas` account-number literals) | Billing | `<PENDING_SHA>` — 2026-08-30 | `LIVE_VERIFICATION_REQUIRED` | 2026-08-30 +6h from push | Closes the account-number half of `BILL-001`. NMI/MIRN portion intentionally untouched — `BLOCKED`, needs owner decision, see `DASHBOARD_BACKLOG.md`. |
 | False-safe door-count aggregates (`home` hero + quick chip + Security card, `cameras` chip row, `ipad-command-center` chip row) | Main | `b058006` + follow-up — 08-30 01:50 | `LIVE_VERIFICATION_REQUIRED` | 08-30 07:50 | Closes REG-007..011. Continuation of the REG-001..006 false-safe-state sequence under RCP rule 5/7 — the same three-sensor door list was copy-pasted unguarded into 5 cards across 3 views; all 5 now guarded. REG-008 was corrected from an initial mislog against `ipad-command-center` to its actual location on `cameras` — see `DASHBOARD_ISSUES.md`. |
 | Bilingual template pass (all 36 views) | Main | `f04a59f` — 08-29 20:51 | `LIVE_VERIFICATION_REQUIRED` | 08-30 02:51 | Sequence `f4e7ec3`→`fa286de`→`f04a59f`; Main may continue under RCP rule 5. |
 | False-safe status regressions (`security`, `lights`, `cameras`, `home`) | Main | `b5eee22` — 08-29 23:37 | `LIVE_VERIFICATION_REQUIRED` | 08-30 05:37 | Closes REG-001/002/003. |
@@ -641,7 +642,7 @@ be implemented.
 | Routine | Item | Priority | State | Reason Selected |
 |---|---|---|---|---|
 | Main CasaRay Upgrade | `DR-001` — iPad Command Center density | P3 | `PLANNED` — needs a design decision before implementation | `BILING-RESID` (REG-004/005/006) is fixed and pushed in `dff00f3`, so `DR-001` is the only item left in Main's queue and the Selection Score no longer has anything to choose between — it scores **−2** (Impact 3, Effort 4, Risk 4) and is selected by being the sole remainder, not by rank. It is explicitly "advisory item, no implementation agreed": a density *review* the CasaRay Design Reviewer should scope before Main writes code, not a coded fix to start speculatively. Everything else Main owns (`UI-011`, and this run's own REG-001..006/UI-027 batches) is `LIVE_VERIFICATION_REQUIRED` and waiting on the owner. |
-| Billing Dashboard Upgrade | `BILL-001` — remove hardcoded account / NMI / MIRN from `bill-electricity` and `bill-gas` | P1 | `PLANNED` — actionable | Highest actionable Billing-owned item, and named explicitly in the P1 class. Blocks `BILL-003`: ingestion should not be built over an unresolved privacy exposure. Repository removal is safe now; only the question of what the live card displays needs the owner. Unchanged by scoring — Billing's only actionable P1 (score 4). |
+| Billing Dashboard Upgrade | `BILL-002` — scope Home Assistant exposure for a `billing/history.json` structured store (see `BILLING_PROGRESS.md`) | P2 | `PLANNED` — proposal written, needs owner direction | `BILL-001`'s account-number portion is fixed and pushed (`<PENDING_SHA>`); its NMI/MIRN portion is `BLOCKED` on an owner decision (no helper exists, cannot invent one) and is excluded from selection (queue rule 4). `BILL-002` is next by ownership/priority; the safe move is a written storage-architecture proposal (done, see `BILLING_PROGRESS.md`) rather than dashboard YAML against unconfirmed sensors. `BILL-003` stays blocked on both. |
 
 ---
 
@@ -716,15 +717,38 @@ be implemented.
   single spot-checked card.
 
 ### Billing
-- **Queue:** `BILL-001` (P1) → `BILL-002` (P2) → `BILL-003` (P2).
-- **`BILL-001` is the live blocker:** `bill-electricity` and `bill-gas` still
-  carry hardcoded account numbers, an NMI and a MIRN. Re-verified this run —
-  both lines present, no commit has touched the bill subviews. Resolve before
-  widening billing scope.
+- **Queue:** `BILL-001` (P1, partial/blocked) → `BILL-002` (P2, scoped) →
+  `BILL-003` (P2, blocked).
+- **2026-08-30 — `BILL-001` account-number portion fixed:** `bill-electricity`
+  and `bill-gas` markdown blocks now render
+  `input_text.elec_account_number` / `..._gas_account_number` (guarded,
+  already-referenced entities — not invented) instead of the literal account
+  numbers. **NMI and MIRN remain hardcoded** — no helper entity exists for
+  either and one must not be invented; needs an owner decision (create the
+  helpers, or approve removing the text). `BILL-001` is now `BLOCKED` on that
+  decision and excluded from autonomous selection. Commit: `<PENDING_SHA>`.
+  Full detail in `BILLING_PROGRESS.md`.
+- Confirmed via `GetLiveContext` this run: no bill-related entity is exposed
+  to Assist (`name: bill` → no match) — billing figures stay `CODE_VALID` at
+  best, unconfirmable live from here.
 - Six bill subviews exist, one section / one column each, back chip to
   `bills`; layout reviewed under `9b28fdb`, no change needed.
-- Bill sensors (`sensor.bills_unpaid_count`, `sensor.bills_outstanding_total`)
-  are not exposed to Assist — billing figures are `CODE_VALID` at best.
+- **`BILL-002` scoped, not implemented:** no `bills.json`/`paid_state.json`/
+  `meter_board` architecture exists anywhere in this repository — confirmed
+  by inspection this run, contrary to what this routine's task brief
+  assumed. Wrote a storage-architecture proposal in `BILLING_PROGRESS.md`
+  (structured `billing/history.json`, populated manually until `BILL-003`
+  ingestion exists). The real blocker is architectural, not effort: Lovelace
+  cannot read an arbitrary repository JSON file directly, so an HA-side
+  exposure mechanism (template/RESTful sensor, or ingestion into HA
+  statistics) needs an owner decision before any dashboard implementation.
+- **`BILL-003`** unchanged: blocked on both `BILL-001`'s remaining scope and
+  `BILL-002`'s storage decision. No Gmail/Drive calls made this run — nothing
+  safe yet for ingestion to write to.
+- Back navigation: per this file's own record, already complete and needs a
+  live look only; no rebuild attempted this run, consistent with this
+  routine's brief.
+- **Next task:** see `BILLING_PROGRESS.md` → "Exact next billing task".
 
 ### Regression
 - Baseline audit `3116495` against `7f304ad`: REG-001..006, **all six now

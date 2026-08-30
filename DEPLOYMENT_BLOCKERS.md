@@ -191,24 +191,29 @@ device-native engines rather than as HA `automation.*` entities.
 
 **To clear:** same as Blocker 2 — file-level access to `/config`.
 
-## Blocker 5 — utility identifiers are hardcoded (accepted, low severity)
+## Blocker 5 — utility identifiers are hardcoded (partially resolved, low severity)
 
-**Updated 2026-08-25: the account-number sanitisation has been reverted.**
-All four identifiers are now literals in the deployed file.
+**Updated 2026-08-30: the account-number sanitisation has been re-applied**
+(`<PENDING_SHA>`, Billing Dashboard Upgrade routine). NMI and MIRN remain
+literals — see below.
 
 | View | Identifier | Status |
 |---|---|---|
-| `bill-electricity` | Account number | **Hardcoded** — sanitisation reverted by `921315e` |
+| `bill-electricity` | Account number | **Sanitised** — sourced from `input_text.elec_account_number` again as of `<PENDING_SHA>` |
 | `bill-electricity` | **NMI** | Hardcoded — never sanitised |
-| `bill-gas` | Account number | **Hardcoded** — sanitisation reverted by `921315e` |
+| `bill-gas` | Account number | **Sanitised** — sourced from `input_text.gas_account_number` again as of `<PENDING_SHA>` |
 | `bill-gas` | **MIRN** | Hardcoded — never sanitised |
 
 Commit `a084482` had replaced the two account numbers with
 `input_text.elec_account_number` and `input_text.gas_account_number`, which
 the dashboard already used in its Bills entry form. `921315e` then imported
 the raw production export verbatim at the owner's instruction, restoring the
-literals. They also remain in history at `a62d49e`, so removing them from the
-tip would not remove them from the repository.
+literals — not a deliberate decision to re-expose them, per
+`DASHBOARD_BACKLOG.md`'s own note on `BILL-001`. `<PENDING_SHA>` restores the
+`a084482` approach for the two account numbers only. They, and NMI/MIRN,
+also remain in history at `a62d49e`/`921315e`, so removing them from the tip
+does not remove them from the repository — history was not rewritten and is
+not expected to be.
 
 No helper exists for NMI or MIRN. The alternatives were all rejected:
 
@@ -229,8 +234,10 @@ privacy case for keeping this repository private does not rest on the
 utility identifiers alone.
 
 **Action required: do not make this repository public.** If public access is
-ever wanted: create helpers in HA for all four values, reference them the way
-`a084482` did, and rewrite the history that carries the literals.
+ever wanted: create `input_text` helpers in HA for NMI and MIRN, reference
+them the way the account numbers now are, and rewrite the history that
+carries all four literals (account numbers included — sanitising the tip
+does not clear history).
 
 ---
 
