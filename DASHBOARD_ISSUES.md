@@ -30,6 +30,13 @@ seen on the live instance whose cause and fix live in HA's own config
 never fixed by a push to this branch, and never enters the verification
 queue: the queue is for deployed changes awaiting a look, whereas a `CFG-`
 item is awaiting a *diagnosis* the owner alone can perform.
+**Closing a `CFG-` item still requires live verification.** The fix is
+applied in Home Assistant by the owner rather than pushed from here, so the
+close condition is the owner re-reading the affected surface and confirming
+the corrected figure — never a plausible diagnosis, a matching arithmetic
+model, or a passing `ha_validate.sh` run. When a `CFG-` fix is applied, add
+its confirmation row to `LIVE_VERIFICATION_QUEUE.md` at that point, so the
+close goes through the same gate as everything else.
 
 ---
 
@@ -39,6 +46,89 @@ item is awaiting a *diagnosis* the owner alone can perform.
 |---|---|---|---|---|
 | CFG-001 | S1 | Home Assistant **Energy dashboard configuration** (`.storage/energy`) — *not* `dashboards/deez_smart_home.yaml` | Energy → Totals reports Grid total **47.83 kWh** costing **A$437.60**, an implied **A$9.1491/kWh** and about **31.8×** the real tariff. Observed live by the owner 30 Aug 2026 while verifying `UI-011`. **Not a scaling bug — an accumulation read as a period total.** The one exposed monetary entity is named literally `sensor Cost` (`device_class: monetary`, `AUD`, no area) and read **451.1649** the same day; `451.1649 − 437.60 = 13.5649`, and A$13.5649 over 47.83 kWh is **0.2836 AUD/kWh** — an entirely ordinary rate, within 1.6% of the `SolarNet Grid import tariff` entity (0.2880 AUD/kWh) and 3.7% of the contracted peak rate (0.2734996 incl GST, per the `bill-electricity` view). So today's true cost is ≈A$13.56 sitting inside a wrong figure; the ≈A$437.60 on screen is the cost entity's accumulated total, not its increase across the selected period. That also explains why the factor is an odd 31.8× rather than a clean power of ten. **Leading hypothesis, stated as a hypothesis:** grid-consumption cost is set to *use an entity tracking the total costs*, pointed at a cumulative lifetime cost sensor whose statistic history effectively begins inside the current period, so its whole accumulated total was recorded as one jump and attributed to today. `451.16 ÷ 0.288 ≈ 1567 kWh` ≈ 33 days of import, consistent with a counter that started about a month ago. The sensor's name is itself a signal: HA auto-names a cost sensor `<source name> Cost`, so a bare `sensor Cost` means the source-name half resolved to nothing — consistent with a renamed source or a hand-made sensor. A `state_class: total` without `last_reset`, or a `total_increasing` sensor that reset, would produce similar symptoms by a different route. **Not diagnosable from here and deliberately not changed:** the cost source lives in `.storage/energy`, which this environment cannot read (`/config` unmounted, REST/WebSocket blocked — `DEPLOYMENT_BLOCKERS.md` Blockers 2/3), and the grid source entity itself is a Powerpal sensor, not exposed to Assist. Editing a production money figure blind is exactly what the owner's instruction ruled out. **Owner action to unblock:** Settings → Dashboards → Energy → Grid consumption → its cost setting. Report (1) which entity is the grid consumption source; (2) which cost option is selected — *do not track costs* / *static price* / *entity with the current price* / *entity tracking the total costs*; (3) if an entity is named, which one, plus its `state_class`, `device_class`, unit and current state from Developer Tools → States (≈451 if it is the `sensor Cost` above); (4) from Developer Tools → Statistics, whether that entity is flagged with a units/reset issue and when its history starts. **Nothing in this repository changes as part of the fix** — the Energy dashboard's configuration is not under version control here. Take a full backup first; HA backups are unavailable from this environment (`MAINTENANCE.md`). | OPEN — blocked on owner diagnosis |
 | CFG-002 | S4 | Fronius / SolarNet integration — *not* `dashboards/deez_smart_home.yaml` | The `SolarNet Grid import tariff` entity reads **0.2880 AUD/kWh** while the contracted Home 365 Solar peak rate shown on the `bill-electricity` view is **0.2734996 incl GST** — a 1.45 c/kWh gap, about 5% on every cost figure derived from the entity. Possibly a deliberate rounded-up estimate, possibly stale from a previous plan; the current contract began 31 Jul 2026, recently enough for a stale rate to be plausible. Lives in the integration, not in this repository, so there is nothing to change on this branch. **Logged separately so it is not mistaken for part of `CFG-001`** — it is a ~5% difference, not a 31.8× one, and correcting it would not move A$437.60 anywhere near A$13. | OPEN — owner decision |
+
+---
+
+## CFG-001 diagnostic protocol — awaiting owner evidence
+
+**Status: open, evidence not yet supplied. Nothing in the Energy
+configuration is to be guessed at or changed until it is** — the owner's
+standing instruction, and consistent with `MAINTENANCE.md`, which places HA
+configuration outside autonomous scope.
+
+The owner will supply Energy Dashboard screenshots/details. When they arrive,
+work these seven determinations in order and record each with the evidence it
+rests on. Where evidence does not settle a point, say so — an unanswered
+determination is a result, not a gap to fill with the model below.
+
+| # | Determination | Where the evidence comes from |
+|---|---|---|
+| 1 | **Which entity HA uses as the Grid Consumption source** | Settings → Dashboards → Energy → Grid consumption. Expected to be a Powerpal sensor; it is not exposed to Assist, so it cannot be read from here |
+| 2 | **Which cost option is selected** — *do not track costs* · *static price* · *entity with the current price* · *entity tracking the total costs* | Same panel, the cost row under that source |
+| 3 | **Whether the cost entity is cumulative or period-based** | Its `state_class`: `total_increasing`/`total` = cumulative; `measurement` = instantaneous and wrong for this slot. A cumulative entity in the *current price* slot is a category error; a period entity in the *total costs* slot is another |
+| 4 | **Its state, unit, `device_class` and `state_class`** | Developer Tools → States. Compare against the one monetary entity visible from here: name `sensor Cost`, `device_class: monetary`, `AUD`, **451.1649** on 30 Aug 2026. If the configured entity is that one, its state should now be somewhat above 451 |
+| 5 | **Whether HA Statistics reports an issue on it** | Developer Tools → Statistics — look for a units-changed or "state class changed" flag, and for the *Fix issue* affordance |
+| 6 | **Whether the entity's history/statistics start date explains A$437.60** | Developer Tools → Statistics → that entity's history, or the Energy dashboard stepped back day by day. **This is the decisive test of the standing hypothesis:** if the statistic's history begins on or near 30 Aug 2026 with a single jump of ≈A$437.60, the accumulation-read-as-period-total explanation is confirmed. If instead it has a month of ordinary ≈A$13/day steps, the hypothesis is **wrong** and the cause is elsewhere — report that plainly rather than reshaping the model to fit |
+| 7 | **The safest correction that preserves historical Energy data** | Decided only after 1–6. Ranked below |
+
+### Correction options, safest first
+
+Not to be applied before determinations 1–6 are answered. Ranked by how much
+history each preserves, which is the owner's stated priority:
+
+1. **Repair the statistic in place.** If (6) shows one bogus jump in an
+   otherwise sound series, Developer Tools → Statistics → *Fix issue* /
+   *Adjust sum* on that single hour. Loses nothing but the bad delta, and
+   keeps every real day before and after it. Try this first.
+2. **Correct the wiring, leave the data.** If (2)/(3) show a category error —
+   a cumulative total sitting in the *current price* slot, say — repointing
+   the cost option fixes future periods without touching recorded history.
+   Past periods stay wrong and should be noted as such rather than silently
+   left to look correct.
+3. **Repoint at a price entity or a static price.** `SolarNet Grid import
+   tariff` (0.2880 AUD/kWh) is the obvious candidate for *entity with the
+   current price*, **but see `CFG-002`** — that entity's own rate is unconfirmed
+   and 5% above the contracted one, so this option should not be taken until
+   `CFG-002` is settled, or it trades a 31.8× error for a 5% one.
+4. **Clear and re-record the cost statistic.** Discards history. Last resort,
+   and only with the owner's explicit agreement on what is being lost.
+
+In every case: full backup first — HA backups are unavailable from this
+environment (`MAINTENANCE.md`) — and the close is the owner re-reading
+Energy → Totals and confirming a plausible daily cost (≈A$13–15 for a
+47.83 kWh day), per the live-verification rule above.
+
+### What is already established, and what is only a model
+
+Keeping these apart matters, because determination 6 can falsify the second
+column and nothing in the first.
+
+| Established (read-only, 30 Aug 2026) | Hypothesis only |
+|---|---|
+| Energy → Totals showed 47.83 kWh at A$437.60 → A$9.1491/kWh implied | That the cost option is *entity tracking the total costs* |
+| Exactly one monetary entity is exposed, named literally `sensor Cost`, `device_class: monetary`, AUD, state 451.1649 | That its statistic history begins inside the current period |
+| `451.1649 − 437.60 = 13.5649`, and A$13.5649 ÷ 47.83 kWh = **0.2836 AUD/kWh** — an ordinary rate | That the whole accumulated total was recorded as one jump |
+| `SolarNet Grid import tariff` = 0.2880 AUD/kWh; contracted peak 0.2734996 incl GST | That `451.16 ÷ 0.288 ≈ 1567 kWh ≈ 33 days` reflects when the counter started |
+| The grid source entity is not exposed to Assist and cannot be read from here | That the bare name `sensor Cost` indicates a renamed or hand-made source |
+
+## CFG-002 — change gate
+
+`SolarNet Grid import tariff` reads 0.2880 AUD/kWh; the `bill-electricity`
+view's contracted Home 365 Solar peak rate is 0.2734996 incl GST.
+
+**Do not change the configured tariff on the strength of that gap alone.**
+Confirm the actual EnergyAustralia rate *structure* first — the dashboard
+records a single peak rate, but the discrepancy would be explained just as
+well by a rate this record does not capture: a time-of-use or demand
+component, a shoulder/off-peak band, the 24% guaranteed discount applying to
+usage rather than the total, or a rate that changed after the 31 Jul 2026
+contract start. 0.2880 may be a deliberate rounded-up estimate rather than an
+error.
+
+Only once the correct structure is confirmed against the bill or the
+retailer's rate sheet does a change become correct — and it is applied in the
+Fronius/SolarNet integration, not on this branch. Close on live confirmation,
+never on the arithmetic alone.
 
 ## Fixed — tracking only (no live dashboard component)
 

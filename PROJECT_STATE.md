@@ -1537,7 +1537,32 @@ be implemented.
 
 ## Last Coordination Update
 
-- **Date/time:** 2026-08-30 (this run) — live verification reconciliation
+- **Date/time:** 2026-08-30 (this run) — CFG-001/CFG-002 diagnostic protocol
+- **Branch:** `ha-deploy`
+- **`ha-deploy` HEAD before this update:** `6d5acd1`
+- **This update's commit:** `PENDING` — recorded, at the owner's direction,
+  the seven determinations `CFG-001` must answer once Energy Dashboard
+  evidence is supplied, the correction options ranked by how much Energy
+  history each preserves, and an explicit split between what is **established
+  read-only** and what is **hypothesis only** — determination 6 (does the cost
+  statistic's history start inside the period?) can falsify the hypothesis
+  column outright, and the protocol says to report that rather than reshape
+  the model. Added a `CFG-002` change gate: the 0.2880 vs 0.2734996 gap is not
+  on its own grounds to change the tariff, since a time-of-use band, the 24%
+  discount's basis, or a post-31-Jul-2026 rate change would explain it equally
+  well. Amended the `CFG-` series definition: a `CFG-` item's **close still
+  requires live verification** — its fix is applied in HA rather than pushed,
+  so it gains a `LIVE_VERIFICATION_QUEUE.md` row at the point a fix is
+  applied. Both remain `OPEN`. **No Energy configuration read, guessed at or
+  changed**; no dashboard YAML, theme, priority, score or ownership touched.
+- **Mirror:** `claude/ha-dashboard-upgrades-wui7ig` fast-forwarded to match
+  `ha-deploy` at `6d5acd1` with the owner's explicit approval, after
+  confirming by `git merge-base --is-ancestor` that it was a true
+  fast-forward. No force-push, no history rewritten.
+
+### Superseded — previous update
+
+- **Date/time:** 2026-08-30 — live verification reconciliation
 - **Branch:** `ha-deploy`
 - **`ha-deploy` HEAD before this update:** `ca1fa32`
 - **This update's commit:** `afef82c` — reconciled the owner's `UI-011`
