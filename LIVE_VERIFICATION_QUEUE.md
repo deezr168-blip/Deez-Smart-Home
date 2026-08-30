@@ -104,6 +104,7 @@ on the iPad, landscape.
 |---|---|---|---|---|---|---|
 | BILL-001 | Account-number literal replaced with `input_text.elec_account_number`/`..._gas_account_number` **[guard]** | `bill-electricity` and `bill-gas` plan-details cards | Same account number as entered in the Bills form (or "Not entered" if the helper is empty), not a hardcoded number that no longer matches. NMI/MIRN unchanged — not part of this check | `23c0301` | P1 | PENDING |
 | BILL-004 | Bill status/amount cards guarded against raw `unavailable`/`unknown` interpolation **[guard][中]** | `bills` landing tiles (Electricity, Gas, Car Insurance, Council Rates, South East Water, VicRoads Rego) and the status card on `bill-car-insurance`/`bill-water`/`bill-council-rates`/`bill-rego`, with the underlying `input_number`/`sensor` disabled | Shows "Not entered" / 未输入 (or "Status unavailable" / 状态不可用 for the electricity/gas status word), never a literal `$unavailable` or raw `unavailable` status | `d570a82` | P3 | PENDING |
+| BILL-005 | Title-card `card_mod` text-shadow added to the 4 title cards dashboard-wide that were missing it | `bill-car-insurance`, `bill-water`, `bill-council-rates`, `bill-rego` page titles | Title/subtitle text has the same subtle shadow as every other page title (e.g. `bills`, `bill-electricity`) for contrast over the night-sky background, not flat/harder-to-read text | `<pending>` | P3 | PENDING |
 | UI-016 | Last nested grids dissolved on `bills`, `light-living-room`, `lighting-modes` | All three page layouts | Cards sized normally, not squeezed inside half-width sections; the six bill subviews each read as one clean column | `9b28fdb` | P2 | PENDING |
 | UI-013 | Duplicate media cards removed | Parents Room and Guest Room | One media control per player, not a Mushroom card stacked on a native one | `56c7656` | P3 | PENDING |
 | UI-023 | Placeholder cards removed | Ray Bedroom and other room pages | No "nothing here yet" cards taking up columns | `3048e54` | P2 | PENDING |
@@ -152,13 +153,16 @@ result does to the issue record, the backlog and ownership — are in
 - `PASS` rows stay for traceability. A page group with nothing left
   outstanding may collapse to a one-line summary naming its IDs and date.
 
-**43 checks pending** (44 carried forward, less `UI-011` which the owner
-recorded `PASS` on 30 Aug 2026 — the first live result this queue has
-received. The previous run's count of 44 was 43 carried forward + 1 row added
-by the Billing Dashboard Upgrade routine: `BILL-004`, guarding ten bill status/amount
-cards on `bills` and four `bill-*` subviews against raw `unavailable`/
-`unknown` interpolation — see `BILLING_PROGRESS.md` for the full batch).
-UI-025, UI-026 and now `UI-011` are `VERIFIED`; `UI-011`'s row is kept above
+**44 checks pending** (43 carried forward + 1 row added by the Billing
+Dashboard Upgrade routine this run: `BILL-005`, a `card_mod` text-shadow
+fix on 4 title cards — see `BILLING_PROGRESS.md` for the full batch. The
+43 itself was 44 carried forward, less `UI-011` which the owner recorded
+`PASS` on 30 Aug 2026 — the first live result this queue has received; that
+44 was in turn 43 carried forward + 1 row added by the Billing Dashboard
+Upgrade routine: `BILL-004`, guarding ten bill status/amount cards on
+`bills` and four `bill-*` subviews against raw `unavailable`/`unknown`
+interpolation).
+UI-025, UI-026 and `UI-011` are `VERIFIED`; `UI-011`'s row is kept above
 for traceability, per Queue upkeep. The Energy group still has `UI-020` and
 `UI-021` `PENDING`, so it does not collapse yet — and note that `UI-020`
 (Total Solar *carries a unit*, Powerpal battery guarded) is a **different**

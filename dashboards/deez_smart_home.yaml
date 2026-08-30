@@ -4380,6 +4380,18 @@ views:
   - type: grid
     cards:
     - type: custom:mushroom-title-card
+      card_mod:
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 4px 4px 0px 4px;
+            margin-bottom: -4px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
       title: '{{ ''🚘 车险'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''🚘 Car Insurance'' }}'
       subtitle: '{{ ''保单 • 保费 • 续保 • 付款'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Policy • premium • renewal • payment'' }}'
     - type: custom:mushroom-template-card
@@ -4445,6 +4457,18 @@ views:
   - type: grid
     cards:
     - type: custom:mushroom-title-card
+      card_mod:
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 4px 4px 0px 4px;
+            margin-bottom: -4px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
       title: 💧 South East Water
       subtitle: '{{ ''用水量 • 费用 • 账单周期'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Water usage • charges • billing period'' }}'
     - type: custom:mushroom-template-card
@@ -4509,6 +4533,18 @@ views:
   - type: grid
     cards:
     - type: custom:mushroom-title-card
+      card_mod:
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 4px 4px 0px 4px;
+            margin-bottom: -4px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
       title: '{{ ''🏛️ 市政费'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''🏛️ Council Rates'' }}'
       subtitle: '{{ ''房产 • 评估 • 费率 • 付款'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Property • assessment • rates • payment'' }}'
     - type: custom:mushroom-template-card
@@ -4571,6 +4607,18 @@ views:
   - type: grid
     cards:
     - type: custom:mushroom-title-card
+      card_mod:
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 4px 4px 0px 4px;
+            margin-bottom: -4px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
       title: '{{ ''🚗 VicRoads 车辆注册'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''🚗 VicRoads Registration'' }}'
       subtitle: '{{ ''车辆 • 注册 • 续期 • 付款'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Vehicle • registration • renewal • payment'' }}'
     - type: custom:mushroom-template-card
