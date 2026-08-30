@@ -639,7 +639,7 @@ be implemented.
 
 | Routine | Item | Priority | State | Reason Selected |
 |---|---|---|---|---|
-| Main CasaRay Upgrade | `DR-001` — iPad Command Center density | P3 | `PLANNED` — needs a design decision before implementation | Still the only scoped item in Main's queue after five consecutive clean sweeps this session (raw-interpolation, false-safe aggregate, float-sentinel, icon_color/attribute/int/cover/structural, state_attr/comparison/bare-float/navigation) — score **−2** (Impact 3, Effort 4, Risk 4), selected by being the sole remainder, not by rank. Explicitly "advisory item, no implementation agreed": needs a CasaRay Design Reviewer brief before Main writes code. Everything else Main owns (`UI-011`, and the REG-001..013/UI-027/UI-030/UI-031 batches) is `LIVE_VERIFICATION_REQUIRED` and waiting on the owner — the 42-row verification queue has had zero results recorded across at least five runs. |
+| Main CasaRay Upgrade | `DR-001` — iPad Command Center density | P3 | `PLANNED` — needs a design decision before implementation | Still the only scoped item in Main's queue after five consecutive clean sweeps this session (raw-interpolation, false-safe aggregate, float-sentinel, icon_color/attribute/int/cover/structural, state_attr/comparison/bare-float/navigation) — score **−2** (Impact 3, Effort 4, Risk 4), selected by being the sole remainder, not by rank. Explicitly "advisory item, no implementation agreed": needs a CasaRay Design Reviewer brief before Main writes code. Everything else Main owns (the REG-001..013/UI-027/UI-030/UI-031 batches) is `LIVE_VERIFICATION_REQUIRED` and waiting on the owner. **The verification drought has broken:** the owner recorded the queue's first-ever live result on 2026-08-30 — `UI-011` `PASS` — taking it to `LIVE_VERIFIED` and the queue from 44 pending to 43. That verification also surfaced `CFG-001` (Energy → Totals grid cost ~31.8× too high), which is **not Main's work and not implementable from here**: it lives in HA's own Energy configuration, is blocked on owner diagnosis, and never enters the verification queue. Main's selection is unchanged by both. |
 | Billing Dashboard Upgrade | `BILL-002` — Home Assistant exposure decision for `billing/history.json` (storage now exists, see `billing/README.md`) | P2 | `PARTIAL` — storage scaffolded (`5147eb0`/`ff25626`), read side needs owner direction | `BILL-001`'s account-number portion is fixed and pushed (`23c0301`); its NMI/MIRN portion is `BLOCKED` on an owner decision (no helper exists, cannot invent one) and is excluded from selection (queue rule 4). `BILL-002`'s storage layer (`billing/schema.json`, empty `billing/history.json`) exists; its read side is still blocked on which HA-side mechanism exposes the file to Lovelace (`billing/README.md` point 2). `BILL-003` stays blocked on both. This run instead found and fixed unblocked `BILL-004` (raw-interpolation guard on ten bill status/amount cards, `d570a82` — see Billing's own section below) since nothing in `BILL-001`/`002`/`003` is actionable without an owner decision; `BILL-002`'s exposure question is still the next thing that unblocks real dashboard-history work once decided. |
 
 ---
@@ -648,8 +648,9 @@ be implemented.
 
 ### Main (CasaRay Upgrade)
 - **Queue:** `DR-001` (P3, score −2) only, and it needs a design brief before
-  code. No actionable P1 or P2 remains; `UI-011` is P1 but purely
-  `LIVE_VERIFICATION_REQUIRED` (queue rule 4).
+  code. No actionable P1 or P2 remains. `UI-011` is **no longer queued at
+  all** — the owner returned a `PASS` on 2026-08-30 and it is now
+  `LIVE_VERIFIED` (see the reconciliation entry at the end of this section).
 - **Status:** implementable queue exhausted. Three batches landed and pushed
   this run — `b5eee22` (REG-001/002/003), `9926233` (UI-027), `dff00f3`
   (REG-004/005/006) — closing every open coded Main item. Details in
@@ -902,6 +903,44 @@ be implemented.
   this session's five clean sweep classes without new evidence — it should
   instead re-check whether any `LIVE_VERIFICATION_QUEUE.md` results or a
   `DR-001` brief have landed since this note.
+- **2026-08-30 — `UI-011` live result reconciled (verification, no code
+  change):** the owner returned the queue's **first live result**, from the
+  native Home Assistant Energy dashboard: Solar 16 kWh, Grid 47.83 kWh, Home
+  consumption 63.83 kWh, summing exactly, with the Solar production chart and
+  Energy Distribution card independently showing 16 kWh. Corroborated
+  read-only from here the same day — `Primo 5.0-1 (1) Energy day` = 16558 Wh
+  (`unit_of_measurement: Wh`) = 16.56 kWh, and `Total energy` = 48425900 Wh,
+  which the card's `/1000` renders as 48425.9 kWh: the same order of
+  magnitude as `Energy year` (4588.1 kWh) and larger, as a lifetime counter
+  must be. The feared 1000×-low reading does not occur. Reconciled per the
+  `PASS` column of the Reconciliation procedure: queue Result → `PASS` (row
+  kept for traceability), `DASHBOARD_ISSUES.md` `OPEN` → `VERIFIED` under the
+  same stable ID, no backlog item recreated, priority and ownership untouched.
+  Queue footer 44 → 43. **Scope kept narrow on purpose:** `UI-020` is a
+  different check on the same card (that the readout carries a unit, and the
+  Powerpal battery guard) and stays `PENDING`; a result on one surface does
+  not clear a different check that happens to share a sensor.
+- **2026-08-30 — `CFG-001`/`CFG-002` filed from that same verification (not
+  Main's work):** the owner also observed Energy → Totals reporting Grid
+  total 47.83 kWh at **A$437.60** — an implied A$9.1491/kWh, ~31.8× the real
+  tariff. Investigated read-only, without touching any configuration. The one
+  exposed monetary entity is named literally `sensor Cost` and read 451.1649
+  AUD; `451.1649 − 437.60 = 13.5649`, which over 47.83 kWh is 0.2836 AUD/kWh —
+  an ordinary rate. So this is **not a scaling bug**: today's true cost
+  (≈A$13.56) is sitting inside the cost entity's accumulated total, which is
+  being read as a period total. That is recorded as a hypothesis, not a
+  finding — the cost source lives in `.storage/energy`, unreadable from here,
+  and the grid source is a Powerpal sensor not exposed to Assist. Per the
+  owner's explicit instruction and `MAINTENANCE.md`, **no configuration was
+  changed**; `DASHBOARD_ISSUES.md` carries the four things the owner needs to
+  read out of Settings → Dashboards → Energy to unblock it. `CFG-002` (the
+  SolarNet import-tariff entity at 0.2880 vs the contracted 0.2734996) is
+  logged separately and deliberately, so a 5% discrepancy is not confused
+  with the 31.8× one. A new `CFG-` ID series was opened for defects whose
+  cause and fix live in HA's own configuration rather than in any tracked
+  file here; by definition no push to this branch can close one, and they do
+  not enter the verification queue, which is for deployed changes awaiting a
+  look.
 
 ### Billing
 - **Queue:** `BILL-001` (P1, partial/blocked) → `BILL-002` (P2, partial) →
@@ -1215,10 +1254,26 @@ be implemented.
 
 ## Last Coordination Update
 
-- **Date/time:** 2026-08-30 (this run) — Regression Auditor
+- **Date/time:** 2026-08-30 (this run) — live verification reconciliation
 - **Branch:** `ha-deploy`
-- **`ha-deploy` HEAD before this update:** `50fc733`
-- **This update's commit:** `b8d7807` — Regression Auditor run: audited
+- **`ha-deploy` HEAD before this update:** `ca1fa32`
+- **This update's commit:** `PENDING` — reconciled the owner's `UI-011`
+  `PASS`, the first live result this queue has ever received: queue Result →
+  `PASS` (row kept), `DASHBOARD_ISSUES.md` `OPEN` → `VERIFIED` under the same
+  stable ID, footer 44 → 43, Main's pointer and queue entry updated. Filed
+  `CFG-001` (S1 — Energy → Totals grid cost ~31.8× too high, blocked on owner
+  diagnosis) and `CFG-002` (S4 — SolarNet import tariff 0.2880 vs contracted
+  0.2734996) from the same verification, opening the `CFG-` series for
+  defects living in HA's configuration rather than in a tracked file. No
+  dashboard YAML, theme, Home Assistant configuration, priority, score or
+  ownership touched; no device controlled. `bash scripts/ha_validate.sh`
+  passes 7/7.
+
+### Superseded — previous update
+
+- **Date/time:** 2026-08-30 — Regression Auditor
+- **`ha-deploy` HEAD before that update:** `50fc733`
+- **That update's commit:** `b8d7807` — Regression Auditor run: audited
   `ea7289f..HEAD` (15 commits, 2 dashboard-touching), confirmed no
   cross-routine boundary violation between `ccfb0c8` (Main) and `d570a82`
   (Billing), re-verified the verification-queue footer count and the

@@ -49,7 +49,7 @@ on the iPad, landscape.
 
 | ID | What changed | What to check live | Expected result | Commit | P | Result |
 |---|---|---|---|---|---|---|
-| UI-011 | Total Solar converted Wh→kWh | Compare Total Solar against Day and Year figures | Same order of magnitude. **If Total reads ~1000× smaller, the conversion is wrong — mark FAIL** | `df457e3` | P1 | PENDING |
+| UI-011 | Total Solar converted Wh→kWh | Compare Total Solar against Day and Year figures | Same order of magnitude. **If Total reads ~1000× smaller, the conversion is wrong — mark FAIL** | `df457e3` | P1 | **PASS** — 30 Aug 2026. Owner read the native HA Energy dashboard: Solar 16 kWh + Grid 47.83 kWh = Home 63.83 kWh exactly, with the Solar production chart and Energy Distribution card independently showing 16 kWh. No 1000× scaling error. See `DASHBOARD_ISSUES.md` UI-011 for the scope this does and does not cover |
 | UI-020 | Total Solar and Powerpal battery guarded **[guard]** | Both readouts carry units; battery colour | No "Battery unavailable%"; battery not green while silent | `df457e3` | P1 | PENDING |
 | UI-021 | Energy split into five sections | Page layout in landscape | Cards spread across the width; native energy cards not squeezed into half a page | `df457e3` | P2 | PENDING |
 
@@ -152,11 +152,17 @@ result does to the issue record, the backlog and ownership — are in
 - `PASS` rows stay for traceability. A page group with nothing left
   outstanding may collapse to a one-line summary naming its IDs and date.
 
-**44 checks pending** (43 carried forward + 1 row added this run by the
-Billing Dashboard Upgrade routine: `BILL-004`, guarding ten bill status/amount
+**43 checks pending** (44 carried forward, less `UI-011` which the owner
+recorded `PASS` on 30 Aug 2026 — the first live result this queue has
+received. The previous run's count of 44 was 43 carried forward + 1 row added
+by the Billing Dashboard Upgrade routine: `BILL-004`, guarding ten bill status/amount
 cards on `bills` and four `bill-*` subviews against raw `unavailable`/
 `unknown` interpolation — see `BILLING_PROGRESS.md` for the full batch).
-UI-025 and UI-026 are already `VERIFIED` and are not listed. `BILL-001`'s
+UI-025, UI-026 and now `UI-011` are `VERIFIED`; `UI-011`'s row is kept above
+for traceability, per Queue upkeep. The Energy group still has `UI-020` and
+`UI-021` `PENDING`, so it does not collapse yet — and note that `UI-020`
+(Total Solar *carries a unit*, Powerpal battery guarded) is a **different**
+check on the same card and was **not** covered by the UI-011 result. `BILL-001`'s
 account-number fix is now pushed and listed above under Bills & rooms; its
 still-`BLOCKED` NMI/MIRN portion is implementation work, not a verification
 item, and stays in `DASHBOARD_BACKLOG.md`. `DR-001` (iPad density) is also
