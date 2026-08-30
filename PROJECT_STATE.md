@@ -1506,6 +1506,23 @@ be implemented.
   If the owner has not yet disabled the external recurring trigger, that is
   the actual unblock here, not further repository work. A future run should
   again re-fetch and re-read the top of this file first.
+- **2026-08-30 (this run) — second re-check, pause still in effect, no code
+  change:** fetched `origin/ha-deploy` — `HEAD` unchanged at `a0df98a`, tree
+  clean before and after. The **Schedule Status: PAUSED** section is still
+  unmodified: no dated lift note, so the owner-directed pause still applies.
+  No new commits, no new evidence, no human verification results recorded
+  since the previous check-in. Made no dashboard-code change and did not
+  start any queued item, per the pause. Did **not** send a push
+  notification — this is the third consecutive fire since the pause was
+  recorded, nothing has changed since the last alert, and a repeat would be
+  redundant noise per the routine's own notification guidance. **Exact next
+  recommended task:** unchanged — none from this routine until the owner
+  lifts the pause (dated note replacing the Schedule Status section); at
+  that point resume from `DR-001` / the `CFG-003` host recovery status. The
+  external recurring trigger firing three times against an explicit pause
+  is itself the notable fact here — the owner disabling it (outside this
+  repository) is the actual unblock, not further repository work. A future
+  run should again re-fetch and re-read the top of this file first.
 
 ### Billing
 - **2026-08-30 (this run) — `BILL-005` fixed (title-card text-shadow guard)
