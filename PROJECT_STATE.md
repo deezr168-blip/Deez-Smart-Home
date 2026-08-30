@@ -665,6 +665,22 @@ be implemented.
   closed, which was not exhaustively re-run this session.
 - `REG-005`'s fix changed the English text from `WAN —` to "WAN not
   reporting". Deliberate consistency choice, **not** owner-confirmed.
+- **2026-08-30 00:35 UTC re-check (no code change):** fetched `origin/ha-deploy`
+  — HEAD unchanged at `928fa78`, tree clean. Re-read `DASHBOARD_ISSUES.md`,
+  `DASHBOARD_BACKLOG.md` and `LIVE_VERIFICATION_QUEUE.md` (all 33 rows still
+  `PENDING`, none recorded). Confirmed no new actionable Main item exists:
+  `DR-001` is still explicitly gated on a design brief Main should not write
+  itself, and every other Main-owned item is `LIVE_VERIFICATION_REQUIRED`
+  with zero human results recorded since the last update. Ran
+  `bash scripts/ha_validate.sh` — passes clean (7/7) with no drift. Did not
+  invent speculative work against Recent Change Protection: every area Main
+  would touch was substantially modified within the last hour. No commit
+  this run. **Next recommended work, unchanged:** owner live-verifies the
+  pushed batches (`LIVE_VERIFICATION_QUEUE.md`) and gives `UI-011` one look
+  at the Energy card, or the CasaRay Design Reviewer scopes a `DR-001`
+  brief — either unblocks Main's next batch. Until one of those lands, a
+  future run should re-fetch and re-check this same gate rather than
+  re-deriving it from scratch.
 
 ### Billing
 - **Queue:** `BILL-001` (P1) → `BILL-002` (P2) → `BILL-003` (P2).
