@@ -1351,6 +1351,50 @@ be implemented.
   (same `energy` group as the already-verified `UI-011`) or `UI-032` itself
   now that it is deployed; (3) a concrete `DR-001` design brief. No
   fifteenth sweep should be attempted without one of those landing first.
+- **2026-08-30 — post-`CFG-003` check, no code change:** fetched
+  `origin/ha-deploy` — `HEAD` unchanged at `83110de` (the `CFG-003` stamp
+  commit), tree clean before and after. Re-read `CLAUDE.md` and this file in
+  full, `DASHBOARD_ISSUES.md`'s Open section (`CFG-001`/`CFG-002`/`CFG-003`,
+  all Home Assistant / deployment-bridge issues outside this repository's
+  reach) and `DASHBOARD_BACKLOG.md`'s active queue (unchanged: `DR-001`
+  Main-owned, still gated on a design brief this routine should not write
+  itself; `BILL-001/002/003` Billing-owned and blocked/partial). Checked
+  `LIVE_VERIFICATION_QUEUE.md` directly: 45 rows, still exactly one real
+  result recorded (`UI-011` `PASS`) — no new `PASS`/`FAIL`/`PARTIAL` since the
+  last check, and no movement on `CFG-001` or the owner diagnostic steps
+  `CFG-003` names. `bash scripts/ha_validate.sh` passes clean (7/7, 389
+  templates, 36/36 views, no drift). **No dashboard-code fix made this run.**
+  `CFG-003` — filed last run — is now the dominant blocker for this entire
+  routine, not merely another queue item: it states plainly that no change to
+  `dashboards/deez_smart_home.yaml` has ever been independently confirmed
+  live, that 12+ commits (now more) have touched the file since the one
+  deployment run on record, which itself wrote nothing, and it explicitly
+  instructs every routine not to queue further dashboard work on the
+  assumption it will deploy. Honoured that instruction this run: did not
+  attempt a fifteenth static-repository sweep (the coded-fix surface was
+  already exhausted before `CFG-003`, and finding another cosmetic fix would
+  not address the actual problem — a fix nobody can confirm is reaching the
+  dashboard is not a productive use of a batch). **Recommendation, now
+  stronger than the prior check's: pause this schedule until the owner
+  completes `CFG-003`'s five-step diagnostic** (`DASHBOARD_ISSUES.md`
+  steps a–e: check the Raw configuration editor for `UI-032 PROBE v1`,
+  search for `front_door_battery`, look for any alert card directly under
+  the Home page header, run the deploy script by hand and capture its
+  output, and check Settings → Dashboards for a duplicate `deez-smart-home`
+  entry). Continuing to run autonomous batches while the deployment path
+  itself is unconfirmed risks compounding unverifiable work: every further
+  push is one more commit in the same unproven state `CFG-003` describes.
+  Sent the owner a push notification this run flagging `CFG-003` directly,
+  since the previous check's own escalation (fourteenth check, `CFG-001`)
+  predates `CFG-003`'s discovery and does not cover it. **Exact next
+  recommended task, unchanged in substance, reordered by severity:**
+  (1) owner works `CFG-003`'s five-step diagnostic — decisive and the
+  fastest of the three to check; (2) owner works `CFG-001`'s four-point
+  diagnostic in `DASHBOARD_ISSUES.md` (real money, ~31.8× overstated Energy
+  cost); (3) owner records any result in the 45-row
+  `LIVE_VERIFICATION_QUEUE.md`; (4) a concrete `DR-001` design brief. A
+  future autonomous run should re-check `CFG-003`'s status before resuming
+  any dashboard-code batch, not merely before resuming a sweep.
 
 ### Billing
 - **2026-08-30 (this run) — `BILL-005` fixed (title-card text-shadow guard)
