@@ -1854,7 +1854,7 @@ be implemented.
 - **Date/time:** 2026-08-30 (this run) — CFG-003 filed, UI-032 blocked
 - **Branch:** `ha-deploy`
 - **`ha-deploy` HEAD before this update:** `6d5acd1`
-- **This update's commit:** `PENDING` — the `UI-032` probe did not render
+- **This update's commit:** `d200945` — the `UI-032` probe did not render
   either. An unconditional card's absence cannot be explained by any gate,
   template, entity or schema question, so the fault is not in this file's
   logic. Filed **`CFG-003`** (S1): pushes to `ha-deploy` are not reaching the
