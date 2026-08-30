@@ -370,6 +370,7 @@ recorded in `DASHBOARD_BACKLOG.md` or `DASHBOARD_ISSUES.md`.
 
 | Area | Owner | Last Significant Commit | State | Protected Until | Notes |
 |---|---|---|---|---|---|
+| False-safe door-count aggregates (`home` hero, `ipad-command-center` Doors chip) | Main | (this commit) — 08-30 01:35 | `LIVE_VERIFICATION_REQUIRED` | 08-30 07:35 | Closes REG-007/008. Continuation of the REG-001..006 false-safe-state sequence under RCP rule 5/7 — same recurring defect class (Process note in `DASHBOARD_ISSUES.md`), found on two aggregate cards the REG-001..006 batch never touched. |
 | Bilingual template pass (all 36 views) | Main | `f04a59f` — 08-29 20:51 | `LIVE_VERIFICATION_REQUIRED` | 08-30 02:51 | Sequence `f4e7ec3`→`fa286de`→`f04a59f`; Main may continue under RCP rule 5. |
 | False-safe status regressions (`security`, `lights`, `cameras`, `home`) | Main | `b5eee22` — 08-29 23:37 | `LIVE_VERIFICATION_REQUIRED` | 08-30 05:37 | Closes REG-001/002/003. |
 | Heading-card contrast (`themes/deez_your_name.yaml`) | Main | `9926233` — 08-29 23:42 | `LIVE_VERIFICATION_REQUIRED` | 08-30 05:42 | Closes UI-027; theme-level rule, no dashboard YAML. |
@@ -681,6 +682,27 @@ be implemented.
   brief — either unblocks Main's next batch. Until one of those lands, a
   future run should re-fetch and re-check this same gate rather than
   re-deriving it from scratch.
+- **2026-08-30 01:35 UTC — REG-007/REG-008 (this commit):** performed the
+  fresh narrow false-safe-state sweep recommended by the 00:35 re-check,
+  scoped to aggregate cards (multiple sensors combined into one count/color)
+  rather than the single-sensor cards REG-001..006 already covered. Found two:
+  the `home` House Pulse hero's door-open count/icon_color, and the
+  `ipad-command-center` Doors status chip — both silently dropped an
+  unavailable door sensor from the tally instead of flagging it, and the
+  iPad chip additionally had no guard at all and was still bare English,
+  unlike its Motion/WAN siblings in the same chip row. Fixed both to match
+  the existing guarded/bilingual convention used elsewhere in the file (see
+  `DASHBOARD_ISSUES.md`). `bash scripts/ha_validate.sh` passes clean (7/7,
+  384 templates compile, 36/36 views resolve). Pushed to `ha-deploy` and
+  `claude/ha-dashboard-upgrades-wui7ig`. Treated as a legitimate RCP override
+  (rules 5 and 7): same recurring defect class as the just-landed REG-001..006
+  sequence, found by design authority Main holds, not a redesign of anyone
+  else's recent work. **Next recommended work:** queue is exhausted again —
+  same as the 00:35 note, the owner live-verifying the growing
+  `LIVE_VERIFICATION_QUEUE.md` backlog (now 35 rows) or a `DR-001` design
+  brief are what unblock Main's next batch. A future run could widen this
+  same aggregate-card sweep to `climate`, `status`, `network` and the room
+  pages, which were not part of this pass.
 
 ### Billing
 - **Queue:** `BILL-001` (P1) → `BILL-002` (P2) → `BILL-003` (P2).

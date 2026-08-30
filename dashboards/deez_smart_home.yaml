@@ -73,13 +73,9 @@ views:
     - type: custom:mushroom-template-card
       primary: '{{ ''家庭状态'' if is_state(''input_boolean.chinese_dashboard'',''on'')
         else ''House Pulse'' }}'
-      secondary: '{% set doors = [states(''binary_sensor.m_contact_sensor_door''), states(''binary_sensor.f_contact_sensor_door''), states(''binary_sensor.b_contact_sensor_door'')] %}{% set open = doors | select(''eq'',''on'') | list | count %}{% set wan = is_state(''binary_sensor.eero_wan_status'',''on'') %}{% set lights = states.light | selectattr(''state'',''eq'',''on'') | list | count %}{% set t = state_attr(''weather.forecast_home'',''temperature'') %}{% set temp = (t | round(0) | int ~ ''°C'') if t is number else ''—'' %}{% if is_state(''input_boolean.chinese_dashboard'',''on'') %}{{ open }} 扇门开启 • {{ lights }} 盏灯 • {{ temp }}{{ '' • 网络离线'' if not wan else '''' }}{% else %}{{ open }} open • {{ lights }} lights • {{ temp }}{{ '' • Offline'' if not wan else '''' }}{% endif %}'
+      secondary: '{% set bad = [''unavailable'', ''unknown'', ''none''] %}{% set doors = [states(''binary_sensor.m_contact_sensor_door''), states(''binary_sensor.f_contact_sensor_door''), states(''binary_sensor.b_contact_sensor_door'')] %}{% set doors_unknown = doors | select(''in'', bad) | list | count %}{% set open = doors | reject(''in'', bad) | select(''eq'',''on'') | list | count %}{% set wan = states(''binary_sensor.eero_wan_status'') %}{% set lights = states.light | selectattr(''state'',''eq'',''on'') | list | count %}{% set t = state_attr(''weather.forecast_home'',''temperature'') %}{% set temp = (t | round(0) | int ~ ''°C'') if t is number else ''—'' %}{% if is_state(''input_boolean.chinese_dashboard'',''on'') %}{{ open }} 扇门开启{{ '' • '' ~ doors_unknown ~ '' 个门传感器离线'' if doors_unknown > 0 else '''' }} • {{ lights }} 盏灯 • {{ temp }}{{ '' • 网络无数据'' if wan in bad else ('' • 网络离线'' if wan != ''on'' else '''') }}{% else %}{{ open }} open{{ '' • '' ~ doors_unknown ~ '' door sensor(s) offline'' if doors_unknown > 0 else '''' }} • {{ lights }} lights • {{ temp }}{{ '' • WAN not reporting'' if wan in bad else ('' • Offline'' if wan != ''on'' else '''') }}{% endif %}'
       icon: mdi:home-heart
-      icon_color: '{% set doors = [states(''binary_sensor.m_contact_sensor_door''),
-        states(''binary_sensor.f_contact_sensor_door''), states(''binary_sensor.b_contact_sensor_door'')]
-        %} {% set open = doors | select(''eq'',''on'') | list | count %} {{ ''red''
-        if open > 0 or not is_state(''binary_sensor.eero_wan_status'',''on'') else
-        ''green'' }}'
+      icon_color: '{% set bad = [''unavailable'', ''unknown'', ''none''] %}{% set doors = [states(''binary_sensor.m_contact_sensor_door''), states(''binary_sensor.f_contact_sensor_door''), states(''binary_sensor.b_contact_sensor_door'')] %}{% set doors_unknown = doors | select(''in'', bad) | list | count %}{% set open = doors | reject(''in'', bad) | select(''eq'',''on'') | list | count %}{% set wan = states(''binary_sensor.eero_wan_status'') %}{{ ''red'' if (open > 0 or (wan not in bad and wan != ''on'')) else (''grey'' if (doors_unknown > 0 or wan in bad) else ''green'') }}'
       tap_action:
         action: navigate
         navigation_path: /deez-smart-home/status
@@ -1599,13 +1595,8 @@ views:
         icon_color: '{% set cams = [(''Front Door'',''camera.front_door_live_view''), (''North Wall'',''camera.tapo_c425_north_wall_hd_stream_direct''), (''East Wall'',''camera.tapo_c420_east_wall_hd_stream_direct''), (''South Wall'',''camera.tapo_c420_south_wall_hd_stream_direct''), (''Stockroom'',''camera.tapo_c200_stockroom_hd_stream_direct''), (''Pet Feeder'',''camera.smart_pet_feeder'')] %}{% set ns = namespace(down=[]) %}{% for n,c in cams %}{% if states(c) in [''unavailable'',''unknown'',''none''] %}{% set ns.down = ns.down + [n] %}{% endif %}{% endfor %}{{ ''green'' if ns.down | count == 0 else (''amber'' if ns.down | count <= 2 else ''red'') }}'
       - type: template
         icon: mdi:door
-        content: "{% set doors = [\n  states('binary_sensor.f_contact_sensor_door'),\n\
-          \  states('binary_sensor.m_contact_sensor_door'),\n  states('binary_sensor.b_contact_sensor_door')\n\
-          ] %} {{ doors | select('eq','on') | list | count }} open"
-        icon_color: "{% set doors = [\n  states('binary_sensor.f_contact_sensor_door'),\n\
-          \  states('binary_sensor.m_contact_sensor_door'),\n  states('binary_sensor.b_contact_sensor_door')\n\
-          ] %} {{ 'red' if (doors | select('eq','on') | list | count) > 0 else 'green'\
-          \ }}"
+        content: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set bad = [''unavailable'', ''unknown'', ''none''] %}{% set doors = [states(''binary_sensor.f_contact_sensor_door''), states(''binary_sensor.m_contact_sensor_door''), states(''binary_sensor.b_contact_sensor_door'')] %}{% if doors | reject(''in'', bad) | list | count == 0 %}{{ ''传感器离线'' if cn else ''Sensor offline'' }}{% else %}{{ doors | select(''eq'',''on'') | list | count }} {{ ''扇门开启'' if cn else ''open'' }}{% endif %}'
+        icon_color: '{% set bad = [''unavailable'', ''unknown'', ''none''] %}{% set doors = [states(''binary_sensor.f_contact_sensor_door''), states(''binary_sensor.m_contact_sensor_door''), states(''binary_sensor.b_contact_sensor_door'')] %}{% if doors | reject(''in'', bad) | list | count == 0 %}grey{% elif (doors | select(''eq'',''on'') | list | count) > 0 %}red{% else %}green{% endif %}'
         tap_action:
           action: navigate
           navigation_path: /deez-smart-home/security

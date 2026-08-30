@@ -32,6 +32,22 @@ navigation · **S3** layout or readability · **S4** polish.
 
 ---
 
+## False-safe-state sweep — 2026-08-30
+
+A narrow re-sweep for the recurring false-safe-state class (see Process note)
+beyond the REG-001..006 baseline, targeting cards that aggregate multiple
+sensors — the per-sensor guards already fixed under REG-001..003 don't
+automatically cover an aggregate that silently drops an unavailable sensor
+from its count instead of flagging it. Two instances found, both on cards
+never touched by the REG-001..006 batch.
+
+| ID | Sev | View / component | Summary | Fixed in | Status |
+|---|---|---|---|---|---|
+| REG-007 | MED | `home` — House Pulse hero card | The door-open count and its icon_color silently dropped any door sensor reporting `unavailable`/`unknown`/`none` from the tally instead of flagging it, so all three sensors going offline showed a confident "0 open" and (with WAN up) a green icon — the same false-safe pattern REG-003 fixed on the sibling Network nav chip two cards away. Now surfaces "N door sensor(s) offline" / "N 个门传感器离线" and the icon falls back to grey rather than green when any door state is unknown. | (this commit) | FIXED — AWAITING LIVE VERIFICATION |
+| REG-008 | MED | `ipad-command-center` — Doors status chip | Same root cause as REG-007, worse: the chip had no unavailable guard at all and was still bare English ("N open"), unlike its two siblings in the same chip row (Motion, WAN) which were already guarded. All three door sensors offline showed "0 open" / green. Now matches the Motion chip's own guard convention: all-unknown → "Sensor offline" / grey, bilingual. | (this commit) | FIXED — AWAITING LIVE VERIFICATION |
+
+---
+
 ## Regression audit — 2026-08-29
 
 Baseline audit against `ha-deploy` HEAD `7f304ad`, covering the 12 commits
