@@ -1098,6 +1098,53 @@ be implemented.
   Solar) if it is ever coded, since it remains the only open dashboard
   (non-tracking) issue.
 - Auditor is advisory: findings queue for Main, never self-implemented.
+- **2026-08-30 audit (this run) — scope `ea7289f..HEAD` (15 commits,
+  `50fc733`):** fetched `origin/ha-deploy`, confirmed local matched remote
+  (`50fc733`) with a clean tree, no drift before writing. Of the 15 commits
+  in range, only two touch `dashboards/deez_smart_home.yaml`: `ccfb0c8`
+  (Main — UI-031/REG-013) and `d570a82` (Billing — BILL-004); the rest are
+  docs-only stamps/confirmation notes or Billing's non-dashboard
+  `billing/` storage scaffold (`5147eb0`/`ff25626`). Diffed both dashboard
+  commits directly against the view-boundary line map (`grep -n '^  path:'`)
+  rather than trusting the commit messages alone: `ccfb0c8`'s four hunks all
+  fall inside `home` (L9–560) and `light-ray-bedroom`/`lighting-modes`
+  (L3354–3586) — no billing view touched. `d570a82`'s ten hunks all fall
+  inside `bills` (L4007–4178) and `bill-car-insurance`/`bill-water`/
+  `bill-council-rates`/`bill-rego` (L4374–end) — no non-billing view
+  touched. **No cross-routine boundary violation, no undone work, no
+  billing change by Main, no unrelated change by Billing.** Both commits'
+  narratives in `DASHBOARD_ISSUES.md`/`DASHBOARD_BACKLOG.md`/
+  `BILLING_PROGRESS.md` match their actual diffs. Re-verified `LIVE_VERIFICATION_QUEUE.md`'s
+  "44 checks pending" footer against an actual row count (`grep -c '|
+  PENDING |'` = 44) — accurate this time, no REG-012-class drift.
+  Re-checked the billing-privacy brief directly against the live YAML: the
+  NMI/MIRN literals at `bill-electricity`/`bill-gas` are still hardcoded
+  (confirmed present, digits not reproduced here) and remain correctly
+  tracked as `BILL-001`'s `BLOCKED` remainder with a documented reason — not
+  re-logged, per "do not manufacture issues." `billing/history.json` is
+  still `[]` and `BILLING_PROGRESS.md`'s own NMI/MIRN digits remain redacted
+  from the previous run — no new privacy exposure found.
+- **New issue: `REG-014`** (LOW) — `DASHBOARD_ISSUES.md` describes itself as
+  the authoritative bug record for `dashboards/deez_smart_home.yaml`, but
+  neither `BILL-001`'s account-number fix (`23c0301`) nor `BILL-004`
+  (`d570a82`) — both genuine fixes to that file, same raw-interpolation
+  class already logged here for Main's `UI-030`/`UI-031` — appear in it at
+  all, even though both are correctly present in `DASHBOARD_BACKLOG.md` and
+  `LIVE_VERIFICATION_QUEUE.md`. Tracking-completeness gap only; nothing is
+  lost, unverifiable, or wrongly marked complete. Full evidence and
+  recommended action in `DASHBOARD_ISSUES.md`'s Open table. Not self-fixed —
+  recommended owner is Billing (who authored both fixes) or the Daily
+  Project Coordinator.
+- **Resolved/stale issues identified this run:** none.
+- **Cross-routine conflicts this run:** none.
+- **Verification requirements:** unchanged — `UI-011` remains the only open
+  non-tracking issue; `REG-014` is tracking-only and has no live-dashboard
+  component.
+- **Next recommended audit focus:** once `REG-014` is corrected (or the
+  `DASHBOARD_ISSUES.md` scope is deliberately narrowed to exclude
+  `BILL-*`), the next audit's default scope is `50fc733..HEAD` for whatever
+  Main/Billing push next. `UI-011` (Energy — Total Solar) remains worth a
+  fresh look if it is ever coded.
 
 ### Entity Scout
 - File findings in `DASHBOARD_BACKLOG.md` as evidence-based items.
@@ -1168,16 +1215,18 @@ be implemented.
 
 ## Last Coordination Update
 
-- **Date/time:** 2026-08-30 05:47 UTC (this run)
+- **Date/time:** 2026-08-30 (this run) — Regression Auditor
 - **Branch:** `ha-deploy`
-- **`ha-deploy` HEAD before this update:** `20a468d`
-- **This update's commit:** `384a8f1` — Daily Project Coordinator
-  reconciliation run: closed `REG-012` by adding the missing `UI-030` row to
-  `LIVE_VERIFICATION_QUEUE.md` (footer corrected to 43) and reconciling
-  `DASHBOARD_ISSUES.md`; removed 4 expired Active Change Window rows whose
-  work was already recorded elsewhere; added this file's own Daily Project
-  Coordinator section. No dashboard YAML, theme, priority, score, ownership
-  or `LIVE_VERIFIED` state touched.
+- **`ha-deploy` HEAD before this update:** `50fc733`
+- **This update's commit:** *(pending — stamped by the follow-up `docs:
+  stamp` commit, per `CLAUDE.md`)* — Regression Auditor run: audited
+  `ea7289f..HEAD` (15 commits, 2 dashboard-touching), confirmed no
+  cross-routine boundary violation between `ccfb0c8` (Main) and `d570a82`
+  (Billing), re-verified the verification-queue footer count and the
+  billing-privacy remainder are both accurate. Filed `REG-014` (LOW,
+  tracking-completeness gap: `BILL-001`/`BILL-004` missing from
+  `DASHBOARD_ISSUES.md`). No dashboard YAML, theme, priority, score,
+  ownership or `LIVE_VERIFIED` state touched.
 
 Per `CLAUDE.md`, a commit cannot contain its own hash: this update's SHA is
 written by the `docs: stamp` commit that immediately follows it.
