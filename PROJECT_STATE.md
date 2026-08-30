@@ -78,6 +78,10 @@ stop when you have what the task needs.
    audits that area.
 7. Do not load `archive/` at all unless investigating a regression recurrence
    or revisiting a past design decision.
+8. Read `LIVE_VERIFICATION_QUEUE.md` only when: deciding whether a
+   verification-blocked item has changed state, working on an affected view,
+   or reconciling a user-supplied `PASS`/`FAIL`/`PARTIAL` result. Not every
+   run.
 
 Cheapness never licenses stale state: the Concurrency / Serialization Policy
 still requires a fetch and a re-read of this file before any write, and the
@@ -91,6 +95,7 @@ Next Actionable Work pointer must still be revalidated against current `HEAD`.
 | `DASHBOARD_BACKLOG.md` | Authoritative **detailed active work queue** |
 | `DASHBOARD_ISSUES.md` | Authoritative **active regression / issue record** |
 | `DASHBOARD_PROGRESS.md` | **Historical** implementation record — not coordination state, carries no priority list |
+| `LIVE_VERIFICATION_QUEUE.md` | Authoritative **human verification checklist** — the only place live-check instructions live |
 | `archive/*` | Closed detail, retained for investigation only |
 
 ---
@@ -268,7 +273,7 @@ recorded in `DASHBOARD_BACKLOG.md` or `DASHBOARD_ISSUES.md`.
 | Heading-card contrast (`themes/deez_your_name.yaml`) | Main | `9926233` — 08-29 23:42 | `LIVE_VERIFICATION_REQUIRED` | 08-30 05:42 | Closes UI-027; theme-level rule, no dashboard YAML. |
 | Residual bilingual gaps (`people-locations`, `ipad-command-center`, `home`) | Main | `dff00f3` — 08-29 23:45 | `LIVE_VERIFICATION_REQUIRED` | 08-30 05:45 | Closes REG-004/005/006. REG-005 changed English `WAN —` → "WAN not reporting" — owner may want to review. |
 | Regression audit record (`DASHBOARD_ISSUES.md`) | Regression Auditor | `3116495` — 08-29 22:49 | `PUSHED` | 08-30 04:49 | Baseline REG-001..006 fresh; do not re-audit that range. |
-| Coordination state (`PROJECT_STATE.md`, `DASHBOARD_BACKLOG.md`) | Shared | `5c96aeb` — 08-29 23:55 | `PUSHED` | 08-30 05:55 | Structure settled. Append to your own sections; do not restructure. |
+| Coordination state (`PROJECT_STATE.md`, `DASHBOARD_BACKLOG.md`) | Shared | `STAMPSHA` — 08-30 00:05 | `PUSHED` | 08-30 06:05 | Structure settled. Append to your own sections; do not restructure. |
 
 Back / previous-page navigation is **complete** (35/36 views, parent-targeted;
 `home` is root) and its window long expired — recorded under UI-009/UI-017 in
@@ -360,6 +365,29 @@ do **not** belong here.
 
 ---
 
+## Live Verification
+
+`LIVE_VERIFICATION_QUEUE.md` is the **authoritative human verification
+checklist**. Nothing in this environment can reach the instance, so only a
+person looking at the live dashboard can close a verification item.
+
+- Writer and advisory routines must **not** duplicate detailed
+  live-verification instructions anywhere else — link to the queue instead.
+- Existing `LIVE_VERIFICATION_REQUIRED` states remain valid until a human
+  records a result. Creating, reading or reorganising the queue is **not**
+  verification.
+- **`PASS`** — the routine reconciling it may move the item to
+  `LIVE_VERIFIED` in `DASHBOARD_ISSUES.md`.
+- **`FAIL`** — reopen an actionable regression, reusing the existing stable ID
+  where one exists rather than minting a new one.
+- **`PARTIAL`** — preserve the portion that passed and raise a narrowly scoped
+  follow-up. Never trigger a wholesale reimplementation from a partial result.
+- Verification items are not backlog work. An item awaiting a live check stays
+  excluded from autonomous selection (queue rule 4) and does not become
+  actionable implementation work just because it is unverified.
+
+---
+
 ## Next Actionable Work
 
 Coordination pointer to each writer's current highest actionable item — not a
@@ -392,11 +420,9 @@ be implemented.
   this run — `b5eee22` (REG-001/002/003), `9926233` (UI-027), `dff00f3`
   (REG-004/005/006) — closing every open coded Main item. Details in
   `DASHBOARD_PROGRESS.md`; states in `DASHBOARD_ISSUES.md`.
-- **Verification:** all of it `PUSHED`, none `LIVE_VERIFIED`. Template
-  branches were checked by rendering the extracted Jinja standalone across
-  every state and both languages; UI-027 is CSS-only and has no
-  repository-side render check. Live-verification debt is now nine batches
-  deep. Per queue rule 5 this does not stall development.
+- **Verification:** all of it `PUSHED`, none `LIVE_VERIFIED`. 33 checks are
+  queued in `LIVE_VERIFICATION_QUEUE.md` — that file, not this one, carries
+  the instructions. Per queue rule 5 the debt does not stall development.
 - **Blockers:** none on code. Out of scoped, actionable Main-owned items.
 - **Next task, in order of value:** (1) owner live-verifies this run's
   batches and `UI-011`; (2) if `DR-001` gets a concrete brief it becomes
@@ -437,11 +463,11 @@ be implemented.
 
 ## Last Coordination Update
 
-- **Date/time:** 2026-08-29 23:55 UTC
+- **Date/time:** 2026-08-30 00:05 UTC
 - **Branch:** `ha-deploy`
-- **`ha-deploy` HEAD before this update:** `de259a8`
-- **This update's commit:** `5c96aeb` — tracking-system compaction and the
-  Context Loading Strategy.
+- **`ha-deploy` HEAD before this update:** `4dc566a`
+- **This update's commit:** `STAMPSHA` — `LIVE_VERIFICATION_QUEUE.md` and the
+  Live Verification coordination rules.
 
 Per `CLAUDE.md`, a commit cannot contain its own hash: this update's SHA is
 written by the `docs: stamp` commit that immediately follows it.
