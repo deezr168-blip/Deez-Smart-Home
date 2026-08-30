@@ -1218,8 +1218,7 @@ be implemented.
 - **Date/time:** 2026-08-30 (this run) — Regression Auditor
 - **Branch:** `ha-deploy`
 - **`ha-deploy` HEAD before this update:** `50fc733`
-- **This update's commit:** *(pending — stamped by the follow-up `docs:
-  stamp` commit, per `CLAUDE.md`)* — Regression Auditor run: audited
+- **This update's commit:** `b8d7807` — Regression Auditor run: audited
   `ea7289f..HEAD` (15 commits, 2 dashboard-touching), confirmed no
   cross-routine boundary violation between `ccfb0c8` (Main) and `d570a82`
   (Billing), re-verified the verification-queue footer count and the
