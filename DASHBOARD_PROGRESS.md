@@ -28,6 +28,44 @@ minutes.
 
 Detailed. These are the batches current work and open verification depend on.
 
+### `b058006` + `d592692` — five copies of one false-safe door-count aggregate closed (REG-007..011)
+Area: `home` (House Pulse hero, quick-control chip row, Rooms → Security
+card), `cameras` (status chip row), `ipad-command-center` (Home Pulse chip
+row). Purpose: continues the REG-001..006 false-safe-state sequence with the
+narrow re-sweep the 00:35 re-check recommended, scoped to aggregates
+(multiple sensors folded into one count/colour) rather than the
+single-sensor cards REG-001..003 already covered.
+The exact same three-element list — `states('binary_sensor.m_contact_sensor_door')`,
+`f_contact_sensor_door`, `b_contact_sensor_door` — had been copy-pasted into
+six cards across three views (a seventh, the `home`/`network` Network nav
+chip, was already guarded under REG-003). Every unguarded copy did
+`doors | select('eq','on') | list | count`: an unavailable door sensor is
+neither `'on'` nor counted, so it silently vanished from the tally instead
+of being flagged — all three sensors dropping out showed a confident
+"0 open" and a green/safe icon, this project's own named recurring defect.
+Three of the five (the `cameras` chip, and the `ipad-command-center` and
+`home` quick-control Doors chips) had no guard branch at all and were still
+bare English, unlike their already-guarded Motion/WAN siblings sitting in
+the same chip rows.
+Fixed all five to the existing guarded/bilingual convention: standalone
+"Doors" chips now show "Sensor offline" / 传感器离线 and turn grey when every
+door sensor is unavailable (matching the Motion chip's own convention);
+mixed-info cards (the House Pulse hero, the Rooms Security card) keep their
+other fields and append "N door sensor(s) offline" / "N unknown" instead,
+turning grey rather than green when any door state is unknown. A `b058006`.
+`d592692` correction: the first pass mislabeled one fix as
+`ipad-command-center` when the chip is actually on `cameras` — the actual
+`ipad-command-center` Home Pulse row turned out to have its own, previously
+undiscovered instance of the same bug (REG-011). Caught by grepping the raw
+sensor list after the first commit rather than trusting the initial
+spot-check; a repeat of that grep after the second commit confirms no
+unguarded copy remains anywhere in the file.
+Validated: 384 templates, 36/36 links, 0 broken, no entity loss, on both
+commits.
+Expect: no visible change when all three door sensors are healthy; with one
+or more disabled, the affected card now says so instead of a confident
+"0 open" / green.
+
 ### `dff00f3` — the last three bare-English fragments close the bilingual thread (BILING-RESID)
 Area: `people-locations` (~L2879), `ipad-command-center` WAN chip (~L3675),
 `home` Energy tile (~L450). Purpose: closes REG-004/005/006, the residue left
