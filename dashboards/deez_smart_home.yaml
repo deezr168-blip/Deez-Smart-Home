@@ -856,8 +856,7 @@ views:
       name: LetPot Power
     - type: custom:mushroom-template-card
       primary: Grow Light
-      secondary: '{{ states(''select.lph_se_dcd9_light_mode'') }} • {{ states(''select.lph_se_dcd9_light_brightness'')
-        }}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set bad = [''unavailable'',''unknown'',''none''] %}{% set m = states(''select.lph_se_dcd9_light_mode'') %}{% set b = states(''select.lph_se_dcd9_light_brightness'') %}{% if m in bad and b in bad %}{{ ''离线'' if cn else ''Offline'' }}{% else %}{{ m if m not in bad else ''—'' }} • {{ b if b not in bad else ''—'' }}{% endif %}'
       icon: mdi:led-strip-variant
     - type: entities
       title: '{{ ''LetPot 明细'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''LetPot Details'' }}'

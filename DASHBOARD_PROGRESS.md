@@ -28,6 +28,38 @@ minutes.
 
 Detailed. These are the batches current work and open verification depend on.
 
+### `<PENDING>` — false-safe aggregate sweep widened; one raw-interpolation fix (UI-030)
+Purpose: Main's queue was exhausted (`DR-001` needs a design brief, everything
+else `LIVE_VERIFICATION_REQUIRED`), so this run carried out the widened sweep
+the 01:50 note recommended — the REG-007..011 aggregate-door pattern
+(`states() | select('eq','on') | count`, unavailable sensors silently dropped
+from the tally) checked against `climate`, `network`, `status` and all seven
+room views (`parents-room`, `ray-bedroom`, `guest-room`, `living-room`,
+`kitchen`, `dining`, `garage`), not just the three views REG-007..011 covered.
+Grepped for the raw three-door-sensor array, `namespace(`/`reduce(` aggregate
+patterns, combined `is_state(...) and/or is_state(...)` boolean checks, and
+every remaining reassuring-text literal (`Closed`, `Clear`, `Normal`, etc.) in
+the file. **Clean result** — every instance already carries the
+unavailable/unknown/none guard; no new false-safe aggregate found. The one
+open camera-count aggregate not covered by REG-007..011 (`ns.down`-based
+"N of 6 offline" on `cameras` and `ipad-command-center`) was already guarded.
+Also grepped for un-guarded raw `states()` interpolations printing a literal
+state name mid-sentence (UI-006's class) and found exactly one survivor:
+`ray-bedroom`'s LetPot "Grow Light" card (~L859) printed
+`states('select.lph_se_dcd9_light_mode')` and `..._light_brightness` with no
+guard at all — an unavailable select would have rendered the literal word
+"unavailable" as if it were a real mode/brightness reading. Both entities
+were already referenced only at that one line, so no entity was invented;
+added the same `bad = [unavailable, unknown, none]` guard used throughout the
+file, falling back to an em dash per field, or a bilingual "Offline"/"离线"
+when both are unavailable. Filed as `UI-030` (S4 — cosmetic, not a
+security-class false-safe: no reassuring claim was made, just a raw state
+name).
+Validated: 386 templates, 36/36 links, 0 broken, no entity/view loss.
+Expect: no visible change to the sweep-checked views (nothing there needed
+fixing); the LetPot Grow Light card now reads "— • —" or "Offline" instead of
+"unavailable • unavailable" whenever the LetPot select entities go offline.
+
 ### `b058006` + `d592692` — five copies of one false-safe door-count aggregate closed (REG-007..011)
 Area: `home` (House Pulse hero, quick-control chip row, Rooms → Security
 card), `cameras` (status chip row), `ipad-command-center` (Home Pulse chip

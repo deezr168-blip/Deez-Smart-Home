@@ -372,6 +372,7 @@ recorded in `DASHBOARD_BACKLOG.md` or `DASHBOARD_ISSUES.md`.
 |---|---|---|---|---|---|
 | Billing privacy (`bill-electricity`, `bill-gas` account-number literals) | Billing | `23c0301` — 2026-08-30 | `LIVE_VERIFICATION_REQUIRED` | 2026-08-30 +6h from push | Closes the account-number half of `BILL-001`. NMI/MIRN portion intentionally untouched — `BLOCKED`, needs owner decision, see `DASHBOARD_BACKLOG.md`. |
 | False-safe door-count aggregates (`home` hero + quick chip + Security card, `cameras` chip row, `ipad-command-center` chip row) | Main | `b058006` + follow-up — 08-30 01:50 | `LIVE_VERIFICATION_REQUIRED` | 08-30 07:50 | Closes REG-007..011. Continuation of the REG-001..006 false-safe-state sequence under RCP rule 5/7 — the same three-sensor door list was copy-pasted unguarded into 5 cards across 3 views; all 5 now guarded. REG-008 was corrected from an initial mislog against `ipad-command-center` to its actual location on `cameras` — see `DASHBOARD_ISSUES.md`. |
+| LetPot Grow Light raw-interpolation guard (`ray-bedroom`, ~L859) | Main | `<PENDING>` — 2026-08-30 | `LIVE_VERIFICATION_REQUIRED` | 2026-08-30 +6h from push | Closes `UI-030`. Found while widening the REG-007..011 aggregate sweep to `climate`/`network`/`status`/room views — that sweep itself was clean, no new false-safe instance found anywhere. |
 | Bilingual template pass (all 36 views) | Main | `f04a59f` — 08-29 20:51 | `LIVE_VERIFICATION_REQUIRED` | 08-30 02:51 | Sequence `f4e7ec3`→`fa286de`→`f04a59f`; Main may continue under RCP rule 5. |
 | False-safe status regressions (`security`, `lights`, `cameras`, `home`) | Main | `b5eee22` — 08-29 23:37 | `LIVE_VERIFICATION_REQUIRED` | 08-30 05:37 | Closes REG-001/002/003. |
 | Heading-card contrast (`themes/deez_your_name.yaml`) | Main | `9926233` — 08-29 23:42 | `LIVE_VERIFICATION_REQUIRED` | 08-30 05:42 | Closes UI-027; theme-level rule, no dashboard YAML. |
@@ -641,7 +642,7 @@ be implemented.
 
 | Routine | Item | Priority | State | Reason Selected |
 |---|---|---|---|---|
-| Main CasaRay Upgrade | `DR-001` — iPad Command Center density | P3 | `PLANNED` — needs a design decision before implementation | `BILING-RESID` (REG-004/005/006) is fixed and pushed in `dff00f3`, so `DR-001` is the only item left in Main's queue and the Selection Score no longer has anything to choose between — it scores **−2** (Impact 3, Effort 4, Risk 4) and is selected by being the sole remainder, not by rank. It is explicitly "advisory item, no implementation agreed": a density *review* the CasaRay Design Reviewer should scope before Main writes code, not a coded fix to start speculatively. Everything else Main owns (`UI-011`, and this run's own REG-001..006/UI-027 batches) is `LIVE_VERIFICATION_REQUIRED` and waiting on the owner. |
+| Main CasaRay Upgrade | `DR-001` — iPad Command Center density | P3 | `PLANNED` — needs a design decision before implementation | Still the only scoped item in Main's queue after this run's widened false-safe sweep (clean) and the small `UI-030` fix — score **−2** (Impact 3, Effort 4, Risk 4), selected by being the sole remainder, not by rank. Explicitly "advisory item, no implementation agreed": needs a CasaRay Design Reviewer brief before Main writes code. Everything else Main owns (`UI-011`, and the REG-001..011/UI-027/UI-030 batches) is `LIVE_VERIFICATION_REQUIRED` and waiting on the owner. |
 | Billing Dashboard Upgrade | `BILL-002` — scope Home Assistant exposure for a `billing/history.json` structured store (see `BILLING_PROGRESS.md`) | P2 | `PLANNED` — proposal written, needs owner direction | `BILL-001`'s account-number portion is fixed and pushed (`23c0301`); its NMI/MIRN portion is `BLOCKED` on an owner decision (no helper exists, cannot invent one) and is excluded from selection (queue rule 4). `BILL-002` is next by ownership/priority; the safe move is a written storage-architecture proposal (done, see `BILLING_PROGRESS.md`) rather than dashboard YAML against unconfirmed sensors. `BILL-003` stays blocked on both. |
 
 ---
@@ -715,6 +716,49 @@ be implemented.
   (5 instances of one bug, one mislabeled on first log) argues for grepping
   the exact sensor/entity list across the whole file rather than trusting a
   single spot-checked card.
+- **2026-08-30 (this run) — widened the aggregate sweep; found `UI-030`
+  (`<PENDING>`):** confirmed no new-actionable P1/P2 item exists for Main:
+  `DR-001` still explicitly needs a design brief before code, and every
+  other Main-owned item is still `LIVE_VERIFICATION_REQUIRED` with no new
+  human results recorded. Per the previous note's own recommendation, ran
+  the false-safe aggregate sweep (`states() | select('eq','on') | count`
+  dropping unavailable sensors from a tally) across `climate`, `network`,
+  `status` and all seven room views (`parents-room`, `ray-bedroom`,
+  `guest-room`, `living-room`, `kitchen`, `dining`, `garage`) — grepped the
+  raw three-door-sensor array, every `namespace(`/`reduce(` aggregate, any
+  combined `is_state(...) and/or is_state(...)` boolean, and every
+  remaining reassuring-text literal (`Closed`, `Clear`, `Normal`, etc.) in
+  the whole file. **Clean** — every instance already carries the
+  unavailable/unknown/none guard, including the camera "N of 6 offline"
+  aggregates on `cameras`/`ipad-command-center`, which turned out to
+  already use a guarded `namespace()` pattern. While doing that sweep, also
+  grepped for the separate UI-006 class (a raw `states()` interpolation
+  printing a literal state name mid-sentence with no guard) and found one
+  survivor: `ray-bedroom`'s LetPot "Grow Light" card (~L859), printing
+  `select.lph_se_dcd9_light_mode`/`..._light_brightness` completely
+  unguarded — an unavailable select would render as the literal word
+  "unavailable". Both entities were already referenced only at that one
+  line (confirmed by grep), so nothing was invented; added the same
+  `bad = [unavailable, unknown, none]` guard used throughout the file,
+  falling back to an em dash per field or a bilingual "Offline"/"离线" when
+  both are unavailable. Filed as `UI-030` (S4 — cosmetic, not the
+  security-class false-safe pattern: no reassuring claim was made, just a
+  raw state name). `bash scripts/ha_validate.sh` passes clean (7/7, 386
+  templates, 36/36 views, no entity/view loss). Pushed to `ha-deploy` and
+  `claude/ha-dashboard-upgrades-wui7ig`; full narrative in
+  `DASHBOARD_PROGRESS.md`. **Next recommended work:** queue is exhausted
+  again — the false-safe aggregate class now appears fully closed
+  dashboard-wide (two full sweeps, zero remaining instances), so a further
+  identical sweep is unlikely to be productive. The next actionable options
+  for a future run are, in order: (1) the owner live-verifies the
+  growing `LIVE_VERIFICATION_QUEUE.md` backlog (now 39 rows) or gives
+  `UI-011` one look at the Energy card; (2) if `DR-001` gets a concrete
+  design brief it becomes Main's next P3 — still do not start a 52-card
+  redesign speculatively; (3) failing both, a fresh pass specifically for
+  the raw-interpolation (UI-006/UI-030) class across the six camera
+  subviews and the `bills`/`bill-*` views is the next plausible source of
+  small, safe, high-confidence fixes — not attempted this run, and the bill
+  subviews are Billing-owned so would need Billing's routine, not Main's.
 
 ### Billing
 - **Queue:** `BILL-001` (P1, partial/blocked) → `BILL-002` (P2, scoped) →
