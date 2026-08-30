@@ -1072,7 +1072,7 @@ be implemented.
 - **Date/time:** 2026-08-30 (this run) UTC
 - **Branch:** `ha-deploy`
 - **`ha-deploy` HEAD before this update:** `975a2b1`
-- **This update's commit:** `PENDING` — Main's fifth consecutive clean sweep
+- **This update's commit:** `966e6ff` — Main's fifth consecutive clean sweep
   this session (state_attr guards, direct numeric comparisons, bare `| float`
   defaults, full navigation-graph diff — all clean, 36/36 views, no broken
   links). No dashboard YAML touched. No priority, backlog item, issue status,
