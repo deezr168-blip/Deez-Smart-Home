@@ -28,7 +28,7 @@ minutes.
 
 Detailed. These are the batches current work and open verification depend on.
 
-### `<PENDING>` — false-safe aggregate sweep widened; one raw-interpolation fix (UI-030)
+### `691689a` — false-safe aggregate sweep widened; one raw-interpolation fix (UI-030)
 Purpose: Main's queue was exhausted (`DR-001` needs a design brief, everything
 else `LIVE_VERIFICATION_REQUIRED`), so this run carried out the widened sweep
 the 01:50 note recommended — the REG-007..011 aggregate-door pattern
