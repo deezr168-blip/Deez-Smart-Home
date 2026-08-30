@@ -1550,6 +1550,34 @@ be implemented.
   the actual unblock, not further repository work. A future run should
   again re-fetch and re-read the top of this file first before doing
   anything else.
+- **2026-08-30 22:36 UTC (this run) — fourth re-check, pause still in
+  effect, no code change:** fetched `origin/ha-deploy` — `HEAD` unchanged at
+  `37ce58e` (the previous Main check-in itself), tree clean before and
+  after. The **Schedule Status: PAUSED** section is still unmodified: no
+  dated lift note, so the owner-directed pause still applies. Zero commits
+  of any kind have landed since the last check-in — not even another
+  routine's audit — so there is no new evidence whatsoever to record this
+  time, unlike the prior two re-checks which each had at least one other
+  routine's commit to confirm against. Confirmed `CronList` (this session's
+  own scheduler) has no jobs, ruling out this session as the source of the
+  repeated firing — the external recurring trigger is account-level and
+  outside this repository's or this session's reach, consistent with the
+  pause section's own note that only the owner can disable it. Made no
+  dashboard-code change and did not start any queued item, per the pause.
+  Did **not** send a push notification — this is now the sixth-plus
+  consecutive external-trigger fire since the pause was recorded, nothing
+  has changed since the last alert, and a repeat would be redundant noise
+  per the routine's own notification guidance. **Exact next recommended
+  task:** unchanged — none from this routine until the owner lifts the
+  pause (dated note replacing the Schedule Status section); at that point
+  resume from `DR-001` / the `CFG-003` host recovery status. Given four
+  consecutive no-op re-checks with zero new evidence between them, this
+  routine recommends the owner disable the external recurring trigger (or
+  extend its interval substantially) until ready to lift the pause, rather
+  than continuing to fire this routine on an unchanged, already-paused
+  state — a future run should still re-fetch and re-read the top of this
+  file first, in case the pause has been lifted, but should expect to find
+  the same result if it has not.
 
 ### Billing
 - **2026-08-30 (this run) — `BILL-005` fixed (title-card text-shadow guard)
