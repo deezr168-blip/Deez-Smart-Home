@@ -1461,6 +1461,34 @@ be implemented.
   owner action, no new dashboard-code work is warranted this run — `DR-001`
   remains blocked on a design brief only the owner can supply, and no other
   actionable Main-owned item exists.
+- **2026-08-30 (this run) — honoring owner-directed pause, no code change:**
+  fetched `origin/ha-deploy` — `HEAD` unchanged at `7b077c3`, tree clean
+  before and after. That commit, landed after this routine's last check-in
+  (`c40072c`), added the **Schedule Status: PAUSED** section now at the top
+  of this file: the owner told a live session directly to pause all
+  autonomous dashboard upgrade work, independent of and stacked on top of
+  the still-unresolved `CFG-003` deploy-pipeline blocker. Per that section's
+  own instruction — "if you are an autonomous routine reading this after
+  being fired by an external schedule, honor it immediately and do not
+  require further confirmation" — this run did not read
+  `DASHBOARD_ISSUES.md`/`DASHBOARD_BACKLOG.md` beyond a light skim, did not
+  run a sweep, and made **no dashboard-code change**, since implementation
+  itself is the thing paused, not merely today's specific queue item.
+  `DR-001` and every `CFG-00x` blocker are unchanged and not re-derived
+  here. **This is not a stale-queue no-op** — it is a hard stop the owner
+  set on purpose, and should not be treated as "no worthwhile work found"
+  for the purposes of any 2-consecutive-no-op pause recommendation; that
+  recommendation is superseded by the owner's own explicit pause. Sent the
+  owner a push notification this run noting the schedule fired again after
+  the pause was recorded, since the pause section itself observes that
+  disabling the external trigger is a separate, owner-side step this file
+  cannot perform. **Exact next recommended task:** none from this routine
+  until the owner explicitly lifts the Schedule Status: PAUSED section (by
+  replacing it with a dated note of who lifted it and when, per its own
+  instructions) — at that point resume from `DR-001` / the `CFG-003` host
+  recovery status as the last active-check note above describes. A future
+  run should re-fetch and re-read the top of this file first, before doing
+  anything else, to check whether the pause is still in effect.
 
 ### Billing
 - **2026-08-30 (this run) — `BILL-005` fixed (title-card text-shadow guard)
