@@ -1,0 +1,121 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://deez-smart-home/billing/schema.json",
+  "title": "Bill record",
+  "description": "One historical billing-period record for a single utility/household bill. See billing/README.md for how this store is populated and its current limitations.",
+  "type": "object",
+  "required": [
+    "id",
+    "utility_type",
+    "provider",
+    "period_start",
+    "period_end",
+    "due_date",
+    "final_amount",
+    "payment_status",
+    "source"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Stable unique identifier for this bill record, e.g. `<utility_type>-<period_end>`."
+    },
+    "utility_type": {
+      "type": "string",
+      "description": "One of the household's tracked bill categories.",
+      "enum": [
+        "electricity",
+        "gas",
+        "water",
+        "car_insurance",
+        "council_rates",
+        "rego",
+        "internet",
+        "other"
+      ]
+    },
+    "provider": {
+      "type": "string",
+      "description": "Billing provider/retailer name."
+    },
+    "period_start": {
+      "type": ["string", "null"],
+      "format": "date",
+      "description": "Billing period start date (ISO 8601), if known."
+    },
+    "period_end": {
+      "type": ["string", "null"],
+      "format": "date",
+      "description": "Billing period end date (ISO 8601), if known."
+    },
+    "issue_date": {
+      "type": ["string", "null"],
+      "format": "date",
+      "description": "Date the bill was issued, if known."
+    },
+    "due_date": {
+      "type": ["string", "null"],
+      "format": "date",
+      "description": "Payment due date, if known."
+    },
+    "usage": {
+      "type": ["object", "null"],
+      "description": "Metered usage for the period, when applicable (electricity kWh, gas MJ, water kL, etc). Omit or null when not applicable/known.",
+      "properties": {
+        "amount": { "type": ["number", "null"] },
+        "unit": { "type": ["string", "null"] }
+      }
+    },
+    "original_cost": {
+      "type": ["number", "null"],
+      "description": "Original / pre-discount cost, if the source document distinguishes it from the final payable amount. Null when the source only gives one figure."
+    },
+    "discounts": {
+      "type": ["number", "null"],
+      "description": "Total discounts/credits applied for the period, if known. Null rather than 0 when the source does not state a discount explicitly — never fabricate a savings figure."
+    },
+    "final_amount": {
+      "type": "number",
+      "description": "Final amount payable for this bill."
+    },
+    "payment_status": {
+      "type": "string",
+      "description": "User-controlled. Never set to 'paid' automatically by an ingestion process — see README.",
+      "enum": ["unpaid", "paid"]
+    },
+    "paid_date": {
+      "type": ["string", "null"],
+      "format": "date",
+      "description": "Date the user marked this bill Paid, if applicable."
+    },
+    "extraction_confidence": {
+      "type": ["string", "null"],
+      "description": "Set by an ingestion pipeline (BILL-003) when a record was produced from automated extraction rather than manual entry. 'review_required' means one or more fields are uncertain and must not be trusted until a human confirms them.",
+      "enum": [null, "confirmed", "review_required"]
+    },
+    "source": {
+      "type": "object",
+      "description": "Traceability back to where this record came from.",
+      "required": ["method"],
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": ["manual", "gmail", "google_drive"]
+        },
+        "reference": {
+          "type": ["string", "null"],
+          "description": "A non-sensitive pointer to the source (e.g. a message/file id), never the document content or an account/customer identifier."
+        },
+        "recorded_at": {
+          "type": ["string", "null"],
+          "format": "date-time"
+        }
+      }
+    },
+    "notes": {
+      "type": ["string", "null"],
+      "description": "Free-text note, e.g. 'corrected/reissued bill, supersedes <id>'."
+    }
+  },
+  "additionalProperties": false
+}

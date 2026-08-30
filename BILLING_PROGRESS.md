@@ -71,8 +71,11 @@ card (the "Account number" form field), so this is not a new entity
 reference — it reuses what the card's own edit form already writes to.
 Guarded the same way the rest of the file guards a possibly-empty/unknown
 state, rather than assuming the helper is always populated.
-**NMI and MIRN are still hardcoded** (`6407640515` electricity,
-`5310552355` gas) and are **not** fixed by this batch. No `input_text`
+**NMI and MIRN are still hardcoded** (electricity NMI, gas MIRN — see
+`bill-electricity`/`bill-gas` in the dashboard YAML for the literal values;
+not reproduced here per the P1 privacy requirement against carrying private
+billing identifiers in tracking files) and are **not** fixed by this batch.
+No `input_text`
 helper exists for either, and this routine cannot create Home Assistant
 helpers (no `/config` access, and inventing an entity ID without one
 existing violates the project's never-invent-entity-IDs rule — see
@@ -100,12 +103,13 @@ only; nothing here can confirm what actually renders).
 
 ---
 
-## `BILL-002` scope proposal (design only, no implementation this run)
+## `BILL-002` scope proposal
 
-Written this run per the "prefer structured bill storage rather than
-embedding historical bill data directly into Lovelace YAML" direction. Not
-started — recorded here so a future batch does not re-derive it, and so the
-owner can react before code is written.
+Written per the "prefer structured bill storage rather than embedding
+historical bill data directly into Lovelace YAML" direction, then partially
+implemented in a later batch (see below) — recorded here so a future batch
+does not re-derive it, and so the owner can react before more code is
+written.
 
 **Why now:** the current architecture (above) has no history at all — each
 new bill entry overwrites the last, keeping only a single "previous bill"
@@ -155,8 +159,47 @@ routine's brief both forbid.
 **Do not build:** any `bills-history` card against invented or assumed
 sensor names before (3) is resolved by the owner — that would produce a
 "Sensor Unavailable" card or, worse, one that quietly renders nothing
-useful. `BILL-002` stays `PLANNED` in `DASHBOARD_BACKLOG.md` until the owner
-picks a direction for (3).
+useful.
+
+---
+
+### `PENDING_SHA` — storage layer scaffolded (`BILL-002`, proposal item 1)
+
+Item 1 of the proposal above (storage) does not depend on the owner's
+decision for item 3 (dashboard read side), so it was safe to build this run
+without guessing at sensors or writing dashboard YAML. Added a new
+`billing/` directory:
+
+- `billing/schema.json` — JSON Schema (draft-07) for one bill record,
+  covering exactly the field list from this routine's brief: provider,
+  utility type, billing period, issue/due date, usage, original/pre-discount
+  cost, discounts/credits, final payable amount, payment status (user-
+  controlled, never auto-set to `paid`), and a `source` object for
+  traceability (`manual` / `gmail` / `google_drive` + a non-sensitive
+  reference). `extraction_confidence` lets a future `BILL-003` ingestion
+  batch flag a record as `review_required` without inventing a separate
+  review-queue file yet.
+- `billing/history.json` — the actual store, initialized to `[]`. No record
+  has been appended — nothing here is backfilled or fabricated. See
+  `billing/README.md` for why (population mechanism is still an open
+  decision, same as the read side).
+- `billing/README.md` — explains both remaining open decisions (what writes
+  to the store, what exposes it to Lovelace) and the privacy rule for this
+  file: no account numbers/NMI/MIRN/policy or customer numbers in bill
+  records, ever — those stay in HA `input_text` helpers as they already do
+  for the dashboard's own bill-entry forms.
+
+No dashboard YAML touched this batch. `BILL-002` moves from `PLANNED` to
+`PARTIAL` in `DASHBOARD_BACKLOG.md` — storage exists, read side still
+`BLOCKED` on the owner's exposure-mechanism decision (proposal point 3).
+Also redacted the literal NMI/MIRN digit values this file previously
+recorded in the `BILL-001` entry above, per the P1 privacy requirement
+against reproducing sensitive billing identifiers in tracking files — the
+values are unchanged in the dashboard YAML itself (still `BLOCKED`, see
+`BILL-001`), only this file's own copy of the digits was removed.
+Validated: `bash scripts/ha_validate.sh` passed clean (7/7); both new JSON
+files parse; no protected path touched; no credential-shaped literal
+introduced.
 
 ---
 
@@ -181,9 +224,20 @@ made this run; there was nothing safe yet for them to feed.
   `sensor.bills_unpaid_count`/`bills_outstanding_total` still exist or hold
   sane values; it can only confirm they are referenced consistently in the
   YAML.
-- `BILL-002`'s history-store design is a proposal, not a decision — needs
-  owner input on how HA config should expose repository-stored history data
-  to the dashboard (see point 3 above) before any implementation batch.
+- `billing/schema.json` and `billing/history.json` exist and validate as
+  JSON, but neither has been exercised end-to-end — nothing writes to
+  `history.json` yet (population mechanism undecided) and nothing reads it
+  (HA-exposure mechanism undecided). "Scaffolded" is not "working."
+- `BILL-002`'s dashboard read side is a proposal, not a decision — needs
+  owner input on how HA config should expose `billing/history.json`'s
+  contents to the dashboard (see proposal point 3) before any dashboard
+  implementation batch.
+- Verified this run: the six `bill-*` subviews each already end in a
+  bilingual-free but consistent "Back to Bills" card targeting
+  `/deez-smart-home/bills` (matches the pre-existing repo-wide secondary
+  back-nav pattern also used on `people-locations` and the `lighting-*`
+  subviews). No missing or broken billing back-nav case found — nothing to
+  fix, per this routine's brief not to rebuild what already works.
 
 ## Exact next billing task
 
@@ -196,8 +250,11 @@ made this run; there was nothing safe yet for them to feed.
    scope proposal above — specifically, decide how HA should expose
    `billing/history.json` (or equivalent) to the dashboard (proposal point
    3). That decision is what unblocks real implementation of bill history
-   and YTD analytics, not further dashboard YAML work.
-3. `BILL-003` (ingestion) stays blocked until both of the above move.
-4. Back navigation: per `PROJECT_STATE.md`, already complete (35/36 views)
-   and needs a live look only — no rebuild attempted this run, consistent
-   with this routine's own brief.
+   and YTD analytics, not further dashboard YAML work. The storage layer
+   itself (point 1) no longer blocks anything — it exists.
+3. `BILL-003` (ingestion) stays blocked until both of the above move. When it
+   starts, `billing/schema.json`'s `extraction_confidence` field is where an
+   uncertain automated extraction gets flagged `review_required` rather than
+   silently trusted.
+4. Back navigation: confirmed this run for all six billing subviews (see
+   above) — needs a live look only, no further code.

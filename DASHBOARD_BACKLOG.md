@@ -20,7 +20,7 @@ priority or ownership.
 |---|---|---|---|---|---|---|---|---|---|---|
 | `BILL-001` | P1 | Billing | `bill-electricity` (~L4238), `bill-gas` (~L4323) | Remove hardcoded NMI and MIRN so they are not carried in Git (account numbers already resolved) | `BLOCKED` — needs owner decision | 5 | 3 | 3 | **4** | No `input_text` helper exists for NMI/MIRN and one must not be invented (never-invent-entity-IDs rule). Owner must either (a) create `input_text.elec_nmi` / `input_text.gas_mirn` helpers in HA so the dashboard can reference them, or (b) approve removing the NMI/MIRN text from the card outright. Verify once resolved: secret scan clean + live look at both subviews |
 | `UI-011` | P1 | Main | `energy` — Total Solar | Confirm the Wh→kWh conversion from `df457e3` matches what the Fronius total reports | `LIVE_VERIFICATION_REQUIRED` — excluded from selection, unscored | — | — | — | — | Needs one owner look; if the total reports kWh the figure reads 1000× low |
-| `BILL-002` | P2 | Billing | `bills` + six `bill-*` subviews | Bill history and analytics for the parent-friendly workflow (global priority 3) | `PLANNED` — scope written this run, see Billing note below; not started | 4 | 4 | 3 | **1** | Bill sensors (`sensor.electricity_bill_status`, `*_bill_estimate`, etc.) are not exposed to Assist (confirmed via `GetLiveContext`, no match) — figures unconfirmable from here. No historical storage exists yet (no `bills.json`/`paid_state.json`/`meter_board` anywhere in this repo). Verify: live look, figures confirmed by owner |
+| `BILL-002` | P2 | Billing | `billing/` (storage, done) + `bills` + six `bill-*` subviews (read side, blocked) | Bill history and analytics for the parent-friendly workflow (global priority 3) | `PARTIAL` — storage layer scaffolded (`billing/schema.json`, `billing/history.json`, empty); dashboard read side `BLOCKED` on owner decision | 4 | 4 | 3 | **1** | Bill sensors (`sensor.electricity_bill_status`, `*_bill_estimate`, etc.) are not exposed to Assist (confirmed via `GetLiveContext`, no match) — figures unconfirmable from here. Storage no longer blocks progress; the remaining blocker is purely the HA-exposure mechanism (see `billing/README.md` point 2) — owner must pick one before any `bills-history` dashboard work starts. Verify: live look, figures confirmed by owner |
 | `BILL-003` | P2 | Billing | Ingestion architecture | Design then implement automatic utility-bill ingestion (global priority 4) | `PLANNED` — design stage, blocked | 4 | 5 | 4 | **−1** | Blocked on `BILL-001` (NMI/MIRN portion still open) and on `BILL-002`'s storage model. Verify: design reviewed by owner before implementation |
 | `DR-001` | P3 | Main | `ipad-command-center` | Review information density — 52 cards, never reviewed end to end for hierarchy | `PLANNED` — advisory, no implementation agreed | 3 | 4 | 4 | **−2** | Needs a design brief first. Verify: design review, then a live look on the iPad |
 
@@ -45,11 +45,12 @@ priority or ownership.
 - **`DR-001`** — do not start a 52-card redesign speculatively. The structural
   defects from UI-015 are already fixed; what remains is a judgment question a
   score should not settle. Risk 4 because the view was rebuilt in `99a77b4`.
-- **`BILL-002`** — Effort 4 reflects unwritten scope. Scope proposal written
-  this run in `BILLING_PROGRESS.md` (structured JSON bill-history store read
-  by a new `bills-history` subview, populated manually until `BILL-003`
-  ingestion exists); revise Effort/Risk once the owner has looked at the
-  proposal and any live sensor gaps are confirmed.
+- **`BILL-002`** — Storage layer now exists (`billing/schema.json` +
+  `billing/history.json`, both empty of real data — nothing fabricated).
+  Nothing writes to or reads from it yet: population mechanism and HA-side
+  exposure are both still open owner decisions, see `billing/README.md`.
+  Effort/Risk here reflect the remaining read-side work only; revise once the
+  owner picks an exposure mechanism.
 
 ---
 
