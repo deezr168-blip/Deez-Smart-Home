@@ -12,9 +12,10 @@ routine — see `PROJECT_STATE.md` for cross-routine coordination state and
 
 **Verification.** "Validated" means `scripts/ha_validate.sh` passed. It does
 not mean anything rendered. See `DASHBOARD_BACKLOG.md` / `PROJECT_STATE.md`
-for live-verification state; billing items do not yet have dedicated rows in
-`DASHBOARD_ISSUES.md` since none has been a regression — they are tracked as
-`BILL-*` backlog items instead.
+for live-verification state; `BILL-*` items are tracked as backlog items
+there and, since `REG-014`'s 2026-08-30 backfill, also carry rows in
+`DASHBOARD_ISSUES.md`'s "Fixed — awaiting live verification" table alongside
+Main's `UI-`/`REG-` fixes.
 
 ---
 
@@ -52,6 +53,66 @@ for live-verification state; billing items do not yet have dedicated rows in
 ---
 
 ## Recent batches
+
+### `73813e8` — title-card text-shadow guard (`BILL-005`) + `DASHBOARD_ISSUES.md` tracking backfill (`REG-014`)
+Area: `bill-car-insurance`, `bill-water`, `bill-council-rates`, `bill-rego`
+page titles; `DASHBOARD_ISSUES.md` tracking only.
+
+Fetched `origin/ha-deploy` (HEAD `a8bf91c`), read `CLAUDE.md`,
+`PROJECT_STATE.md`, `DASHBOARD_PROGRESS.md`, `DASHBOARD_ISSUES.md`,
+`DASHBOARD_BACKLOG.md`, this file and recent `ha-deploy` history first.
+Re-confirmed via `GetLiveContext` that no NMI/MIRN helper exists and no bill
+entity is exposed to Assist — `BILL-001`'s NMI/MIRN portion, `BILL-002`'s
+read side and `BILL-003` are all still genuinely blocked on owner decisions,
+unchanged since the last run. Rather than log another "still blocked" note,
+swept the live YAML and this repository's own tracking files for new,
+unblocked work — the same approach that found `BILL-004` previously — and
+found two things:
+
+1. **`BILL-005`.** Grepped every one of the dashboard's 29
+   `custom:mushroom-title-card` instances for the standard `card_mod`
+   text-shadow block (`text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55)`, plus
+   the surrounding transparent/borderless `ha-card` rule). Exactly 4 lacked
+   it — all four Billing's own subviews without an "Enter Bill Details"
+   markdown card above the title (`bill-car-insurance`, `bill-water`,
+   `bill-council-rates`, `bill-rego`) — unlike every other title card
+   dashboard-wide, including the sibling `bills`, `bill-electricity` and
+   `bill-gas` titles. Over the CasaRay night-sky photo background this meant
+   these four titles were the only ones with no shadow guaranteeing
+   text contrast. Added the identical existing block used by the other 25;
+   no new CSS invented, no entity touched.
+2. **`REG-014`.** The Regression Auditor's open finding was correct:
+   `BILL-001` (`23c0301`) and `BILL-004` (`d570a82`) were properly tracked in
+   `DASHBOARD_BACKLOG.md` and `LIVE_VERIFICATION_QUEUE.md` but missing from
+   `DASHBOARD_ISSUES.md`'s own "Fixed — awaiting live verification" table.
+   Backfilled both rows there (NMI/MIRN digit values not reproduced, per the
+   privacy rule) and closed `REG-014` into "Fixed — tracking only", citing
+   "Billing Dashboard Upgrade, this run" rather than a self-referencing
+   commit hash — the same convention `REG-012` set for exactly this
+   self-hash problem.
+
+Also re-swept all six `bill-*` markdown/entities blocks for any 5+ digit
+literal beyond the already-known NMI/MIRN pair — found none; every other
+figure is a tariff/rate value, not an identifier, so no new privacy exposure
+exists. Re-verified all six `bill-*` subviews still carry a working "Back to
+Bills" control — none missing or broken, none rebuilt, per this routine's
+brief (back navigation is complete and only needs a live look).
+
+Validated: `bash scripts/ha_validate.sh` passed clean (7/7) both before
+committing and after the stamp; 386 templates (unchanged — `BILL-005` is
+CSS-only, no new template), 36/36 views resolve, no entity/view loss, no
+protected path touched. Added `BILL-005` rows to `DASHBOARD_BACKLOG.md`'s
+"Awaiting live verification" table and `LIVE_VERIFICATION_QUEUE.md` (Bills &
+rooms, footer 43→44) in the same commit as the dashboard change. Fetched
+again immediately before each push — no drift either time. Pushed to
+`ha-deploy` and `claude/ha-dashboard-upgrades-wui7ig` (`73813e8` content,
+`f95bb71` stamp).
+
+Expect: the four re-styled titles read with the same subtle drop-shadow as
+every other page title on the dashboard — no other visible change.
+**`BILL-005` is `FIXED — AWAITING LIVE VERIFICATION`** (repository check
+only). `REG-014` needed no live check — a tracking-file completeness fix,
+directly verifiable by inspection.
 
 ### `d570a82` — ten bill status/amount cards guarded against raw interpolation (`BILL-004`)
 Area: `bills` landing tiles (Electricity, Gas, Car Insurance, Council Rates,
@@ -303,10 +364,12 @@ made this run; there was nothing safe yet for them to feed.
 
 ## Exact next billing task
 
-0. **This run's `BILL-004` batch is `FIXED — AWAITING LIVE VERIFICATION`** —
-   nothing further to code; needs a live look at the ten guarded cards (or,
-   more practically, temporarily disabling one `input_number`/`sensor` to
-   confirm the guard fires — see `LIVE_VERIFICATION_QUEUE.md`).
+0. **This run's `BILL-005` batch is `FIXED — AWAITING LIVE VERIFICATION`** —
+   nothing further to code; needs a live look at the four re-styled titles
+   (`bill-car-insurance`, `bill-water`, `bill-council-rates`, `bill-rego`) for
+   the same drop-shadow every other page title has. `BILL-004`'s ten guarded
+   cards are still pending the same kind of look from an earlier run — see
+   `LIVE_VERIFICATION_QUEUE.md`.
 1. **If the owner has looked at `BILL-001`:** either create
    `input_text.elec_nmi` and `input_text.gas_mirn` helpers in Home Assistant
    (then a follow-up batch wires them into `bill-electricity`/`bill-gas`
