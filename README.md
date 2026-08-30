@@ -95,11 +95,21 @@ read. The repository-side checks below are the ones known to run.
 
 ### Confirming a deployment actually landed
 
-There is a cheap visual check. Commit `1bdd704` removed a `TEST` marker from
-the Home view subtitle. If the Home view still reads **"Home control centre
-TEST"**, no deployment has run since 2026-08-24 and everything after
-`26c3b148…` is still sitting in Git. If it reads **"Home control centre"**,
-deployment has run at least once since.
+> **This check is no longer usable, corrected 2026-08-30.** It referred to
+> commit `1bdd704`, which is **not an ancestor of this branch** — it belongs
+> to the superseded orphan history replaced by the `6c3fff5` merge. The
+> current baseline has no `TEST` marker either, so seeing "Home control
+> centre" now proves nothing about whether a deployment has run.
+>
+> ~~There is a cheap visual check. Commit `1bdd704` removed a `TEST` marker
+> from the Home view subtitle.~~
+
+**Use instead:** search the dashboard's **Raw configuration editor** for a
+string unique to the commit you are testing for. That bypasses rendering
+entirely and answers the delivery question directly. As of 2026-08-30 the
+marker in the tree is `UI-032 PROBE v1` (commit `2183177`) — if the raw
+config does not contain it, nothing since has been delivered. See `CFG-003`
+in `DASHBOARD_ISSUES.md`.
 
 ### Why not the alternatives
 

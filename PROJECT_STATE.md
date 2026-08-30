@@ -1851,9 +1851,40 @@ be implemented.
 
 ## Last Coordination Update
 
-- **Date/time:** 2026-08-30 (this run) — UI-032 second FAIL, probe shipped
+- **Date/time:** 2026-08-30 (this run) — CFG-003 filed, UI-032 blocked
 - **Branch:** `ha-deploy`
 - **`ha-deploy` HEAD before this update:** `6d5acd1`
+- **This update's commit:** `PENDING` — the `UI-032` probe did not render
+  either. An unconditional card's absence cannot be explained by any gate,
+  template, entity or schema question, so the fault is not in this file's
+  logic. Filed **`CFG-003`** (S1): pushes to `ha-deploy` are not reaching the
+  live dashboard. Evidence, not hypothesis: (1) nothing the owner has ever
+  reported seeing is unique to a commit after the `6c3fff5` merge — the
+  `Home Systems` heading, its 7 cards and its exact 5-chip row all predate it,
+  so every live observation to date is equally consistent with the dashboard
+  being frozen there; (2) **no change to `dashboards/deez_smart_home.yaml` has
+  ever been independently confirmed live** — `UI-025` is a theme file and a
+  `/local/` image, `UI-026` was inferred from the background, and `UI-011` was
+  read off HA's native Energy panel, none of them this config; (3) 12 commits
+  have touched the file since `26c3b14`, the only deployment run on record,
+  and it wrote nothing. **Confound stated rather than buried:** the area the
+  owner inspected is `sections[5]` at the bottom of the page; the probe is in
+  `sections[1]`, second block from the top. Cheap to eliminate, and step (c)
+  of the queue row does it. No `UI-032` logic change made, per instruction;
+  the probe stays as the deployment test instrument. Also corrected the
+  README's documented landing check, which cited `1bdd704` — **not an ancestor
+  of this branch**, it belongs to the superseded orphan history — and
+  strengthened `DEPLOYMENT_BLOCKERS.md` Blocker 1 from "unverified" to
+  "evidence the apply step is not writing". `CFG-001`/`CFG-002` untouched.
+  Validation 7/7, dashboard YAML unchanged this commit.
+- **Consequence for every other routine:** until `CFG-003` is settled, treat
+  each `FIXED — AWAITING LIVE VERIFICATION` row as **unproven at the delivery
+  step**, not merely unobserved. Roughly 45 queued checks may be describing
+  cards that never reached a screen. Do not queue further dashboard work on
+  the assumption it will deploy.
+
+### Superseded — previous update
+
 - **This update's commit:** `2183177` — `UI-032` failed live a second time
   after `0fec9bb`. The flat per-entity conditionals fail exactly as the `or`
   version did, so **`condition: or` was not the cause** — that first diagnosis

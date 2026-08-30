@@ -127,6 +127,36 @@ been read from here.
 | Applies the dashboard to the live instance | **Not independently verified** — the quoted run is a no-op and performs no write |
 | Safety checks, rollback behaviour, failure handling | **Unknown** — unread |
 
+### 2026-08-30 — evidence that the apply step is not writing
+
+The table above said the apply step was "not independently verified". It is
+now worse than unverified. Three consecutive pushes changed
+`dashboards/deez_smart_home.yaml` and produced **no visible change on the live
+dashboard**, the third being a card carrying **no condition of any kind**
+(`UI-032 PROBE v1`, `2183177`), whose absence cannot be explained by any gate,
+template, entity or schema question.
+
+Two further facts point the same way:
+
+- **Nothing the owner has ever reported seeing is unique to a commit after
+  the `6c3fff5` merge.** The `Home Systems` heading, its seven cards and its
+  exact five-chip row all date from that merge or earlier, so every live
+  observation to date is equally consistent with the dashboard being frozen
+  at `6c3fff5`-era content.
+- **No change to this file has ever been independently confirmed live.** The
+  three `VERIFIED` items in `DASHBOARD_ISSUES.md` are a theme file and a
+  `/local/` image (`UI-025`), an inference from the background rendering
+  (`UI-026`), and a reading taken off Home Assistant's **native Energy panel**
+  (`UI-011`) — none of them this Lovelace config.
+
+**12 commits have touched the dashboard file since `26c3b14`**, the single
+deployment run on record, and that run wrote nothing.
+
+Tracked as `CFG-003` in `DASHBOARD_ISSUES.md`, which carries the owner
+diagnostic procedure. Until it is settled, treat every
+`FIXED — AWAITING LIVE VERIFICATION` row in this repository as **unproven at
+the delivery step**, not merely unobserved: they may be sitting in Git.
+
 **To clear the remainder:** commit the script to this branch (it is HA
 configuration and belongs under version control alongside the dashboard it
 deploys), or provide file-level access to `/config`. Until then, treat the
