@@ -1578,6 +1578,27 @@ be implemented.
   state — a future run should still re-fetch and re-read the top of this
   file first, in case the pause has been lifted, but should expect to find
   the same result if it has not.
+- **2026-08-30 23:35 UTC (this run) — fifth re-check, pause still in
+  effect, no code change:** fetched `origin/ha-deploy` — `HEAD` unchanged at
+  `987407b` (the previous Main check-in itself), tree clean before and
+  after. **Schedule Status: PAUSED** is still unmodified — no dated lift
+  note — so the owner-directed pause still applies. Zero commits of any
+  kind have landed since the last check-in; re-read `DASHBOARD_ISSUES.md`'s
+  Open section (still only `CFG-001`/`CFG-003`, both blocked on the owner
+  and outside this repository's reach) and confirmed `LIVE_VERIFICATION_QUEUE.md`
+  still shows 48 `PENDING` rows with no new `PASS`/`FAIL`/`PARTIAL` since the
+  last check. No dashboard-code change made, no queued item started, per the
+  pause. **Not** sending a push notification — this is now the seventh-plus
+  consecutive external-trigger fire against an unchanged, already-paused
+  state, the prior two runs already made the same "disable the external
+  trigger" recommendation, and nothing has changed since either alert; a
+  repeat would be redundant noise. **Exact next recommended task:**
+  unchanged — none from this routine until the owner lifts the pause (a
+  dated note replacing the Schedule Status section); at that point resume
+  from `DR-001` / the `CFG-003` host recovery status. Repeating the standing
+  recommendation once more for the record: the owner should disable or
+  substantially extend the external recurring trigger until ready to lift
+  the pause, since this file cannot stop the trigger itself from firing.
 
 ### Billing
 - **2026-08-30 (this run) — `BILL-005` fixed (title-card text-shadow guard)
