@@ -1124,7 +1124,7 @@ be implemented.
 - **Date/time:** 2026-08-30 05:47 UTC (this run)
 - **Branch:** `ha-deploy`
 - **`ha-deploy` HEAD before this update:** `20a468d`
-- **This update's commit:** `PENDING_SHA` — Daily Project Coordinator
+- **This update's commit:** `384a8f1` — Daily Project Coordinator
   reconciliation run: closed `REG-012` by adding the missing `UI-030` row to
   `LIVE_VERIFICATION_QUEUE.md` (footer corrected to 43) and reconciling
   `DASHBOARD_ISSUES.md`; removed 4 expired Active Change Window rows whose
