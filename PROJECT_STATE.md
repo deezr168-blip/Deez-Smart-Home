@@ -1308,6 +1308,49 @@ be implemented.
   (4) a Developer Tools → States export unblocks `UI-032`. A future
   autonomous run should check for movement on any of these four before
   attempting a fifteenth static-repository sweep.
+- **2026-08-30 — post-`UI-032` check, no code change:** fetched
+  `origin/ha-deploy` — `HEAD` unchanged at `15ec422` (the `UI-032` stamp
+  commit), tree clean before and after. The battery-coverage export the
+  fourteenth check flagged as the outstanding unblock arrived and was
+  consumed: `UI-032` is implemented (`a183d5f`, all six owner-verified
+  entities bound, RingRing included, none invented) and correctly moved to
+  `FIXED — AWAITING LIVE VERIFICATION` in `DASHBOARD_ISSUES.md` and out of
+  the active queue in `DASHBOARD_BACKLOG.md`. Re-read `CLAUDE.md`, this file
+  in full, `DASHBOARD_ISSUES.md`'s Open section (unchanged: only
+  `CFG-001`/`CFG-002`, both Home Assistant Energy configuration outside this
+  repository, blocked on owner diagnosis) and `DASHBOARD_BACKLOG.md`'s active
+  queue (now contains only `DR-001`, Main-owned but still gated on a design
+  brief this routine should not write itself, plus `BILL-001/002/003`, all
+  Billing-owned and blocked/partial). Checked `LIVE_VERIFICATION_QUEUE.md`
+  directly: 45 rows, still exactly one real result recorded (`UI-011`
+  `PASS`) — no new `PASS`/`FAIL`/`PARTIAL` to reconcile, and no movement on
+  `CFG-001` since the owner notification two checks ago. Confirmed via
+  `git log a183d5f..HEAD` that no other routine has committed since the
+  stamp. `bash scripts/ha_validate.sh` passes clean (7/7, 389 templates,
+  36/36 views, no drift). **No dashboard-code fix made this run — consuming
+  the one new piece of evidence (`UI-032`'s entity export) closed the only
+  gap that had opened since the fourteenth check, and nothing has replaced
+  it.** Main is back to exactly the state the fourteenth check already
+  escalated: zero actionable P0/P1/P2 work, `DR-001` the only P3 and not
+  startable without a brief, both real blockers (`CFG-001`, the 45-row
+  verification backlog) still owner-side and already reported. Did not
+  invent a fifteenth static-repository sweep — twelve grep/structural
+  classes already swept this session came back clean or non-actionable, and
+  this run's own re-read found no new file, entity or issue evidence to
+  justify a thirteenth. **Recommendation: pause this schedule.** This is the
+  project's stable/blocked state per this run's own instructions — no new
+  evidence since the last check, and the fourteenth check already sent the
+  one owner notification this class of finding warrants; repeating it here
+  would be a duplicate, not new information. Resume when any of: an owner
+  live-verification result lands in `LIVE_VERIFICATION_QUEUE.md`, `CFG-001`'s
+  four-point diagnostic is answered, a `DR-001` design brief is supplied, or
+  a new entity/defect/requirement is otherwise supplied. **Exact next
+  recommended task, unchanged:** (1) owner works `CFG-001`'s diagnostic in
+  `DASHBOARD_ISSUES.md`; (2) owner records any result in the 45-row
+  `LIVE_VERIFICATION_QUEUE.md`, starting with `UI-020`/`UI-021`
+  (same `energy` group as the already-verified `UI-011`) or `UI-032` itself
+  now that it is deployed; (3) a concrete `DR-001` design brief. No
+  fifteenth sweep should be attempted without one of those landing first.
 
 ### Billing
 - **2026-08-30 (this run) — `BILL-005` fixed (title-card text-shadow guard)
