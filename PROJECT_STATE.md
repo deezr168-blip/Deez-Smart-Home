@@ -1110,6 +1110,66 @@ be implemented.
   new verification results or a design brief before attempting further
   identical sweep classes — static-repository-inspection sweeps of this
   shape now appear exhausted for this session without new evidence.
+- **2026-08-30 — tenth Main sweep, no code change:** fetched
+  `origin/ha-deploy` — `HEAD` unchanged at `9f75c79`, tree clean before and
+  after. Re-read `CLAUDE.md` and this file in full. `DASHBOARD_ISSUES.md`'s
+  Open section is unchanged: only `CFG-001`/`CFG-002` (Home Assistant
+  configuration, outside this repository, blocked on owner diagnosis).
+  `DASHBOARD_BACKLOG.md`'s active queue is unchanged: `DR-001` is still the
+  only Main-owned item, still gated on a design brief this routine should not
+  write itself; `BILL-001/002/003` remain Billing-owned and blocked/partial.
+  `LIVE_VERIFICATION_QUEUE.md` still shows exactly one recorded result
+  (`UI-011` `PASS`) — confirmed the `UI-020 FAIL`/`REG-005 PARTIAL` lines a
+  raw grep of that file turns up are the same Result-syntax documentation
+  examples already quoted in this file, not real entries. Rather than repeat
+  one of the nine already-clean grep-based sweep classes, parsed the
+  dashboard as structured YAML (not text grep) for three genuinely new
+  checks: (1) cross-referenced every direct-control card
+  (`light`/`cover`/`climate`/`fan`/`lock`/`media-control`/domain-matched
+  `tile` cards) against its own `entity` across all 36 views — 58 total
+  control-card entity references, zero duplicates in any view, extending the
+  `UI-013` media-player-duplication class to every controllable domain
+  instead of just media players; (2) checked every fixed-type control card
+  for a domain mismatch between its declared card type and its entity's
+  actual domain (e.g. a `light` card pointed at a `switch` entity) — zero
+  mismatches; (3) re-examined the two `{% for %}` loops in the file (the
+  camera-status aggregates on `cameras` and `ipad-command-center`) for the
+  classic Jinja loop-scoping gotcha (a `{% set %}` inside a `for` not
+  surviving past `endfor`) — both already use `namespace()` correctly. While
+  there, checked whether the file's pervasive `{% set x = ... %}` inside
+  `{% if %}/{% elif %}/{% else %}` pattern (e.g. the Roller Shade `shade`
+  variable, ~L384) has the same class of bug — confirmed by rendering the
+  exact construct standalone that it does not: Jinja's `if` blocks, unlike
+  `for` loops, do not introduce a new variable scope, so the value set in
+  whichever branch runs is visible after `endif`. Also re-tried
+  `GetLiveContext` directly against "Front Door Battery" to check whether the
+  connector now exposes `entity_id` for `UI-032` — it still returns only
+  name/domain/state/area/attributes, confirming that block is unchanged.
+  `bash scripts/ha_validate.sh` passes clean (7/7, 386 templates, 36/36
+  views, no drift). **No dashboard-code fix made this run** — ten
+  consecutive sweeps this session are now clean or non-actionable without a
+  design decision or a human verification result, spanning
+  raw-interpolation, false-safe aggregate, float-sentinel,
+  icon_color/attribute/int/cover/structural,
+  state_attr/comparison/bare-float/navigation,
+  nested-grid/conditional-guard/color-palette, theme cross-reference,
+  guard-list-none-sentinel/duplicate-path, credential/PII exposure, and now
+  duplicate-control/type-domain-mismatch/loop-scoping classes. **Next
+  recommended work, unchanged and now significantly overdue for owner
+  attention:** (1) the `LIVE_VERIFICATION_QUEUE.md` backlog (44 rows, one
+  `PASS` recorded across ten consecutive autonomous runs) remains the single
+  highest-value unblock — `UI-020`/`UI-021` are the natural next two in the
+  same `energy` group as the verified `UI-011`; (2) `CFG-001` (S1, grid cost
+  ~31.8× too high) needs the owner to read four specific values out of
+  Settings → Dashboards → Energy per `DASHBOARD_ISSUES.md`, genuinely outside
+  any autonomous routine's reach; (3) a concrete `DR-001` design brief would
+  become Main's next actionable P3; (4) `UI-032` (device battery coverage)
+  stays `BLOCKED` — `GetLiveContext` still does not expose `entity_id`,
+  reconfirmed this run. A future autonomous run should not attempt further
+  static-repository-inspection sweeps without new evidence — this class of
+  check now appears exhausted for Main; the next productive Main run is one
+  that reacts to a new human verification result or design brief, not one
+  that invents an eleventh grep class.
 
 ### Billing
 - **2026-08-30 (this run) — `BILL-005` fixed (title-card text-shadow guard)
