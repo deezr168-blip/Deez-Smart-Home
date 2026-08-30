@@ -1034,6 +1034,46 @@ be implemented.
   design brief before attempting further identical sweep classes — the
   coded-fix surface reachable by grep sweeps alone appears to be genuinely
   exhausted for this session.
+- **2026-08-30 — eighth Main sweep, no code change:** fetched
+  `origin/ha-deploy` — `HEAD` unchanged at `28b1caf`, tree clean before and
+  after. Re-read `CLAUDE.md` and this file in full. `DASHBOARD_ISSUES.md`'s
+  Open section is unchanged: only `CFG-001`/`CFG-002` (Home Assistant
+  configuration, outside this repository) — `REG-012`/`REG-014` are
+  tracking-only and already closed. `DASHBOARD_BACKLOG.md`'s active queue is
+  unchanged: `DR-001` is still the only Main-owned item, still gated on a
+  design brief this routine should not write itself; `BILL-001/002/003`
+  remain Billing-owned. `LIVE_VERIFICATION_QUEUE.md` still shows zero new
+  `PASS`/`FAIL`/`PARTIAL` since `UI-011`. Rather than repeat one of the seven
+  already-clean sweep classes, ran two genuinely new, narrow checks: (1)
+  audited every guard list containing `'unavailable'`/`'unknown'` for a
+  missing `'none'` sentinel (the file's own three-value convention) —
+  grepping for `unavailable` without `none` nearby returned five hits, but
+  all were false positives from YAML line-folding (the `'none'` value sits on
+  the next folded line, e.g. ~L1598/1605) except two `climate` `icon_color`
+  guards (~L376, ~484) checking `states('climate...') not in
+  ['off','unavailable','unknown']` with no `'none'` branch — confirmed **not**
+  a gap: a Home Assistant entity's own `.state` is never the literal string
+  `'none'` (that sentinel exists in this file's convention to guard attribute
+  reads via `state_attr`/`brightness`, which can be Python `None`, not entity
+  states), so omitting it here is correct, not a regression; (2) extracted
+  every view's `path:` value (36 total) and confirmed zero duplicates — no
+  two views collide on the same URL segment. Both checks clean, nothing to
+  fix. `bash scripts/ha_validate.sh` passes clean (7/7, 386 templates, 36/36
+  views, no drift). **No dashboard-code fix made this run** — eight
+  consecutive sweeps this session are now clean or non-actionable without a
+  design decision or a human verification result. Per this file's own
+  guidance against re-deriving the same conclusion, this run does not attempt
+  a ninth grep pass; the coded-fix surface reachable by static repository
+  inspection alone appears genuinely exhausted for this session. **Next
+  recommended work, unchanged:** (1) the `LIVE_VERIFICATION_QUEUE.md` backlog
+  (43 rows, one `PASS` recorded across eight consecutive runs) is the
+  single highest-value unblock — `UI-020`/`UI-021` are the natural next two
+  in the same `energy` group as the verified `UI-011`; (2) `CFG-001` needs
+  the owner to read four values out of Settings → Dashboards → Energy per
+  `DASHBOARD_ISSUES.md`, outside any autonomous routine's reach; (3) a
+  concrete `DR-001` design brief would become Main's next actionable P3. A
+  future run should check for new verification results or a design brief
+  before attempting further sweeps of this shape.
 
 ### Billing
 - **2026-08-30 (this run) — `BILL-005` fixed (title-card text-shadow guard)
