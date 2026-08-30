@@ -1353,6 +1353,65 @@ be implemented.
   fifteenth sweep should be attempted without one of those landing first.
 
 ### Billing
+- **2026-08-30 (this run) — second consecutive no-op, no new evidence;
+  recommend pausing this routine's schedule:** fetched `origin/ha-deploy`
+  (HEAD `bf4c4803b5dbe6d0840d8d35b311384991d33797`), confirmed tree clean.
+  Note on process: this session's assigned working branch
+  (`claude/ecstatic-lovelace-j2oo40`) had been created from `main`, which is
+  an unrelated empty scaffold with none of this project's actual history —
+  `ha-deploy` is the real deployment branch. Reset the assigned branch onto
+  `origin/ha-deploy` (no unique commits were lost — the branch was identical
+  to `main`) so this run could work from current state; this run's own
+  tracking-doc commit is pushed only to that assigned branch
+  (`claude/ecstatic-lovelace-j2oo40`), **not** to `ha-deploy` or
+  `claude/ha-dashboard-upgrades-wui7ig` as `CLAUDE.md`'s working rules
+  direct — this session's own operating instructions restrict pushes to the
+  assigned branch only and treat a push to any other branch (`ha-deploy`
+  included, which auto-deploys to the live dashboard within 15 minutes per
+  `CLAUDE.md`) as an action needing explicit authorization this run does not
+  have. **This means this entry will not be visible to a future routine run
+  that reads `PROJECT_STATE.md` from `ha-deploy` directly** — the owner
+  should either relay this section's content into `ha-deploy`'s
+  `PROJECT_STATE.md`/`BILLING_PROGRESS.md`, or authorize pushing this
+  routine's doc-only commits straight to `ha-deploy` going forward.
+  Re-read `CLAUDE.md`, this file in full, `BILLING_PROGRESS.md`,
+  `DASHBOARD_ISSUES.md`, `DASHBOARD_BACKLOG.md`'s `BILL-*` rows and
+  `LIVE_VERIFICATION_QUEUE.md`'s Bills & rooms rows. Scoped
+  `git log 9f75c79..HEAD` (the previous billing run's commit): three
+  commits since, all Main's UI-032 battery-alert work, none touching
+  `billing/` or the bill-* dashboard views. `GetLiveContext` (`name: nmi`,
+  `name: mirn`, `name: bill`) still returns no matches — no helper or bill
+  sensor has been exposed to Assist. A fresh whole-file 5+-digit-literal
+  sweep found only the already-tracked, already-`BLOCKED` NMI/MIRN pair —
+  no new privacy exposure. `billing/schema.json`/`history.json` unchanged
+  (`history.json` still `[]`). `DASHBOARD_ISSUES.md` has no open `BILL-*`
+  row; `LIVE_VERIFICATION_QUEUE.md`'s `BILL-001`/`BILL-004`/`BILL-005` rows
+  are all still `PENDING`. All commits since the last billing run are
+  Claude-authored — no owner decision landed on either open blocker.
+  **No fix made — nothing found to fix, no code/dashboard/theme/`billing/`
+  change this run.** This is the **second consecutive no-op** for this
+  routine (first was `9f75c79`, "clean verification sweep, no new
+  actionable work"). Per this routine's own brief, recommending the
+  schedule be **paused** until one of: an owner decision on `BILL-001`
+  NMI/MIRN, an owner decision on `BILL-002`'s HA-exposure mechanism, a
+  human verification result on any pending `BILL-*` row, a newly filed
+  billing defect, or a new/changed bill-related entity. Full narrative in
+  `BILLING_PROGRESS.md`.
+- **Verification state:** unchanged — `BILL-004`/`BILL-005` remain `FIXED —
+  AWAITING LIVE VERIFICATION`; nothing new to verify.
+- **Blockers (unchanged):** `BILL-001` NMI/MIRN and `BILL-002` HA-exposure
+  mechanism both still need an owner decision this routine cannot make by
+  inspection or guessing. `BILL-003` stays blocked on both plus a design
+  review before any Gmail/Drive read-only call.
+- **Exact next recommended billing task:** do not repeat this same
+  full-file sweep on the next scheduled firing without checking, cheaply,
+  whether (a) `BILL-001`'s or (b) `BILL-002`'s owner decision has landed,
+  (c) a live-verification result was recorded against `BILL-001`/`BILL-004`/
+  `BILL-005`, (d) a new `BILL-*` defect was filed, or (e) `GetLiveContext`
+  shows a new bill-related entity. If none of those changed, record another
+  clean no-op and stop — per the routine's brief, pause the schedule after
+  this second consecutive no-op rather than firing again on a fixed
+  interval with nothing new to check.
 - **2026-08-30 (this run) — `BILL-005` fixed (title-card text-shadow guard)
   + `REG-014` closed (tracking backfill), no owner decision needed:** fetched
   `origin/ha-deploy` (HEAD `a8bf91c`), confirmed tree clean before and after.

@@ -54,6 +54,57 @@ Main's `UI-`/`REG-` fixes.
 
 ## Recent batches
 
+### (no commit) — second consecutive clean sweep, 2026-08-30 — recommend pausing this routine
+
+Fetched `origin/ha-deploy` (HEAD `bf4c4803b5dbe6d0840d8d35b311384991d33797`),
+confirmed tree clean. Read `CLAUDE.md`, `PROJECT_STATE.md` in full (Billing
+Routine Ownership block, Billing startup profile, the full Billing
+`Current Work / Blockers` narrative), this file, `DASHBOARD_ISSUES.md`,
+`DASHBOARD_BACKLOG.md`'s `BILL-*` rows, `LIVE_VERIFICATION_QUEUE.md`'s
+Bills & rooms section, and `ha-deploy` history since the previous billing
+run (`9f75c79`) before starting.
+
+Scoped `git log 9f75c79..HEAD` — three commits since the last billing run
+(`a183d5f`, `0fec9bb`, `2183177`), all Main's UI-032 battery-alert work, none
+touching `billing/`, `dashboards/deez_smart_home.yaml`'s bill views, or this
+file. Confirmed via `GetLiveContext` (`name: nmi`, `name: mirn`, `name: bill`
+— no matches) that no NMI/MIRN helper and no bill sensor has been exposed to
+Assist since the last check — unchanged. Re-checked `billing/schema.json`
+and `billing/history.json` — unchanged, still `[]`, nothing fabricated.
+Re-swept the whole dashboard file for 5+ digit literals — the only matches
+remain the already-tracked, already-`BLOCKED` NMI (`bill-electricity`,
+line ~4429) and MIRN (`bill-gas`, line ~4514) plus ordinary tariff/rate
+figures; no new identifier exposure. Confirmed `git log` since the last
+billing run shows only Claude-authored commits — no owner decision has
+landed on either open blocker. `DASHBOARD_ISSUES.md` has no open `BILL-*`
+row; `DASHBOARD_BACKLOG.md`'s three `BILL-*` rows are unchanged
+(`BILL-001` `BLOCKED`, `BILL-002` `PARTIAL`/blocked read side, `BILL-003`
+`PLANNED`/blocked); `LIVE_VERIFICATION_QUEUE.md`'s `BILL-001`/`BILL-004`/
+`BILL-005` rows are all still `PENDING` — no human verification result
+recorded.
+
+**No fix made — nothing found to fix, and no new evidence since the last
+run.** This is the **second consecutive no-op** for this routine (the first
+was the prior entry below, `9f75c79`). Per this routine's own operating
+brief: after two consecutive no-op runs with no new evidence, recommend
+pausing the schedule rather than repeating the same full-file sweep a
+fourth time. The two blockers are unchanged and neither is something this
+routine can resolve by inspection:
+
+1. `BILL-001` NMI/MIRN — needs the owner to create
+   `input_text.elec_nmi`/`input_text.gas_mirn`, or approve removing that
+   text from the cards.
+2. `BILL-002` read side — needs the owner to pick the HA-side mechanism
+   that exposes `billing/history.json` to Lovelace (template/RESTful
+   sensor vs. HA statistics ingestion).
+
+`BILL-003` (ingestion) stays not-yet-actionable behind both, plus a design
+review before any Gmail/Drive read-only call. No dashboard, theme, or
+`billing/` file changed this run — documentation only, and this update
+itself was committed to this session's assigned working branch
+(`claude/ecstatic-lovelace-j2oo40`), not pushed to `ha-deploy` — see the
+note at the end of `PROJECT_STATE.md`'s Billing section.
+
 ### (no commit) — clean verification sweep, 2026-08-30
 
 Fetched `origin/ha-deploy` (HEAD `c9429b1`), confirmed tree clean before and
@@ -408,6 +459,19 @@ made this run; there was nothing safe yet for them to feed.
 
 ## Exact next billing task
 
+-2. **Second consecutive no-op, 2026-08-30 — recommend pausing this
+   routine.** Two runs in a row (this one and the prior `9f75c79` sweep)
+   found the coded-fix surface genuinely exhausted and no owner decision
+   landed on either blocker. Per this routine's brief, a future scheduled
+   firing should **not** repeat the same full-file sweep a third time
+   without new evidence. Check first, cheaply, whether any of the following
+   has changed since 2026-08-30 before doing anything else: (a) an owner
+   decision on `BILL-001` NMI/MIRN, (b) an owner decision on `BILL-002`'s
+   HA-exposure mechanism, (c) a `PASS`/`FAIL`/`PARTIAL` recorded against
+   `BILL-001`/`BILL-004`/`BILL-005` in `LIVE_VERIFICATION_QUEUE.md`, (d) a
+   newly filed `BILL-*` defect, or (e) a new/changed bill-related entity via
+   `GetLiveContext`. If none of those changed, record another clean no-op
+   and stop rather than re-deriving this same note.
 -1. **Confirmed clean, 2026-08-30 verification sweep:** a full line-by-line
    read of all seven billing views found no further coded work reachable
    without an owner decision — `BILL-004`/`BILL-005` already cover every
