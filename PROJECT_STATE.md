@@ -643,7 +643,7 @@ be implemented.
 
 | Routine | Item | Priority | State | Reason Selected |
 |---|---|---|---|---|
-| Main CasaRay Upgrade | `DR-001` — iPad Command Center density | P3 | `PLANNED` — needs a design decision before implementation | Still the only scoped item in Main's queue after this run's camera-subview sweep (clean) and the `UI-031`/`REG-013` fixes — score **−2** (Impact 3, Effort 4, Risk 4), selected by being the sole remainder, not by rank. Explicitly "advisory item, no implementation agreed": needs a CasaRay Design Reviewer brief before Main writes code. Everything else Main owns (`UI-011`, and the REG-001..013/UI-027/UI-030/UI-031 batches) is `LIVE_VERIFICATION_REQUIRED` and waiting on the owner. |
+| Main CasaRay Upgrade | `DR-001` — iPad Command Center density | P3 | `PLANNED` — needs a design decision before implementation | Still the only scoped item in Main's queue after five consecutive clean sweeps this session (raw-interpolation, false-safe aggregate, float-sentinel, icon_color/attribute/int/cover/structural, state_attr/comparison/bare-float/navigation) — score **−2** (Impact 3, Effort 4, Risk 4), selected by being the sole remainder, not by rank. Explicitly "advisory item, no implementation agreed": needs a CasaRay Design Reviewer brief before Main writes code. Everything else Main owns (`UI-011`, and the REG-001..013/UI-027/UI-030/UI-031 batches) is `LIVE_VERIFICATION_REQUIRED` and waiting on the owner — the 42-row verification queue has had zero results recorded across at least five runs. |
 | Billing Dashboard Upgrade | `BILL-002` — Home Assistant exposure decision for `billing/history.json` (storage now exists, see `billing/README.md`) | P2 | `PARTIAL` — storage scaffolded (`5147eb0`/`ff25626`), read side needs owner direction | `BILL-001`'s account-number portion is fixed and pushed (`23c0301`); its NMI/MIRN portion is `BLOCKED` on an owner decision (no helper exists, cannot invent one) and is excluded from selection (queue rule 4). This run built `BILL-002`'s storage layer (`billing/schema.json`, empty `billing/history.json`) since it doesn't depend on the owner's read-side decision — no dashboard YAML touched, nothing fabricated. The remaining blocker is purely which HA-side mechanism exposes the file to Lovelace (`billing/README.md` point 2); that decision is what unblocks real dashboard work. `BILL-003` stays blocked on both. |
 
 ---
@@ -864,6 +864,48 @@ be implemented.
   Billing-owned; a future run should look for genuinely new evidence (e.g.
   entities added since the last Entity Scout pass) rather than repeating this
   run's now four-times-clean sweep classes.
+- **2026-08-30 — fifth Main sweep, no code change:** fetched
+  `origin/ha-deploy` — `HEAD` unchanged at `975a2b1`, tree clean before and
+  after. Re-read `PROJECT_STATE.md`, `DASHBOARD_ISSUES.md`'s Open section
+  (still only `UI-011`, excluded by queue rule 4, and `REG-012`,
+  tracking-only) and `DASHBOARD_BACKLOG.md`'s active queue (still only
+  `DR-001`, gated on a design brief). No new human verification result
+  recorded in `LIVE_VERIFICATION_QUEUE.md` (still 42 pending, all `PENDING`
+  or the syntax-doc example rows — no real `PASS`/`FAIL`/`PARTIAL` since the
+  last check). Ran four grep classes not yet tried by prior sweeps: (1) every
+  `state_attr(...)` call (14 total) — each is either inside an existing
+  `is not none`/`bad`-list guard, or rendered only by a `conditional` card
+  whose own conditions already exclude `unavailable`/`unknown`/`off` before
+  the template runs (the Parents AC hero card, ~L146-172); none unguarded;
+  (2) direct `states(...)` numeric comparisons with no `float()`/`int()`
+  cast (a real Jinja bug class — comparing a string state to a number) —
+  zero instances found anywhere in the file; (3) bare `| float` with no
+  explicit default (hides a silent `0.0` sentinel differently from the
+  already-audited `| float(0)` class) — five instances, all reading a
+  `brightness` attribute already proven not-`none` by the enclosing
+  `if b is not none` branch, so none is reachable with a bad value; (4) a
+  full navigation-graph diff — extracted all 36 `path:` view IDs and all
+  `navigation_path: /deez-smart-home/...` targets referenced anywhere in the
+  file and compared them: **exact match, 36/36, zero broken links and zero
+  orphaned views**. `bash scripts/ha_validate.sh` passes clean (7/7, 386
+  templates, 36/36 views, no drift). **No fix made — nothing found to fix.**
+  This is the fifth consecutive sweep this session to come back clean
+  (raw-interpolation, false-safe aggregate, float-sentinel,
+  icon_color/attribute/int/cover/structural, and now
+  state_attr/comparison/bare-float/navigation). Main's coded-fix surface
+  looks genuinely exhausted without new repository evidence or an owner
+  decision — further sweeps of this shape are unlikely to be productive.
+  **Next recommended work, unchanged and now overdue for owner attention:**
+  (1) the 42-row `LIVE_VERIFICATION_QUEUE.md` backlog has had zero results
+  recorded across at least five consecutive autonomous runs — this is the
+  single highest-value unblock available, starting with `UI-011` (Total
+  Solar, P1, possibly reading 1000× low) since it is the only open
+  non-tracking issue; (2) a concrete `DR-001` design brief would become
+  Main's next actionable P3; (3) the `bills`/`bill-*` raw-interpolation pass
+  remains open but Billing-owned. A future autonomous run should not repeat
+  this session's five clean sweep classes without new evidence — it should
+  instead re-check whether any `LIVE_VERIFICATION_QUEUE.md` results or a
+  `DR-001` brief have landed since this note.
 
 ### Billing
 - **Queue:** `BILL-001` (P1, partial/blocked) → `BILL-002` (P2, partial) →
@@ -1027,13 +1069,15 @@ be implemented.
 
 ## Last Coordination Update
 
-- **Date/time:** 2026-08-30 00:30 UTC
+- **Date/time:** 2026-08-30 (this run) UTC
 - **Branch:** `ha-deploy`
-- **`ha-deploy` HEAD before this update:** `88c345b`
-- **This update's commit:** `c5584c2` — Daily Project Coordinator added to
-  the ownership map, protected areas, stamp rule 18 and the startup profiles.
-  Final framework correction. No priority, backlog item, issue status,
-  verification result, score, change window or Next Actionable Work altered.
+- **`ha-deploy` HEAD before this update:** `975a2b1`
+- **This update's commit:** `PENDING` — Main's fifth consecutive clean sweep
+  this session (state_attr guards, direct numeric comparisons, bare `| float`
+  defaults, full navigation-graph diff — all clean, 36/36 views, no broken
+  links). No dashboard YAML touched. No priority, backlog item, issue status,
+  verification result, score, change window or ownership altered beyond
+  Main's own progress note and Next Actionable Work reason text.
 
 Per `CLAUDE.md`, a commit cannot contain its own hash: this update's SHA is
 written by the `docs: stamp` commit that immediately follows it.
