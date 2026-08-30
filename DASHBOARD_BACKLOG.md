@@ -61,7 +61,7 @@ active queue work** — no routine should re-implement these. Full records in
 
 | Area | Items | Last commit |
 |---|---|---|
-| Account-number literals replaced with existing `input_text.elec_account_number` / `input_text.gas_account_number` references, guarded (`bill-electricity`, `bill-gas`) | `BILL-001` (account-number portion; NMI/MIRN still open, see active queue) | `<PENDING_SHA>` |
+| Account-number literals replaced with existing `input_text.elec_account_number` / `input_text.gas_account_number` references, guarded (`bill-electricity`, `bill-gas`) | `BILL-001` (account-number portion; NMI/MIRN still open, see active queue) | `23c0301` |
 | False-safe door-count aggregates (`home` hero + quick chip + Security card, `cameras` chip row, `ipad-command-center` chip row) — same three-sensor list copy-pasted into 5 cards, now all guarded | REG-007, REG-008, REG-009, REG-010, REG-011 | `b058006` + this run's follow-up commit |
 | Residual bilingual gaps (per-person "at home", WAN chip fallback, Energy tile fallback) | REG-004, REG-005, REG-006 | `dff00f3` |
 | Heading-card contrast (theme-level `card-mod-card-heading` rule) | UI-027 | `9926233` |

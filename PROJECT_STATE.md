@@ -370,7 +370,7 @@ recorded in `DASHBOARD_BACKLOG.md` or `DASHBOARD_ISSUES.md`.
 
 | Area | Owner | Last Significant Commit | State | Protected Until | Notes |
 |---|---|---|---|---|---|
-| Billing privacy (`bill-electricity`, `bill-gas` account-number literals) | Billing | `<PENDING_SHA>` — 2026-08-30 | `LIVE_VERIFICATION_REQUIRED` | 2026-08-30 +6h from push | Closes the account-number half of `BILL-001`. NMI/MIRN portion intentionally untouched — `BLOCKED`, needs owner decision, see `DASHBOARD_BACKLOG.md`. |
+| Billing privacy (`bill-electricity`, `bill-gas` account-number literals) | Billing | `23c0301` — 2026-08-30 | `LIVE_VERIFICATION_REQUIRED` | 2026-08-30 +6h from push | Closes the account-number half of `BILL-001`. NMI/MIRN portion intentionally untouched — `BLOCKED`, needs owner decision, see `DASHBOARD_BACKLOG.md`. |
 | False-safe door-count aggregates (`home` hero + quick chip + Security card, `cameras` chip row, `ipad-command-center` chip row) | Main | `b058006` + follow-up — 08-30 01:50 | `LIVE_VERIFICATION_REQUIRED` | 08-30 07:50 | Closes REG-007..011. Continuation of the REG-001..006 false-safe-state sequence under RCP rule 5/7 — the same three-sensor door list was copy-pasted unguarded into 5 cards across 3 views; all 5 now guarded. REG-008 was corrected from an initial mislog against `ipad-command-center` to its actual location on `cameras` — see `DASHBOARD_ISSUES.md`. |
 | Bilingual template pass (all 36 views) | Main | `f04a59f` — 08-29 20:51 | `LIVE_VERIFICATION_REQUIRED` | 08-30 02:51 | Sequence `f4e7ec3`→`fa286de`→`f04a59f`; Main may continue under RCP rule 5. |
 | False-safe status regressions (`security`, `lights`, `cameras`, `home`) | Main | `b5eee22` — 08-29 23:37 | `LIVE_VERIFICATION_REQUIRED` | 08-30 05:37 | Closes REG-001/002/003. |
@@ -642,7 +642,7 @@ be implemented.
 | Routine | Item | Priority | State | Reason Selected |
 |---|---|---|---|---|
 | Main CasaRay Upgrade | `DR-001` — iPad Command Center density | P3 | `PLANNED` — needs a design decision before implementation | `BILING-RESID` (REG-004/005/006) is fixed and pushed in `dff00f3`, so `DR-001` is the only item left in Main's queue and the Selection Score no longer has anything to choose between — it scores **−2** (Impact 3, Effort 4, Risk 4) and is selected by being the sole remainder, not by rank. It is explicitly "advisory item, no implementation agreed": a density *review* the CasaRay Design Reviewer should scope before Main writes code, not a coded fix to start speculatively. Everything else Main owns (`UI-011`, and this run's own REG-001..006/UI-027 batches) is `LIVE_VERIFICATION_REQUIRED` and waiting on the owner. |
-| Billing Dashboard Upgrade | `BILL-002` — scope Home Assistant exposure for a `billing/history.json` structured store (see `BILLING_PROGRESS.md`) | P2 | `PLANNED` — proposal written, needs owner direction | `BILL-001`'s account-number portion is fixed and pushed (`<PENDING_SHA>`); its NMI/MIRN portion is `BLOCKED` on an owner decision (no helper exists, cannot invent one) and is excluded from selection (queue rule 4). `BILL-002` is next by ownership/priority; the safe move is a written storage-architecture proposal (done, see `BILLING_PROGRESS.md`) rather than dashboard YAML against unconfirmed sensors. `BILL-003` stays blocked on both. |
+| Billing Dashboard Upgrade | `BILL-002` — scope Home Assistant exposure for a `billing/history.json` structured store (see `BILLING_PROGRESS.md`) | P2 | `PLANNED` — proposal written, needs owner direction | `BILL-001`'s account-number portion is fixed and pushed (`23c0301`); its NMI/MIRN portion is `BLOCKED` on an owner decision (no helper exists, cannot invent one) and is excluded from selection (queue rule 4). `BILL-002` is next by ownership/priority; the safe move is a written storage-architecture proposal (done, see `BILLING_PROGRESS.md`) rather than dashboard YAML against unconfirmed sensors. `BILL-003` stays blocked on both. |
 
 ---
 
@@ -726,7 +726,7 @@ be implemented.
   numbers. **NMI and MIRN remain hardcoded** — no helper entity exists for
   either and one must not be invented; needs an owner decision (create the
   helpers, or approve removing the text). `BILL-001` is now `BLOCKED` on that
-  decision and excluded from autonomous selection. Commit: `<PENDING_SHA>`.
+  decision and excluded from autonomous selection. Commit: `23c0301`.
   Full detail in `BILLING_PROGRESS.md`.
 - Confirmed via `GetLiveContext` this run: no bill-related entity is exposed
   to Assist (`name: bill` → no match) — billing figures stay `CODE_VALID` at

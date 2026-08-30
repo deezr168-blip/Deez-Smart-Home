@@ -53,7 +53,7 @@ for live-verification state; billing items do not yet have dedicated rows in
 
 ## Recent batches
 
-### `<PENDING_SHA>` — NMI/MIRN blocked, account numbers de-hardcoded (`BILL-001`, partial)
+### `23c0301` — NMI/MIRN blocked, account numbers de-hardcoded (`BILL-001`, partial)
 Area: `bill-electricity` (~L4238), `bill-gas` (~L4323).
 Both subviews' plan-details `markdown` cards carried the real, live account
 number as a literal digit string, alongside the NMI (electricity) and MIRN

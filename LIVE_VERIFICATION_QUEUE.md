@@ -99,7 +99,7 @@ on the iPad, landscape.
 
 | ID | What changed | What to check live | Expected result | Commit | P | Result |
 |---|---|---|---|---|---|---|
-| BILL-001 | Account-number literal replaced with `input_text.elec_account_number`/`..._gas_account_number` **[guard]** | `bill-electricity` and `bill-gas` plan-details cards | Same account number as entered in the Bills form (or "Not entered" if the helper is empty), not a hardcoded number that no longer matches. NMI/MIRN unchanged — not part of this check | `<PENDING_SHA>` | P1 | PENDING |
+| BILL-001 | Account-number literal replaced with `input_text.elec_account_number`/`..._gas_account_number` **[guard]** | `bill-electricity` and `bill-gas` plan-details cards | Same account number as entered in the Bills form (or "Not entered" if the helper is empty), not a hardcoded number that no longer matches. NMI/MIRN unchanged — not part of this check | `23c0301` | P1 | PENDING |
 | UI-016 | Last nested grids dissolved on `bills`, `light-living-room`, `lighting-modes` | All three page layouts | Cards sized normally, not squeezed inside half-width sections; the six bill subviews each read as one clean column | `9b28fdb` | P2 | PENDING |
 | UI-013 | Duplicate media cards removed | Parents Room and Guest Room | One media control per player, not a Mushroom card stacked on a native one | `56c7656` | P3 | PENDING |
 | UI-023 | Placeholder cards removed | Ray Bedroom and other room pages | No "nothing here yet" cards taking up columns | `3048e54` | P2 | PENDING |

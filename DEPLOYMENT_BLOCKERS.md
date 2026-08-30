@@ -194,14 +194,14 @@ device-native engines rather than as HA `automation.*` entities.
 ## Blocker 5 — utility identifiers are hardcoded (partially resolved, low severity)
 
 **Updated 2026-08-30: the account-number sanitisation has been re-applied**
-(`<PENDING_SHA>`, Billing Dashboard Upgrade routine). NMI and MIRN remain
+(`23c0301`, Billing Dashboard Upgrade routine). NMI and MIRN remain
 literals — see below.
 
 | View | Identifier | Status |
 |---|---|---|
-| `bill-electricity` | Account number | **Sanitised** — sourced from `input_text.elec_account_number` again as of `<PENDING_SHA>` |
+| `bill-electricity` | Account number | **Sanitised** — sourced from `input_text.elec_account_number` again as of `23c0301` |
 | `bill-electricity` | **NMI** | Hardcoded — never sanitised |
-| `bill-gas` | Account number | **Sanitised** — sourced from `input_text.gas_account_number` again as of `<PENDING_SHA>` |
+| `bill-gas` | Account number | **Sanitised** — sourced from `input_text.gas_account_number` again as of `23c0301` |
 | `bill-gas` | **MIRN** | Hardcoded — never sanitised |
 
 Commit `a084482` had replaced the two account numbers with
@@ -209,7 +209,7 @@ Commit `a084482` had replaced the two account numbers with
 the dashboard already used in its Bills entry form. `921315e` then imported
 the raw production export verbatim at the owner's instruction, restoring the
 literals — not a deliberate decision to re-expose them, per
-`DASHBOARD_BACKLOG.md`'s own note on `BILL-001`. `<PENDING_SHA>` restores the
+`DASHBOARD_BACKLOG.md`'s own note on `BILL-001`. `23c0301` restores the
 `a084482` approach for the two account numbers only. They, and NMI/MIRN,
 also remain in history at `a62d49e`/`921315e`, so removing them from the tip
 does not remove them from the repository — history was not rewritten and is
