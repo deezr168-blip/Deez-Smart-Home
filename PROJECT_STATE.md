@@ -1811,7 +1811,7 @@ be implemented.
 - **Date/time:** 2026-08-30 (this run) — UI-032 implemented
 - **Branch:** `ha-deploy`
 - **`ha-deploy` HEAD before this update:** `6d5acd1`
-- **This update's commit:** `PENDING` — implemented `UI-032` on owner-verified
+- **This update's commit:** `a183d5f` — implemented `UI-032` on owner-verified
   entity IDs. One conditional card added to the `home` Active Now strip;
   contextual, so it is absent from the screen entirely when no battery is low
   or unreadable. Six verified entities bound, the stale

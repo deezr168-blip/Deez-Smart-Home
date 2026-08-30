@@ -134,7 +134,7 @@ never on the arithmetic alone.
 
 ## UI-032 — battery health had no surface at all
 
-**Implemented 2026-08-30 (`PENDING-SHA`). Status: FIXED — AWAITING LIVE
+**Implemented 2026-08-30 (`a183d5f`). Status: FIXED — AWAITING LIVE
 VERIFICATION.** Sev S2: not a false statement, but a maintenance condition the
 household could not see. Front Door and RingRing are entry devices and the
 C425 is an outdoor camera; all three run flat without warning.
