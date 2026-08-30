@@ -1239,6 +1239,38 @@ be implemented.
   (4) `UI-032` stays `BLOCKED` on a States export. A future autonomous run
   should check for new verification results, an entity export, or a design
   brief before attempting any further static-repository-inspection sweep.
+- **2026-08-30 — thirteenth Main check, no code change:** fetched
+  `origin/ha-deploy` — `HEAD` unchanged at `7171427`, tree clean before and
+  after. Re-read `CLAUDE.md` and this file in full, `DASHBOARD_ISSUES.md`'s
+  Open section (unchanged: only `CFG-001`/`CFG-002`, both Home Assistant
+  Energy configuration outside this repository, blocked on owner diagnosis)
+  and `DASHBOARD_BACKLOG.md`'s active queue (unchanged: `UI-032` still
+  `BLOCKED` on a Developer Tools → States export, `DR-001` still gated on a
+  design brief this routine should not write itself; `BILL-001/002/003`
+  remain Billing-owned and blocked/partial). Checked
+  `LIVE_VERIFICATION_QUEUE.md` directly: 47 `PENDING` rows, still exactly one
+  real result recorded (`UI-011` `PASS`) across thirteen consecutive
+  autonomous runs — no new `PASS`/`FAIL`/`PARTIAL` to reconcile. Per the
+  twelfth check's own explicit conclusion, did not invent a thirteenth
+  static-repository-inspection grep class with no new evidence to justify
+  it — eleven distinct sweep classes already cover that surface and a
+  twelfth confirmed no drift. Ran `bash scripts/ha_validate.sh` as a baseline
+  health check only (not a substitute for new work): passes clean (7/7, 386
+  templates, 36/36 views, no drift). **No dashboard-code fix made this run —
+  genuinely no safe, actionable, unblocked Main-owned work exists.** The
+  session is now fully gated on human input across all three of Main's open
+  threads: (1) `LIVE_VERIFICATION_QUEUE.md`'s 47-row backlog has had exactly
+  one result in thirteen runs; (2) `CFG-001` (S1, Energy → Totals grid cost
+  ~31.8× too high, real money on a live dashboard) needs the owner to read
+  four specific values out of Settings → Dashboards → Energy per
+  `DASHBOARD_ISSUES.md` — genuinely outside any autonomous routine's reach;
+  (3) `DR-001` needs a concrete design brief before it can become Main's next
+  actionable P3. Flagging this explicitly rather than filing a fourteenth
+  identical note: a future autonomous run should not attempt further
+  static-repository-inspection sweeps without new evidence — the next
+  productive Main run is one that reacts to a new human verification result,
+  entity export, or design brief, and this state should be surfaced to the
+  owner rather than silently re-confirmed indefinitely.
 
 ### Billing
 - **2026-08-30 (this run) — `BILL-005` fixed (title-card text-shadow guard)
