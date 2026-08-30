@@ -1380,6 +1380,57 @@ be implemented.
   `BILL-*`), the next audit's default scope is `50fc733..HEAD` for whatever
   Main/Billing push next. `UI-011` (Energy — Total Solar) remains worth a
   fresh look if it is ever coded.
+- **2026-08-30 audit (this run) — scope `50fc733..HEAD` (11 commits,
+  `291a976`):** fetched `origin/ha-deploy`, confirmed local matched remote
+  with a clean tree before writing. Of the 11 commits in range, only one
+  touches `dashboards/deez_smart_home.yaml`: `73813e8` (Billing —
+  `BILL-005`, backfilling `REG-014`'s tracking gap in the same commit). The
+  other ten are docs-only: `b8d7807`/`ca1fa32` (prior Regression Auditor
+  audit + stamp), `afef82c`/`401e904` (`UI-011` `PASS` reconciliation +
+  `CFG-001`/`CFG-002` filing), `7df2f5b` (verification-syntax doc cleanup),
+  `7b42918`/`a8bf91c` (Main's sixth/seventh clean sweeps, no code),
+  `f95bb71`/`28b1caf` (Billing's `BILL-005` stamp + coordination note), and
+  `291a976` (Main's eighth clean sweep, no code). Diffed `73813e8` directly:
+  all four hunks add the identical existing `card_mod` text-shadow block to
+  `bill-car-insurance`/`bill-water`/`bill-council-rates`/`bill-rego` title
+  cards (L4380–4619 region) — CSS-only, no template/entity/navigation
+  change, confined entirely to Billing's own four subviews. **No
+  cross-routine boundary violation, no undone work, no billing change by
+  Main, no unrelated change by Billing.** Cross-checked the commit's own
+  narrative against `DASHBOARD_ISSUES.md` (`BILL-005` row present, correct
+  commit, NMI/MIRN digits not reproduced; `REG-014` correctly closed into
+  "Fixed — tracking only") and `DASHBOARD_BACKLOG.md` ("Awaiting live
+  verification" row present, correct commit) — both match, no drift this
+  time (unlike the REG-012/REG-014 gaps the last two audits caught).
+  Re-verified `LIVE_VERIFICATION_QUEUE.md`'s "44 checks pending" footer
+  against an actual row count (`grep -c '| PENDING |'` = 44) — accurate.
+  Re-checked the billing-privacy brief directly against the live YAML: the
+  NMI/MIRN literals at `bill-electricity`/`bill-gas` are still hardcoded
+  (confirmed present, digits not reproduced here) and remain correctly
+  tracked as `BILL-001`'s `BLOCKED` remainder with a documented reason — not
+  re-logged, per "do not manufacture issues." No new repository-visible
+  billing identifier found elsewhere. Re-checked Back/previous-page
+  navigation per this run's brief: untouched by any commit in range: still
+  `LIVE_VERIFICATION_REQUIRED` only, no repository evidence of a new defect,
+  so no new navigation regression opened.
+- **New issues this run:** none — nothing to file.
+- **Resolved/stale issues identified this run:** none newly found; `REG-012`
+  and `REG-014` (closed by prior runs) remain correctly closed, no
+  regression of either.
+- **Cross-routine conflicts this run:** none.
+- **Verification requirements:** unchanged — `CFG-001`/`CFG-002` are Home
+  Assistant configuration defects outside this repository, correctly
+  excluded from the verification queue; `BILL-005` is `FIXED — AWAITING
+  LIVE VERIFICATION` and already queued.
+- **Next recommended audit focus:** this run found no actionable
+  regression — a clean audit. Next default scope is `291a976..HEAD` for
+  whatever Main/Billing push next. Worth a specific look next time: (1)
+  whether `BILL-001`'s NMI/MIRN or `BILL-002`'s HA-exposure decision has
+  moved, since either would open new billing-code surface to audit; (2)
+  `DR-001` if it ever gets a design brief and code; (3) whether any human
+  verification result (`PASS`/`FAIL`/`PARTIAL`) has finally landed in
+  `LIVE_VERIFICATION_QUEUE.md` beyond `UI-011`, since a `FAIL`/`PARTIAL`
+  would need reconciliation against the right stable ID.
 
 ### Entity Scout
 - File findings in `DASHBOARD_BACKLOG.md` as evidence-based items.
