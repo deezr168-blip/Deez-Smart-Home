@@ -1898,7 +1898,7 @@ be implemented.
 - **Date/time:** 2026-08-30 (this run) — CFG-003 root cause found
 - **Branch:** `ha-deploy`
 - **`ha-deploy` HEAD before this update:** `6d5acd1`
-- **This update's commit:** `PENDING` — `CFG-003` confirmed by the owner and
+- **This update's commit:** `ec10656` — `CFG-003` confirmed by the owner and
   **root cause established**. `ha-deploy` was replaced with an **unrelated
   history on 2026-08-29** and the Home Assistant host's clone was left on the
   old one. Proof: `git merge-base 26c3b14 HEAD` — the deploy log's own
