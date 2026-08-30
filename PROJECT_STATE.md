@@ -370,7 +370,7 @@ recorded in `DASHBOARD_BACKLOG.md` or `DASHBOARD_ISSUES.md`.
 
 | Area | Owner | Last Significant Commit | State | Protected Until | Notes |
 |---|---|---|---|---|---|
-| False-safe door-count aggregates (`home` hero, `ipad-command-center` Doors chip) | Main | (this commit) — 08-30 01:35 | `LIVE_VERIFICATION_REQUIRED` | 08-30 07:35 | Closes REG-007/008. Continuation of the REG-001..006 false-safe-state sequence under RCP rule 5/7 — same recurring defect class (Process note in `DASHBOARD_ISSUES.md`), found on two aggregate cards the REG-001..006 batch never touched. |
+| False-safe door-count aggregates (`home` hero, `ipad-command-center` Doors chip) | Main | `b058006` — 08-30 01:35 | `LIVE_VERIFICATION_REQUIRED` | 08-30 07:35 | Closes REG-007/008. Continuation of the REG-001..006 false-safe-state sequence under RCP rule 5/7 — same recurring defect class (Process note in `DASHBOARD_ISSUES.md`), found on two aggregate cards the REG-001..006 batch never touched. |
 | Bilingual template pass (all 36 views) | Main | `f04a59f` — 08-29 20:51 | `LIVE_VERIFICATION_REQUIRED` | 08-30 02:51 | Sequence `f4e7ec3`→`fa286de`→`f04a59f`; Main may continue under RCP rule 5. |
 | False-safe status regressions (`security`, `lights`, `cameras`, `home`) | Main | `b5eee22` — 08-29 23:37 | `LIVE_VERIFICATION_REQUIRED` | 08-30 05:37 | Closes REG-001/002/003. |
 | Heading-card contrast (`themes/deez_your_name.yaml`) | Main | `9926233` — 08-29 23:42 | `LIVE_VERIFICATION_REQUIRED` | 08-30 05:42 | Closes UI-027; theme-level rule, no dashboard YAML. |
@@ -682,7 +682,7 @@ be implemented.
   brief — either unblocks Main's next batch. Until one of those lands, a
   future run should re-fetch and re-check this same gate rather than
   re-deriving it from scratch.
-- **2026-08-30 01:35 UTC — REG-007/REG-008 (this commit):** performed the
+- **2026-08-30 01:35 UTC — REG-007/REG-008 `b058006`:** performed the
   fresh narrow false-safe-state sweep recommended by the 00:35 re-check,
   scoped to aggregate cards (multiple sensors combined into one count/color)
   rather than the single-sensor cards REG-001..006 already covered. Found two:
