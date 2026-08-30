@@ -1472,6 +1472,30 @@ be implemented.
 - File findings in `DASHBOARD_BACKLOG.md` as evidence-based items.
 - Entity registry is unavailable here; entity existence is inferred from the
   imported live dashboard and never confirmed. Record findings as claims.
+- **2026-08-30 — first live `sensor`-domain sweep (advisory, no YAML
+  touched).** Ran `GetLiveContext` over the `sensor` domain while verifying
+  `UI-011` — the first live entity data any run has had. Two results:
+  - **Unit and scale cross-check: clean.** Every one of the 34 `sensor.`
+    references in the dashboard that could be matched to a live entity
+    handles its unit correctly. Specifically confirmed: the four Primo
+    sensors report **Wh** and every card that reads them divides by 1000
+    (`Solar Today`, `Solar Year`, `Total Solar`); the two P110M plugs report
+    **W** for `current_consumption` and **kWh** for `today_s_consumption`,
+    and both cards label them that way; `sensor_group_illuminance` is lx and
+    the Aqara shade battery is %. No sentinel fallbacks remain
+    (`float(100)`/`float(9999)`: zero hits). A prior suspicion that motion
+    and door references sat in the wrong domain was **checked and is false**
+    — all 8 are correctly `binary_sensor.`, the apparent hits were `sensor.`
+    matching the tail of `binary_sensor.`.
+  - **One new item: `UI-032`** (P2, score 3, Main-owned, `BLOCKED`) — battery
+    coverage. Full evidence in `DASHBOARD_BACKLOG.md`.
+- **Blocker 3 is now evidenced, not just asserted.** This sweep produced
+  concrete proof that entity IDs cannot be slugified from friendly names *in
+  this instance*: the dashboard's working
+  `sensor.living_room_living_hue_hue_sensor_temperature` against a live name
+  of "Living Hue Hue Sensor Temperature", plus live duplicate battery
+  entities where one copy is permanently `unavailable`. Any future routine
+  tempted to infer an ID should read the `UI-032` note first.
 
 ### Design Review
 - Standing item: `DR-001` (P3, Main-owned) — needs a brief, not a redesign.
@@ -1537,9 +1561,20 @@ be implemented.
 
 ## Last Coordination Update
 
-- **Date/time:** 2026-08-30 (this run) — CFG-001/CFG-002 diagnostic protocol
+- **Date/time:** 2026-08-30 (this run) — Entity Scout live sensor sweep
 - **Branch:** `ha-deploy`
 - **`ha-deploy` HEAD before this update:** `6d5acd1`
+- **This update's commit:** `PENDING` — Entity Scout: first live
+  `sensor`-domain sweep. Unit/scale cross-check across all 34 `sensor.`
+  references came back **clean**; filed `UI-032` (P2, battery coverage —
+  2 of ~12 battery entities surfaced, three already low: Front Door 21%,
+  RingRing 21%, Tapo C425 North Wall 29%) as `BLOCKED` rather than
+  implementing it on inferred IDs, and recorded the live evidence that makes
+  inference unsafe here. Advisory only: no dashboard YAML, theme, Energy
+  configuration, priority, score or ownership of existing items touched.
+
+### Superseded — CFG-001/CFG-002 diagnostic protocol
+
 - **This update's commit:** `09eb377` — recorded, at the owner's direction,
   the seven determinations `CFG-001` must answer once Energy Dashboard
   evidence is supplied, the correction options ranked by how much Energy
