@@ -65,6 +65,24 @@ to the right page section in the same commit as REG-009..011.
 
 ---
 
+## False-safe + raw-interpolation sweep — 2026-08-30 (person chip, Climate summary, Roller Shade, Lighting Modes)
+
+A fresh pass over the areas the previous run's `LIVE_VERIFICATION_QUEUE.md`
+note flagged as next-plausible (raw-interpolation class beyond `ray-bedroom`).
+The six `camera-*` subviews themselves turned out clean — each is just a back
+chip plus a `webrtc-camera` card, no template content to guard. Widening the
+grep for raw `{{ states(...) }}` interpolation elsewhere in the file (outside
+Billing's `bill-*` views, which are out of scope) turned up three unguarded
+instances, plus one genuine false-safe finding caught while checking the
+same `lighting-modes` view.
+
+| ID | Sev | View / component | Summary | Fixed in | Status |
+|---|---|---|---|---|---|
+| UI-031 | S4 | `home` quick-control chip row (Person); `home` Rooms grid (Climate card); `light-ray-bedroom` (Roller Shade card) | Same raw-interpolation class as UI-006/UI-030: three cards printed a raw `states(...)` value with no guard and no bilingual text — the `home` view's Person chip showed the literal `person.raymond_du` state string (`home`/`not_home`, or `unavailable` verbatim) instead of the distance-based bilingual convention already used on `people-locations` and `ipad-command-center`; the `home` Rooms-grid Climate card printed the raw lowercase HVAC mode (or `unavailable`) instead of the guarded/title-cased convention already used two cards away (Parents Room, line ~375); the Roller Shade card on `light-ray-bedroom` printed the raw cover state and an unguarded battery percentage that would render `unavailable%` exactly like the Powerpal battery card UI-020 already fixed. All three now use the guards/bilingual conventions already established elsewhere in the same file for the same entities. | `<PENDING>` | FIXED — AWAITING LIVE VERIFICATION |
+| REG-013 | MED | `lighting-modes` — Current State section (Living Room, Ray Bedroom, Dining cards) | The recurring false-safe-state class: each card read `'Off' if is_state(light,'off') else (<percent> if brightness is not none else 'On')`. An `unavailable`/`unknown` light is neither `off` nor has a brightness attribute, so it fell into the final `else` and confidently asserted **"On"** — the exact same class CLAUDE.md's process note warns about ("never let a card assert a reassuring state it cannot see"), just for a light instead of a door/motion sensor. Now shows bilingual "Offline"/"离线" when the light is unavailable/unknown, ahead of the existing off/percentage branches. Icon colour was already safe (defaults to grey unless confirmed `on`) — text was the only false-safe surface. | `<PENDING>` | FIXED — AWAITING LIVE VERIFICATION |
+
+---
+
 ## Regression audit — 2026-08-29
 
 Baseline audit against `ha-deploy` HEAD `7f304ad`, covering the 12 commits

@@ -128,9 +128,8 @@ views:
           navigation_path: /deez-smart-home/cameras
       - type: template
         icon: mdi:account
-        content: '{{ states(''person.raymond_du'') }}'
-        icon_color: '{{ ''green'' if is_state(''person.raymond_du'',''home'') else
-          ''blue'' }}'
+        content: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set d = distance(''zone.home'',''person.raymond_du'') %}{% if d is not number %}{{ ''未知'' if cn else ''Unknown'' }}{% elif d <= 0.1 %}{{ ''在家'' if cn else ''Home'' }}{% else %}{% if cn %}距家 {{ d | round(1) }} 公里{% else %}{{ d | round(1) }} km away{% endif %}{% endif %}'
+        icon_color: '{% set d = distance(''zone.home'',''person.raymond_du'') %}{% if d is not number %}grey{% elif d <= 0.1 %}green{% elif d < 50 %}orange{% else %}red{% endif %}'
         tap_action:
           action: navigate
           navigation_path: /deez-smart-home/people-locations
@@ -479,7 +478,7 @@ views:
       grid_options:
         columns: 3
       primary: Climate
-      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{{ ''父母房空调'' if cn else ''Parents AC'' }} {{ states(''climate.bedroom_parents_room_ac'') }}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set bad = [''unavailable'',''unknown'',''none''] %}{% set ac = states(''climate.bedroom_parents_room_ac'') %}{{ ''父母房空调'' if cn else ''Parents AC'' }} {{ ''—'' if ac in bad else (ac | replace(''_'','' '') | title) }}'
       icon: mdi:thermostat
       icon_color: '{{ ''blue'' if states(''climate.bedroom_parents_room_ac'') not
         in [''off'',''unavailable'',''unknown''] else ''grey'' }}'
@@ -3428,7 +3427,7 @@ views:
       heading: '{{ ''卧室概况'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Bedroom Context'' }}'
     - type: custom:mushroom-template-card
       primary: Roller Shade
-      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{{ states(''cover.aqara_roller_shade_driver_e1'') }} {{ ''• 电量'' if cn else ''• Battery'' }} {{ states(''sensor.aqara_roller_shade_driver_e1_battery'') }}%'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set bad = [''unavailable'',''unknown'',''none''] %}{% set s = states(''cover.aqara_roller_shade_driver_e1'') %}{% if s == ''open'' %}{{ ''窗帘开'' if cn else ''Shade open'' }}{% elif s == ''closed'' %}{{ ''窗帘关'' if cn else ''Shade closed'' }}{% else %}{{ ''—'' }}{% endif %} {{ ''• 电量'' if cn else ''• Battery'' }} {% set b = states(''sensor.aqara_roller_shade_driver_e1_battery'') %}{{ ''—'' if b in bad else ((b | float(0) | round(0) | int) ~ ''%'') }}'
       icon: mdi:roller-shade
       icon_color: indigo
       entity: cover.aqara_roller_shade_driver_e1
@@ -3560,25 +3559,19 @@ views:
       heading: '{{ ''当前状态'' if is_state(''input_boolean.chinese_dashboard'',''on'') else ''Current State'' }}'
     - type: custom:mushroom-template-card
       primary: Living Room
-      secondary: '{% set b = state_attr(''light.living_room'',''brightness'') %} {{
-        ''Off'' if is_state(''light.living_room'',''off'') else ((((b | float / 255)
-        * 100) | round(0) ~ ''%'') if b is not none else ''On'') }}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set b = state_attr(''light.living_room'',''brightness'') %}{% if is_state(''light.living_room'',''unavailable'') or is_state(''light.living_room'',''unknown'') %}{{ ''离线'' if cn else ''Offline'' }}{% elif is_state(''light.living_room'',''off'') %}{{ ''关闭'' if cn else ''Off'' }}{% else %}{{ ((((b | float / 255) * 100) | round(0)) ~ ''%'') if b is not none else (''开启'' if cn else ''On'') }}{% endif %}'
       icon: mdi:sofa
       icon_color: '{{ ''amber'' if is_state(''light.living_room'',''on'') else ''grey''
         }}'
     - type: custom:mushroom-template-card
       primary: Ray Bedroom
-      secondary: '{% set b = state_attr(''light.bedroom_bedroom'',''brightness'')
-        %} {{ ''Off'' if is_state(''light.bedroom_bedroom'',''off'') else ((((b |
-        float / 255) * 100) | round(0) ~ ''%'') if b is not none else ''On'') }}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set b = state_attr(''light.bedroom_bedroom'',''brightness'') %}{% if is_state(''light.bedroom_bedroom'',''unavailable'') or is_state(''light.bedroom_bedroom'',''unknown'') %}{{ ''离线'' if cn else ''Offline'' }}{% elif is_state(''light.bedroom_bedroom'',''off'') %}{{ ''关闭'' if cn else ''Off'' }}{% else %}{{ ((((b | float / 255) * 100) | round(0)) ~ ''%'') if b is not none else (''开启'' if cn else ''On'') }}{% endif %}'
       icon: mdi:bed
       icon_color: '{{ ''amber'' if is_state(''light.bedroom_bedroom'',''on'') else
         ''grey'' }}'
     - type: custom:mushroom-template-card
       primary: Dining
-      secondary: '{% set b = state_attr(''light.dining'',''brightness'') %} {{ ''Off''
-        if is_state(''light.dining'',''off'') else ((((b | float / 255) * 100) | round(0)
-        ~ ''%'') if b is not none else ''On'') }}'
+      secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set b = state_attr(''light.dining'',''brightness'') %}{% if is_state(''light.dining'',''unavailable'') or is_state(''light.dining'',''unknown'') %}{{ ''离线'' if cn else ''Offline'' }}{% elif is_state(''light.dining'',''off'') %}{{ ''关闭'' if cn else ''Off'' }}{% else %}{{ ((((b | float / 255) * 100) | round(0)) ~ ''%'') if b is not none else (''开启'' if cn else ''On'') }}{% endif %}'
       icon: mdi:table-chair
       icon_color: '{{ ''amber'' if is_state(''light.dining'',''on'') else ''grey''
         }}'

@@ -373,6 +373,7 @@ recorded in `DASHBOARD_BACKLOG.md` or `DASHBOARD_ISSUES.md`.
 | Billing privacy (`bill-electricity`, `bill-gas` account-number literals) | Billing | `23c0301` — 2026-08-30 | `LIVE_VERIFICATION_REQUIRED` | 2026-08-30 +6h from push | Closes the account-number half of `BILL-001`. NMI/MIRN portion intentionally untouched — `BLOCKED`, needs owner decision, see `DASHBOARD_BACKLOG.md`. |
 | False-safe door-count aggregates (`home` hero + quick chip + Security card, `cameras` chip row, `ipad-command-center` chip row) | Main | `b058006` + follow-up — 08-30 01:50 | `LIVE_VERIFICATION_REQUIRED` | 08-30 07:50 | Closes REG-007..011. Continuation of the REG-001..006 false-safe-state sequence under RCP rule 5/7 — the same three-sensor door list was copy-pasted unguarded into 5 cards across 3 views; all 5 now guarded. REG-008 was corrected from an initial mislog against `ipad-command-center` to its actual location on `cameras` — see `DASHBOARD_ISSUES.md`. |
 | LetPot Grow Light raw-interpolation guard (`ray-bedroom`, ~L859) | Main | `691689a` — 2026-08-30 | `LIVE_VERIFICATION_REQUIRED` | 2026-08-30 +6h from push | Closes `UI-030`. Found while widening the REG-007..011 aggregate sweep to `climate`/`network`/`status`/room views — that sweep itself was clean, no new false-safe instance found anywhere. |
+| Raw-interpolation fixes (`home` Person chip, `home` Climate card, `light-ray-bedroom` Roller Shade) + one false-safe fix (`lighting-modes` Current State) | Main | `<PENDING>` — 2026-08-30 | `LIVE_VERIFICATION_REQUIRED` | 2026-08-30 +6h from push | Closes `UI-031` and `REG-013`. Camera-subview sweep the previous note recommended was clean (six subviews are just back chip + webrtc card); widened to a whole-file raw-interpolation grep instead. See `DASHBOARD_PROGRESS.md` for full detail. |
 | Bilingual template pass (all 36 views) | Main | `f04a59f` — 08-29 20:51 | `LIVE_VERIFICATION_REQUIRED` | 08-30 02:51 | Sequence `f4e7ec3`→`fa286de`→`f04a59f`; Main may continue under RCP rule 5. |
 | False-safe status regressions (`security`, `lights`, `cameras`, `home`) | Main | `b5eee22` — 08-29 23:37 | `LIVE_VERIFICATION_REQUIRED` | 08-30 05:37 | Closes REG-001/002/003. |
 | Heading-card contrast (`themes/deez_your_name.yaml`) | Main | `9926233` — 08-29 23:42 | `LIVE_VERIFICATION_REQUIRED` | 08-30 05:42 | Closes UI-027; theme-level rule, no dashboard YAML. |
@@ -642,7 +643,7 @@ be implemented.
 
 | Routine | Item | Priority | State | Reason Selected |
 |---|---|---|---|---|
-| Main CasaRay Upgrade | `DR-001` — iPad Command Center density | P3 | `PLANNED` — needs a design decision before implementation | Still the only scoped item in Main's queue after this run's widened false-safe sweep (clean) and the small `UI-030` fix — score **−2** (Impact 3, Effort 4, Risk 4), selected by being the sole remainder, not by rank. Explicitly "advisory item, no implementation agreed": needs a CasaRay Design Reviewer brief before Main writes code. Everything else Main owns (`UI-011`, and the REG-001..011/UI-027/UI-030 batches) is `LIVE_VERIFICATION_REQUIRED` and waiting on the owner. |
+| Main CasaRay Upgrade | `DR-001` — iPad Command Center density | P3 | `PLANNED` — needs a design decision before implementation | Still the only scoped item in Main's queue after this run's camera-subview sweep (clean) and the `UI-031`/`REG-013` fixes — score **−2** (Impact 3, Effort 4, Risk 4), selected by being the sole remainder, not by rank. Explicitly "advisory item, no implementation agreed": needs a CasaRay Design Reviewer brief before Main writes code. Everything else Main owns (`UI-011`, and the REG-001..013/UI-027/UI-030/UI-031 batches) is `LIVE_VERIFICATION_REQUIRED` and waiting on the owner. |
 | Billing Dashboard Upgrade | `BILL-002` — scope Home Assistant exposure for a `billing/history.json` structured store (see `BILLING_PROGRESS.md`) | P2 | `PLANNED` — proposal written, needs owner direction | `BILL-001`'s account-number portion is fixed and pushed (`23c0301`); its NMI/MIRN portion is `BLOCKED` on an owner decision (no helper exists, cannot invent one) and is excluded from selection (queue rule 4). `BILL-002` is next by ownership/priority; the safe move is a written storage-architecture proposal (done, see `BILLING_PROGRESS.md`) rather than dashboard YAML against unconfirmed sensors. `BILL-003` stays blocked on both. |
 
 ---
@@ -759,6 +760,51 @@ be implemented.
   subviews and the `bills`/`bill-*` views is the next plausible source of
   small, safe, high-confidence fixes — not attempted this run, and the bill
   subviews are Billing-owned so would need Billing's routine, not Main's.
+- **2026-08-30 (this run) — camera-subview sweep (clean); `UI-031`/`REG-013`
+  fixed (`<PENDING>`):** followed the previous note's own recommendation (3):
+  the six `camera-*` subviews turned out clean — each is only a back chip and
+  a `custom:webrtc-camera` card, no template content at all to guard, so no
+  fix was possible or needed there. Widened the same raw-interpolation grep
+  to the rest of the non-billing file instead and found three genuine
+  unguarded/untranslated `{{ states(...) }}` instances: the `home`
+  quick-control Person chip (raw `home`/`not_home`/`unavailable` state
+  string, now the same distance-based bilingual convention already used on
+  `people-locations`/`ipad-command-center`), the `home` Rooms-grid Climate
+  card (raw lowercase HVAC mode, now guarded/title-cased like the adjacent
+  Parents Room card), and the `light-ray-bedroom` Roller Shade card (raw
+  cover state plus an **unguarded battery percentage** that would have
+  rendered `unavailable%` — the exact UI-020 class). Filed as `UI-031`. While
+  checking `lighting-modes` for the same class, found a genuine false-safe
+  regression instead (not raw-interpolation): its three "Current State"
+  light cards asserted a confident "On" for an `unavailable`/`unknown` light
+  (neither the `off` branch nor the brightness-not-none branch caught it).
+  Filed as `REG-013` and fixed with the standard bilingual
+  "Offline"/"离线" branch. No entity invented — all four entities were
+  already referenced elsewhere in the file under the conventions reused.
+  Deliberately left the dashboard-wide `'On' if is_state(...,'on') else
+  'Off'` toggle-chip pattern untouched — same theoretical gap, but a direct
+  control on nearly every lighting view, never flagged across five prior
+  regression sweeps, and redesigning it now would be a large speculative
+  change outside this batch's scope; flagged for a future run if the owner
+  wants it addressed. `bash scripts/ha_validate.sh` passes clean (7/7), 386
+  templates, 36/36 views, no entity/view loss. Added `REG-013`/`UI-031` rows
+  to `LIVE_VERIFICATION_QUEUE.md` and corrected its pending-count footer for
+  this batch's own additions (39→42) in the same commit, to avoid repeating
+  `REG-012`'s drift — `REG-012`'s own pre-existing gap (the still-missing
+  `UI-030` row and the `34`→`39` portion of the undercount) is unchanged and
+  stays with the Regression Auditor / Daily Project Coordinator, not
+  self-fixed here. Full narrative in `DASHBOARD_PROGRESS.md`. **Next
+  recommended work:** queue is exhausted again. In order: (1) the owner
+  live-verifies the now-42-row `LIVE_VERIFICATION_QUEUE.md` backlog, gives
+  `UI-011` one look at the Energy card, or confirms/rejects the toggle-chip
+  question raised above; (2) if `DR-001` gets a concrete design brief it
+  becomes Main's next P3 — still do not start a 52-card redesign
+  speculatively; (3) failing both, the `bills`/`bill-*` raw-interpolation
+  pass is still open but Billing-owned, not Main's to take; a fresh
+  whole-file grep for any remaining `| float(0)` cast that lost its guard, or
+  a second look at the six camera subviews' `webrtc-camera` config itself
+  (not template content) for a UX-only improvement, are the next plausible
+  low-risk sources if nothing above unblocks first.
 
 ### Billing
 - **Queue:** `BILL-001` (P1, partial/blocked) → `BILL-002` (P2, scoped) →

@@ -28,6 +28,73 @@ minutes.
 
 Detailed. These are the batches current work and open verification depend on.
 
+### `<PENDING>` — camera-subview sweep (clean); raw-interpolation fixes (UI-031); one new false-safe finding (REG-013)
+Purpose: continued the 691689a note's own recommendation — a fresh
+raw-interpolation (UI-006/UI-030 class) pass across the six `camera-*`
+subviews, since the bill subviews flagged alongside them are Billing-owned
+and out of scope for Main.
+
+The six camera subviews themselves were clean: each is just a back chip plus
+a `custom:webrtc-camera` card with a static title, no template content to
+guard. Widened the grep instead to every remaining raw `{{ states(...) }}`
+interpolation in the file (excluding `bill-*`, Billing-owned) and found three
+genuine instances, plus one separate false-safe finding noticed while
+checking the same `lighting-modes` view:
+
+- **`UI-031`** — three unguarded/untranslated raw interpolations:
+  - `home` quick-control Person chip: printed the raw `person.raymond_du`
+    state string verbatim (`home`/`not_home`, or a literal `unavailable`).
+    Replaced with the distance-based bilingual convention already
+    established for the same person on `people-locations` and
+    `ipad-command-center` (在家/未知/`X km away`), and the icon colour now
+    uses the same grey/green/orange/red distance banding instead of a
+    two-branch green/blue that had no unavailable case.
+  - `home` Rooms-grid Climate card: printed the raw lowercase HVAC mode (or
+    `unavailable`) with no guard, two cards away from the Parents Room
+    card (~L375) which already guards the identical entity with a
+    `bad`/title-case convention. Now reuses that same convention.
+  - `light-ray-bedroom` Roller Shade card: printed the raw cover state and
+    an **unguarded battery percentage** that would render `unavailable%` —
+    the exact class UI-020 already fixed for the Powerpal battery card.
+    Now guards both the cover state (matching the `home`/`ipad-command-center`
+    Ray Bedroom summary cards' existing 开/关/— convention) and the battery
+    reading (matching the Powerpal card's `bad`-list convention, ~L1492).
+  No entity was invented — all four entities were already referenced
+  elsewhere in the file under the conventions this batch reused.
+- **`REG-013`** — a genuine false-safe finding, not the raw-interpolation
+  class: the `lighting-modes` "Current State" section's three light cards
+  (Living Room, Ray Bedroom, Dining) read
+  `'Off' if is_state(light,'off') else (<percent> if brightness is not none else 'On')`.
+  An `unavailable`/`unknown` light is neither `off` nor has a `brightness`
+  attribute, so all three fell into the final branch and confidently showed
+  **"On"** — CLAUDE.md's process note by name ("never let a card assert a
+  reassuring state it cannot see"), just for a light rather than a
+  door/motion sensor. Icon colour was already safe (grey unless confirmed
+  `on`); only the status text was the false-safe surface. Now shows
+  bilingual "Offline"/"离线" ahead of the off/percentage branches.
+
+Deliberately **not** touched: the widespread `'On' if is_state(...,'on') else
+'Off'` toggle-chip pattern used across most light rows in the file (e.g.
+`light-living-room`, `light-ray-bedroom` power chips). That pattern has the
+same theoretical gap (an unavailable light reads "Off") but is a direct
+toggle control rather than a status-summary card, appears on essentially
+every lighting view, and was never flagged by the REG-001..012 audits despite
+several thorough sweeps — redesigning it dashboard-wide would be a large,
+speculative redesign outside this batch's small-controlled-batch scope, not
+a targeted fix. Left as a candidate for a future run if the owner confirms
+it's wanted.
+
+Validated: `bash scripts/ha_validate.sh` passes clean (7/7), 386 templates
+compiled (unchanged), 36/36 views resolve, no entity/view loss, diff touches
+only the four cards described above (7 insertions / 14 deletions net, single
+file). Added `REG-013`/`UI-031` rows to `LIVE_VERIFICATION_QUEUE.md` and
+corrected its "checks pending" footer to the table's actual current count
+(42) in the same commit — the prior batch's `REG-012` finding was exactly
+this kind of drift, so this batch does not repeat it for its own additions
+(the pre-existing `691689a`/`REG-007..011` gap `REG-012` describes is
+unchanged and still owned by the Regression Auditor / Daily Project
+Coordinator).
+
 ### `691689a` — false-safe aggregate sweep widened; one raw-interpolation fix (UI-030)
 Purpose: Main's queue was exhausted (`DR-001` needs a design brief, everything
 else `LIVE_VERIFICATION_REQUIRED`), so this run carried out the widened sweep
