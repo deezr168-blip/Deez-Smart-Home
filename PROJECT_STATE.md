@@ -823,6 +823,47 @@ be implemented.
   decision. **Next recommended work, unchanged from above:** owner
   live-verification of the 42-row queue, or a `DR-001` design brief, are what
   unblock Main's next batch.
+- **2026-08-30 — fresh Main sweep, no code change:** fetched
+  `origin/ha-deploy` — `HEAD` unchanged at `1bbe035`, tree clean before and
+  after. Re-read `CLAUDE.md`, this file, `DASHBOARD_ISSUES.md` (Open section:
+  only `UI-011`, excluded by queue rule 4, and `REG-012`, tracking-only and
+  not Main-owned) and `DASHBOARD_BACKLOG.md`'s active queue (only `DR-001`,
+  gated on a design brief this routine should not write itself). Confirmed no
+  new actionable P0/P1/P2 Main item exists. Ran four grep sweeps the prior
+  notes had not yet tried: (1) `icon_color` two-branch templates without an
+  unavailable guard — the only unguarded instances are the dashboard-wide
+  light/motion toggle-chip pattern (already flagged and deliberately left
+  alone under `ccfb0c8`) and the `input_boolean.*_paid` bill-status chips,
+  which are Billing-owned (`bill-*` views), not Main's; (2) every
+  `.attributes.` read in the file — all already guarded with `is not
+  none`/`default(`, none bare; (3) `int(0)` casts (5 total) and every
+  `round(...)` chained off a raw `states()` read — all sit behind an existing
+  `bad`/unavailable guard branch; (4) every `cover.` entity reference — all
+  three roller-shade cards already fall back to an em dash / "Shade —" rather
+  than asserting `open`/`closed` for an unavailable state, so no UI-031-class
+  regression remains there. Also checked structural design compliance from
+  `CLAUDE.md`'s Design Direction section: every `max_columns` in the file is
+  ≤2, the theme's single `ha-card-border-radius: 18px` rule is the only
+  radius definition found (no per-card override), and a scripted count of
+  `custom:mushroom-title-card` per view confirms exactly one on every view
+  that has one — the seven views with zero (six `camera-*` subviews plus
+  `ipad-command-center`) are intentional: the camera subviews are back-chip +
+  `webrtc-camera` only (already confirmed clean under `ccfb0c8`), and
+  `ipad-command-center` is a kiosk wall panel built on `heading` cards with
+  no page title by design (`99a77b4`) — its density is exactly `DR-001`'s
+  open question, not a bug to fix speculatively. `bash scripts/ha_validate.sh`
+  passes clean (7/7, no drift). **No fix made — nothing found to fix.** This
+  is the fourth consecutive sweep (raw-interpolation, false-safe aggregate,
+  float-sentinel, and now icon_color/attribute/int/cover/structural) to come
+  back clean; Main's coded-fix surface appears genuinely exhausted without
+  new repository evidence or an owner decision. **Next recommended work,
+  unchanged:** (1) owner live-verification of the `LIVE_VERIFICATION_QUEUE.md`
+  backlog (42 rows) or one look at `UI-011`'s Energy card; (2) a concrete
+  `DR-001` design brief, which would become Main's next actionable P3; (3)
+  failing both, the `bills`/`bill-*` raw-interpolation pass is still open but
+  Billing-owned; a future run should look for genuinely new evidence (e.g.
+  entities added since the last Entity Scout pass) rather than repeating this
+  run's now four-times-clean sweep classes.
 
 ### Billing
 - **Queue:** `BILL-001` (P1, partial/blocked) → `BILL-002` (P2, partial) →
