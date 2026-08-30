@@ -101,6 +101,85 @@ Next Actionable Work pointer must still be revalidated against current `HEAD`.
 
 ---
 
+## Routine Startup Profiles
+
+What each routine loads at startup. Applies the Context Loading Strategy per
+routine; it changes **what is read**, never what a routine is allowed to do.
+Ownership, authority and every policy below are unaffected.
+
+**Every routine, always:** read `PROJECT_STATE.md` in full · `git fetch origin
+ha-deploy` · confirm the branch is current and the worktree clean.
+
+| Routine | Always load | Selective load | Normally skip |
+|---|---|---|---|
+| **Main CasaRay Upgrade** | `PROJECT_STATE.md`; fetch + branch state | Its own active backlog items; open issues for the target view; `LIVE_VERIFICATION_QUEUE.md` rows (`PENDING`/`FAIL`/`PARTIAL`) for that view; `git log -- <view/theme path>`; recent `DASHBOARD_PROGRESS.md` entries for the same area | Full `DASHBOARD_PROGRESS.md`; resolved issue tables; awaiting/completed backlog; `archive/`; billing-specialist detail |
+| **Billing Dashboard Upgrade** | `PROJECT_STATE.md`; fetch + branch state | `BILL-*` backlog items; billing issues; verification rows for `bills`/`bill-*`; `git log -- dashboards/…` scoped to bill views; billing-supporting files | Full `DASHBOARD_PROGRESS.md`; non-billing issues and backlog; `archive/`; general CasaRay UX detail |
+| **Regression Auditor** | `PROJECT_STATE.md`; fetch + branch state | Open issues + the active audit section; `git log` for the commit range under audit; the diffs it is auditing; verification `FAIL`/`PARTIAL` rows | Full `DASHBOARD_PROGRESS.md`; resolved issue narrative; `archive/` unless testing a recurrence; backlog items outside the audited range |
+| **Entity & Feature Scout** | `PROJECT_STATE.md`; fetch + branch state | The dashboard's current entity references; open issues touching entities; its own backlog items | `DASHBOARD_PROGRESS.md`; issue history; `archive/`; other routines' backlog items; verification queue |
+| **CasaRay Design Reviewer** | `PROJECT_STATE.md`; fetch + branch state | The views under review; `themes/deez_your_name.yaml`; design-related backlog (`DR-*`, `UI-027`); verification rows for visual items | Full `DASHBOARD_PROGRESS.md`; implementation narrative; `archive/` unless retrieving prior design rationale; billing internals |
+
+Read `archive/` only when investigating a regression recurrence or retrieving
+prior design rationale. Read another specialist's area only when auditing it.
+
+### Normalized startup blocks
+
+Drop-in replacements for the routines' existing read lists. Documented here
+only — the Claude Routine configuration is not edited by this policy.
+
+**Main CasaRay Upgrade**
+```
+Read PROJECT_STATE.md in full. Fetch origin/ha-deploy; confirm branch current
+and tree clean. Then load only: your active DASHBOARD_BACKLOG.md items, open
+DASHBOARD_ISSUES.md entries for the target view, any PENDING/FAIL/PARTIAL rows
+in LIVE_VERIFICATION_QUEUE.md for that view, and git log scoped to the files
+you will touch. Do not read DASHBOARD_PROGRESS.md or archive/ end to end.
+Before touching production implementation, run Pre-Implementation
+Revalidation and take the Active Work Lease.
+```
+
+**Billing Dashboard Upgrade**
+```
+Read PROJECT_STATE.md in full. Fetch origin/ha-deploy; confirm branch current
+and tree clean. Then load only: BILL-* backlog items, billing-related issues,
+verification rows for bills/bill-*, and git log scoped to the bill views and
+billing-supporting files. Do not read DASHBOARD_PROGRESS.md or archive/ end to
+end, and do not load general CasaRay UX detail. Before touching production
+implementation, run Pre-Implementation Revalidation and take the Active Work
+Lease.
+```
+
+**Regression Auditor**
+```
+Read PROJECT_STATE.md in full. Fetch origin/ha-deploy; confirm branch current.
+Then load only: the Open section of DASHBOARD_ISSUES.md, git log for the
+commit range under audit, the diffs in that range, and any FAIL/PARTIAL
+verification rows. Skip resolved issue narrative and DASHBOARD_PROGRESS.md
+unless testing a recurrence, in which case read the specific archived entry.
+Advisory only: record findings as issues/backlog items; never modify
+production dashboard YAML.
+```
+
+**Entity & Feature Scout**
+```
+Read PROJECT_STATE.md in full. Fetch origin/ha-deploy; confirm branch current.
+Then load only: current entity references in the dashboard, open issues
+touching entities, and your own backlog items. Skip DASHBOARD_PROGRESS.md,
+archive/, the verification queue and other routines' items. The entity
+registry is unavailable here — record findings as claims, not facts. Advisory
+only: never modify production dashboard YAML.
+```
+
+**CasaRay Design Reviewer**
+```
+Read PROJECT_STATE.md in full. Fetch origin/ha-deploy; confirm branch current.
+Then load only: the views under review, themes/deez_your_name.yaml,
+design-related backlog items (DR-*, UI-027) and verification rows for visual
+items. Read archive/ only to retrieve prior design rationale. Advisory only:
+queue design findings; never modify production dashboard YAML.
+```
+
+---
+
 ## Priority Model
 
 | Level | Class | Covers |
@@ -276,7 +355,7 @@ recorded in `DASHBOARD_BACKLOG.md` or `DASHBOARD_ISSUES.md`.
 | Heading-card contrast (`themes/deez_your_name.yaml`) | Main | `9926233` — 08-29 23:42 | `LIVE_VERIFICATION_REQUIRED` | 08-30 05:42 | Closes UI-027; theme-level rule, no dashboard YAML. |
 | Residual bilingual gaps (`people-locations`, `ipad-command-center`, `home`) | Main | `dff00f3` — 08-29 23:45 | `LIVE_VERIFICATION_REQUIRED` | 08-30 05:45 | Closes REG-004/005/006. REG-005 changed English `WAN —` → "WAN not reporting" — owner may want to review. |
 | Regression audit record (`DASHBOARD_ISSUES.md`) | Regression Auditor | `3116495` — 08-29 22:49 | `PUSHED` | 08-30 04:49 | Baseline REG-001..006 fresh; do not re-audit that range. |
-| Coordination state (`PROJECT_STATE.md`, `DASHBOARD_BACKLOG.md`) | Shared | `6e8f6b0` — 08-30 00:18 | `PUSHED` | 08-30 06:18 | Structure settled. Append to your own sections; do not restructure. |
+| Coordination state (`PROJECT_STATE.md`, `CLAUDE.md` startup block) | Shared | `STAMPSHA` — 08-30 00:25 | `PUSHED` | 08-30 06:25 | Structure settled. Append to your own sections; do not restructure. |
 
 Back / previous-page navigation is **complete** (35/36 views, parent-targeted;
 `home` is root) and its window long expired — recorded under UI-009/UI-017 in
@@ -595,11 +674,12 @@ be implemented.
 
 ## Last Coordination Update
 
-- **Date/time:** 2026-08-30 00:18 UTC
+- **Date/time:** 2026-08-30 00:25 UTC
 - **Branch:** `ha-deploy`
-- **`ha-deploy` HEAD before this update:** `2d877ac`
-- **This update's commit:** `6e8f6b0` — Pre-Implementation Revalidation
-  policy. No item state, priority or verification result was changed.
+- **`ha-deploy` HEAD before this update:** `281b21b`
+- **This update's commit:** `STAMPSHA` — Routine Startup Profiles, normalized
+  startup blocks, and the `CLAUDE.md` session-start fix. No item state,
+  priority or verification result changed.
 
 Per `CLAUDE.md`, a commit cannot contain its own hash: this update's SHA is
 written by the `docs: stamp` commit that immediately follows it.

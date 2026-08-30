@@ -1,8 +1,8 @@
 # Deez Smart Home — project rules
 
 Permanent rules and architecture for this repository. Read this, then
-`DASHBOARD_PROGRESS.md` and `DASHBOARD_ISSUES.md`, at the start of every
-session. Resume from that recorded state; do not re-audit from scratch.
+`PROJECT_STATE.md`, at the start of every session. Resume from that recorded
+state; do not re-audit from scratch.
 
 ## What this repository is
 
@@ -17,10 +17,16 @@ themes, an English/Chinese toggle on `input_boolean.chinese_dashboard`.
 
 ## Session start
 
-1. Read `CLAUDE.md`, `DASHBOARD_PROGRESS.md`, `DASHBOARD_ISSUES.md`.
-2. `git log --oneline -15 ha-deploy` and confirm the tree is clean.
-3. Check unresolved issues **before** planning new work. High-severity
-   regressions come before cosmetic improvement.
+1. Read `CLAUDE.md` and `PROJECT_STATE.md` in full. `PROJECT_STATE.md` is the
+   authoritative coordination state and carries your routine's startup
+   profile.
+2. `git fetch origin ha-deploy`, `git log --oneline -15 ha-deploy`, confirm
+   the tree is clean and the branch is current.
+3. Load everything else **selectively**, per the Context Loading Strategy and
+   Routine Startup Profiles in `PROJECT_STATE.md`. Do not read
+   `DASHBOARD_PROGRESS.md` or `archive/` end to end as a matter of course.
+4. Check open issues and the active backlog **before** planning new work.
+   High-severity regressions come before cosmetic improvement.
 
 ## Working rules
 
