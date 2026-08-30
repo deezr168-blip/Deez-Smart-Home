@@ -130,6 +130,97 @@ retailer's rate sheet does a change become correct — and it is applied in the
 Fronius/SolarNet integration, not on this branch. Close on live confirmation,
 never on the arithmetic alone.
 
+---
+
+## UI-032 — battery health had no surface at all
+
+**Implemented 2026-08-30 (`PENDING-SHA`). Status: FIXED — AWAITING LIVE
+VERIFICATION.** Sev S2: not a false statement, but a maintenance condition the
+household could not see. Front Door and RingRing are entry devices and the
+C425 is an outdoor camera; all three run flat without warning.
+
+### What was wrong
+
+The dashboard surfaced 2 of roughly a dozen live battery entities. Nothing
+showed **Front Door 20%**, **RingRing 21%** or **Tapo C425 North Wall 28%**.
+The `cameras` view's chip read "6/6 online", which was true and said nothing
+about charge — a camera at 28% is still online right up until it isn't.
+
+### What was added
+
+**One** card: a `type: conditional` in the `home` view's **Active Now** strip
+(after the Bills alert, before the Rooms grid), following the strip's existing
+pattern exactly — `grid_options` + `conditions` + a bilingual
+`custom:mushroom-template-card`. It is `columns: 12` rather than the strip's
+usual 6 because its longest realistic line is ~72 characters and the design
+direction forbids truncated labels on iPad landscape.
+
+It is **contextual, not a panel**: the card does not exist on screen at all
+unless a battery is genuinely below 30% or genuinely not reporting. With every
+battery healthy the Active Now strip looks exactly as it did before.
+
+| Property | Behaviour |
+|---|---|
+| Shows | Names and percentages of low batteries, at most three, then `+N more` |
+| Unreadable | One → "East Wall not reporting"; several → "N not reporting" |
+| Icon colour | `red` if any is low · `orange` if only unreadable · `green` otherwise |
+| Tap | Navigates to `/deez-smart-home/cameras` |
+| Language | Full bilingual pair on every branch, per the toggle convention |
+
+### Entities bound — all six owner-verified, none inferred
+
+`sensor.front_door_battery` · `sensor.living_room_ringring_battery` ·
+`sensor.tapo_c425_north_wall_battery` · `sensor.tapo_c420_south_wall_battery` ·
+`sensor.tapo_c420_east_wall_battery` · `sensor.tapo_camera_bcca_battery`
+
+**`sensor.tapo_c420_south_wall_battery_2` is deliberately NOT bound** — the
+owner identified it as a stale duplicate that reads `unavailable` forever.
+Binding it would have manufactured a permanent false alarm. Verified absent
+from the file by grep.
+
+### How a missing reading is handled
+
+Two independent guards, because the gate and the text can disagree:
+
+1. **The visibility gate** fires on `numeric_state below: 30` *or*
+   `state: unavailable`, per entity. `numeric_state` is false for a
+   non-numeric state, so an unreadable sensor can never satisfy the *low*
+   branch.
+2. **The card text** re-checks every entity itself: `unavailable`/`unknown`/
+   `none`, *and* `is_number` for anything else non-numeric. Only a value that
+   passes both is compared against 30 or rendered as a percentage.
+
+A missing reading therefore renders as **"not reporting"** and colours
+`orange`. It is never shown as 0%, never counted as low, never counted as
+healthy, and never silently dropped from the tally — the failure mode
+`REG-007..011` were filed for.
+
+### Verified by rendering, not by inspection
+
+The primary and `icon_color` templates were rendered against six scenarios
+before the file was touched: the live states; all healthy; all unavailable;
+all six low; a mixed `unknown`/`none`/non-numeric-string case; and the
+29/30 boundary. Every branch produced correct text, correct colour and a
+bounded length (12–72 chars). The 30 boundary is exclusive in both the gate
+and the text, so they cannot disagree about it.
+
+### Still to confirm live
+
+- `condition: or` is the one construct **new to this file**. It is core Home
+  Assistant conditional-card schema and this instance is demonstrably modern
+  (it uses `grid_options`, HA 2024.11+), but Lovelace schema is not verifiable
+  from here — see `DEPLOYMENT_BLOCKERS.md`. If the card never appears despite
+  three batteries being under 30%, this is the first thing to check.
+- Per the owner: close `UI-032` only once all three verified low batteries
+  display correctly **and clear correctly when no longer low**. The clearing
+  half cannot be observed from here at all.
+
+### Not covered
+
+Only these six entities. Other live battery entities (the Hue sensors, the
+contact sensors, the Aqara shade, the Powerpal gateway) have not been
+owner-verified as entity IDs, and the never-invent rule still applies to them.
+
 ## Fixed — tracking only (no live dashboard component)
 
 | ID | Sev | View / component | Summary | Fixed in | Status |

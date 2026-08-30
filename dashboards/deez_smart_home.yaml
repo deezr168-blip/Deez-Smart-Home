@@ -265,6 +265,57 @@ views:
         tap_action:
           action: navigate
           navigation_path: /deez-smart-home/bills
+    - type: conditional
+      grid_options:
+        columns: 12
+      conditions:
+      - condition: or
+        conditions:
+        - condition: numeric_state
+          entity: sensor.front_door_battery
+          below: 30
+        - condition: numeric_state
+          entity: sensor.living_room_ringring_battery
+          below: 30
+        - condition: numeric_state
+          entity: sensor.tapo_c425_north_wall_battery
+          below: 30
+        - condition: numeric_state
+          entity: sensor.tapo_c420_south_wall_battery
+          below: 30
+        - condition: numeric_state
+          entity: sensor.tapo_c420_east_wall_battery
+          below: 30
+        - condition: numeric_state
+          entity: sensor.tapo_camera_bcca_battery
+          below: 30
+        - condition: state
+          entity: sensor.front_door_battery
+          state: unavailable
+        - condition: state
+          entity: sensor.living_room_ringring_battery
+          state: unavailable
+        - condition: state
+          entity: sensor.tapo_c425_north_wall_battery
+          state: unavailable
+        - condition: state
+          entity: sensor.tapo_c420_south_wall_battery
+          state: unavailable
+        - condition: state
+          entity: sensor.tapo_c420_east_wall_battery
+          state: unavailable
+        - condition: state
+          entity: sensor.tapo_camera_bcca_battery
+          state: unavailable
+      card:
+        type: custom:mushroom-template-card
+        primary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set bad = [''unavailable'',''unknown'',''none''] %}{% set items = [(''sensor.front_door_battery'',''Front Door'',''前门''),(''sensor.living_room_ringring_battery'',''RingRing'',''门铃''),(''sensor.tapo_c425_north_wall_battery'',''North Wall'',''北墙''),(''sensor.tapo_c420_south_wall_battery'',''South Wall'',''南墙''),(''sensor.tapo_c420_east_wall_battery'',''East Wall'',''东墙''),(''sensor.tapo_camera_bcca_battery'',''Backyard Cam'',''后院'')] %}{% set ns = namespace(low=[], dead=[]) %}{% for e, en, zh in items %}{% set s = states(e) %}{% set nm = zh if cn else en %}{% if s in bad or not (s | is_number) %}{% set ns.dead = ns.dead + [nm] %}{% elif (s | float(0)) < 30 %}{% set ns.low = ns.low + [nm ~ '' '' ~ (s | float(0) | round(0) | int) ~ ''%''] %}{% endif %}{% endfor %}{% if ns.low %}{{ ns.low[:3] | join('' • '') }}{% if ns.low | count > 3 %} • +{{ (ns.low | count) - 3 }}{{ '' 个'' if cn else '' more'' }}{% endif %}{% endif %}{% if ns.low and ns.dead %} • {% endif %}{% if ns.dead %}{% if ns.dead | count == 1 %}{{ ns.dead[0] }} {{ ''无电量数据'' if cn else ''not reporting'' }}{% else %}{{ ns.dead | count }}{{ '' 个无电量数据'' if cn else '' not reporting'' }}{% endif %}{% endif %}{% if not ns.low and not ns.dead %}{{ ''电量正常'' if cn else ''Batteries OK'' }}{% endif %}'
+        secondary: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{{ ''电池需注意'' if cn else ''Battery needs attention'' }}'
+        icon: mdi:battery-alert-variant-outline
+        icon_color: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') %}{% set bad = [''unavailable'',''unknown'',''none''] %}{% set items = [(''sensor.front_door_battery'',''Front Door'',''前门''),(''sensor.living_room_ringring_battery'',''RingRing'',''门铃''),(''sensor.tapo_c425_north_wall_battery'',''North Wall'',''北墙''),(''sensor.tapo_c420_south_wall_battery'',''South Wall'',''南墙''),(''sensor.tapo_c420_east_wall_battery'',''East Wall'',''东墙''),(''sensor.tapo_camera_bcca_battery'',''Backyard Cam'',''后院'')] %}{% set ns = namespace(low=[], dead=[]) %}{% for e, en, zh in items %}{% set s = states(e) %}{% set nm = zh if cn else en %}{% if s in bad or not (s | is_number) %}{% set ns.dead = ns.dead + [nm] %}{% elif (s | float(0)) < 30 %}{% set ns.low = ns.low + [nm ~ '' '' ~ (s | float(0) | round(0) | int) ~ ''%''] %}{% endif %}{% endfor %}{% if ns.low %}red{% elif ns.dead %}orange{% else %}green{% endif %}'
+        tap_action:
+          action: navigate
+          navigation_path: /deez-smart-home/cameras
   - type: grid
     column_span: 2
     cards:

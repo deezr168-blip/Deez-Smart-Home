@@ -1714,6 +1714,11 @@ be implemented.
 - File findings in `DASHBOARD_BACKLOG.md` as evidence-based items.
 - Entity registry is unavailable here; entity existence is inferred from the
   imported live dashboard and never confirmed. Record findings as claims.
+- **2026-08-30 — `UI-032` implemented and out of the active queue.** The owner
+  supplied verified entity IDs for all six battery sensors, RingRing included,
+  which is exactly the unblock the sweep below said was needed. Built on those
+  IDs only; the stale `_battery_2` duplicate the sweep warned about was
+  excluded by name. Full record in `DASHBOARD_ISSUES.md`.
 - **2026-08-30 — first live `sensor`-domain sweep (advisory, no YAML
   touched).** Ran `GetLiveContext` over the `sensor` domain while verifying
   `UI-011` — the first live entity data any run has had. Two results:
@@ -1803,9 +1808,24 @@ be implemented.
 
 ## Last Coordination Update
 
-- **Date/time:** 2026-08-30 (this run) — Entity Scout live sensor sweep
+- **Date/time:** 2026-08-30 (this run) — UI-032 implemented
 - **Branch:** `ha-deploy`
 - **`ha-deploy` HEAD before this update:** `6d5acd1`
+- **This update's commit:** `PENDING` — implemented `UI-032` on owner-verified
+  entity IDs. One conditional card added to the `home` Active Now strip;
+  contextual, so it is absent from the screen entirely when no battery is low
+  or unreadable. Six verified entities bound, the stale
+  `sensor.tapo_c420_south_wall_battery_2` deliberately excluded. RingRing's ID
+  arrived mid-implementation and is included, so **no part of `UI-032` remains
+  blocked on entity identification**. `condition: or` is the one construct new
+  to this file and is flagged in the verification queue as the first thing to
+  check if the card fails to appear. Templates render-tested across six
+  scenarios including the 29/30 boundary and non-numeric input. `CFG-001` and
+  `CFG-002` untouched and still evidence-blocked. Validation 7/7, no entity or
+  view loss.
+
+### Superseded — previous update
+
 - **This update's commit:** `9abf860` — Entity Scout: first live
   `sensor`-domain sweep. Unit/scale cross-check across all 34 `sensor.`
   references came back **clean**; filed `UI-032` (P2, battery coverage —

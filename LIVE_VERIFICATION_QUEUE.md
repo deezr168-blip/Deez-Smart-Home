@@ -38,6 +38,8 @@ on the iPad, landscape.
 | REG-010 | Rooms → Security card door count guarded **[中]** | The "Security" card in the Rooms grid, with a door sensor disabled | Appends "N unknown" / "N 离线" after the door count instead of silently omitting the sensor; icon turns grey, not green | `d592692` | P2 | PENDING |
 | UI-031 | Quick-control Person chip and Rooms → Climate card guarded, bilingual **[guard][中]** | The Person chip (quick-control row) and the Climate card (Rooms grid), with `person.raymond_du` / `climate.bedroom_parents_room_ac` disabled | Person chip shows a distance-based bilingual label (在家/未知/X km away), never the raw entity-state string; Climate card shows "—", never a bare lowercase HVAC mode or a literal `unavailable` | `ccfb0c8` | P3 | PENDING |
 
+| UI-032 | Battery health alert added to the Active Now strip **[guard][中]** | With Front Door 20%, RingRing 21% and C425 North Wall 28%, the Active Now strip on Home | A red card: "Front Door 20% • RingRing 21% • North Wall 28% • East Wall not reporting". **Then the clearing half:** once a battery is charged above 30% its name must disappear, and when none is low and none is unreadable the card must vanish entirely rather than sit there green. Also confirm the `cameras` "6/6 online" chip is unchanged and still says nothing about battery | `PENDING-SHA` | P2 | PENDING |
+
 ## Security — `/deez-smart-home/security`
 
 | ID | What changed | What to check live | Expected result | Commit | P | Result |
@@ -153,8 +155,10 @@ result does to the issue record, the backlog and ownership — are in
 - `PASS` rows stay for traceability. A page group with nothing left
   outstanding may collapse to a one-line summary naming its IDs and date.
 
-**44 checks pending** (43 carried forward + 1 row added by the Billing
-Dashboard Upgrade routine this run: `BILL-005`, a `card_mod` text-shadow
+**45 checks pending** (44 carried forward + 1 row added this run: `UI-032`,
+the battery-health alert on Home — see `DASHBOARD_ISSUES.md`. That 44 was
+43 carried forward + 1 row added by the Billing
+Dashboard Upgrade routine: `BILL-005`, a `card_mod` text-shadow
 fix on 4 title cards — see `BILLING_PROGRESS.md` for the full batch. The
 43 itself was 44 carried forward, less `UI-011` which the owner recorded
 `PASS` on 30 Aug 2026 — the first live result this queue has received; that
