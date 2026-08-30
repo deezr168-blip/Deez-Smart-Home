@@ -1489,6 +1489,23 @@ be implemented.
   recovery status as the last active-check note above describes. A future
   run should re-fetch and re-read the top of this file first, before doing
   anything else, to check whether the pause is still in effect.
+- **2026-08-30 (this run) — re-check, pause still in effect, no code
+  change:** fetched `origin/ha-deploy` — `HEAD` unchanged at `2b71373`, tree
+  clean before and after. The **Schedule Status: PAUSED** section is
+  unmodified: no dated lift note has been added, so the owner-directed pause
+  from the previous check-in still applies. No new commits, no new evidence,
+  no human verification results recorded since the last check-in. Made no
+  dashboard-code change and did not start any queued item, per the pause.
+  Did **not** send a duplicate push notification — the previous run already
+  alerted the owner that the external schedule keeps firing after the pause
+  was recorded, and nothing has changed since that alert, so a second one
+  would be redundant per the routine's own notification guidance. **Exact
+  next recommended task:** unchanged — none from this routine until the
+  owner lifts the pause (dated note replacing the Schedule Status section);
+  at that point resume from `DR-001` / the `CFG-003` host recovery status.
+  If the owner has not yet disabled the external recurring trigger, that is
+  the actual unblock here, not further repository work. A future run should
+  again re-fetch and re-read the top of this file first.
 
 ### Billing
 - **2026-08-30 (this run) — `BILL-005` fixed (title-card text-shadow guard)
