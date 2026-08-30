@@ -163,7 +163,7 @@ useful.
 
 ---
 
-### `PENDING_SHA` — storage layer scaffolded (`BILL-002`, proposal item 1)
+### `5147eb05591bf62ff1fc6ec1836721d526d03fb3` — storage layer scaffolded (`BILL-002`, proposal item 1)
 
 Item 1 of the proposal above (storage) does not depend on the owner's
 decision for item 3 (dashboard read side), so it was safe to build this run
