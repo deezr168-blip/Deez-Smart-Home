@@ -1851,9 +1851,33 @@ be implemented.
 
 ## Last Coordination Update
 
-- **Date/time:** 2026-08-30 (this run) — UI-032 FAIL reworked
+- **Date/time:** 2026-08-30 (this run) — UI-032 second FAIL, probe shipped
 - **Branch:** `ha-deploy`
 - **`ha-deploy` HEAD before this update:** `6d5acd1`
+- **This update's commit:** `PENDING` — `UI-032` failed live a second time
+  after `0fec9bb`. The flat per-entity conditionals fail exactly as the `or`
+  version did, so **`condition: or` was not the cause** — that first diagnosis
+  was reasoning by elimination stated with more confidence than one unverified
+  variable deserved, and it is corrected in `DASHBOARD_ISSUES.md` rather than
+  quietly dropped. Parsing the committed YAML positively rules out placement
+  (Home `sections[1]`, beside the 5 working conditionals), `grid_options`
+  nesting, section structure, and card shape — mine is key-for-key identical
+  to the Solar alert that renders, differing only in `below` vs `above`. The
+  two survivors, entity-ID resolution and whether the deploy is at the stamped
+  commit, are both unreachable from here. So instead of a third rewrite:
+  **`UI-032 PROBE v1`**, one unconditional card first in the same section,
+  reading out raw `states()` for all six IDs and counting how many satisfy the
+  gates' own test. Its three outcomes are mutually exclusive and each names a
+  different root cause — see the queue row. The 12 conditionals stay in place
+  so a probe-renders-but-cards-hidden result isolates the gate.
+  `CFG-001`/`CFG-002` untouched. Validation 7/7.
+- **Standing lesson, strengthened:** the earlier note said to prefer a proven
+  construct. The sharper version is that when this environment cannot observe
+  the failure, **the next commit should acquire evidence rather than attempt a
+  fix**. Two speculative rewrites cost two deploy cycles and the owner's time.
+
+### Superseded — previous update
+
 - **This update's commit:** `0fec9bb` — reconciled a live `FAIL` on `UI-032`
   and shipped the rework. The owner reported no battery alert on Home despite
   batteries at 20/21/28%. Cause: `condition: or`, the one construct in

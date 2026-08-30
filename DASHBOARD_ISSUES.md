@@ -254,7 +254,59 @@ consolidated card would have been. That is the deliberate trade: the
 consolidated version cannot be expressed without `or`, and a card that
 renders beats a tidier one that does not.
 
+### Second live FAIL, and what it eliminated
+
+**Observed 2026-08-30 (owner):** still nothing, after `0fec9bb`. Other Home
+cards (Energy, Lighting, Cameras, Security, Climate, People, Bills) render
+normally, so the view itself is fine.
+
+I was wrong about the cause the first time. `condition: or` was a real
+unproven construct and removing it was correct on its own terms, but it was
+**not** what stopped the cards rendering, because the flat replacement fails
+identically. Recording that plainly: the first diagnosis was reasoning by
+elimination presented with more confidence than one unverified variable
+deserved.
+
+**What the repository can now positively rule out**, by parsing the committed
+YAML rather than by argument:
+
+| Checked | Result |
+|---|---|
+| Are the cards inside the rendered Home container? | **Yes.** Home → `sections[1]`, the Active Now strip, alongside the 5 pre-existing conditionals |
+| Is `grid_options` valid at that nesting level? | **Same level as the working Solar card**, which renders |
+| Is the section structure dropping them? | Section 1 is `type: grid`, `column_span: 2`, no `visibility` key anywhere in the file |
+| Is my card shape different from a working one? | **No.** Key-for-key identical to the Solar alert: `type` / `grid_options.columns` / `conditions[0]{condition,entity,below\|above}` / `card{type,primary,secondary,icon,icon_color,tap_action}`. The only difference is `below` vs `above`, both valid `numeric_state` operators |
+| Any section- or view-level condition suppressing the block? | None exists |
+
+So the structure is not the problem, and two structural rewrites have now
+failed. The two remaining candidates cannot be settled from this environment
+at all: **the entity IDs**, and **whether the deployed dashboard is actually
+at the stamped commit**.
+
+### Probe shipped instead of a third rewrite
+
+`UI-032 PROBE v1` — one **unconditional** `custom:mushroom-template-card`, the
+first card of the same section 1, `columns: 12`, purple bug icon. No condition
+of any kind, so it renders if and only if that container renders.
+
+It reads out the raw `states()` of all six entity IDs and counts how many
+satisfy the exact test the gates use. Its three possible outcomes are mutually
+exclusive and each names a different root cause:
+
+| What the owner sees | Root cause |
+|---|---|
+| `FD 20 · RR 21 · NW 28 · SW 100 · EW unavailable · BC 100` and "3 of 6 read under 30" | IDs and deploy are both fine → the fault is in `numeric_state` evaluation itself, and the fix is to drop the conditional wrapper and gate inside the template |
+| `FD unknown · RR unknown · …` and "0 of 6" | **The entity IDs do not resolve on this instance.** Every gate is false, so nothing ever renders — and this would explain both failures exactly |
+| **No purple probe card at all** | The container is not rendering, or the deployed dashboard is not at the stamped commit — a deployment problem, not a YAML one |
+
+The 12 conditional cards are left in place. If the IDs are good they cost
+nothing, and if the probe shows real values while they stay hidden, that
+isolates the gate precisely.
+
 ### Still to confirm live
+
+- The probe outcome above, which decides the actual fix.
+- That the four expected cards then appear at all.
 
 - That the four expected cards now appear at all. This is the whole point of
   the rework.

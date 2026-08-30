@@ -143,6 +143,13 @@ views:
   - type: grid
     column_span: 2
     cards:
+    - type: custom:mushroom-template-card
+      grid_options:
+        columns: 12
+      primary: 'UI-032 PROBE v1 · {% set ns = namespace(n=0) %}{% set s = states(''sensor.front_door_battery'') %}{% if s | is_number and (s | float(0)) < 30 %}{% set ns.n = ns.n + 1 %}{% endif %}{% set s = states(''sensor.living_room_ringring_battery'') %}{% if s | is_number and (s | float(0)) < 30 %}{% set ns.n = ns.n + 1 %}{% endif %}{% set s = states(''sensor.tapo_c425_north_wall_battery'') %}{% if s | is_number and (s | float(0)) < 30 %}{% set ns.n = ns.n + 1 %}{% endif %}{% set s = states(''sensor.tapo_c420_south_wall_battery'') %}{% if s | is_number and (s | float(0)) < 30 %}{% set ns.n = ns.n + 1 %}{% endif %}{% set s = states(''sensor.tapo_c420_east_wall_battery'') %}{% if s | is_number and (s | float(0)) < 30 %}{% set ns.n = ns.n + 1 %}{% endif %}{% set s = states(''sensor.tapo_camera_bcca_battery'') %}{% if s | is_number and (s | float(0)) < 30 %}{% set ns.n = ns.n + 1 %}{% endif %}{{ ns.n }} of 6 read under 30 · remove after diagnosis'
+      secondary: 'FD {{ states(''sensor.front_door_battery'') }} · RR {{ states(''sensor.living_room_ringring_battery'') }} · NW {{ states(''sensor.tapo_c425_north_wall_battery'') }} · SW {{ states(''sensor.tapo_c420_south_wall_battery'') }} · EW {{ states(''sensor.tapo_c420_east_wall_battery'') }} · BC {{ states(''sensor.tapo_camera_bcca_battery'') }}'
+      icon: mdi:bug-check-outline
+      icon_color: purple
     - type: conditional
       grid_options:
         columns: 6
