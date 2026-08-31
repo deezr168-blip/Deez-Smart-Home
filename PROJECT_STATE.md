@@ -1631,6 +1631,11 @@ be implemented.
   row against an unchanged paused state; a future run should not restate
   this note in full — a one-line HEAD-unchanged confirmation is sufficient
   until something actually changes.
+- **2026-08-31 (this run) — eighth re-check, pause still in effect, no code
+  change:** fetched `origin/ha-deploy` — HEAD `1b2d82f` (Billing's second
+  re-check), tree clean. Pause note still undated-lifted; `CFG-001`/`CFG-003`
+  unchanged. No new evidence, no push notification. Next recommended task
+  unchanged: `DR-001` / `CFG-003` once the owner lifts the pause.
 
 ### Billing
 - **2026-08-31 — Billing honors owner-directed pause, no code change:**
