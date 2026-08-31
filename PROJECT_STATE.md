@@ -1619,6 +1619,18 @@ be implemented.
   status. The standing recommendation stands: the owner should disable or
   substantially extend the external recurring trigger until ready to lift
   the pause.
+- **2026-08-31 01:35 UTC (this run) — seventh re-check, pause still in
+  effect, no code change:** fetched `origin/ha-deploy` — `HEAD` unchanged at
+  `cb189f3`, tree clean. **Schedule Status: PAUSED** still has no dated lift
+  note. Zero new commits since the sixth re-check one hour prior; `CFG-001`
+  and `CFG-003` unchanged (`OPEN`/blocked on the owner). No code change, no
+  push notification (nothing new since the standing recommendation).
+  **Exact next recommended task:** unchanged — none from this routine until
+  the owner lifts the pause or supplies new evidence; resume from `DR-001` /
+  `CFG-003` at that point. This schedule has now fired seven-plus times in a
+  row against an unchanged paused state; a future run should not restate
+  this note in full — a one-line HEAD-unchanged confirmation is sufficient
+  until something actually changes.
 
 ### Billing
 - **2026-08-31 — Billing honors owner-directed pause, no code change:**
