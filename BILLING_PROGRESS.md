@@ -54,6 +54,28 @@ Main's `UI-`/`REG-` fixes.
 
 ## Recent batches
 
+### (no commit) — owner pause honored, 2026-08-31
+
+Fetched `origin/ha-deploy` (HEAD `d05075b`), tree clean before and after.
+This is the first Billing-routine run since the owner recorded a hard
+`Schedule Status: PAUSED` directive in `PROJECT_STATE.md` on 2026-08-30
+18:15 UTC (`7b077c3`): all upgrade routines must stop implementing,
+redesigning or pushing any production dashboard change, and must not start
+any new backlog/issue item, until the owner explicitly lifts it. Six Main
+re-checks and one Regression Auditor pass since then have confirmed the
+pause still holds with no lift recorded; this run adds Billing's own
+confirmation rather than assuming it.
+
+Re-read `DASHBOARD_ISSUES.md`, `DASHBOARD_BACKLOG.md` and this file's own
+prior entry — nothing has moved since the pre-pause clean sweep (`9f75c79`):
+`BILL-001`'s NMI/MIRN portion, `BILL-002`'s dashboard read side and
+`BILL-003` are still `BLOCKED`/`PARTIAL`/`PLANNED` on the same owner
+decisions; `BILL-004`/`BILL-005` are still `FIXED — AWAITING LIVE
+VERIFICATION` with no recorded live result. No implementation was
+attempted, per the pause. Full detail of this check-in and its
+recommendation to disable the external schedule trigger is recorded under
+`PROJECT_STATE.md`'s Billing section, 2026-08-31 entry.
+
 ### (no commit) — clean verification sweep, 2026-08-30
 
 Fetched `origin/ha-deploy` (HEAD `c9429b1`), confirmed tree clean before and

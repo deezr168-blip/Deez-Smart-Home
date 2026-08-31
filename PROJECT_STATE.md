@@ -1601,6 +1601,41 @@ be implemented.
   the pause, since this file cannot stop the trigger itself from firing.
 
 ### Billing
+- **2026-08-31 — Billing honors owner-directed pause, no code change:**
+  fetched `origin/ha-deploy` (HEAD `d05075b`), tree clean before and after.
+  Read `CLAUDE.md`, this file in full (including the `Schedule Status:
+  PAUSED` notice added 2026-08-30 18:15 UTC), `DASHBOARD_ISSUES.md`,
+  `DASHBOARD_BACKLOG.md` and `BILLING_PROGRESS.md`. This is the first
+  Billing-routine run since the owner's pause directive (`7b077c3`); six
+  Main re-checks and one Regression Auditor pass have confirmed it still
+  holds, with no lift recorded anywhere in this file. Per the pause notice,
+  performed no implementation, redesign, or push of any dashboard change,
+  and did not start any new backlog/issue item. Confirmed by re-reading the
+  active queue that nothing has changed since the last Billing run
+  (`9f75c79`, pre-pause): `BILL-001`'s NMI/MIRN portion, `BILL-002`'s
+  dashboard read side and `BILL-003` remain `BLOCKED`/`PARTIAL`/`PLANNED` on
+  the same owner decisions, unmodified; `BILL-004`/`BILL-005` remain `FIXED
+  — AWAITING LIVE VERIFICATION`, no new human verification result recorded
+  for either; no other routine has touched billing files. No new evidence,
+  defect, entity or requirement has appeared since the pre-pause clean sweep.
+  No commit-worthy repository state changed other than this documentation
+  entry itself.
+- **Exact next recommended billing task:** none actionable while the pause
+  holds. When the owner lifts it (see this file's pause notice for the lift
+  procedure), resume in this order: (1) a live look at `BILL-004`'s ten
+  guarded cards and `BILL-005`'s four re-styled titles in
+  `LIVE_VERIFICATION_QUEUE.md`; (2) whichever `BILL-001` NMI/MIRN direction
+  the owner has chosen (create the two `input_text` helpers, or approve
+  removing the text); (3) the owner's `BILL-002` HA-exposure decision for
+  `billing/history.json` (`billing/README.md` point 2); (4) `BILL-003`
+  stays not-yet-actionable until (2) and (3) move, plus a design review
+  before any Gmail/Drive read-only call.
+- **Recommendation:** this is Billing's first no-op run under the pause, but
+  the eighth consecutive no-code-change run project-wide since `7b077c3`
+  with zero new evidence surfacing in any of them. Recommend the owner
+  disable this schedule's external trigger (this file cannot do that) until
+  ready to either supply a NMI/MIRN or `BILL-002` decision, report a live
+  verification result, or explicitly lift the pause.
 - **2026-08-30 (this run) — `BILL-005` fixed (title-card text-shadow guard)
   + `REG-014` closed (tracking backfill), no owner decision needed:** fetched
   `origin/ha-deploy` (HEAD `a8bf91c`), confirmed tree clean before and after.
