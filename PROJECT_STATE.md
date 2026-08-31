@@ -1914,6 +1914,26 @@ be implemented.
   live look only; no rebuild attempted this run, consistent with this
   routine's brief.
 - **Next task:** see `BILLING_PROGRESS.md` → "Exact next billing task".
+- **2026-08-31 02:13 UTC (this run) — second re-check, pause still in
+  effect, no code change:** fetched `origin/ha-deploy` (HEAD `0243fd1`),
+  tree clean before and after. Re-read this file's `Schedule Status: PAUSED`
+  notice in full — unmodified, no dated lift note, so the owner-directed
+  pause still applies. Commits since the last Billing entry (`89313e6`) are
+  `b2fa3b6`, `cb189f3`, `0243fd1` — a regression-audit pass and two Main
+  re-checks, none touching billing files. `DASHBOARD_ISSUES.md` and
+  `DASHBOARD_BACKLOG.md` `BILL-*` rows are unchanged from the prior run:
+  `BILL-001` NMI/MIRN and `BILL-002`'s read-side exposure decision remain
+  `BLOCKED` on the same owner decisions, `BILL-003` remains blocked on both.
+  No new evidence, defect, entity or requirement for billing has appeared.
+  Made no dashboard-code change and did not start any queued item, per the
+  pause. **Not** sending a push notification — this is now the tenth-plus
+  consecutive no-code-change run project-wide since `7b077c3` with nothing
+  new to report. **Recommendation unchanged:** the owner should disable
+  this schedule's external trigger (this file cannot do that) until ready
+  to supply a `BILL-001`/`BILL-002` decision, report a live verification
+  result, or explicitly lift the pause. A future run should keep this to a
+  one-line HEAD-unchanged confirmation, per Main's own note, rather than
+  restating this in full again.
 
 ### Regression
 - Baseline audit `3116495` against `7f304ad`: REG-001..006, **all six now
