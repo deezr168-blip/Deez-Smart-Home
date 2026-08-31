@@ -1599,6 +1599,26 @@ be implemented.
   recommendation once more for the record: the owner should disable or
   substantially extend the external recurring trigger until ready to lift
   the pause, since this file cannot stop the trigger itself from firing.
+- **2026-08-31 (this run) — sixth re-check, pause still in effect, no code
+  change:** fetched `origin/ha-deploy` — `HEAD` unchanged at `b2fa3b6` (the
+  Regression Auditor's third consecutive clean audit), tree clean before and
+  after. **Schedule Status: PAUSED** is still unmodified — no dated lift
+  note — so the owner-directed pause still applies. Zero new commits beyond
+  the Billing and Regression Auditor re-checks already recorded; `CFG-001`
+  and `CFG-003` in `DASHBOARD_ISSUES.md` are unchanged (both `OPEN`/blocked
+  on the owner), and `LIVE_VERIFICATION_QUEUE.md` still shows 48 `PENDING`
+  rows. No dashboard-code change made, no queued item started, per the
+  pause. **Not** sending a push notification — this is now the eighth-plus
+  consecutive external-trigger fire against an unchanged, already-paused
+  state with nothing new to report since the standing recommendation;
+  another alert would be redundant noise per this routine's own
+  notification guidance. **Exact next recommended task:** unchanged — none
+  from this routine until the owner lifts the pause (a dated note replacing
+  the Schedule Status section) or supplies new `CFG-003`/live-verification
+  evidence; at that point resume from `DR-001` / the `CFG-003` host recovery
+  status. The standing recommendation stands: the owner should disable or
+  substantially extend the external recurring trigger until ready to lift
+  the pause.
 
 ### Billing
 - **2026-08-31 — Billing honors owner-directed pause, no code change:**
