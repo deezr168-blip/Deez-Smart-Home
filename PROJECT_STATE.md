@@ -2090,6 +2090,43 @@ be implemented.
   `CFG-003` is recovered, resume at `6d951dc..HEAD` for whatever Main/Billing
   push next; re-check `UI-032`'s eventual live result first, since it is the
   only item with three prior live `FAIL`s on record.
+- **2026-08-31 audit (this run) — scope `e83920b..HEAD` (4 commits,
+  `89313e6`):** fetched `origin/ha-deploy`, confirmed local matched remote
+  with a clean tree before writing. All four commits in range
+  (`37ce58e`, `987407b`, `d05075b` — Main's third/fourth/fifth pause
+  re-checks — and `89313e6` — Billing's pause acknowledgement) are
+  docs-only "no code change" entries; confirmed directly via
+  `git diff --stat e83920b HEAD` that only `PROJECT_STATE.md` and
+  `BILLING_PROGRESS.md` changed (133 insertions, 0 deletions) — no
+  `dashboards/deez_smart_home.yaml`, theme, script or `billing/` file
+  touched by any of them. **No cross-routine boundary violation, no
+  undone work, no billing change by Main, no unrelated change by
+  Billing** — there is no dashboard diff in range to violate a boundary
+  with. Owner-directed pause (top of this file) remains in effect and is
+  being honored in practice by every routine, not just in prose. No new
+  repository-visible billing identifier introduced. `CFG-003` remains
+  open, correctly `BLOCKED` pending the owner's recovery procedure;
+  `UI-032` remains correctly blocked on it. Back/previous-page navigation
+  untouched in range: still `LIVE_VERIFICATION_REQUIRED` only, no new
+  regression opened.
+- **New issues this run:** none.
+- **Resolved/stale issues identified this run:** none; no tracking file
+  disagrees with repository state found this run.
+- **Cross-routine conflicts this run:** none.
+- **Verification requirements:** unchanged.
+- **Three consecutive clean/no-op audits now** (`50fc733..HEAD`,
+  `291a976..HEAD`, and this run), spanning zero dashboard-code commits
+  since the pause took effect. The prior run's recommendation to pause
+  this routine's external schedule stands and is reinforced, not
+  superseded — nothing has changed to warrant lifting it. Continuing to
+  fire this schedule while the owner's pause holds produces audits of
+  docs-only "no code change" commits with no actionable content;
+  recommend the owner disable the external trigger until the pause is
+  lifted or `CFG-003` produces new dashboard-facing evidence.
+- **Next recommended audit focus:** unchanged from the prior run — once
+  the owner lifts the pause and/or `CFG-003` is recovered, resume at
+  `89313e6..HEAD` for whatever Main/Billing push next; re-check
+  `UI-032`'s eventual live result first.
 
 ### Entity Scout
 - File findings in `DASHBOARD_BACKLOG.md` as evidence-based items.
