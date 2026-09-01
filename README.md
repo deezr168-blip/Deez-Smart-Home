@@ -24,6 +24,11 @@ well — those two roles are not in conflict.
   (see "Branch history" below).
 - `main` is untouched by this work. All deployment work is isolated to
   `ha-deploy`.
+- **Design reference:** the intended look and content of the dashboard is
+  described in [`DESIGN_REFERENCE.md`](DESIGN_REFERENCE.md), transcribed from
+  the CasaRay mockups the owner supplied on 2026-08-31. Check layout, wording
+  and colour changes against it. It describes intent only — it does not relax
+  the entity-verification rules below.
 
 ## Deployment architecture (current)
 
