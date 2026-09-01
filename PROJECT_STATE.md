@@ -679,7 +679,8 @@ be implemented.
 
 | Routine | Item | Priority | State | Reason Selected |
 |---|---|---|---|---|
-| Main CasaRay Upgrade | `DR-001` — iPad Command Center density | P3 | `PLANNED` — needs a design decision before implementation | Still the only scoped item in Main's queue after five consecutive clean sweeps this session (raw-interpolation, false-safe aggregate, float-sentinel, icon_color/attribute/int/cover/structural, state_attr/comparison/bare-float/navigation) — score **−2** (Impact 3, Effort 4, Risk 4), selected by being the sole remainder, not by rank. Explicitly "advisory item, no implementation agreed": needs a CasaRay Design Reviewer brief before Main writes code. Everything else Main owns (the REG-001..013/UI-027/UI-030/UI-031 batches) is `LIVE_VERIFICATION_REQUIRED` and waiting on the owner. **The verification drought has broken:** the owner recorded the queue's first-ever live result on 2026-08-30 — `UI-011` `PASS` — taking it to `LIVE_VERIFIED` and the queue from 44 pending to 43. That verification also surfaced `CFG-001` (Energy → Totals grid cost ~31.8× too high), which is **not Main's work and not implementable from here**: it lives in HA's own Energy configuration, is blocked on owner diagnosis, and never enters the verification queue. Main's selection is unchanged by both. |
+| Main CasaRay Upgrade | **CasaRay Batch 2 — Home** (`docs/CASARAY_MAPPING_PACK.md` → Part 4) | P2 | `READY` — no owner input needed | **This pointer was rewritten on 2026-09-01 when the pause lifted and CasaRay Design v1 was frozen.** Main's queue is no longer "exhausted": the mapping pack turned the frozen design into a batch plan, and six batches are buildable with nothing from the owner. Batch 1 (the P1 clock/date shell component) landed this run. **Batch 2 is Home only**: group the 17 loose `conditional` alert cards under an Attention heading, add the P4 KPI strip, and give the Security roll-up an honest shape — doors, motion and camera health only, with **no alarm row**, because no `alarm_control_panel` entity exists. Batch 5 (House Health: three genuinely-low batteries, the offline inverter, backup status) is the highest-value new content and also needs no owner input. Everything involving scenes, automations, air quality, solar forecast or Water & Gas is blocked on **B1**, one Developer Tools → States export. `DR-001` is **not** superseded but is now correctly behind the batch plan: it is a P3 needing a design brief, and the frozen mockups plus the mapping pack are a better brief than anything that existed when it was filed. `CFG-001` and `CFG-003` are unchanged by any of this. |
+| ~~Main CasaRay Upgrade (superseded 2026-09-01)~~ | `DR-001` — iPad Command Center density | P3 | `PLANNED` — needs a design decision before implementation | Still the only scoped item in Main's queue after five consecutive clean sweeps this session (raw-interpolation, false-safe aggregate, float-sentinel, icon_color/attribute/int/cover/structural, state_attr/comparison/bare-float/navigation) — score **−2** (Impact 3, Effort 4, Risk 4), selected by being the sole remainder, not by rank. Explicitly "advisory item, no implementation agreed": needs a CasaRay Design Reviewer brief before Main writes code. Everything else Main owns (the REG-001..013/UI-027/UI-030/UI-031 batches) is `LIVE_VERIFICATION_REQUIRED` and waiting on the owner. **The verification drought has broken:** the owner recorded the queue's first-ever live result on 2026-08-30 — `UI-011` `PASS` — taking it to `LIVE_VERIFIED` and the queue from 44 pending to 43. That verification also surfaced `CFG-001` (Energy → Totals grid cost ~31.8× too high), which is **not Main's work and not implementable from here**: it lives in HA's own Energy configuration, is blocked on owner diagnosis, and never enters the verification queue. Main's selection is unchanged by both. |
 | Billing Dashboard Upgrade | `BILL-002` — Home Assistant exposure decision for `billing/history.json` (storage now exists, see `billing/README.md`) | P2 | `PARTIAL` — storage scaffolded (`5147eb0`/`ff25626`), read side needs owner direction | `BILL-001`'s account-number portion is fixed and pushed (`23c0301`); its NMI/MIRN portion is `BLOCKED` on an owner decision (no helper exists, cannot invent one) and is excluded from selection (queue rule 4). `BILL-002`'s storage layer (`billing/schema.json`, empty `billing/history.json`) exists; its read side is still blocked on which HA-side mechanism exposes the file to Lovelace (`billing/README.md` point 2). `BILL-003` stays blocked on both. Two runs (`BILL-004`, then `BILL-005` + `REG-014`) found and fixed unblocked work instead of re-deriving the same blocker notes; this run's own full re-read of all seven billing views plus a fresh 5+-digit-literal privacy sweep found nothing further — the coded-fix surface is now genuinely clean, not merely unattempted. `BILL-002`'s exposure question remains the next thing that unblocks real dashboard-history work once decided. |
 
 ---
@@ -687,6 +688,37 @@ be implemented.
 ## Current Work / Blockers
 
 ### Main (CasaRay Upgrade)
+
+**2026-09-01 — CasaRay Design v1 frozen, pause lifted, Batch 1 landed. This
+entry supersedes the "implementable queue exhausted" status below it.**
+
+- **Queue:** the six-batch plan in `docs/CASARAY_MAPPING_PACK.md` Part 4.
+  Batches 1–6 need nothing from the owner. **Batch 1 is done** (P1 clock/date,
+  Home header). **Batch 2 (Home only) is next and is `READY`.**
+- **Why the queue is no longer exhausted.** It was exhausted against the *old*
+  backlog, not against the design. Freezing the mockups and mapping every
+  component to a real entity produced a concrete, entity-verified work queue
+  where there had been a single blocked P3.
+- **Entity truth is now written down.** `docs/entity_inventory.md` reconciles
+  all 166 referenced IDs against the live instance. Read it before writing a
+  card; it is what stops the next invented entity ID.
+- **Live findings Main must design around:** the Fronius inverter is
+  **offline** (every `primo_5_0_1_1_*` sensor `unavailable`); three batteries
+  are genuinely under 30 % (Front Door 22, RingRing 21, Tapo C425 25 — this is
+  `UI-032`'s answer); Tapo East/South Wall cameras and all four Living Room
+  Hue spots are `unavailable`; there is **no Bathroom area, no alarm panel, no
+  lock, no garage door, no water or gas meter, no battery, and no
+  grid import/export sensor**. Do not build a card over any of them.
+- **Blockers:** `CFG-003` (nothing pushed reaches the live dashboard) and
+  **B1** (entity IDs are not readable from this environment — one Developer
+  Tools → States export unblocks the scene rows on every room page, the whole
+  Lighting Studio and the entire Automations board). Neither blocks Batches
+  2–6.
+- **Verification:** Batch 1 is `PUSHED`, not `LIVE_VERIFIED`. Queued as
+  `CR-001`/`CR-002` in `LIVE_VERIFICATION_QUEUE.md`.
+
+*Superseded status, retained for history:*
+
 - **Queue:** `DR-001` (P3, score −2) only, and it needs a design brief before
   code. No actionable P1 or P2 remains. `UI-011` is **no longer queued at
   all** — the owner returned a `PASS` on 2026-08-30 and it is now

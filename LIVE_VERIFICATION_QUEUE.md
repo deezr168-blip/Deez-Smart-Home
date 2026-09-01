@@ -37,6 +37,8 @@ on the iPad, landscape.
 | REG-009 | Quick-control Doors chip guarded and translated **[guard][中]** | Home view's own Doors chip (in the row under the language toggle, not the hero) with all three door sensors disabled | Reads "Sensor offline" / 传感器离线 and turns grey, not a confident bare-English "0 open" / green | `d592692` | P2 | PENDING |
 | REG-010 | Rooms → Security card door count guarded **[中]** | The "Security" card in the Rooms grid, with a door sensor disabled | Appends "N unknown" / "N 离线" after the door count instead of silently omitting the sensor; icon turns grey, not green | `d592692` | P2 | PENDING |
 | UI-031 | Quick-control Person chip and Rooms → Climate card guarded, bilingual **[guard][中]** | The Person chip (quick-control row) and the Climate card (Rooms grid), with `person.raymond_du` / `climate.bedroom_parents_room_ac` disabled | Person chip shows a distance-based bilingual label (在家/未知/X km away), never the raw entity-state string; Climate card shows "—", never a bare lowercase HVAC mode or a literal `unavailable` | `ccfb0c8` | P3 | PENDING |
+| CR-001 | **CasaRay Batch 1 — P1 clock/date added to the Home header** | Directly under the page title, above the English/中文 toggle row: a clock-icon card | Two lines: the time (e.g. `5:42 PM`, no leading zero) with the date **directly underneath it** as `DD/MM/YY` (e.g. `01/09/26`). Watch it tick over a minute boundary — it must update on its own. Tapping it must do nothing. **If the date shows any other format, or sits beside the time rather than under it, mark FAIL** | `PENDING-SHA` | P2 | PENDING |
+| CR-002 | CasaRay Batch 1 — header layout on the iPad | The same clock card, iPad landscape | It sits on the sky with no glass card behind it, matching the title and chip rows around it, and its text stays legible against the background. Note whether it renders **beside** the title or **under** it — that answers whether a follow-up should narrow the title to 8 columns | `PENDING-SHA` | P3 | PENDING |
 
 | CFG-003 | **Deployment bridge repair, then bridge verification.** Delivery failure CONFIRMED (`sensor.front_door_battery` absent from live raw config); root cause is a replaced branch history, see `DASHBOARD_ISSUES.md` | **On the host, in the clone the deploy script uses:** run the recovery steps in `DASHBOARD_ISSUES.md` — confirm the split with `git merge-base HEAD origin/ha-deploy` (empty), check `git log --oneline origin/ha-deploy..HEAD` is empty **before** resetting, then `git reset --hard origin/ha-deploy` and run the deploy script by hand | **Bridge repaired** when the run reports a candidate commit that is no longer `26c3b14` and an apply rather than a skip. **Bridge verified** when the Raw Configuration Editor contains `UI-032 PROBE v1` and the purple bug-icon card appears directly under the Home page header. Only then is `UI-032` itself judgeable | `2183177` (probe) | **P1** | PENDING |
 
@@ -155,7 +157,10 @@ result does to the issue record, the backlog and ownership — are in
 - `PASS` rows stay for traceability. A page group with nothing left
   outstanding may collapse to a one-line summary naming its IDs and date.
 
-**45 checks pending** (44 carried forward + 1 row added this run: `UI-032`,
+**47 checks pending** (45 carried forward + 2 rows added this run by the
+CasaRay Batch 1 implementation: `CR-001` and `CR-002`, the P1 clock/date
+component in the Home header — see `DASHBOARD_PROGRESS.md`. That 45 was
+44 carried forward + 1 row: `UI-032`,
 the battery-health alert on Home — see `DASHBOARD_ISSUES.md`. That 44 was
 43 carried forward + 1 row added by the Billing
 Dashboard Upgrade routine: `BILL-005`, a `card_mod` text-shadow

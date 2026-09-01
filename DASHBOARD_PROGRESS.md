@@ -28,6 +28,65 @@ minutes.
 
 Detailed. These are the batches current work and open verification depend on.
 
+### `PENDING-SHA` — CasaRay Batch 1: the P1 clock/date shell component
+Purpose: the first implementation batch after CasaRay Design v1 was frozen and
+the 2026-08-30 schedule pause was lifted. Batch 1's brief is the global CasaRay
+shell. Of everything in that brief, the clock is the piece that is genuinely
+global, genuinely mandated, and genuinely buildable today.
+
+**What the mockups ask for.** Every one of the twelve full-size CasaRay screens
+carries a clock in its page header: the time on a large line, the date small
+directly beneath it (`5:42 PM` over `12/09/26`). The owner's instruction this
+run makes the form binding — time, and directly underneath, `DD/MM/YY`,
+consistently across all major pages and boards.
+
+**What the dashboard had.** No clock or date component anywhere in the file. A
+grep for `strftime` returned three hits, all timestamp formatting on backup
+sensors and none of them a clock. This was a straight absence, not a variant to
+reconcile.
+
+**The change.** One `custom:mushroom-template-card` added to Home's section 0,
+directly after the title card:
+
+- `primary: {{ now().strftime('%I:%M %p').lstrip('0') }}` — Mushroom's large
+  line, so `5:42 PM`.
+- `secondary: {{ now().strftime('%d/%m/%y') }}` — Mushroom's muted line,
+  rendered directly beneath the primary, so `01/09/26`.
+- `grid_options: {columns: 4, rows: 1}`, an established width in this file
+  (18 existing uses).
+- The same no-surface `card_mod` block the title and chip cards on either side
+  of it already carry, so it floats on the night-sky background as a header
+  element rather than sitting on a glass card.
+- `tap_action: action: none` — the mockup clock is not interactive, and this
+  stops a stray `more-info` dialog.
+
+**Why `.lstrip('0')` and not `%-I`.** `%-I` is a glibc extension. `lstrip` is
+portable and behaves at both ends of the day: 17:42 → `5:42 PM`, 10:05 →
+`10:05 AM`, 00:07 → `12:07 AM` (not `2:07 AM`), 12:30 → `12:30 PM`. All four
+checked before commit.
+
+**Risk.** Purely additive. No existing card, entity, template, navigation path
+or theme was touched — the diff is one inserted block. The card references no
+entity and no helper, so it cannot go `unavailable`; `now()` alone drives it,
+and Home Assistant re-renders templates using `now()` at the top of each
+minute. It is the lowest-risk possible first batch, which is deliberate: it
+establishes the pattern that every later board copies.
+
+**Deliberately not done.** No comment block was left in the YAML. The file
+contains no comments at all — it round-trips through a YAML dumper on the
+storage-mode dashboard path, which would strip them — so the rationale lives
+in `docs/CASARAY_MAPPING_PACK.md` under pattern **P1** instead. The clock was
+also not placed beside the title card by narrowing the title to 8 columns:
+that would have changed an existing card's width, unverifiable from here, for
+a cosmetic gain. If the header renders as title-then-clock-stacked and the
+owner wants them side by side, that is a one-line follow-up.
+
+Validated: `bash scripts/ha_validate.sh` 7/7. Templates 424 → 426 (the two new
+ones), views 36 → 36, internal links 36/36 broken 0, entities +0, size 101%.
+
+**Not verified live, and cannot be:** `CFG-003` is still open, so this commit
+reaches `ha-deploy` and stops there. Queued in `LIVE_VERIFICATION_QUEUE.md`.
+
 ### `ccfb0c8` — camera-subview sweep (clean); raw-interpolation fixes (UI-031); one new false-safe finding (REG-013)
 Purpose: continued the 691689a note's own recommendation — a fresh
 raw-interpolation (UI-006/UI-030 class) pass across the six `camera-*`

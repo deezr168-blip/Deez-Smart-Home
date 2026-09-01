@@ -30,6 +30,27 @@ views:
         else ''🏠 Deez Smart Home'' }}'
       subtitle: '{{ ''家庭控制中心'' if is_state(''input_boolean.chinese_dashboard'',''on'')
         else ''Home control centre'' }}'
+    - type: custom:mushroom-template-card
+      card_mod:
+        style: |
+          ha-card {
+            background: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+            padding: 0px 4px;
+            text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+          }
+      primary: '{{ now().strftime(''%I:%M %p'').lstrip(''0'') }}'
+      secondary: '{{ now().strftime(''%d/%m/%y'') }}'
+      icon: mdi:clock-outline
+      icon_color: blue
+      tap_action:
+        action: none
+      grid_options:
+        columns: 4
+        rows: 1
     - type: custom:mushroom-chips-card
       card_mod:
         style: |

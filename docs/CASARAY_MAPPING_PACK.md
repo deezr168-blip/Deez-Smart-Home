@@ -124,11 +124,27 @@ appears.
 
 `primary` is the large line, `secondary` the muted line directly beneath —
 which is the mockup's clock exactly. `.lstrip('0')` gives `5:42 PM` rather
-than `05:42 PM` without relying on the `%-I` glibc extension. `now()` makes
-Home Assistant re-render the card at the top of every minute; no helper, no
-entity, no polling.
+than `05:42 PM` without relying on the `%-I` glibc extension, and it is safe
+at both ends of the day: midnight renders `12:07 AM`, not `2:07 AM`. `now()`
+makes Home Assistant re-render the card at the top of every minute; no helper,
+no entity, no polling, and nothing that can go `unavailable`.
 
-**Status: AVAILABLE NOW.** First instance: Home header (Batch 1).
+**This is the reference instance. Change the pattern here and nowhere else** —
+every other board copies it verbatim, and a second variant is how a mandated
+format quietly stops being one.
+
+When P1 sits in a page **header** (its normal home) it also takes the
+no-surface `card_mod` treatment the title and chip cards already use —
+`background: none`, no backdrop filter, no border, no shadow, plus the
+`text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55)` that keeps text legible over
+the night-sky background. In a content section it keeps the normal glass card.
+
+**The rationale lives here, not in the YAML.** `dashboards/deez_smart_home.yaml`
+contains no comments at all — it round-trips through a YAML dumper on the
+storage-mode dashboard path, which would strip them. Explanations go in this
+pack; the YAML stays machine-clean.
+
+**Status: AVAILABLE NOW.** First instance: Home header, Batch 1, commit below.
 
 #### P2 — Page header
 
@@ -540,8 +556,8 @@ Following the briefing's §24 order, filtered by what is actually buildable.
 
 | Batch | Scope | Depends on | State |
 |---|---|---|---|
-| **1** | **Global CasaRay shell** — the P1 clock/date component, first instance in the Home header; header pattern established. | — | **This run** |
-| **2** | **Home only** — group the 17 loose alert cards under an Attention heading; KPI strip using P4; honest Security roll-up with no alarm row. | Batch 1 | Next |
+| **1** | **Global CasaRay shell** — the P1 clock/date component, first instance in the Home header; header pattern established. | — | **DONE** — `PENDING-SHA`, 2026-09-01. Validated 7/7. Queued live as `CR-001`/`CR-002`. |
+| **2** | **Home only** — group the 17 loose alert cards under an Attention heading; KPI strip using P4; honest Security roll-up with **no alarm row** (no `alarm_control_panel` exists). | Batch 1 | **NEXT — ready, needs nothing from the owner** |
 | 3 | Room template system — apply P2/P3/P5/P6 + the P1 clock uniformly across the seven room views. | Batch 2 | Queued |
 | 4 | Parents Room — native `thermostat` replacing the templated climate block. | Batch 3 | Queued |
 | 5 | House Health — battery board (3 low), inverter-offline surface, backup status. | Batch 3 | Queued — highest-value new content that needs **no** export |
