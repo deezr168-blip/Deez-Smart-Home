@@ -29,6 +29,15 @@ well — those two roles are not in conflict.
   the CasaRay mockups the owner supplied on 2026-08-31. Check layout, wording
   and colour changes against it. It describes intent only — it does not relax
   the entity-verification rules below.
+- **Technical mapping:** [`docs/CASARAY_MAPPING_PACK.md`](docs/CASARAY_MAPPING_PACK.md)
+  takes each mockup component through to a real entity, a proposed card and a
+  buildability status (`AVAILABLE NOW` … `NEEDS HARDWARE/DATA`). Read it before
+  building any CasaRay component — it is the record of what can honestly be
+  built and what cannot.
+- **Entity truth:** [`docs/entity_inventory.md`](docs/entity_inventory.md)
+  reconciles every entity the dashboard references against the live instance.
+  It is where "does this entity exist?" is answered, and it records the limits
+  of what this environment can confirm.
 
 ## Deployment architecture (current)
 

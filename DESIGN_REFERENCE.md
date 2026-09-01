@@ -10,13 +10,30 @@ structure, it is checked against this file.
 Twelve rendered mockups of a design system branded **CasaRay** were supplied by
 the owner on 2026-08-31 and designated the source reference for the dashboard.
 
-The mockups were supplied as pasted images in a maintenance session, not as
-files, so **the image binaries are not present in this repository** and could not
-be committed — nothing was written to disk that could be recovered. This document
-is a transcription of them, made while the renders were on screen, and it is the
-form the reference survives in here. If the owner still holds the original PNGs,
-committing them under `design/mockups/` alongside this file would make the
-reference complete; this text stands on its own until then.
+The mockups reached the transcribing session as pasted images rather than files,
+so **the image binaries are not in this repository**. This document is a
+transcription of them, made while the renders were on screen.
+
+**Update, 2026-09-01 — the originals were found and are recoverable.** They live
+in the owner's Google Drive folder **`CasaRay Mockups`**, alongside two artefacts
+this repository did not previously know about:
+
+| Artefact | Kind | Role |
+|---|---|---|
+| **CasaRay Master Design Briefing v1** | Google Doc, 25 sections | The authority on *intent* — design theory, visual language, per-board purpose, the Home Assistant implementation ladder, the component system, the validation gate and the implementation order. This transcription covers the *renders*; the briefing covers the *reasoning*. |
+| 24 rendered mockups | PNG | The visual source of truth, including the twelve transcribed below |
+| CasaRay HA Implementation Checklist | Spreadsheet | Owner-maintained implementation tracking |
+
+CasaRay Design v1 is **frozen** as of 2026-09-01. The mockups and the briefing
+together are the authoritative visual and UX specification; do not redesign the
+product unless a genuine Home Assistant limitation makes a direct implementation
+impractical, and record any such adaptation in
+`docs/CASARAY_MAPPING_PACK.md`.
+
+The PNGs are ~2 MB each and are deliberately **not** committed — 50 MB of binaries
+would swamp a configuration repository, and the validation gate flags unexpected
+binaries. Drive is the store of record for the images; this file and the mapping
+pack are the store of record for what they mean.
 
 Every screen below is described as rendered. Where a mockup contradicts another
 mockup, that is recorded rather than silently reconciled — see

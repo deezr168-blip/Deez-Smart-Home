@@ -17,33 +17,43 @@ on purpose so every routine can load it cheaply at the start of each run.
 
 ---
 
-## Schedule Status: PAUSED (owner directive, 2026-08-30)
+## Schedule Status: ACTIVE — pause lifted (owner directive, 2026-09-01)
 
-**The owner has requested all upgrade routines paused.** Every autonomous
-routine — Main CasaRay Upgrade, Billing Dashboard Upgrade, Regression
-Auditor, Entity & Feature Scout, CasaRay Design Reviewer, and the Daily
-Project Coordinator — must treat this as a hard stop:
+**The owner lifted the 2026-08-30 pause on 2026-09-01**, in a live session, by
+freezing CasaRay Design v1 and directing the implementation to resume from the
+approved mockups and the *CasaRay Master Design Briefing v1*. Autonomous
+implementation is permitted again, under the standing rules below.
 
-- Do **not** implement, redesign, or push any production dashboard change.
-- Do **not** start a new backlog/issue item, planned or otherwise.
-- A routine may still **read** the repository, and an advisory routine may
-  still record newly-observed evidence (a regression, a live-verification
-  result the owner reports, a new entity) — but must not act on it beyond
-  filing it.
-- This pause was requested independently of, and stacks with, the
-  `CFG-003` deploy-pipeline blocker below: even once `CFG-003` is
-  recovered, do not resume implementation until the owner explicitly lifts
-  this pause.
-- **This directive was given directly to a live session, not recorded via
-  any in-repo mechanism the owner controls.** If you are an autonomous
-  routine reading this after being fired by an external schedule, honor it
-  immediately and do not require further confirmation. The owner may still
-  need to disable the external recurring trigger itself (outside this
-  repository) to stop future runs from firing at all — this file only
-  controls what a fired run does once it starts.
-- Lift this section (do not just delete it — replace it with a dated note
-  of who lifted it and when) only on an explicit owner instruction to
-  resume.
+What the lift does and does not change:
+
+- Implementation, backlog work and pushes to `ha-deploy` are **permitted**
+  again. The 2026-08-30 stop is over. Per its own instruction it is replaced
+  with this dated note rather than silently deleted; its text is preserved in
+  Git history at `b6e76f5`.
+- **`CFG-003` is untouched by this and still stands.** The deployment bridge
+  does not deliver: the host's clone is orphaned from `ha-deploy`, so nothing
+  pushed since `26c3b14` has reached the live dashboard. Work may proceed, but
+  every batch lands unverified until the owner runs the recovery procedure in
+  `DASHBOARD_ISSUES.md`. Each batch's record must say so rather than imply a
+  change went live.
+- **`UI-032 PROBE v1` stays on the production Home page** while `CFG-003` is
+  open. It is the test instrument for the bridge, not a leftover. Do not
+  remove it as cleanup.
+- Every other rule in this file — ownership, protected areas, the validation
+  gate, the concurrency policy, the entity-verification rule — is unchanged.
+
+### CasaRay Design v1 — frozen
+
+The approved mockups and the *CasaRay Master Design Briefing v1* are the
+authoritative visual and UX specification. Both live in the owner's Google
+Drive folder `CasaRay Mockups`; `DESIGN_REFERENCE.md` transcribes the renders,
+and `docs/CASARAY_MAPPING_PACK.md` maps every mockup component to a real
+entity, a proposed card and a buildability status. Do not redesign against
+them; where Home Assistant genuinely cannot reproduce a component, record the
+adaptation in the mapping pack rather than inventing a new design.
+
+`docs/entity_inventory.md` is the entity truth this work runs on, reconciled
+against the live instance on 2026-09-01.
 
 ---
 
