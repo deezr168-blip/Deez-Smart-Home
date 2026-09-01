@@ -556,7 +556,7 @@ Following the briefing's §24 order, filtered by what is actually buildable.
 
 | Batch | Scope | Depends on | State |
 |---|---|---|---|
-| **1** | **Global CasaRay shell** — the P1 clock/date component, first instance in the Home header; header pattern established. | — | **DONE** — `PENDING-SHA`, 2026-09-01. Validated 7/7. Queued live as `CR-001`/`CR-002`. |
+| **1** | **Global CasaRay shell** — the P1 clock/date component, first instance in the Home header; header pattern established. | — | **DONE** — `5ad2bce`, 2026-09-01. Validated 7/7. Queued live as `CR-001`/`CR-002`. |
 | **2** | **Home only** — group the 17 loose alert cards under an Attention heading; KPI strip using P4; honest Security roll-up with **no alarm row** (no `alarm_control_panel` exists). | Batch 1 | **NEXT — ready, needs nothing from the owner** |
 | 3 | Room template system — apply P2/P3/P5/P6 + the P1 clock uniformly across the seven room views. | Batch 2 | Queued |
 | 4 | Parents Room — native `thermostat` replacing the templated climate block. | Batch 3 | Queued |

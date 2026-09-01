@@ -28,7 +28,7 @@ minutes.
 
 Detailed. These are the batches current work and open verification depend on.
 
-### `PENDING-SHA` — CasaRay Batch 1: the P1 clock/date shell component
+### `5ad2bce` — CasaRay Batch 1: the P1 clock/date shell component
 Purpose: the first implementation batch after CasaRay Design v1 was frozen and
 the 2026-08-30 schedule pause was lifted. Batch 1's brief is the global CasaRay
 shell. Of everything in that brief, the clock is the piece that is genuinely
