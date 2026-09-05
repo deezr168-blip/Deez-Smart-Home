@@ -5067,6 +5067,46 @@ views:
     column_span: 1
     cards:
     - type: heading
+      heading: Hue Bridge automations
+      heading_style: title
+      icon: mdi:bridge
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: Hue 网桥自动化
+      heading_style: title
+      icon: mdi:bridge
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: tile
+      entity: switch.hue_bridge_automation_coming_home
+      name: Coming home
+      icon: mdi:home-import-outline
+    - type: tile
+      entity: switch.hue_bridge_automation_leaving_home
+      name: Leaving home
+      icon: mdi:home-export-outline
+    - type: tile
+      entity: switch.hue_bridge_automation_nightlight_on_nightlight_off
+      name: Nightlight schedule
+      icon: mdi:lightbulb-night-outline
+    - type: markdown
+      content: >-
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {% if cn %}这三项自动化在 Hue 网桥上运行，不在 Home Assistant
+        中。这里只能启用或停用它们——它们何时触发、执行了什么，Home Assistant
+        看不到。{% else %}These three run on the Hue bridge, not in Home
+        Assistant. All this board can do is enable or disable them: when they
+        fired and what they did is not visible to Home Assistant.{% endif %}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
       heading: System maintenance
       heading_style: title
       icon: mdi:wrench-cog
