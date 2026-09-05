@@ -13,6 +13,8 @@ Covers the checks that are possible without Home Assistant itself:
     CommonMark indented code block
   - no line inside a folded scalar is indented deeper than its block, which
     would stop YAML folding it and break a sentence in half
+  - bilingual section headings come in pairs, so no section loses its label
+    in one language
   - /local/ resource paths exist in www/ when www/ is present
   - mass-damage detection against the committed version of the same file
 
@@ -248,7 +250,44 @@ def check(path):
     else:
         print("  /local/ resources        : none referenced")
 
-    # 7. mass-damage detection against HEAD
+    # 7. bilingual headings come in pairs
+    #
+    # CLAUDE.md makes bilingual section headings mandatory, and the native
+    # `heading` card cannot render a template — so each one is two cards with
+    # opposite `visibility` conditions. Add one and forget the other and the
+    # section silently loses its label in that language, which is exactly what
+    # CR-140 exists to catch by eye. It is cheaper to catch here.
+    #
+    # A heading with no visibility condition and no template in its text shows
+    # the same words in both languages. That is correct only for a proper noun
+    # (convention 3), so it is a warning to eyeball, never a failure. A heading
+    # whose text IS a template is bilingual by the other mechanism -- which is
+    # what the legacy dashboard uses throughout -- and is not flagged.
+    unpaired, always = [], []
+    for view in views:
+        for sec in (view.get("sections") or []):
+            heads = [c for c in sec.get("cards", [])
+                     if isinstance(c, dict) and c.get("type") == "heading"]
+            en = [c for c in heads if any(v.get("state_not") == "on"
+                                          for v in (c.get("visibility") or []))]
+            cn = [c for c in heads if any(v.get("state") == "on"
+                                          for v in (c.get("visibility") or []))]
+            if len(en) != len(cn):
+                unpaired.append((view.get("path"),
+                                 [h.get("heading") for h in heads]))
+            always += [(view.get("path"), h.get("heading"))
+                       for h in heads if not h.get("visibility")
+                       and "{{" not in str(h.get("heading", ""))
+                       and "{%" not in str(h.get("heading", ""))]
+    for path_, heads in unpaired:
+        fails.append(f"{path}: view '{path_}' has an unpaired bilingual "
+                     f"heading — {heads}")
+    for path_, h in always:
+        warns.append(f"{path}: heading {h!r} on '{path_}' shows in both "
+                     f"languages; correct only for a proper noun")
+    print(f"  unpaired bilingual heads : {len(unpaired)}")
+
+    # 8. mass-damage detection against HEAD
     old = committed(path)
     if old is None:
         print("  mass-damage check        : new file, no baseline")
