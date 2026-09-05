@@ -57,7 +57,7 @@ views:
       content: >-
         # {{ now().strftime('%I:%M %p').lstrip('0') }}
 
-        {{ now().strftime('%d/%m/%Y') }}
+        {{ now().strftime('%d/%m/%y') }}
 
   - type: grid
     column_span: 2
@@ -147,19 +147,19 @@ views:
         %}{% endif %}{% endfor %} {% set total = ns.dopen + ns.blow + ns.coff %}
         {% if total == 0 and ns.dunk == 0 and ns.bunk == 0 %}{{ '一切正常。' if
         cn else 'All clear. Nothing needs attention.' }}{% else %}{% if ns.dopen
-        %}- **{{ ns.dopen }}** {{ '扇門開著' if cn else ('door open' if ns.dopen
+        %}- **{{ ns.dopen }}** {{ '扇门开启' if cn else ('door open' if ns.dopen
         == 1 else 'doors open') }}
 
-        {% endif %}{% if ns.blow %}- **{{ ns.blow }}** {{ '個電池低於 30%' if cn
+        {% endif %}{% if ns.blow %}- **{{ ns.blow }}** {{ '个电池低于 30%' if cn
         else 'batteries under 30%' }}
 
-        {% endif %}{% if ns.coff %}- **{{ ns.coff }}** {{ '個攝影機離線' if cn
+        {% endif %}{% if ns.coff %}- **{{ ns.coff }}** {{ '个摄像头离线' if cn
         else ('camera offline' if ns.coff == 1 else 'cameras offline') }}
 
-        {% endif %}{% if ns.dunk %}- {{ ns.dunk }} {{ '扇門無回報' if cn else
+        {% endif %}{% if ns.dunk %}- {{ ns.dunk }} {{ '扇门传感器离线' if cn else
         'door sensors not reporting' }}
 
-        {% endif %}{% if ns.bunk %}- {{ ns.bunk }} {{ '個電池無回報' if cn else
+        {% endif %}{% if ns.bunk %}- {{ ns.bunk }} {{ '个电池无数据' if cn else
         'batteries not reporting' }}
 
         {% endif %}{% endif %}
@@ -327,10 +327,10 @@ views:
         namespace(open=0, unk=0) %} {% for d in doors %}{% set s = states(d) %}{%
         if s == 'on' %}{% set ns.open = ns.open + 1 %}{% elif s != 'off' %}{% set
         ns.unk = ns.unk + 1 %}{% endif %}{% endfor %} {% if ns.unk %}{{
-        '門窗感測器有 %d 個無回報。' % ns.unk if cn else '%d of 3 door sensors
+        '门窗传感器有 %d 个无数据。' % ns.unk if cn else '%d of 3 door sensors
         are not reporting. Security state cannot be confirmed.' % ns.unk }}{%
-        elif ns.open %}{{ '%d 扇門開著。' % ns.open if cn else '%d of 3 doors
-        open.' % ns.open }}{% else %}{{ '三扇門全部關閉。' if cn else 'All 3
+        elif ns.open %}{{ '%d 扇门开启。' % ns.open if cn else '%d of 3 doors
+        open.' % ns.open }}{% else %}{{ '三扇门全部关闭。' if cn else 'All 3
         doors closed.' }}{% endif %}
     - type: tile
       entity: binary_sensor.f_contact_sensor_door
@@ -363,11 +363,11 @@ views:
         states('sensor.primo_5_0_1_1_ac_power') %} {% set pk = p not in
         ['unavailable','unknown','none',''] and p | float(-1) >= 0 %} {% set sk =
         s not in ['unavailable','unknown','none',''] and s | float(-1) >= 0 %} {%
-        if pk %}{{ '目前用電 %s W。' % p if cn else 'Drawing **%s W** right
-        now.' % p }}{% else %}{{ '用電量無回報。' if cn else 'House power is not
-        reporting.' }}{% endif %} {% if sk %}{{ ' 太陽能發電 %s W。' % s if cn
+        if pk %}{{ '目前用电 %s W。' % p if cn else 'Drawing **%s W** right
+        now.' % p }}{% else %}{{ '用电量无数据。' if cn else 'House power is not
+        reporting.' }}{% endif %} {% if sk %}{{ ' 太阳能发电 %s W。' % s if cn
         else ' Solar generating **%s W**.' % s }}{% else %}{{ '
-        太陽能逆變器離線。' if cn else ' The solar inverter is offline, so
+        太阳能逆变器离线。' if cn else ' The solar inverter is offline, so
         generation is unknown.' }}{% endif %}
     - type: tile
       entity: sensor.powerpal_gateway_powerpal_power
@@ -570,17 +570,17 @@ views:
     - type: markdown
       grid_options: {columns: 6, rows: 2}
       content: >-
-        # {{ '房間' if is_state('input_boolean.chinese_dashboard','on') else
+        # {{ '房间' if is_state('input_boolean.chinese_dashboard','on') else
         'Rooms' }}
 
-        {{ '選擇一個房間' if is_state('input_boolean.chinese_dashboard','on')
+        {{ '选择一个房间' if is_state('input_boolean.chinese_dashboard','on')
         else 'Choose a room' }}
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
         # {{ now().strftime('%I:%M %p').lstrip('0') }}
 
-        {{ now().strftime('%d/%m/%Y') }}
+        {{ now().strftime('%d/%m/%y') }}
 
   - type: grid
     column_span: 2
@@ -672,7 +672,7 @@ views:
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
-        # {{ '客廳' if is_state('input_boolean.chinese_dashboard','on') else
+        # {{ '客厅' if is_state('input_boolean.chinese_dashboard','on') else
         'Living Room' }}
 
         {% set t = states('sensor.living_room_living_hue_hue_sensor_temperature')
@@ -685,7 +685,7 @@ views:
       content: >-
         # {{ now().strftime('%I:%M %p').lstrip('0') }}
 
-        {{ now().strftime('%d/%m/%Y') }}
+        {{ now().strftime('%d/%m/%y') }}
 
   - type: grid
     column_span: 1
@@ -846,7 +846,7 @@ views:
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
-        # {{ '廚房' if is_state('input_boolean.chinese_dashboard','on') else
+        # {{ '厨房' if is_state('input_boolean.chinese_dashboard','on') else
         'Kitchen' }}
 
         {% set m = states('binary_sensor.k_motion_sensor_motion') %}{% if m ==
@@ -857,7 +857,7 @@ views:
       content: >-
         # {{ now().strftime('%I:%M %p').lstrip('0') }}
 
-        {{ now().strftime('%d/%m/%Y') }}
+        {{ now().strftime('%d/%m/%y') }}
 
   - type: grid
     column_span: 1
@@ -957,7 +957,7 @@ views:
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
-        # {{ '餐廳' if is_state('input_boolean.chinese_dashboard','on') else
+        # {{ '餐厅' if is_state('input_boolean.chinese_dashboard','on') else
         'Dining' }}
 
         {% set m = states('binary_sensor.sensor_group_motion') %}{% set l =
@@ -970,7 +970,7 @@ views:
       content: >-
         # {{ now().strftime('%I:%M %p').lstrip('0') }}
 
-        {{ now().strftime('%d/%m/%Y') }}
+        {{ now().strftime('%d/%m/%y') }}
 
   - type: grid
     column_span: 1
@@ -1079,7 +1079,7 @@ views:
       content: >-
         # {{ now().strftime('%I:%M %p').lstrip('0') }}
 
-        {{ now().strftime('%d/%m/%Y') }}
+        {{ now().strftime('%d/%m/%y') }}
 
   - type: grid
     column_span: 1
@@ -1259,7 +1259,7 @@ views:
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
-        # {{ 'Ray 房間' if is_state('input_boolean.chinese_dashboard','on') else
+        # {{ 'Ray 房间' if is_state('input_boolean.chinese_dashboard','on') else
         'Ray Bedroom' }}
 
         {% set l = states('light.bedroom_bedroom') %}{% set c =
@@ -1272,7 +1272,7 @@ views:
       content: >-
         # {{ now().strftime('%I:%M %p').lstrip('0') }}
 
-        {{ now().strftime('%d/%m/%Y') }}
+        {{ now().strftime('%d/%m/%y') }}
 
   - type: grid
     column_span: 1
@@ -1394,7 +1394,7 @@ views:
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
-        # {{ '車庫' if is_state('input_boolean.chinese_dashboard','on') else
+        # {{ '车库' if is_state('input_boolean.chinese_dashboard','on') else
         'Garage' }}
 
         {% set p = states('sensor.g_monitor_freezer_p110m_current_consumption')
@@ -1405,7 +1405,7 @@ views:
       content: >-
         # {{ now().strftime('%I:%M %p').lstrip('0') }}
 
-        {{ now().strftime('%d/%m/%Y') }}
+        {{ now().strftime('%d/%m/%y') }}
 
   - type: grid
     column_span: 1
@@ -1499,7 +1499,7 @@ views:
       content: >-
         # {{ now().strftime('%I:%M %p').lstrip('0') }}
 
-        {{ now().strftime('%d/%m/%Y') }}
+        {{ now().strftime('%d/%m/%y') }}
 
   - type: grid
     column_span: 1
@@ -1570,7 +1570,7 @@ views:
     - type: markdown
       grid_options: {columns: 6, rows: 2}
       content: >-
-        # {{ '燈光' if is_state('input_boolean.chinese_dashboard','on') else
+        # {{ '灯光' if is_state('input_boolean.chinese_dashboard','on') else
         'Lighting' }}
 
         {% set ls = ['light.living_room', 'light.dining',
@@ -1585,7 +1585,7 @@ views:
       content: >-
         # {{ now().strftime('%I:%M %p').lstrip('0') }}
 
-        {{ now().strftime('%d/%m/%Y') }}
+        {{ now().strftime('%d/%m/%y') }}
 
   - type: grid
     column_span: 1
@@ -1688,7 +1688,7 @@ views:
     - type: markdown
       grid_options: {columns: 6, rows: 2}
       content: >-
-        # {{ '氣候' if is_state('input_boolean.chinese_dashboard','on') else
+        # {{ '气候' if is_state('input_boolean.chinese_dashboard','on') else
         'Climate' }}
 
         {% set ts = ['sensor.living_room_living_hue_hue_sensor_temperature',
@@ -1706,7 +1706,7 @@ views:
       content: >-
         # {{ now().strftime('%I:%M %p').lstrip('0') }}
 
-        {{ now().strftime('%d/%m/%Y') }}
+        {{ now().strftime('%d/%m/%y') }}
 
   - type: grid
     column_span: 1
@@ -1797,7 +1797,7 @@ views:
       content: >-
         # {{ now().strftime('%I:%M %p').lstrip('0') }}
 
-        {{ now().strftime('%d/%m/%Y') }}
+        {{ now().strftime('%d/%m/%y') }}
 
   - type: grid
     column_span: 2
@@ -1950,17 +1950,17 @@ views:
     - type: markdown
       grid_options: {columns: 6, rows: 2}
       content: >-
-        # {{ '帳單' if is_state('input_boolean.chinese_dashboard','on') else
+        # {{ '账单' if is_state('input_boolean.chinese_dashboard','on') else
         'Bills' }}
 
-        {{ '家庭開支與到期日' if is_state('input_boolean.chinese_dashboard','on')
+        {{ '家庭开支与到期日' if is_state('input_boolean.chinese_dashboard','on')
         else 'Household expenses and due dates' }}
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
         # {{ now().strftime('%I:%M %p').lstrip('0') }}
 
-        {{ now().strftime('%d/%m/%Y') }}
+        {{ now().strftime('%d/%m/%y') }}
 
   - type: grid
     column_span: 2
@@ -2346,7 +2346,7 @@ views:
       content: >-
         # {{ now().strftime('%I:%M %p').lstrip('0') }}
 
-        {{ now().strftime('%d/%m/%Y') }}
+        {{ now().strftime('%d/%m/%y') }}
 
   - type: grid
     column_span: 1
@@ -2469,17 +2469,17 @@ views:
     - type: markdown
       grid_options: {columns: 6, rows: 2}
       content: >-
-        # {{ '攝影機' if is_state('input_boolean.chinese_dashboard','on') else
+        # {{ '摄像头' if is_state('input_boolean.chinese_dashboard','on') else
         'Cameras' }}
 
-        {{ '點擊放大即時畫面' if is_state('input_boolean.chinese_dashboard','on')
+        {{ '点击放大实时画面' if is_state('input_boolean.chinese_dashboard','on')
         else 'Tap a camera for the live view' }}
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
         # {{ now().strftime('%I:%M %p').lstrip('0') }}
 
-        {{ now().strftime('%d/%m/%Y') }}
+        {{ now().strftime('%d/%m/%y') }}
 
   - type: grid
     column_span: 2
@@ -2761,7 +2761,7 @@ views:
       content: >-
         # {{ now().strftime('%I:%M %p').lstrip('0') }}
 
-        {{ now().strftime('%d/%m/%Y') }}
+        {{ now().strftime('%d/%m/%y') }}
 
   - type: grid
     column_span: 1
@@ -2825,7 +2825,7 @@ views:
     - type: markdown
       grid_options: {columns: 6, rows: 2}
       content: >-
-        # {{ '娛樂' if is_state('input_boolean.chinese_dashboard','on') else
+        # {{ '娱乐' if is_state('input_boolean.chinese_dashboard','on') else
         'Entertainment' }}
 
         {% set ms = ['media_player.living_room_tv_samsung_q9_series_65',
@@ -2840,7 +2840,7 @@ views:
       content: >-
         # {{ now().strftime('%I:%M %p').lstrip('0') }}
 
-        {{ now().strftime('%d/%m/%Y') }}
+        {{ now().strftime('%d/%m/%y') }}
 
   - type: grid
     column_span: 1
@@ -2912,17 +2912,17 @@ views:
     - type: markdown
       grid_options: {columns: 6, rows: 2}
       content: >-
-        # {{ '系統健康' if is_state('input_boolean.chinese_dashboard','on') else
+        # {{ '系统健康' if is_state('input_boolean.chinese_dashboard','on') else
         'House Health' }}
 
-        {{ '系統狀態與維護' if is_state('input_boolean.chinese_dashboard','on')
+        {{ '系统状态与维护' if is_state('input_boolean.chinese_dashboard','on')
         else 'System status and maintenance' }}
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
         # {{ now().strftime('%I:%M %p').lstrip('0') }}
 
-        {{ now().strftime('%d/%m/%Y') }}
+        {{ now().strftime('%d/%m/%y') }}
 
   - type: grid
     column_span: 2
@@ -3141,14 +3141,14 @@ views:
         # {{ '通知' if is_state('input_boolean.chinese_dashboard','on') else
         'Alerts' }}
 
-        {{ '目前需要注意的事項' if is_state('input_boolean.chinese_dashboard','on')
+        {{ '目前需要注意的事项' if is_state('input_boolean.chinese_dashboard','on')
         else 'What needs attention right now' }}
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
         # {{ now().strftime('%I:%M %p').lstrip('0') }}
 
-        {{ now().strftime('%d/%m/%Y') }}
+        {{ now().strftime('%d/%m/%y') }}
 
   - type: grid
     column_span: 2

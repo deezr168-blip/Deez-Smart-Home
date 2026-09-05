@@ -113,6 +113,28 @@ Every clock on every board renders the **time**, and **directly underneath it,
 the date as `DD/MM/YY`**. No exceptions, no other date format anywhere a clock
 appears.
 
+**The format is the mandate; the card type is not.** The two dashboards have
+different card vocabularies, so P1 has two spellings. Both must produce
+`5:42 PM` over `05/09/26`. Neither may produce `05/09/2026`.
+
+**Native form — `dashboards/casaray_v2.yaml`** (no Mushroom, no `card_mod`):
+
+```yaml
+- type: markdown
+  grid_options: {columns: 4, rows: 2}
+  content: >-
+    # {{ now().strftime('%I:%M %p').lstrip('0') }}
+
+    {{ now().strftime('%d/%m/%y') }}
+```
+
+The `#` makes the time an `<h1>` and the blank line puts the date in its own
+paragraph directly beneath it. That is the mockup's clock, natively, with no
+custom card.
+
+**Mushroom form — `dashboards/deez_smart_home.yaml`** (which is built on
+Mushroom throughout, so a lone `markdown` card would be the odd one out):
+
 ```yaml
 - type: custom:mushroom-template-card
   primary: "{{ now().strftime('%I:%M %p').lstrip('0') }}"
@@ -122,29 +144,38 @@ appears.
   grid_options: {columns: 4, rows: 1}
 ```
 
-`primary` is the large line, `secondary` the muted line directly beneath —
-which is the mockup's clock exactly. `.lstrip('0')` gives `5:42 PM` rather
-than `05:42 PM` without relying on the `%-I` glibc extension, and it is safe
-at both ends of the day: midnight renders `12:07 AM`, not `2:07 AM`. `now()`
-makes Home Assistant re-render the card at the top of every minute; no helper,
-no entity, no polling, and nothing that can go `unavailable`.
+`primary` is the large line, `secondary` the muted line directly beneath.
 
-**This is the reference instance. Change the pattern here and nowhere else** —
-every other board copies it verbatim, and a second variant is how a mandated
-format quietly stops being one.
+**Common to both.** `.lstrip('0')` gives `5:42 PM` rather than `05:42 PM`
+without relying on the `%-I` glibc extension, and it is safe at both ends of
+the day: midnight renders `12:07 AM`, not `2:07 AM`. `now()` makes Home
+Assistant re-render at the top of every minute; no helper, no entity, no
+polling, and nothing that can go `unavailable`.
 
-When P1 sits in a page **header** (its normal home) it also takes the
-no-surface `card_mod` treatment the title and chip cards already use —
-`background: none`, no backdrop filter, no border, no shadow, plus the
-`text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55)` that keeps text legible over
-the night-sky background. In a content section it keeps the normal glass card.
+**`%y`, never `%Y`.** This is the one that has already gone wrong once: the
+`casaray_v2` rebuild shipped all nineteen of its clocks with `%d/%m/%Y`,
+rendering `05/09/2026` against a mandate and a mockup that both say `05/09/26`.
+Corrected in `PENDING-SHA`. If a grep for `%d/%m/%Y` in `dashboards/` returns
+anything, that is the bug, and it is a one-character fix.
 
-**The rationale lives here, not in the YAML.** `dashboards/deez_smart_home.yaml`
-contains no comments at all — it round-trips through a YAML dumper on the
-storage-mode dashboard path, which would strip them. Explanations go in this
-pack; the YAML stays machine-clean.
+When the Mushroom form sits in a page **header** it also takes the no-surface
+`card_mod` treatment the title and chip cards use — `background: none`, no
+backdrop filter, no border, no shadow, plus
+`text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55)` for legibility over the
+night-sky background. The native form needs none of this: `casaray_v2` leaves
+all surface treatment to the theme.
 
-**Status: AVAILABLE NOW.** First instance: Home header, Batch 1, commit below.
+**The rationale lives here regardless of what the YAML says.** The two files
+differ on comments: `deez_smart_home.yaml` carries none, and adding any would
+be against its own convention; `casaray_v2.yaml` comments heavily and says in
+its header why. Both round-trip through a YAML dumper if imported into a
+storage-mode dashboard, which strips comments either way — so this pack, not a
+comment, is where a pattern's reasoning is guaranteed to survive.
+
+**Status: DONE on both dashboards.** `casaray_v2` carries P1 on all 19
+non-subview pages (the six single-camera subviews are detail views and
+correctly have none); `deez_smart_home` carries it in the Home header from
+Batch 1 (`5ad2bce`).
 
 #### P2 — Page header
 

@@ -28,6 +28,60 @@ minutes.
 
 Detailed. These are the batches current work and open verification depend on.
 
+### `PENDING-SHA` — casaray_v2: two convention breaks corrected (date format, Chinese script)
+Purpose: `5dc6f50` delivered `dashboards/casaray_v2.yaml`, a from-scratch
+parallel rebuild. It is strong work — well-guarded templates, no invented
+entities, honest absences. Two things in it diverge from conventions that were
+already settled elsewhere in the project, and both are the kind that get
+noticed on the wall tablet rather than in review.
+
+**1. The mandated date format, 19 instances.** The owner's instruction is that
+every clock renders the time with `DD/MM/YY` directly underneath, consistently
+across all major pages and boards; the mockups show `12/09/26`. v2 shipped all
+nineteen of its clocks as `now().strftime('%d/%m/%Y')`, which renders
+`05/09/2026`. The placement was already right — one clock on each of the 19
+non-subview pages, none on the six single-camera subviews, which is the correct
+exception — so this was purely the format. Changed `%Y` to `%y` in all 19.
+`grep -rn "strftime('%d/%m/%Y')" dashboards/` now returns nothing.
+
+**2. Traditional Chinese in a Simplified-Chinese project.** v2 was written in
+Taiwan-standard Chinese: `攝影機`, `感測器`, `帳單`, `扇門開著`, `氣候`, `車庫`.
+`dashboards/deez_smart_home.yaml` has been Simplified across all 304 of its
+bilingual strings: `摄像头`, `传感器`, `账单`, `扇门开启`, `气候`, `车库`. Both
+dashboards are driven by the same `input_boolean.chinese_dashboard`, so they
+cannot disagree about which Chinese the household reads, and production's is
+the only established convention in the repository.
+
+Converted v2 to Simplified — 29 exact-phrase replacements, script **and**
+vocabulary. Where production already had a phrase for the same idea, v2 now
+reuses production's wording verbatim rather than a new translation of it:
+`扇門開著` → `扇门开启`, `扇門無回報` → `扇门传感器离线`,
+`個攝影機離線` → `个摄像头离线`, `門窗感測器有…個無回報` →
+`门窗传感器有…个无数据`. Every replacement was asserted to occur before it was
+applied, and a follow-up scan for Traditional-only characters returns none.
+
+**Method.** Exact-phrase replacement with a per-phrase occurrence assertion,
+not per-character transliteration — a character map would have been faster and
+would have risked touching English. The script is in the scratchpad, not
+committed: it is a one-off, and the correct future guard is the grep in the
+verification list, not a tool.
+
+**Not changed.** v2's architecture, layout, entity choices, card vocabulary,
+comment style and its deliberate decision to translate only the
+meaning-carrying layer are all left alone. This batch corrects two conventions;
+it does not review the rebuild.
+
+Validated: `bash scripts/ha_validate.sh` 7/7, both dashboards. v2 templates 49
+→ 49, views 25 → 25, internal links 25/25 broken 0, entities +0. Production
+untouched: 426 templates, 36/36 links.
+
+Docs: `docs/CASARAY_V2_ARCHITECTURE.md` gains the script decision and two new
+live-verification items (7 and 8); `docs/CASARAY_MAPPING_PACK.md`'s P1 now
+carries both card spellings — native `markdown` for v2, Mushroom for
+production — and states that the format, not the card type, is the mandate.
+
+**Not verified live, and cannot be:** `CFG-003` is still open.
+
 ### `5ad2bce` — CasaRay Batch 1: the P1 clock/date shell component
 Purpose: the first implementation batch after CasaRay Design v1 was frozen and
 the 2026-08-30 schedule pause was lifted. Batch 1's brief is the global CasaRay

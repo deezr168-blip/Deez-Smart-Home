@@ -86,6 +86,17 @@ English identifies "Dining light" by icon, position and state, not by its
 label; a reader who needs to know whether the house is secure needs that
 sentence in their language.
 
+**Script: Simplified Chinese.** v2 first shipped in Traditional, Taiwan-standard
+Chinese — `攝影機`, `感測器`, `帳單`, `扇門開著` — while
+`dashboards/deez_smart_home.yaml` has been Simplified throughout its 304
+bilingual strings: `摄像头`, `传感器`, `账单`, `扇门开启`. Two dashboards driven by
+the same household toggle cannot disagree about which Chinese the household
+reads, and production's is the only established convention in the repository,
+so v2 was converted to match it — script **and** vocabulary, reusing
+production's exact phrasing wherever production already had one. Corrected in
+`PENDING-SHA`. New Chinese strings follow production's wording; grep it before
+inventing a term.
+
 ### View list (25)
 
 | Path | Title | Sub | Justification |
@@ -260,7 +271,12 @@ Lovelace.
 6. **iPad landscape.** Confirm two columns read correctly and no label
    truncates; `max_columns: 2` is set on every non-subview.
 7. **Bilingual toggle.** Confirm the Chinese strings render and that the
-   toggle on Home flips them.
+   toggle on Home flips them. Confirm they are **Simplified** and read the
+   same way as the old dashboard — `摄像头`, not `攝影機`.
+8. **The clock, on every board.** All 19 non-subview pages carry the P1
+   clock. Confirm the time sits above the date and the date reads
+   `DD/MM/YY` — `05/09/26`, **not** `05/09/2026`. The six single-camera
+   subviews have no clock by design.
 
 ## Maintenance
 
