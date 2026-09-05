@@ -1232,6 +1232,38 @@ views:
       icon: mdi:snowflake-alert
 
   - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Electrolux fridge
+      heading_style: subtitle
+      icon: mdi:fridge-outline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 伊莱克斯冰箱
+      heading_style: subtitle
+      icon: mdi:fridge-outline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: tile
+      entity: sensor.kitchen_electrolux_fridge_temperature
+      name: Temperature
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.kitchen_electrolux_fridge_humidity
+      name: Humidity
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.kitchen_electrolux_fridge_battery
+      name: Sensor battery
+      grid_options: {columns: 6, rows: 1}
+
+  - type: grid
     column_span: 2
     cards:
     - type: heading
@@ -1254,6 +1286,10 @@ views:
       entity: binary_sensor.k_motion_sensor_motion
       name: Motion
       grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: binary_sensor.k_motion_sensor_occupancy
+      name: Occupancy
+      grid_options: {columns: 6, rows: 1}
     - type: history-graph
       hours_to_show: 24
       grid_options: {columns: 12, rows: 3}
@@ -1262,6 +1298,28 @@ views:
         name: Kitchen motion
       - entity: binary_sensor.lg_fridge_door
         name: Fridge door
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Shopping list
+      heading_style: title
+      icon: mdi:cart-outline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 购物清单
+      heading_style: title
+      icon: mdi:cart-outline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: todo-list
+      entity: todo.shopping_list
 
 # ===========================================================================
 # DINING. Dining light, the motion group, and the pet feeder.
@@ -2807,8 +2865,20 @@ views:
       name: Parents Room humidity
       grid_options: {columns: 6, rows: 1}
     - type: tile
+      entity: sensor.living_room_living_room_temperature
+      name: Dining
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
       entity: weather.forecast_home
       name: Outside
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.master_bedroom_sensibo_sky_plus_air_conditioner_mode
+      name: AC mode
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.master_bedroom_sensibo_sky_plus_cooling_setpoint
+      name: AC setpoint
       grid_options: {columns: 6, rows: 1}
 
   - type: grid
@@ -2840,6 +2910,8 @@ views:
         name: Parents Room
       - entity: sensor.bedroom_motion_sensor_humidity
         name: Parents humidity
+      - entity: sensor.living_room_living_room_temperature
+        name: Dining
 
 # ===========================================================================
 # ENERGY. Powerpal is whole-house; the Fronius Primo inverter is currently
