@@ -4987,6 +4987,22 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+    - type: tile
+      entity: sensor.house_status
+      name: House status
+      grid_options: {columns: 12, rows: 1}
+    - type: tile
+      entity: sensor.casa_offline_devices
+      name: Offline devices
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: sensor.active_rooms_count
+      name: Rooms in use
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: sensor.house_lights_on
+      name: Lights on
+      grid_options: {columns: 4, rows: 1}
     - type: markdown
       content: >-
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set bats = [('Front
@@ -4995,7 +5011,16 @@ views:
         camera','北墙摄像头','sensor.tapo_c425_north_wall_battery'), ('East Wall
         camera','东墙摄像头','sensor.tapo_camera_bcca_battery'), ('South Wall
         camera','南墙摄像头','sensor.tapo_c420_south_wall_battery'), ('Roller
-        shade','卷帘','sensor.aqara_roller_shade_driver_e1_battery')] %} {% set devs =
+        shade','卷帘','sensor.aqara_roller_shade_driver_e1_battery'),
+        ('Powerpal','Powerpal','sensor.powerpal_gateway_powerpal_battery'), ('Gas
+        meter','燃气表','sensor.gas_meter_pulse_sensor_battery'),
+        ('Fridge','冰箱','sensor.kitchen_electrolux_fridge_battery'), ('Living Room
+        switch','客厅开关','sensor.living_room_livingroomswitch_battery'), ('Living Room
+        motion','客厅动作传感器','sensor.living_room_living_hue_hue_sensor_battery'), ('Living Hue
+        sensor','客厅 Hue 传感器','sensor.master_bedroom_living_hue_hue_sensor_battery'), ('Dining
+        motion','餐厅动作传感器','sensor.living_room_living_room_battery'), ('Ray Bedroom
+        switch','Ray 卧室开关','sensor.bedroom_bedlightswitch_battery'), ('Bedroom Hue
+        sensor','卧室 Hue 传感器','sensor.master_bedroom_bedroom_hue_sensor_battery')] %} {% set devs =
         ['camera.tapo_c420_east_wall_hd_stream_direct',
         'camera.tapo_c420_south_wall_hd_stream_direct',
         'sensor.primo_5_0_1_1_ac_power', 'media_player.pogo', 'light.kogan_tv',
@@ -5071,6 +5096,38 @@ views:
       entity: sensor.powerpal_gateway_powerpal_battery
       name: Powerpal
       grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.gas_meter_pulse_sensor_battery
+      name: Gas meter
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.kitchen_electrolux_fridge_battery
+      name: Fridge
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.living_room_livingroomswitch_battery
+      name: Living Room switch
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.living_room_living_hue_hue_sensor_battery
+      name: Living Room motion
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.master_bedroom_living_hue_hue_sensor_battery
+      name: Living Hue sensor
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.living_room_living_room_battery
+      name: Dining motion
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.bedroom_bedlightswitch_battery
+      name: Ray Bedroom switch
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.master_bedroom_bedroom_hue_sensor_battery
+      name: Bedroom Hue sensor
+      grid_options: {columns: 6, rows: 1}
 
   - type: grid
     column_span: 1
@@ -5097,6 +5154,9 @@ views:
     - type: tile
       entity: binary_sensor.remote_ui
       name: Remote access
+    - type: tile
+      entity: binary_sensor.matter_zigbee_hub_problem
+      name: Zigbee hub
     - type: markdown
       content: >-
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% if cn
