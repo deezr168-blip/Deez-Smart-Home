@@ -139,30 +139,30 @@ views:
         state: 'on'
     - type: markdown
       content: >-
-        {% set cn = is_state('input_boolean.chinese_dashboard','on') %} {% set
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') -%} {% set
         doors = ['binary_sensor.f_contact_sensor_door',
         'binary_sensor.m_contact_sensor_door',
-        'binary_sensor.b_contact_sensor_door'] %} {% set bats =
+        'binary_sensor.b_contact_sensor_door'] -%} {% set bats =
         ['sensor.front_door_battery', 'sensor.living_room_ringring_battery',
         'sensor.tapo_c425_north_wall_battery',
         'sensor.tapo_camera_bcca_battery',
         'sensor.tapo_c420_south_wall_battery',
-        'sensor.aqara_roller_shade_driver_e1_battery'] %} {% set cams =
+        'sensor.aqara_roller_shade_driver_e1_battery'] -%} {% set cams =
         ['camera.front_door_live_view',
         'camera.tapo_c425_north_wall_hd_stream_direct',
         'camera.tapo_c420_east_wall_hd_stream_direct',
         'camera.tapo_c420_south_wall_hd_stream_direct',
         'camera.tapo_c200_stockroom_hd_stream_direct',
-        'camera.smart_pet_feeder'] %} {% set ns = namespace(dopen=0, dunk=0,
-        blow=0, bunk=0, coff=0) %} {% for d in doors %}{% set s = states(d) %}{%
+        'camera.smart_pet_feeder'] -%} {% set ns = namespace(dopen=0, dunk=0,
+        blow=0, bunk=0, coff=0) -%} {% for d in doors %}{% set s = states(d) %}{%
         if s == 'on' %}{% set ns.dopen = ns.dopen + 1 %}{% elif s != 'off' %}{%
-        set ns.dunk = ns.dunk + 1 %}{% endif %}{% endfor %} {% for b in bats %}{%
+        set ns.dunk = ns.dunk + 1 %}{% endif %}{% endfor -%} {% for b in bats %}{%
         set s = states(b) %}{% if s in ['unavailable','unknown','none',''] %}{%
         set ns.bunk = ns.bunk + 1 %}{% else %}{% set f = s | float(-1) %}{% if f
         < 0 %}{% set ns.bunk = ns.bunk + 1 %}{% elif f < 30 %}{% set ns.blow =
-        ns.blow + 1 %}{% endif %}{% endif %}{% endfor %} {% for c in cams %}{% if
+        ns.blow + 1 %}{% endif %}{% endif %}{% endfor -%} {% for c in cams %}{% if
         states(c) in ['unavailable','unknown'] %}{% set ns.coff = ns.coff + 1
-        %}{% endif %}{% endfor %} {% set total = ns.dopen + ns.blow + ns.coff %}
+        %}{% endif %}{% endfor -%} {% set total = ns.dopen + ns.blow + ns.coff -%}
         {% if total == 0 and ns.dunk == 0 and ns.bunk == 0 %}{{ '一切正常。' if
         cn else 'All clear. Nothing needs attention.' }}{% else %}{% if ns.dopen
         %}- **{{ ns.dopen }}** {{ '扇门开启' if cn else ('door open' if ns.dopen
@@ -365,13 +365,13 @@ views:
         state: 'on'
     - type: markdown
       content: >-
-        {% set cn = is_state('input_boolean.chinese_dashboard','on') %} {% set
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') -%} {% set
         doors = ['binary_sensor.f_contact_sensor_door',
         'binary_sensor.m_contact_sensor_door',
-        'binary_sensor.b_contact_sensor_door'] %} {% set ns =
-        namespace(open=0, unk=0) %} {% for d in doors %}{% set s = states(d) %}{%
+        'binary_sensor.b_contact_sensor_door'] -%} {% set ns =
+        namespace(open=0, unk=0) -%} {% for d in doors %}{% set s = states(d) %}{%
         if s == 'on' %}{% set ns.open = ns.open + 1 %}{% elif s != 'off' %}{% set
-        ns.unk = ns.unk + 1 %}{% endif %}{% endfor %} {% if ns.unk %}{{
+        ns.unk = ns.unk + 1 %}{% endif %}{% endfor -%} {% if ns.unk %}{{
         '门窗传感器有 %d 个无数据。' % ns.unk if cn else '%d of 3 door sensors
         are not reporting. Security state cannot be confirmed.' % ns.unk }}{%
         elif ns.open %}{{ '%d 扇门开启。' % ns.open if cn else '%d of 3 doors
@@ -418,11 +418,11 @@ views:
         state: 'on'
     - type: markdown
       content: >-
-        {% set cn = is_state('input_boolean.chinese_dashboard','on') %} {% set p
-        = states('sensor.powerpal_gateway_powerpal_power') %} {% set s =
-        states('sensor.primo_5_0_1_1_ac_power') %} {% set pk = p not in
-        ['unavailable','unknown','none',''] and p | float(-1) >= 0 %} {% set sk =
-        s not in ['unavailable','unknown','none',''] and s | float(-1) >= 0 %} {%
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') -%} {% set p
+        = states('sensor.powerpal_gateway_powerpal_power') -%} {% set s =
+        states('sensor.primo_5_0_1_1_ac_power') -%} {% set pk = p not in
+        ['unavailable','unknown','none',''] and p | float(-1) >= 0 -%} {% set sk =
+        s not in ['unavailable','unknown','none',''] and s | float(-1) >= 0 -%} {%
         if pk %}{{ '目前用电 %s W。' % p if cn else 'Drawing **%s W** right
         now.' % p }}{% else %}{{ '用电量无数据。' if cn else 'House power is not
         reporting.' }}{% endif %} {% if sk %}{{ ' 太阳能发电 %s W。' % s if cn
@@ -1698,11 +1698,11 @@ views:
     - type: markdown
       content: >-
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set d =
-        states('binary_sensor.emergency_button_dad_cloud_connection') %} {% set m =
-        states('binary_sensor.emergency_button_mum_cloud_connection') %} {% set
-        ns = namespace(down=0, unk=0) %} {% for s in [d, m] %}{% if s == 'off'
+        states('binary_sensor.emergency_button_dad_cloud_connection') -%} {% set m =
+        states('binary_sensor.emergency_button_mum_cloud_connection') -%} {% set
+        ns = namespace(down=0, unk=0) -%} {% for s in [d, m] %}{% if s == 'off'
         %}{% set ns.down = ns.down + 1 %}{% elif s != 'on' %}{% set ns.unk =
-        ns.unk + 1 %}{% endif %}{% endfor %} {% if ns.unk %}{% if cn %}**2
+        ns.unk + 1 %}{% endif %}{% endfor -%} {% if ns.unk %}{% if cn %}**2
         个紧急按钮中有 {{ ns.unk }} 个无数据。**无法确认状态。{% else %}**{{ ns.unk }} of
         2 emergency buttons are not reporting.** Their status cannot be confirmed.{%
         endif %}{% elif ns.down %}{% if cn %}**2 个紧急按钮中有 {{ ns.down }}
@@ -2974,10 +2974,10 @@ views:
     - type: markdown
       content: >-
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set p =
-        states('sensor.powerpal_gateway_powerpal_power') %} {% set s =
-        states('sensor.primo_5_0_1_1_ac_power') %} {% set pk = p not in
-        ['unavailable','unknown','none',''] and p | float(-1) >= 0 %} {% set sk =
-        s not in ['unavailable','unknown','none',''] and s | float(-1) >= 0 %} {%
+        states('sensor.powerpal_gateway_powerpal_power') -%} {% set s =
+        states('sensor.primo_5_0_1_1_ac_power') -%} {% set pk = p not in
+        ['unavailable','unknown','none',''] and p | float(-1) >= 0 -%} {% set sk =
+        s not in ['unavailable','unknown','none',''] and s | float(-1) >= 0 -%} {%
         if pk and sk %}{% set pf = p | float(-1) %}{% set sf = s | float(-1) %}{%
         if pf > 0 %}{% if cn %}太阳能供应了家庭用电的 **{{ ((sf / pf) * 100) | round(0) |
         int }}%**。{% else %}Solar is supplying **{{ ((sf / pf) * 100) | round(0) | int
@@ -3282,8 +3282,8 @@ views:
         'input_boolean.council_rate_paid'),
         ('Car insurance','车险','input_datetime.car_insurance_due',
         'input_boolean.car_insurance_paid'),
-        ('Rego','车辆注册','input_datetime.rego_due','input_boolean.rego_paid')] %} {%
-        set ns = namespace(soonest=99999, name='', overdue=0, unk=0) %} {% for n, z, d,
+        ('Rego','车辆注册','input_datetime.rego_due','input_boolean.rego_paid')] -%} {%
+        set ns = namespace(soonest=99999, name='', overdue=0, unk=0) -%} {% for n, z, d,
         p in dues %}{% set ds = states(d) %}{% set ps = states(p) %}{% if ds in
         ['unavailable','unknown','none',''] %}{% set ns.unk = ns.unk + 1 %}{%
         elif ps != 'on' %}{% set ts = as_timestamp(ds, 0) %}{% if ts > 0 %}{% set
@@ -3291,7 +3291,7 @@ views:
         < 0 %}{% set ns.overdue = ns.overdue + 1 %}{% endif %}{% if days <
         ns.soonest %}{% set ns.soonest = days %}{% set ns.name = z if cn else n %}{%
         endif %}{% else %}{% set ns.unk = ns.unk + 1 %}{% endif %}{% endif %}{% endfor
-        %} {% if ns.overdue %}{% if cn %}**{{ ns.overdue }} 笔账单已逾期。** {% else
+        -%} {% if ns.overdue %}{% if cn %}**{{ ns.overdue }} 笔账单已逾期。** {% else
         %}**{{ ns.overdue }} bill{{ 's' if ns.overdue > 1 else '' }} overdue.** {% endif
         %}{% endif %}{% if ns.name %}{% if cn %}下一笔：**{{ ns.name }}**{% if ns.soonest
         < 0 %}，已逾期 {{ ns.soonest | abs }} 天。{% elif ns.soonest == 0 %}，今天到期。{%
@@ -5020,22 +5020,22 @@ views:
         sensor','客厅 Hue 传感器','sensor.master_bedroom_living_hue_hue_sensor_battery'), ('Dining
         motion','餐厅动作传感器','sensor.living_room_living_room_battery'), ('Ray Bedroom
         switch','Ray 卧室开关','sensor.bedroom_bedlightswitch_battery'), ('Bedroom Hue
-        sensor','卧室 Hue 传感器','sensor.master_bedroom_bedroom_hue_sensor_battery')] %} {% set devs =
+        sensor','卧室 Hue 传感器','sensor.master_bedroom_bedroom_hue_sensor_battery')] -%} {% set devs =
         ['camera.tapo_c420_east_wall_hd_stream_direct',
         'camera.tapo_c420_south_wall_hd_stream_direct',
         'sensor.primo_5_0_1_1_ac_power', 'media_player.pogo', 'light.kogan_tv',
         'light.living_room_hue_ambiance_spot_1',
         'light.living_room_hue_ambiance_spot_2',
         'light.living_room_hue_ambiance_spot_3',
-        'light.living_room_hue_ambiance_spot_4'] %} {% set ns =
-        namespace(low=[], unk=0, down=0) %} {% for n, z, b in bats %}{% set s =
+        'light.living_room_hue_ambiance_spot_4'] -%} {% set ns =
+        namespace(low=[], unk=0, down=0) -%} {% for n, z, b in bats %}{% set s =
         states(b) %}{% if s in ['unavailable','unknown','none',''] %}{% set
         ns.unk = ns.unk + 1 %}{% else %}{% set f = s | float(-1) %}{% if f < 0
         %}{% set ns.unk = ns.unk + 1 %}{% elif f < 30 %}{% set ns.low = ns.low +
-        [z if cn else n] %}{% endif %}{% endif %}{% endfor %} {% for d in devs %}{% if
+        [z if cn else n] %}{% endif %}{% endif %}{% endfor -%} {% for d in devs %}{% if
         states(d) in ['unavailable','unknown'] %}{% set ns.down = ns.down + 1 %}{%
-        endif %}{% endfor %} {% set wan =
-        states('binary_sensor.eero_wan_status') %} {% if wan == 'on' %}{{ '网络已连接。'
+        endif %}{% endfor -%} {% set wan =
+        states('binary_sensor.eero_wan_status') -%} {% if wan == 'on' %}{{ '网络已连接。'
         if cn else 'Internet is up.' }}{% elif wan == 'off' %}{{ '**网络连接已断开。**' if
         cn else '**The internet connection is down.**' }}{% else %}{{
         '**WAN 传感器无数据。**' if cn else '**The WAN sensor is not reporting.**' }}{%

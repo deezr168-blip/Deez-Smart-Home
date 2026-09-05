@@ -9,6 +9,8 @@ Covers the checks that are possible without Home Assistant itself:
   - every in-dashboard navigation_path resolves to a real view
   - card-type / property mismatches (e.g. `color` on a Mushroom card, which
     Home Assistant silently ignores)
+  - markdown cards do not emit enough leading whitespace to render as a
+    CommonMark indented code block
   - /local/ resource paths exist in www/ when www/ is present
   - mass-damage detection against the committed version of the same file
 
@@ -63,6 +65,28 @@ def walk(node, fn):
     elif isinstance(node, list):
         for v in node:
             walk(v, fn)
+
+
+def strip_jinja_tags(body):
+    """`body` with every {% ... %} removed, honouring Jinja whitespace control.
+
+    `{%- ... %}` eats the whitespace before the tag and `{% ... -%}` the
+    whitespace after it, so a naive strip would report whitespace that Jinja
+    never emits and flag cards that are already correct.
+    """
+    out, pos = [], 0
+    for m in re.finditer(r"\{%(.*?)%\}", body, flags=re.S):
+        inner = m.group(1)
+        chunk = body[pos:m.start()]
+        if inner.startswith("-"):
+            chunk = chunk.rstrip()
+        out.append(chunk)
+        pos = m.end()
+        if inner.endswith("-"):
+            while pos < len(body) and body[pos].isspace():
+                pos += 1
+    out.append(body[pos:])
+    return "".join(out)
 
 
 def committed(path):
@@ -139,7 +163,38 @@ def check(path):
             warns.append(f"{path}: '{k}' is inert on {t} (use icon_color) — {who!r}")
     print(f"  inert card properties    : {len(bad_props)}")
 
-    # 4. /local/ resources
+    # 4. markdown cards must not render as an indented code block
+    #
+    # A `{% set %}` preamble leaves its inter-tag spaces in the output. Four
+    # or more of them at the start makes CommonMark treat the whole card as
+    # an indented code block, so a house summary renders as grey monospace.
+    # Counted statically: strip the tags, and whatever spaces remain in front
+    # are what the card will emit before its first real character. The fix is
+    # `-%}` on the preamble tags, which eats the whitespace after them.
+    #
+    # Static, so it is deliberately conservative: whitespace emitted from
+    # inside a branch that only some states take is not counted, and no card
+    # is ever flagged for whitespace Jinja will not actually emit.
+    indented = []
+
+    def md_indent(node):
+        if node.get("type") != "markdown":
+            return
+        body = node.get("content")
+        if not isinstance(body, str) or "{%" not in body:
+            return
+        # Folded YAML scalars arrive with newlines already folded to spaces.
+        lead = strip_jinja_tags(body)
+        n = len(lead) - len(lead.lstrip(" "))
+        if n >= 4:
+            indented.append((n, re.sub(r"\s+", " ", body)[:60]))
+    walk(doc, md_indent)
+    for n, who in indented:
+        fails.append(f"{path}: markdown card emits {n} leading spaces — renders "
+                     f"as a code block; use -%}} on the preamble tags — {who!r}")
+    print(f"  markdown code-block risk : {len(indented)}")
+
+    # 5. /local/ resources
     local_refs = sorted(set(re.findall(r"/local/([A-Za-z0-9_./-]+)", raw)))
     if local_refs:
         if os.path.isdir("www"):
@@ -152,7 +207,7 @@ def check(path):
     else:
         print("  /local/ resources        : none referenced")
 
-    # 5. mass-damage detection against HEAD
+    # 6. mass-damage detection against HEAD
     old = committed(path)
     if old is None:
         print("  mass-damage check        : new file, no baseline")
