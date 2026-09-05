@@ -4658,6 +4658,13 @@ views:
       entity: zone.home
       name: People in the home zone
       icon: mdi:home-account
+    # more-info rather than a tap-toggle: guest mode may drive automations
+    # this dashboard cannot see, so flipping it is a deliberate act.
+    - type: tile
+      entity: input_boolean.guest_mode
+      name: Guest mode
+      icon: mdi:account-supervisor
+      tap_action: {action: more-info}
 
 
   - type: grid
@@ -4681,13 +4688,69 @@ views:
         state: 'on'
     - type: tile
       entity: sensor.raymonds_iphone_battery_level
-      name: Raymond phone battery
+      name: Raymond phone
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.raymonds_iphone_battery_state
+      name: Charging
+      grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: sensor.vine_s_phone_battery_level
-      name: Vinh phone battery
+      name: Vinh phone
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.vine_s_phone_battery_state
+      name: Charging
+      grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: sensor.ais_iphone_battery_level
-      name: Ai phone battery
+      name: Ai phone
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.ais_iphone_battery_state
+      name: Charging
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.raymonds_ipad_battery_level
+      name: Raymond iPad
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.raymonds_ipad_battery_state
+      name: Charging
+      grid_options: {columns: 6, rows: 1}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Whereabouts
+      heading_style: title
+      icon: mdi:map-marker-distance
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 位置
+      heading_style: title
+      icon: mdi:map-marker-distance
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: tile
+      entity: sensor.raymonds_iphone_distance
+      name: Raymond distance from home
+    - type: tile
+      entity: sensor.raymonds_iphone_activity
+      name: Raymond activity
+    - type: markdown
+      content: >-
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {% if cn %}只有 Raymond 的 iPhone 上报距离和活动状态。Vinh
+        的手机只提供电量，Ai 的 iPhone 位置传感器目前无数据。{% else %}Only Raymond's iPhone
+        reports distance and activity. Vinh's phone exposes battery only, and
+        Ai's iPhone location sensors are currently not reporting.{% endif %}
 
   - type: grid
     column_span: 1
