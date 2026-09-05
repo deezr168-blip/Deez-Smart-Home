@@ -28,6 +28,63 @@ minutes.
 
 Detailed. These are the batches current work and open verification depend on.
 
+### `PENDING-SHA` — casaray_v2: the bilingual meaning layer, completed
+Purpose: `docs/CASARAY_V2_ARCHITECTURE.md` states v2's bilingual rule — translate
+"the layer that carries meaning — page titles, room summaries, interpreted
+status" and leave device rows as native tiles. The rule is sound. It was not
+fully implemented.
+
+**What a Chinese-mode reader actually got.** Every page had a bilingual *title*
+and an English-only *subtitle*: `# 客厅` followed by "Temperature not reporting
+· no motion". Worse, none of the eight interpreted-status panels — the ones the
+rule exists to protect — translated at all. In Chinese mode the House Health
+page read entirely in English, including the sentence saying three batteries
+are low. The parents are the reason the toggle exists; the panels they most
+need were the ones still in English.
+
+**Scope.** 21 templates, all in `casaray_v2.yaml`:
+
+- 13 room and board summaries — living-room, kitchen, dining, parents-room,
+  ray-bedroom, garage, guest-room, lighting, climate, energy, security, people,
+  entertainment.
+- 8 interpreted-status panels — the Hue bridge notice, the emergency-button
+  roll-up, the freezer circuit notice, solar contribution, the inverter-offline
+  banner, the next-bill summary, the camera roll-up, and House Health.
+- Plus the three "why this panel is absent" notes on bills, network and alerts.
+  Those are on-screen text like anything else.
+
+**List items are translated, not just the sentence around them.** The camera
+roll-up now reads `**6 个摄像头中 2 个离线：**东墙、南墙。`, House Health names
+`前门、门铃、北墙摄像头`, and Bills says `下一笔：**电费**，12 天后到期。` Each
+list carries a Chinese label beside its English one in the same tuple, so the
+loop picks the right one. Chinese enumerations use `、`, not `,`. Proper nouns
+stay Latin — CasaRay, Hue, Fronius Primo, eero, Lovelace, WAN, Ray.
+
+**Logic unchanged.** Every guard, every `float(-1)` sentinel tested immediately,
+every `unavailable / unknown / none` branch, every entity ID is exactly as
+`5dc6f50` wrote it. The only edits wrap output literals in
+`{{ 'zh' if cn else 'en' }}` and add the `cn` binding where it was missing.
+
+**How it was verified, beyond the gate.** Rendering 52 Jinja templates through
+real Jinja2 — with `jinja2.utils.Namespace`, live states from the 2026-09-01
+connector snapshot, and stub `states` / `is_state` / `as_timestamp` — in both
+languages: **0 render errors, and every panel differs between the two.** The
+render also reproduced the known live facts independently: "3 batteries under
+30%: Front Door, RingRing, North Wall camera" and "2 of 6 cameras offline: East
+Wall, South Wall", which is what `docs/entity_inventory.md` recorded.
+
+**Deliberately not done: the 70 `heading` cards** — "Needs attention",
+"Lights", "Power outlets" — are still English. They are section labels, not
+page titles, room summaries or interpreted status, so they fall outside the
+rule as written. Translating them changes the rule rather than completing it,
+and that is the owner's call. Noted in the architecture document.
+
+Validated: `bash scripts/ha_validate.sh` 7/7. v2 templates 49 → 52 (the three
+absence notes became templated), views 25 → 25, internal links 25/25 broken 0,
+**entities +0**. Production untouched.
+
+**Not verified live, and cannot be:** `CFG-003` is still open.
+
 ### `885b03a` — casaray_v2: two convention breaks corrected (date format, Chinese script)
 Purpose: `5dc6f50` delivered `dashboards/casaray_v2.yaml`, a from-scratch
 parallel rebuild. It is strong work — well-guarded templates, no invented

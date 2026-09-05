@@ -675,11 +675,13 @@ views:
         # {{ '客厅' if is_state('input_boolean.chinese_dashboard','on') else
         'Living Room' }}
 
-        {% set t = states('sensor.living_room_living_hue_hue_sensor_temperature')
-        %}{% set m = states('binary_sensor.living_room_living_hue_hue_sensor_motion')
-        %}{% if t not in ['unavailable','unknown','none',''] %}{{ t }} °C{% else
-        %}Temperature not reporting{% endif %}{% if m == 'on' %} · occupied{%
-        elif m == 'off' %} · no motion{% endif %}
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set t =
+        states('sensor.living_room_living_hue_hue_sensor_temperature') %}{% set m =
+        states('binary_sensor.living_room_living_hue_hue_sensor_motion') %}{% if t not
+        in ['unavailable','unknown','none',''] %}{{ t }} °C{% else %}{{ '温度无数据' if
+        cn else 'Temperature not reporting' }}{% endif %}{% if m == 'on' %}{{ ' · 有人'
+        if cn else ' · occupied' }}{% elif m == 'off' %}{{ ' · 无人' if cn else ' · no
+        motion' }}{% endif %}
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
@@ -717,15 +719,18 @@ views:
       grid_options: {columns: 6, rows: 1}
     - type: markdown
       content: >-
-        {% set spots = ['light.living_room_hue_ambiance_spot_1',
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set spots =
+        ['light.living_room_hue_ambiance_spot_1',
         'light.living_room_hue_ambiance_spot_2',
         'light.living_room_hue_ambiance_spot_3',
         'light.living_room_hue_ambiance_spot_4'] %} {% set ns =
         namespace(down=0) %} {% for s in spots %}{% if states(s) in
         ['unavailable','unknown'] %}{% set ns.down = ns.down + 1 %}{% endif %}{%
-        endfor %} {% if ns.down == 4 %}All four Hue spots are unavailable. The
-        Hue bridge is not answering — this is a bridge fault, not a dashboard
-        one.{% elif ns.down %}{{ ns.down }} of 4 Hue spots unavailable.{% endif %}
+        endfor %} {% if ns.down == 4 %}{{ '四盏 Hue 射灯全部离线。Hue
+        桥接器无响应，这是桥接器故障，不是面板问题。' if cn else 'All four Hue spots are
+        unavailable. The Hue bridge is not answering — this is a bridge fault, not a
+        dashboard one.' }}{% elif ns.down %}{% if cn %}{{ ns.down }} 盏 Hue 射灯离线（共
+        4 盏）。{% else %}{{ ns.down }} of 4 Hue spots unavailable.{% endif %}{% endif %}
 
   - type: grid
     column_span: 1
@@ -849,9 +854,11 @@ views:
         # {{ '厨房' if is_state('input_boolean.chinese_dashboard','on') else
         'Kitchen' }}
 
-        {% set m = states('binary_sensor.k_motion_sensor_motion') %}{% if m ==
-        'on' %}Someone is in the kitchen{% elif m == 'off' %}No motion{% else
-        %}Motion sensor not reporting{% endif %}
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set m =
+        states('binary_sensor.k_motion_sensor_motion') %}{% if m == 'on' %}{{ '厨房有人'
+        if cn else 'Someone is in the kitchen' }}{% elif m == 'off' %}{{ '无人活动' if
+        cn else 'No motion' }}{% else %}{{ '动作传感器离线' if cn else 'Motion sensor
+        not reporting' }}{% endif %}
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
@@ -960,11 +967,14 @@ views:
         # {{ '餐厅' if is_state('input_boolean.chinese_dashboard','on') else
         'Dining' }}
 
-        {% set m = states('binary_sensor.sensor_group_motion') %}{% set l =
-        states('light.dining') %}{% if m == 'on' %}Occupied{% elif m == 'off'
-        %}No motion{% else %}Motion sensor not reporting{% endif %} · {% if l ==
-        'on' %}light on{% elif l == 'off' %}light off{% else %}light not
-        reporting{% endif %}
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set m =
+        states('binary_sensor.sensor_group_motion') %}{% set l =
+        states('light.dining') %}{% if m == 'on' %}{{ '有人' if cn else 'Occupied' }}{%
+        elif m == 'off' %}{{ '无人' if cn else 'No motion' }}{% else %}{{
+        '动作传感器离线' if cn else 'Motion sensor not reporting' }}{% endif %} · {% if
+        l == 'on' %}{{ '灯开启' if cn else 'light on' }}{% elif l == 'off' %}{{ '灯关闭'
+        if cn else 'light off' }}{% else %}{{ '灯无数据' if cn else 'light not
+        reporting' }}{% endif %}
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
@@ -1069,11 +1079,13 @@ views:
         # {{ '父母房' if is_state('input_boolean.chinese_dashboard','on') else
         'Parents Room' }}
 
-        {% set t = states('sensor.bedroom_motion_sensor_temperature') %}{% set o
-        = states('binary_sensor.bedroom_parents_room_ac_room_occupied') %}{% if t
-        not in ['unavailable','unknown','none',''] %}{{ t }} °C{% else
-        %}Temperature not reporting{% endif %}{% if o == 'on' %} · occupied{%
-        elif o == 'off' %} · empty{% endif %}
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set t =
+        states('sensor.bedroom_motion_sensor_temperature') %}{% set o =
+        states('binary_sensor.bedroom_parents_room_ac_room_occupied') %}{% if t not in
+        ['unavailable','unknown','none',''] %}{{ t }} °C{% else %}{{ '温度无数据' if cn
+        else 'Temperature not reporting' }}{% endif %}{% if o == 'on' %}{{ ' · 有人' if
+        cn else ' · occupied' }}{% elif o == 'off' %}{{ ' · 无人' if cn else ' · empty'
+        }}{% endif %}
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
@@ -1141,15 +1153,18 @@ views:
       icon: mdi:bell-alert
     - type: markdown
       content: >-
-        {% set d = states('binary_sensor.emergency_button_dad_cloud_connection')
-        %} {% set m =
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set d =
+        states('binary_sensor.emergency_button_dad_cloud_connection') %} {% set m =
         states('binary_sensor.emergency_button_mum_cloud_connection') %} {% set
         ns = namespace(down=0, unk=0) %} {% for s in [d, m] %}{% if s == 'off'
         %}{% set ns.down = ns.down + 1 %}{% elif s != 'on' %}{% set ns.unk =
-        ns.unk + 1 %}{% endif %}{% endfor %} {% if ns.unk %}**{{ ns.unk }} of 2
-        emergency buttons are not reporting.** Their status cannot be
-        confirmed.{% elif ns.down %}**{{ ns.down }} of 2 emergency buttons are
-        offline.**{% else %}Both emergency buttons are connected.{% endif %}
+        ns.unk + 1 %}{% endif %}{% endfor %} {% if ns.unk %}{% if cn %}**2
+        个紧急按钮中有 {{ ns.unk }} 个无数据。**无法确认状态。{% else %}**{{ ns.unk }} of
+        2 emergency buttons are not reporting.** Their status cannot be confirmed.{%
+        endif %}{% elif ns.down %}{% if cn %}**2 个紧急按钮中有 {{ ns.down }}
+        个离线。**{% else %}**{{ ns.down }} of 2 emergency buttons are offline.**{%
+        endif %}{% else %}{{ '两个紧急按钮均已连接。' if cn else 'Both emergency buttons
+        are connected.' }}{% endif %}
     - type: tile
       entity: binary_sensor.emergency_button_dad_cloud_connection
       name: Dad's button
@@ -1262,11 +1277,13 @@ views:
         # {{ 'Ray 房间' if is_state('input_boolean.chinese_dashboard','on') else
         'Ray Bedroom' }}
 
-        {% set l = states('light.bedroom_bedroom') %}{% set c =
-        states('cover.aqara_roller_shade_driver_e1') %}{% if l == 'on' %}Light
-        on{% elif l == 'off' %}Light off{% else %}Light not reporting{% endif %}
-        · {% if c in ['open','closed'] %}blind {{ c }}{% else %}blind not
-        reporting{% endif %}
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set l = states('light.bedroom_bedroom') %}{% set c =
+        states('cover.aqara_roller_shade_driver_e1') %}{% if l == 'on' %}{{ '灯开启' if
+        cn else 'Light on' }}{% elif l == 'off' %}{{ '灯关闭' if cn else 'Light off'
+        }}{% else %}{{ '灯无数据' if cn else 'Light not reporting' }}{% endif %} · {% if
+        c == 'open' %}{{ '窗帘已打开' if cn else 'blind open' }}{% elif c == 'closed'
+        %}{{ '窗帘已关闭' if cn else 'blind closed' }}{% else %}{{ '窗帘无数据' if cn
+        else 'blind not reporting' }}{% endif %}
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
@@ -1397,9 +1414,11 @@ views:
         # {{ '车库' if is_state('input_boolean.chinese_dashboard','on') else
         'Garage' }}
 
-        {% set p = states('sensor.g_monitor_freezer_p110m_current_consumption')
-        %}{% if p not in ['unavailable','unknown','none',''] %}Freezer drawing {{
-        p }} W{% else %}Freezer monitor not reporting{% endif %}
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set p =
+        states('sensor.g_monitor_freezer_p110m_current_consumption') %}{% if p not in
+        ['unavailable','unknown','none',''] %}{% if cn %}冰柜功率 {{ p }} W{% else
+        %}Freezer drawing {{ p }} W{% endif %}{% else %}{{ '冰柜监测无数据' if cn else
+        'Freezer monitor not reporting' }}{% endif %}
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
@@ -1423,12 +1442,15 @@ views:
       icon: mdi:power-plug
     - type: markdown
       content: >-
-        {% set o = states('binary_sensor.g_monitor_freezer_p110m_overloaded') %}
-        {% set s = states('switch.g_monitor_freezer_p110m') %} {% if o == 'on'
-        %}**The freezer circuit is overloaded.** Check the appliance before
-        resetting.{% elif o == 'off' and s == 'on' %}Freezer running normally.{%
-        elif s == 'off' %}**The freezer plug is switched off.**{% else %}Freezer
-        monitor is not reporting.{% endif %}
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set o =
+        states('binary_sensor.g_monitor_freezer_p110m_overloaded') %} {% set s =
+        states('switch.g_monitor_freezer_p110m') %} {% if o == 'on' %}{{
+        '**冰柜电路过载。**请先检查电器再恢复供电。' if cn else '**The freezer circuit is
+        overloaded.** Check the appliance before resetting.' }}{% elif o == 'off' and s
+        == 'on' %}{{ '冰柜运行正常。' if cn else 'Freezer running normally.' }}{% elif s
+        == 'off' %}{{ '**冰柜插座已关闭。**' if cn else '**The freezer plug is switched
+        off.**' }}{% else %}{{ '冰柜监测无数据。' if cn else 'Freezer monitor is not
+        reporting.' }}{% endif %}
 
   - type: grid
     column_span: 1
@@ -1491,9 +1513,10 @@ views:
         # {{ '客房' if is_state('input_boolean.chinese_dashboard','on') else
         'Guest Room' }}
 
-        {% set p = states('switch.g_printer_p100') %}{% if p == 'on' %}Printer
-        on{% elif p == 'off' %}Printer off{% else %}Printer plug not reporting{%
-        endif %}
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set p = states('switch.g_printer_p100') %}{% if p == 'on' %}{{
+        '打印机开启' if cn else 'Printer on' }}{% elif p == 'off' %}{{ '打印机关闭' if
+        cn else 'Printer off' }}{% else %}{{ '打印机插座无数据' if cn else 'Printer plug
+        not reporting' }}{% endif %}
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
@@ -1573,13 +1596,15 @@ views:
         # {{ '灯光' if is_state('input_boolean.chinese_dashboard','on') else
         'Lighting' }}
 
-        {% set ls = ['light.living_room', 'light.dining',
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set ls = ['light.living_room', 'light.dining',
         'light.bedroom_bedroom', 'light.kogan_tv',
         'light.smart_pet_feeder_indicator_light'] %} {% set ns =
         namespace(on=0, unk=0) %} {% for l in ls %}{% set s = states(l) %}{% if s
         == 'on' %}{% set ns.on = ns.on + 1 %}{% elif s != 'off' %}{% set ns.unk =
-        ns.unk + 1 %}{% endif %}{% endfor %} {{ ns.on }} of {{ ls | count }}
-        lights on{% if ns.unk %} · {{ ns.unk }} not reporting{% endif %}
+        ns.unk + 1 %}{% endif %}{% endfor %} {% if cn %}{{ ls | count }} 盏灯中 {{ ns.on
+        }} 盏开启{% if ns.unk %} · {{ ns.unk }} 盏无数据{% endif %}{% else %}{{ ns.on }}
+        of {{ ls | count }} lights on{% if ns.unk %} · {{ ns.unk }} not reporting{%
+        endif %}{% endif %}
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
@@ -1691,16 +1716,19 @@ views:
         # {{ '气候' if is_state('input_boolean.chinese_dashboard','on') else
         'Climate' }}
 
-        {% set ts = ['sensor.living_room_living_hue_hue_sensor_temperature',
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set ts =
+        ['sensor.living_room_living_hue_hue_sensor_temperature',
         'sensor.bedroom_motion_sensor_temperature'] %} {% set ns =
         namespace(sum=0.0, n=0, unk=0) %} {% for t in ts %}{% set s = states(t)
         %}{% if s in ['unavailable','unknown','none',''] %}{% set ns.unk =
         ns.unk + 1 %}{% else %}{% set f = s | float(-999) %}{% if f > -900 %}{%
         set ns.sum = ns.sum + f %}{% set ns.n = ns.n + 1 %}{% else %}{% set
-        ns.unk = ns.unk + 1 %}{% endif %}{% endif %}{% endfor %} {% if ns.n
-        %}Indoor average {{ (ns.sum / ns.n) | round(1) }} °C across {{ ns.n }}
-        {{ 'room' if ns.n == 1 else 'rooms' }}{% if ns.unk %} · {{ ns.unk }} not
-        reporting{% endif %}{% else %}No indoor temperature is reporting.{% endif %}
+        ns.unk = ns.unk + 1 %}{% endif %}{% endif %}{% endfor %} {% if ns.n %}{% if cn
+        %}室内平均 {{ (ns.sum / ns.n) | round(1) }} °C（{{ ns.n }} 个房间）{% if ns.unk
+        %} · {{ ns.unk }} 个无数据{% endif %}{% else %}Indoor average {{ (ns.sum / ns.n)
+        | round(1) }} °C across {{ ns.n }} {{ 'room' if ns.n == 1 else 'rooms' }}{% if
+        ns.unk %} · {{ ns.unk }} not reporting{% endif %}{% endif %}{% else %}{{
+        '没有室内温度数据。' if cn else 'No indoor temperature is reporting.' }}{% endif %}
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
@@ -1789,9 +1817,11 @@ views:
         # {{ '能源' if is_state('input_boolean.chinese_dashboard','on') else
         'Energy' }}
 
-        {% set p = states('sensor.powerpal_gateway_powerpal_power') %}{% if p not
-        in ['unavailable','unknown','none',''] %}{{ p }} W now{% else %}House
-        power not reporting{% endif %}
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set p =
+        states('sensor.powerpal_gateway_powerpal_power') %}{% if p not in
+        ['unavailable','unknown','none',''] %}{% if cn %}当前 {{ p }} W{% else %}{{ p }}
+        W now{% endif %}{% else %}{{ '用电量无数据' if cn else 'House power not
+        reporting' }}{% endif %}
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
@@ -1808,17 +1838,23 @@ views:
       icon: mdi:flash
     - type: markdown
       content: >-
-        {% set p = states('sensor.powerpal_gateway_powerpal_power') %} {% set s =
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set p =
+        states('sensor.powerpal_gateway_powerpal_power') %} {% set s =
         states('sensor.primo_5_0_1_1_ac_power') %} {% set pk = p not in
         ['unavailable','unknown','none',''] and p | float(-1) >= 0 %} {% set sk =
         s not in ['unavailable','unknown','none',''] and s | float(-1) >= 0 %} {%
         if pk and sk %}{% set pf = p | float(-1) %}{% set sf = s | float(-1) %}{%
-        if pf > 0 %}Solar is supplying **{{ ((sf / pf) * 100) | round(0) | int
-        }}%** of household demand.{% else %}House draw is {{ pf }} W.{% endif %}{%
-        elif pk %}Drawing **{{ p }} W**. The solar inverter is offline, so solar
-        contribution cannot be calculated.{% elif sk %}Solar generating **{{ s }}
-        W**. House consumption is not reporting.{% else %}Neither the house power
-        meter nor the solar inverter is reporting right now.{% endif %}
+        if pf > 0 %}{% if cn %}太阳能供应了家庭用电的 **{{ ((sf / pf) * 100) | round(0) |
+        int }}%**。{% else %}Solar is supplying **{{ ((sf / pf) * 100) | round(0) | int
+        }}%** of household demand.{% endif %}{% else %}{% if cn %}家庭用电 {{ pf }} W。{%
+        else %}House draw is {{ pf }} W.{% endif %}{% endif %}{% elif pk %}{% if cn
+        %}当前用电 **{{ p }} W**。太阳能逆变器离线，无法计算太阳能占比。{% else %}Drawing
+        **{{ p }} W**. The solar inverter is offline, so solar contribution cannot be
+        calculated.{% endif %}{% elif sk %}{% if cn %}太阳能发电 **{{ s }}
+        W**。家庭用电量无数据。{% else %}Solar generating **{{ s }} W**. House
+        consumption is not reporting.{% endif %}{% else %}{{
+        '用电表与太阳能逆变器目前均无数据。' if cn else 'Neither the house power meter nor
+        the solar inverter is reporting right now.' }}{% endif %}
     - type: tile
       entity: sensor.powerpal_gateway_powerpal_power
       name: House power
@@ -1849,11 +1885,14 @@ views:
       icon: mdi:solar-panel
     - type: markdown
       content: >-
-        {% set s = states('sensor.primo_5_0_1_1_ac_power') %} {% if s in
-        ['unavailable','unknown'] %}**The Fronius Primo inverter is offline.**
-        Every solar reading below is stale or absent until it reconnects. This is
-        a hardware or network fault, not a dashboard one.{% else %}Inverter
-        reporting normally.{% endif %}
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set s =
+        states('sensor.primo_5_0_1_1_ac_power') %} {% if s in
+        ['unavailable','unknown'] %}{{ '**Fronius Primo
+        逆变器离线。**在重新连接之前，下方所有太阳能数据均为过期或缺失。这是硬件或网络故障，不是面板问题。'
+        if cn else '**The Fronius Primo inverter is offline.** Every solar reading
+        below is stale or absent until it reconnects. This is a hardware or network
+        fault, not a dashboard one.' }}{% else %}{{ '逆变器运行正常。' if cn else
+        'Inverter reporting normally.' }}{% endif %}
     - type: tile
       entity: sensor.primo_5_0_1_1_energy_year
       name: Solar this year
@@ -1971,30 +2010,35 @@ views:
       icon: mdi:cash-multiple
     - type: markdown
       content: >-
-        {% set dues = [('Electricity','input_datetime.elec_bill_due',
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set dues =
+        [('Electricity','电费','input_datetime.elec_bill_due',
         'input_boolean.elec_bill_paid'),
-        ('Gas','input_datetime.gas_bill_due','input_boolean.gas_bill_paid'),
-        ('Water','input_datetime.water_bill_due','input_boolean.water_bill_paid'),
-        ('Council rates','input_datetime.council_rate_due',
+        ('Gas','燃气费','input_datetime.gas_bill_due','input_boolean.gas_bill_paid'),
+        ('Water','水费','input_datetime.water_bill_due','input_boolean.water_bill_paid'),
+        ('Council rates','市政费','input_datetime.council_rate_due',
         'input_boolean.council_rate_paid'),
-        ('Car insurance','input_datetime.car_insurance_due',
+        ('Car insurance','车险','input_datetime.car_insurance_due',
         'input_boolean.car_insurance_paid'),
-        ('Rego','input_datetime.rego_due','input_boolean.rego_paid')] %} {% set
-        ns = namespace(soonest=99999, name='', overdue=0, unk=0) %} {% for n, d,
+        ('Rego','车辆注册','input_datetime.rego_due','input_boolean.rego_paid')] %} {%
+        set ns = namespace(soonest=99999, name='', overdue=0, unk=0) %} {% for n, z, d,
         p in dues %}{% set ds = states(d) %}{% set ps = states(p) %}{% if ds in
         ['unavailable','unknown','none',''] %}{% set ns.unk = ns.unk + 1 %}{%
         elif ps != 'on' %}{% set ts = as_timestamp(ds, 0) %}{% if ts > 0 %}{% set
         days = ((ts - as_timestamp(now())) / 86400) | round(0) | int %}{% if days
         < 0 %}{% set ns.overdue = ns.overdue + 1 %}{% endif %}{% if days <
-        ns.soonest %}{% set ns.soonest = days %}{% set ns.name = n %}{% endif
-        %}{% else %}{% set ns.unk = ns.unk + 1 %}{% endif %}{% endif %}{% endfor
-        %} {% if ns.overdue %}**{{ ns.overdue }} bill{{ 's' if ns.overdue > 1
-        else '' }} overdue.** {% endif %}{% if ns.name %}Next up: **{{ ns.name
+        ns.soonest %}{% set ns.soonest = days %}{% set ns.name = z if cn else n %}{%
+        endif %}{% else %}{% set ns.unk = ns.unk + 1 %}{% endif %}{% endif %}{% endfor
+        %} {% if ns.overdue %}{% if cn %}**{{ ns.overdue }} 笔账单已逾期。** {% else
+        %}**{{ ns.overdue }} bill{{ 's' if ns.overdue > 1 else '' }} overdue.** {% endif
+        %}{% endif %}{% if ns.name %}{% if cn %}下一笔：**{{ ns.name }}**{% if ns.soonest
+        < 0 %}，已逾期 {{ ns.soonest | abs }} 天。{% elif ns.soonest == 0 %}，今天到期。{%
+        else %}，{{ ns.soonest }} 天后到期。{% endif %}{% else %}Next up: **{{ ns.name
         }}**{% if ns.soonest < 0 %}, {{ ns.soonest | abs }} days overdue.{% elif
         ns.soonest == 0 %}, due today.{% else %}, due in {{ ns.soonest }} days.{%
-        endif %}{% elif ns.unk == 0 %}Everything is paid.{% endif %}{% if ns.unk
-        %} {{ ns.unk }} bill date{{ 's' if ns.unk > 1 else '' }} not reporting.{%
-        endif %}
+        endif %}{% endif %}{% elif ns.unk == 0 %}{{ '全部已付。' if cn else 'Everything
+        is paid.' }}{% endif %}{% if ns.unk %}{% if cn %} {{ ns.unk }}
+        笔账单日期无数据。{% else %} {{ ns.unk }} bill date{{ 's' if ns.unk > 1 else ''
+        }} not reporting.{% endif %}{% endif %}
     - type: tile
       entity: sensor.bills_outstanding_total
       name: Outstanding
@@ -2297,13 +2341,16 @@ views:
       icon: mdi:database-clock-outline
     - type: markdown
       content: >-
-        Spending trend, payment history, year-to-date paid and year-to-date
-        savings are **not shown because no data source produces them yet**.
-        `billing/history.json` exists but has no mechanism to reach Lovelace,
-        and no year-to-date sensor exists. Discounts, tariffs and the daily
-        supply charge have no helper behind them. These panels will appear when
-        the data does — showing an empty chart in the meantime would imply the
-        history is there and merely zero.
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% if cn
+        %}支出趋势、付款记录、年度已付与年度节省**目前不显示，因为还没有数据来源**。`billing/history.json`
+        文件存在，但没有任何机制把它送到 Lovelace，也没有年度统计传感器。折扣、费率与每日供电费均无对应助手实体。等数据到位这些面板就会出现
+        — 现在放一张空图表，会让人以为历史数据存在而且恰好为零。{% else %}Spending trend,
+        payment history, year-to-date paid and year-to-date savings are **not shown
+        because no data source produces them yet**. `billing/history.json` exists but
+        has no mechanism to reach Lovelace, and no year-to-date sensor exists.
+        Discounts, tariffs and the daily supply charge have no helper behind them.
+        These panels will appear when the data does — showing an empty chart in the
+        meantime would imply the history is there and merely zero.{% endif %}
 
 # ===========================================================================
 # SECURITY. Doors, motion, camera health. There is no alarm_control_panel
@@ -2333,14 +2380,16 @@ views:
         # {{ '安全' if is_state('input_boolean.chinese_dashboard','on') else
         'Security' }}
 
-        {% set doors = ['binary_sensor.f_contact_sensor_door',
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set doors = ['binary_sensor.f_contact_sensor_door',
         'binary_sensor.m_contact_sensor_door',
         'binary_sensor.b_contact_sensor_door'] %} {% set ns = namespace(open=0,
         unk=0) %} {% for d in doors %}{% set s = states(d) %}{% if s == 'on' %}{%
         set ns.open = ns.open + 1 %}{% elif s != 'off' %}{% set ns.unk = ns.unk +
-        1 %}{% endif %}{% endfor %} {% if ns.unk %}{{ ns.unk }} of 3 door sensors
-        not reporting{% elif ns.open %}{{ ns.open }} of 3 doors open{% else
-        %}All doors closed{% endif %}
+        1 %}{% endif %}{% endfor %} {% if ns.unk %}{% if cn %}3 个门传感器中 {{ ns.unk }}
+        个无数据{% else %}{{ ns.unk }} of 3 door sensors not reporting{% endif %}{% elif
+        ns.open %}{% if cn %}3 扇门中 {{ ns.open }} 扇开启{% else %}{{ ns.open }} of 3
+        doors open{% endif %}{% else %}{{ '所有门已关闭' if cn else 'All doors closed'
+        }}{% endif %}
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
@@ -2403,17 +2452,20 @@ views:
       icon: mdi:cctv
     - type: markdown
       content: >-
-        {% set cams = [('Front Door','camera.front_door_live_view'), ('North
-        Wall','camera.tapo_c425_north_wall_hd_stream_direct'), ('East
-        Wall','camera.tapo_c420_east_wall_hd_stream_direct'), ('South
-        Wall','camera.tapo_c420_south_wall_hd_stream_direct'),
-        ('Stockroom','camera.tapo_c200_stockroom_hd_stream_direct'), ('Pet
-        Feeder','camera.smart_pet_feeder')] %} {% set ns = namespace(down=[]) %}
-        {% for n, c in cams %}{% if states(c) in ['unavailable','unknown'] %}{%
-        set ns.down = ns.down + [n] %}{% endif %}{% endfor %} {% if ns.down |
-        count %}**{{ ns.down | count }} of {{ cams | count }} cameras
-        offline:** {{ ns.down | join(', ') }}.{% else %}All {{ cams | count }}
-        cameras online.{% endif %}
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set cams = [('Front
+        Door','前门','camera.front_door_live_view'), ('North
+        Wall','北墙','camera.tapo_c425_north_wall_hd_stream_direct'), ('East
+        Wall','东墙','camera.tapo_c420_east_wall_hd_stream_direct'), ('South
+        Wall','南墙','camera.tapo_c420_south_wall_hd_stream_direct'),
+        ('Stockroom','储藏室','camera.tapo_c200_stockroom_hd_stream_direct'), ('Pet
+        Feeder','喂食器','camera.smart_pet_feeder')] %} {% set ns = namespace(down=[]) %}
+        {% for n, z, c in cams %}{% if states(c) in ['unavailable','unknown'] %}{%
+        set ns.down = ns.down + [z if cn else n] %}{% endif %}{% endfor %} {% if ns.down
+        | count %}{% if cn %}**{{ cams | count }} 个摄像头中 {{ ns.down | count }}
+        个离线：**{{ ns.down | join('、') }}。{% else %}**{{ ns.down | count }} of {{
+        cams | count }} cameras offline:** {{ ns.down | join(', ') }}.{% endif %}{% else
+        %}{% if cn %}{{ cams | count }} 个摄像头全部在线。{% else %}All {{ cams | count }}
+        cameras online.{% endif %}{% endif %}
     - type: tile
       entity: camera.front_door_live_view
       name: Front Door
@@ -2749,13 +2801,14 @@ views:
         # {{ '家人' if is_state('input_boolean.chinese_dashboard','on') else
         'People' }}
 
-        {% set ps = ['person.raymond_du', 'person.vinh_du',
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set ps = ['person.raymond_du', 'person.vinh_du',
         'person.ai_q_huang'] %} {% set ns = namespace(home=0, away=0, unk=0) %}
         {% for p in ps %}{% set s = states(p) %}{% if s == 'home' %}{% set
         ns.home = ns.home + 1 %}{% elif s in ['unavailable','unknown','none','']
         %}{% set ns.unk = ns.unk + 1 %}{% else %}{% set ns.away = ns.away + 1
-        %}{% endif %}{% endfor %} {{ ns.home }} home · {{ ns.away }} out{% if
-        ns.unk %} · {{ ns.unk }} unknown{% endif %}
+        %}{% endif %}{% endfor %} {% if cn %}{{ ns.home }} 人在家 · {{ ns.away }} 人外出{%
+        if ns.unk %} · {{ ns.unk }} 人未知{% endif %}{% else %}{{ ns.home }} home · {{
+        ns.away }} out{% if ns.unk %} · {{ ns.unk }} unknown{% endif %}{% endif %}
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
@@ -2828,13 +2881,15 @@ views:
         # {{ '娱乐' if is_state('input_boolean.chinese_dashboard','on') else
         'Entertainment' }}
 
-        {% set ms = ['media_player.living_room_tv_samsung_q9_series_65',
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set ms =
+        ['media_player.living_room_tv_samsung_q9_series_65',
         'media_player.55_qled_4k_ai', 'media_player.pogo'] %} {% set ns =
         namespace(on=0, unk=0) %} {% for m in ms %}{% set s = states(m) %}{% if s
         in ['unavailable','unknown'] %}{% set ns.unk = ns.unk + 1 %}{% elif s !=
-        'off' %}{% set ns.on = ns.on + 1 %}{% endif %}{% endfor %} {{ ns.on }} of
-        {{ ms | count }} players active{% if ns.unk %} · {{ ns.unk }} not
-        reporting{% endif %}
+        'off' %}{% set ns.on = ns.on + 1 %}{% endif %}{% endfor %} {% if cn %}{{ ms |
+        count }} 台设备中 {{ ns.on }} 台使用中{% if ns.unk %} · {{ ns.unk }} 台无数据{%
+        endif %}{% else %}{{ ns.on }} of {{ ms | count }} players active{% if ns.unk %}
+        · {{ ns.unk }} not reporting{% endif %}{% endif %}
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
@@ -2933,13 +2988,14 @@ views:
       icon: mdi:stethoscope
     - type: markdown
       content: >-
-        {% set bats = [('Front Door','sensor.front_door_battery'),
-        ('RingRing','sensor.living_room_ringring_battery'), ('North Wall
-        camera','sensor.tapo_c425_north_wall_battery'), ('East Wall
-        camera','sensor.tapo_c420_east_wall_battery'), ('South Wall
-        camera','sensor.tapo_c420_south_wall_battery'), ('Backyard
-        camera','sensor.tapo_camera_bcca_battery'), ('Roller
-        shade','sensor.aqara_roller_shade_driver_e1_battery')] %} {% set devs =
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set bats = [('Front
+        Door','前门','sensor.front_door_battery'),
+        ('RingRing','门铃','sensor.living_room_ringring_battery'), ('North Wall
+        camera','北墙摄像头','sensor.tapo_c425_north_wall_battery'), ('East Wall
+        camera','东墙摄像头','sensor.tapo_c420_east_wall_battery'), ('South Wall
+        camera','南墙摄像头','sensor.tapo_c420_south_wall_battery'), ('Backyard
+        camera','后院摄像头','sensor.tapo_camera_bcca_battery'), ('Roller
+        shade','卷帘','sensor.aqara_roller_shade_driver_e1_battery')] %} {% set devs =
         ['camera.tapo_c420_east_wall_hd_stream_direct',
         'camera.tapo_c420_south_wall_hd_stream_direct',
         'sensor.primo_5_0_1_1_ac_power', 'media_player.pogo', 'light.kogan_tv',
@@ -2947,21 +3003,26 @@ views:
         'light.living_room_hue_ambiance_spot_2',
         'light.living_room_hue_ambiance_spot_3',
         'light.living_room_hue_ambiance_spot_4'] %} {% set ns =
-        namespace(low=[], unk=0, down=0) %} {% for n, b in bats %}{% set s =
+        namespace(low=[], unk=0, down=0) %} {% for n, z, b in bats %}{% set s =
         states(b) %}{% if s in ['unavailable','unknown','none',''] %}{% set
         ns.unk = ns.unk + 1 %}{% else %}{% set f = s | float(-1) %}{% if f < 0
         %}{% set ns.unk = ns.unk + 1 %}{% elif f < 30 %}{% set ns.low = ns.low +
-        [n] %}{% endif %}{% endif %}{% endfor %} {% for d in devs %}{% if
+        [z if cn else n] %}{% endif %}{% endif %}{% endfor %} {% for d in devs %}{% if
         states(d) in ['unavailable','unknown'] %}{% set ns.down = ns.down + 1 %}{%
         endif %}{% endfor %} {% set wan =
-        states('binary_sensor.eero_wan_status') %} {% if wan == 'on' %}Internet
-        is up.{% elif wan == 'off' %}**The internet connection is down.**{% else
-        %}**The WAN sensor is not reporting.**{% endif %} {% if ns.low | count
-        %} **{{ ns.low | count }} batteries under 30%:** {{ ns.low | join(', ')
-        }}.{% endif %}{% if ns.unk %} {{ ns.unk }} batter{{ 'y is' if ns.unk == 1
-        else 'ies are' }} not reporting.{% endif %}{% if ns.down %} **{{ ns.down
-        }} devices are offline.**{% endif %}{% if not (ns.low | count) and not
-        ns.down and wan == 'on' %} Nothing else needs attention.{% endif %}
+        states('binary_sensor.eero_wan_status') %} {% if wan == 'on' %}{{ '网络已连接。'
+        if cn else 'Internet is up.' }}{% elif wan == 'off' %}{{ '**网络连接已断开。**' if
+        cn else '**The internet connection is down.**' }}{% else %}{{
+        '**WAN 传感器无数据。**' if cn else '**The WAN sensor is not reporting.**' }}{%
+        endif %} {% if ns.low | count %}{% if cn %} **{{ ns.low | count }} 个电池电量低于
+        30%：**{{ ns.low | join('、') }}。{% else %} **{{ ns.low | count }} batteries
+        under 30%:** {{ ns.low | join(', ') }}.{% endif %}{% endif %}{% if ns.unk %}{%
+        if cn %} {{ ns.unk }} 个电池无数据。{% else %} {{ ns.unk }} batter{{ 'y is' if
+        ns.unk == 1 else 'ies are' }} not reporting.{% endif %}{% endif %}{% if ns.down
+        %}{% if cn %} **{{ ns.down }} 个设备离线。**{% else %} **{{ ns.down }} devices
+        are offline.**{% endif %}{% endif %}{% if not (ns.low | count) and not
+        ns.down and wan == 'on' %}{{ ' 其他一切正常。' if cn else ' Nothing else needs
+        attention.' }}{% endif %}
 
   - type: grid
     column_span: 1
@@ -3018,9 +3079,11 @@ views:
       name: Remote access
     - type: markdown
       content: >-
-        Download and upload speed, uptime and a device map are not shown: no
-        sensor in this instance produces them. The eero integration exposes WAN
-        up/down only.
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% if cn
+        %}下载与上传速度、在线时长和设备拓扑图均不显示：本实例没有任何传感器提供这些数据。eero
+        集成只提供网络的连线/断线状态。{% else %}Download and upload speed, uptime and a
+        device map are not shown: no sensor in this instance produces them. The eero
+        integration exposes WAN up/down only.{% endif %}
 
   - type: grid
     column_span: 1
@@ -3319,8 +3382,9 @@ views:
         color: blue
     - type: markdown
       content: >-
-        Severity here is computed from live conditions. Mark-as-read, alert
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% if cn
+        %}此处的严重程度由实时状态计算得出。已读标记、通知历史与免打扰时段**尚未实现**：本实例没有任何通知或持久化警报实体来保存这些状态，而一个每次刷新就忘记的已读标记比没有更糟。{%
+        else %}Severity here is computed from live conditions. Mark-as-read, alert
         history and quiet hours are **not implemented**: no notification or
-        persistent-alert entity exists in this instance to store that state, and
-        a read flag that forgets itself on every refresh would be worse than
-        none.
+        persistent-alert entity exists in this instance to store that state, and a read
+        flag that forgets itself on every refresh would be worse than none.{% endif %}
