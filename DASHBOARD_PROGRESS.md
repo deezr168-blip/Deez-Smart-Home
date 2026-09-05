@@ -1,7 +1,12 @@
 # Dashboard progression record
 
-Historical record of `dashboards/deez_smart_home.yaml` batches. Newest first.
-Append after every successful batch; commit with the change it describes.
+Historical record of dashboard batches, newest first. Append after every
+successful batch; commit with the change it describes.
+
+Entries up to `5ad2bce` describe `dashboards/deez_smart_home.yaml`, the legacy
+dashboard. From `885b03a` onward they describe
+**`dashboards/casaray_v2.yaml`**, the canonical CasaRay target since the
+owner's 2026-09-05 architecture decision. Each entry names its file.
 
 > **Autonomous routines: do not read this file end to end.** It is history,
 > not coordination state. Normally inspect only the most recent entries and
@@ -27,6 +32,91 @@ minutes.
 ## Recent batches
 
 Detailed. These are the batches current work and open verification depend on.
+
+### `PENDING-SHA` — casaray_v2: bilingual section headings; the architecture decision recorded
+Purpose: the owner settled the architecture question on 2026-09-05 —
+`dashboards/casaray_v2.yaml` **is** CasaRay — and brought section headings
+inside the bilingual convention, which the previous batch had left outside it
+as an owner decision.
+
+**The architecture decision, recorded so it cannot drift.** `CLAUDE.md`,
+`PROJECT_STATE.md`, `README.md`, `docs/CASARAY_MAPPING_PACK.md` and
+`docs/CASARAY_V2_ARCHITECTURE.md` now all say the same thing in their own
+terms: v2 is the canonical target for every future batch, board, UX change,
+bilingual change, entity integration and every Bills / Entertainment / Camera /
+People Mapping / Energy / House Health feature. The legacy dashboard is a
+reference for confirmed entity IDs, a source of proven logic, the rollback
+baseline, and the running system until v2 deploys — not a build target. Routine
+ownership in `PROJECT_STATE.md` was updated to match, including Billing's,
+which now points at v2's `bills` view rather than the legacy `bill-*` subviews.
+
+**The bilingual conventions are now written down as mandatory** rather than
+inferred from what the file happens to do — `DD/MM/YY` via `%d/%m/%y`,
+Simplified Chinese, Latin proper nouns, `、` for enumerations, what is bilingual
+and what is never translated. Both `CLAUDE.md` and the architecture document
+carry them, with two greps that enforce the first two without a running
+instance.
+
+**The 70 headings.** 61 distinct labels across 25 views, from "Needs attention"
+/ `需要注意` to "Wall switches" / `墙壁开关`. `Pogo` alone stays Latin, being a
+device name under rule 3.
+
+**Why they are not templated — the load-bearing decision in this batch.** The
+native `heading` card renders `heading:` as a plain string and does not
+evaluate Jinja. Templating it would have printed raw `{{ ... }}` on screen in
+**both** languages, on all 70 — a worse regression than the gap being closed,
+and one that no repository check would catch. The evidence is not just the HA
+docs: v2's own author reached for `markdown` cards for every piece of dynamic
+text including page titles, which is exactly what someone does when headings
+cannot be templated.
+
+So each heading is **two cards with `visibility` conditions** — the documented,
+native, sections-layout mechanism, driven by the same
+`input_boolean.chinese_dashboard` as everything else. Failure mode if the
+mechanism somehow misbehaves is a duplicated or missing heading: visible,
+readable, one-line fix. Failure mode of the templated approach was raw Jinja on
+every section of every page.
+
+**The English card uses `state_not: 'on'`, not `state: 'off'`.** Had both cards
+tested for an exact state, a toggle helper that went `unavailable` would hide
+*both* and strip every section on the dashboard of its label — the false-safe
+class this project keeps catching. As written, English covers `off`,
+`unavailable` and `unknown`, so exactly one heading always shows.
+
+**Verified programmatically, not by eye:**
+
+- 70 heading pairs; `icon`, `heading_style` and all 12 `badges` blocks
+  identical within every pair.
+- Simulating the toggle: exactly one heading visible per section in each
+  language, and the two languages produce the same number of headings in every
+  section of every view.
+- With the helper `unavailable`: 70 of 70 headings still render.
+- Entity IDs added: **none**. Removed: **none**.
+- Navigation paths added: **none**. Removed: **none**.
+- `dashboards/deez_smart_home.yaml` byte-identical to `HEAD`.
+
+**`docs/B1_STATES_EXPORT.md` is new** — the exact owner procedure for the
+entity export, which is the single largest unblock outstanding. One paste into
+Developer Tools → Template, one copy back. It emits every entity ID, friendly
+name, area and availability for every entity, so the owner never has to work
+out which ones are wanted. It deliberately emits **no state values**: a raw
+States dump would carry the home's street address via the geocoded-location
+sensors and coordinates via device trackers. Reduced to
+`ok`/`unavailable`/`unknown`, the export is safe to commit.
+
+**The Main queue is now an explicit ladder** in `PROJECT_STATE.md`: resolve
+`CFG-003` → obtain B1 → reconcile v2 against the new inventory → deploy at
+url_path `casaray` → live iPad/iPhone verification → and only then resume
+feature development. Steps 1 and 2 are owner actions no routine can perform.
+New feature work is stopped at the top of it by owner instruction.
+
+Validated: `bash scripts/ha_validate.sh` 7/7. v2 templates 52 → 52, views
+25 → 25, internal links 25/25 broken 0, entities +0, size 120% (the duplicated
+heading cards). Legacy dashboard 426 templates, 36/36 links, untouched.
+
+**Not verified live, and cannot be:** `CFG-003` is still open. Items 9 and 10
+in the architecture document's live-verification list cover the heading
+mechanism, which has never rendered.
 
 ### `3faa830` — casaray_v2: the bilingual meaning layer, completed
 Purpose: `docs/CASARAY_V2_ARCHITECTURE.md` states v2's bilingual rule — translate

@@ -173,7 +173,8 @@ dashboards/deez_smart_home.yaml`) and open a normal PR. Never use
 
 | | |
 |---|---|
-| Production dashboard baseline | **Present** — `dashboards/deez_smart_home.yaml` |
+| **Canonical CasaRay target** | `dashboards/casaray_v2.yaml` — all new work (owner decision, 2026-09-05) |
+| Legacy / reference dashboard | `dashboards/deez_smart_home.yaml` — entity + logic reference, rollback baseline |
 | Dashboard mode | **Storage mode** (adopted; see verification caveat below) |
 | Deployment mechanism | **Automated** — `/config/deploy_deez_dashboard.sh` from `origin/ha-deploy` |
 | Git Pull add-on | **Not used** — and must not be (see above) |
@@ -184,20 +185,35 @@ dashboards/deez_smart_home.yaml`) and open a normal PR. Never use
 | Automations / scripts / scenes | Not imported — see `DEPLOYMENT_BLOCKERS.md` |
 | Themes | Not imported — `themes/` is a reserved empty path |
 
-### The dashboard baseline
+### The two dashboards
 
-`dashboards/deez_smart_home.yaml` is the **live production dashboard**. It
-originated as a verbatim export from the Raw configuration editor and is now
-the deployed source of truth.
+**`dashboards/casaray_v2.yaml` — the canonical CasaRay target.** Owner
+decision, 2026-09-05. Every new CasaRay batch, board, feature and bilingual
+improvement goes here. 25 views (6 subviews), native-first — one custom card
+type (`custom:webrtc-camera`), no Mushroom, no `card_mod`, surface treatment
+from the theme. It expects url_path **`casaray`**: all 85 internal links are
+`/casaray/<view>` and break anywhere else. Architecture and the mandatory
+bilingual conventions: `docs/CASARAY_V2_ARCHITECTURE.md`.
+
+**`dashboards/deez_smart_home.yaml` — legacy, and the reference baseline.** It
+originated as a verbatim export from the Raw configuration editor and is the
+running system until v2 is deployed and verified. It is no longer where CasaRay
+is built. It keeps four jobs: a reference for confirmed working entity IDs, a
+source of proven templates and logic, the rollback baseline, and the live
+system for now.
+
+**Do not delete, overwrite, merge into or materially restructure it**, and do
+not rebuild v2 features in it. Touch it only for a genuine regression in it, or
+on an explicit owner instruction. No redesign, no refactor, no reformatting.
 
 As of 2026-08-25 it is 36 views (16 subviews), 162 distinct entity IDs, 132
 `card_mod` blocks, `kiosk_mode`, five per-view themes (`Deez Cameras`, `Deez
 Climate`, `Deez Energy`, `Deez Lighting`, `Deez Security`), 236 Mushroom
 cards, six `custom:webrtc-camera` cards, and the English/Chinese toggle.
 
-**This file is also the rollback point.** Treat it as production: no
-redesign, no refactor, no reformatting. Changes go in as small, reviewable
-diffs.
+**Neither is currently reachable.** `CFG-003` blocks the delivery path, so a
+push to `ha-deploy` is committed, not deployed. Never report the two as the
+same thing.
 
 Dashboard identity: `url_path` **`deez-smart-home`**, title **Deez Smart
 Home**.
@@ -374,7 +390,12 @@ those — it is not optional.
 
 | Path | Purpose | Parsed by HA? |
 |---|---|---|
-| `dashboards/deez_smart_home.yaml` | Production dashboard — **deployed** | Applied by `/config/deploy_deez_dashboard.sh`, not read from `/config` by HA |
+| `dashboards/casaray_v2.yaml` | **Canonical CasaRay target** — all new work. Expects url_path `casaray` | Not yet deployed (`CFG-003`) |
+| `dashboards/deez_smart_home.yaml` | Legacy / reference dashboard — entity and logic reference, rollback baseline | Applied by `/config/deploy_deez_dashboard.sh`, not read from `/config` by HA |
+| `docs/CASARAY_V2_ARCHITECTURE.md` | v2 architecture + the mandatory bilingual conventions | No |
+| `docs/CASARAY_MAPPING_PACK.md` | Mockup component → entity → card → buildability | No |
+| `docs/entity_inventory.md` | Entity truth, reconciled against the live instance | No |
+| `docs/B1_STATES_EXPORT.md` | **The one-minute owner procedure that unblocks the most work** | No |
 | `themes/.gitkeep` | Reserved path for theme YAML | No |
 | `.gitignore` | Blocks secrets, `.storage/`, databases, logs, backups, keys | No |
 | `README.md` | This file | No |

@@ -4,21 +4,37 @@
 proposed card → notes and limitations.**
 
 CasaRay Design v1 is frozen. This pack is the bridge between that frozen
-design and `dashboards/deez_smart_home.yaml`. It does not restate the design —
+design and the implementation. It does not restate the design —
 `DESIGN_REFERENCE.md` transcribes the mockups and the *CasaRay Master Design
 Briefing v1* holds the intent. This file answers one question per component:
 **can it actually be built, with what, and if not, what is missing.**
 
+> **The build target is `dashboards/casaray_v2.yaml`** (owner decision,
+> 2026-09-05). This pack was written on 2026-09-01, when the only dashboard was
+> `dashboards/deez_smart_home.yaml`, and its per-board tables were surveyed
+> against that file. **The entity analysis and the buildability statuses carry
+> over unchanged** — they are statements about what the *house* has, not about
+> which YAML file asks for it, and v2 uses all 164 of the same entity IDs.
+> What does **not** carry over is Part 4's batch plan, which is superseded:
+> v2 already implements Batches 2, 5 and 6, and the current queue is the
+> ordered ladder in `PROJECT_STATE.md`. Where a row names the legacy file, read
+> it as a statement about where a pattern currently lives, not about where to
+> build next.
+
 - **Created:** 2026-09-01, against `ha-deploy` at `b6e76f5`.
+- **Retargeted:** 2026-09-05 to `dashboards/casaray_v2.yaml`.
 - **Entity truth:** `docs/entity_inventory.md`, reconciled against the live
-  instance the same day.
+  instance on 2026-09-01 — and due for regeneration from the B1 export, see
+  `docs/B1_STATES_EXPORT.md`.
 - **Design truth:** `DESIGN_REFERENCE.md` + the Drive briefing (see
   *Sources* below).
+- **v2's own architecture:** `docs/CASARAY_V2_ARCHITECTURE.md`.
 
 > **No entity ID in this document was invented.** Every ID that appears is
-> already referenced by the production dashboard or was confirmed live. Where
-> a mockup component needs data that does not exist, the row says so and stops
-> there. A mockup showing a metric is not evidence that a sensor for it exists.
+> already referenced by a dashboard in this repository or was confirmed live.
+> Where a mockup component needs data that does not exist, the row says so and
+> stops there. A mockup showing a metric is not evidence that a sensor for it
+> exists.
 
 ## Sources
 
@@ -559,7 +575,7 @@ mockup's live daily histograms. Say so on the card.
 
 | ID | Blocker | Impact | Owner action |
 |---|---|---|---|
-| **B1** | **Entity IDs cannot be read from this environment.** The HA connector returns friendly names only, and only for Assist-exposed entities. | **The single largest constraint in the programme.** It blocks all 29 Hue scenes (every room's Quick Actions, the whole Lighting Studio), all automations and scripts (the entire Automations board), air-quality sensors, solar forecast, per-person device batteries, the Shopping List, the Family Location helper, hub health, and Tapo camera controls. | **Developer Tools → States → download/copy the entity list**, or Settings → Devices & Services → Entities → export. Paste it into the repo (no secrets are involved — entity IDs are not credentials). One export unblocks ~10 mapping rows. |
+| **B1** | **Entity IDs cannot be read from this environment.** The HA connector returns friendly names only, and only for Assist-exposed entities. | **The single largest constraint in the programme.** It blocks all 29 Hue scenes (every room's Quick Actions, the whole Lighting board's scene rows), all automations and scripts (the entire Automations board), air-quality sensors, solar forecast, per-person device batteries, the Shopping List, the Family Location helper, hub health, and Tapo camera controls. | **The exact procedure is `docs/B1_STATES_EXPORT.md`** — one paste into Developer Tools → Template, one copy back. It emits every entity ID, name, area and availability, and deliberately carries **no state values**, so it is safe to commit: no addresses, no coordinates, no tokens. The owner does not need to work out which entities are wanted. Ladder step 2. |
 | **B2** | **`CFG-003` — the deployment bridge does not deliver.** The host's local clone is orphaned from `ha-deploy`, so the deploy script compares stale content, finds no change and never reaches its apply step. Confirmed 2026-08-30: the live raw config does not contain `sensor.front_door_battery`. | **Nothing pushed since `26c3b14` has reached the live dashboard.** Every CasaRay batch will validate, commit and push correctly and remain invisible. | The recovery procedure is written out in `DASHBOARD_ISSUES.md` → *Owner recovery, on the host*. It is the owner's to run — the deployment bridge is protected. |
 | **B3** | **No HA schema validation is possible here.** No `/config`, no supervisor, no API route. Valid YAML is not valid Lovelace. | Card types, option names and nesting are unchecked. A batch can pass every repository check and still not render. | Browser check after each deploy — which needs B2 first. |
 | **B4** | `auto-entities` is not installed. | Dynamic generation (the mockups' filtered lists, "View all" expansions) must be hand-written. | Install via HACS if dynamic lists become worth the dependency. Not required for Batches 1–2. |
@@ -581,20 +597,25 @@ For the record, the live answer it is waiting to display is **3 of 6**.
 
 ---
 
-## Part 4 — Batch plan
+## Part 4 — Batch plan  *(superseded 2026-09-05)*
 
-Following the briefing's §24 order, filtered by what is actually buildable.
+> **This plan is closed.** It was written against
+> `dashboards/deez_smart_home.yaml` on 2026-09-01. The `casaray_v2` rebuild
+> then delivered Batches 2, 5 and 6 as part of its own architecture, and the
+> owner made v2 the canonical target. **The live queue is the ordered ladder in
+> `PROJECT_STATE.md`**, and new feature work is stopped at the top of it until
+> `CFG-003` and B1 are resolved. This table is kept for traceability.
 
-| Batch | Scope | Depends on | State |
-|---|---|---|---|
-| **1** | **Global CasaRay shell** — the P1 clock/date component, first instance in the Home header; header pattern established. | — | **DONE** — `5ad2bce`, 2026-09-01. Validated 7/7. Queued live as `CR-001`/`CR-002`. |
-| **2** | **Home only** — group the 17 loose alert cards under an Attention heading; KPI strip using P4; honest Security roll-up with **no alarm row** (no `alarm_control_panel` exists). | Batch 1 | **NEXT — ready, needs nothing from the owner** |
-| 3 | Room template system — apply P2/P3/P5/P6 + the P1 clock uniformly across the seven room views. | Batch 2 | Queued |
-| 4 | Parents Room — native `thermostat` replacing the templated climate block. | Batch 3 | Queued |
-| 5 | House Health — battery board (3 low), inverter-offline surface, backup status. | Batch 3 | Queued — highest-value new content that needs **no** export |
-| 6 | Notifications & Alerts — a real board over the existing P7 conditions. | Batch 5 | Queued |
-| — | Lighting Studio scenes · Automations board · air quality · solar forecast · Water & Gas | **B1 export** | **Blocked** |
-| — | Bathroom · Garage door · alarm · locks · grid/battery · water/gas metering | Hardware | **Blocked** |
+| Batch | Scope | Outcome |
+|---|---|---|
+| **1** | Global CasaRay shell — the P1 clock/date component in the legacy Home header. | **DONE** — `5ad2bce`, on the legacy dashboard. Queued live as `CR-001`/`CR-002`. |
+| **2** | Home — group the loose alert cards under an Attention heading; KPI strip; honest Security roll-up with no alarm row. | **DELIVERED BY v2** — `casaray_v2`'s `home` has 31 grouped conditional alerts, a *Needs attention* section and a Security roll-up with no alarm row. Not built in the legacy file. |
+| 3 | Room template system across the room views. | **DELIVERED BY v2** — 8 room views on one pattern. |
+| 4 | Parents Room — native `thermostat`. | **DELIVERED BY v2**. |
+| 5 | House Health — battery board, inverter-offline surface, backups. | **DELIVERED BY v2** — the `house-health` view. Not built in the legacy file. |
+| 6 | Notifications & Alerts board. | **DELIVERED BY v2** — the `alerts` view, three severities. |
+| — | Scene rows · Automations board · air quality · solar forecast · Water & Gas | **Blocked on B1** — `docs/B1_STATES_EXPORT.md` |
+| — | Bathroom · garage door · alarm · locks · grid/battery · water/gas metering | **Blocked on hardware** |
 
-**Batches 1–6 need nothing from the owner.** Everything after them needs B1,
-B2, or hardware.
+The two blocked rows are the ones that survive into v2 unchanged: they were
+never about which file the YAML lived in.

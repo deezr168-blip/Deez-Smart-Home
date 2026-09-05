@@ -6,14 +6,70 @@ state; do not re-audit from scratch.
 
 ## What this repository is
 
-`ha-deploy` is the deployment branch for one live Home Assistant dashboard.
-`dashboards/deez_smart_home.yaml` **is production** — a push to `ha-deploy`
-reaches the live dashboard within 15 minutes via
-`/config/deploy_deez_dashboard.sh`. Treat every pushed batch as live.
+`ha-deploy` is the deployment branch for the household's Home Assistant
+dashboards. It carries **two**, and they have different jobs.
 
-Dashboard identity: url_path `deez-smart-home`, title **Deez Smart Home**,
-36 views (16 subviews), Mushroom + card_mod + kiosk_mode, five per-view
-themes, an English/Chinese toggle on `input_boolean.chinese_dashboard`.
+### `dashboards/casaray_v2.yaml` — the canonical CasaRay target
+
+**Owner decision, 2026-09-05.** This is where CasaRay is built. Every future
+batch, board, UX improvement, bilingual improvement, entity integration,
+automation-linked UI, and every Bills, Entertainment, Camera, People Mapping,
+Energy or House Health feature targets **this file**, unless the owner says
+otherwise in so many words.
+
+Identity: url_path **`casaray`** (all 85 internal links are `/casaray/<view>`;
+mounted anywhere else, navigation breaks), 25 views (6 subviews), native-first —
+one custom card type (`custom:webrtc-camera`), no Mushroom, no `card_mod`,
+surface treatment from the theme. Bilingual on
+`input_boolean.chinese_dashboard`; see *Bilingual conventions* below.
+
+### `dashboards/deez_smart_home.yaml` — legacy, and the reference baseline
+
+The older production dashboard. It is **not** the target for new CasaRay work.
+It remains valuable and stays exactly where it is, as:
+
+- a reference for **confirmed working entity IDs**,
+- a source of **proven templates and logic** worth reusing,
+- the **rollback / reference baseline**,
+- the running system until v2 is deployed and verified.
+
+**Do not delete, overwrite, merge into, or materially restructure it.** Do not
+rebuild v2 features in it. Touch it only for a genuine regression in it, or on
+an explicit owner instruction.
+
+Identity: url_path `deez-smart-home`, title **Deez Smart Home**, 36 views
+(16 subviews), Mushroom + card_mod + kiosk_mode, five per-view themes, the same
+language toggle.
+
+### Deployment
+
+A push to `ha-deploy` is intended to reach the live dashboard within 15 minutes
+via `/config/deploy_deez_dashboard.sh`. **That path is currently broken —
+`CFG-003`.** Until it is repaired, "committed in Git" and "live in Home
+Assistant" are different things and must never be reported as the same one.
+
+## Bilingual conventions — mandatory
+
+These apply to `casaray_v2.yaml` and to any new bilingual work. They are
+requirements, not preferences.
+
+1. **Clock date format is `DD/MM/YY`**, produced by
+   `now().strftime('%d/%m/%y')`. Never `%Y`. The time sits above the date.
+2. **Chinese is Simplified**, matching the legacy dashboard's established
+   vocabulary. Grep it for an existing term before inventing one.
+3. **Proper nouns and device names may stay Latin** — CasaRay, Hue, Fronius
+   Primo, eero, Lovelace, WAN, Ray, Pogo.
+4. **Chinese enumerations use `、`**, not `,`.
+5. **Bilingual:** page titles, section headings, room summaries, interpreted
+   status text, alerts, warnings, explanatory text, and any other user-facing
+   dynamic summary.
+6. **Never translated:** entity IDs, internal identifiers, YAML keys,
+   navigation paths, implementation metadata.
+
+Headings use two `heading` cards with `visibility` conditions rather than a
+templated string — the native `heading` card does not render templates. The
+English card uses `state_not: 'on'`, so it also shows if the toggle helper ever
+goes unavailable and a section never loses its label.
 
 ## Session start
 

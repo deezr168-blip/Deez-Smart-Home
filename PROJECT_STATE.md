@@ -10,37 +10,66 @@ on purpose so every routine can load it cheaply at the start of each run.
 
 - **Repository:** `deezr168-blip/Deez-Smart-Home`
 - **Deployment branch:** `ha-deploy`
-- **Primary dashboard:** `dashboards/deez_smart_home.yaml`
+- **Canonical CasaRay target:** `dashboards/casaray_v2.yaml` — all new work
+- **Legacy / reference dashboard:** `dashboards/deez_smart_home.yaml` — do not
+  build new CasaRay features here
 - **Deployment model:** validated GitHub changes are polled/deployed by Home
   Assistant independently. No routine deploys, restarts or reloads anything —
-  pushing a validated commit to `ha-deploy` is the whole handoff.
+  pushing a validated commit to `ha-deploy` is the whole handoff. **That path
+  is broken (`CFG-003`); pushed is not deployed.**
 
 ---
 
-## Parallel implementation: CasaRay v2 (owner directive, 2026-09-05)
+## Architecture decision: casaray_v2 is CasaRay (owner directive, 2026-09-05)
 
-**The owner directed a from-scratch rebuild**, delivered as
-`dashboards/casaray_v2.yaml` and documented in
-`docs/CASARAY_V2_ARCHITECTURE.md`. It is a **parallel** implementation:
-`dashboards/deez_smart_home.yaml` is untouched and remains the running
-system. Nothing is deleted and nothing is superseded until the owner picks
-one.
+**The owner has chosen.** `dashboards/casaray_v2.yaml` is the **canonical
+CasaRay development target**. The question of which dashboard is CasaRay is
+settled and should not be reopened by any routine.
 
-What this means for the routines:
+### What targets v2
 
-- **The batch programme in `docs/CASARAY_MAPPING_PACK.md` Part 4 is not
-  cancelled, but it is now one of two live tracks.** Do not start Batch 2
-  without checking with the owner first — batching changes into the old file
-  while a replacement is under review may be wasted work.
-- v2 is native-first: 1 custom card type against production's 6, no
-  `card_mod`, no Mushroom. It uses **all 164** of production's real entity
-  IDs, invents none, and drops none.
-- v2 assumes it is registered at url_path **`casaray`**. All 85 of its
-  navigation links are `/casaray/<view>`; mounted anywhere else they break.
-- `CFG-003` applies to v2 exactly as it does to production. Neither can be
-  seen live until the bridge is recovered.
-- `scripts/dashboard_check.py` no longer hardcodes the production url_path
-  when resolving navigation links, so the gate now covers both dashboards.
+Every future CasaRay batch, board, UX improvement, bilingual improvement,
+entity integration, automation-linked UI, and every Bills, Entertainment,
+Camera, People Mapping, Energy or House Health feature — **unless the owner
+explicitly directs otherwise**.
+
+### What `dashboards/deez_smart_home.yaml` is now
+
+Legacy, and the reference baseline. It keeps four jobs:
+
+- a reference for **confirmed working entity IDs**,
+- a source of **proven templates and logic** worth reusing,
+- the **rollback / reference baseline**,
+- the running system until v2 is deployed and verified.
+
+**Do not delete, overwrite, merge into, or materially restructure it.** Do not
+rebuild v2 features in it — in particular, Batches 2 and 5 are **not** to be
+built there; v2 already carries their content. Touch it only for a genuine
+regression in it, or on an explicit owner instruction.
+
+### Work already completed in v2 — preserve it
+
+- `885b03a` — the mandated `DD/MM/YY` clock format across all 19 clocks, and
+  the conversion from Traditional to Simplified Chinese.
+- `3faa830` — the bilingual meaning layer: 21 room, board and status templates.
+- `PENDING-SHA` — the 70 bilingual section headings.
+
+These are settled. Do not revert or re-litigate them.
+
+### Facts a routine needs before editing v2
+
+- Native-first: 1 custom card type (`custom:webrtc-camera`) against the legacy
+  file's 6, no `card_mod`, no Mushroom, surface treatment from the theme.
+- It uses **all 164** of the legacy dashboard's real entity IDs, invents none,
+  drops none.
+- It assumes url_path **`casaray`**. All 85 navigation links are
+  `/casaray/<view>`; mounted anywhere else they break.
+- Bilingual conventions are **mandatory** and listed in `CLAUDE.md` and
+  `docs/CASARAY_V2_ARCHITECTURE.md`.
+- `CFG-003` applies to v2 exactly as it does to the legacy file. Neither can
+  be seen live until the bridge is recovered. **Committed is not deployed.**
+- `scripts/dashboard_check.py` no longer hardcodes a url_path when resolving
+  navigation links, so the gate covers both dashboards.
 
 ---
 
@@ -88,12 +117,16 @@ against the live instance on 2026-09-01.
 
 ### Main CasaRay Upgrade
 - Owns general dashboard UX and implementation.
-- May modify `dashboards/deez_smart_home.yaml`, except specialist-owned
-  billing areas.
+- May modify `dashboards/casaray_v2.yaml` — the canonical target — except
+  specialist-owned billing areas.
+- **May not** build new CasaRay features in `dashboards/deez_smart_home.yaml`.
+  That file is legacy and reference-only per the architecture decision above.
 
 ### Billing Dashboard Upgrade
 - Owns billing-specific dashboard UX, bill history, analytics,
   bill-ingestion architecture, and billing-supporting repository files.
+- Billing work targets **`dashboards/casaray_v2.yaml`**'s `bills` view, not the
+  legacy dashboard's `bills` view or its six `bill-*` subviews.
 - May also implement the approved global Back-navigation pattern.
 
 ### Regression Auditor
@@ -116,7 +149,8 @@ against the live instance on 2026-09-01.
   `DASHBOARD_PROGRESS.md`, and documentation under `archive/`.
 - May perform evidence-based reconciliation of coordination and tracking
   state.
-- **Must not modify** `dashboards/deez_smart_home.yaml`, themes, Home
+- **Must not modify** `dashboards/casaray_v2.yaml`,
+  `dashboards/deez_smart_home.yaml`, themes, Home
   Assistant configuration, automations, helpers, integrations, billing
   implementation, scripts, deployment infrastructure, Git/authentication
   infrastructure or secrets.
@@ -704,9 +738,28 @@ against current `HEAD` at execution time, per the Concurrency /
 Serialization Policy, before acting on it — the item named here may already
 be implemented.
 
+### Main queue — the ordered ladder (owner directive, 2026-09-05)
+
+Implementation is deliberately **stopped at the top of this ladder**. New
+CasaRay feature development does not resume until steps 1–5 are done, in order.
+Steps 1 and 2 are owner actions; no routine can perform them.
+
+| # | | Step | Owner or Claude | State |
+|---|---|---|---|---|
+| 1 | 🔴 | **Resolve `CFG-003`** — repair the delivery path. Nothing committed reaches Home Assistant until this is done. Procedure: `DASHBOARD_ISSUES.md` → *Owner recovery, on the host*. | **Owner** | BLOCKED |
+| 2 | 🔴 | **Obtain B1** — one Home Assistant Developer Tools → States export. Procedure: `docs/B1_STATES_EXPORT.md`. | **Owner** | BLOCKED |
+| 3 | 🟡 | **Reconcile v2 against the B1 entity inventory** — regenerate `docs/entity_inventory.md` from the export, then check every v2 entity ID, and add the scene / automation / air-quality / solar-forecast surfaces the export unblocks. | Claude | waits on 2 |
+| 4 | 🟡 | **Deploy v2** through the repaired delivery path, registered at url_path **`casaray`**. | Owner + Claude | waits on 1, 3 |
+| 5 | 🟡 | **Live visual verification** on iPad landscape and iPhone. Checklist: `docs/CASARAY_V2_ARCHITECTURE.md` → *What must be verified in the live interface*. | **Owner** | waits on 4 |
+| 6 | 🟢 | **Resume new CasaRay feature development** — and only then. | Claude | waits on 5 |
+
+**Do not start another major feature batch ahead of this ladder.** Documentation,
+non-destructive validation and small corrections to already-shipped v2 work
+remain in scope; new boards and new features do not.
+
 | Routine | Item | Priority | State | Reason Selected |
 |---|---|---|---|---|
-| Main CasaRay Upgrade | **Owner decision: which dashboard is CasaRay?** — then either v2 polish or the production batch plan | P1 | `BLOCKED` on one owner choice | **Rewritten 2026-09-05.** The owner approved proceeding with Batches 2 and 5 on 2026-09-01. Between the question and the answer, `5dc6f50` landed `dashboards/casaray_v2.yaml` — a from-scratch parallel CasaRay build that **already contains both**: an `alerts` board (Batch 6), a `house-health` board with the battery roll-up (Batch 5), and a Home whose 31 alerts are already grouped and conditional (Batch 2). Doing Batches 2 and 5 against the old file would have been the wasted work this file's own v2 section warns about, so they were **not** done. The same value went into v2 instead: `885b03a` fixed the mandated `DD/MM/YY` date format across all 19 clocks and converted the file from Traditional to Simplified Chinese to match production's 304 strings; `3faa830` completed v2's bilingual meaning layer, which its own architecture document claimed but had not implemented — 21 templates, verified by rendering all 52 through real Jinja2 in both languages with zero errors. **Nothing further should be built on either dashboard until the owner says which one is CasaRay.** Two live tracks is the current cost, and it compounds with every batch. Remaining v2 work that needs no decision: the 70 English `heading` cards (a change to v2's stated bilingual rule, so owner's call). Blockers unchanged: `CFG-003` (nothing reaches the instance), **B1** (entity IDs unreadable — one States export unblocks scenes, automations, air quality, solar forecast), `CFG-001`. *Superseded pointer text follows.* **This pointer was rewritten on 2026-09-01 when the pause lifted and CasaRay Design v1 was frozen.** Main's queue is no longer "exhausted": the mapping pack turned the frozen design into a batch plan, and six batches are buildable with nothing from the owner. Batch 1 (the P1 clock/date shell component) landed this run. **Batch 2 is Home only**: group the 17 loose `conditional` alert cards under an Attention heading, add the P4 KPI strip, and give the Security roll-up an honest shape — doors, motion and camera health only, with **no alarm row**, because no `alarm_control_panel` entity exists. Batch 5 (House Health: three genuinely-low batteries, the offline inverter, backup status) is the highest-value new content and also needs no owner input. Everything involving scenes, automations, air quality, solar forecast or Water & Gas is blocked on **B1**, one Developer Tools → States export. `DR-001` is **not** superseded but is now correctly behind the batch plan: it is a P3 needing a design brief, and the frozen mockups plus the mapping pack are a better brief than anything that existed when it was filed. `CFG-001` and `CFG-003` are unchanged by any of this. |
+| Main CasaRay Upgrade | **Ladder step 1 — `CFG-003`**, then step 2 — B1. See the ordered ladder above. | P1 | `BLOCKED` — both are owner actions | **Rewritten 2026-09-05, second revision.** The architecture question is **settled**: `casaray_v2.yaml` is CasaRay, the legacy dashboard is reference-only. Main's implementation queue is deliberately empty, not exhausted — the owner has stopped new feature work at the top of the ladder above until delivery and the entity export are sorted. Everything Main can usefully do without them is done: `885b03a` (clock format, Simplified Chinese), `3faa830` (bilingual meaning layer), `PENDING-SHA` (70 bilingual section headings). What remains needs step 2's export — scenes on every room page, the whole Lighting board's scene rows, the Automations board, air quality, solar forecast — or step 1's delivery path, since nothing can be visually verified until v2 renders. *Superseded pointer text follows.* The owner approved proceeding with Batches 2 and 5 on 2026-09-01. Between the question and the answer, `5dc6f50` landed `dashboards/casaray_v2.yaml` — a from-scratch parallel CasaRay build that **already contains both**: an `alerts` board (Batch 6), a `house-health` board with the battery roll-up (Batch 5), and a Home whose 31 alerts are already grouped and conditional (Batch 2). Doing Batches 2 and 5 against the old file would have been the wasted work this file's own v2 section warns about, so they were **not** done. The same value went into v2 instead: `885b03a` fixed the mandated `DD/MM/YY` date format across all 19 clocks and converted the file from Traditional to Simplified Chinese to match production's 304 strings; `3faa830` completed v2's bilingual meaning layer, which its own architecture document claimed but had not implemented — 21 templates, verified by rendering all 52 through real Jinja2 in both languages with zero errors. **Nothing further should be built on either dashboard until the owner says which one is CasaRay.** Two live tracks is the current cost, and it compounds with every batch. Remaining v2 work that needs no decision: the 70 English `heading` cards (a change to v2's stated bilingual rule, so owner's call). Blockers unchanged: `CFG-003` (nothing reaches the instance), **B1** (entity IDs unreadable — one States export unblocks scenes, automations, air quality, solar forecast), `CFG-001`. *Superseded pointer text follows.* **This pointer was rewritten on 2026-09-01 when the pause lifted and CasaRay Design v1 was frozen.** Main's queue is no longer "exhausted": the mapping pack turned the frozen design into a batch plan, and six batches are buildable with nothing from the owner. Batch 1 (the P1 clock/date shell component) landed this run. **Batch 2 is Home only**: group the 17 loose `conditional` alert cards under an Attention heading, add the P4 KPI strip, and give the Security roll-up an honest shape — doors, motion and camera health only, with **no alarm row**, because no `alarm_control_panel` entity exists. Batch 5 (House Health: three genuinely-low batteries, the offline inverter, backup status) is the highest-value new content and also needs no owner input. Everything involving scenes, automations, air quality, solar forecast or Water & Gas is blocked on **B1**, one Developer Tools → States export. `DR-001` is **not** superseded but is now correctly behind the batch plan: it is a P3 needing a design brief, and the frozen mockups plus the mapping pack are a better brief than anything that existed when it was filed. `CFG-001` and `CFG-003` are unchanged by any of this. |
 | ~~Main CasaRay Upgrade (superseded 2026-09-01)~~ | `DR-001` — iPad Command Center density | P3 | `PLANNED` — needs a design decision before implementation | Still the only scoped item in Main's queue after five consecutive clean sweeps this session (raw-interpolation, false-safe aggregate, float-sentinel, icon_color/attribute/int/cover/structural, state_attr/comparison/bare-float/navigation) — score **−2** (Impact 3, Effort 4, Risk 4), selected by being the sole remainder, not by rank. Explicitly "advisory item, no implementation agreed": needs a CasaRay Design Reviewer brief before Main writes code. Everything else Main owns (the REG-001..013/UI-027/UI-030/UI-031 batches) is `LIVE_VERIFICATION_REQUIRED` and waiting on the owner. **The verification drought has broken:** the owner recorded the queue's first-ever live result on 2026-08-30 — `UI-011` `PASS` — taking it to `LIVE_VERIFIED` and the queue from 44 pending to 43. That verification also surfaced `CFG-001` (Energy → Totals grid cost ~31.8× too high), which is **not Main's work and not implementable from here**: it lives in HA's own Energy configuration, is blocked on owner diagnosis, and never enters the verification queue. Main's selection is unchanged by both. |
 | Billing Dashboard Upgrade | `BILL-002` — Home Assistant exposure decision for `billing/history.json` (storage now exists, see `billing/README.md`) | P2 | `PARTIAL` — storage scaffolded (`5147eb0`/`ff25626`), read side needs owner direction | `BILL-001`'s account-number portion is fixed and pushed (`23c0301`); its NMI/MIRN portion is `BLOCKED` on an owner decision (no helper exists, cannot invent one) and is excluded from selection (queue rule 4). `BILL-002`'s storage layer (`billing/schema.json`, empty `billing/history.json`) exists; its read side is still blocked on which HA-side mechanism exposes the file to Lovelace (`billing/README.md` point 2). `BILL-003` stays blocked on both. Two runs (`BILL-004`, then `BILL-005` + `REG-014`) found and fixed unblocked work instead of re-deriving the same blocker notes; this run's own full re-read of all seven billing views plus a fresh 5+-digit-literal privacy sweep found nothing further — the coded-fix surface is now genuinely clean, not merely unattempted. `BILL-002`'s exposure question remains the next thing that unblocks real dashboard-history work once decided. |
 

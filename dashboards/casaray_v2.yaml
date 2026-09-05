@@ -119,6 +119,18 @@ views:
       heading: Needs attention
       heading_style: title
       icon: mdi:alert-circle-outline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 需要注意
+      heading_style: title
+      icon: mdi:alert-circle-outline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: markdown
       content: >-
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %} {% set
@@ -288,6 +300,18 @@ views:
       heading: Household
       heading_style: title
       icon: mdi:account-group
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 家庭
+      heading_style: title
+      icon: mdi:account-group
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: zone.home
       name: People home
@@ -318,6 +342,21 @@ views:
       badges:
       - type: entity
         entity: binary_sensor.f_contact_sensor_door
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 安全
+      heading_style: title
+      icon: mdi:shield-home
+      badges:
+      - type: entity
+        entity: binary_sensor.f_contact_sensor_door
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: markdown
       content: >-
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %} {% set
@@ -356,6 +395,21 @@ views:
       badges:
       - type: entity
         entity: sensor.powerpal_gateway_powerpal_power
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 当前能耗
+      heading_style: title
+      icon: mdi:lightning-bolt
+      badges:
+      - type: entity
+        entity: sensor.powerpal_gateway_powerpal_power
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: markdown
       content: >-
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %} {% set p
@@ -402,6 +456,18 @@ views:
       heading: Rooms
       heading_style: title
       icon: mdi:floor-plan
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 房间
+      heading_style: title
+      icon: mdi:floor-plan
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: button
       grid_options: {columns: 4, rows: 1}
       name: Living Room
@@ -473,6 +539,18 @@ views:
       heading: Indoor climate
       heading_style: title
       icon: mdi:home-thermometer
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 室内气候
+      heading_style: title
+      icon: mdi:home-thermometer
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: sensor.living_room_living_hue_hue_sensor_temperature
       name: Living Room
@@ -501,6 +579,21 @@ views:
       badges:
       - type: entity
         entity: camera.front_door_live_view
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 摄像头
+      heading_style: title
+      icon: mdi:cctv
+      badges:
+      - type: entity
+        entity: camera.front_door_live_view
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: picture-entity
       entity: camera.front_door_live_view
       name: Front Door
@@ -521,6 +614,18 @@ views:
       heading: Outside
       heading_style: subtitle
       icon: mdi:weather-partly-cloudy
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 室外
+      heading_style: subtitle
+      icon: mdi:weather-partly-cloudy
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: weather-forecast
       entity: weather.forecast_home
       forecast_type: daily
@@ -696,6 +801,18 @@ views:
       heading: Lights
       heading_style: title
       icon: mdi:lightbulb
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 灯光
+      heading_style: title
+      icon: mdi:lightbulb
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: light.living_room
       name: Living Room
@@ -739,6 +856,18 @@ views:
       heading: Power board
       heading_style: title
       icon: mdi:power-socket-au
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 排插
+      heading_style: title
+      icon: mdi:power-socket-au
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: switch.genio_power_board_with_usb_livingroom_socket_1
       name: Socket 1
@@ -767,6 +896,18 @@ views:
       heading: Entertainment
       heading_style: title
       icon: mdi:television
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 娱乐
+      heading_style: title
+      icon: mdi:television
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: media-control
       entity: media_player.living_room_tv_samsung_q9_series_65
 
@@ -777,6 +918,18 @@ views:
       heading: Sensors
       heading_style: title
       icon: mdi:motion-sensor
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 传感器
+      heading_style: title
+      icon: mdi:motion-sensor
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: binary_sensor.living_room_living_hue_hue_sensor_motion
       name: Motion
@@ -808,6 +961,18 @@ views:
       heading: Front door camera
       heading_style: title
       icon: mdi:doorbell-video
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 前门摄像头
+      heading_style: title
+      icon: mdi:doorbell-video
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: picture-entity
       entity: camera.front_door_live_view
       name: Front Door
@@ -873,6 +1038,18 @@ views:
       heading: Bench plugs
       heading_style: title
       icon: mdi:power-socket-au
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 台面插座
+      heading_style: title
+      icon: mdi:power-socket-au
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: switch.k_coffee_p100
       name: Coffee
@@ -896,6 +1073,21 @@ views:
       badges:
       - type: entity
         entity: binary_sensor.lg_fridge_door
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 冰箱
+      heading_style: title
+      icon: mdi:fridge
+      badges:
+      - type: entity
+        entity: binary_sensor.lg_fridge_door
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: binary_sensor.lg_fridge_door
       name: Fridge door
@@ -923,6 +1115,18 @@ views:
       heading: Sensors
       heading_style: title
       icon: mdi:motion-sensor
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 传感器
+      heading_style: title
+      icon: mdi:motion-sensor
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: binary_sensor.k_motion_sensor_motion
       name: Motion
@@ -989,6 +1193,18 @@ views:
       heading: Lights
       heading_style: title
       icon: mdi:lightbulb
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 灯光
+      heading_style: title
+      icon: mdi:lightbulb
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: light.dining
       name: Dining light
@@ -1006,6 +1222,18 @@ views:
       heading: Sensors
       heading_style: title
       icon: mdi:motion-sensor
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 传感器
+      heading_style: title
+      icon: mdi:motion-sensor
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: binary_sensor.sensor_group_motion
       name: Motion
@@ -1022,6 +1250,18 @@ views:
       heading: Pet feeder
       heading_style: title
       icon: mdi:paw
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 喂食器
+      heading_style: title
+      icon: mdi:paw
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: picture-entity
       entity: camera.smart_pet_feeder
       name: Pet Feeder
@@ -1100,6 +1340,18 @@ views:
       heading: Air conditioning
       heading_style: title
       icon: mdi:air-conditioner
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 空调
+      heading_style: title
+      icon: mdi:air-conditioner
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: thermostat
       entity: climate.bedroom_parents_room_ac
       features:
@@ -1133,6 +1385,18 @@ views:
       heading: Lights
       heading_style: title
       icon: mdi:lightbulb
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 灯光
+      heading_style: title
+      icon: mdi:lightbulb
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: switch.mainroomlight_switch_1
       name: Main light
@@ -1141,6 +1405,18 @@ views:
       heading: Entertainment
       heading_style: subtitle
       icon: mdi:television
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 娱乐
+      heading_style: subtitle
+      icon: mdi:television
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: media-control
       entity: media_player.55_qled_4k_ai
 
@@ -1151,6 +1427,18 @@ views:
       heading: Emergency buttons
       heading_style: title
       icon: mdi:bell-alert
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 紧急按钮
+      heading_style: title
+      icon: mdi:bell-alert
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: markdown
       content: >-
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set d =
@@ -1191,6 +1479,18 @@ views:
       heading: Sensors
       heading_style: title
       icon: mdi:motion-sensor
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 传感器
+      heading_style: title
+      icon: mdi:motion-sensor
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: binary_sensor.bedroom_motion_sensor_motion
       name: Motion
@@ -1226,6 +1526,18 @@ views:
       heading: AC maintenance
       heading_style: subtitle
       icon: mdi:air-filter
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 空调维护
+      heading_style: subtitle
+      icon: mdi:air-filter
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: binary_sensor.bedroom_parents_room_ac_filter_clean_required
       name: Filter clean required
@@ -1298,6 +1610,18 @@ views:
       heading: Lights
       heading_style: title
       icon: mdi:lightbulb
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 灯光
+      heading_style: title
+      icon: mdi:lightbulb
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: light.bedroom_bedroom
       name: Bedroom light
@@ -1315,6 +1639,18 @@ views:
       heading: Blind
       heading_style: title
       icon: mdi:roller-shade
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 窗帘
+      heading_style: title
+      icon: mdi:roller-shade
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: cover.aqara_roller_shade_driver_e1
       name: Roller shade
@@ -1335,6 +1671,21 @@ views:
       badges:
       - type: entity
         entity: number.lph_se_dcd9_plants_age
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 种植机
+      heading_style: title
+      icon: mdi:sprout
+      badges:
+      - type: entity
+        entity: number.lph_se_dcd9_plants_age
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: switch.lph_se_dcd9_power
       name: Power
@@ -1364,6 +1715,18 @@ views:
       heading: Power use
       heading_style: title
       icon: mdi:flash
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 用电量
+      heading_style: title
+      icon: mdi:flash
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: switch.r_energy_monitor_p110m
       name: Energy monitor plug
@@ -1436,6 +1799,21 @@ views:
       badges:
       - type: entity
         entity: binary_sensor.g_monitor_freezer_p110m_overloaded
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 冰柜
+      heading_style: title
+      icon: mdi:snowflake
+      badges:
+      - type: entity
+        entity: binary_sensor.g_monitor_freezer_p110m_overloaded
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: switch.g_monitor_freezer_p110m
       name: Freezer plug
@@ -1459,6 +1837,18 @@ views:
       heading: Electrical
       heading_style: title
       icon: mdi:flash
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 电力
+      heading_style: title
+      icon: mdi:flash
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: sensor.g_monitor_freezer_p110m_current_consumption
       name: Power
@@ -1531,6 +1921,18 @@ views:
       heading: Printer
       heading_style: title
       icon: mdi:printer
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 打印机
+      heading_style: title
+      icon: mdi:printer
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: switch.g_printer_p100
       name: Printer plug
@@ -1562,6 +1964,18 @@ views:
       heading: Entertainment
       heading_style: title
       icon: mdi:television
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 娱乐
+      heading_style: title
+      icon: mdi:television
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: light.kogan_tv
       name: Kogan TV backlight
@@ -1619,6 +2033,18 @@ views:
       heading: Main lights
       heading_style: title
       icon: mdi:lightbulb
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 主要灯光
+      heading_style: title
+      icon: mdi:lightbulb
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: light.living_room
       name: Living Room
@@ -1642,6 +2068,18 @@ views:
       heading: Wall switches
       heading_style: title
       icon: mdi:light-switch
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 墙壁开关
+      heading_style: title
+      icon: mdi:light-switch
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: switch.mainroomlight_switch_1
       name: Parents Room
@@ -1659,6 +2097,18 @@ views:
       heading: Living Room Hue
       heading_style: title
       icon: mdi:lightbulb-multiple
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 客厅 Hue
+      heading_style: title
+      icon: mdi:lightbulb-multiple
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: light.living_room_hue_ambiance_spot_1
       name: Spot 1
@@ -1683,6 +2133,18 @@ views:
       heading: Other lights
       heading_style: title
       icon: mdi:lightbulb-outline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 其他灯光
+      heading_style: title
+      icon: mdi:lightbulb-outline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: light.smart_pet_feeder_indicator_light
       name: Pet feeder indicator
@@ -1743,6 +2205,18 @@ views:
       heading: Parents Room AC
       heading_style: title
       icon: mdi:air-conditioner
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 父母房空调
+      heading_style: title
+      icon: mdi:air-conditioner
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: thermostat
       entity: climate.bedroom_parents_room_ac
       features:
@@ -1755,6 +2229,18 @@ views:
       heading: Readings
       heading_style: title
       icon: mdi:thermometer-lines
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 读数
+      heading_style: title
+      icon: mdi:thermometer-lines
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: sensor.living_room_living_hue_hue_sensor_temperature
       name: Living Room
@@ -1779,6 +2265,18 @@ views:
       heading: Last 24 hours
       heading_style: subtitle
       icon: mdi:chart-line
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 最近 24 小时
+      heading_style: subtitle
+      icon: mdi:chart-line
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: history-graph
       hours_to_show: 24
       grid_options: {columns: 12, rows: 4}
@@ -1836,6 +2334,18 @@ views:
       heading: Right now
       heading_style: title
       icon: mdi:flash
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 此刻
+      heading_style: title
+      icon: mdi:flash
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: markdown
       content: >-
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set p =
@@ -1883,6 +2393,18 @@ views:
       heading: Solar system
       heading_style: title
       icon: mdi:solar-panel
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 太阳能系统
+      heading_style: title
+      icon: mdi:solar-panel
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: markdown
       content: >-
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set s =
@@ -1907,6 +2429,18 @@ views:
       heading: Metered circuits
       heading_style: title
       icon: mdi:meter-electric
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 计量回路
+      heading_style: title
+      icon: mdi:meter-electric
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: sensor.r_energy_monitor_p110m_current_consumption
       name: Ray Bedroom now
@@ -1931,6 +2465,18 @@ views:
       heading: Trend
       heading_style: subtitle
       icon: mdi:chart-areaspline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 趋势
+      heading_style: subtitle
+      icon: mdi:chart-areaspline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: statistics-graph
       grid_options: {columns: 12, rows: 4}
       days_to_show: 30
@@ -2008,6 +2554,18 @@ views:
       heading: Overview
       heading_style: title
       icon: mdi:cash-multiple
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 概览
+      heading_style: title
+      icon: mdi:cash-multiple
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: markdown
       content: >-
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set dues =
@@ -2060,6 +2618,21 @@ views:
       badges:
       - type: entity
         entity: input_boolean.elec_bill_paid
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 电费
+      heading_style: title
+      icon: mdi:flash
+      badges:
+      - type: entity
+        entity: input_boolean.elec_bill_paid
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: input_number.elec_bill_amount
       name: Amount due
@@ -2107,6 +2680,21 @@ views:
       badges:
       - type: entity
         entity: input_boolean.gas_bill_paid
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 燃气费
+      heading_style: title
+      icon: mdi:fire
+      badges:
+      - type: entity
+        entity: input_boolean.gas_bill_paid
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: input_number.gas_bill_amount
       name: Amount due
@@ -2154,6 +2742,21 @@ views:
       badges:
       - type: entity
         entity: input_boolean.water_bill_paid
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 水费
+      heading_style: title
+      icon: mdi:water
+      badges:
+      - type: entity
+        entity: input_boolean.water_bill_paid
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: input_number.water_bill_amount
       name: Amount due
@@ -2205,6 +2808,21 @@ views:
       badges:
       - type: entity
         entity: input_boolean.council_rate_paid
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 市政费
+      heading_style: title
+      icon: mdi:city-variant-outline
+      badges:
+      - type: entity
+        entity: input_boolean.council_rate_paid
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: input_number.council_rate_amount
       name: Amount due
@@ -2252,6 +2870,21 @@ views:
       badges:
       - type: entity
         entity: input_boolean.car_insurance_paid
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 车险
+      heading_style: title
+      icon: mdi:car-key
+      badges:
+      - type: entity
+        entity: input_boolean.car_insurance_paid
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: input_number.car_insurance_amount
       name: Amount due
@@ -2303,6 +2936,21 @@ views:
       badges:
       - type: entity
         entity: input_boolean.rego_paid
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 车辆注册
+      heading_style: title
+      icon: mdi:card-account-details-outline
+      badges:
+      - type: entity
+        entity: input_boolean.rego_paid
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: input_number.rego_amount
       name: Amount due
@@ -2339,6 +2987,18 @@ views:
       heading: Not yet available
       heading_style: subtitle
       icon: mdi:database-clock-outline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 暂未提供
+      heading_style: subtitle
+      icon: mdi:database-clock-outline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: markdown
       content: >-
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% if cn
@@ -2404,6 +3064,18 @@ views:
       heading: Doors
       heading_style: title
       icon: mdi:door
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 门
+      heading_style: title
+      icon: mdi:door
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: binary_sensor.f_contact_sensor_door
       name: Front door
@@ -2430,6 +3102,18 @@ views:
       heading: Motion
       heading_style: title
       icon: mdi:motion-sensor
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 动作
+      heading_style: title
+      icon: mdi:motion-sensor
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: binary_sensor.living_room_living_hue_hue_sensor_motion
       name: Living Room
@@ -2450,6 +3134,18 @@ views:
       heading: Camera health
       heading_style: title
       icon: mdi:cctv
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 摄像头状态
+      heading_style: title
+      icon: mdi:cctv
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: markdown
       content: >-
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set cams = [('Front
@@ -2586,6 +3282,18 @@ views:
       heading: Camera batteries
       heading_style: subtitle
       icon: mdi:battery
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 摄像头电池
+      heading_style: subtitle
+      icon: mdi:battery
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: sensor.front_door_battery
       name: Front Door
@@ -2823,6 +3531,18 @@ views:
       heading: Household
       heading_style: title
       icon: mdi:account-multiple
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 家庭
+      heading_style: title
+      icon: mdi:account-multiple
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: person.raymond_du
       name: Raymond
@@ -2844,6 +3564,18 @@ views:
       heading: Presence today
       heading_style: title
       icon: mdi:chart-timeline-variant
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 今日在家情况
+      heading_style: title
+      icon: mdi:chart-timeline-variant
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: history-graph
       hours_to_show: 24
       entities:
@@ -2904,6 +3636,18 @@ views:
       heading: Living Room TV
       heading_style: title
       icon: mdi:television
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 客厅电视
+      heading_style: title
+      icon: mdi:television
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: media-control
       entity: media_player.living_room_tv_samsung_q9_series_65
 
@@ -2914,6 +3658,18 @@ views:
       heading: Parents Room TV
       heading_style: title
       icon: mdi:television
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 父母房电视
+      heading_style: title
+      icon: mdi:television
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: media-control
       entity: media_player.55_qled_4k_ai
 
@@ -2934,6 +3690,18 @@ views:
       heading: Room lighting
       heading_style: title
       icon: mdi:lightbulb-on-outline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 房间灯光
+      heading_style: title
+      icon: mdi:lightbulb-on-outline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: light.living_room
       name: Living Room
@@ -2986,6 +3754,18 @@ views:
       heading: Overall
       heading_style: title
       icon: mdi:stethoscope
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 总体
+      heading_style: title
+      icon: mdi:stethoscope
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: markdown
       content: >-
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set bats = [('Front
@@ -3031,6 +3811,18 @@ views:
       heading: Batteries
       heading_style: title
       icon: mdi:battery-50
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 电池
+      heading_style: title
+      icon: mdi:battery-50
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: sensor.front_door_battery
       name: Front Door
@@ -3071,6 +3863,18 @@ views:
       heading: Network
       heading_style: title
       icon: mdi:wan
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 网络
+      heading_style: title
+      icon: mdi:wan
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: binary_sensor.eero_wan_status
       name: Internet (WAN)
@@ -3092,6 +3896,18 @@ views:
       heading: Offline devices
       heading_style: title
       icon: mdi:lan-disconnect
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 离线设备
+      heading_style: title
+      icon: mdi:lan-disconnect
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: conditional
       conditions:
       - condition: state
@@ -3162,6 +3978,18 @@ views:
       heading: Backups and updates
       heading_style: title
       icon: mdi:backup-restore
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 备份与更新
+      heading_style: title
+      icon: mdi:backup-restore
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: sensor.backup_last_successful_automatic_backup
       name: Last backup
@@ -3220,6 +4048,18 @@ views:
       heading: Critical
       heading_style: title
       icon: mdi:alert-octagon
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 严重
+      heading_style: title
+      icon: mdi:alert-octagon
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: conditional
       conditions:
       - condition: state
@@ -3272,6 +4112,18 @@ views:
       heading: Warnings
       heading_style: title
       icon: mdi:alert
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 警告
+      heading_style: title
+      icon: mdi:alert
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: conditional
       conditions:
       - condition: state
@@ -3350,6 +4202,18 @@ views:
       heading: Information
       heading_style: title
       icon: mdi:information-outline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 提示
+      heading_style: title
+      icon: mdi:information-outline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: conditional
       conditions:
       - condition: state

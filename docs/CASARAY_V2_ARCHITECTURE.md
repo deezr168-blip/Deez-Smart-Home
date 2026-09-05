@@ -1,16 +1,31 @@
 # CasaRay v2 — architecture, entity migration and delivery report
 
 A ground-up rebuild of the CasaRay dashboard as `dashboards/casaray_v2.yaml`,
-built on the frozen CasaRay Design v1. The production dashboard
-`dashboards/deez_smart_home.yaml` is **untouched** and still the running
-system; v2 is a parallel implementation, not a replacement, until the owner
-chooses one.
+built on the frozen CasaRay Design v1.
+
+> ## This file is the canonical CasaRay target
+>
+> **Owner decision, 2026-09-05.** Every future CasaRay batch, board, UX
+> improvement, bilingual improvement, entity integration, automation-linked UI,
+> and every Bills, Entertainment, Camera, People Mapping, Energy or House Health
+> feature targets `dashboards/casaray_v2.yaml`, unless the owner explicitly
+> directs otherwise.
+>
+> `dashboards/deez_smart_home.yaml` is **legacy and reference-only**: a source
+> of confirmed entity IDs and proven logic, the rollback baseline, and the
+> running system until v2 is deployed. Do not delete, overwrite, merge into or
+> materially restructure it, and do not rebuild v2 features in it.
+>
+> **Committed is not deployed.** `CFG-003` still blocks the delivery path, so
+> nothing described here has been rendered even once.
 
 - **Created:** 2026-09-05, against `ha-deploy` at `b65497a`.
 - **Design authority:** *CasaRay Master Design Briefing v1* (Drive) and
   `DESIGN_REFERENCE.md`.
 - **Entity authority:** `docs/entity_inventory.md`.
 - **Buildability authority:** `docs/CASARAY_MAPPING_PACK.md`.
+- **Coordination:** `PROJECT_STATE.md` — the architecture decision and the
+  ordered Main queue ladder.
 
 ---
 
@@ -75,14 +90,36 @@ faked. Instead:
   "where technically feasible".
 - All **85 navigation links resolve**; every one of the 25 views is reachable.
 
+### Bilingual conventions — MANDATORY
+
+**Owner directive, 2026-09-05.** These are requirements for `casaray_v2.yaml`
+and for every future bilingual change. They are not stylistic preferences and
+are not to be re-decided per batch.
+
+| # | Rule |
+|---|---|
+| 1 | **Clock date format is `DD/MM/YY`**, produced by `now().strftime('%d/%m/%y')`. Never `%Y`. The time sits on the line above the date. |
+| 2 | **Chinese is Simplified**, matching the legacy dashboard's established vocabulary. |
+| 3 | **Proper nouns and device names may stay Latin** — CasaRay, Hue, Fronius Primo, eero, Lovelace, WAN, Ray, Pogo. |
+| 4 | **Chinese enumerations use `、`**, not `,`. |
+| 5 | **Bilingual:** page titles, section headings, room summaries, interpreted status text, alerts, warnings, explanatory text, and every other user-facing dynamic summary. |
+| 6 | **Never translated:** entity IDs, internal identifiers, YAML keys, navigation paths, implementation metadata. |
+
+Two greps enforce rules 1 and 2 without needing a running instance:
+
+```sh
+grep -rn "strftime('%d/%m/%Y')" dashboards/     # must return nothing (rule 1)
+grep -o "[一-鿿]\+" dashboards/casaray_v2.yaml | sort -u   # eyeball for rule 2
+```
+
 ### Bilingual behaviour
 
-`input_boolean.chinese_dashboard` is preserved and still drives the interface,
-but at a different altitude. The old dashboard templated nearly every card,
-which is most of why it is 222 KB. v2 translates the layer that carries
-meaning — page titles, room summaries, interpreted status — and leaves device
-rows as native tiles showing the device's own name. A reader who does not read
-English identifies "Dining light" by icon, position and state, not by its
+`input_boolean.chinese_dashboard` drives the interface, but at a different
+altitude than the legacy file, which templated nearly every card — most of why
+it is 222 KB. v2 translates the layer that carries meaning — page titles,
+section headings, room summaries, interpreted status — and leaves **device
+rows** as native tiles showing the device's own name. A reader who does not
+read English identifies "Dining light" by icon, position and state, not by its
 label; a reader who needs to know whether the house is secure needs that
 sentence in their language.
 
@@ -113,12 +150,47 @@ label carried alongside the English one in the same tuple. Chinese enumerations
 use `、`, not `,`. Proper nouns stay Latin: CasaRay, Hue, Fronius Primo, eero,
 Lovelace, WAN, Ray.
 
-**Still English: the 70 `heading` cards** — "Needs attention", "Lights",
-"Power outlets". They are section labels rather than page titles, room
-summaries or interpreted status, so they sit outside the rule as written, and
-translating them is a change to the rule rather than a completion of it. That
-is an owner decision, not an autonomous one. Everything the rule does cover is
-now done.
+**Section headings: done, and this is how.** The owner brought headings inside
+the convention on 2026-09-05, so all **70** are now bilingual — 61 distinct
+labels across 25 views, from "Needs attention" / `需要注意` to "Wall switches" /
+`墙壁开关`. Only `Pogo` stays Latin, being a device name under rule 3.
+
+They are **not** templated. The native `heading` card renders `heading:` as a
+plain string and does not evaluate Jinja — which is why v2's author reached for
+`markdown` cards for every piece of dynamic text in the first place. A
+templated heading would have printed raw `{{ ... }}` on screen in **both**
+languages, on all 70.
+
+Instead each heading is two cards with `visibility` conditions:
+
+```yaml
+- type: heading
+  heading: Needs attention
+  heading_style: title
+  icon: mdi:alert-circle-outline
+  visibility:
+  - condition: state
+    entity: input_boolean.chinese_dashboard
+    state_not: 'on'
+- type: heading
+  heading: 需要注意
+  heading_style: title
+  icon: mdi:alert-circle-outline
+  visibility:
+  - condition: state
+    entity: input_boolean.chinese_dashboard
+    state: 'on'
+```
+
+**The English card uses `state_not: 'on'`, deliberately.** Had both cards
+tested for an exact state, a toggle helper that went `unavailable` would hide
+*both* and strip every section on the dashboard of its label. As written,
+English is the fallback for `off`, `unavailable` and `unknown` alike, so
+exactly one heading always shows. Verified: with the helper unavailable, 70 of
+70 headings still render.
+
+`icon`, `heading_style` and all 12 `badges` blocks are identical between each
+pair — checked programmatically, not by eye. Landed in `PENDING-SHA`.
 
 ### View list (25)
 
@@ -300,6 +372,16 @@ Lovelace.
    clock. Confirm the time sits above the date and the date reads
    `DD/MM/YY` — `05/09/26`, **not** `05/09/2026`. The six single-camera
    subviews have no clock by design.
+9. **Section headings, both ways.** This is the highest-risk item after
+   item 1, because the mechanism has never rendered. Flip the toggle and
+   confirm that **exactly one** heading shows per section — English with the
+   toggle off, Simplified Chinese with it on. Two failure modes to watch for:
+   **both** headings showing (the `visibility` conditions are not being
+   applied) or **neither** (they are being applied inverted). Either is
+   immediately obvious and is a one-line fix.
+10. **Heading icons and badges survive the flip.** They are duplicated across
+    each pair; confirm the icon and any entity badge look identical in Chinese
+    mode, particularly on Home → Security, which carries a door badge.
 
 ## Maintenance
 
