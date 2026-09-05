@@ -225,8 +225,8 @@ environment cannot see. They were caught in the first five screenshots.
 
 | ID | What was wrong | Fix | Commit | P | Result |
 |---|---|---|---|---|---|
-| CR-160 | **Room page titles broke mid-word** — "Livin g Roo", "Kitch en", "Dinin g". The 7 room views gave the title card `columns: 4` while all 13 board views gave it `6`, so `Rooms` rendered correctly and `Living Room` did not. Not a font problem; a grid-width one | Room titles widened 4 → 6, matching the boards. Row 1 becomes Back(2)+Home(2)+title(6); the clock wraps to its own row on room pages only | `PENDING-SHA` | **P1** | PENDING — recheck |
-| CR-161 | **Every page had a horizontal scrollbar on the clock card.** The clock was an `<h1>` inside a 4-column card, so its content was wider than the card. It was also the wrong heading level — the page title is the h1, and two h1s per page is simply incorrect | Clock demoted `#` → `##` on all 20 non-subview pages. Still the large line with the date directly beneath, so the mandated form is unchanged | `PENDING-SHA` | **P1** | PENDING — recheck |
+| CR-160 | **Room page titles broke mid-word** — "Livin g Roo", "Kitch en", "Dinin g". The 7 room views gave the title card `columns: 4` while all 13 board views gave it `6`, so `Rooms` rendered correctly and `Living Room` did not. Not a font problem; a grid-width one | Room titles widened 4 → 6, matching the boards. Row 1 becomes Back(2)+Home(2)+title(6); the clock wraps to its own row on room pages only | `3683782` | **P1** | PENDING — recheck |
+| CR-161 | **Every page had a horizontal scrollbar on the clock card.** The clock was an `<h1>` inside a 4-column card, so its content was wider than the card. It was also the wrong heading level — the page title is the h1, and two h1s per page is simply incorrect | Clock demoted `#` → `##` on all 20 non-subview pages. Still the large line with the date directly beneath, so the mandated form is unchanged | `3683782` | **P1** | PENDING — recheck |
 
 **Re-check both after the next sync:** open any room page. The title must read
 as one word — `Living Room`, not `Livin g Roo` — and no card may have a
