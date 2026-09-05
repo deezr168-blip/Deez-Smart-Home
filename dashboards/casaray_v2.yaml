@@ -7,9 +7,9 @@
 #   and only where a live low-latency stream has no native equivalent.
 #
 # Entity truth: docs/entity_inventory.md. Every ID below is already
-# referenced by dashboards/deez_smart_home.yaml or was confirmed live.
-# Nothing here is invented. Components with no data behind them are absent,
-# not faked -- see docs/CASARAY_V2_ARCHITECTURE.md for the full list.
+# referenced by dashboards/deez_smart_home.yaml or was confirmed by the
+# owner-supplied B1 Developer Tools entity export on 2026-09-05. Nothing is
+# invented. Components with no data behind them are absent, not faked.
 #
 # Layout: max_columns 2 throughout. iPad landscape renders ~2 usable
 # columns whatever the mockups show.
@@ -98,6 +98,12 @@ views:
       icon: mdi:television-play
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray/entertainment}
+    - type: button
+      grid_options: {columns: 3, rows: 1}
+      name: Automations
+      icon: mdi:robot
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/automations}
     - type: button
       grid_options: {columns: 3, rows: 1}
       name: Alerts
@@ -794,6 +800,81 @@ views:
 
         {{ now().strftime('%d/%m/%y') }}
 
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Quick actions
+      heading_style: title
+      icon: mdi:palette-outline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 快捷场景
+      heading_style: title
+      icon: mdi:palette-outline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Relax
+      icon: mdi:sofa-outline
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.living_room_living_room_relax}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Bright
+      icon: mdi:brightness-7
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.living_room_living_room_bright}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Read
+      icon: mdi:book-open-page-variant
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.living_room_living_room_read}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Nightlight
+      icon: mdi:weather-night
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.living_room_living_room_nightlight}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Energize
+      icon: mdi:lightning-bolt
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.living_room_living_room_energize}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Concentrate
+      icon: mdi:head-lightbulb-outline
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.living_room_living_room_concentrate}
+
   - type: grid
     column_span: 1
     cards:
@@ -910,6 +991,48 @@ views:
         state: 'on'
     - type: media-control
       entity: media_player.living_room_tv_samsung_q9_series_65
+
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Air quality
+      heading_style: title
+      icon: mdi:air-purifier
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 空气质量
+      heading_style: title
+      icon: mdi:air-purifier
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: tile
+      entity: fan.living_room_air_purifier
+      name: Air purifier
+      features:
+      - type: fan-speed
+    - type: tile
+      entity: sensor.living_room_air_purifier_air_quality
+      name: Air quality
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.living_room_air_purifier_pm2_5
+      name: PM2.5
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.living_room_air_purifier_pm10
+      name: PM10
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.living_room_air_purifier_odor_sensor
+      name: Odor
+      grid_options: {columns: 6, rows: 1}
 
   - type: grid
     column_span: 1
@@ -1185,6 +1308,81 @@ views:
         # {{ now().strftime('%I:%M %p').lstrip('0') }}
 
         {{ now().strftime('%d/%m/%y') }}
+
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Quick actions
+      heading_style: title
+      icon: mdi:palette-outline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 快捷场景
+      heading_style: title
+      icon: mdi:palette-outline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Relax
+      icon: mdi:table-chair
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.dining_dining_relax}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Read
+      icon: mdi:book-open-page-variant
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.dining_dining_read}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Nightlight
+      icon: mdi:weather-night
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.dining_dining_nightlight}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Energize
+      icon: mdi:lightning-bolt
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.dining_dining_energize}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Concentrate
+      icon: mdi:head-lightbulb-outline
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.dining_dining_concentrate}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Midwinter
+      icon: mdi:snowflake
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.dining_dining_midwinter}
 
   - type: grid
     column_span: 1
@@ -1603,6 +1801,81 @@ views:
 
         {{ now().strftime('%d/%m/%y') }}
 
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Quick actions
+      heading_style: title
+      icon: mdi:palette-outline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 快捷场景
+      heading_style: title
+      icon: mdi:palette-outline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Read
+      icon: mdi:book-open-page-variant
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.bedroom_bedroom_read}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Nightlight
+      icon: mdi:weather-night
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.bedroom_bedroom_nightlight}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Nighttime
+      icon: mdi:moon-waning-crescent
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.bedroom_bedroom_nighttime}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Concentrate
+      icon: mdi:head-lightbulb-outline
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.bedroom_bedroom_concentrate}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Silverstone
+      icon: mdi:palette
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.bedroom_bedroom_silverstone}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Soho
+      icon: mdi:palette
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.bedroom_bedroom_soho}
+
   - type: grid
     column_span: 1
     cards:
@@ -1983,10 +2256,8 @@ views:
       entity: media_player.pogo
 
 # ===========================================================================
-# LIGHTING. Whole-house light control. The briefing's Lighting Studio also
-# wants scenes: 29 Hue scenes exist live but their entity IDs cannot be read
-# from this environment, and guessing one would be inventing an entity ID.
-# Scene rows are therefore absent, not stubbed. See blocker B1.
+# LIGHTING. Whole-house light control plus the verified Hue scene catalogue.
+# Scene entity IDs were confirmed by the owner-supplied B1 export on 2026-09-05.
 # ===========================================================================
 - type: sections
   title: Lighting
@@ -2151,6 +2422,288 @@ views:
     - type: tile
       entity: light.kogan_tv
       name: Kogan TV backlight
+
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Scene studio
+      heading_style: title
+      icon: mdi:palette-outline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 场景工作室
+      heading_style: title
+      icon: mdi:palette-outline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Living · Relax
+      icon: mdi:sofa-outline
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.living_room_living_room_relax}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Living · Bright
+      icon: mdi:brightness-7
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.living_room_living_room_bright}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Living · Read
+      icon: mdi:book-open-page-variant
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.living_room_living_room_read}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Living · Nightlight
+      icon: mdi:weather-night
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.living_room_living_room_nightlight}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Living · Energize
+      icon: mdi:lightning-bolt
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.living_room_living_room_energize}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Living · Concentrate
+      icon: mdi:head-lightbulb-outline
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.living_room_living_room_concentrate}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Living · Dimmed
+      icon: mdi:brightness-4
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.living_room_living_room_dimmed}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Living · Midwinter
+      icon: mdi:snowflake
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.living_room_living_room_midwinter}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Dining · Relax
+      icon: mdi:table-chair
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.dining_dining_relax}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Dining · Read
+      icon: mdi:book-open-page-variant
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.dining_dining_read}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Dining · Nightlight
+      icon: mdi:weather-night
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.dining_dining_nightlight}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Dining · Energize
+      icon: mdi:lightning-bolt
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.dining_dining_energize}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Dining · Concentrate
+      icon: mdi:head-lightbulb-outline
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.dining_dining_concentrate}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Dining · Midwinter
+      icon: mdi:snowflake
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.dining_dining_midwinter}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Bedroom · Read
+      icon: mdi:book-open-page-variant
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.bedroom_bedroom_read}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Bedroom · Nightlight
+      icon: mdi:weather-night
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.bedroom_bedroom_nightlight}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Bedroom · Nighttime
+      icon: mdi:moon-waning-crescent
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.bedroom_bedroom_nighttime}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Bedroom · Concentrate
+      icon: mdi:head-lightbulb-outline
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.bedroom_bedroom_concentrate}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Bedroom · Silverstone
+      icon: mdi:palette
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.bedroom_bedroom_silverstone}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Bedroom · Soho
+      icon: mdi:palette
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.bedroom_bedroom_soho}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Bedroom · Suzuka
+      icon: mdi:palette
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.bedroom_bedroom_suzuka}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Bedroom · Baby's breath
+      icon: mdi:flower
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.bedroom_bedroom_baby_s_breath}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Bedroom · Starlight
+      icon: mdi:star-four-points
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.bedroom_bedroom_starlight}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Bedroom · Amber bloom
+      icon: mdi:flower
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.bedroom_bedroom_amber_bloom}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Bedroom · Vapor wave
+      icon: mdi:waves
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.bedroom_bedroom_vapor_wave}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Bedroom · Blossom
+      icon: mdi:flower
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.bedroom_bedroom_blossom}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Bedroom · Dreamy dusk
+      icon: mdi:weather-sunset
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.bedroom_bedroom_dreamy_dusk}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Bedroom · Pensive
+      icon: mdi:thought-bubble-outline
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.bedroom_bedroom_pensive}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Bedroom · Nature's colors
+      icon: mdi:leaf
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: scene.turn_on
+        target: {entity_id: scene.bedroom_bedroom_nature_s_colors}
 
 # ===========================================================================
 # CLIMATE. One climate entity and four temperature/humidity readings.
@@ -2421,6 +2974,54 @@ views:
     - type: tile
       entity: sensor.primo_5_0_1_1_total_energy
       name: Solar lifetime
+
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Solar forecast
+      heading_style: title
+      icon: mdi:weather-sunny-alert
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 太阳能预测
+      heading_style: title
+      icon: mdi:weather-sunny-alert
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: markdown
+      content: >-
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set t = states('sensor.energy_production_today') %}{% set r = states('sensor.energy_production_today_remaining') %}{% set n = states('sensor.power_production_now') %}{% if t not in ['unknown','unavailable','none',''] %}{{ ('今日预计太阳能 **%s kWh**' % t) if cn else ('Forecast **%s kWh** solar today.' % t) }}{% if r not in ['unknown','unavailable','none',''] %} {{ ('今日剩余 **%s kWh**。' % r) if cn else (' **%s kWh** remains in today’s forecast.' % r) }}{% endif %}{% else %}{{ '太阳能预测目前无数据。' if cn else 'Solar forecast is not reporting.' }}{% endif %}{% if n not in ['unknown','unavailable','none',''] %} {{ ('当前预测功率 **%s W**。' % n) if cn else (' Forecast production now: **%s W**.' % n) }}{% endif %}
+    - type: tile
+      entity: sensor.energy_production_today
+      name: Forecast today
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: sensor.energy_production_today_remaining
+      name: Remaining today
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: sensor.energy_production_tomorrow
+      name: Forecast tomorrow
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: sensor.power_production_now
+      name: Forecast power now
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: sensor.energy_current_hour
+      name: This hour
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: sensor.energy_next_hour
+      name: Next hour
+      grid_options: {columns: 4, rows: 1}
 
   - type: grid
     column_span: 1
@@ -3482,10 +4083,9 @@ views:
       name: Privacy mode
 
 # ===========================================================================
-# PEOPLE. Human-readable presence only. Raw GPS and tracker internals stay
-# out of the normal interface (briefing section 11). The mockup's per-person
-# battery and ETA columns need device_tracker and phone-battery entity IDs
-# that cannot be read from this environment -- blocker B1.
+# PEOPLE. Human-readable presence only. Raw GPS coordinates stay out of the
+# normal interface. B1 confirmed phone trackers and battery entities; the UI
+# exposes readable presence and battery status, not tracker internals.
 # ===========================================================================
 - type: sections
   title: People
@@ -3557,6 +4157,36 @@ views:
       name: People in the home zone
       icon: mdi:home-account
 
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Device status
+      heading_style: title
+      icon: mdi:cellphone-marker
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 设备状态
+      heading_style: title
+      icon: mdi:cellphone-marker
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: tile
+      entity: sensor.raymonds_iphone_battery_level
+      name: Raymond phone battery
+    - type: tile
+      entity: sensor.vine_s_phone_battery_level
+      name: Vinh phone battery
+    - type: tile
+      entity: sensor.ais_iphone_battery_level
+      name: Ai phone battery
+
   - type: grid
     column_span: 1
     cards:
@@ -3585,6 +4215,95 @@ views:
         name: Vinh
       - entity: person.ai_q_huang
         name: Ai Q
+
+
+# ===========================================================================
+# AUTOMATIONS. Only entities verified in the B1 export are shown. The frozen
+# design's Good Morning / Away / Good Night examples are not fabricated.
+# ===========================================================================
+- type: sections
+  title: Automations
+  path: automations
+  icon: mdi:robot
+  max_columns: 2
+  sections:
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/home}
+    - type: markdown
+      grid_options: {columns: 6, rows: 2}
+      content: >-
+        # {{ '自动化' if is_state('input_boolean.chinese_dashboard','on') else 'Automations' }}
+
+        {{ '仅显示 Home Assistant 当前实际存在的自动化。' if is_state('input_boolean.chinese_dashboard','on') else 'Only automations that currently exist in Home Assistant are shown.' }}
+    - type: markdown
+      grid_options: {columns: 4, rows: 2}
+      content: >-
+        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+
+        {{ now().strftime('%d/%m/%y') }}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Household behaviours
+      heading_style: title
+      icon: mdi:home-automation
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 家庭行为
+      heading_style: title
+      icon: mdi:home-automation
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: tile
+      entity: automation.gas_meter_pulse_counter
+      name: Gas meter pulse counter
+      icon: mdi:meter-gas
+    - type: tile
+      entity: automation.bills_reset_ytd_totals
+      name: Reset bills YTD totals
+      icon: mdi:calendar-refresh
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: System maintenance
+      heading_style: title
+      icon: mdi:wrench-cog
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 系统维护
+      heading_style: title
+      icon: mdi:wrench-cog
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: tile
+      entity: automation.deploy_deez_dashboard_updates
+      name: Dashboard deployment updates
+      icon: mdi:source-branch-sync
+    - type: markdown
+      content: >-
+        {{ '设计简报中的 Door → Dining、Work Prep、Good Morning、Away Mode 和 Good Night 是目标示例；B1 导出没有这些 automation.* 实体，所以此处不会虚构它们。' if is_state('input_boolean.chinese_dashboard','on') else 'Door → Dining, Work Prep, Good Morning, Away Mode and Good Night are design targets only. The B1 export contains no matching automation.* entities, so CasaRay does not fabricate them.' }}
 
 # ===========================================================================
 # ENTERTAINMENT. Native media-control over the three real media players.
