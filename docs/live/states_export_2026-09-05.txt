@@ -1,0 +1,970 @@
+update.home_assistant_supervisor_update|Home Assistant Supervisor Update|-|ok
+update.home_assistant_core_update|Home Assistant Core Update|-|ok
+update.home_assistant_operating_system_update|Home Assistant Operating System Update|-|ok
+update.matter_server_update|Matter Server Update|-|ok
+update.esphome_device_builder_update|ESPHome Device Builder Update|-|ok
+update.spotify_connect_update|Spotify Connect Update|-|ok
+update.terminal_ssh_update|Terminal & SSH Update|-|ok
+update.studio_code_server_update|Studio Code Server Update|-|ok
+update.file_editor_update|File editor Update|-|ok
+update.samba_share_update|Samba share Update|-|ok
+update.network_ups_tools_update|Network UPS Tools Update|-|ok
+update.openthread_border_router_update|OpenThread Border Router Update|-|ok
+update.music_assistant_update|Music Assistant Update|-|ok
+update.vlc_update|VLC Update|-|ok
+update.codex_cli_worker_update|Codex CLI Worker Update|-|ok
+update.mosquitto_broker_update|Mosquitto broker Update|-|ok
+update.mqtt_io_update|MQTT IO Update|-|ok
+update.git_pull_update|Git pull Update|-|ok
+conversation.home_assistant|Home Assistant|-|ok
+light.ray_bedroom_bedroomlight_switch_1|BedRoomLight Switch 1|Ray Bedroom|ok
+event.backup_automatic_backup|Backup Automatic backup|-|ok
+sensor.backup_backup_manager_state|Backup Backup Manager state|-|ok
+sensor.backup_next_scheduled_automatic_backup|Backup Next scheduled automatic backup|-|ok
+sensor.backup_last_successful_automatic_backup|Backup Last successful automatic backup|-|ok
+sensor.backup_last_attempted_automatic_backup|Backup Last attempted automatic backup|-|ok
+binary_sensor.remote_ui|Remote UI|-|ok
+stt.home_assistant_cloud|Home Assistant Cloud|-|unknown
+tts.home_assistant_cloud|Home Assistant Cloud|-|unknown
+script.record_electricity_bill_payment|Record Electricity Bill Payment|-|ok
+script.record_gas_bill_payment|Record Gas Bill Payment|-|ok
+script.record_water_bill_payment|Record South East Water Bill Payment|-|ok
+script.record_car_insurance_bill_payment|Record Car Insurance Bill Payment|-|ok
+script.record_council_rates_bill_payment|Record Council Rates Bill Payment|-|ok
+script.record_rego_bill_payment|Record VicRoads Rego Bill Payment|-|ok
+zone.home_2|Home|-|ok
+input_text.bill_history_electricity_last_signature|Electricity Last Recorded Bill Signature|-|unknown
+input_text.bill_history_gas_last_signature|Gas Last Recorded Bill Signature|-|ok
+input_text.bill_history_water_last_signature|South East Water Last Recorded Bill Signature|-|unknown
+input_text.bill_history_car_insurance_last_signature|Car Insurance Last Recorded Bill Signature|-|unknown
+input_text.bill_history_council_rates_last_signature|Council Rates Last Recorded Bill Signature|-|unknown
+input_text.bill_history_rego_last_signature|VicRoads Rego Last Recorded Bill Signature|-|unknown
+input_text.elec_account_number|Electricity Account Number|-|ok
+input_text.gas_account_number|Gas Account Number|-|ok
+input_boolean.elec_bill_paid|Electricity Bill Paid|-|ok
+input_boolean.gas_bill_paid|Gas Bill Paid|-|ok
+input_boolean.guest_mode|Guest Mode|-|ok
+input_select.bill_history_company|Bill History Company|-|ok
+input_select.lighting_scene|Lighting Scene|-|ok
+input_number.bills_paid_ytd|Bills Paid YTD|-|ok
+input_number.bills_saved_ytd|Bills Saved YTD|-|ok
+input_number.bills_original_ytd|Bills Before Discounts YTD|-|ok
+input_number.electricity_bill_before_discount|Electricity Bill Before Discount|-|ok
+input_number.electricity_actual_paid|Electricity Actual Amount Paid|-|ok
+input_number.electricity_discount_percent|Electricity Discount Applied|-|ok
+input_number.electricity_saving|Electricity Saving|-|ok
+input_number.gas_bill_before_discount|Gas Bill Before Discount|-|ok
+input_number.gas_actual_paid|Gas Actual Amount Paid|-|ok
+input_number.gas_discount_percent|Gas Discount Applied|-|ok
+input_number.gas_saving|Gas Saving|-|ok
+input_number.water_bill_before_discount|South East Water Bill Before Discount|-|ok
+input_number.water_actual_paid|South East Water Actual Amount Paid|-|ok
+input_number.water_discount_percent|South East Water Discount Applied|-|ok
+input_number.water_saving|South East Water Saving|-|ok
+input_number.car_insurance_bill_before_discount|Car Insurance Bill Before Discount|-|ok
+input_number.car_insurance_actual_paid|Car Insurance Actual Amount Paid|-|ok
+input_number.car_insurance_discount_percent|Car Insurance Discount Applied|-|ok
+input_number.car_insurance_saving|Car Insurance Saving|-|ok
+input_number.council_rates_bill_before_discount|Council Rates Bill Before Discount|-|ok
+input_number.council_rates_actual_paid|Council Rates Actual Amount Paid|-|ok
+input_number.council_rates_discount_percent|Council Rates Discount Applied|-|ok
+input_number.council_rates_saving|Council Rates Saving|-|ok
+input_number.rego_bill_before_discount|VicRoads Rego Bill Before Discount|-|ok
+input_number.rego_actual_paid|VicRoads Rego Actual Amount Paid|-|ok
+input_number.rego_discount_percent|VicRoads Rego Discount Applied|-|ok
+input_number.rego_saving|VicRoads Rego Saving|-|ok
+input_number.bill_history_electricity_payment|Electricity History Payment|-|ok
+input_number.bill_history_electricity_discount|Electricity History Discount|-|ok
+input_number.bill_history_electricity_saving|Electricity History Saving|-|ok
+input_number.bill_history_gas_payment|Gas History Payment|-|ok
+input_number.bill_history_gas_discount|Gas History Discount|-|ok
+input_number.bill_history_gas_saving|Gas History Saving|-|ok
+input_number.bill_history_water_payment|South East Water History Payment|-|ok
+input_number.bill_history_water_discount|South East Water History Discount|-|ok
+input_number.bill_history_water_saving|South East Water History Saving|-|ok
+input_number.bill_history_car_insurance_payment|Car Insurance History Payment|-|ok
+input_number.bill_history_car_insurance_discount|Car Insurance History Discount|-|ok
+input_number.bill_history_car_insurance_saving|Car Insurance History Saving|-|ok
+input_number.bill_history_council_rates_payment|Council Rates History Payment|-|ok
+input_number.bill_history_council_rates_discount|Council Rates History Discount|-|ok
+input_number.bill_history_council_rates_saving|Council Rates History Saving|-|ok
+input_number.bill_history_rego_payment|VicRoads Rego History Payment|-|ok
+input_number.bill_history_rego_discount|VicRoads Rego History Discount|-|ok
+input_number.bill_history_rego_saving|VicRoads Rego History Saving|-|ok
+input_number.elec_bill_amount|Electricity Bill Amount|-|ok
+input_number.elec_last_bill_amount|Electricity Last Bill Amount|-|ok
+input_number.gas_bill_amount|Gas Bill Amount|-|ok
+input_number.gas_last_bill_amount|Gas Last Bill Amount|-|ok
+input_number.gas_bill_mj|Gas Bill Usage MJ|-|ok
+input_datetime.bill_history_electricity_paid_date|Electricity History Paid Date|-|ok
+input_datetime.bill_history_electricity_due_date|Electricity History Due Date|-|ok
+input_datetime.bill_history_gas_paid_date|Gas History Paid Date|-|ok
+input_datetime.bill_history_gas_due_date|Gas History Due Date|-|ok
+input_datetime.bill_history_water_paid_date|South East Water History Paid Date|-|ok
+input_datetime.bill_history_water_due_date|South East Water History Due Date|-|ok
+input_datetime.bill_history_car_insurance_paid_date|Car Insurance History Paid Date|-|ok
+input_datetime.bill_history_car_insurance_due_date|Car Insurance History Due Date|-|ok
+input_datetime.bill_history_council_rates_paid_date|Council Rates History Paid Date|-|ok
+input_datetime.bill_history_council_rates_due_date|Council Rates History Due Date|-|ok
+input_datetime.bill_history_rego_paid_date|VicRoads Rego History Paid Date|-|ok
+input_datetime.bill_history_rego_due_date|VicRoads Rego History Due Date|-|ok
+input_datetime.elec_bill_due|Electricity Bill Due|-|ok
+input_datetime.elec_bill_period_start|Electricity Period Start|-|ok
+input_datetime.gas_bill_due|Gas Bill Due|-|ok
+input_datetime.gas_bill_period_start|Gas Period Start|-|ok
+zone.home|Home|-|ok
+input_text.car_insurance_provider|    car_insurance_provider|-|ok
+input_text.car_insurance_policy_number|    car_insurance_policy_number |-|unknown
+input_text.car_insurance_vehicle|    car_insurance_vehicle|-|unknown
+input_text.car_insurance_registration|    car_insurance_registration|-|unknown
+input_text.water_provider|    water_provider|-|unknown
+input_text.water_account_number|    water_account_number|-|unknown
+input_text.water_property|    water_property|-|unknown
+input_text.council_rate_council|    council_rate_council|-|unknown
+input_text.council_rate_assessment_number|    council_rate_assessment_number|-|unknown
+input_text.council_rate_property|    council_rate_property|-|unknown
+input_text.rego_vehicle|    rego_vehicle|-|unknown
+input_text.rego_plate|    rego_plate|-|unknown
+input_text.rego_customer_number|    rego_customer_number|-|unknown
+input_boolean.chinese_dashboard|Chinese Dashboard|-|ok
+input_boolean.car_insurance_paid|    car_insurance_paid|-|ok
+input_boolean.water_bill_paid|    water_bill_paid|-|ok
+input_boolean.council_rate_paid|    council_rate_paid|-|ok
+input_boolean.rego_paid|    rego_paid|-|ok
+input_select.input_select_family_location_selected|Family Location|-|ok
+input_number.car_insurance_amount|    car_insurance_amount|-|ok
+input_number.car_insurance_last_amount|    car_insurance_last_amount|-|ok
+input_number.water_bill_amount|    water_bill_amount|-|ok
+input_number.water_bill_usage_kl|    water_bill_usage_kl|-|ok
+input_number.water_last_bill_amount|    water_last_bill_amount|-|ok
+input_number.council_rate_amount|    council_rate_amount|-|ok
+input_number.council_rate_last_amount|    council_rate_last_amount|-|ok
+input_number.rego_amount|    rego_amount|-|ok
+input_number.rego_last_amount|    rego_last_amount|-|ok
+input_datetime.car_insurance_due|    car_insurance_due|-|ok
+input_datetime.car_insurance_period_start|    car_insurance_period_start|-|ok
+input_datetime.car_insurance_period_en|    car_insurance_period_en|-|ok
+input_datetime.water_bill_due|    water_bill_due|-|ok
+input_datetime.water_bill_period_start|    water_bill_period_start|-|ok
+input_datetime.water_bill_period_end|    water_bill_period_end|-|ok
+input_datetime.council_rate_due|    council_rate_due|-|ok
+input_datetime.council_rate_period_start|    council_rate_period_start|-|ok
+input_datetime.council_rate_period_end|    council_rate_period_end|-|ok
+input_datetime.rego_due|    rego_due|-|ok
+person.raymond_du|Raymond Du.|-|ok
+person.vinh_du|Vinh Du|-|ok
+person.ai_q_huang|Ai Q Huang|-|ok
+sun.sun|Sun|-|ok
+sensor.sun_next_dawn|Sun Next dawn|-|ok
+sensor.sun_next_dusk|Sun Next dusk|-|ok
+sensor.sun_next_midnight|Sun Next midnight|-|ok
+sensor.sun_next_noon|Sun Next noon|-|ok
+sensor.sun_next_rising|Sun Next rising|-|ok
+sensor.sun_next_setting|Sun Next setting|-|ok
+update.aqara_hub_m100_firmware|Aqara Hub M100 Firmware|Network|ok
+button.aqara_hub_m100_identify|Aqara Hub M100 Identify|Network|unknown
+binary_sensor.aqara_roller_shade_driver_e1_configuration_status|Aqara Roller Shade Driver E1 Configuration status|Ray Bedroom|ok
+button.aqara_roller_shade_driver_e1_identify|Aqara Roller Shade Driver E1 Identify|Ray Bedroom|ok
+cover.aqara_roller_shade_driver_e1|Aqara Roller Shade Driver E1|Ray Bedroom|ok
+sensor.aqara_roller_shade_driver_e1_battery|Aqara Roller Shade Driver E1 Battery|Ray Bedroom|ok
+sensor.aqara_roller_shade_driver_e1_battery_voltage|Aqara Roller Shade Driver E1 Battery voltage|Ray Bedroom|ok
+sensor.aqara_roller_shade_driver_e1_battery_charge_state|Aqara Roller Shade Driver E1 Battery charge state|Ray Bedroom|ok
+update.the_matter_wired_gateway_by_moes_firmware|The Matter Wired Gateway by MOES Firmware|Network|ok
+button.the_matter_wired_gateway_by_moes_identify|The Matter Wired Gateway by MOES Identify|Network|unknown
+update.tapo_h200_firmware|Tapo H200 Firmware|Network|ok
+binary_sensor.k_motion_sensor_occupancy|K/Motion Sensor Occupancy|Kitchen|ok
+update.presence_multi_sensor_fp300_firmware|Presence Multi-Sensor FP300 Firmware|Ray Bedroom|unavailable
+binary_sensor.presence_multi_sensor_fp300_occupancy|Presence Multi-Sensor FP300 Occupancy|Ray Bedroom|unavailable
+button.presence_multi_sensor_fp300_identify_1|Presence Multi-Sensor FP300 Identify (1)|Ray Bedroom|unavailable
+number.presence_multi_sensor_fp300_hold_time|Presence Multi-Sensor FP300 Hold time|Ray Bedroom|unavailable
+number.presence_multi_sensor_fp300_sensitivity|Presence Multi-Sensor FP300 Sensitivity|Ray Bedroom|unavailable
+button.presence_multi_sensor_fp300_identify_2|Presence Multi-Sensor FP300 Identify (2)|Ray Bedroom|unavailable
+sensor.presence_multi_sensor_fp300_illuminance|Presence Multi-Sensor FP300 Illuminance|Ray Bedroom|unavailable
+button.presence_multi_sensor_fp300_identify_3|Presence Multi-Sensor FP300 Identify (3)|Ray Bedroom|unavailable
+sensor.presence_multi_sensor_fp300_temperature|Presence Multi-Sensor FP300 Temperature|Ray Bedroom|unavailable
+button.presence_multi_sensor_fp300_identify_4|Presence Multi-Sensor FP300 Identify (4)|Ray Bedroom|unavailable
+sensor.presence_multi_sensor_fp300_humidity|Presence Multi-Sensor FP300 Humidity|Ray Bedroom|unavailable
+sensor.presence_multi_sensor_fp300_battery|Presence Multi-Sensor FP300 Battery|Ray Bedroom|unavailable
+sensor.presence_multi_sensor_fp300_battery_voltage|Presence Multi-Sensor FP300 Battery voltage|Ray Bedroom|unavailable
+sensor.presence_multi_sensor_fp300_battery_type|Presence Multi-Sensor FP300 Battery type|Ray Bedroom|unavailable
+binary_sensor.casa_solar_online|Casa Solar Online|-|ok
+sensor.casa_doors_open|Casa Doors Open|-|unavailable
+sensor.casa_monitored_power|Casa Monitored Power|-|ok
+sensor.casa_solar_expected_today|Casa Solar Expected Today|-|ok
+sensor.casa_grid_carbon|Casa Grid Carbon|-|unavailable
+sensor.electricity_days_until_due|Electricity Days Until Due|-|ok
+sensor.gas_days_until_due|Gas Days Until Due|-|ok
+sensor.electricity_bill_status|Electricity Bill Status|-|ok
+sensor.gas_bill_status|Gas Bill Status|-|ok
+sensor.bills_outstanding_total|Bills Outstanding Total|-|ok
+sensor.bills_unpaid_count|Bills Unpaid Count|-|ok
+sensor.electricity_bill_estimate|Electricity Bill Estimate|-|ok
+sensor.gas_bill_estimate|Gas Bill Estimate|-|ok
+sensor.house_lights_on|House Lights On|-|ok
+sensor.open_doors_count|Open Doors Count|-|ok
+sensor.active_rooms_count|Active Rooms Count|-|ok
+sensor.house_status|House Status|-|ok
+sensor.solar_power_display|Solar Power Display|-|ok
+binary_sensor.living_room_active|Living Room Active|-|ok
+binary_sensor.parents_room_active|Parents Room Active|-|ok
+binary_sensor.ray_bedroom_active|Ray Bedroom Active|-|ok
+binary_sensor.dining_active|Dining Active|-|ok
+sensor.casa_offline_devices|Casa Offline Devices|-|ok
+sensor.electricity_billing_cycle|Electricity Billing Cycle|-|ok
+sensor.powerpal_gateway_powerpal_total_energy_cost|sensor Cost|-|ok
+binary_sensor.raymonds_iphone_focus|Deez Raymond’s iPhone Focus|-|ok
+binary_sensor.raymonds_iphone_kiosk_mode|Deez Raymond’s iPhone Kiosk Mode|-|ok
+binary_sensor.deez_camera_motion|Deez Camera Motion|-|unavailable
+device_tracker.raymonds_iphone|Deez|-|ok
+notify.raymonds_iphone|Deez|-|unknown
+sensor.raymonds_iphone_activity|Deez Raymond’s iPhone Activity|-|ok
+sensor.raymonds_iphone_distance|Deez Raymond’s iPhone Distance|-|ok
+sensor.raymonds_iphone_floors_ascended|Deez Raymond’s iPhone Floors Ascended|-|ok
+sensor.raymonds_iphone_battery_level|Deez Raymond’s iPhone Battery Level|-|ok
+sensor.raymonds_iphone_floors_descended|Deez Raymond’s iPhone Floors Descended|-|ok
+sensor.raymonds_iphone_battery_state|Deez Raymond’s iPhone Battery State|-|ok
+sensor.raymonds_iphone_storage|Deez Raymond’s iPhone Storage|-|ok
+sensor.raymonds_iphone_ssid|Deez Raymond’s iPhone SSID|-|ok
+sensor.raymonds_iphone_bssid|Deez Raymond’s iPhone BSSID|-|ok
+sensor.raymonds_iphone_connection_type|Deez Raymond’s iPhone Connection Type|-|ok
+sensor.raymonds_iphone_sim_1|Deez Raymond’s iPhone SIM 1|-|ok
+sensor.raymonds_iphone_sim_2|Deez Raymond’s iPhone SIM 2|-|ok
+sensor.raymonds_iphone_geocoded_location|Deez Raymond’s iPhone Geocoded Location|-|ok
+sensor.raymonds_iphone_last_update_trigger|Deez Raymond’s iPhone Last Update Trigger|-|ok
+sensor.raymonds_iphone_app_version|Deez Raymond’s iPhone App Version|-|ok
+sensor.raymonds_iphone_location_permission|Deez Raymond’s iPhone Location permission|-|ok
+sensor.raymonds_iphone_audio_output|Deez Raymond’s iPhone Audio Output|-|ok
+sensor.raymonds_iphone_pressure|Deez Raymond’s iPhone Pressure|-|ok
+sensor.raymonds_iphone_steps|Deez Raymond’s iPhone Steps|-|ok
+sensor.raymonds_iphone_average_active_pace|Deez Raymond’s iPhone Average Active Pace|-|ok
+sensor.raymonds_iphone_kiosk_brightness|Deez Raymond’s iPhone Kiosk Brightness|-|unavailable
+sensor.raymonds_iphone_kiosk_volume|Deez Raymond’s iPhone Kiosk Volume|-|unavailable
+sensor.deez_camera_stream|Deez Camera Stream|-|unavailable
+device_tracker.casaray_ipad|CasaRay iPad|-|unknown
+notify.casaray_ipad|CasaRay iPad|-|ok
+binary_sensor.raymonds_ipad_kiosk_mode|Raymond’s iPad Kiosk Mode|-|ok
+binary_sensor.raymonds_ipad_camera_motion|Raymond’s iPad Camera Motion|-|unavailable
+device_tracker.raymonds_ipad|Raymond’s iPad|-|ok
+notify.raymonds_ipad|Raymond’s iPad|-|unknown
+sensor.raymonds_ipad_battery_level|Raymond’s iPad Battery Level|-|ok
+sensor.raymonds_ipad_geocoded_location|Raymond’s iPad Geocoded Location|-|ok
+sensor.raymonds_ipad_last_update_trigger|Raymond’s iPad Last Update Trigger|-|ok
+sensor.raymonds_ipad_storage|Raymond’s iPad Storage|-|ok
+sensor.raymonds_ipad_battery_state|Raymond’s iPad Battery State|-|ok
+sensor.raymonds_ipad_app_version|Raymond’s iPad App Version|-|ok
+sensor.raymonds_ipad_ssid|Raymond’s iPad SSID|-|ok
+sensor.raymonds_ipad_location_permission|Raymond’s iPad Location permission|-|ok
+sensor.raymonds_ipad_audio_output|Raymond’s iPad Audio Output|-|ok
+sensor.raymonds_ipad_bssid|Raymond’s iPad BSSID|-|ok
+sensor.raymonds_ipad_kiosk_brightness|Raymond’s iPad Kiosk Brightness|-|ok
+sensor.raymonds_ipad_kiosk_volume|Raymond’s iPad Kiosk Volume|-|ok
+sensor.raymonds_ipad_connection_type|Raymond’s iPad Connection Type|-|ok
+sensor.raymonds_ipad_camera_stream|Raymond’s iPad Camera Stream|-|unavailable
+binary_sensor.ais_iphone_kiosk_mode|Ai’s iPhone Kiosk Mode|-|ok
+binary_sensor.ais_iphone_camera_motion|Ai’s iPhone Camera Motion|-|ok
+device_tracker.ais_iphone|Ai’s iPhone|-|ok
+notify.ais_iphone|Ai’s iPhone|-|unknown
+sensor.ais_iphone_bssid|Ai’s iPhone BSSID|-|unavailable
+sensor.ais_iphone_connection_type|Ai’s iPhone Connection Type|-|unavailable
+sensor.ais_iphone_storage|Ai’s iPhone Storage|-|unavailable
+sensor.ais_iphone_ssid|Ai’s iPhone SSID|-|unavailable
+sensor.ais_iphone_battery_level|Ai’s iPhone Battery Level|-|ok
+sensor.ais_iphone_battery_state|Ai’s iPhone Battery State|-|ok
+sensor.ais_iphone_sim_1|Ai’s iPhone SIM 1|-|unavailable
+sensor.ais_iphone_sim_2|Ai’s iPhone SIM 2|-|unavailable
+sensor.ais_iphone_geocoded_location|Ai’s iPhone Geocoded Location|-|unavailable
+sensor.ais_iphone_last_update_trigger|Ai’s iPhone Last Update Trigger|-|unavailable
+sensor.ais_iphone_app_version|Ai’s iPhone App Version|-|ok
+sensor.ais_iphone_location_permission|Ai’s iPhone Location permission|-|ok
+sensor.ais_iphone_audio_output|Ai’s iPhone Audio Output|-|unavailable
+sensor.ais_iphone_kiosk_brightness|Ai’s iPhone Kiosk Brightness|-|unavailable
+sensor.ais_iphone_kiosk_volume|Ai’s iPhone Kiosk Volume|-|unavailable
+sensor.ais_iphone_camera_stream|Ai’s iPhone Camera Stream|-|unavailable
+device_tracker.vine_s_phone|Vinh’s phone|-|ok
+notify.vine_s_phone|Vinh’s phone|-|unknown
+sensor.vine_s_phone_battery_level|Vinh’s phone Battery level|-|ok
+sensor.vine_s_phone_battery_state|Vinh’s phone Battery state|-|ok
+sensor.vine_s_phone_charger_type|Vinh’s phone Charger type|-|unknown
+binary_sensor.deez_kiosk_mode|Deez Kiosk Mode|-|ok
+binary_sensor.deez_camera_motion_2|Deez Camera Motion|-|unavailable
+device_tracker.deez|Deez|-|ok
+notify.deez|Deez|-|unknown
+sensor.deez_battery_level|Deez Battery Level|-|ok
+sensor.deez_sim_1|Deez SIM 1|-|ok
+sensor.deez_sim_2|Deez SIM 2|-|ok
+sensor.deez_last_update_trigger|Deez Last Update Trigger|-|ok
+sensor.deez_app_version|Deez App Version|-|ok
+sensor.deez_location_permission|Deez Location permission|-|ok
+sensor.deez_audio_output|Deez Audio Output|-|ok
+sensor.deez_kiosk_brightness|Deez Kiosk Brightness|-|unavailable
+sensor.deez_kiosk_volume|Deez Kiosk Volume|-|unavailable
+sensor.deez_storage|Deez Storage|-|ok
+sensor.deez_ssid|Deez SSID|-|ok
+sensor.deez_bssid|Deez BSSID|-|ok
+sensor.deez_battery_state|Deez Battery State|-|ok
+sensor.deez_connection_type|Deez Connection Type|-|ok
+sensor.deez_geocoded_location|Deez Geocoded Location|-|ok
+sensor.deez_camera_stream_2|Deez Camera Stream|-|unavailable
+tts.google_translate_en_com|Google Translate en com|-|unknown
+update.liquid_glass_by_studio_prisma_update|Liquid Glass by Studio Prisma Update|-|ok
+update.card_mod_studio_update|Card-Mod Studio Update|-|ok
+update.card_mod_update|card-mod Update|-|ok
+update.button_card_update|button-card Update|-|ok
+update.solar_panel_visualizer_update|Solar Panel Visualizer Update|-|ok
+update.codex_update|Codex Update|-|ok
+update.hp_printers_integration_update|HP Printers Integration Update|-|ok
+update.watchman_update|Watchman Update|-|ok
+update.blitzortung_lightning_card_update|Blitzortung Lightning Card Update|-|ok
+update.platinum_weather_card_plus_charts_update|Platinum Weather Card Plus Charts Update|-|ok
+update.layout_card_update|layout-card Update|-|ok
+update.power_flow_card_plus_update|Power Flow Card Plus Update|-|ok
+update.metrology_metro_fluent_windows_themes_by_mmak_es_update|Metrology - Metro + Fluent + Windows Themes - by mmak.es Update|-|ok
+update.fronius_solarweb_update|Fronius_Solarweb Update|-|ok
+update.swipe_card_update|Swipe Card Update|-|ok
+update.esphome_designer_update|ESPHome Designer Update|-|ok
+update.ios_light_mode_update|iOS Light Mode Update|-|ok
+update.tapo_controller_update|Tapo Controller Update|-|ok
+update.glass_dynamic_dashboard_update|Glass Dynamic Dashboard Update|-|ok
+update.smart_m_air_mitsubishi_wf_rac_update|Smart M-Air (Mitsubishi WF-RAC) Update|-|ok
+update.auto_entities_update|auto-entities Update|-|ok
+update.ios_dark_mode_theme_update|iOS Dark Mode Theme Update|-|ok
+update.miele_integration_update|Miele integration Update|-|ok
+update.your_ha_digital_twin_floor3d_card_update|Your HA Digital Twin floor3d-card Update|-|ok
+update.frosted_glass_theme_update|Frosted Glass Theme Update|-|ok
+update.weather_alerts_card_update|Weather Alerts Card Update|-|ok
+update.miele_update|Miele Update|-|ok
+update.your_name_update|Your Name. Update|-|ok
+update.tapo_cameras_control_update|Tapo: Cameras Control Update|-|ok
+update.apexcharts_card_update|apexcharts-card Update|-|ok
+update.stack_in_card_update|Stack In Card Update|-|ok
+update.three_state_switch_card_update|Three State Switch Card Update|-|ok
+update.advanced_history_update|Advanced History Update|-|ok
+update.bubble_card_update|Bubble Card Update|-|ok
+update.browser_mod_update|browser_mod Update|-|ok
+update.weather_card_update|Weather Card Update|-|ok
+update.adaptive_lighting_update|Adaptive Lighting Update|-|ok
+update.webrtc_camera_update|WebRTC Camera Update|-|ok
+update.alarmo_update|Alarmo Update|-|ok
+update.hacs_update|HACS Update|-|ok
+update.mushroom_update|Mushroom Update|-|ok
+update.powerpal_update|Powerpal Update|-|ok
+remote.living_room_tv_samsung_q9_series_65|[TV] Samsung Q9 Series (65)|Living Room|ok
+counter.water_meter_pulses|    Water Meter Pulses|-|ok
+counter.gas_meter_pulses|    Gas Meter Pulses|-|ok
+remote.55_qled_4k_ai_qa55q7faawxxy|55&quot; QLED 4k AI (QA55Q7FAAWXXY)|Parents Room|ok
+media_player.vlc_telnet|VLC-TELNET|-|ok
+media_player.living_room_tv_samsung_q9_series_65|[TV] Samsung Q9 Series (65)|Living Room|ok
+media_player.55_qled_4k_ai_qa55q7faawxxy|55&quot; QLED 4k AI (QA55Q7FAAWXXY)|Parents Room|ok
+binary_sensor.living_room_living_room_motion|Dining Room Motion Sensor Motion|Dining|ok
+binary_sensor.living_room_living_hue_hue_sensor_motion|Living Room Motion Sensor Motion|Living Room|ok
+binary_sensor.hue_bridge_alexa_music|Hue Bridge Entertainment area Alexa Music|Network|ok
+binary_sensor.hue_bridge_music_area|Hue Bridge Entertainment area Music area|Network|ok
+binary_sensor.sensor_group_motion|Sensor group Motion|Dining|ok
+binary_sensor.living_room_living_room_motion_2|Living room Motion|Living Room|ok
+event.bedroom_bedlightswitch_button_3|Ray Bedroom Switch Button 3|Ray Bedroom|ok
+event.living_room_livingroomswitch_button_2|Living Room Switch Button 2|Living Room|unknown
+event.living_room_livingroomswitch_button_3|Living Room Switch Button 3|Living Room|unknown
+event.bedroom_bedlightswitch_button_2|Ray Bedroom Switch Button 2|Ray Bedroom|ok
+event.living_room_livingroomswitch_button_1|Living Room Switch Button 1|Living Room|unknown
+event.living_room_livingroomswitch_button_4|Living Room Switch Button 4|Living Room|unknown
+event.bedroom_bedlightswitch_button_1|Ray Bedroom Switch Button 1|Ray Bedroom|ok
+event.bedroom_bedlightswitch_button_4|Ray Bedroom Switch Button 4|Ray Bedroom|ok
+light.living_room_hue_ambiance_spot_4|Living Room Outter Right|Living Room|unavailable
+light.dining_dining_2|Dining Light Right|Dining|unavailable
+light.bedroom_nightlight|NightLight|Ray Bedroom|ok
+light.living_room_hue_ambiance_spot_1|Living Room Inner Left|Living Room|unavailable
+light.living_room_hue_ambiance_spot_3|Living Room Outter Left|Living Room|unavailable
+light.dining_dining_1|Dining Light Left|Dining|unavailable
+light.living_room_hue_ambiance_spot_2|Living Room Inner Right|Living Room|unavailable
+light.dining|Dining|Dining|ok
+light.dining_dining|Dining|Dining|ok
+light.living_room|Living room|Living Room|ok
+light.living_room_living_room|Living room|Living Room|ok
+light.bedroom_bedroom|Bedroom|Ray Bedroom|ok
+scene.bedroom_bedroom_silverstone|Bedroom Silverstone|Ray Bedroom|unknown
+scene.dining_dining_relax|Dining Relax|Dining|unknown
+scene.bedroom_bedroom_soho|Bedroom Soho|Ray Bedroom|ok
+scene.bedroom_bedroom_suzuka|Bedroom Suzuka|Ray Bedroom|unknown
+scene.bedroom_bedroom_baby_s_breath|Bedroom Baby's breath|Ray Bedroom|ok
+scene.living_room_living_room_dimmed|Living room Dimmed|Living Room|unknown
+scene.living_room_living_room_bright|Living room Bright|Living Room|ok
+scene.bedroom_bedroom_read|Bedroom Read|Ray Bedroom|ok
+scene.bedroom_bedroom_starlight|Bedroom Starlight|Ray Bedroom|unknown
+scene.living_room_living_room_energize|Living room Energize|Living Room|unknown
+scene.living_room_living_room_midwinter|Living room Midwinter|Living Room|unknown
+scene.bedroom_bedroom_nightlight|Bedroom Nightlight|Ray Bedroom|ok
+scene.bedroom_bedroom_blossom|Bedroom Blossom|Ray Bedroom|ok
+scene.living_room_living_room_nightlight|Living room Nightlight|Living Room|unknown
+scene.dining_dining_energize|Dining Energize|Dining|unknown
+scene.bedroom_bedroom_amber_bloom|Bedroom Amber bloom|Ray Bedroom|ok
+scene.bedroom_bedroom_vapor_wave|Bedroom Vapor wave|Ray Bedroom|ok
+scene.living_room_living_room_concentrate|Living room Concentrate|Living Room|unknown
+scene.bedroom_bedroom_concentrate|Bedroom Concentrate|Ray Bedroom|ok
+scene.living_room_living_room_read|Living room Read|Living Room|unknown
+scene.bedroom_bedroom_nighttime|Bedroom Nighttime|Ray Bedroom|ok
+scene.dining_dining_midwinter|Dining Midwinter|Dining|unknown
+scene.bedroom_bedroom_dreamy_dusk|Bedroom Dreamy dusk|Ray Bedroom|ok
+scene.dining_dining_concentrate|Dining Concentrate|Dining|unknown
+scene.dining_dining_nightlight|Dining Nightlight|Dining|unknown
+scene.dining_dining_read|Dining Read|Dining|unknown
+scene.living_room_living_room_relax|Living room Relax|Living Room|unknown
+scene.bedroom_bedroom_pensive|Bedroom Pensive|Ray Bedroom|ok
+scene.bedroom_bedroom_nature_s_colors|Bedroom Nature's colors|Ray Bedroom|ok
+sensor.living_room_living_room_temperature|Dining Room Motion Sensor Temperature|Dining|ok
+sensor.living_room_living_hue_hue_sensor_temperature|Living Room Motion Sensor Temperature|Living Room|ok
+sensor.living_room_living_hue_hue_sensor_illuminance|Living Room Motion Sensor Illuminance|Living Room|ok
+sensor.living_room_living_room_illuminance|Dining Room Motion Sensor Illuminance|Dining|ok
+sensor.living_room_living_room_battery|Dining Room Motion Sensor Battery|Dining|ok
+sensor.living_room_livingroomswitch_battery|Living Room Switch Battery|Living Room|ok
+sensor.living_room_living_hue_hue_sensor_battery|Living Room Motion Sensor Battery|Living Room|ok
+sensor.bedroom_bedlightswitch_battery|Ray Bedroom Switch Battery|Ray Bedroom|ok
+sensor.living_room_living_room_illuminance_2|Living room Illuminance|Living Room|ok
+sensor.sensor_group_illuminance|Sensor group Illuminance|Dining|ok
+switch.living_room_living_room_motion_sensor_enabled|Dining Room Motion Sensor Motion sensor enabled|Dining|ok
+switch.living_room_living_hue_hue_sensor_motion_sensor_enabled|Living Room Motion Sensor Motion sensor enabled|Living Room|ok
+switch.living_room_living_hue_hue_sensor_light_sensor_enabled|Living Room Motion Sensor Light sensor enabled|Living Room|ok
+switch.living_room_living_room_light_sensor_enabled|Dining Room Motion Sensor Light sensor enabled|Dining|ok
+switch.hue_bridge_automation_nightlight_on_nightlight_off|Hue Bridge Automation: Nightlight On Nightlight Off|Network|ok
+switch.hue_bridge_automation_coming_home|Hue Bridge Automation: Coming home|Network|ok
+switch.hue_bridge_automation_leaving_home|Hue Bridge Automation: Leaving home|Network|ok
+weather.forecast_home|Forecast Home|Energy|ok
+camera.front_door_live_view|Front Door Live view|Living Room|ok
+event.front_door_ding|Front Door Ding|Living Room|ok
+event.front_door_motion|Front Door Motion|Living Room|ok
+number.ringchime_volume|RingChime Volume|Network|ok
+number.front_door_volume|Front Door Volume|Living Room|ok
+sensor.front_door_battery|Front Door Battery|Living Room|ok
+sensor.front_door_last_activity|Front Door Last activity|Living Room|ok
+siren.ringchime_siren|RingChime Siren|Network|unknown
+switch.front_door_in_home_chime|Front Door In-home chime|Living Room|ok
+switch.front_door_motion_detection|Front Door Motion detection|Living Room|ok
+binary_sensor.eero_wan_status|eero Gateway WAN status|Network|ok
+sensor.eero_external_ip|eero Gateway External IP|Network|ok
+ai_task.claude_ai_task|Claude AI Task|-|unknown
+conversation.claude_conversation|Claude conversation|-|ok
+calendar.calender|Calender|-|ok
+binary_sensor.bedroom_motion_sensor_connectivity|Parents Room Motion Sensor Connectivity|Parents Room|ok
+binary_sensor.bedroom_motion_sensor_main_sensor|Parents Room Motion Sensor Main sensor|Parents Room|ok
+binary_sensor.bedroom_motion_sensor_motion|Parents Room Motion Sensor Motion|Parents Room|ok
+binary_sensor.bedroom_parents_room_ac_room_occupied|Parents Room AC Room occupied|Parents Room|ok
+binary_sensor.bedroom_parents_room_ac_filter_clean_required|Parents Room AC Filter clean required|Parents Room|ok
+button.bedroom_parents_room_ac_reset_filter|Parents Room AC Reset filter|Parents Room|unknown
+climate.bedroom_parents_room_ac|Parents Room AC|Parents Room|ok
+sensor.bedroom_motion_sensor_battery_voltage|Parents Room Motion Sensor Battery voltage|Parents Room|ok
+sensor.bedroom_motion_sensor_humidity|Parents Room Motion Sensor Humidity|Parents Room|ok
+sensor.bedroom_motion_sensor_temperature|Parents Room Motion Sensor Temperature|Parents Room|ok
+sensor.bedroom_parents_room_ac_timer_end_time|Parents Room AC Timer end time|Parents Room|ok
+sensor.bedroom_parents_room_ac_filter_last_reset|Parents Room AC Filter last reset|Parents Room|ok
+switch.bedroom_parents_room_ac_timer|Parents Room AC Timer|Parents Room|ok
+switch.bedroom_parents_room_ac_climate_react|Parents Room AC Climate React|Parents Room|ok
+update.bedroom_parents_room_ac_firmware|Parents Room AC Firmware|Parents Room|ok
+media_player.q70f8036|55" QLED 4k AI|Ray Bedroom|ok
+sensor.cpu_speed|CPU Speed|Network|unknown
+binary_sensor.matter_zigbee_hub_problem|Matter ZigBee Hub Problem|-|ok
+button.smart_pet_feeder_restart|Smart Pet Feeder Restart|Dining|unknown
+light.kogan_tv|Kogan Tv|Guest Room|unavailable
+light.smart_pet_feeder_indicator_light|Smart Pet Feeder Indicator light|Dining|ok
+number.smart_pet_feeder_volume|Smart Pet Feeder Volume|Dining|ok
+select.genio_power_board_with_usb_livingroom_power_on_behavior|Genio Power Board with USB-LivingRoom Power-on behavior|Living Room|ok
+select.smart_pet_feeder_night_vision|Smart Pet Feeder Night vision|Dining|ok
+select.smart_pet_feeder_motion_detection_sensitivity|Smart Pet Feeder Motion detection sensitivity|Dining|ok
+switch.genio_power_board_with_usb_livingroom_child_lock|Genio Power Board with USB-LivingRoom Child lock|Living Room|ok
+switch.genio_power_board_with_usb_livingroom_socket_1|Genio Power Board with USB-LivingRoom Socket 1|Living Room|ok
+switch.genio_power_board_with_usb_livingroom_socket_2|Genio Power Board with USB-LivingRoom Socket 2|Living Room|ok
+switch.genio_power_board_with_usb_livingroom_socket_3|Genio Power Board with USB-LivingRoom Socket 3|Living Room|ok
+switch.genio_power_board_with_usb_livingroom_socket_4|Genio Power Board with USB-LivingRoom Socket 4|Living Room|ok
+switch.genio_power_board_with_usb_livingroom_socket_5|Genio Power Board with USB-LivingRoom Socket 5|Living Room|ok
+switch.master_bedroom_power_point_socket_1|Master bedroom power point Socket 1|Parents Room|ok
+switch.master_bedroom_power_point_socket_2|Master bedroom power point Socket 2|Parents Room|ok
+switch.master_bedroom_power_point_socket_3|Master bedroom power point Socket 3|Parents Room|ok
+switch.master_bedroom_power_point_socket_4|Master bedroom power point Socket 4|Parents Room|ok
+switch.master_bedroom_power_point_socket_5|Master bedroom power point Socket 5|Parents Room|ok
+switch.dinning_light_switch_1|Dinning light Switch 1|Dining|ok
+switch.bedroomlight_switch_1|BedRoomLight Switch 1|Ray Bedroom|ok
+switch.mainroomlight_switch_1|MainRoomLight Switch 1|Parents Room|ok
+switch.smart_pet_feeder_privacy_mode|Smart Pet Feeder Privacy mode|Dining|ok
+switch.smart_pet_feeder_time_watermark|Smart Pet Feeder Time watermark|Dining|ok
+switch.smart_pet_feeder_motion_alarm|Smart Pet Feeder Motion alarm|Dining|ok
+media_player.tv_samsung_q9_series_65|[TV] Samsung Q9 Series (65)|Living Room|unavailable
+tts.openai_tts|OpenAI TTS|-|ok
+todo.shopping_list|Shopping List|-|ok
+ai_task.openai_ai_task|OpenAI AI Task|-|ok
+conversation.openai_conversation|OpenAI Conversation|-|ok
+stt.openai_stt|OpenAI STT|-|unknown
+tts.openai_tts_2|OpenAI TTS|-|unknown
+ai_task.openai_ai_task_2|OpenAI AI Task|-|ok
+conversation.openai_conversation_2|OpenAI Conversation|-|unknown
+stt.openai_stt_2|OpenAI STT|-|unknown
+sensor.powerpal_gateway_powerpal_power|Powerpal Gateway Powerpal Power|Energy|ok
+sensor.powerpal_gateway_powerpal_total_energy|Powerpal Gateway Powerpal Total Energy|Energy|ok
+sensor.powerpal_gateway_powerpal_daily_energy|Powerpal Gateway Powerpal Daily Energy|Energy|ok
+sensor.powerpal_gateway_powerpal_battery|Powerpal Gateway Powerpal Battery|Energy|ok
+camera.smart_pet_feeder|Smart Pet Feeder|Dining|ok
+binary_sensor.k_coffee_p100_cloud_connection|K/Coffee P100 Cloud connection|Kitchen|ok
+number.k_coffee_p100_turn_off_in|K/Coffee P100 Turn off in|Kitchen|ok
+sensor.k_coffee_p100_signal_level|K/Coffee P100 Signal level|Kitchen|ok
+sensor.k_coffee_p100_auto_off_at|K/Coffee P100 Auto-off at|Kitchen|unknown
+switch.k_coffee_p100|K/Coffee P100|Kitchen|ok
+switch.k_coffee_p100_auto_off_enabled|K/Coffee P100 Auto-off enabled|Kitchen|ok
+switch.k_coffee_p100_auto_update_enabled|K/Coffee P100 Auto-update enabled|Kitchen|ok
+switch.k_coffee_p100_led|K/Coffee P100 LED|Kitchen|ok
+sensor.electricity_maps_co2_intensity|Electricity Maps CO2 intensity|Energy|ok
+sensor.electricity_maps_grid_fossil_fuel_percentage|Electricity Maps Grid fossil fuel percentage|Energy|ok
+binary_sensor.k_top_p100_cloud_connection|K/Top P100 Cloud connection|Kitchen|ok
+number.k_top_p100_turn_off_in|K/Top P100 Turn off in|Kitchen|ok
+sensor.k_top_p100_signal_level|K/Top P100 Signal level|Kitchen|ok
+sensor.k_top_p100_auto_off_at|K/Top P100 Auto-off at|Kitchen|unknown
+switch.k_top_p100|K/Top P100|Kitchen|ok
+switch.k_top_p100_auto_off_enabled|K/Top P100 Auto-off enabled|Kitchen|ok
+switch.k_top_p100_auto_update_enabled|K/Top P100 Auto-update enabled|Kitchen|ok
+switch.k_top_p100_led|K/Top P100 LED|Kitchen|ok
+binary_sensor.k_bot_p100_cloud_connection|K/Bot P100 Cloud connection|Kitchen|ok
+number.k_bot_p100_turn_off_in|K/Bot P100 Turn off in|Kitchen|ok
+sensor.k_bot_p100_signal_level|K/Bot P100 Signal level|Kitchen|ok
+sensor.k_bot_p100_auto_off_at|K/Bot P100 Auto-off at|Kitchen|unknown
+switch.k_bot_p100|K/Bot P100|Kitchen|ok
+switch.k_bot_p100_auto_off_enabled|K/Bot P100 Auto-off enabled|Kitchen|ok
+switch.k_bot_p100_auto_update_enabled|K/Bot P100 Auto-update enabled|Kitchen|ok
+switch.k_bot_p100_led|K/Bot P100 LED|Kitchen|ok
+binary_sensor.g_printer_p100_cloud_connection|G/Printer P100 Cloud connection|Guest Room|ok
+number.g_printer_p100_turn_off_in|G/Printer P100 Turn off in|Guest Room|ok
+sensor.g_printer_p100_signal_level|G/Printer P100 Signal level|Guest Room|ok
+sensor.g_printer_p100_auto_off_at|G/Printer P100 Auto-off at|Guest Room|unknown
+switch.g_printer_p100|G/Printer P100|Guest Room|ok
+switch.g_printer_p100_auto_off_enabled|G/Printer P100 Auto-off enabled|Guest Room|ok
+switch.g_printer_p100_auto_update_enabled|G/Printer P100 Auto-update enabled|Guest Room|ok
+switch.g_printer_p100_led|G/Printer P100 LED|Guest Room|ok
+binary_sensor.g_monitor_freezer_p110m_cloud_connection|G/Monitor Freezer P110M Cloud connection|Garage|ok
+binary_sensor.g_monitor_freezer_p110m_overloaded|G/Monitor Freezer P110M Overloaded|Garage|ok
+number.g_monitor_freezer_p110m_turn_off_in|G/Monitor Freezer P110M Turn off in|Garage|ok
+number.g_monitor_freezer_p110m_power_protection|G/Monitor Freezer P110M Power protection|Garage|ok
+sensor.g_monitor_freezer_p110m_signal_level|G/Monitor Freezer P110M Signal level|Garage|ok
+sensor.g_monitor_freezer_p110m_auto_off_at|G/Monitor Freezer P110M Auto-off at|Garage|unknown
+sensor.g_monitor_freezer_p110m_current_consumption|G/Monitor Freezer P110M Current consumption|Garage|ok
+sensor.g_monitor_freezer_p110m_today_s_consumption|G/Monitor Freezer P110M Today's consumption|Garage|ok
+sensor.g_monitor_freezer_p110m_this_month_s_consumption|G/Monitor Freezer P110M This month's consumption|Garage|ok
+sensor.g_monitor_freezer_p110m_voltage|G/Monitor Freezer P110M Voltage|Garage|ok
+sensor.g_monitor_freezer_p110m_current|G/Monitor Freezer P110M Current|Garage|ok
+switch.g_monitor_freezer_p110m|G/Monitor Freezer P110M|Garage|ok
+switch.g_monitor_freezer_p110m_auto_off_enabled|G/Monitor Freezer P110M Auto-off enabled|Garage|ok
+switch.g_monitor_freezer_p110m_auto_update_enabled|G/Monitor Freezer P110M Auto-update enabled|Garage|ok
+switch.g_monitor_freezer_p110m_led|G/Monitor Freezer P110M LED|Garage|ok
+binary_sensor.r_energy_monitor_p110m_cloud_connection|R/Energy Monitor P110M Cloud connection|Ray Bedroom|ok
+binary_sensor.r_energy_monitor_p110m_overloaded|R/Energy Monitor P110M Overloaded|Ray Bedroom|ok
+number.r_energy_monitor_p110m_turn_off_in|R/Energy Monitor P110M Turn off in|Ray Bedroom|ok
+number.r_energy_monitor_p110m_power_protection|R/Energy Monitor P110M Power protection|Ray Bedroom|ok
+sensor.r_energy_monitor_p110m_signal_level|R/Energy Monitor P110M Signal level|Ray Bedroom|ok
+sensor.r_energy_monitor_p110m_auto_off_at|R/Energy Monitor P110M Auto-off at|Ray Bedroom|unknown
+sensor.r_energy_monitor_p110m_current_consumption|R/Energy Monitor P110M Current consumption|Ray Bedroom|ok
+sensor.r_energy_monitor_p110m_today_s_consumption|R/Energy Monitor P110M Today's consumption|Ray Bedroom|ok
+sensor.r_energy_monitor_p110m_this_month_s_consumption|R/Energy Monitor P110M This month's consumption|Ray Bedroom|ok
+sensor.r_energy_monitor_p110m_voltage|R/Energy Monitor P110M Voltage|Ray Bedroom|ok
+sensor.r_energy_monitor_p110m_current|R/Energy Monitor P110M Current|Ray Bedroom|ok
+switch.r_energy_monitor_p110m|R/Energy Monitor P110M|Ray Bedroom|ok
+switch.r_energy_monitor_p110m_auto_off_enabled|R/Energy Monitor P110M Auto-off enabled|Ray Bedroom|ok
+switch.r_energy_monitor_p110m_auto_update_enabled|R/Energy Monitor P110M Auto-update enabled|Ray Bedroom|ok
+switch.r_energy_monitor_p110m_led|R/Energy Monitor P110M LED|Ray Bedroom|ok
+binary_sensor.network_tp_linkhub_h100_cloud_connection|TP-LinkHub H100 Cloud connection|Network|unavailable
+binary_sensor.network_tp_linkhub_h100_overheated|TP-LinkHub H100 Overheated|Network|unavailable
+binary_sensor.b_contact_sensor_cloud_connection|B/Contact Sensor Cloud connection|Backyard|unavailable
+binary_sensor.b_contact_sensor_door|B/Contact Sensor Door|Backyard|unavailable
+binary_sensor.f_contact_sensor_cloud_connection|F/Contact Sensor Cloud connection|Living Room|unavailable
+binary_sensor.f_contact_sensor_door|F/Contact Sensor Door|Living Room|unavailable
+binary_sensor.m_contact_sensor_cloud_connection|M/Contact Sensor Cloud connection|Parents Room|unavailable
+binary_sensor.m_contact_sensor_door|M/Contact Sensor Door|Parents Room|unavailable
+button.network_tp_linkhub_h100_pair_new_device|TP-LinkHub H100 Pair new device|Network|unavailable
+select.network_tp_linkhub_h100_alarm_sound|TP-LinkHub H100 Alarm sound|Network|unavailable
+select.network_tp_linkhub_h100_alarm_volume|TP-LinkHub H100 Alarm volume|Network|unavailable
+sensor.network_tp_linkhub_h100_signal_level|TP-LinkHub H100 Signal level|Network|unavailable
+sensor.network_tp_linkhub_h100_alarm_source|TP-LinkHub H100 Alarm source|Network|unavailable
+sensor.b_contact_sensor_signal_level|B/Contact Sensor Signal level|Backyard|unavailable
+sensor.f_contact_sensor_signal_level|F/Contact Sensor Signal level|Living Room|unavailable
+sensor.m_contact_sensor_signal_level|M/Contact Sensor Signal level|Parents Room|unavailable
+siren.network_tp_linkhub_h100|TP-LinkHub H100|Network|unavailable
+switch.network_tp_linkhub_h100_auto_update_enabled|TP-LinkHub H100 Auto-update enabled|Network|unavailable
+switch.network_tp_linkhub_h100_led|TP-LinkHub H100 LED|Network|unavailable
+binary_sensor.emergency_button_dad_cloud_connection|Emergency Button Dad Cloud connection|Parents Room|ok
+binary_sensor.emergency_button_mum_cloud_connection|Emergency Button Mum Cloud connection|Parents Room|ok
+binary_sensor.k_smart_button_cloud_connection|K/Smart Button Cloud connection|Kitchen|ok
+binary_sensor.k_motion_sensor_cloud_connection|K/Motion Sensor Cloud connection|Kitchen|ok
+binary_sensor.k_motion_sensor_motion|K/Motion Sensor Motion|Kitchen|ok
+button.tapo_h200_pair_new_device|Tapo H200 Pair new device|Network|unknown
+select.tapo_h200_alarm_sound|Tapo H200 Alarm sound|Network|ok
+sensor.tapo_c420_south_wall_battery|Tapo C420 - South Wall Battery|Network|ok
+sensor.tapo_camera_bcca_battery|Tapo C420 - East Wall Battery|Network|ok
+sensor.emergency_button_dad_signal_level|Emergency Button Dad Signal level|Parents Room|ok
+sensor.emergency_button_mum_signal_level|Emergency Button Mum Signal level|Parents Room|ok
+sensor.k_smart_button_signal_level|K/Smart Button Signal level|Kitchen|ok
+sensor.k_motion_sensor_signal_level|K/Motion Sensor Signal level|Kitchen|ok
+siren.tapo_h200|Tapo H200|Network|ok
+switch.tapo_h200_led|Tapo H200 LED|Network|ok
+switch.tapo_c420_south_wall_tapo_c420_south_wall|Tapo C420 - South Wall Tapo C420 - South Wall|Network|ok
+switch.tapo_c420_south_wall_led|Tapo C420 - South Wall LED|Network|ok
+switch.tapo_c420_south_wall_motion_detection|Tapo C420 - South Wall Motion detection|Network|ok
+switch.tapo_c420_south_wall_person_detection|Tapo C420 - South Wall Person detection|Network|ok
+switch.tapo_camera_bcca_tapo_camera_bcca|Tapo C420 - East Wall Tapo C420 East Wall|Network|ok
+switch.tapo_camera_bcca_led|Tapo C420 - East Wall LED|Network|ok
+switch.tapo_camera_bcca_motion_detection|Tapo C420 - East Wall Motion detection|Network|ok
+switch.tapo_camera_bcca_person_detection|Tapo C420 - East Wall Person detection|Network|ok
+sensor.energy_production_today|Solar production forecast Estimated energy production - today|Energy|ok
+sensor.energy_production_today_remaining|Solar production forecast Estimated energy production - remaining today|Energy|ok
+sensor.energy_production_tomorrow|Solar production forecast Estimated energy production - tomorrow|Energy|ok
+sensor.power_highest_peak_time_today|Solar production forecast Highest power peak time - today|Energy|ok
+sensor.power_highest_peak_time_tomorrow|Solar production forecast Highest power peak time - tomorrow|Energy|ok
+sensor.power_production_now|Solar production forecast Estimated power production - now|Energy|ok
+sensor.energy_current_hour|Solar production forecast Estimated energy production - this hour|Energy|ok
+sensor.energy_next_hour|Solar production forecast Estimated energy production - next hour|Energy|ok
+binary_sensor.lg_fridge_door|LG-Fridge Door|Kitchen|ok
+event.lg_fridge_notification|LG-Fridge Notification|Kitchen|ok
+number.lg_fridge_fridge_temperature|LG-Fridge fridge temperature|Kitchen|ok
+number.lg_fridge_freezer_temperature|LG-Fridge freezer temperature|Kitchen|ok
+switch.lg_fridge_express_mode|LG-Fridge Express mode|Kitchen|ok
+binary_sensor.lph_se_dcd9_pump|LPH-SE DCD9 Pump|Ray Bedroom|unavailable
+number.lph_se_dcd9_plants_age|LPH-SE DCD9 Plants age|Ray Bedroom|unavailable
+select.lph_se_dcd9_light_brightness|LPH-SE DCD9 Light brightness|Ray Bedroom|unavailable
+select.lph_se_dcd9_light_mode|LPH-SE DCD9 Light mode|Ray Bedroom|unavailable
+switch.lph_se_dcd9_alarm_sound|LPH-SE DCD9 Alarm sound|Ray Bedroom|unavailable
+switch.lph_se_dcd9_power|LPH-SE DCD9 Power|Ray Bedroom|unavailable
+switch.lph_se_dcd9_pump_cycling|LPH-SE DCD9 Pump cycling|Ray Bedroom|unavailable
+time.lph_se_dcd9_light_off|LPH-SE DCD9 Light off|Ray Bedroom|unavailable
+time.lph_se_dcd9_light_on|LPH-SE DCD9 Light on|Ray Bedroom|unavailable
+automation.deploy_deez_dashboard_updates|Deploy Deez Dashboard Updates|-|ok
+automation.gas_meter_pulse_counter|Gas Meter Pulse Counter|-|ok
+automation.bills_reset_ytd_totals|Bills - Reset YTD Totals|-|ok
+binary_sensor.washing_machine_door|Washing machine Door|-|unavailable
+binary_sensor.washing_machine_info|Washing machine Info|-|unavailable
+binary_sensor.washing_machine_failure|Washing machine Failure|-|unavailable
+binary_sensor.washing_machine_remote_control|Washing machine Remote control|-|unavailable
+button.washing_machine_start|Washing machine Start|-|unavailable
+button.washing_machine_stop|Washing machine Stop|-|unavailable
+sensor.washing_machine_target_temperature|Washing machine Target temperature|-|unavailable
+sensor.washing_machine_status|Washing machine Status|-|unavailable
+sensor.washing_machine_program|Washing machine Program|-|unavailable
+sensor.washing_machine_program_type|Washing machine Program type|-|unavailable
+sensor.washing_machine_program_phase|Washing machine Program phase|-|unavailable
+sensor.washing_machine_spin_speed|Washing machine Spin speed|-|unavailable
+sensor.washing_machine_remaining_time|Washing machine Remaining time|-|unavailable
+sensor.washing_machine_finish_at|Washing machine Finish at|-|unavailable
+sensor.washing_machine_start_time|Washing machine Start time|-|unavailable
+sensor.washing_machine_start_at|Washing machine Start at|-|unavailable
+sensor.washing_machine_elapsed_time|Washing machine Elapsed time|-|unavailable
+sensor.washing_machine_started_at|Washing machine Started at|-|unavailable
+switch.washing_machine_power_on|Washing machine Power on|-|unavailable
+binary_sensor.living_room_ringring_motion|RingRing Motion|Living Room|ok
+binary_sensor.iphone_presence|iPhone Presence|-|ok
+binary_sensor.backyard_b_contact_sensor_door|B/Contact Sensor Door|Backyard|unavailable
+binary_sensor.master_bedroom_bedroom_hue_sensor_motion|Bedroom Hue Sensor Motion|Dining|ok
+binary_sensor.backyard_tapo_camera_motion|Tapo_Camera Motion|Backyard|unavailable
+binary_sensor.master_bedroom_m_contact_sensor_door|M/Contact Sensor Door|Parents Room|unavailable
+binary_sensor.front_door_f_contact_sensor_door|F/Contact Sensor Door|Living Room|unavailable
+binary_sensor.backyard_tapo_c200_5c35_motion|Tapo_C200_5C35 Motion|Backyard|unavailable
+binary_sensor.master_bedroom_living_hue_hue_sensor_motion|Living Hue Hue Sensor Motion|Living Room|ok
+binary_sensor.kitchen_k_motion_sensor_motion|K/Motion Sensor Motion|Kitchen|unavailable
+event.master_bedroom_emergency_button_dad_main|Emergency Button Dad main|-|unavailable
+event.master_bedroom_livingroomswitch_button4|LivingroomSwitch button4|-|unavailable
+event.master_bedroom_livingroomswitch_button2|LivingroomSwitch button2|-|unavailable
+event.master_bedroom_livingroomswitch_button3|LivingroomSwitch button3|-|unavailable
+event.master_bedroom_livingroomswitch_main|LivingroomSwitch main|-|unavailable
+event.living_room_ringring_main|RingRing main|Living Room|ok
+event.master_bedroom_bedlightswitch_button4|BedlightSwitch button4|-|unavailable
+event.master_bedroom_bedlightswitch_button2|BedlightSwitch button2|-|unavailable
+event.master_bedroom_bedlightswitch_button3|BedlightSwitch button3|-|unavailable
+event.master_bedroom_bedlightswitch_main|BedlightSwitch main|-|unavailable
+event.living_room_k_smart_button_main|K/Smart Button main|Kitchen|unavailable
+event.master_bedroom_emergency_button_mum_main|Emergency Button Mum main|-|unavailable
+fan.living_room_air_purifier|Air purifier|Living Room|ok
+light.master_bedroom_hue_ambiance_spot_3|Hue ambiance spot 3|Living Room|unavailable
+light.master_bedroom_nightlight|NightLight|Ray Bedroom|unavailable
+light.master_bedroom_hue_ambiance_spot_4|Hue ambiance spot 4|Living Room|unavailable
+light.master_bedroom_hue_ambiance_spot_1|Hue ambiance spot 1|Living Room|unavailable
+light.master_bedroom_corridor_1|Corridor 1|Dining|unavailable
+light.master_bedroom_hue_ambiance_spot_1_2|Hue ambiance spot 1|Living Room|unavailable
+light.master_bedroom_corridor_2|Corridor 2|Dining|unavailable
+media_player.master_bedroom_55_qled_4k_ai|55" QLED 4k AI|Parents Room|ok
+media_player.living_room_samsung_q9_series_65|Samsung Q9 Series (65)|Living Room|ok
+select.living_room_air_purifier_lamp|Air purifier Lamp|Living Room|ok
+sensor.master_bedroom_livingroomswitch_battery|LivingroomSwitch Battery|-|unavailable
+sensor.living_room_ringring_battery|RingRing Battery|Living Room|ok
+sensor.master_bedroom_light_sensor_55_qled_4k_ai_illuminance|Light Sensor - 55" QLED 4k AI Illuminance|Parents Room|ok
+sensor.master_bedroom_light_sensor_55_qled_4k_ai_brightness_intensity|Light Sensor - 55" QLED 4k AI Brightness intensity|Parents Room|ok
+sensor.living_room_air_purifier_air_quality|Air purifier Air quality|Living Room|ok
+sensor.living_room_air_purifier_pm10_health_concern|Air purifier PM10 health concern|Living Room|ok
+sensor.living_room_air_purifier_pm10|Air purifier PM10|Living Room|ok
+sensor.living_room_air_purifier_pm2_5|Air purifier PM2.5|Living Room|ok
+sensor.living_room_air_purifier_pm2_5_health_concern|Air purifier PM2.5 health concern|Living Room|ok
+sensor.living_room_air_purifier_odor_sensor|Air purifier Odor sensor|Living Room|ok
+sensor.living_room_air_purifier_pm1_health_concern|Air purifier PM1 health concern|Living Room|ok
+sensor.living_room_air_purifier_pm1|Air purifier PM1|Living Room|ok
+sensor.master_bedroom_bedlightswitch_battery|BedlightSwitch Battery|-|unavailable
+sensor.backyard_b_freezer_energymonitor_p110m_energy|B/Freezer/EnergyMonitor/P110M Energy|Backyard|unavailable
+sensor.backyard_b_freezer_energymonitor_p110m_energy_difference|B/Freezer/EnergyMonitor/P110M Energy difference|Backyard|unavailable
+sensor.living_room_tp_linkhub_alarm|TP-LinkHub Alarm|Network|unavailable
+sensor.master_bedroom_bedroom_hue_sensor_battery|Bedroom Hue Sensor Battery|Dining|ok
+sensor.master_bedroom_bedroom_hue_sensor_illuminance|Bedroom Hue Sensor Illuminance|Dining|ok
+sensor.master_bedroom_bedroom_hue_sensor_temperature|Bedroom Hue Sensor Temperature|Dining|ok
+sensor.backyard_tapo_camera_battery|Tapo_Camera Battery|Backyard|unavailable
+sensor.ray_room_r_laptop_energy_monitor_p110m_energy|R/Laptop/Energy Monitor/P110M Energy|Ray Bedroom|unavailable
+sensor.ray_room_r_laptop_energy_monitor_p110m_energy_difference|R/Laptop/Energy Monitor/P110M Energy difference|Ray Bedroom|unavailable
+sensor.master_bedroom_55_qled_4k_ai_energy|55" QLED 4k AI Energy|Parents Room|ok
+sensor.master_bedroom_55_qled_4k_ai_power|55" QLED 4k AI Power|Parents Room|ok
+sensor.master_bedroom_55_qled_4k_ai_energy_difference|55" QLED 4k AI Energy difference|Parents Room|ok
+sensor.master_bedroom_55_qled_4k_ai_power_energy|55" QLED 4k AI Power energy|Parents Room|ok
+sensor.master_bedroom_55_qled_4k_ai_energy_saved|55" QLED 4k AI Energy saved|Parents Room|ok
+sensor.master_bedroom_55_qled_4k_ai_tv_channel|55" QLED 4k AI TV channel|Parents Room|unknown
+sensor.master_bedroom_55_qled_4k_ai_tv_channel_name|55" QLED 4k AI TV channel name|Parents Room|ok
+sensor.master_bedroom_living_hue_hue_sensor_battery|Living Hue Hue Sensor Battery|Living Room|ok
+sensor.master_bedroom_living_hue_hue_sensor_illuminance|Living Hue Hue Sensor Illuminance|Living Room|ok
+sensor.master_bedroom_living_hue_hue_sensor_temperature|Living Hue Hue Sensor Temperature|Living Room|ok
+sensor.master_bedroom_sensibo_sky_plus_air_conditioner_mode|Sensibo Sky Plus Air conditioner mode|Parents Room|ok
+sensor.master_bedroom_sensibo_sky_plus_cooling_setpoint|Sensibo Sky Plus Cooling setpoint|Parents Room|ok
+sensor.living_room_samsung_q9_series_65_tv_channel|Samsung Q9 Series (65) TV channel|Living Room|unknown
+sensor.living_room_samsung_q9_series_65_tv_channel_name|Samsung Q9 Series (65) TV channel name|Living Room|ok
+switch.master_bedroom_light_sensor_55_qled_4k_ai|Light Sensor - 55" QLED 4k AI|Parents Room|ok
+switch.living_room_air_purifier|Air purifier|Living Room|ok
+switch.kitchen_k_coffee_p100|K/Coffee P100|Kitchen|unavailable
+switch.guest_room_g_printer_p100|G/Printer P100|Guest Room|unavailable
+switch.backyard_b_freezer_energymonitor_p110m|B/Freezer/EnergyMonitor/P110M|Backyard|unavailable
+switch.kitchen_k_bot_p100|K/Bot P100|Kitchen|unavailable
+switch.ray_room_r_laptop_energy_monitor_p110m|R/Laptop/Energy Monitor/P110M|Ray Bedroom|unavailable
+switch.kitchen_k_top_p100|K/Top P100|Kitchen|unavailable
+switch.master_bedroom_sensibo_sky_plus|Sensibo Sky Plus|Parents Room|ok
+camera.tapo_c200_stockroom_hd_stream_direct|Tapo C200 - Stockroom HD Stream (Direct)|Network|ok
+camera.network_tapo_c200_stockroom_hd_stream|Tapo C200 - Stockroom HD Stream|Network|ok
+camera.network_tapo_c200_stockroom_sd_stream|Tapo C200 - Stockroom SD Stream|Network|ok
+button.tapo_c200_stockroom_reboot|Tapo C200 - Stockroom Reboot|Network|unknown
+button.tapo_c200_stockroom_format_sd_card|Tapo C200 - Stockroom Format SD Card|Network|unknown
+button.tapo_c200_stockroom_manual_alarm_start|Tapo C200 - Stockroom Manual Alarm Start|Network|unknown
+button.tapo_c200_stockroom_manual_alarm_stop|Tapo C200 - Stockroom Manual Alarm Stop|Network|unknown
+button.tapo_c200_stockroom_sync_time|Tapo C200 - Stockroom Sync Time|Network|unknown
+button.tapo_c200_stockroom_calibrate|Tapo C200 - Stockroom Calibrate|Network|unknown
+button.tapo_c200_stockroom_move_up|Tapo C200 - Stockroom Move Up|Network|unknown
+button.tapo_c200_stockroom_move_down|Tapo C200 - Stockroom Move Down|Network|unknown
+button.tapo_c200_stockroom_move_right|Tapo C200 - Stockroom Move Right|Network|unknown
+button.tapo_c200_stockroom_move_left|Tapo C200 - Stockroom Move Left|Network|unknown
+number.tapo_c200_stockroom_movement_angle|Tapo C200 - Stockroom Movement Angle|Network|ok
+number.tapo_c200_stockroom_motion_detection_digital_sensitivity|Tapo C200 - Stockroom Motion Detection - Digital Sensitivity|Network|ok
+number.tapo_c200_stockroom_microphone_volume|Tapo C200 - Stockroom Microphone - Volume|Network|ok
+number.tapo_c200_stockroom_speaker_volume|Tapo C200 - Stockroom Speaker - Volume|Network|ok
+number.tapo_c200_stockroom_spotlight_intensity|Tapo C200 - Stockroom Spotlight Intensity|Network|ok
+select.tapo_c200_stockroom_timezone|Tapo C200 - Stockroom Timezone|Network|ok
+select.tapo_c200_stockroom_automatic_reboot_time|Tapo C200 - Stockroom Automatic Reboot - Time|Network|ok
+select.tapo_c200_stockroom_night_vision_switching|Tapo C200 - Stockroom Night Vision Switching|Network|ok
+select.tapo_c200_stockroom_night_vision|Tapo C200 - Stockroom Night Vision|Network|ok
+select.tapo_c200_stockroom_light_frequency|Tapo C200 - Stockroom Light Frequency|Network|ok
+select.tapo_c200_stockroom_automatic_alarm|Tapo C200 - Stockroom Automatic Alarm|Network|ok
+select.tapo_c200_stockroom_siren_type|Tapo C200 - Stockroom Siren Type|Network|ok
+select.tapo_c200_stockroom_motion_detection|Tapo C200 - Stockroom Motion Detection|Network|ok
+select.tapo_c200_stockroom_person_detection|Tapo C200 - Stockroom Person Detection|Network|ok
+select.tapo_c200_stockroom_baby_cry_detection|Tapo C200 - Stockroom Baby Cry Detection|Network|ok
+select.tapo_c200_stockroom_tamper_detection|Tapo C200 - Stockroom Tamper Detection|Network|ok
+select.tapo_c200_stockroom_move_to_preset|Tapo C200 - Stockroom Move to Preset|Network|unknown
+select.tapo_c200_stockroom_patrol_mode|Tapo C200 - Stockroom Patrol Mode|Network|unknown
+select.tapo_c200_stockroom_spotlight_on_off_for|Tapo C200 - Stockroom Spotlight on/off for|Network|ok
+siren.tapo_c200_stockroom_siren|Tapo C200 - Stockroom Siren|Network|ok
+update.tapo_c200_stockroom_update|Tapo C200 - Stockroom Update|Network|ok
+sensor.tapo_c200_stockroom_network_ssid|Tapo C200 - Stockroom Network SSID|Network|ok
+sensor.tapo_c200_stockroom_link_type|Tapo C200 - Stockroom Link Type|Network|ok
+sensor.tapo_c200_stockroom_rssi|Tapo C200 - Stockroom RSSI|Network|ok
+sensor.tapo_c200_stockroom_last_automatic_reboot_time|Tapo C200 - Stockroom Last Automatic Reboot Time|Network|ok
+sensor.tapo_c200_stockroom_recordings_synchronization|Tapo C200 - Stockroom Recordings Synchronization|Network|ok
+switch.tapo_c200_stockroom_privacy|Tapo C200 - Stockroom Privacy|Network|ok
+switch.tapo_c200_stockroom_media_sync|Tapo C200 - Stockroom Media Sync|Network|ok
+switch.tapo_c200_stockroom_lens_distortion_correction|Tapo C200 - Stockroom Lens Distortion Correction|Network|ok
+switch.tapo_c200_stockroom_indicator_led|Tapo C200 - Stockroom Indicator LED|Network|ok
+switch.tapo_c200_stockroom_record_audio|Tapo C200 - Stockroom Record Audio|Network|ok
+switch.tapo_c200_stockroom_diagnose_mode|Tapo C200 - Stockroom Diagnose Mode|Network|ok
+switch.tapo_c200_stockroom_smart_track_people|Tapo C200 - Stockroom Smart Track - People|Network|ok
+switch.tapo_c200_stockroom_smart_track_pet|Tapo C200 - Stockroom Smart Track - Pet|Network|ok
+switch.tapo_c200_stockroom_smart_track_vehicle|Tapo C200 - Stockroom Smart Track - Vehicle|Network|ok
+switch.tapo_c200_stockroom_privacy_zones|Tapo C200 - Stockroom Privacy Zones|Network|ok
+switch.tapo_c200_stockroom_flip|Tapo C200 - Stockroom Flip|Network|ok
+switch.tapo_c200_stockroom_auto_track|Tapo C200 - Stockroom Auto Track|Network|ok
+switch.tapo_c200_stockroom_preset_patrol_mode|Tapo C200 - Stockroom Preset Patrol Mode|Network|ok
+switch.tapo_c200_stockroom_notifications|Tapo C200 - Stockroom Notifications|Network|ok
+switch.tapo_c200_stockroom_rich_notifications|Tapo C200 - Stockroom Rich Notifications|Network|ok
+switch.tapo_c200_stockroom_automatically_upgrade_firmware|Tapo C200 - Stockroom Automatically Upgrade Firmware|Network|ok
+switch.tapo_c200_stockroom_automatic_reboot|Tapo C200 - Stockroom Automatic Reboot|Network|ok
+switch.tapo_c200_stockroom_record_to_sd_card|Tapo C200 - Stockroom Record to SD Card|Network|ok
+switch.tapo_c200_stockroom_microphone_mute|Tapo C200 - Stockroom Microphone - Mute|Network|ok
+switch.tapo_c200_stockroom_microphone_noise_cancellation|Tapo C200 - Stockroom Microphone - Noise Cancellation|Network|ok
+light.tapo_c200_stockroom_floodlight_timed|Tapo C200 - Stockroom Floodlight (Timed)|Network|ok
+binary_sensor.gas_meter_pulse_sensor|Gas Meter Pulse Sensor|Energy|ok
+binary_sensor.water_meter_pulse_sensor|Water Meter Pulse Sensor|Energy|unavailable
+button.gas_meter_pulse_sensor_identify|Gas Meter Pulse Sensor Identify|Energy|unknown
+button.water_meter_pulse_sensor_identify|Water Meter Pulse Sensor Identify|Energy|unavailable
+button.kitchen_electrolux_fridge_identify|Electrolux Fridge Identify|Kitchen|unknown
+button.kogan_freezer_identify|Kogan Freezer Identify|Backyard|unavailable
+number.kogan_freezer_temperature_offset|Kogan Freezer Temperature offset|Backyard|unavailable
+select.kogan_freezer_display_unit|Kogan Freezer Display unit|Backyard|unavailable
+sensor.gas_meter_pulse_sensor_battery|Gas Meter Pulse Sensor Battery|Energy|ok
+sensor.water_meter_pulse_sensor_battery|Water Meter Pulse Sensor Battery|Energy|unavailable
+sensor.kitchen_electrolux_fridge_battery|Electrolux Fridge Battery|Kitchen|ok
+sensor.kitchen_electrolux_fridge_temperature|Electrolux Fridge Temperature|Kitchen|ok
+sensor.kitchen_electrolux_fridge_humidity|Electrolux Fridge Humidity|Kitchen|ok
+sensor.kogan_freezer_battery|Kogan Freezer Battery|Backyard|unavailable
+sensor.kogan_freezer|Kogan Freezer|Backyard|unavailable
+update.gas_meter_pulse_sensor_firmware|Gas Meter Pulse Sensor Firmware|Energy|unknown
+update.water_meter_pulse_sensor_firmware|Water Meter Pulse Sensor Firmware|Energy|unavailable
+update.kitchen_electrolux_fridge_firmware|Electrolux Fridge Firmware|Kitchen|ok
+update.kogan_freezer_firmware|Kogan Freezer Firmware|Backyard|unavailable
+media_player.pogo|Pogo|Guest Room|unavailable
+binary_sensor.g_monitor_freezer_p110m_overheated|G/Monitor Freezer P110M Overheated|Garage|unavailable
+sensor.primo_5_0_1_1_energy_day|Primo 5.0-1 (1) Energy day|Energy|ok
+sensor.primo_5_0_1_1_energy_year|Primo 5.0-1 (1) Energy year|Energy|ok
+sensor.primo_5_0_1_1_total_energy|Primo 5.0-1 (1) Total energy|Energy|ok
+sensor.primo_5_0_1_1_ac_current|Primo 5.0-1 (1) AC current|Energy|ok
+sensor.primo_5_0_1_1_dc_current|Primo 5.0-1 (1) DC current|Energy|ok
+sensor.primo_5_0_1_1_ac_power|Primo 5.0-1 (1) AC power|Energy|ok
+sensor.primo_5_0_1_1_dc_voltage|Primo 5.0-1 (1) DC voltage|Energy|ok
+sensor.primo_5_0_1_1_error_message|Primo 5.0-1 (1) Error message|Energy|ok
+sensor.primo_5_0_1_1_status_message|Primo 5.0-1 (1) Status message|Energy|ok
+sensor.solarnet_co2_factor|SolarNet CO₂ factor|Energy|ok
+sensor.solarnet_grid_export_tariff|SolarNet Grid export tariff|Energy|ok
+sensor.solarnet_grid_import_tariff|SolarNet Grid import tariff|Energy|ok
+sensor.solarnet_meter_mode|SolarNet Meter mode|Energy|ok
+sensor.solarnet_power_photovoltaics|SolarNet Power photovoltaics|Energy|ok
+camera.tapo_c425_north_wall_hd_stream_direct|Tapo C425 - North Wall HD Stream (Direct)|Network|ok
+button.tapo_c425_north_wall_reboot|Tapo C425 - North Wall Reboot|Network|unknown
+button.tapo_c425_north_wall_format_sd_card|Tapo C425 - North Wall Format SD Card|Network|unknown
+button.tapo_c425_north_wall_manual_alarm_start|Tapo C425 - North Wall Manual Alarm Start|Network|unknown
+button.tapo_c425_north_wall_manual_alarm_stop|Tapo C425 - North Wall Manual Alarm Stop|Network|unknown
+button.tapo_c425_north_wall_sync_time|Tapo C425 - North Wall Sync Time|Network|unavailable
+number.tapo_c425_north_wall_motion_detection_digital_sensitivity|Tapo C425 - North Wall Motion Detection - Digital Sensitivity|Network|ok
+number.tapo_c425_north_wall_microphone_volume|Tapo C425 - North Wall Microphone - Volume|Network|ok
+number.tapo_c425_north_wall_speaker_volume|Tapo C425 - North Wall Speaker - Volume|Network|ok
+number.tapo_c425_north_wall_siren_volume|Tapo C425 - North Wall Siren volume|Network|ok
+number.tapo_c425_north_wall_siren_duration|Tapo C425 - North Wall Siren duration|Network|ok
+number.tapo_c425_north_wall_spotlight_intensity|Tapo C425 - North Wall Spotlight Intensity|Network|ok
+select.tapo_c425_north_wall_timezone|Tapo C425 - North Wall Timezone|Network|ok
+select.tapo_c425_north_wall_automatic_reboot_time|Tapo C425 - North Wall Automatic Reboot - Time|Network|ok
+select.tapo_c425_north_wall_night_vision_switching|Tapo C425 - North Wall Night Vision Switching|Network|ok
+select.tapo_c425_north_wall_night_vision|Tapo C425 - North Wall Night Vision|Network|ok
+select.tapo_c425_north_wall_light_frequency|Tapo C425 - North Wall Light Frequency|Network|ok
+select.tapo_c425_north_wall_automatic_alarm|Tapo C425 - North Wall Automatic Alarm|Network|ok
+select.tapo_c425_north_wall_siren_type|Tapo C425 - North Wall Siren Type|Network|ok
+select.tapo_c425_north_wall_motion_detection|Tapo C425 - North Wall Motion Detection|Network|ok
+select.tapo_c425_north_wall_person_detection|Tapo C425 - North Wall Person Detection|Network|ok
+select.tapo_c425_north_wall_vehicle_detection|Tapo C425 - North Wall Vehicle Detection|Network|ok
+select.tapo_c425_north_wall_pet_detection|Tapo C425 - North Wall Pet Detection|Network|ok
+select.tapo_c425_north_wall_spotlight_on_off_for|Tapo C425 - North Wall Spotlight on/off for|Network|ok
+siren.tapo_c425_north_wall_siren|Tapo C425 - North Wall Siren|Network|ok
+update.tapo_c425_north_wall_update|Tapo C425 - North Wall Update|Network|ok
+sensor.tapo_c425_north_wall_battery|Tapo C425 - North Wall Battery|Network|ok
+sensor.tapo_c425_north_wall_network_ssid|Tapo C425 - North Wall Network SSID|Network|ok
+sensor.tapo_c425_north_wall_link_type|Tapo C425 - North Wall Link Type|Network|ok
+sensor.tapo_c425_north_wall_rssi|Tapo C425 - North Wall RSSI|Network|ok
+sensor.tapo_c425_north_wall_last_automatic_reboot_time|Tapo C425 - North Wall Last Automatic Reboot Time|Network|ok
+sensor.tapo_c425_north_wall_recordings_synchronization|Tapo C425 - North Wall Recordings Synchronization|Network|ok
+switch.tapo_c425_north_wall_privacy|Tapo C425 - North Wall Privacy|Network|ok
+switch.tapo_c425_north_wall_trigger_alarm_on_motion_detection|Tapo C425 - North Wall Trigger alarm on motion_detection|Network|ok
+switch.tapo_c425_north_wall_trigger_alarm_on_people_detection|Tapo C425 - North Wall Trigger alarm on people_detection|Network|ok
+switch.tapo_c425_north_wall_trigger_alarm_on_pet_detection|Tapo C425 - North Wall Trigger alarm on pet_detection|Network|ok
+switch.tapo_c425_north_wall_trigger_alarm_on_vehicle_detection|Tapo C425 - North Wall Trigger alarm on vehicle_detection|Network|ok
+switch.tapo_c425_north_wall_media_sync|Tapo C425 - North Wall Media Sync|Network|ok
+switch.tapo_c425_north_wall_lens_distortion_correction|Tapo C425 - North Wall Lens Distortion Correction|Network|ok
+switch.tapo_c425_north_wall_indicator_led|Tapo C425 - North Wall Indicator LED|Network|ok
+switch.tapo_c425_north_wall_record_audio|Tapo C425 - North Wall Record Audio|Network|ok
+switch.tapo_c425_north_wall_diagnose_mode|Tapo C425 - North Wall Diagnose Mode|Network|ok
+switch.tapo_c425_north_wall_privacy_zones|Tapo C425 - North Wall Privacy Zones|Network|ok
+switch.tapo_c425_north_wall_flip|Tapo C425 - North Wall Flip|Network|ok
+switch.tapo_c425_north_wall_notifications|Tapo C425 - North Wall Notifications|Network|ok
+switch.tapo_c425_north_wall_rich_notifications|Tapo C425 - North Wall Rich Notifications|Network|ok
+switch.tapo_c425_north_wall_automatically_upgrade_firmware|Tapo C425 - North Wall Automatically Upgrade Firmware|Network|ok
+switch.tapo_c425_north_wall_automatic_reboot|Tapo C425 - North Wall Automatic Reboot|Network|ok
+switch.tapo_c425_north_wall_record_to_sd_card|Tapo C425 - North Wall Record to SD Card|Network|ok
+switch.tapo_c425_north_wall_microphone_mute|Tapo C425 - North Wall Microphone - Mute|Network|ok
+switch.tapo_c425_north_wall_microphone_noise_cancellation|Tapo C425 - North Wall Microphone - Noise Cancellation|Network|ok
+light.tapo_c425_north_wall_floodlight_timed|Tapo C425 - North Wall Floodlight (Timed)|Network|ok
+camera.tapo_c420_south_wall_sd_stream_direct|Tapo C420 - South Wall SD Stream (Direct)|Network|unavailable
+camera.tapo_c420_east_wall_hd_stream_direct|Tapo C420 East Wall HD Stream (Direct)|Network|unavailable
+camera.tapo_c420_east_wall_sd_stream_direct|Tapo C420 East Wall SD Stream (Direct)|Network|unavailable
+button.tapo_h200_reboot|Tapo H200 Reboot|Network|unavailable
+button.tapo_h200_format_sd_card|Tapo H200 Format SD Card|Network|unavailable
+number.tapo_h200_siren_volume|Tapo H200 Siren volume|Network|unavailable
+number.tapo_h200_siren_duration|Tapo H200 Siren duration|Network|unavailable
+number.tapo_c420_south_wall_motion_detection_digital_sensitivity|Tapo C420 - South Wall Motion Detection - Digital Sensitivity|Network|unavailable
+number.tapo_c420_south_wall_microphone_volume|Tapo C420 - South Wall Microphone - Volume|Network|unavailable
+number.tapo_c420_south_wall_speaker_volume|Tapo C420 - South Wall Speaker - Volume|Network|unavailable
+number.tapo_c420_south_wall_siren_volume|Tapo C420 - South Wall Siren volume|Network|unavailable
+number.tapo_c420_south_wall_siren_duration|Tapo C420 - South Wall Siren duration|Network|unavailable
+number.tapo_c420_east_wall_motion_detection_digital_sensitivity|Tapo C420 East Wall Motion Detection - Digital Sensitivity|Network|unavailable
+number.tapo_c420_east_wall_microphone_volume|Tapo C420 East Wall Microphone - Volume|Network|unavailable
+number.tapo_c420_east_wall_speaker_volume|Tapo C420 East Wall Speaker - Volume|Network|unavailable
+number.tapo_c420_east_wall_siren_volume|Tapo C420 East Wall Siren volume|Network|unavailable
+number.tapo_c420_east_wall_siren_duration|Tapo C420 East Wall Siren duration|Network|unavailable
+select.tapo_h200_timezone|Tapo H200 Timezone|Network|unavailable
+select.tapo_h200_automatic_reboot_time|Tapo H200 Automatic Reboot - Time|Network|unavailable
+select.tapo_h200_siren_type|Tapo H200 Siren Type|Network|unavailable
+select.tapo_c420_south_wall_timezone|Tapo C420 - South Wall Timezone|Network|unavailable
+select.tapo_c420_south_wall_night_vision|Tapo C420 - South Wall Night Vision|Network|unavailable
+select.tapo_c420_south_wall_light_frequency|Tapo C420 - South Wall Light Frequency|Network|unavailable
+select.tapo_c420_south_wall_automatic_alarm|Tapo C420 - South Wall Automatic Alarm|Network|unavailable
+select.tapo_c420_south_wall_siren_type|Tapo C420 - South Wall Siren Type|Network|unavailable
+select.tapo_c420_south_wall_motion_detection|Tapo C420 - South Wall Motion Detection|Network|unavailable
+select.tapo_c420_south_wall_person_detection|Tapo C420 - South Wall Person Detection|Network|unavailable
+select.tapo_c420_south_wall_vehicle_detection|Tapo C420 - South Wall Vehicle Detection|Network|unavailable
+select.tapo_c420_south_wall_pet_detection|Tapo C420 - South Wall Pet Detection|Network|unavailable
+select.tapo_c420_south_wall_spotlight_on_off_for|Tapo C420 - South Wall Spotlight on/off for|Network|unavailable
+select.tapo_c420_south_wall_spotlight_intensity|Tapo C420 - South Wall Spotlight Intensity|Network|unavailable
+select.tapo_c420_east_wall_timezone|Tapo C420 East Wall Timezone|Network|unavailable
+select.tapo_c420_east_wall_night_vision|Tapo C420 East Wall Night Vision|Network|unavailable
+select.tapo_c420_east_wall_light_frequency|Tapo C420 East Wall Light Frequency|Network|unavailable
+select.tapo_c420_east_wall_automatic_alarm|Tapo C420 East Wall Automatic Alarm|Network|unavailable
+select.tapo_c420_east_wall_siren_type|Tapo C420 East Wall Siren Type|Network|unavailable
+select.tapo_c420_east_wall_motion_detection|Tapo C420 East Wall Motion Detection|Network|unavailable
+select.tapo_c420_east_wall_person_detection|Tapo C420 East Wall Person Detection|Network|unavailable
+select.tapo_c420_east_wall_vehicle_detection|Tapo C420 East Wall Vehicle Detection|Network|unavailable
+select.tapo_c420_east_wall_pet_detection|Tapo C420 East Wall Pet Detection|Network|unavailable
+select.tapo_c420_east_wall_spotlight_on_off_for|Tapo C420 East Wall Spotlight on/off for|Network|unavailable
+select.tapo_c420_east_wall_spotlight_intensity|Tapo C420 East Wall Spotlight Intensity|Network|unavailable
+siren.tapo_h200_siren|Tapo H200 Siren|Network|unavailable
+siren.tapo_c420_south_wall_siren|Tapo C420 - South Wall Siren|Network|unavailable
+siren.tapo_c420_east_wall_siren|Tapo C420 East Wall Siren|Network|unavailable
+update.tapo_h200_update|Tapo H200 Update|Network|unavailable
+update.tapo_c420_south_wall_update|Tapo C420 - South Wall Update|Network|unavailable
+update.tapo_c420_east_wall_update|Tapo C420 East Wall Update|Network|unavailable
+sensor.tapo_h200_link_type|Tapo H200 Link Type|Network|unavailable
+sensor.tapo_h200_recordings_synchronization|Tapo H200 Recordings Synchronization|Network|unavailable
+sensor.tapo_c420_south_wall_battery_2|Tapo C420 - South Wall Battery|Network|unavailable
+sensor.tapo_c420_south_wall_recordings_synchronization|Tapo C420 - South Wall Recordings Synchronization|Network|unavailable
+sensor.tapo_c420_east_wall_battery|Tapo C420 East Wall Battery|Network|unavailable
+sensor.tapo_c420_east_wall_recordings_synchronization|Tapo C420 East Wall Recordings Synchronization|Network|unavailable
+switch.tapo_h200_media_sync|Tapo H200 Media Sync|Network|unavailable
+switch.tapo_h200_indicator_led|Tapo H200 Indicator LED|Network|unavailable
+switch.tapo_h200_diagnose_mode|Tapo H200 Diagnose Mode|Network|unavailable
+switch.tapo_h200_automatically_upgrade_firmware|Tapo H200 Automatically Upgrade Firmware|Network|unavailable
+switch.tapo_h200_automatic_reboot|Tapo H200 Automatic Reboot|Network|unavailable
+switch.tapo_c420_south_wall_privacy|Tapo C420 - South Wall Privacy|Network|unavailable
+switch.tapo_c420_south_wall_media_sync|Tapo C420 - South Wall Media Sync|Network|unavailable
+switch.tapo_c420_south_wall_lens_distortion_correction|Tapo C420 - South Wall Lens Distortion Correction|Network|unavailable
+switch.tapo_c420_south_wall_indicator_led|Tapo C420 - South Wall Indicator LED|Network|unavailable
+switch.tapo_c420_south_wall_record_audio|Tapo C420 - South Wall Record Audio|Network|unavailable
+switch.tapo_c420_south_wall_privacy_zones|Tapo C420 - South Wall Privacy Zones|Network|unavailable
+switch.tapo_c420_south_wall_flip|Tapo C420 - South Wall Flip|Network|unavailable
+switch.tapo_c420_south_wall_notifications|Tapo C420 - South Wall Notifications|Network|unavailable
+switch.tapo_c420_south_wall_rich_notifications|Tapo C420 - South Wall Rich Notifications|Network|unavailable
+switch.tapo_c420_south_wall_record_to_sd_card|Tapo C420 - South Wall Record to SD Card|Network|unavailable
+switch.tapo_c420_east_wall_privacy|Tapo C420 East Wall Privacy|Network|unavailable
+switch.tapo_c420_east_wall_media_sync|Tapo C420 East Wall Media Sync|Network|unavailable
+switch.tapo_c420_east_wall_lens_distortion_correction|Tapo C420 East Wall Lens Distortion Correction|Network|unavailable
+switch.tapo_c420_east_wall_indicator_led|Tapo C420 East Wall Indicator LED|Network|unavailable
+switch.tapo_c420_east_wall_record_audio|Tapo C420 East Wall Record Audio|Network|unavailable
+switch.tapo_c420_east_wall_privacy_zones|Tapo C420 East Wall Privacy Zones|Network|unavailable
+switch.tapo_c420_east_wall_flip|Tapo C420 East Wall Flip|Network|unavailable
+switch.tapo_c420_east_wall_notifications|Tapo C420 East Wall Notifications|Network|unavailable
+switch.tapo_c420_east_wall_rich_notifications|Tapo C420 East Wall Rich Notifications|Network|unavailable
+switch.tapo_c420_east_wall_record_to_sd_card|Tapo C420 East Wall Record to SD Card|Network|unavailable
+light.tapo_c420_south_wall_floodlight_timed|Tapo C420 - South Wall Floodlight (Timed)|Network|unavailable
+light.tapo_c420_east_wall_floodlight_timed|Tapo C420 East Wall Floodlight (Timed)|Network|unavailable
+camera.tapo_c420_south_wall_hd_stream_direct|Tapo C420 - South Wall HD Stream (Direct)|Network|unavailable
+button.55_qled_4k_ai_favorite_current_song|55" QLED 4k AI Favorite current song|Ray Bedroom|unavailable
+media_player.55_qled_4k_ai|55" QLED 4k AI|Ray Bedroom|unavailable
+button.samsung_q9_series_65_favorite_current_song|Samsung Q9 Series (65) Favorite current song|Living Room|unavailable
+media_player.samsung_q9_series_65|Samsung Q9 Series (65)|Living Room|unavailable
+sensor.primo_5_0_1_1_total_energy_cost|sensor Cost|-|unavailable
+binary_sensor.network_tapo_c200_stockroom_cell_motion_detection|Tapo C200 - Stockroom Cell Motion Detection|Network|ok
+binary_sensor.network_tapo_c200_stockroom_motion_alarm|Tapo C200 - Stockroom Motion Alarm|Network|ok
+binary_sensor.network_tapo_c200_stockroom_person_detection|Tapo C200 - Stockroom Person Detection|Network|unavailable
+binary_sensor.deez_kiosk_screensaver|Deez Kiosk Screensaver|-|ok
+binary_sensor.deez_kiosk_screensaver_2|Deez Kiosk Screensaver|-|ok
+binary_sensor.raymonds_ipad_kiosk_screensaver|Raymond’s iPad Kiosk Screensaver|-|ok

@@ -145,7 +145,7 @@ views:
         'binary_sensor.b_contact_sensor_door'] %} {% set bats =
         ['sensor.front_door_battery', 'sensor.living_room_ringring_battery',
         'sensor.tapo_c425_north_wall_battery',
-        'sensor.tapo_c420_east_wall_battery',
+        'sensor.tapo_camera_bcca_battery',
         'sensor.tapo_c420_south_wall_battery',
         'sensor.aqara_roller_shade_driver_e1_battery'] %} {% set cams =
         ['camera.front_door_live_view',
@@ -3507,7 +3507,7 @@ views:
       name: Period start
       grid_options: {columns: 6, rows: 1}
     - type: tile
-      entity: input_datetime.car_insurance_period_end
+      entity: input_datetime.car_insurance_period_en
       name: Period end
       grid_options: {columns: 6, rows: 1}
     - type: tile
@@ -3904,16 +3904,12 @@ views:
       name: North Wall
       grid_options: {columns: 4, rows: 1}
     - type: tile
-      entity: sensor.tapo_c420_east_wall_battery
-      name: East Wall
-      grid_options: {columns: 4, rows: 1}
-    - type: tile
       entity: sensor.tapo_c420_south_wall_battery
       name: South Wall
       grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: sensor.tapo_camera_bcca_battery
-      name: Backyard
+      name: East Wall
       grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: sensor.living_room_ringring_battery
@@ -3998,7 +3994,7 @@ views:
       muted: true
       ui: true
     - type: tile
-      entity: sensor.tapo_c420_east_wall_battery
+      entity: sensor.tapo_camera_bcca_battery
       name: Camera battery
 
 - type: sections
@@ -4491,9 +4487,8 @@ views:
         Door','前门','sensor.front_door_battery'),
         ('RingRing','门铃','sensor.living_room_ringring_battery'), ('North Wall
         camera','北墙摄像头','sensor.tapo_c425_north_wall_battery'), ('East Wall
-        camera','东墙摄像头','sensor.tapo_c420_east_wall_battery'), ('South Wall
-        camera','南墙摄像头','sensor.tapo_c420_south_wall_battery'), ('Backyard
-        camera','后院摄像头','sensor.tapo_camera_bcca_battery'), ('Roller
+        camera','东墙摄像头','sensor.tapo_camera_bcca_battery'), ('South Wall
+        camera','南墙摄像头','sensor.tapo_c420_south_wall_battery'), ('Roller
         shade','卷帘','sensor.aqara_roller_shade_driver_e1_battery')] %} {% set devs =
         ['camera.tapo_c420_east_wall_hd_stream_direct',
         'camera.tapo_c420_south_wall_hd_stream_direct',
@@ -4555,16 +4550,12 @@ views:
       name: North Wall
       grid_options: {columns: 6, rows: 1}
     - type: tile
-      entity: sensor.tapo_c420_east_wall_battery
-      name: East Wall
-      grid_options: {columns: 6, rows: 1}
-    - type: tile
       entity: sensor.tapo_c420_south_wall_battery
       name: South Wall
       grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: sensor.tapo_camera_bcca_battery
-      name: Backyard
+      name: East Wall
       grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: sensor.aqara_roller_shade_driver_e1_battery
