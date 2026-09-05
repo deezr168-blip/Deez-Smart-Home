@@ -1033,21 +1033,42 @@ views:
       name: Air purifier
       features:
       - type: fan-speed
+    # Each particulate paired with its health-concern reading. The number is
+    # for whoever wants it; the word ("Good", "Moderate") is the one anybody
+    # can act on, which is what matters on a board an older household member
+    # reads. CR-122 already expected PM1 and the three concern sensors; they
+    # were never actually wired.
     - type: tile
       entity: sensor.living_room_air_purifier_air_quality
       name: Air quality
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.living_room_air_purifier_odor_sensor
+      name: Odor
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.living_room_air_purifier_pm1
+      name: PM1
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.living_room_air_purifier_pm1_health_concern
+      name: PM1 level
       grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: sensor.living_room_air_purifier_pm2_5
       name: PM2.5
       grid_options: {columns: 6, rows: 1}
     - type: tile
+      entity: sensor.living_room_air_purifier_pm2_5_health_concern
+      name: PM2.5 level
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
       entity: sensor.living_room_air_purifier_pm10
       name: PM10
       grid_options: {columns: 6, rows: 1}
     - type: tile
-      entity: sensor.living_room_air_purifier_odor_sensor
-      name: Odor
+      entity: sensor.living_room_air_purifier_pm10_health_concern
+      name: PM10 level
       grid_options: {columns: 6, rows: 1}
 
   - type: grid
@@ -2095,6 +2116,13 @@ views:
       entity: sensor.r_energy_monitor_p110m_today_s_consumption
       name: Used today
       grid_options: {columns: 6, rows: 1}
+    # An overload warning on the socket the grow unit runs from. The only
+    # safety signal in this room, and it was on no board.
+    - type: tile
+      entity: binary_sensor.r_energy_monitor_p110m_overloaded
+      name: Socket overloaded
+      icon: mdi:flash-alert
+      grid_options: {columns: 12, rows: 1}
     - type: history-graph
       hours_to_show: 24
       entities:
@@ -4702,6 +4730,11 @@ views:
     - type: tile
       entity: sensor.front_door_battery
       name: Front Door
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: sensor.front_door_last_activity
+      name: Front Door last seen
+      icon: mdi:motion-sensor
       grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: sensor.tapo_c425_north_wall_battery
