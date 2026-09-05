@@ -11,6 +11,8 @@ Covers the checks that are possible without Home Assistant itself:
     Home Assistant silently ignores)
   - markdown cards do not emit enough leading whitespace to render as a
     CommonMark indented code block
+  - no line inside a folded scalar is indented deeper than its block, which
+    would stop YAML folding it and break a sentence in half
   - /local/ resource paths exist in www/ when www/ is present
   - mass-damage detection against the committed version of the same file
 
@@ -194,7 +196,46 @@ def check(path):
                      f"as a code block; use -%}} on the preamble tags — {who!r}")
     print(f"  markdown code-block risk : {len(indented)}")
 
-    # 5. /local/ resources
+    # 5. folded scalars must not have accidentally more-indented lines
+    #
+    # In a YAML folded block, a line indented deeper than the block is "more
+    # indented": YAML stops folding around it and keeps the newlines. One
+    # stray leading space therefore breaks a sentence in half mid-render --
+    # "All 3 update entities are up to\ndate." -- and nothing else catches it,
+    # because the YAML is valid and the template compiles.
+    #
+    # Deliberate deeper indentation inside a folded scalar is a thing YAML
+    # supports, but nothing in these dashboards uses it: every block is one
+    # flat run of text. So any deeper line here is a typo.
+    ragged = []
+    lines = raw.split("\n")
+    i = 0
+    while i < len(lines):
+        m = re.match(r"^(\s*)\S.*:\s*>-?\s*$", lines[i])
+        if not m:
+            i += 1
+            continue
+        key_indent = len(m.group(1))
+        body = []
+        j = i + 1
+        while j < len(lines) and (not lines[j].strip()
+                                  or len(lines[j]) - len(lines[j].lstrip()) > key_indent):
+            body.append((j, lines[j]))
+            j += 1
+        widths = [len(l) - len(l.lstrip()) for _, l in body if l.strip()]
+        if widths:
+            base = min(widths)
+            for n, l in body:
+                if l.strip() and (len(l) - len(l.lstrip())) > base:
+                    ragged.append((n + 1, l.strip()[:50]))
+        i = j
+    for n, text in ragged:
+        fails.append(f"{path}:{n}: line is indented deeper than its folded "
+                     f"block, so YAML keeps the line break instead of folding "
+                     f"it — {text!r}")
+    print(f"  ragged folded scalars    : {len(ragged)}")
+
+    # 6. /local/ resources
     local_refs = sorted(set(re.findall(r"/local/([A-Za-z0-9_./-]+)", raw)))
     if local_refs:
         if os.path.isdir("www"):
@@ -207,7 +248,7 @@ def check(path):
     else:
         print("  /local/ resources        : none referenced")
 
-    # 6. mass-damage detection against HEAD
+    # 7. mass-damage detection against HEAD
     old = committed(path)
     if old is None:
         print("  mass-damage check        : new file, no baseline")

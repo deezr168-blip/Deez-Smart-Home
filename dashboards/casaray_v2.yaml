@@ -5794,8 +5794,35 @@ views:
       entity: update.home_assistant_core_update
       name: Home Assistant Core
     - type: tile
+      entity: update.home_assistant_supervisor_update
+      name: Supervisor
+    - type: tile
+      entity: update.home_assistant_operating_system_update
+      name: Operating System
+    - type: tile
       entity: update.bedroom_parents_room_ac_firmware
       name: Parents Room AC firmware
+    # 74 update entities exist. Listing them as tiles would bury this page,
+    # and listing a hand-picked few would quietly hide the rest -- a firmware
+    # update nobody can see is one nobody installs. This counts them live off
+    # `states.update`, so it stays correct as devices come and go and cannot
+    # go stale against a hardcoded list.
+    - type: markdown
+      content: >-
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {% set ups = states.update | list -%}
+        {% set pending = ups | selectattr('state','eq','on') | list -%}
+        {% set quiet = ups | rejectattr('state','in',['on','off']) | list -%}
+        {% set np = pending | count %}{% set nq = quiet | count -%}
+        {% if np %}{% if cn %}**{{ np }} 项更新待安装：**{{ pending |
+        map(attribute='name') | join('、') }}。{% else %}**{{ np }} update{{ ''
+        if np == 1 else 's' }} available:** {{ pending | map(attribute='name') |
+        join(', ') }}.{% endif %} {% endif %}{% if nq %}{% if cn %}{{ nq }}
+        个设备的更新状态无数据。{% else %}{{ nq }} device{{ '' if nq == 1 else 's' }} {{
+        'is' if nq == 1 else 'are' }} not reporting an update state.{% endif %}
+        {% endif %}{% if not np and not nq %}{% if cn %}{{ ups | count }}
+        个更新实体全部为最新。{% else %}All {{ ups | count }} update entities are up to
+        date.{% endif %}{% endif %}
 
 # ===========================================================================
 # ALERTS. The unified alert centre from briefing section 16, built from the
