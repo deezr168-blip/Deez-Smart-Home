@@ -1,0 +1,3326 @@
+# CasaRay v2 — rebuilt from scratch on the frozen CasaRay Design v1.
+#
+# Architecture: native-first per Master Design Briefing v1 section 20.
+#   Sections layout -> heading -> tile -> native domain cards -> markdown
+#   for the interpretation layer. No card_mod: surface treatment belongs to
+#   themes/deez_your_name.yaml. Only custom:webrtc-camera is depended on,
+#   and only where a live low-latency stream has no native equivalent.
+#
+# Entity truth: docs/entity_inventory.md. Every ID below is already
+# referenced by dashboards/deez_smart_home.yaml or was confirmed live.
+# Nothing here is invented. Components with no data behind them are absent,
+# not faked -- see docs/CASARAY_V2_ARCHITECTURE.md for the full list.
+#
+# Layout: max_columns 2 throughout. iPad landscape renders ~2 usable
+# columns whatever the mockups show.
+#
+# Comments survive in this repository. If this file is ever imported into a
+# storage-mode dashboard it round-trips through a YAML dumper and they are
+# stripped; the rationale is duplicated in the architecture document.
+
+kiosk_mode:
+  hide_sidebar: true
+  hide_header: true
+  ignore_per_user: false
+theme: Deez Smart Home
+
+views:
+
+# ===========================================================================
+# HOME -- executive overview. Status before controls, exceptions before
+# status. Briefing section 4: answer "is the house okay" in seconds.
+# ===========================================================================
+- type: sections
+  title: CasaRay
+  path: home
+  icon: mdi:home-heart
+  max_columns: 2
+  sections:
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: markdown
+      grid_options: {columns: 8, rows: 2}
+      content: >-
+        {% set h = now().hour %} {% set cn =
+        is_state('input_boolean.chinese_dashboard','on') %} {% if h < 12 %}{%
+        set g = '早安' if cn else 'Good morning' %}{% elif h < 18 %}{% set g =
+        '午安' if cn else 'Good afternoon' %}{% else %}{% set g = '晚安' if cn
+        else 'Good evening' %}{% endif %}
+
+        # {{ g }}
+
+        {{ 'CasaRay 家庭控制中心' if cn else 'CasaRay household control centre' }}
+    - type: markdown
+      grid_options: {columns: 4, rows: 2}
+      content: >-
+        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+
+        {{ now().strftime('%d/%m/%Y') }}
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 3, rows: 1}
+      name: Rooms
+      icon: mdi:floor-plan
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/rooms}
+    - type: button
+      grid_options: {columns: 3, rows: 1}
+      name: Energy
+      icon: mdi:lightning-bolt
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/energy}
+    - type: button
+      grid_options: {columns: 3, rows: 1}
+      name: Security
+      icon: mdi:shield-home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/security}
+    - type: button
+      grid_options: {columns: 3, rows: 1}
+      name: Cameras
+      icon: mdi:cctv
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/cameras}
+    - type: button
+      grid_options: {columns: 3, rows: 1}
+      name: Bills
+      icon: mdi:file-document-outline
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/bills}
+    - type: button
+      grid_options: {columns: 3, rows: 1}
+      name: Entertainment
+      icon: mdi:television-play
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/entertainment}
+    - type: button
+      grid_options: {columns: 3, rows: 1}
+      name: Alerts
+      icon: mdi:bell-alert
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/alerts}
+    - type: button
+      grid_options: {columns: 3, rows: 1}
+      name: Health
+      icon: mdi:heart-pulse
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/house-health}
+
+  # --- Attention. Conditional throughout: a healthy house shows nothing. ---
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Needs attention
+      heading_style: title
+      icon: mdi:alert-circle-outline
+    - type: markdown
+      content: >-
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') %} {% set
+        doors = ['binary_sensor.f_contact_sensor_door',
+        'binary_sensor.m_contact_sensor_door',
+        'binary_sensor.b_contact_sensor_door'] %} {% set bats =
+        ['sensor.front_door_battery', 'sensor.living_room_ringring_battery',
+        'sensor.tapo_c425_north_wall_battery',
+        'sensor.tapo_c420_east_wall_battery',
+        'sensor.tapo_c420_south_wall_battery',
+        'sensor.aqara_roller_shade_driver_e1_battery'] %} {% set cams =
+        ['camera.front_door_live_view',
+        'camera.tapo_c425_north_wall_hd_stream_direct',
+        'camera.tapo_c420_east_wall_hd_stream_direct',
+        'camera.tapo_c420_south_wall_hd_stream_direct',
+        'camera.tapo_c200_stockroom_hd_stream_direct',
+        'camera.smart_pet_feeder'] %} {% set ns = namespace(dopen=0, dunk=0,
+        blow=0, bunk=0, coff=0) %} {% for d in doors %}{% set s = states(d) %}{%
+        if s == 'on' %}{% set ns.dopen = ns.dopen + 1 %}{% elif s != 'off' %}{%
+        set ns.dunk = ns.dunk + 1 %}{% endif %}{% endfor %} {% for b in bats %}{%
+        set s = states(b) %}{% if s in ['unavailable','unknown','none',''] %}{%
+        set ns.bunk = ns.bunk + 1 %}{% else %}{% set f = s | float(-1) %}{% if f
+        < 0 %}{% set ns.bunk = ns.bunk + 1 %}{% elif f < 30 %}{% set ns.blow =
+        ns.blow + 1 %}{% endif %}{% endif %}{% endfor %} {% for c in cams %}{% if
+        states(c) in ['unavailable','unknown'] %}{% set ns.coff = ns.coff + 1
+        %}{% endif %}{% endfor %} {% set total = ns.dopen + ns.blow + ns.coff %}
+        {% if total == 0 and ns.dunk == 0 and ns.bunk == 0 %}{{ '一切正常。' if
+        cn else 'All clear. Nothing needs attention.' }}{% else %}{% if ns.dopen
+        %}- **{{ ns.dopen }}** {{ '扇門開著' if cn else ('door open' if ns.dopen
+        == 1 else 'doors open') }}
+
+        {% endif %}{% if ns.blow %}- **{{ ns.blow }}** {{ '個電池低於 30%' if cn
+        else 'batteries under 30%' }}
+
+        {% endif %}{% if ns.coff %}- **{{ ns.coff }}** {{ '個攝影機離線' if cn
+        else ('camera offline' if ns.coff == 1 else 'cameras offline') }}
+
+        {% endif %}{% if ns.dunk %}- {{ ns.dunk }} {{ '扇門無回報' if cn else
+        'door sensors not reporting' }}
+
+        {% endif %}{% if ns.bunk %}- {{ ns.bunk }} {{ '個電池無回報' if cn else
+        'batteries not reporting' }}
+
+        {% endif %}{% endif %}
+    - type: conditional
+      conditions:
+      - condition: state
+        entity: binary_sensor.f_contact_sensor_door
+        state: 'on'
+      card:
+        type: tile
+        entity: binary_sensor.f_contact_sensor_door
+        name: Front door open
+        icon: mdi:door-open
+        color: red
+        tap_action: {action: navigate, navigation_path: /casaray/security}
+    - type: conditional
+      conditions:
+      - condition: state
+        entity: binary_sensor.b_contact_sensor_door
+        state: 'on'
+      card:
+        type: tile
+        entity: binary_sensor.b_contact_sensor_door
+        name: Backyard door open
+        icon: mdi:door-open
+        color: red
+        tap_action: {action: navigate, navigation_path: /casaray/security}
+    - type: conditional
+      conditions:
+      - condition: state
+        entity: binary_sensor.m_contact_sensor_door
+        state: 'on'
+      card:
+        type: tile
+        entity: binary_sensor.m_contact_sensor_door
+        name: Parents Room door open
+        icon: mdi:door-open
+        color: orange
+    - type: conditional
+      conditions:
+      - condition: numeric_state
+        entity: sensor.front_door_battery
+        below: 30
+      card:
+        type: tile
+        entity: sensor.front_door_battery
+        name: Front Door battery low
+        icon: mdi:battery-alert-variant-outline
+        color: orange
+        tap_action: {action: navigate, navigation_path: /casaray/house-health}
+    - type: conditional
+      conditions:
+      - condition: numeric_state
+        entity: sensor.living_room_ringring_battery
+        below: 30
+      card:
+        type: tile
+        entity: sensor.living_room_ringring_battery
+        name: RingRing battery low
+        icon: mdi:battery-alert-variant-outline
+        color: orange
+        tap_action: {action: navigate, navigation_path: /casaray/house-health}
+    - type: conditional
+      conditions:
+      - condition: numeric_state
+        entity: sensor.tapo_c425_north_wall_battery
+        below: 30
+      card:
+        type: tile
+        entity: sensor.tapo_c425_north_wall_battery
+        name: North Wall camera battery low
+        icon: mdi:battery-alert-variant-outline
+        color: orange
+        tap_action: {action: navigate, navigation_path: /casaray/house-health}
+    - type: conditional
+      conditions:
+      - condition: state
+        entity: binary_sensor.eero_wan_status
+        state_not: 'on'
+      card:
+        type: tile
+        entity: binary_sensor.eero_wan_status
+        name: Internet
+        icon: mdi:wan
+        color: red
+        tap_action: {action: navigate, navigation_path: /casaray/house-health}
+    - type: conditional
+      conditions:
+      - condition: state
+        entity: binary_sensor.g_monitor_freezer_p110m_overloaded
+        state: 'on'
+      card:
+        type: tile
+        entity: binary_sensor.g_monitor_freezer_p110m_overloaded
+        name: Garage freezer circuit overloaded
+        icon: mdi:flash-alert
+        color: red
+    - type: conditional
+      conditions:
+      - condition: state
+        entity: binary_sensor.bedroom_parents_room_ac_filter_clean_required
+        state: 'on'
+      card:
+        type: tile
+        entity: binary_sensor.bedroom_parents_room_ac_filter_clean_required
+        name: Parents Room AC filter needs cleaning
+        icon: mdi:air-filter
+        color: orange
+    - type: conditional
+      conditions:
+      - condition: state
+        entity: binary_sensor.lg_fridge_door
+        state: 'on'
+      card:
+        type: tile
+        entity: binary_sensor.lg_fridge_door
+        name: Fridge door open
+        icon: mdi:fridge-alert-outline
+        color: orange
+
+  # --- Household: who is in, and is the house secure. ---
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Household
+      heading_style: title
+      icon: mdi:account-group
+    - type: tile
+      entity: zone.home
+      name: People home
+      icon: mdi:home-account
+      tap_action: {action: navigate, navigation_path: /casaray/people}
+    - type: tile
+      entity: person.raymond_du
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: person.vinh_du
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: person.ai_q_huang
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: binary_sensor.eero_wan_status
+      name: Internet
+      icon: mdi:wan
+
+  # --- Security roll-up. No alarm row: no alarm_control_panel exists. ---
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Security
+      heading_style: title
+      icon: mdi:shield-home
+      badges:
+      - type: entity
+        entity: binary_sensor.f_contact_sensor_door
+    - type: markdown
+      content: >-
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') %} {% set
+        doors = ['binary_sensor.f_contact_sensor_door',
+        'binary_sensor.m_contact_sensor_door',
+        'binary_sensor.b_contact_sensor_door'] %} {% set ns =
+        namespace(open=0, unk=0) %} {% for d in doors %}{% set s = states(d) %}{%
+        if s == 'on' %}{% set ns.open = ns.open + 1 %}{% elif s != 'off' %}{% set
+        ns.unk = ns.unk + 1 %}{% endif %}{% endfor %} {% if ns.unk %}{{
+        '門窗感測器有 %d 個無回報。' % ns.unk if cn else '%d of 3 door sensors
+        are not reporting. Security state cannot be confirmed.' % ns.unk }}{%
+        elif ns.open %}{{ '%d 扇門開著。' % ns.open if cn else '%d of 3 doors
+        open.' % ns.open }}{% else %}{{ '三扇門全部關閉。' if cn else 'All 3
+        doors closed.' }}{% endif %}
+    - type: tile
+      entity: binary_sensor.f_contact_sensor_door
+      name: Front door
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: binary_sensor.m_contact_sensor_door
+      name: Parents Room
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: binary_sensor.b_contact_sensor_door
+      name: Backyard
+      grid_options: {columns: 4, rows: 1}
+
+  # --- Energy now. The inverter is offline right now; guard every read. ---
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Energy now
+      heading_style: title
+      icon: mdi:lightning-bolt
+      badges:
+      - type: entity
+        entity: sensor.powerpal_gateway_powerpal_power
+    - type: markdown
+      content: >-
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') %} {% set p
+        = states('sensor.powerpal_gateway_powerpal_power') %} {% set s =
+        states('sensor.primo_5_0_1_1_ac_power') %} {% set pk = p not in
+        ['unavailable','unknown','none',''] and p | float(-1) >= 0 %} {% set sk =
+        s not in ['unavailable','unknown','none',''] and s | float(-1) >= 0 %} {%
+        if pk %}{{ '目前用電 %s W。' % p if cn else 'Drawing **%s W** right
+        now.' % p }}{% else %}{{ '用電量無回報。' if cn else 'House power is not
+        reporting.' }}{% endif %} {% if sk %}{{ ' 太陽能發電 %s W。' % s if cn
+        else ' Solar generating **%s W**.' % s }}{% else %}{{ '
+        太陽能逆變器離線。' if cn else ' The solar inverter is offline, so
+        generation is unknown.' }}{% endif %}
+    - type: tile
+      entity: sensor.powerpal_gateway_powerpal_power
+      name: House power
+      icon: mdi:transmission-tower
+      grid_options: {columns: 6, rows: 1}
+      tap_action: {action: navigate, navigation_path: /casaray/energy}
+    - type: tile
+      entity: sensor.powerpal_gateway_powerpal_daily_energy
+      name: Used today
+      icon: mdi:counter
+      grid_options: {columns: 6, rows: 1}
+      tap_action: {action: navigate, navigation_path: /casaray/energy}
+    - type: tile
+      entity: sensor.primo_5_0_1_1_ac_power
+      name: Solar now
+      icon: mdi:solar-power-variant
+      grid_options: {columns: 6, rows: 1}
+      tap_action: {action: navigate, navigation_path: /casaray/energy}
+    - type: tile
+      entity: sensor.primo_5_0_1_1_energy_day
+      name: Solar today
+      icon: mdi:weather-sunny
+      grid_options: {columns: 6, rows: 1}
+      tap_action: {action: navigate, navigation_path: /casaray/energy}
+
+  # --- Rooms. P5: one line of state per room, tap to open. ---
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Rooms
+      heading_style: title
+      icon: mdi:floor-plan
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Living Room
+      icon: mdi:sofa
+      entity: light.living_room
+      show_state: true
+      tap_action: {action: navigate, navigation_path: /casaray/living-room}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Kitchen
+      icon: mdi:silverware-fork-knife
+      entity: binary_sensor.k_motion_sensor_motion
+      show_state: true
+      tap_action: {action: navigate, navigation_path: /casaray/kitchen}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Dining
+      icon: mdi:table-chair
+      entity: light.dining
+      show_state: true
+      tap_action: {action: navigate, navigation_path: /casaray/dining}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Parents Room
+      icon: mdi:bed-king
+      entity: climate.bedroom_parents_room_ac
+      show_state: true
+      tap_action: {action: navigate, navigation_path: /casaray/parents-room}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Ray Bedroom
+      icon: mdi:bed
+      entity: light.bedroom_bedroom
+      show_state: true
+      tap_action: {action: navigate, navigation_path: /casaray/ray-bedroom}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Garage
+      icon: mdi:garage
+      entity: switch.g_monitor_freezer_p110m
+      show_state: true
+      tap_action: {action: navigate, navigation_path: /casaray/garage}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Guest Room
+      icon: mdi:bed-empty
+      entity: switch.g_printer_p100
+      show_state: true
+      tap_action: {action: navigate, navigation_path: /casaray/guest-room}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Lighting
+      icon: mdi:lightbulb-group
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/lighting}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Climate
+      icon: mdi:thermometer
+      entity: sensor.bedroom_motion_sensor_temperature
+      show_state: true
+      tap_action: {action: navigate, navigation_path: /casaray/climate}
+
+  # --- Indoor climate at a glance. ---
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Indoor climate
+      heading_style: title
+      icon: mdi:home-thermometer
+    - type: tile
+      entity: sensor.living_room_living_hue_hue_sensor_temperature
+      name: Living Room
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.bedroom_motion_sensor_temperature
+      name: Parents Room
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.bedroom_motion_sensor_humidity
+      name: Humidity
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.living_room_living_hue_hue_sensor_illuminance
+      name: Light level
+      grid_options: {columns: 6, rows: 1}
+
+  # --- Cameras preview. ---
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Cameras
+      heading_style: title
+      icon: mdi:cctv
+      badges:
+      - type: entity
+        entity: camera.front_door_live_view
+    - type: picture-entity
+      entity: camera.front_door_live_view
+      name: Front Door
+      camera_view: auto
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/camera-front-door}
+    - type: button
+      name: All cameras
+      icon: mdi:cctv
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/cameras}
+
+  # --- Footer: weather and the next bill. ---
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Outside
+      heading_style: subtitle
+      icon: mdi:weather-partly-cloudy
+    - type: weather-forecast
+      entity: weather.forecast_home
+      forecast_type: daily
+      show_current: true
+      show_forecast: true
+      grid_options: {columns: 8, rows: 3}
+    - type: tile
+      entity: sensor.bills_outstanding_total
+      name: Outstanding bills
+      icon: mdi:cash-multiple
+      grid_options: {columns: 4, rows: 1}
+      tap_action: {action: navigate, navigation_path: /casaray/bills}
+    - type: tile
+      entity: sensor.bills_unpaid_count
+      name: Unpaid
+      icon: mdi:file-alert-outline
+      grid_options: {columns: 4, rows: 1}
+      tap_action: {action: navigate, navigation_path: /casaray/bills}
+    - type: button
+      grid_options: {columns: 4, rows: 1}
+      name: Language
+      icon: mdi:translate
+      entity: input_boolean.chinese_dashboard
+      show_state: true
+      tap_action: {action: toggle}
+
+# ===========================================================================
+# ROOMS -- index. The parent that every room's Back button returns to.
+# Lovelace has no native browser-back action, so Back is the logical parent.
+# ===========================================================================
+- type: sections
+  title: Rooms
+  path: rooms
+  icon: mdi:floor-plan
+  max_columns: 2
+  sections:
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/home}
+    - type: markdown
+      grid_options: {columns: 6, rows: 2}
+      content: >-
+        # {{ '房間' if is_state('input_boolean.chinese_dashboard','on') else
+        'Rooms' }}
+
+        {{ '選擇一個房間' if is_state('input_boolean.chinese_dashboard','on')
+        else 'Choose a room' }}
+    - type: markdown
+      grid_options: {columns: 4, rows: 2}
+      content: >-
+        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+
+        {{ now().strftime('%d/%m/%Y') }}
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 6, rows: 2}
+      name: Living Room
+      icon: mdi:sofa
+      entity: light.living_room
+      show_state: true
+      tap_action: {action: navigate, navigation_path: /casaray/living-room}
+    - type: button
+      grid_options: {columns: 6, rows: 2}
+      name: Kitchen
+      icon: mdi:silverware-fork-knife
+      entity: binary_sensor.k_motion_sensor_motion
+      show_state: true
+      tap_action: {action: navigate, navigation_path: /casaray/kitchen}
+    - type: button
+      grid_options: {columns: 6, rows: 2}
+      name: Dining
+      icon: mdi:table-chair
+      entity: light.dining
+      show_state: true
+      tap_action: {action: navigate, navigation_path: /casaray/dining}
+    - type: button
+      grid_options: {columns: 6, rows: 2}
+      name: Parents Room
+      icon: mdi:bed-king
+      entity: climate.bedroom_parents_room_ac
+      show_state: true
+      tap_action: {action: navigate, navigation_path: /casaray/parents-room}
+    - type: button
+      grid_options: {columns: 6, rows: 2}
+      name: Ray Bedroom
+      icon: mdi:bed
+      entity: light.bedroom_bedroom
+      show_state: true
+      tap_action: {action: navigate, navigation_path: /casaray/ray-bedroom}
+    - type: button
+      grid_options: {columns: 6, rows: 2}
+      name: Garage
+      icon: mdi:garage
+      entity: switch.g_monitor_freezer_p110m
+      show_state: true
+      tap_action: {action: navigate, navigation_path: /casaray/garage}
+    - type: button
+      grid_options: {columns: 6, rows: 2}
+      name: Guest Room
+      icon: mdi:bed-empty
+      entity: switch.g_printer_p100
+      show_state: true
+      tap_action: {action: navigate, navigation_path: /casaray/guest-room}
+    - type: button
+      grid_options: {columns: 6, rows: 2}
+      name: Backyard
+      icon: mdi:tree
+      entity: binary_sensor.b_contact_sensor_door
+      show_state: true
+      tap_action: {action: navigate, navigation_path: /casaray/security}
+
+# ===========================================================================
+# LIVING ROOM. Media, lighting and the front door live here.
+# The four Hue ambiance spots are retained and will read unavailable while
+# the bridge is down -- the cards are correct, the bridge is not answering.
+# ===========================================================================
+- type: sections
+  title: Living Room
+  path: living-room
+  icon: mdi:sofa
+  max_columns: 2
+  sections:
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Back
+      icon: mdi:arrow-left
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/rooms}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/home}
+    - type: markdown
+      grid_options: {columns: 4, rows: 2}
+      content: >-
+        # {{ '客廳' if is_state('input_boolean.chinese_dashboard','on') else
+        'Living Room' }}
+
+        {% set t = states('sensor.living_room_living_hue_hue_sensor_temperature')
+        %}{% set m = states('binary_sensor.living_room_living_hue_hue_sensor_motion')
+        %}{% if t not in ['unavailable','unknown','none',''] %}{{ t }} °C{% else
+        %}Temperature not reporting{% endif %}{% if m == 'on' %} · occupied{%
+        elif m == 'off' %} · no motion{% endif %}
+    - type: markdown
+      grid_options: {columns: 4, rows: 2}
+      content: >-
+        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+
+        {{ now().strftime('%d/%m/%Y') }}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Lights
+      heading_style: title
+      icon: mdi:lightbulb
+    - type: tile
+      entity: light.living_room
+      name: Living Room
+      features:
+      - type: light-brightness
+    - type: tile
+      entity: light.living_room_hue_ambiance_spot_1
+      name: Hue spot 1
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: light.living_room_hue_ambiance_spot_2
+      name: Hue spot 2
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: light.living_room_hue_ambiance_spot_3
+      name: Hue spot 3
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: light.living_room_hue_ambiance_spot_4
+      name: Hue spot 4
+      grid_options: {columns: 6, rows: 1}
+    - type: markdown
+      content: >-
+        {% set spots = ['light.living_room_hue_ambiance_spot_1',
+        'light.living_room_hue_ambiance_spot_2',
+        'light.living_room_hue_ambiance_spot_3',
+        'light.living_room_hue_ambiance_spot_4'] %} {% set ns =
+        namespace(down=0) %} {% for s in spots %}{% if states(s) in
+        ['unavailable','unknown'] %}{% set ns.down = ns.down + 1 %}{% endif %}{%
+        endfor %} {% if ns.down == 4 %}All four Hue spots are unavailable. The
+        Hue bridge is not answering — this is a bridge fault, not a dashboard
+        one.{% elif ns.down %}{{ ns.down }} of 4 Hue spots unavailable.{% endif %}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Power board
+      heading_style: title
+      icon: mdi:power-socket-au
+    - type: tile
+      entity: switch.genio_power_board_with_usb_livingroom_socket_1
+      name: Socket 1
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: switch.genio_power_board_with_usb_livingroom_socket_2
+      name: Socket 2
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: switch.genio_power_board_with_usb_livingroom_socket_3
+      name: Socket 3
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: switch.genio_power_board_with_usb_livingroom_socket_4
+      name: Socket 4
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: switch.genio_power_board_with_usb_livingroom_socket_5
+      name: Socket 5
+      grid_options: {columns: 6, rows: 1}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Entertainment
+      heading_style: title
+      icon: mdi:television
+    - type: media-control
+      entity: media_player.living_room_tv_samsung_q9_series_65
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Sensors
+      heading_style: title
+      icon: mdi:motion-sensor
+    - type: tile
+      entity: binary_sensor.living_room_living_hue_hue_sensor_motion
+      name: Motion
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.living_room_living_hue_hue_sensor_temperature
+      name: Temperature
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.living_room_living_hue_hue_sensor_illuminance
+      name: Light level
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: binary_sensor.f_contact_sensor_door
+      name: Front door
+      grid_options: {columns: 6, rows: 1}
+    - type: history-graph
+      hours_to_show: 12
+      entities:
+      - entity: sensor.living_room_living_hue_hue_sensor_temperature
+        name: Temperature
+      - entity: sensor.living_room_living_hue_hue_sensor_illuminance
+        name: Light
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Front door camera
+      heading_style: title
+      icon: mdi:doorbell-video
+    - type: picture-entity
+      entity: camera.front_door_live_view
+      name: Front Door
+      camera_view: auto
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/camera-front-door}
+    - type: tile
+      entity: sensor.front_door_battery
+      name: Doorbell battery
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.living_room_ringring_battery
+      name: RingRing battery
+      grid_options: {columns: 6, rows: 1}
+
+# ===========================================================================
+# KITCHEN. Appliances and cooking-oriented controls (briefing section 5).
+# ===========================================================================
+- type: sections
+  title: Kitchen
+  path: kitchen
+  icon: mdi:silverware-fork-knife
+  max_columns: 2
+  sections:
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Back
+      icon: mdi:arrow-left
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/rooms}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/home}
+    - type: markdown
+      grid_options: {columns: 4, rows: 2}
+      content: >-
+        # {{ '廚房' if is_state('input_boolean.chinese_dashboard','on') else
+        'Kitchen' }}
+
+        {% set m = states('binary_sensor.k_motion_sensor_motion') %}{% if m ==
+        'on' %}Someone is in the kitchen{% elif m == 'off' %}No motion{% else
+        %}Motion sensor not reporting{% endif %}
+    - type: markdown
+      grid_options: {columns: 4, rows: 2}
+      content: >-
+        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+
+        {{ now().strftime('%d/%m/%Y') }}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Bench plugs
+      heading_style: title
+      icon: mdi:power-socket-au
+    - type: tile
+      entity: switch.k_coffee_p100
+      name: Coffee
+      icon: mdi:coffee-maker
+    - type: tile
+      entity: switch.k_bot_p100
+      name: Bottom bench
+      icon: mdi:power-plug
+    - type: tile
+      entity: switch.k_top_p100
+      name: Top bench
+      icon: mdi:power-plug
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Fridge
+      heading_style: title
+      icon: mdi:fridge
+      badges:
+      - type: entity
+        entity: binary_sensor.lg_fridge_door
+    - type: tile
+      entity: binary_sensor.lg_fridge_door
+      name: Fridge door
+    - type: tile
+      entity: number.lg_fridge_fridge_temperature
+      name: Fridge setpoint
+      features:
+      - type: numeric-input
+        style: buttons
+    - type: tile
+      entity: number.lg_fridge_freezer_temperature
+      name: Freezer setpoint
+      features:
+      - type: numeric-input
+        style: buttons
+    - type: tile
+      entity: switch.lg_fridge_express_mode
+      name: Express mode
+      icon: mdi:snowflake-alert
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Sensors
+      heading_style: title
+      icon: mdi:motion-sensor
+    - type: tile
+      entity: binary_sensor.k_motion_sensor_motion
+      name: Motion
+      grid_options: {columns: 6, rows: 1}
+    - type: history-graph
+      hours_to_show: 24
+      grid_options: {columns: 12, rows: 3}
+      entities:
+      - entity: binary_sensor.k_motion_sensor_motion
+        name: Kitchen motion
+      - entity: binary_sensor.lg_fridge_door
+        name: Fridge door
+
+# ===========================================================================
+# DINING. Dining light, the motion group, and the pet feeder.
+# ===========================================================================
+- type: sections
+  title: Dining
+  path: dining
+  icon: mdi:table-chair
+  max_columns: 2
+  sections:
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Back
+      icon: mdi:arrow-left
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/rooms}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/home}
+    - type: markdown
+      grid_options: {columns: 4, rows: 2}
+      content: >-
+        # {{ '餐廳' if is_state('input_boolean.chinese_dashboard','on') else
+        'Dining' }}
+
+        {% set m = states('binary_sensor.sensor_group_motion') %}{% set l =
+        states('light.dining') %}{% if m == 'on' %}Occupied{% elif m == 'off'
+        %}No motion{% else %}Motion sensor not reporting{% endif %} · {% if l ==
+        'on' %}light on{% elif l == 'off' %}light off{% else %}light not
+        reporting{% endif %}
+    - type: markdown
+      grid_options: {columns: 4, rows: 2}
+      content: >-
+        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+
+        {{ now().strftime('%d/%m/%Y') }}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Lights
+      heading_style: title
+      icon: mdi:lightbulb
+    - type: tile
+      entity: light.dining
+      name: Dining light
+      features:
+      - type: light-brightness
+    - type: tile
+      entity: switch.dinning_light_switch_1
+      name: Wall switch
+      icon: mdi:light-switch
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Sensors
+      heading_style: title
+      icon: mdi:motion-sensor
+    - type: tile
+      entity: binary_sensor.sensor_group_motion
+      name: Motion
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.sensor_group_illuminance
+      name: Light level
+      grid_options: {columns: 6, rows: 1}
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Pet feeder
+      heading_style: title
+      icon: mdi:paw
+    - type: picture-entity
+      entity: camera.smart_pet_feeder
+      name: Pet Feeder
+      camera_view: auto
+      show_state: false
+      grid_options: {columns: 6, rows: 4}
+      tap_action: {action: navigate, navigation_path: /casaray/camera-pet-feeder}
+    - type: tile
+      entity: light.smart_pet_feeder_indicator_light
+      name: Indicator light
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: switch.smart_pet_feeder_motion_alarm
+      name: Motion alarm
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: switch.smart_pet_feeder_privacy_mode
+      name: Privacy mode
+      grid_options: {columns: 6, rows: 1}
+
+# ===========================================================================
+# PARENTS ROOM. The only climate entity in the house, so the native
+# thermostat card lives here. Emergency buttons are surfaced as connection
+# health -- they are the most safety-relevant devices on the dashboard.
+#
+# Name drift, deliberate: every bedroom_motion_sensor_* ID below is a
+# PARENTS ROOM reading. The device was renamed; the entity IDs kept the old
+# slug. Do not repoint these at Ray Bedroom. See docs/entity_inventory.md.
+# ===========================================================================
+- type: sections
+  title: Parents Room
+  path: parents-room
+  icon: mdi:bed-king
+  max_columns: 2
+  sections:
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Back
+      icon: mdi:arrow-left
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/rooms}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/home}
+    - type: markdown
+      grid_options: {columns: 4, rows: 2}
+      content: >-
+        # {{ '父母房' if is_state('input_boolean.chinese_dashboard','on') else
+        'Parents Room' }}
+
+        {% set t = states('sensor.bedroom_motion_sensor_temperature') %}{% set o
+        = states('binary_sensor.bedroom_parents_room_ac_room_occupied') %}{% if t
+        not in ['unavailable','unknown','none',''] %}{{ t }} °C{% else
+        %}Temperature not reporting{% endif %}{% if o == 'on' %} · occupied{%
+        elif o == 'off' %} · empty{% endif %}
+    - type: markdown
+      grid_options: {columns: 4, rows: 2}
+      content: >-
+        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+
+        {{ now().strftime('%d/%m/%Y') }}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Air conditioning
+      heading_style: title
+      icon: mdi:air-conditioner
+    - type: thermostat
+      entity: climate.bedroom_parents_room_ac
+      features:
+      - type: climate-hvac-modes
+      - type: climate-fan-modes
+    - type: tile
+      entity: switch.bedroom_parents_room_ac_climate_react
+      name: Climate React
+      icon: mdi:auto-mode
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: switch.bedroom_parents_room_ac_timer
+      name: AC timer
+      icon: mdi:timer-outline
+      grid_options: {columns: 6, rows: 1}
+    - type: conditional
+      conditions:
+      - condition: state
+        entity: switch.bedroom_parents_room_ac_timer
+        state: 'on'
+      card:
+        type: tile
+        entity: sensor.bedroom_parents_room_ac_timer_end_time
+        name: Timer ends
+        icon: mdi:timer-sand
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Lights
+      heading_style: title
+      icon: mdi:lightbulb
+    - type: tile
+      entity: switch.mainroomlight_switch_1
+      name: Main light
+      icon: mdi:light-switch
+    - type: heading
+      heading: Entertainment
+      heading_style: subtitle
+      icon: mdi:television
+    - type: media-control
+      entity: media_player.55_qled_4k_ai
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Emergency buttons
+      heading_style: title
+      icon: mdi:bell-alert
+    - type: markdown
+      content: >-
+        {% set d = states('binary_sensor.emergency_button_dad_cloud_connection')
+        %} {% set m =
+        states('binary_sensor.emergency_button_mum_cloud_connection') %} {% set
+        ns = namespace(down=0, unk=0) %} {% for s in [d, m] %}{% if s == 'off'
+        %}{% set ns.down = ns.down + 1 %}{% elif s != 'on' %}{% set ns.unk =
+        ns.unk + 1 %}{% endif %}{% endfor %} {% if ns.unk %}**{{ ns.unk }} of 2
+        emergency buttons are not reporting.** Their status cannot be
+        confirmed.{% elif ns.down %}**{{ ns.down }} of 2 emergency buttons are
+        offline.**{% else %}Both emergency buttons are connected.{% endif %}
+    - type: tile
+      entity: binary_sensor.emergency_button_dad_cloud_connection
+      name: Dad's button
+      icon: mdi:bell-ring
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: binary_sensor.emergency_button_mum_cloud_connection
+      name: Mum's button
+      icon: mdi:bell-ring
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.emergency_button_dad_signal_level
+      name: Dad's signal
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.emergency_button_mum_signal_level
+      name: Mum's signal
+      grid_options: {columns: 6, rows: 1}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Sensors
+      heading_style: title
+      icon: mdi:motion-sensor
+    - type: tile
+      entity: binary_sensor.bedroom_motion_sensor_motion
+      name: Motion
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: binary_sensor.bedroom_parents_room_ac_room_occupied
+      name: Occupancy
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.bedroom_motion_sensor_temperature
+      name: Temperature
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.bedroom_motion_sensor_humidity
+      name: Humidity
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: binary_sensor.m_contact_sensor_door
+      name: Door
+      grid_options: {columns: 6, rows: 1}
+    - type: history-graph
+      hours_to_show: 24
+      entities:
+      - entity: sensor.bedroom_motion_sensor_temperature
+        name: Temperature
+      - entity: sensor.bedroom_motion_sensor_humidity
+        name: Humidity
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: AC maintenance
+      heading_style: subtitle
+      icon: mdi:air-filter
+    - type: tile
+      entity: binary_sensor.bedroom_parents_room_ac_filter_clean_required
+      name: Filter clean required
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: sensor.bedroom_parents_room_ac_filter_last_reset
+      name: Filter last reset
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: button.bedroom_parents_room_ac_reset_filter
+      name: Reset filter
+      icon: mdi:restart
+      grid_options: {columns: 4, rows: 1}
+      tap_action: {action: toggle}
+    - type: tile
+      entity: update.bedroom_parents_room_ac_firmware
+      name: AC firmware
+      grid_options: {columns: 4, rows: 1}
+
+# ===========================================================================
+# RAY BEDROOM. Bed, blind, and the LetPot hydroponic grow unit, which is
+# genuinely room-specific content the old dashboard under-used.
+# ===========================================================================
+- type: sections
+  title: Ray Bedroom
+  path: ray-bedroom
+  icon: mdi:bed
+  max_columns: 2
+  sections:
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Back
+      icon: mdi:arrow-left
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/rooms}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/home}
+    - type: markdown
+      grid_options: {columns: 4, rows: 2}
+      content: >-
+        # {{ 'Ray 房間' if is_state('input_boolean.chinese_dashboard','on') else
+        'Ray Bedroom' }}
+
+        {% set l = states('light.bedroom_bedroom') %}{% set c =
+        states('cover.aqara_roller_shade_driver_e1') %}{% if l == 'on' %}Light
+        on{% elif l == 'off' %}Light off{% else %}Light not reporting{% endif %}
+        · {% if c in ['open','closed'] %}blind {{ c }}{% else %}blind not
+        reporting{% endif %}
+    - type: markdown
+      grid_options: {columns: 4, rows: 2}
+      content: >-
+        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+
+        {{ now().strftime('%d/%m/%Y') }}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Lights
+      heading_style: title
+      icon: mdi:lightbulb
+    - type: tile
+      entity: light.bedroom_bedroom
+      name: Bedroom light
+      features:
+      - type: light-brightness
+    - type: tile
+      entity: switch.bedroomlight_switch_1
+      name: Wall switch
+      icon: mdi:light-switch
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Blind
+      heading_style: title
+      icon: mdi:roller-shade
+    - type: tile
+      entity: cover.aqara_roller_shade_driver_e1
+      name: Roller shade
+      features:
+      - type: cover-open-close
+      - type: cover-position
+    - type: tile
+      entity: sensor.aqara_roller_shade_driver_e1_battery
+      name: Blind battery
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Grow unit
+      heading_style: title
+      icon: mdi:sprout
+      badges:
+      - type: entity
+        entity: number.lph_se_dcd9_plants_age
+    - type: tile
+      entity: switch.lph_se_dcd9_power
+      name: Power
+      icon: mdi:power
+    - type: tile
+      entity: switch.lph_se_dcd9_pump_cycling
+      name: Pump cycling
+      icon: mdi:water-sync
+    - type: tile
+      entity: binary_sensor.lph_se_dcd9_pump
+      name: Pump running
+      icon: mdi:water-pump
+    - type: tile
+      entity: select.lph_se_dcd9_light_mode
+      name: Light mode
+    - type: tile
+      entity: select.lph_se_dcd9_light_brightness
+      name: Light brightness
+    - type: tile
+      entity: number.lph_se_dcd9_plants_age
+      name: Plant age
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Power use
+      heading_style: title
+      icon: mdi:flash
+    - type: tile
+      entity: switch.r_energy_monitor_p110m
+      name: Energy monitor plug
+    - type: tile
+      entity: sensor.r_energy_monitor_p110m_current_consumption
+      name: Drawing now
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.r_energy_monitor_p110m_today_s_consumption
+      name: Used today
+      grid_options: {columns: 6, rows: 1}
+    - type: history-graph
+      hours_to_show: 24
+      entities:
+      - entity: sensor.r_energy_monitor_p110m_current_consumption
+        name: Power
+
+# ===========================================================================
+# GARAGE. Freezer monitoring and workshop power. There is no cover entity
+# in Garage, so there is no garage-door control -- the mockup's "Open Door"
+# has nothing behind it and is deliberately absent.
+# ===========================================================================
+- type: sections
+  title: Garage
+  path: garage
+  icon: mdi:garage
+  max_columns: 2
+  sections:
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Back
+      icon: mdi:arrow-left
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/rooms}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/home}
+    - type: markdown
+      grid_options: {columns: 4, rows: 2}
+      content: >-
+        # {{ '車庫' if is_state('input_boolean.chinese_dashboard','on') else
+        'Garage' }}
+
+        {% set p = states('sensor.g_monitor_freezer_p110m_current_consumption')
+        %}{% if p not in ['unavailable','unknown','none',''] %}Freezer drawing {{
+        p }} W{% else %}Freezer monitor not reporting{% endif %}
+    - type: markdown
+      grid_options: {columns: 4, rows: 2}
+      content: >-
+        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+
+        {{ now().strftime('%d/%m/%Y') }}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Freezer
+      heading_style: title
+      icon: mdi:snowflake
+      badges:
+      - type: entity
+        entity: binary_sensor.g_monitor_freezer_p110m_overloaded
+    - type: tile
+      entity: switch.g_monitor_freezer_p110m
+      name: Freezer plug
+      icon: mdi:power-plug
+    - type: markdown
+      content: >-
+        {% set o = states('binary_sensor.g_monitor_freezer_p110m_overloaded') %}
+        {% set s = states('switch.g_monitor_freezer_p110m') %} {% if o == 'on'
+        %}**The freezer circuit is overloaded.** Check the appliance before
+        resetting.{% elif o == 'off' and s == 'on' %}Freezer running normally.{%
+        elif s == 'off' %}**The freezer plug is switched off.**{% else %}Freezer
+        monitor is not reporting.{% endif %}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Electrical
+      heading_style: title
+      icon: mdi:flash
+    - type: tile
+      entity: sensor.g_monitor_freezer_p110m_current_consumption
+      name: Power
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.g_monitor_freezer_p110m_today_s_consumption
+      name: Today
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.g_monitor_freezer_p110m_current
+      name: Current
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.g_monitor_freezer_p110m_voltage
+      name: Voltage
+      grid_options: {columns: 6, rows: 1}
+    - type: history-graph
+      hours_to_show: 24
+      entities:
+      - entity: sensor.g_monitor_freezer_p110m_current_consumption
+        name: Freezer power
+
+# ===========================================================================
+# GUEST ROOM. Printer plug and the Kogan TV. Both TV entities read
+# unavailable at inventory time; the cards are retained and honest.
+# ===========================================================================
+- type: sections
+  title: Guest Room
+  path: guest-room
+  icon: mdi:bed-empty
+  max_columns: 2
+  sections:
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Back
+      icon: mdi:arrow-left
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/rooms}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/home}
+    - type: markdown
+      grid_options: {columns: 4, rows: 2}
+      content: >-
+        # {{ '客房' if is_state('input_boolean.chinese_dashboard','on') else
+        'Guest Room' }}
+
+        {% set p = states('switch.g_printer_p100') %}{% if p == 'on' %}Printer
+        on{% elif p == 'off' %}Printer off{% else %}Printer plug not reporting{%
+        endif %}
+    - type: markdown
+      grid_options: {columns: 4, rows: 2}
+      content: >-
+        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+
+        {{ now().strftime('%d/%m/%Y') }}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Printer
+      heading_style: title
+      icon: mdi:printer
+    - type: tile
+      entity: switch.g_printer_p100
+      name: Printer plug
+    - type: tile
+      entity: switch.g_printer_p100_led
+      name: Plug LED
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: switch.g_printer_p100_auto_off_enabled
+      name: Auto off
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: number.g_printer_p100_turn_off_in
+      name: Turn off in
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.g_printer_p100_auto_off_at
+      name: Auto off at
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: switch.g_printer_p100_auto_update_enabled
+      name: Auto update
+      grid_options: {columns: 6, rows: 1}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Entertainment
+      heading_style: title
+      icon: mdi:television
+    - type: tile
+      entity: light.kogan_tv
+      name: Kogan TV backlight
+    - type: media-control
+      entity: media_player.pogo
+
+# ===========================================================================
+# LIGHTING. Whole-house light control. The briefing's Lighting Studio also
+# wants scenes: 29 Hue scenes exist live but their entity IDs cannot be read
+# from this environment, and guessing one would be inventing an entity ID.
+# Scene rows are therefore absent, not stubbed. See blocker B1.
+# ===========================================================================
+- type: sections
+  title: Lighting
+  path: lighting
+  icon: mdi:lightbulb-group
+  max_columns: 2
+  sections:
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/home}
+    - type: markdown
+      grid_options: {columns: 6, rows: 2}
+      content: >-
+        # {{ '燈光' if is_state('input_boolean.chinese_dashboard','on') else
+        'Lighting' }}
+
+        {% set ls = ['light.living_room', 'light.dining',
+        'light.bedroom_bedroom', 'light.kogan_tv',
+        'light.smart_pet_feeder_indicator_light'] %} {% set ns =
+        namespace(on=0, unk=0) %} {% for l in ls %}{% set s = states(l) %}{% if s
+        == 'on' %}{% set ns.on = ns.on + 1 %}{% elif s != 'off' %}{% set ns.unk =
+        ns.unk + 1 %}{% endif %}{% endfor %} {{ ns.on }} of {{ ls | count }}
+        lights on{% if ns.unk %} · {{ ns.unk }} not reporting{% endif %}
+    - type: markdown
+      grid_options: {columns: 4, rows: 2}
+      content: >-
+        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+
+        {{ now().strftime('%d/%m/%Y') }}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Main lights
+      heading_style: title
+      icon: mdi:lightbulb
+    - type: tile
+      entity: light.living_room
+      name: Living Room
+      features:
+      - type: light-brightness
+    - type: tile
+      entity: light.dining
+      name: Dining
+      features:
+      - type: light-brightness
+    - type: tile
+      entity: light.bedroom_bedroom
+      name: Ray Bedroom
+      features:
+      - type: light-brightness
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Wall switches
+      heading_style: title
+      icon: mdi:light-switch
+    - type: tile
+      entity: switch.mainroomlight_switch_1
+      name: Parents Room
+    - type: tile
+      entity: switch.dinning_light_switch_1
+      name: Dining
+    - type: tile
+      entity: switch.bedroomlight_switch_1
+      name: Ray Bedroom
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Living Room Hue
+      heading_style: title
+      icon: mdi:lightbulb-multiple
+    - type: tile
+      entity: light.living_room_hue_ambiance_spot_1
+      name: Spot 1
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: light.living_room_hue_ambiance_spot_2
+      name: Spot 2
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: light.living_room_hue_ambiance_spot_3
+      name: Spot 3
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: light.living_room_hue_ambiance_spot_4
+      name: Spot 4
+      grid_options: {columns: 6, rows: 1}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Other lights
+      heading_style: title
+      icon: mdi:lightbulb-outline
+    - type: tile
+      entity: light.smart_pet_feeder_indicator_light
+      name: Pet feeder indicator
+    - type: tile
+      entity: light.kogan_tv
+      name: Kogan TV backlight
+
+# ===========================================================================
+# CLIMATE. One climate entity and four temperature/humidity readings.
+# No whole-house HVAC exists, so this interprets rather than pretends.
+# ===========================================================================
+- type: sections
+  title: Climate
+  path: climate
+  icon: mdi:thermometer
+  max_columns: 2
+  sections:
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/home}
+    - type: markdown
+      grid_options: {columns: 6, rows: 2}
+      content: >-
+        # {{ '氣候' if is_state('input_boolean.chinese_dashboard','on') else
+        'Climate' }}
+
+        {% set ts = ['sensor.living_room_living_hue_hue_sensor_temperature',
+        'sensor.bedroom_motion_sensor_temperature'] %} {% set ns =
+        namespace(sum=0.0, n=0, unk=0) %} {% for t in ts %}{% set s = states(t)
+        %}{% if s in ['unavailable','unknown','none',''] %}{% set ns.unk =
+        ns.unk + 1 %}{% else %}{% set f = s | float(-999) %}{% if f > -900 %}{%
+        set ns.sum = ns.sum + f %}{% set ns.n = ns.n + 1 %}{% else %}{% set
+        ns.unk = ns.unk + 1 %}{% endif %}{% endif %}{% endfor %} {% if ns.n
+        %}Indoor average {{ (ns.sum / ns.n) | round(1) }} °C across {{ ns.n }}
+        {{ 'room' if ns.n == 1 else 'rooms' }}{% if ns.unk %} · {{ ns.unk }} not
+        reporting{% endif %}{% else %}No indoor temperature is reporting.{% endif %}
+    - type: markdown
+      grid_options: {columns: 4, rows: 2}
+      content: >-
+        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+
+        {{ now().strftime('%d/%m/%Y') }}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Parents Room AC
+      heading_style: title
+      icon: mdi:air-conditioner
+    - type: thermostat
+      entity: climate.bedroom_parents_room_ac
+      features:
+      - type: climate-hvac-modes
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Readings
+      heading_style: title
+      icon: mdi:thermometer-lines
+    - type: tile
+      entity: sensor.living_room_living_hue_hue_sensor_temperature
+      name: Living Room
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.bedroom_motion_sensor_temperature
+      name: Parents Room
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.bedroom_motion_sensor_humidity
+      name: Parents Room humidity
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: weather.forecast_home
+      name: Outside
+      grid_options: {columns: 6, rows: 1}
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Last 24 hours
+      heading_style: subtitle
+      icon: mdi:chart-line
+    - type: history-graph
+      hours_to_show: 24
+      grid_options: {columns: 12, rows: 4}
+      entities:
+      - entity: sensor.living_room_living_hue_hue_sensor_temperature
+        name: Living Room
+      - entity: sensor.bedroom_motion_sensor_temperature
+        name: Parents Room
+      - entity: sensor.bedroom_motion_sensor_humidity
+        name: Parents humidity
+
+# ===========================================================================
+# ENERGY. Powerpal is whole-house; the Fronius Primo inverter is currently
+# offline and every read of it is guarded. No grid import/export sensor and
+# no battery entity exists, so those mockup panels are absent.
+# ===========================================================================
+- type: sections
+  title: Energy
+  path: energy
+  icon: mdi:lightning-bolt
+  max_columns: 2
+  sections:
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/home}
+    - type: markdown
+      grid_options: {columns: 6, rows: 2}
+      content: >-
+        # {{ '能源' if is_state('input_boolean.chinese_dashboard','on') else
+        'Energy' }}
+
+        {% set p = states('sensor.powerpal_gateway_powerpal_power') %}{% if p not
+        in ['unavailable','unknown','none',''] %}{{ p }} W now{% else %}House
+        power not reporting{% endif %}
+    - type: markdown
+      grid_options: {columns: 4, rows: 2}
+      content: >-
+        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+
+        {{ now().strftime('%d/%m/%Y') }}
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Right now
+      heading_style: title
+      icon: mdi:flash
+    - type: markdown
+      content: >-
+        {% set p = states('sensor.powerpal_gateway_powerpal_power') %} {% set s =
+        states('sensor.primo_5_0_1_1_ac_power') %} {% set pk = p not in
+        ['unavailable','unknown','none',''] and p | float(-1) >= 0 %} {% set sk =
+        s not in ['unavailable','unknown','none',''] and s | float(-1) >= 0 %} {%
+        if pk and sk %}{% set pf = p | float(-1) %}{% set sf = s | float(-1) %}{%
+        if pf > 0 %}Solar is supplying **{{ ((sf / pf) * 100) | round(0) | int
+        }}%** of household demand.{% else %}House draw is {{ pf }} W.{% endif %}{%
+        elif pk %}Drawing **{{ p }} W**. The solar inverter is offline, so solar
+        contribution cannot be calculated.{% elif sk %}Solar generating **{{ s }}
+        W**. House consumption is not reporting.{% else %}Neither the house power
+        meter nor the solar inverter is reporting right now.{% endif %}
+    - type: tile
+      entity: sensor.powerpal_gateway_powerpal_power
+      name: House power
+      icon: mdi:transmission-tower
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.primo_5_0_1_1_ac_power
+      name: Solar power
+      icon: mdi:solar-power-variant
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.powerpal_gateway_powerpal_daily_energy
+      name: House today
+      icon: mdi:counter
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.primo_5_0_1_1_energy_day
+      name: Solar today
+      icon: mdi:weather-sunny
+      grid_options: {columns: 6, rows: 1}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Solar system
+      heading_style: title
+      icon: mdi:solar-panel
+    - type: markdown
+      content: >-
+        {% set s = states('sensor.primo_5_0_1_1_ac_power') %} {% if s in
+        ['unavailable','unknown'] %}**The Fronius Primo inverter is offline.**
+        Every solar reading below is stale or absent until it reconnects. This is
+        a hardware or network fault, not a dashboard one.{% else %}Inverter
+        reporting normally.{% endif %}
+    - type: tile
+      entity: sensor.primo_5_0_1_1_energy_year
+      name: Solar this year
+    - type: tile
+      entity: sensor.primo_5_0_1_1_total_energy
+      name: Solar lifetime
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Metered circuits
+      heading_style: title
+      icon: mdi:meter-electric
+    - type: tile
+      entity: sensor.r_energy_monitor_p110m_current_consumption
+      name: Ray Bedroom now
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.r_energy_monitor_p110m_today_s_consumption
+      name: Ray Bedroom today
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.g_monitor_freezer_p110m_current_consumption
+      name: Garage freezer now
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.g_monitor_freezer_p110m_today_s_consumption
+      name: Garage freezer today
+      grid_options: {columns: 6, rows: 1}
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Trend
+      heading_style: subtitle
+      icon: mdi:chart-areaspline
+    - type: statistics-graph
+      grid_options: {columns: 12, rows: 4}
+      days_to_show: 30
+      period: day
+      stat_types:
+      - state
+      chart_type: bar
+      entities:
+      - entity: sensor.powerpal_gateway_powerpal_daily_energy
+        name: House daily energy
+    - type: tile
+      entity: sensor.powerpal_gateway_powerpal_total_energy
+      name: Meter lifetime total
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.powerpal_gateway_powerpal_battery
+      name: Powerpal battery
+      grid_options: {columns: 6, rows: 1}
+
+# ===========================================================================
+# BILLS. A household accounting board, not a card collection.
+#
+# CURRENTLY FUNCTIONAL: amount, due date, billing period, paid/unpaid,
+# account identifiers, provider, per-utility usage, and the two roll-up
+# sensors. All of it rests on helpers that HA computes.
+#
+# FUTURE INTEGRATION / DATA SOURCE REQUIRED, and therefore absent here
+# rather than stubbed:
+#   - spending trend and payment history: billing/history.json has no
+#     mechanism to reach Lovelace (blocker B6)
+#   - year-to-date paid and year-to-date savings: no YTD sensor exists
+#   - discounts, tariffs and daily supply charge: no helper carries them
+#   - automated ingestion from email or documents: no integration exists
+#
+# All 51 input_* bill helpers are canonical IDs taken from the production
+# dashboard, but only input_boolean.chinese_dashboard could be confirmed
+# against the live instance. The rest are unverified -- see the delivery
+# report's verification list.
+# ===========================================================================
+- type: sections
+  title: Bills
+  path: bills
+  icon: mdi:file-document-outline
+  max_columns: 2
+  sections:
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/home}
+    - type: markdown
+      grid_options: {columns: 6, rows: 2}
+      content: >-
+        # {{ '帳單' if is_state('input_boolean.chinese_dashboard','on') else
+        'Bills' }}
+
+        {{ '家庭開支與到期日' if is_state('input_boolean.chinese_dashboard','on')
+        else 'Household expenses and due dates' }}
+    - type: markdown
+      grid_options: {columns: 4, rows: 2}
+      content: >-
+        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+
+        {{ now().strftime('%d/%m/%Y') }}
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Overview
+      heading_style: title
+      icon: mdi:cash-multiple
+    - type: markdown
+      content: >-
+        {% set dues = [('Electricity','input_datetime.elec_bill_due',
+        'input_boolean.elec_bill_paid'),
+        ('Gas','input_datetime.gas_bill_due','input_boolean.gas_bill_paid'),
+        ('Water','input_datetime.water_bill_due','input_boolean.water_bill_paid'),
+        ('Council rates','input_datetime.council_rate_due',
+        'input_boolean.council_rate_paid'),
+        ('Car insurance','input_datetime.car_insurance_due',
+        'input_boolean.car_insurance_paid'),
+        ('Rego','input_datetime.rego_due','input_boolean.rego_paid')] %} {% set
+        ns = namespace(soonest=99999, name='', overdue=0, unk=0) %} {% for n, d,
+        p in dues %}{% set ds = states(d) %}{% set ps = states(p) %}{% if ds in
+        ['unavailable','unknown','none',''] %}{% set ns.unk = ns.unk + 1 %}{%
+        elif ps != 'on' %}{% set ts = as_timestamp(ds, 0) %}{% if ts > 0 %}{% set
+        days = ((ts - as_timestamp(now())) / 86400) | round(0) | int %}{% if days
+        < 0 %}{% set ns.overdue = ns.overdue + 1 %}{% endif %}{% if days <
+        ns.soonest %}{% set ns.soonest = days %}{% set ns.name = n %}{% endif
+        %}{% else %}{% set ns.unk = ns.unk + 1 %}{% endif %}{% endif %}{% endfor
+        %} {% if ns.overdue %}**{{ ns.overdue }} bill{{ 's' if ns.overdue > 1
+        else '' }} overdue.** {% endif %}{% if ns.name %}Next up: **{{ ns.name
+        }}**{% if ns.soonest < 0 %}, {{ ns.soonest | abs }} days overdue.{% elif
+        ns.soonest == 0 %}, due today.{% else %}, due in {{ ns.soonest }} days.{%
+        endif %}{% elif ns.unk == 0 %}Everything is paid.{% endif %}{% if ns.unk
+        %} {{ ns.unk }} bill date{{ 's' if ns.unk > 1 else '' }} not reporting.{%
+        endif %}
+    - type: tile
+      entity: sensor.bills_outstanding_total
+      name: Outstanding
+      icon: mdi:cash
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.bills_unpaid_count
+      name: Unpaid bills
+      icon: mdi:file-alert-outline
+      grid_options: {columns: 6, rows: 1}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Electricity
+      heading_style: title
+      icon: mdi:flash
+      badges:
+      - type: entity
+        entity: input_boolean.elec_bill_paid
+    - type: tile
+      entity: input_number.elec_bill_amount
+      name: Amount due
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_datetime.elec_bill_due
+      name: Due date
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_boolean.elec_bill_paid
+      name: Paid
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.elec_last_bill_amount
+      name: Last bill
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.electricity_bill_estimate
+      name: Estimate
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.electricity_bill_status
+      name: Status
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.electricity_billing_cycle
+      name: Billing cycle
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_datetime.elec_bill_period_start
+      name: Period start
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_text.elec_account_number
+      name: Account
+      grid_options: {columns: 12, rows: 1}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Gas
+      heading_style: title
+      icon: mdi:fire
+      badges:
+      - type: entity
+        entity: input_boolean.gas_bill_paid
+    - type: tile
+      entity: input_number.gas_bill_amount
+      name: Amount due
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_datetime.gas_bill_due
+      name: Due date
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_boolean.gas_bill_paid
+      name: Paid
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.gas_last_bill_amount
+      name: Last bill
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.gas_bill_mj
+      name: Usage
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.gas_bill_estimate
+      name: Estimate
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.gas_bill_status
+      name: Status
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_datetime.gas_bill_period_start
+      name: Period start
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_text.gas_account_number
+      name: Account
+      grid_options: {columns: 12, rows: 1}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Water
+      heading_style: title
+      icon: mdi:water
+      badges:
+      - type: entity
+        entity: input_boolean.water_bill_paid
+    - type: tile
+      entity: input_number.water_bill_amount
+      name: Amount due
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_datetime.water_bill_due
+      name: Due date
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_boolean.water_bill_paid
+      name: Paid
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.water_last_bill_amount
+      name: Last bill
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.water_bill_usage_kl
+      name: Usage
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_text.water_provider
+      name: Provider
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_datetime.water_bill_period_start
+      name: Period start
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_datetime.water_bill_period_end
+      name: Period end
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_text.water_account_number
+      name: Account
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_text.water_property
+      name: Property
+      grid_options: {columns: 6, rows: 1}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Council rates
+      heading_style: title
+      icon: mdi:city-variant-outline
+      badges:
+      - type: entity
+        entity: input_boolean.council_rate_paid
+    - type: tile
+      entity: input_number.council_rate_amount
+      name: Amount due
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_datetime.council_rate_due
+      name: Due date
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_boolean.council_rate_paid
+      name: Paid
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.council_rate_last_amount
+      name: Last amount
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_datetime.council_rate_period_start
+      name: Period start
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_datetime.council_rate_period_end
+      name: Period end
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_text.council_rate_council
+      name: Council
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_text.council_rate_assessment_number
+      name: Assessment
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_text.council_rate_property
+      name: Property
+      grid_options: {columns: 12, rows: 1}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Car insurance
+      heading_style: title
+      icon: mdi:car-key
+      badges:
+      - type: entity
+        entity: input_boolean.car_insurance_paid
+    - type: tile
+      entity: input_number.car_insurance_amount
+      name: Amount due
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_datetime.car_insurance_due
+      name: Due date
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_boolean.car_insurance_paid
+      name: Paid
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.car_insurance_last_amount
+      name: Last amount
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_datetime.car_insurance_period_start
+      name: Period start
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_datetime.car_insurance_period_end
+      name: Period end
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_text.car_insurance_provider
+      name: Provider
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_text.car_insurance_vehicle
+      name: Vehicle
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_text.car_insurance_registration
+      name: Registration
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_text.car_insurance_policy_number
+      name: Policy
+      grid_options: {columns: 6, rows: 1}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Registration
+      heading_style: title
+      icon: mdi:card-account-details-outline
+      badges:
+      - type: entity
+        entity: input_boolean.rego_paid
+    - type: tile
+      entity: input_number.rego_amount
+      name: Amount due
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_datetime.rego_due
+      name: Due date
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_boolean.rego_paid
+      name: Paid
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.rego_last_amount
+      name: Last amount
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_text.rego_vehicle
+      name: Vehicle
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_text.rego_plate
+      name: Plate
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_text.rego_customer_number
+      name: Customer number
+      grid_options: {columns: 12, rows: 1}
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Not yet available
+      heading_style: subtitle
+      icon: mdi:database-clock-outline
+    - type: markdown
+      content: >-
+        Spending trend, payment history, year-to-date paid and year-to-date
+        savings are **not shown because no data source produces them yet**.
+        `billing/history.json` exists but has no mechanism to reach Lovelace,
+        and no year-to-date sensor exists. Discounts, tariffs and the daily
+        supply charge have no helper behind them. These panels will appear when
+        the data does — showing an empty chart in the meantime would imply the
+        history is there and merely zero.
+
+# ===========================================================================
+# SECURITY. Doors, motion, camera health. There is no alarm_control_panel
+# and no lock entity in this instance, so there is no arm/disarm control and
+# no lock row -- the mockup's "Armed (Away)" and "Front Door unlocked" have
+# no source. Their absence is the honest state, not an omission.
+# ===========================================================================
+- type: sections
+  title: Security
+  path: security
+  icon: mdi:shield-home
+  max_columns: 2
+  sections:
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/home}
+    - type: markdown
+      grid_options: {columns: 6, rows: 2}
+      content: >-
+        # {{ '安全' if is_state('input_boolean.chinese_dashboard','on') else
+        'Security' }}
+
+        {% set doors = ['binary_sensor.f_contact_sensor_door',
+        'binary_sensor.m_contact_sensor_door',
+        'binary_sensor.b_contact_sensor_door'] %} {% set ns = namespace(open=0,
+        unk=0) %} {% for d in doors %}{% set s = states(d) %}{% if s == 'on' %}{%
+        set ns.open = ns.open + 1 %}{% elif s != 'off' %}{% set ns.unk = ns.unk +
+        1 %}{% endif %}{% endfor %} {% if ns.unk %}{{ ns.unk }} of 3 door sensors
+        not reporting{% elif ns.open %}{{ ns.open }} of 3 doors open{% else
+        %}All doors closed{% endif %}
+    - type: markdown
+      grid_options: {columns: 4, rows: 2}
+      content: >-
+        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+
+        {{ now().strftime('%d/%m/%Y') }}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Doors
+      heading_style: title
+      icon: mdi:door
+    - type: tile
+      entity: binary_sensor.f_contact_sensor_door
+      name: Front door
+    - type: tile
+      entity: binary_sensor.m_contact_sensor_door
+      name: Parents Room door
+    - type: tile
+      entity: binary_sensor.b_contact_sensor_door
+      name: Backyard door
+    - type: history-graph
+      hours_to_show: 24
+      entities:
+      - entity: binary_sensor.f_contact_sensor_door
+        name: Front
+      - entity: binary_sensor.m_contact_sensor_door
+        name: Parents
+      - entity: binary_sensor.b_contact_sensor_door
+        name: Backyard
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Motion
+      heading_style: title
+      icon: mdi:motion-sensor
+    - type: tile
+      entity: binary_sensor.living_room_living_hue_hue_sensor_motion
+      name: Living Room
+    - type: tile
+      entity: binary_sensor.k_motion_sensor_motion
+      name: Kitchen
+    - type: tile
+      entity: binary_sensor.sensor_group_motion
+      name: Dining
+    - type: tile
+      entity: binary_sensor.bedroom_motion_sensor_motion
+      name: Parents Room
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Camera health
+      heading_style: title
+      icon: mdi:cctv
+    - type: markdown
+      content: >-
+        {% set cams = [('Front Door','camera.front_door_live_view'), ('North
+        Wall','camera.tapo_c425_north_wall_hd_stream_direct'), ('East
+        Wall','camera.tapo_c420_east_wall_hd_stream_direct'), ('South
+        Wall','camera.tapo_c420_south_wall_hd_stream_direct'),
+        ('Stockroom','camera.tapo_c200_stockroom_hd_stream_direct'), ('Pet
+        Feeder','camera.smart_pet_feeder')] %} {% set ns = namespace(down=[]) %}
+        {% for n, c in cams %}{% if states(c) in ['unavailable','unknown'] %}{%
+        set ns.down = ns.down + [n] %}{% endif %}{% endfor %} {% if ns.down |
+        count %}**{{ ns.down | count }} of {{ cams | count }} cameras
+        offline:** {{ ns.down | join(', ') }}.{% else %}All {{ cams | count }}
+        cameras online.{% endif %}
+    - type: tile
+      entity: camera.front_door_live_view
+      name: Front Door
+      grid_options: {columns: 4, rows: 1}
+      tap_action: {action: navigate, navigation_path: /casaray/camera-front-door}
+    - type: tile
+      entity: camera.tapo_c425_north_wall_hd_stream_direct
+      name: North Wall
+      grid_options: {columns: 4, rows: 1}
+      tap_action: {action: navigate, navigation_path: /casaray/camera-north-wall}
+    - type: tile
+      entity: camera.tapo_c420_east_wall_hd_stream_direct
+      name: East Wall
+      grid_options: {columns: 4, rows: 1}
+      tap_action: {action: navigate, navigation_path: /casaray/camera-east-wall}
+    - type: tile
+      entity: camera.tapo_c420_south_wall_hd_stream_direct
+      name: South Wall
+      grid_options: {columns: 4, rows: 1}
+      tap_action: {action: navigate, navigation_path: /casaray/camera-south-wall}
+    - type: tile
+      entity: camera.tapo_c200_stockroom_hd_stream_direct
+      name: Stockroom
+      grid_options: {columns: 4, rows: 1}
+      tap_action: {action: navigate, navigation_path: /casaray/camera-stockroom}
+    - type: tile
+      entity: camera.smart_pet_feeder
+      name: Pet Feeder
+      grid_options: {columns: 4, rows: 1}
+      tap_action: {action: navigate, navigation_path: /casaray/camera-pet-feeder}
+
+# ===========================================================================
+# CAMERAS -- overview grid, then one subview per camera for the live stream.
+# picture-entity for the grid (cheap, native); custom:webrtc-camera only on
+# the detail views, where a low-latency stream has no native equivalent.
+# ===========================================================================
+- type: sections
+  title: Cameras
+  path: cameras
+  icon: mdi:cctv
+  max_columns: 2
+  sections:
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/home}
+    - type: markdown
+      grid_options: {columns: 6, rows: 2}
+      content: >-
+        # {{ '攝影機' if is_state('input_boolean.chinese_dashboard','on') else
+        'Cameras' }}
+
+        {{ '點擊放大即時畫面' if is_state('input_boolean.chinese_dashboard','on')
+        else 'Tap a camera for the live view' }}
+    - type: markdown
+      grid_options: {columns: 4, rows: 2}
+      content: >-
+        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+
+        {{ now().strftime('%d/%m/%Y') }}
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: picture-entity
+      entity: camera.front_door_live_view
+      name: Front Door
+      camera_view: auto
+      show_state: false
+      grid_options: {columns: 6, rows: 4}
+      tap_action: {action: navigate, navigation_path: /casaray/camera-front-door}
+    - type: picture-entity
+      entity: camera.tapo_c425_north_wall_hd_stream_direct
+      name: North Wall
+      camera_view: auto
+      show_state: false
+      grid_options: {columns: 6, rows: 4}
+      tap_action: {action: navigate, navigation_path: /casaray/camera-north-wall}
+    - type: picture-entity
+      entity: camera.tapo_c200_stockroom_hd_stream_direct
+      name: Stockroom
+      camera_view: auto
+      show_state: false
+      grid_options: {columns: 6, rows: 4}
+      tap_action: {action: navigate, navigation_path: /casaray/camera-stockroom}
+    - type: picture-entity
+      entity: camera.smart_pet_feeder
+      name: Pet Feeder
+      camera_view: auto
+      show_state: false
+      grid_options: {columns: 6, rows: 4}
+      tap_action: {action: navigate, navigation_path: /casaray/camera-pet-feeder}
+    - type: picture-entity
+      entity: camera.tapo_c420_east_wall_hd_stream_direct
+      name: East Wall
+      camera_view: auto
+      show_state: false
+      grid_options: {columns: 6, rows: 4}
+      tap_action: {action: navigate, navigation_path: /casaray/camera-east-wall}
+    - type: picture-entity
+      entity: camera.tapo_c420_south_wall_hd_stream_direct
+      name: South Wall
+      camera_view: auto
+      show_state: false
+      grid_options: {columns: 6, rows: 4}
+      tap_action: {action: navigate, navigation_path: /casaray/camera-south-wall}
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Camera batteries
+      heading_style: subtitle
+      icon: mdi:battery
+    - type: tile
+      entity: sensor.front_door_battery
+      name: Front Door
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: sensor.tapo_c425_north_wall_battery
+      name: North Wall
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: sensor.tapo_c420_east_wall_battery
+      name: East Wall
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: sensor.tapo_c420_south_wall_battery
+      name: South Wall
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: sensor.tapo_camera_bcca_battery
+      name: Backyard
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: sensor.living_room_ringring_battery
+      name: RingRing
+      grid_options: {columns: 4, rows: 1}
+
+- type: sections
+  title: Front Door
+  path: camera-front-door
+  icon: mdi:doorbell-video
+  subview: true
+  max_columns: 1
+  sections:
+  - type: grid
+    cards:
+    - type: button
+      grid_options: {columns: 3, rows: 1}
+      name: Cameras
+      icon: mdi:arrow-left
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/cameras}
+    - type: custom:webrtc-camera
+      entity: camera.front_door_live_view
+      title: Front Door
+      mode: webrtc,webrtc/tcp,mse,hls,mjpeg
+      media: video,audio
+      muted: true
+      ui: true
+    - type: tile
+      entity: sensor.front_door_battery
+      name: Doorbell battery
+    - type: tile
+      entity: binary_sensor.f_contact_sensor_door
+      name: Front door contact
+
+- type: sections
+  title: North Wall
+  path: camera-north-wall
+  icon: mdi:cctv
+  subview: true
+  max_columns: 1
+  sections:
+  - type: grid
+    cards:
+    - type: button
+      grid_options: {columns: 3, rows: 1}
+      name: Cameras
+      icon: mdi:arrow-left
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/cameras}
+    - type: custom:webrtc-camera
+      entity: camera.tapo_c425_north_wall_hd_stream_direct
+      title: North Wall
+      mode: webrtc,webrtc/tcp,mse,hls,mjpeg
+      media: video,audio
+      muted: true
+      ui: true
+    - type: tile
+      entity: sensor.tapo_c425_north_wall_battery
+      name: Camera battery
+
+- type: sections
+  title: East Wall
+  path: camera-east-wall
+  icon: mdi:cctv
+  subview: true
+  max_columns: 1
+  sections:
+  - type: grid
+    cards:
+    - type: button
+      grid_options: {columns: 3, rows: 1}
+      name: Cameras
+      icon: mdi:arrow-left
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/cameras}
+    - type: custom:webrtc-camera
+      entity: camera.tapo_c420_east_wall_hd_stream_direct
+      title: East Wall
+      mode: webrtc,webrtc/tcp,mse,hls,mjpeg
+      media: video,audio
+      muted: true
+      ui: true
+    - type: tile
+      entity: sensor.tapo_c420_east_wall_battery
+      name: Camera battery
+
+- type: sections
+  title: South Wall
+  path: camera-south-wall
+  icon: mdi:cctv
+  subview: true
+  max_columns: 1
+  sections:
+  - type: grid
+    cards:
+    - type: button
+      grid_options: {columns: 3, rows: 1}
+      name: Cameras
+      icon: mdi:arrow-left
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/cameras}
+    - type: custom:webrtc-camera
+      entity: camera.tapo_c420_south_wall_hd_stream_direct
+      title: South Wall
+      mode: webrtc,webrtc/tcp,mse,hls,mjpeg
+      media: video,audio
+      muted: true
+      ui: true
+    - type: tile
+      entity: sensor.tapo_c420_south_wall_battery
+      name: Camera battery
+
+- type: sections
+  title: Stockroom
+  path: camera-stockroom
+  icon: mdi:cctv
+  subview: true
+  max_columns: 1
+  sections:
+  - type: grid
+    cards:
+    - type: button
+      grid_options: {columns: 3, rows: 1}
+      name: Cameras
+      icon: mdi:arrow-left
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/cameras}
+    - type: custom:webrtc-camera
+      entity: camera.tapo_c200_stockroom_hd_stream_direct
+      title: Stockroom
+      mode: webrtc,webrtc/tcp,mse,hls,mjpeg
+      media: video,audio
+      muted: true
+      ui: true
+
+- type: sections
+  title: Pet Feeder
+  path: camera-pet-feeder
+  icon: mdi:paw
+  subview: true
+  max_columns: 1
+  sections:
+  - type: grid
+    cards:
+    - type: button
+      grid_options: {columns: 3, rows: 1}
+      name: Cameras
+      icon: mdi:arrow-left
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/cameras}
+    - type: custom:webrtc-camera
+      entity: camera.smart_pet_feeder
+      title: Pet Feeder
+      mode: webrtc,webrtc/tcp,mse,hls,mjpeg
+      media: video,audio
+      muted: true
+      ui: true
+    - type: tile
+      entity: light.smart_pet_feeder_indicator_light
+      name: Indicator light
+    - type: tile
+      entity: switch.smart_pet_feeder_motion_alarm
+      name: Motion alarm
+    - type: tile
+      entity: switch.smart_pet_feeder_privacy_mode
+      name: Privacy mode
+
+# ===========================================================================
+# PEOPLE. Human-readable presence only. Raw GPS and tracker internals stay
+# out of the normal interface (briefing section 11). The mockup's per-person
+# battery and ETA columns need device_tracker and phone-battery entity IDs
+# that cannot be read from this environment -- blocker B1.
+# ===========================================================================
+- type: sections
+  title: People
+  path: people
+  icon: mdi:account-group
+  max_columns: 2
+  sections:
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/home}
+    - type: markdown
+      grid_options: {columns: 6, rows: 2}
+      content: >-
+        # {{ '家人' if is_state('input_boolean.chinese_dashboard','on') else
+        'People' }}
+
+        {% set ps = ['person.raymond_du', 'person.vinh_du',
+        'person.ai_q_huang'] %} {% set ns = namespace(home=0, away=0, unk=0) %}
+        {% for p in ps %}{% set s = states(p) %}{% if s == 'home' %}{% set
+        ns.home = ns.home + 1 %}{% elif s in ['unavailable','unknown','none','']
+        %}{% set ns.unk = ns.unk + 1 %}{% else %}{% set ns.away = ns.away + 1
+        %}{% endif %}{% endfor %} {{ ns.home }} home · {{ ns.away }} out{% if
+        ns.unk %} · {{ ns.unk }} unknown{% endif %}
+    - type: markdown
+      grid_options: {columns: 4, rows: 2}
+      content: >-
+        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+
+        {{ now().strftime('%d/%m/%Y') }}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Household
+      heading_style: title
+      icon: mdi:account-multiple
+    - type: tile
+      entity: person.raymond_du
+      name: Raymond
+    - type: tile
+      entity: person.vinh_du
+      name: Vinh
+    - type: tile
+      entity: person.ai_q_huang
+      name: Ai Q
+    - type: tile
+      entity: zone.home
+      name: People in the home zone
+      icon: mdi:home-account
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Presence today
+      heading_style: title
+      icon: mdi:chart-timeline-variant
+    - type: history-graph
+      hours_to_show: 24
+      entities:
+      - entity: person.raymond_du
+        name: Raymond
+      - entity: person.vinh_du
+        name: Vinh
+      - entity: person.ai_q_huang
+        name: Ai Q
+
+# ===========================================================================
+# ENTERTAINMENT. Native media-control over the three real media players.
+# A streaming-style catalogue browser needs integrations that are not
+# installed; nothing here scrapes or embeds an external service.
+# ===========================================================================
+- type: sections
+  title: Entertainment
+  path: entertainment
+  icon: mdi:television-play
+  max_columns: 2
+  sections:
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/home}
+    - type: markdown
+      grid_options: {columns: 6, rows: 2}
+      content: >-
+        # {{ '娛樂' if is_state('input_boolean.chinese_dashboard','on') else
+        'Entertainment' }}
+
+        {% set ms = ['media_player.living_room_tv_samsung_q9_series_65',
+        'media_player.55_qled_4k_ai', 'media_player.pogo'] %} {% set ns =
+        namespace(on=0, unk=0) %} {% for m in ms %}{% set s = states(m) %}{% if s
+        in ['unavailable','unknown'] %}{% set ns.unk = ns.unk + 1 %}{% elif s !=
+        'off' %}{% set ns.on = ns.on + 1 %}{% endif %}{% endfor %} {{ ns.on }} of
+        {{ ms | count }} players active{% if ns.unk %} · {{ ns.unk }} not
+        reporting{% endif %}
+    - type: markdown
+      grid_options: {columns: 4, rows: 2}
+      content: >-
+        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+
+        {{ now().strftime('%d/%m/%Y') }}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Living Room TV
+      heading_style: title
+      icon: mdi:television
+    - type: media-control
+      entity: media_player.living_room_tv_samsung_q9_series_65
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Parents Room TV
+      heading_style: title
+      icon: mdi:television
+    - type: media-control
+      entity: media_player.55_qled_4k_ai
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Pogo
+      heading_style: title
+      icon: mdi:speaker
+    - type: media-control
+      entity: media_player.pogo
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Room lighting
+      heading_style: title
+      icon: mdi:lightbulb-on-outline
+    - type: tile
+      entity: light.living_room
+      name: Living Room
+      features:
+      - type: light-brightness
+    - type: tile
+      entity: light.kogan_tv
+      name: Kogan TV backlight
+
+# ===========================================================================
+# HOUSE HEALTH. Also absorbs Network -- an eero WAN binary sensor and a
+# remote-UI sensor do not justify a page of their own, and the briefing
+# forbids empty pages. Throughput, uptime and a device map have no sensors.
+# ===========================================================================
+- type: sections
+  title: House Health
+  path: house-health
+  icon: mdi:heart-pulse
+  max_columns: 2
+  sections:
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/home}
+    - type: markdown
+      grid_options: {columns: 6, rows: 2}
+      content: >-
+        # {{ '系統健康' if is_state('input_boolean.chinese_dashboard','on') else
+        'House Health' }}
+
+        {{ '系統狀態與維護' if is_state('input_boolean.chinese_dashboard','on')
+        else 'System status and maintenance' }}
+    - type: markdown
+      grid_options: {columns: 4, rows: 2}
+      content: >-
+        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+
+        {{ now().strftime('%d/%m/%Y') }}
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Overall
+      heading_style: title
+      icon: mdi:stethoscope
+    - type: markdown
+      content: >-
+        {% set bats = [('Front Door','sensor.front_door_battery'),
+        ('RingRing','sensor.living_room_ringring_battery'), ('North Wall
+        camera','sensor.tapo_c425_north_wall_battery'), ('East Wall
+        camera','sensor.tapo_c420_east_wall_battery'), ('South Wall
+        camera','sensor.tapo_c420_south_wall_battery'), ('Backyard
+        camera','sensor.tapo_camera_bcca_battery'), ('Roller
+        shade','sensor.aqara_roller_shade_driver_e1_battery')] %} {% set devs =
+        ['camera.tapo_c420_east_wall_hd_stream_direct',
+        'camera.tapo_c420_south_wall_hd_stream_direct',
+        'sensor.primo_5_0_1_1_ac_power', 'media_player.pogo', 'light.kogan_tv',
+        'light.living_room_hue_ambiance_spot_1',
+        'light.living_room_hue_ambiance_spot_2',
+        'light.living_room_hue_ambiance_spot_3',
+        'light.living_room_hue_ambiance_spot_4'] %} {% set ns =
+        namespace(low=[], unk=0, down=0) %} {% for n, b in bats %}{% set s =
+        states(b) %}{% if s in ['unavailable','unknown','none',''] %}{% set
+        ns.unk = ns.unk + 1 %}{% else %}{% set f = s | float(-1) %}{% if f < 0
+        %}{% set ns.unk = ns.unk + 1 %}{% elif f < 30 %}{% set ns.low = ns.low +
+        [n] %}{% endif %}{% endif %}{% endfor %} {% for d in devs %}{% if
+        states(d) in ['unavailable','unknown'] %}{% set ns.down = ns.down + 1 %}{%
+        endif %}{% endfor %} {% set wan =
+        states('binary_sensor.eero_wan_status') %} {% if wan == 'on' %}Internet
+        is up.{% elif wan == 'off' %}**The internet connection is down.**{% else
+        %}**The WAN sensor is not reporting.**{% endif %} {% if ns.low | count
+        %} **{{ ns.low | count }} batteries under 30%:** {{ ns.low | join(', ')
+        }}.{% endif %}{% if ns.unk %} {{ ns.unk }} batter{{ 'y is' if ns.unk == 1
+        else 'ies are' }} not reporting.{% endif %}{% if ns.down %} **{{ ns.down
+        }} devices are offline.**{% endif %}{% if not (ns.low | count) and not
+        ns.down and wan == 'on' %} Nothing else needs attention.{% endif %}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Batteries
+      heading_style: title
+      icon: mdi:battery-50
+    - type: tile
+      entity: sensor.front_door_battery
+      name: Front Door
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.living_room_ringring_battery
+      name: RingRing
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.tapo_c425_north_wall_battery
+      name: North Wall
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.tapo_c420_east_wall_battery
+      name: East Wall
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.tapo_c420_south_wall_battery
+      name: South Wall
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.tapo_camera_bcca_battery
+      name: Backyard
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.aqara_roller_shade_driver_e1_battery
+      name: Roller shade
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.powerpal_gateway_powerpal_battery
+      name: Powerpal
+      grid_options: {columns: 6, rows: 1}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Network
+      heading_style: title
+      icon: mdi:wan
+    - type: tile
+      entity: binary_sensor.eero_wan_status
+      name: Internet (WAN)
+    - type: tile
+      entity: binary_sensor.remote_ui
+      name: Remote access
+    - type: markdown
+      content: >-
+        Download and upload speed, uptime and a device map are not shown: no
+        sensor in this instance produces them. The eero integration exposes WAN
+        up/down only.
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Offline devices
+      heading_style: title
+      icon: mdi:lan-disconnect
+    - type: conditional
+      conditions:
+      - condition: state
+        entity: sensor.primo_5_0_1_1_ac_power
+        state: unavailable
+      card:
+        type: tile
+        entity: sensor.primo_5_0_1_1_ac_power
+        name: Solar inverter offline
+        icon: mdi:solar-power-variant-outline
+        color: red
+    - type: conditional
+      conditions:
+      - condition: state
+        entity: camera.tapo_c420_east_wall_hd_stream_direct
+        state: unavailable
+      card:
+        type: tile
+        entity: camera.tapo_c420_east_wall_hd_stream_direct
+        name: East Wall camera offline
+        color: orange
+    - type: conditional
+      conditions:
+      - condition: state
+        entity: camera.tapo_c420_south_wall_hd_stream_direct
+        state: unavailable
+      card:
+        type: tile
+        entity: camera.tapo_c420_south_wall_hd_stream_direct
+        name: South Wall camera offline
+        color: orange
+    - type: conditional
+      conditions:
+      - condition: state
+        entity: media_player.pogo
+        state: unavailable
+      card:
+        type: tile
+        entity: media_player.pogo
+        name: Pogo offline
+        color: orange
+    - type: conditional
+      conditions:
+      - condition: state
+        entity: light.kogan_tv
+        state: unavailable
+      card:
+        type: tile
+        entity: light.kogan_tv
+        name: Kogan TV offline
+        color: orange
+    - type: conditional
+      conditions:
+      - condition: state
+        entity: light.living_room_hue_ambiance_spot_1
+        state: unavailable
+      card:
+        type: tile
+        entity: light.living_room_hue_ambiance_spot_1
+        name: Hue bridge not answering
+        icon: mdi:bridge
+        color: orange
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Backups and updates
+      heading_style: title
+      icon: mdi:backup-restore
+    - type: tile
+      entity: sensor.backup_last_successful_automatic_backup
+      name: Last backup
+    - type: tile
+      entity: sensor.backup_next_scheduled_automatic_backup
+      name: Next backup
+    - type: tile
+      entity: update.home_assistant_core_update
+      name: Home Assistant Core
+    - type: tile
+      entity: update.bedroom_parents_room_ac_firmware
+      name: Parents Room AC firmware
+
+# ===========================================================================
+# ALERTS. The unified alert centre from briefing section 16, built from the
+# conditions that real entities can actually express. Severity is by
+# condition, not by a stored level: no notification entity exists, so
+# "mark as read", alert history and quiet hours are not implemented rather
+# than faked.
+# ===========================================================================
+- type: sections
+  title: Alerts
+  path: alerts
+  icon: mdi:bell-alert
+  max_columns: 2
+  sections:
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray/home}
+    - type: markdown
+      grid_options: {columns: 6, rows: 2}
+      content: >-
+        # {{ '通知' if is_state('input_boolean.chinese_dashboard','on') else
+        'Alerts' }}
+
+        {{ '目前需要注意的事項' if is_state('input_boolean.chinese_dashboard','on')
+        else 'What needs attention right now' }}
+    - type: markdown
+      grid_options: {columns: 4, rows: 2}
+      content: >-
+        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+
+        {{ now().strftime('%d/%m/%Y') }}
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Critical
+      heading_style: title
+      icon: mdi:alert-octagon
+    - type: conditional
+      conditions:
+      - condition: state
+        entity: binary_sensor.eero_wan_status
+        state_not: 'on'
+      card:
+        type: tile
+        entity: binary_sensor.eero_wan_status
+        name: Internet connection is down
+        icon: mdi:wan
+        color: red
+    - type: conditional
+      conditions:
+      - condition: state
+        entity: binary_sensor.g_monitor_freezer_p110m_overloaded
+        state: 'on'
+      card:
+        type: tile
+        entity: binary_sensor.g_monitor_freezer_p110m_overloaded
+        name: Garage freezer circuit overloaded
+        icon: mdi:flash-alert
+        color: red
+    - type: conditional
+      conditions:
+      - condition: state
+        entity: binary_sensor.emergency_button_dad_cloud_connection
+        state_not: 'on'
+      card:
+        type: tile
+        entity: binary_sensor.emergency_button_dad_cloud_connection
+        name: Dad's emergency button is not connected
+        icon: mdi:bell-off
+        color: red
+    - type: conditional
+      conditions:
+      - condition: state
+        entity: binary_sensor.emergency_button_mum_cloud_connection
+        state_not: 'on'
+      card:
+        type: tile
+        entity: binary_sensor.emergency_button_mum_cloud_connection
+        name: Mum's emergency button is not connected
+        icon: mdi:bell-off
+        color: red
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Warnings
+      heading_style: title
+      icon: mdi:alert
+    - type: conditional
+      conditions:
+      - condition: state
+        entity: binary_sensor.f_contact_sensor_door
+        state: 'on'
+      card:
+        type: tile
+        entity: binary_sensor.f_contact_sensor_door
+        name: Front door open
+        color: orange
+    - type: conditional
+      conditions:
+      - condition: state
+        entity: binary_sensor.b_contact_sensor_door
+        state: 'on'
+      card:
+        type: tile
+        entity: binary_sensor.b_contact_sensor_door
+        name: Backyard door open
+        color: orange
+    - type: conditional
+      conditions:
+      - condition: state
+        entity: binary_sensor.lg_fridge_door
+        state: 'on'
+      card:
+        type: tile
+        entity: binary_sensor.lg_fridge_door
+        name: Fridge door open
+        color: orange
+    - type: conditional
+      conditions:
+      - condition: numeric_state
+        entity: sensor.front_door_battery
+        below: 30
+      card:
+        type: tile
+        entity: sensor.front_door_battery
+        name: Front Door battery low
+        color: orange
+    - type: conditional
+      conditions:
+      - condition: numeric_state
+        entity: sensor.living_room_ringring_battery
+        below: 30
+      card:
+        type: tile
+        entity: sensor.living_room_ringring_battery
+        name: RingRing battery low
+        color: orange
+    - type: conditional
+      conditions:
+      - condition: numeric_state
+        entity: sensor.tapo_c425_north_wall_battery
+        below: 30
+      card:
+        type: tile
+        entity: sensor.tapo_c425_north_wall_battery
+        name: North Wall camera battery low
+        color: orange
+    - type: conditional
+      conditions:
+      - condition: numeric_state
+        entity: sensor.aqara_roller_shade_driver_e1_battery
+        below: 30
+      card:
+        type: tile
+        entity: sensor.aqara_roller_shade_driver_e1_battery
+        name: Roller shade battery low
+        color: orange
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Information
+      heading_style: title
+      icon: mdi:information-outline
+    - type: conditional
+      conditions:
+      - condition: state
+        entity: binary_sensor.bedroom_parents_room_ac_filter_clean_required
+        state: 'on'
+      card:
+        type: tile
+        entity: binary_sensor.bedroom_parents_room_ac_filter_clean_required
+        name: Parents Room AC filter needs cleaning
+        color: blue
+    - type: conditional
+      conditions:
+      - condition: state
+        entity: sensor.primo_5_0_1_1_ac_power
+        state: unavailable
+      card:
+        type: tile
+        entity: sensor.primo_5_0_1_1_ac_power
+        name: Solar inverter offline
+        color: blue
+    - type: conditional
+      conditions:
+      - condition: state
+        entity: binary_sensor.lph_se_dcd9_pump
+        state: 'on'
+      card:
+        type: tile
+        entity: binary_sensor.lph_se_dcd9_pump
+        name: Grow unit pump running
+        color: blue
+    - type: markdown
+      content: >-
+        Severity here is computed from live conditions. Mark-as-read, alert
+        history and quiet hours are **not implemented**: no notification or
+        persistent-alert entity exists in this instance to store that state, and
+        a read flag that forgets itself on every refresh would be worse than
+        none.

@@ -98,11 +98,27 @@ def check(path):
     print(f"  templates compiled       : {n_tpl}")
 
     # 2. navigation integrity
+    #
+    # A dashboard's own links are "/<url_path>/<view path>". The url_path is
+    # not in the file -- it is set where the dashboard is registered -- so it
+    # is inferred: any prefix whose links resolve against this file's own view
+    # paths is this dashboard's. That keeps every dashboard covered instead of
+    # only the one whose url_path happened to be hardcoded here, and a link
+    # into a *different* dashboard is still correctly left unchecked.
     paths = {v.get("path") for v in views}
-    navs = set(re.findall(r"navigation_path:\s*(\S+)", raw))
-    internal = {n for n in navs if n.startswith("/deez-smart-home/")}
-    broken = sorted(n for n in internal
-                    if n.split("/deez-smart-home/")[1] not in paths)
+    navs = set(re.findall(r"navigation_path:\s*([^\s,}]+)", raw))
+    prefixes = {n.split("/")[1] for n in navs if n.count("/") >= 2}
+    internal, broken = set(), []
+    for prefix in sorted(prefixes):
+        marker = f"/{prefix}/"
+        group = {n for n in navs if n.startswith(marker)}
+        misses = sorted(n for n in group if n.split(marker, 1)[1] not in paths)
+        # Every target resolving means this prefix is this dashboard. A prefix
+        # where none resolve is a link to another dashboard: not ours to check.
+        if len(misses) < len(group):
+            internal |= group
+            broken += misses
+    broken = sorted(broken)
     if broken:
         fails.append(f"{path}: navigation targets do not resolve: {broken}")
     print(f"  views / internal links   : {len(views)} / {len(internal)}"

@@ -1,0 +1,156 @@
+#!/usr/bin/env python3
+"""Entity migration map: dashboards/deez_smart_home.yaml -> casaray_v2.yaml.
+
+Read-only. Emits Markdown on stdout. Never contacts Home Assistant.
+
+For every entity ID either dashboard references, reports where it lives now,
+where it lives in v2, the migration action, its live status from
+docs/entity_inventory.md, and whether that status counts as verified.
+
+Regenerate when either dashboard changes shape:
+    python3 scripts/casaray_v2_entity_map.py > docs/CASARAY_V2_ENTITY_MAP.md
+"""
+
+import collections
+import re
+import sys
+
+import yaml
+
+OLD = "dashboards/deez_smart_home.yaml"
+NEW = "dashboards/casaray_v2.yaml"
+INVENTORY = "docs/entity_inventory.md"
+
+DOMAINS = (
+    "light|switch|sensor|binary_sensor|climate|camera|media_player|person|cover|"
+    "number|select|button|update|weather|zone|fan|input_boolean|input_number|"
+    "input_text|input_datetime|input_select|device_tracker|todo|scene|automation|"
+    "script|lock|alarm_control_panel|event"
+)
+ENTITY_RE = re.compile(r"\b((?:" + DOMAINS + r")\.[a-z0-9_]+)\b")
+
+# Not entities: these are service names that appear in tap_action blocks.
+SERVICE_NAMES = {
+    "light.turn_on", "light.turn_off",
+    "input_boolean.turn_on", "input_boolean.turn_off",
+}
+
+# Old view paths mapped to the v2 view that owns the same concept, so that a
+# detail subview folded into its parent does not read as a relocation.
+CONCEPT = {
+    "people-locations": "people", "people-locations-distance": "people",
+    "lights": "lighting", "light-living-room": "lighting",
+    "light-ray-bedroom": "lighting", "lighting-modes": "lighting",
+    "media": "entertainment",
+    "status": "house-health", "network": "house-health",
+    "settings": "house-health", "ipad-command-center": "house-health",
+    "bill-electricity": "bills", "bill-gas": "bills",
+    "bill-car-insurance": "bills", "bill-water": "bills",
+    "bill-council-rates": "bills", "bill-rego": "bills",
+    "camera-front-door": "cameras", "camera-north-wall": "cameras",
+    "camera-stockroom": "cameras", "camera-east-wall": "cameras",
+    "camera-south-wall": "cameras", "camera-pet-feeder": "cameras",
+}
+
+
+def entities_by_view(path):
+    """Map entity ID -> set of view paths that reference it."""
+    doc = yaml.safe_load(open(path, encoding="utf-8"))
+    found = collections.defaultdict(set)
+    for view in doc["views"]:
+        blob = yaml.safe_dump(view, allow_unicode=True)
+        for entity in ENTITY_RE.findall(blob):
+            if entity not in SERVICE_NAMES:
+                found[entity].add(view["path"])
+    return found
+
+
+def inventory_status(text):
+    """Entity ID -> status string from the inventory's tables.
+
+    Range rows ("`switch.x_1` … `_5`") cover siblings the literal ID never
+    matches, so those are expanded before lookup. Without this the siblings
+    read as unlisted and get over-reported as needing verification.
+    """
+    status = {}
+    for line in text.split("\n"):
+        ids = re.findall(r"`([a-z_]+\.[a-z0-9_]+)`", line)
+        if not ids:
+            continue
+        if "NOT EXPOSED" in line:
+            value = "NOT EXPOSED"
+        elif "LIVE (unavail)" in line or "unavailable" in line:
+            value = "LIVE (unavail)"
+        elif "CHECK" in line:
+            value = "CHECK"
+        elif "NAME DRIFT" in line:
+            value = "NAME DRIFT"
+        elif "LIVE" in line:
+            value = "LIVE"
+        else:
+            continue
+        for entity in ids:
+            status[entity] = value
+        # "`switch.foo_1` … `_5`" — expand the implied siblings.
+        span = re.search(r"`([a-z_]+\.[a-z0-9_]*?)(\d+)`\s*…\s*`_(\d+)`", line)
+        if span:
+            stem, first, last = span.group(1), int(span.group(2)), int(span.group(3))
+            for n in range(first, last + 1):
+                status[f"{stem}{n}"] = value
+    return status
+
+
+def main():
+    old, new = entities_by_view(OLD), entities_by_view(NEW)
+    status = inventory_status(open(INVENTORY, encoding="utf-8").read())
+
+    def concept(paths):
+        return {CONCEPT.get(p, p) for p in paths}
+
+    rows, actions, checks = [], collections.Counter(), collections.Counter()
+    for entity in sorted(set(old) | set(new)):
+        here, there = old.get(entity, set()), new.get(entity, set())
+        if not there:
+            action = "DEPRECATED"
+        elif not here:
+            action = "NEW"
+        elif concept(here) & concept(there):
+            action = "RETAIN"
+        else:
+            action = "RELOCATE"
+
+        live = status.get(entity, "UNLISTED")
+        if live == "LIVE (unavail)":
+            check = "Live, currently unavailable"
+        elif live in ("LIVE", "NAME DRIFT"):
+            check = "Confirmed live"
+        else:
+            check = "Requires verification"
+
+        actions[action] += 1
+        checks[check] += 1
+        rows.append((entity, here, there, action, live, check))
+
+    print("# CasaRay v2 — entity migration map\n")
+    print("Generated by `scripts/casaray_v2_entity_map.py`. Do not hand-edit.\n")
+    print(f"`{OLD}` -> `{NEW}`, {len(rows)} entity IDs. "
+          "Service names are excluded.\n")
+    print("| Action | Count |\n|---|---|")
+    for name in ("RETAIN", "RELOCATE", "REPLACE", "DEPRECATED", "NEW"):
+        print(f"| {name} | {actions.get(name, 0)} |")
+    print("\n| Verification | Count |\n|---|---|")
+    for name, count in sorted(checks.items()):
+        print(f"| {name} | {count} |")
+    print("\n## Per-entity\n")
+    print("| Entity | Current location | New location | Action | Live status "
+          "| Verification |")
+    print("|---|---|---|---|---|---|")
+    for entity, here, there, action, live, check in rows:
+        print(f"| `{entity}` | {' · '.join(sorted(here)) or '—'} "
+              f"| {' · '.join(sorted(there)) or '—'} | {action} | {live} "
+              f"| {check} |")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

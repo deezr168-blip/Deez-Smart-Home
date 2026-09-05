@@ -17,6 +17,33 @@ on purpose so every routine can load it cheaply at the start of each run.
 
 ---
 
+## Parallel implementation: CasaRay v2 (owner directive, 2026-09-05)
+
+**The owner directed a from-scratch rebuild**, delivered as
+`dashboards/casaray_v2.yaml` and documented in
+`docs/CASARAY_V2_ARCHITECTURE.md`. It is a **parallel** implementation:
+`dashboards/deez_smart_home.yaml` is untouched and remains the running
+system. Nothing is deleted and nothing is superseded until the owner picks
+one.
+
+What this means for the routines:
+
+- **The batch programme in `docs/CASARAY_MAPPING_PACK.md` Part 4 is not
+  cancelled, but it is now one of two live tracks.** Do not start Batch 2
+  without checking with the owner first — batching changes into the old file
+  while a replacement is under review may be wasted work.
+- v2 is native-first: 1 custom card type against production's 6, no
+  `card_mod`, no Mushroom. It uses **all 164** of production's real entity
+  IDs, invents none, and drops none.
+- v2 assumes it is registered at url_path **`casaray`**. All 85 of its
+  navigation links are `/casaray/<view>`; mounted anywhere else they break.
+- `CFG-003` applies to v2 exactly as it does to production. Neither can be
+  seen live until the bridge is recovered.
+- `scripts/dashboard_check.py` no longer hardcodes the production url_path
+  when resolving navigation links, so the gate now covers both dashboards.
+
+---
+
 ## Schedule Status: ACTIVE — pause lifted (owner directive, 2026-09-01)
 
 **The owner lifted the 2026-08-30 pause on 2026-09-01**, in a live session, by
