@@ -4234,6 +4234,164 @@ views:
       entity: binary_sensor.bedroom_motion_sensor_motion
       name: Parents Room
 
+  # Detection settings are shown, not operated. Every tile here opens
+  # more-info rather than toggling: privacy mode blinds a camera and a
+  # detection switch is what makes it watch, so switching one off from a wall
+  # panel should never be one accidental tap. The value of the section is that
+  # a protection gap someone left switched off becomes visible.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Detection settings
+      heading_style: title
+      icon: mdi:cctv
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 侦测设置
+      heading_style: title
+      icon: mdi:cctv
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: markdown
+      content: >-
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {% set priv = ['switch.tapo_c425_north_wall_privacy',
+        'switch.tapo_c200_stockroom_privacy',
+        'switch.smart_pet_feeder_privacy_mode'] -%}
+        {% set det = ['switch.front_door_motion_detection',
+        'switch.tapo_c420_south_wall_motion_detection',
+        'switch.tapo_c420_south_wall_person_detection',
+        'switch.tapo_camera_bcca_motion_detection',
+        'switch.tapo_camera_bcca_person_detection',
+        'switch.smart_pet_feeder_motion_alarm'] -%}
+        {% set ns = namespace(blind=0, off=0, unk=0) -%}
+        {% for e in priv %}{% set v = states(e) %}{% if v == 'on' %}{% set
+        ns.blind = ns.blind + 1 %}{% elif v != 'off' %}{% set ns.unk = ns.unk +
+        1 %}{% endif %}{% endfor -%}
+        {% for e in det %}{% set v = states(e) %}{% if v == 'off' %}{% set
+        ns.off = ns.off + 1 %}{% elif v != 'on' %}{% set ns.unk = ns.unk + 1
+        %}{% endif %}{% endfor -%}
+        {% if ns.blind %}{% if cn %}**{{ ns.blind }} 个摄像头处于隐私模式，未在录制。**{% else
+        %}**{{ ns.blind }} camera{{ '' if ns.blind == 1 else 's' }} {{ 'is' if
+        ns.blind == 1 else 'are' }} in privacy mode and not recording.**{% endif
+        %} {% endif %}{% if ns.off %}{% if cn %}**{{ ns.off }} 项侦测功能已关闭。**{%
+        else %}**{{ ns.off }} detection setting{{ '' if ns.off == 1 else 's' }}
+        {{ 'is' if ns.off == 1 else 'are' }} switched off.**{% endif %} {% endif
+        %}{% if ns.unk %}{% if cn %}{{ ns.unk }} 项设置无数据。{% else %}{{ ns.unk }}
+        setting{{ '' if ns.unk == 1 else 's' }} {{ 'is' if ns.unk == 1 else
+        'are' }} not reporting.{% endif %} {% endif %}{% if not ns.blind and not
+        ns.off and not ns.unk %}{% if cn %}所有摄像头均在监控中，隐私模式全部关闭，侦测功能全部开启。{%
+        else %}Every camera is watching. Privacy mode is off everywhere and all
+        detection settings are on.{% endif %}{% endif %}
+    - type: tile
+      entity: switch.front_door_motion_detection
+      name: Front Door motion
+      grid_options: {columns: 6, rows: 1}
+      tap_action: {action: more-info}
+    - type: tile
+      entity: switch.front_door_in_home_chime
+      name: Front Door chime
+      grid_options: {columns: 6, rows: 1}
+      tap_action: {action: more-info}
+    - type: tile
+      entity: switch.tapo_c425_north_wall_privacy
+      name: North Wall privacy
+      grid_options: {columns: 6, rows: 1}
+      tap_action: {action: more-info}
+    - type: tile
+      entity: switch.tapo_c425_north_wall_notifications
+      name: North Wall alerts
+      grid_options: {columns: 6, rows: 1}
+      tap_action: {action: more-info}
+    - type: tile
+      entity: switch.tapo_camera_bcca_motion_detection
+      name: East Wall motion
+      grid_options: {columns: 6, rows: 1}
+      tap_action: {action: more-info}
+    - type: tile
+      entity: switch.tapo_camera_bcca_person_detection
+      name: East Wall person
+      grid_options: {columns: 6, rows: 1}
+      tap_action: {action: more-info}
+    - type: tile
+      entity: switch.tapo_c420_south_wall_motion_detection
+      name: South Wall motion
+      grid_options: {columns: 6, rows: 1}
+      tap_action: {action: more-info}
+    - type: tile
+      entity: switch.tapo_c420_south_wall_person_detection
+      name: South Wall person
+      grid_options: {columns: 6, rows: 1}
+      tap_action: {action: more-info}
+    - type: tile
+      entity: switch.tapo_c200_stockroom_privacy
+      name: Stockroom privacy
+      grid_options: {columns: 6, rows: 1}
+      tap_action: {action: more-info}
+    - type: tile
+      entity: switch.tapo_c200_stockroom_notifications
+      name: Stockroom alerts
+      grid_options: {columns: 6, rows: 1}
+      tap_action: {action: more-info}
+    - type: tile
+      entity: switch.smart_pet_feeder_privacy_mode
+      name: Pet feeder privacy
+      grid_options: {columns: 6, rows: 1}
+      tap_action: {action: more-info}
+    - type: tile
+      entity: switch.smart_pet_feeder_motion_alarm
+      name: Pet feeder alarm
+      grid_options: {columns: 6, rows: 1}
+      tap_action: {action: more-info}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Sirens
+      heading_style: title
+      icon: mdi:bullhorn
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 警报器
+      heading_style: title
+      icon: mdi:bullhorn
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: tile
+      entity: siren.tapo_h200
+      name: Tapo H200 hub
+      grid_options: {columns: 12, rows: 1}
+      tap_action: {action: more-info}
+    - type: tile
+      entity: siren.tapo_c425_north_wall_siren
+      name: North Wall siren
+      grid_options: {columns: 12, rows: 1}
+      tap_action: {action: more-info}
+    - type: tile
+      entity: siren.tapo_c200_stockroom_siren
+      name: Stockroom siren
+      grid_options: {columns: 12, rows: 1}
+      tap_action: {action: more-info}
+    - type: markdown
+      content: >-
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {% if cn %}这些警报器仅显示状态。点按打开详情，不会直接触发。H200
+        自身的警报器实体与南墙、东墙的警报器目前无数据。{% else %}These show state only — a tap opens
+        details rather than sounding anything. The H200's own siren entity and
+        the South and East Wall sirens are currently not reporting.{% endif %}
+
   - type: grid
     column_span: 2
     cards:
