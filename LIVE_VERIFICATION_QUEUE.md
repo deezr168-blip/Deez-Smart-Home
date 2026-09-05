@@ -228,7 +228,7 @@ checked against `docs/live/states_export_2026-09-05.txt` and is recorded
 | CR-196 | Living Room — Air quality | PM1, PM2.5 and PM10, each paired with its health-concern word. This is what CR-122 always expected; only now is it built | `28b520e` | P2 | PENDING |
 | CR-197 | Ray Bedroom / Garage — socket overload | A "Socket overloaded" tile in Ray Bedroom's Power use, and "Socket reachable" in the Garage Freezer section | `28b520e` | P2 | PENDING |
 | CR-198 | House Health — updates | Core, Supervisor and Operating System tiles, plus a line counting every pending update across all 74 update entities | `614ad5e` | P2 | PENDING |
-| CR-199 | Dining — Temperature | A temperature tile in Sensors, reading the same figure the Climate board shows as Dining. **If the two disagree, say so** | `PLACEHOLDER` | P2 | PENDING |
+| CR-199 | Dining — Temperature | A temperature tile in Sensors, reading the same figure the Climate board shows as Dining. **If the two disagree, say so** | `4429a7f` | P2 | PENDING |
 
 ### Needs an owner answer before it can be built
 
