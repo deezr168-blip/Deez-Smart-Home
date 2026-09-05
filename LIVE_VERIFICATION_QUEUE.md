@@ -218,9 +218,9 @@ checked against `docs/live/states_export_2026-09-05.txt` and is recorded
 | CR-184 | Security — Detection settings | Twelve switch tiles, and a paragraph counting privacy-mode cameras and switched-off detection. A tap must open more-info, **not** toggle | `64ae00e` | **P1** | PENDING |
 | CR-185 | Security — Sirens | Three siren tiles, display-only, with the note naming the three that do not report | `64ae00e` | P3 | PENDING |
 | CR-186 | House Health — counts at exactly 1 | Reads "1 battery is under 30%" and "1 device is offline", not "1 batteries" / "1 devices" | `a495a24` | P3 | PENDING |
-| CR-187 | Entertainment — Parents Room TV | The card **works** now. It was pointing at `media_player.55_qled_4k_ai`, which is unavailable — see CR-190 | `bd1e1f3` | **P1** | PENDING |
-| CR-188 | Entertainment — Ray Bedroom TV | A third TV section that has never appeared on this board | `bd1e1f3` | P2 | PENDING |
-| CR-189 | Entertainment — TV power tiles and Pogo note | A Power tile under each Samsung TV; the Pogo section says it is not reporting rather than showing dead controls | `bd1e1f3` | P3 | PENDING |
+| CR-187 | Entertainment — Parents Room TV | The card **works** now. It was pointing at `media_player.55_qled_4k_ai`, which is unavailable — see CR-190 | `0d2b58a` | **P1** | PENDING |
+| CR-188 | Entertainment — Ray Bedroom TV | A third TV section that has never appeared on this board | `0d2b58a` | P2 | PENDING |
+| CR-189 | Entertainment — TV power tiles and Pogo note | A Power tile under each Samsung TV; the Pogo section says it is not reporting rather than showing dead controls | `0d2b58a` | P3 | PENDING |
 
 ### Needs an owner answer before it can be built
 
