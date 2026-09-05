@@ -13,10 +13,15 @@ on purpose so every routine can load it cheaply at the start of each run.
 - **Canonical CasaRay target:** `dashboards/casaray_v2.yaml` — all new work
 - **Legacy / reference dashboard:** `dashboards/deez_smart_home.yaml` — do not
   build new CasaRay features here
-- **Deployment model:** validated GitHub changes are polled/deployed by Home
-  Assistant independently. No routine deploys, restarts or reloads anything —
-  pushing a validated commit to `ha-deploy` is the whole handoff. **That path
-  is broken (`CFG-003`); pushed is not deployed.**
+- **Deployment model:** no routine deploys, restarts or reloads anything.
+  Pushing a validated commit to `ha-deploy` is the whole handoff.
+  **`CFG-003` is RESOLVED** — the host clone receives pushes and the owner
+  has deployed CasaRay successfully. But delivery is **not automatic for
+  CasaRay**: `/config/deploy_deez_dashboard.sh` syncs the legacy dashboard
+  only, so `dashboards/casaray_v2.yaml` reaches `/config/dashboards/` via the
+  owner running `scripts/sync_casaray_to_config.sh`. Pushed therefore still
+  does not mean live, and must never be reported as if it did — but the
+  reason is a manual step, not a broken bridge.
 
 ---
 
@@ -53,6 +58,28 @@ regression in it, or on an explicit owner instruction.
   the conversion from Traditional to Simplified Chinese.
 - `3faa830` — the bilingual meaning layer: 21 room, board and status templates.
 - `1d1f443` — the 70 bilingual section headings.
+- `3683782` — the two live layout defects the 06/09 screenshots exposed:
+  room titles breaking mid-word, and a clock scrollbar on every page.
+- `2203fc1` — the `/casaray/` → `/casaray-v2/` url_path migration, all 87 links.
+
+**2026-09-05 autonomous upgrade session** — nine batches connecting entities
+B1 confirmed live but no board was reading:
+
+- `df413b5` Bills: savings, YTD and bill history, from 53 helpers that
+  existed all along while the page said "Not yet available".
+- `142bb7d` Climate and Kitchen sensors.
+- `bf1bc62` Energy: inverter health, solar forecast timing, grid carbon.
+- `9aaadb5` House Health: the Overall section had no tiles at all; batteries
+  7 → 15, with the roll-up paragraph counting the same 15.
+- `d991e39` **Seven summary cards were rendering as CommonMark code blocks.**
+  A `{% set %}` preamble emits its inter-tag spaces; four leading spaces is an
+  indented code block. Fixed with `-%}`, now gated in `dashboard_check.py`.
+- `ddd7c93` People: charge states, the wall iPad, guest mode, whereabouts.
+- `72926b0` **Entity existence is now a validation gate** — and it
+  immediately found `input_datetime.car_insurance_period_end` on the *live
+  legacy* dashboard, an ID that does not exist. Repaired.
+- `64ae00e` Security: detection settings surfaced, deliberately display-only.
+- `0d2b58a` Entertainment: the Parents Room TV card had never worked.
 
 These are settled. Do not revert or re-litigate them.
 
@@ -60,14 +87,18 @@ These are settled. Do not revert or re-litigate them.
 
 - Native-first: 1 custom card type (`custom:webrtc-camera`) against the legacy
   file's 6, no `card_mod`, no Mushroom, surface treatment from the theme.
-- It uses **all 164** of the legacy dashboard's real entity IDs, invents none,
-  drops none.
-- It assumes url_path **`casaray`**. All 85 navigation links are
-  `/casaray/<view>`; mounted anywhere else they break.
+- It references **311 entities**, every one of them present in the B1 export.
+  Re-check with `python3 scripts/reconcile_entities.py` — this is a gate in
+  `ha_validate.sh`, section 3, so a fabricated ID cannot be committed.
+- url_path is **`casaray-v2`** — Home Assistant requires the hyphen in a YAML
+  dashboard key. All 87 navigation links are `/casaray-v2/<view>`; mounted
+  anywhere else they break. *(The earlier `casaray` was migrated in `2203fc1`.)*
 - Bilingual conventions are **mandatory** and listed in `CLAUDE.md` and
   `docs/CASARAY_V2_ARCHITECTURE.md`.
-- `CFG-003` applies to v2 exactly as it does to the legacy file. Neither can
-  be seen live until the bridge is recovered. **Committed is not deployed.**
+- v2 **is deployed and has rendered** — six `CR-1xx` rows passed on the
+  owner's 06/09 screenshots. It is no longer an unseen file. But each new
+  push still needs the owner's manual sync step; see the deployment model
+  above. **Committed is still not deployed.**
 - `scripts/dashboard_check.py` no longer hardcodes a url_path when resolving
   navigation links, so the gate covers both dashboards.
 

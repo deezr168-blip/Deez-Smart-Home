@@ -17,8 +17,9 @@ automation-linked UI, and every Bills, Entertainment, Camera, People Mapping,
 Energy or House Health feature targets **this file**, unless the owner says
 otherwise in so many words.
 
-Identity: url_path **`casaray`** (all 85 internal links are `/casaray/<view>`;
-mounted anywhere else, navigation breaks), 25 views (6 subviews), native-first —
+Identity: url_path **`casaray-v2`** — Home Assistant requires the hyphen in a
+YAML dashboard key (all 87 internal links are `/casaray-v2/<view>`; mounted
+anywhere else, navigation breaks), 26 views (6 subviews), native-first —
 one custom card type (`custom:webrtc-camera`), no Mushroom, no `card_mod`,
 surface treatment from the theme. Bilingual on
 `input_boolean.chinese_dashboard`; see *Bilingual conventions* below.
@@ -43,10 +44,15 @@ language toggle.
 
 ### Deployment
 
-A push to `ha-deploy` is intended to reach the live dashboard within 15 minutes
-via `/config/deploy_deez_dashboard.sh`. **That path is currently broken —
-`CFG-003`.** Until it is repaired, "committed in Git" and "live in Home
-Assistant" are different things and must never be reported as the same one.
+`CFG-003` is **RESOLVED**: pushes reach the host clone at `/config/deez_repo`,
+and CasaRay has been deployed and seen rendering.
+
+Delivery is still **not automatic for CasaRay**.
+`/config/deploy_deez_dashboard.sh` syncs the legacy dashboard only; CasaRay
+reaches `/config/dashboards/` when the owner runs
+`scripts/sync_casaray_to_config.sh`. So "committed in Git" and "live in Home
+Assistant" remain different things and must never be reported as the same one
+— the reason is now a manual step, not a broken bridge.
 
 ## Bilingual conventions — mandatory
 
@@ -88,11 +94,15 @@ goes unavailable and a section never loses its label.
 
 - Small, controlled batches. One meaningful improvement per batch.
 - Inspect the current YAML before changing it. Never edit blind.
-- **Never invent entity IDs.** Use only entities the file already
-  references, or ones verified through the read-only Home Assistant
-  connector. If no entity exists, say so on the card rather than faking
-  status — the established convention is a grey icon and an honest
-  secondary ("no status entity", "Wi-Fi module not integrated yet").
+- **Never invent entity IDs.** The authority is
+  `docs/live/states_export_2026-09-05.txt` — 970 entities with exact IDs,
+  friendly names, areas and availability. Grep it before writing any ID;
+  `ha_validate.sh` section 3 fails the build on one that is not there.
+  Name similarity is not proof: this instance has stale duplicates that
+  look right and are dead (see `CR-190`). If no entity exists, say so on the
+  card rather than faking status — the established convention is a grey icon
+  and an honest secondary ("no status entity", "Wi-Fi module not integrated
+  yet").
 - Preserve: entity IDs, navigation paths, `/deez-smart-home/` links, the
   language toggle, kiosk mode, subviews, camera functionality, energy
   calculations, room controls, themes, popups.
@@ -100,7 +110,14 @@ goes unavailable and a section never loses its label.
   missing reading. A sentinel renders as a real measurement. Guard with an
   explicit `unavailable / unknown / none` branch, or test `is number`.
 - Never let a card assert a reassuring state it cannot see. "Closed",
-  "Clear", "Normal", "Up to date" all need a third branch.
+  "Clear", "Normal", "Up to date" all need a third branch. This also rules
+  out a *summary sensor* whose inputs are down: `sensor.open_doors_count`
+  reads `0` while all three contact sensors are `unavailable`, so it is a
+  sentinel wearing a number's clothes and is deliberately on no board.
+- A `markdown` card must not start with four or more spaces of output. A
+  `{% set %}` preamble emits the spaces between its tags, and four of them
+  make CommonMark render the whole card as a grey code block. End preamble
+  tags with `-%}`. Gated by `dashboard_check.py`.
 - Run `bash scripts/ha_validate.sh` after every batch. Exit 0 or do not push.
 - If validation fails, fix or revert before pushing. Never force-push, never
   rewrite published history.
