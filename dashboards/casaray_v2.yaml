@@ -638,6 +638,22 @@ views:
       show_current: true
       show_forecast: true
       grid_options: {columns: 8, rows: 3}
+    # Daylight, beside the forecast it belongs with. Dedicated sensors rather
+    # than sun.sun attributes, so each is a plain tile with no templating.
+    - type: tile
+      entity: sun.sun
+      name: Sun
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: sensor.sun_next_rising
+      name: Sunrise
+      icon: mdi:weather-sunset-up
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: sensor.sun_next_setting
+      name: Sunset
+      icon: mdi:weather-sunset-down
+      grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: sensor.bills_outstanding_total
       name: Outstanding bills
@@ -1962,6 +1978,16 @@ views:
       entity: switch.bedroomlight_switch_1
       name: Wall switch
       icon: mdi:light-switch
+    # A separate physical light from the Nightlight *scene* in Quick actions
+    # above, and the only Ray Bedroom light with no control anywhere.
+    # `light.master_bedroom_nightlight` is the dead duplicate; this is the one
+    # that reports.
+    - type: tile
+      entity: light.bedroom_nightlight
+      name: Nightlight
+      icon: mdi:lightbulb-night-outline
+      features:
+      - type: light-brightness
 
   - type: grid
     column_span: 1
@@ -4579,6 +4605,42 @@ views:
       entity: sensor.living_room_ringring_battery
       name: RingRing
       grid_options: {columns: 4, rows: 1}
+
+  # Floodlights are controls, not display-only like the detection switches on
+  # Security: turning one on adds light and adds protection, so a tap here
+  # cannot reduce it. Only the two that report are shown -- the South and East
+  # Wall floodlights follow their cameras and are currently unavailable.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Floodlights
+      heading_style: subtitle
+      icon: mdi:track-light
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 泛光灯
+      heading_style: subtitle
+      icon: mdi:track-light
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: tile
+      entity: light.tapo_c425_north_wall_floodlight_timed
+      name: North Wall floodlight
+      grid_options: {columns: 6, rows: 1}
+      features:
+      - type: light-brightness
+    - type: tile
+      entity: light.tapo_c200_stockroom_floodlight_timed
+      name: Stockroom floodlight
+      grid_options: {columns: 6, rows: 1}
+      features:
+      - type: light-brightness
 
 - type: sections
   title: Front Door

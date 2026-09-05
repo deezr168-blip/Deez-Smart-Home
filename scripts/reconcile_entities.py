@@ -56,8 +56,19 @@ def load_export(path):
 
 
 def references(path):
+    """Entity IDs a dashboard actually uses, ignoring comments.
+
+    Comments legitimately name entities the cards must NOT use -- a dead
+    duplicate, the reason an ID was changed, an entity deliberately left off.
+    Counting those as references makes the offline list wrong and would push
+    an author to write worse comments to keep a tool quiet.
+
+    Whole-line comments only. Every comment in these files is one, and a `#`
+    inside a value (a colour, a card_mod style) is not a comment.
+    """
     raw = open(path, encoding="utf-8").read()
-    return {e for e in re.findall(r"\b([a-z_]+\.[a-z0-9_]+)\b", raw)
+    body = "\n".join(l for l in raw.split("\n") if not l.lstrip().startswith("#"))
+    return {e for e in re.findall(r"\b([a-z_]+\.[a-z0-9_]+)\b", body)
             if e.split(".")[0] in DOMAINS}
 
 
