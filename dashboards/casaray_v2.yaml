@@ -1674,7 +1674,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: media-control
-      entity: media_player.55_qled_4k_ai
+      entity: media_player.55_qled_4k_ai_qa55q7faawxxy
 
   - type: grid
     column_span: 1
@@ -5057,7 +5057,7 @@ views:
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set ms =
         ['media_player.living_room_tv_samsung_q9_series_65',
-        'media_player.55_qled_4k_ai', 'media_player.pogo'] %} {% set ns =
+        'media_player.55_qled_4k_ai_qa55q7faawxxy', 'media_player.pogo'] %} {% set ns =
         namespace(on=0, unk=0) %} {% for m in ms %}{% set s = states(m) %}{% if s
         in ['unavailable','unknown'] %}{% set ns.unk = ns.unk + 1 %}{% elif s !=
         'off' %}{% set ns.on = ns.on + 1 %}{% endif %}{% endfor %} {% if cn %}{{ ms |
@@ -5092,6 +5092,10 @@ views:
         state: 'on'
     - type: media-control
       entity: media_player.living_room_tv_samsung_q9_series_65
+    - type: tile
+      entity: remote.living_room_tv_samsung_q9_series_65
+      name: Power
+      icon: mdi:remote-tv
 
   - type: grid
     column_span: 1
@@ -5112,8 +5116,44 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+    # Was `media_player.55_qled_4k_ai`, which reads `unavailable` in the B1
+    # export while two same-named Parents Room entities read `ok`. This one was
+    # chosen because it is the half of a matching media_player + remote pair
+    # (`remote.55_qled_4k_ai_qa55q7faawxxy`), which is what a current Samsung
+    # integration entry looks like; the third, `master_bedroom_55_qled_4k_ai`,
+    # has no remote and carries the same stale `master_bedroom_` prefix as
+    # other dead duplicates in this instance. Reasoned, not conclusive -- see
+    # CR-190. The legacy dashboard was deliberately left pointing at the old
+    # ID: it is the rollback baseline, and the evidence is not conclusive
+    # enough to edit it.
     - type: media-control
-      entity: media_player.55_qled_4k_ai
+      entity: media_player.55_qled_4k_ai_qa55q7faawxxy
+    - type: tile
+      entity: remote.55_qled_4k_ai_qa55q7faawxxy
+      name: Power
+      icon: mdi:remote-tv
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Ray Bedroom TV
+      heading_style: title
+      icon: mdi:television
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: Ray 房电视
+      heading_style: title
+      icon: mdi:television
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: media-control
+      entity: media_player.q70f8036
 
   - type: grid
     column_span: 1
@@ -5124,6 +5164,12 @@ views:
       icon: mdi:speaker
     - type: media-control
       entity: media_player.pogo
+    - type: markdown
+      content: >-
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {% if states('media_player.pogo') in ['unavailable','unknown'] %}{% if cn
+        %}Pogo 目前未上报状态，以上控制无法使用。{% else %}Pogo is not reporting, so the
+        controls above will not work.{% endif %}{% endif %}
 
   - type: grid
     column_span: 1
