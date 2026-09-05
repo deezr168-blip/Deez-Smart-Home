@@ -194,6 +194,34 @@ Readiness was computed from B1 first, so each row states what it should do.
 | CR-125 | People board | Phone and iPad battery percentages, presence per person. All 6 live | `13d21c4` | P2 | PENDING |
 | CR-126 | Automations board | **Exactly three** automations, each with a working enable toggle. Three is all that exists — not a truncated list | `13d21c4` | P2 | PENDING |
 
+## CasaRay — the 2026-09-05 autonomous upgrade batches
+
+Entities B1 confirms live that no board was reading. Every ID here was
+checked against `docs/live/states_export_2026-09-05.txt` and is recorded
+`ok` there; none was inferred from a name.
+
+| ID | What to check live | Expected result | Commit | P | Result |
+|---|---|---|---|---|---|
+| CR-170 | Bills — This year, Bill history, per-bill discount rows | Amounts and a savings rate, not "Not yet available". 53 helpers back this | `df413b5` | P2 | PENDING |
+| CR-171 | Climate — Dining temperature | Present, and labelled **Dining**. Its entity ID says `living_room` but B1 puts it in Dining; the label follows B1, not the ID | `142bb7d` | P2 | PENDING |
+| CR-172 | Kitchen — Electrolux fridge block and the shopping list | Fridge temp/humidity/battery, motion, and a working `todo.shopping_list` card | `142bb7d` | P2 | PENDING |
+| CR-173 | Energy — inverter health row | Online state plus the Primo status and error strings. These must read even when yield is 0; that is the point of the row | `bf1bc62` | P2 | PENDING |
+| CR-174 | Energy — grid carbon | CO2 intensity and fossil-fuel percentage from Electricity Maps | `bf1bc62` | P3 | PENDING |
+| CR-175 | House Health — Overall | Four tiles: house status, offline devices, rooms in use, lights on. **No open-doors count** — see CR-176 | `9aaadb5` | P2 | PENDING |
+| CR-176 | House Health — Overall, doors | There must be **no** "0 doors open" tile. All three contact sensors are down, so that number is a sentinel, not a measurement. Consistent with CR-130 | `9aaadb5` | **P1** | PENDING |
+| CR-177 | House Health — battery board | **15** battery tiles, and the paragraph above them counts the same 15. If the paragraph says "N not reporting" the N must be countable from the tiles | `9aaadb5` | P2 | PENDING |
+| CR-178 | House Health — Network | A Zigbee hub problem tile beside WAN and Remote access | `9aaadb5` | P3 | PENDING |
+| CR-179 | Any summary paragraph — Home, Energy, Bills, Parents Room, House Health | **Prose, not grey monospace.** These rendered as indented code blocks; if any still does, the `-%}` fix did not take | `d991e39` | **P1** | PENDING |
+| CR-180 | People — Device status | Four devices, each level paired with a charge state, including Raymond's iPad | `ddd7c93` | P2 | PENDING |
+| CR-181 | People — Guest mode tile | Tapping opens more-info; it must **not** toggle on tap | `ddd7c93` | P2 | PENDING |
+| CR-182 | People — Whereabouts | Raymond's distance and activity, plus the note explaining why the other two have neither | `ddd7c93` | P3 | PENDING |
+
+### Needs an owner answer before it can be built
+
+| ID | Question | Why it is blocked |
+|---|---|---|
+| CR-183 | What is `input_select.input_select_family_location_selected` for, and what are its options? | Live and `ok`, but the B1 export carries names only, not option lists or the automations that read them. Surfacing a selector whose effect is unknown could change household state by mis-tap. Not added. |
+
 ## CasaRay — expected-offline, do not chase
 
 Confirmed offline in B1. The cards are written to say so rather than assert a
@@ -269,19 +297,24 @@ result does to the issue record, the backlog and ownership — are in
 - `PASS` rows stay for traceability. A page group with nothing left
   outstanding may collapse to a one-line summary naming its IDs and date.
 
-**70 checks pending**, in two separate sets that must not be merged:
+**81 checks pending**, in two separate sets that must not be merged:
 
-| Set | Dashboard | Pending |
-|---|---|---|
-| `UI-*` / `REG-*` / `BILL-*` / `CR-001`–`CR-002` | legacy `/deez-smart-home/…` | 47 |
-| **`CR-1xx`** | **CasaRay `/casaray-v2/…`** | **23** |
+| Set | Dashboard | Rows | Pending | Passed |
+|---|---|---|---|---|
+| `UI-*` / `REG-*` / `BILL-*` / `CR-001`–`CR-002` | legacy `/deez-smart-home/…` | 48 | 47 | 1 |
+| **`CR-1xx`** | **CasaRay `/casaray-v2/…`** | **40** | **34** | **6** |
 
-The 23 CasaRay rows were added 2026-09-05, ahead of first deployment. That
-dashboard has never rendered, so every row is genuinely unknown rather than
-merely unchecked. Start with `CR-100` (does it load) and `CR-110`–`CR-114`
+`CR-183` is excluded from both counts: it is a question for the owner, not a
+check that can pass or fail.
+
+The CasaRay rows started at 23, added 2026-09-05 ahead of first deployment;
+six passed on the 06/09 screenshots and the 2026-09-05 upgrade batches added
+`CR-170`–`CR-182`. Start with `CR-100` (does it load) and `CR-110`–`CR-114`
 (navigation) — if the dashboard was registered under any key other than
 `casaray-v2`, all 87 internal links break at once and everything below is
-noise until that is fixed.
+noise until that is fixed. After that, `CR-179` is the one to check on every
+board at a glance: it is a rendering fault that would be obvious in a
+screenshot and affects six pages.
 
 The legacy 47 are **lower priority now**. That dashboard is the rollback
 baseline, not the build target; verifying its backlog matters less than

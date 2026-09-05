@@ -4651,7 +4651,10 @@ views:
         card_mod:
           style: "hui-generic-entity-row div {\n  width: 50% !important;\n}\n"
         name: Cover start
-      - entity: input_datetime.car_insurance_period_end
+      # The live helper is `..._period_en`, not `..._period_end` -- the ID was
+      # truncated when it was created. Confirmed against the B1 export; this
+      # row had been pointing at nothing.
+      - entity: input_datetime.car_insurance_period_en
         card_mod:
           style: "hui-generic-entity-row div {\n  width: 50% !important;\n}\n"
         name: Cover end

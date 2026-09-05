@@ -36,6 +36,22 @@ if [ "${#dashes[@]}" -eq 0 ]; then pass "no dashboard files"
 elif python3 scripts/dashboard_check.py "${dashes[@]}"; then pass "dashboard checks passed"
 else fail "dashboard checks failed"; fi
 
+sect "Entity references resolve against the live export"
+# The one class of error the structural checks cannot see: an entity ID that
+# parses, navigates and renders as a card, but names nothing in the instance.
+recon=$(mktemp)
+if [ ! -f docs/live/states_export_2026-09-05.txt ]; then
+  printf '  \033[33mSKIP\033[0m  no B1 export in the repository — entity existence UNVERIFIED\n'
+elif [ "${#dashes[@]}" -eq 0 ]; then pass "no dashboard files"
+elif python3 scripts/reconcile_entities.py "${dashes[@]}" >"$recon" 2>&1; then
+  grep -E 'entity references|ok / unknown' "$recon" | sed 's/^ */  /'
+  pass "every entity reference exists in the export"
+else
+  sed 's/^/  /' "$recon"
+  fail "dashboard references an entity the instance does not have"
+fi
+rm -f "$recon"
+
 sect "Protected files must not be modified autonomously"
 protected='(^|/)(secrets\.ya?ml|configuration\.yaml|automations\.yaml|scripts\.yaml|scenes\.yaml|known_devices\.yaml|ip_bans\.yaml|auth_provider\..*)$|^\.storage/|(^|/)\.env'
 touched=$(git diff --cached --name-only; git diff --name-only)

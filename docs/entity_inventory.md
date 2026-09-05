@@ -17,7 +17,24 @@ reference against what the live instance actually reports.
 > "missing". Check the export before treating anything here as a blocker.
 >
 > The canonical dashboard is now `dashboards/casaray_v2.yaml`. Reconciled
-> against B1 on 2026-09-05: **209 references, 0 absent from the export.**
+> against B1 on 2026-09-05, and again after the upgrade batches of the same
+> day: **297 entity references, 0 absent from the export**, plus two
+> **service names** — `scene.turn_on` and `script.turn_on` — which the export
+> will never carry because they are not entities.
+>
+> Of the 297: 249 read `ok`, 30 `unknown`, 18 `unavailable`. Every one of the
+> 18 is a known-offline device the cards are written to report honestly —
+> the three contact sensors, the four Living Room Hue spots, the East and
+> South Wall camera streams, the LetPot grow unit (`lph_se_dcd9_*`), the
+> Kogan TV, Pogo and the 55" QLED. **Seeing them unavailable is the guard
+> working, not a defect.** See `LIVE_VERIFICATION_QUEUE.md` → *expected
+> offline, do not chase*.
+>
+> Reproduce the reconciliation at any time:
+>
+> ```sh
+> python3 scripts/reconcile_entities.py
+> ```
 
 **Generated:** 2026-09-01, against `ha-deploy` at `b6e76f5`.
 **B1 reconciliation:** 2026-09-05 from the owner-supplied Home Assistant Developer Tools entity export.
