@@ -94,7 +94,7 @@ the same household toggle cannot disagree about which Chinese the household
 reads, and production's is the only established convention in the repository,
 so v2 was converted to match it — script **and** vocabulary, reusing
 production's exact phrasing wherever production already had one. Corrected in
-`PENDING-SHA`. New Chinese strings follow production's wording; grep it before
+`885b03a`. New Chinese strings follow production's wording; grep it before
 inventing a term.
 
 ### View list (25)

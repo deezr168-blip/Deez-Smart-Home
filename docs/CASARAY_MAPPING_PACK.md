@@ -155,7 +155,7 @@ polling, and nothing that can go `unavailable`.
 **`%y`, never `%Y`.** This is the one that has already gone wrong once: the
 `casaray_v2` rebuild shipped all nineteen of its clocks with `%d/%m/%Y`,
 rendering `05/09/2026` against a mandate and a mockup that both say `05/09/26`.
-Corrected in `PENDING-SHA`. If a grep for `%d/%m/%Y` in `dashboards/` returns
+Corrected in `885b03a`. If a grep for `%d/%m/%Y` in `dashboards/` returns
 anything, that is the bug, and it is a one-character fix.
 
 When the Mushroom form sits in a page **header** it also takes the no-surface

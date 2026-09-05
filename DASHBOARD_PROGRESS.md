@@ -28,7 +28,7 @@ minutes.
 
 Detailed. These are the batches current work and open verification depend on.
 
-### `PENDING-SHA` — casaray_v2: two convention breaks corrected (date format, Chinese script)
+### `885b03a` — casaray_v2: two convention breaks corrected (date format, Chinese script)
 Purpose: `5dc6f50` delivered `dashboards/casaray_v2.yaml`, a from-scratch
 parallel rebuild. It is strong work — well-guarded templates, no invented
 entities, honest absences. Two things in it diverge from conventions that were
