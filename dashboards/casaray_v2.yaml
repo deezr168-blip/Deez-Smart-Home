@@ -67,55 +67,55 @@ views:
       name: Rooms
       icon: mdi:floor-plan
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/rooms}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
     - type: button
       grid_options: {columns: 3, rows: 1}
       name: Energy
       icon: mdi:lightning-bolt
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/energy}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
     - type: button
       grid_options: {columns: 3, rows: 1}
       name: Security
       icon: mdi:shield-home
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/security}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/security}
     - type: button
       grid_options: {columns: 3, rows: 1}
       name: Cameras
       icon: mdi:cctv
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/cameras}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
     - type: button
       grid_options: {columns: 3, rows: 1}
       name: Bills
       icon: mdi:file-document-outline
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/bills}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/bills}
     - type: button
       grid_options: {columns: 3, rows: 1}
       name: Entertainment
       icon: mdi:television-play
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/entertainment}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/entertainment}
     - type: button
       grid_options: {columns: 3, rows: 1}
       name: Automations
       icon: mdi:robot
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/automations}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/automations}
     - type: button
       grid_options: {columns: 3, rows: 1}
       name: Alerts
       icon: mdi:bell-alert
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/alerts}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/alerts}
     - type: button
       grid_options: {columns: 3, rows: 1}
       name: Health
       icon: mdi:heart-pulse
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/house-health}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/house-health}
 
   # --- Attention. Conditional throughout: a healthy house shows nothing. ---
   - type: grid
@@ -192,7 +192,7 @@ views:
         name: Front door open
         icon: mdi:door-open
         color: red
-        tap_action: {action: navigate, navigation_path: /casaray/security}
+        tap_action: {action: navigate, navigation_path: /casaray-v2/security}
     - type: conditional
       conditions:
       - condition: state
@@ -204,7 +204,7 @@ views:
         name: Backyard door open
         icon: mdi:door-open
         color: red
-        tap_action: {action: navigate, navigation_path: /casaray/security}
+        tap_action: {action: navigate, navigation_path: /casaray-v2/security}
     - type: conditional
       conditions:
       - condition: state
@@ -227,7 +227,7 @@ views:
         name: Front Door battery low
         icon: mdi:battery-alert-variant-outline
         color: orange
-        tap_action: {action: navigate, navigation_path: /casaray/house-health}
+        tap_action: {action: navigate, navigation_path: /casaray-v2/house-health}
     - type: conditional
       conditions:
       - condition: numeric_state
@@ -239,7 +239,7 @@ views:
         name: RingRing battery low
         icon: mdi:battery-alert-variant-outline
         color: orange
-        tap_action: {action: navigate, navigation_path: /casaray/house-health}
+        tap_action: {action: navigate, navigation_path: /casaray-v2/house-health}
     - type: conditional
       conditions:
       - condition: numeric_state
@@ -251,7 +251,7 @@ views:
         name: North Wall camera battery low
         icon: mdi:battery-alert-variant-outline
         color: orange
-        tap_action: {action: navigate, navigation_path: /casaray/house-health}
+        tap_action: {action: navigate, navigation_path: /casaray-v2/house-health}
     - type: conditional
       conditions:
       - condition: state
@@ -263,7 +263,7 @@ views:
         name: Internet
         icon: mdi:wan
         color: red
-        tap_action: {action: navigate, navigation_path: /casaray/house-health}
+        tap_action: {action: navigate, navigation_path: /casaray-v2/house-health}
     - type: conditional
       conditions:
       - condition: state
@@ -322,7 +322,7 @@ views:
       entity: zone.home
       name: People home
       icon: mdi:home-account
-      tap_action: {action: navigate, navigation_path: /casaray/people}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/people}
     - type: tile
       entity: person.raymond_du
       grid_options: {columns: 4, rows: 1}
@@ -434,25 +434,25 @@ views:
       name: House power
       icon: mdi:transmission-tower
       grid_options: {columns: 6, rows: 1}
-      tap_action: {action: navigate, navigation_path: /casaray/energy}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
     - type: tile
       entity: sensor.powerpal_gateway_powerpal_daily_energy
       name: Used today
       icon: mdi:counter
       grid_options: {columns: 6, rows: 1}
-      tap_action: {action: navigate, navigation_path: /casaray/energy}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
     - type: tile
       entity: sensor.primo_5_0_1_1_ac_power
       name: Solar now
       icon: mdi:solar-power-variant
       grid_options: {columns: 6, rows: 1}
-      tap_action: {action: navigate, navigation_path: /casaray/energy}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
     - type: tile
       entity: sensor.primo_5_0_1_1_energy_day
       name: Solar today
       icon: mdi:weather-sunny
       grid_options: {columns: 6, rows: 1}
-      tap_action: {action: navigate, navigation_path: /casaray/energy}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
 
   # --- Rooms. P5: one line of state per room, tap to open. ---
   - type: grid
@@ -480,62 +480,62 @@ views:
       icon: mdi:sofa
       entity: light.living_room
       show_state: true
-      tap_action: {action: navigate, navigation_path: /casaray/living-room}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/living-room}
     - type: button
       grid_options: {columns: 4, rows: 1}
       name: Kitchen
       icon: mdi:silverware-fork-knife
       entity: binary_sensor.k_motion_sensor_motion
       show_state: true
-      tap_action: {action: navigate, navigation_path: /casaray/kitchen}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/kitchen}
     - type: button
       grid_options: {columns: 4, rows: 1}
       name: Dining
       icon: mdi:table-chair
       entity: light.dining
       show_state: true
-      tap_action: {action: navigate, navigation_path: /casaray/dining}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/dining}
     - type: button
       grid_options: {columns: 4, rows: 1}
       name: Parents Room
       icon: mdi:bed-king
       entity: climate.bedroom_parents_room_ac
       show_state: true
-      tap_action: {action: navigate, navigation_path: /casaray/parents-room}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/parents-room}
     - type: button
       grid_options: {columns: 4, rows: 1}
       name: Ray Bedroom
       icon: mdi:bed
       entity: light.bedroom_bedroom
       show_state: true
-      tap_action: {action: navigate, navigation_path: /casaray/ray-bedroom}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/ray-bedroom}
     - type: button
       grid_options: {columns: 4, rows: 1}
       name: Garage
       icon: mdi:garage
       entity: switch.g_monitor_freezer_p110m
       show_state: true
-      tap_action: {action: navigate, navigation_path: /casaray/garage}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/garage}
     - type: button
       grid_options: {columns: 4, rows: 1}
       name: Guest Room
       icon: mdi:bed-empty
       entity: switch.g_printer_p100
       show_state: true
-      tap_action: {action: navigate, navigation_path: /casaray/guest-room}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/guest-room}
     - type: button
       grid_options: {columns: 4, rows: 1}
       name: Lighting
       icon: mdi:lightbulb-group
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/lighting}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/lighting}
     - type: button
       grid_options: {columns: 4, rows: 1}
       name: Climate
       icon: mdi:thermometer
       entity: sensor.bedroom_motion_sensor_temperature
       show_state: true
-      tap_action: {action: navigate, navigation_path: /casaray/climate}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/climate}
 
   # --- Indoor climate at a glance. ---
   - type: grid
@@ -605,12 +605,12 @@ views:
       name: Front Door
       camera_view: auto
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/camera-front-door}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/camera-front-door}
     - type: button
       name: All cameras
       icon: mdi:cctv
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/cameras}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
 
   # --- Footer: weather and the next bill. ---
   - type: grid
@@ -643,13 +643,13 @@ views:
       name: Outstanding bills
       icon: mdi:cash-multiple
       grid_options: {columns: 4, rows: 1}
-      tap_action: {action: navigate, navigation_path: /casaray/bills}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/bills}
     - type: tile
       entity: sensor.bills_unpaid_count
       name: Unpaid
       icon: mdi:file-alert-outline
       grid_options: {columns: 4, rows: 1}
-      tap_action: {action: navigate, navigation_path: /casaray/bills}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/bills}
     - type: button
       grid_options: {columns: 4, rows: 1}
       name: Language
@@ -677,7 +677,7 @@ views:
       name: Home
       icon: mdi:home
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/home}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
       grid_options: {columns: 6, rows: 2}
       content: >-
@@ -702,56 +702,56 @@ views:
       icon: mdi:sofa
       entity: light.living_room
       show_state: true
-      tap_action: {action: navigate, navigation_path: /casaray/living-room}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/living-room}
     - type: button
       grid_options: {columns: 6, rows: 2}
       name: Kitchen
       icon: mdi:silverware-fork-knife
       entity: binary_sensor.k_motion_sensor_motion
       show_state: true
-      tap_action: {action: navigate, navigation_path: /casaray/kitchen}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/kitchen}
     - type: button
       grid_options: {columns: 6, rows: 2}
       name: Dining
       icon: mdi:table-chair
       entity: light.dining
       show_state: true
-      tap_action: {action: navigate, navigation_path: /casaray/dining}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/dining}
     - type: button
       grid_options: {columns: 6, rows: 2}
       name: Parents Room
       icon: mdi:bed-king
       entity: climate.bedroom_parents_room_ac
       show_state: true
-      tap_action: {action: navigate, navigation_path: /casaray/parents-room}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/parents-room}
     - type: button
       grid_options: {columns: 6, rows: 2}
       name: Ray Bedroom
       icon: mdi:bed
       entity: light.bedroom_bedroom
       show_state: true
-      tap_action: {action: navigate, navigation_path: /casaray/ray-bedroom}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/ray-bedroom}
     - type: button
       grid_options: {columns: 6, rows: 2}
       name: Garage
       icon: mdi:garage
       entity: switch.g_monitor_freezer_p110m
       show_state: true
-      tap_action: {action: navigate, navigation_path: /casaray/garage}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/garage}
     - type: button
       grid_options: {columns: 6, rows: 2}
       name: Guest Room
       icon: mdi:bed-empty
       entity: switch.g_printer_p100
       show_state: true
-      tap_action: {action: navigate, navigation_path: /casaray/guest-room}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/guest-room}
     - type: button
       grid_options: {columns: 6, rows: 2}
       name: Backyard
       icon: mdi:tree
       entity: binary_sensor.b_contact_sensor_door
       show_state: true
-      tap_action: {action: navigate, navigation_path: /casaray/security}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/security}
 
 # ===========================================================================
 # LIVING ROOM. Media, lighting and the front door live here.
@@ -773,13 +773,13 @@ views:
       name: Back
       icon: mdi:arrow-left
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/rooms}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
     - type: button
       grid_options: {columns: 2, rows: 1}
       name: Home
       icon: mdi:home
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/home}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
@@ -1101,7 +1101,7 @@ views:
       name: Front Door
       camera_view: auto
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/camera-front-door}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/camera-front-door}
     - type: tile
       entity: sensor.front_door_battery
       name: Doorbell battery
@@ -1129,13 +1129,13 @@ views:
       name: Back
       icon: mdi:arrow-left
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/rooms}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
     - type: button
       grid_options: {columns: 2, rows: 1}
       name: Home
       icon: mdi:home
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/home}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
@@ -1281,13 +1281,13 @@ views:
       name: Back
       icon: mdi:arrow-left
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/rooms}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
     - type: button
       grid_options: {columns: 2, rows: 1}
       name: Home
       icon: mdi:home
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/home}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
@@ -1466,7 +1466,7 @@ views:
       camera_view: auto
       show_state: false
       grid_options: {columns: 6, rows: 4}
-      tap_action: {action: navigate, navigation_path: /casaray/camera-pet-feeder}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/camera-pet-feeder}
     - type: tile
       entity: light.smart_pet_feeder_indicator_light
       name: Indicator light
@@ -1504,13 +1504,13 @@ views:
       name: Back
       icon: mdi:arrow-left
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/rooms}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
     - type: button
       grid_options: {columns: 2, rows: 1}
       name: Home
       icon: mdi:home
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/home}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
@@ -1774,13 +1774,13 @@ views:
       name: Back
       icon: mdi:arrow-left
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/rooms}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
     - type: button
       grid_options: {columns: 2, rows: 1}
       name: Home
       icon: mdi:home
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/home}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
@@ -2037,13 +2037,13 @@ views:
       name: Back
       icon: mdi:arrow-left
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/rooms}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
     - type: button
       grid_options: {columns: 2, rows: 1}
       name: Home
       icon: mdi:home
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/home}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
@@ -2163,13 +2163,13 @@ views:
       name: Back
       icon: mdi:arrow-left
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/rooms}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
     - type: button
       grid_options: {columns: 2, rows: 1}
       name: Home
       icon: mdi:home
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/home}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
@@ -2274,7 +2274,7 @@ views:
       name: Home
       icon: mdi:home
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/home}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
       grid_options: {columns: 6, rows: 2}
       content: >-
@@ -2724,7 +2724,7 @@ views:
       name: Home
       icon: mdi:home
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/home}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
       grid_options: {columns: 6, rows: 2}
       content: >-
@@ -2861,7 +2861,7 @@ views:
       name: Home
       icon: mdi:home
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/home}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
       grid_options: {columns: 6, rows: 2}
       content: >-
@@ -3132,7 +3132,7 @@ views:
       name: Home
       icon: mdi:home
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/home}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
       grid_options: {columns: 6, rows: 2}
       content: >-
@@ -3634,7 +3634,7 @@ views:
       name: Home
       icon: mdi:home
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/home}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
       grid_options: {columns: 6, rows: 2}
       content: >-
@@ -3767,32 +3767,32 @@ views:
       entity: camera.front_door_live_view
       name: Front Door
       grid_options: {columns: 4, rows: 1}
-      tap_action: {action: navigate, navigation_path: /casaray/camera-front-door}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/camera-front-door}
     - type: tile
       entity: camera.tapo_c425_north_wall_hd_stream_direct
       name: North Wall
       grid_options: {columns: 4, rows: 1}
-      tap_action: {action: navigate, navigation_path: /casaray/camera-north-wall}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/camera-north-wall}
     - type: tile
       entity: camera.tapo_c420_east_wall_hd_stream_direct
       name: East Wall
       grid_options: {columns: 4, rows: 1}
-      tap_action: {action: navigate, navigation_path: /casaray/camera-east-wall}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/camera-east-wall}
     - type: tile
       entity: camera.tapo_c420_south_wall_hd_stream_direct
       name: South Wall
       grid_options: {columns: 4, rows: 1}
-      tap_action: {action: navigate, navigation_path: /casaray/camera-south-wall}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/camera-south-wall}
     - type: tile
       entity: camera.tapo_c200_stockroom_hd_stream_direct
       name: Stockroom
       grid_options: {columns: 4, rows: 1}
-      tap_action: {action: navigate, navigation_path: /casaray/camera-stockroom}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/camera-stockroom}
     - type: tile
       entity: camera.smart_pet_feeder
       name: Pet Feeder
       grid_options: {columns: 4, rows: 1}
-      tap_action: {action: navigate, navigation_path: /casaray/camera-pet-feeder}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/camera-pet-feeder}
 
 # ===========================================================================
 # CAMERAS -- overview grid, then one subview per camera for the live stream.
@@ -3814,7 +3814,7 @@ views:
       name: Home
       icon: mdi:home
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/home}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
       grid_options: {columns: 6, rows: 2}
       content: >-
@@ -3839,42 +3839,42 @@ views:
       camera_view: auto
       show_state: false
       grid_options: {columns: 6, rows: 4}
-      tap_action: {action: navigate, navigation_path: /casaray/camera-front-door}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/camera-front-door}
     - type: picture-entity
       entity: camera.tapo_c425_north_wall_hd_stream_direct
       name: North Wall
       camera_view: auto
       show_state: false
       grid_options: {columns: 6, rows: 4}
-      tap_action: {action: navigate, navigation_path: /casaray/camera-north-wall}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/camera-north-wall}
     - type: picture-entity
       entity: camera.tapo_c200_stockroom_hd_stream_direct
       name: Stockroom
       camera_view: auto
       show_state: false
       grid_options: {columns: 6, rows: 4}
-      tap_action: {action: navigate, navigation_path: /casaray/camera-stockroom}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/camera-stockroom}
     - type: picture-entity
       entity: camera.smart_pet_feeder
       name: Pet Feeder
       camera_view: auto
       show_state: false
       grid_options: {columns: 6, rows: 4}
-      tap_action: {action: navigate, navigation_path: /casaray/camera-pet-feeder}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/camera-pet-feeder}
     - type: picture-entity
       entity: camera.tapo_c420_east_wall_hd_stream_direct
       name: East Wall
       camera_view: auto
       show_state: false
       grid_options: {columns: 6, rows: 4}
-      tap_action: {action: navigate, navigation_path: /casaray/camera-east-wall}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/camera-east-wall}
     - type: picture-entity
       entity: camera.tapo_c420_south_wall_hd_stream_direct
       name: South Wall
       camera_view: auto
       show_state: false
       grid_options: {columns: 6, rows: 4}
-      tap_action: {action: navigate, navigation_path: /casaray/camera-south-wall}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/camera-south-wall}
 
   - type: grid
     column_span: 2
@@ -3930,7 +3930,7 @@ views:
       name: Cameras
       icon: mdi:arrow-left
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/cameras}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
     - type: custom:webrtc-camera
       entity: camera.front_door_live_view
       title: Front Door
@@ -3959,7 +3959,7 @@ views:
       name: Cameras
       icon: mdi:arrow-left
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/cameras}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
     - type: custom:webrtc-camera
       entity: camera.tapo_c425_north_wall_hd_stream_direct
       title: North Wall
@@ -3985,7 +3985,7 @@ views:
       name: Cameras
       icon: mdi:arrow-left
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/cameras}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
     - type: custom:webrtc-camera
       entity: camera.tapo_c420_east_wall_hd_stream_direct
       title: East Wall
@@ -4011,7 +4011,7 @@ views:
       name: Cameras
       icon: mdi:arrow-left
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/cameras}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
     - type: custom:webrtc-camera
       entity: camera.tapo_c420_south_wall_hd_stream_direct
       title: South Wall
@@ -4037,7 +4037,7 @@ views:
       name: Cameras
       icon: mdi:arrow-left
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/cameras}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
     - type: custom:webrtc-camera
       entity: camera.tapo_c200_stockroom_hd_stream_direct
       title: Stockroom
@@ -4060,7 +4060,7 @@ views:
       name: Cameras
       icon: mdi:arrow-left
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/cameras}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
     - type: custom:webrtc-camera
       entity: camera.smart_pet_feeder
       title: Pet Feeder
@@ -4098,7 +4098,7 @@ views:
       name: Home
       icon: mdi:home
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/home}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
       grid_options: {columns: 6, rows: 2}
       content: >-
@@ -4232,7 +4232,7 @@ views:
       name: Home
       icon: mdi:home
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/home}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
       grid_options: {columns: 6, rows: 2}
       content: >-
@@ -4321,7 +4321,7 @@ views:
       name: Home
       icon: mdi:home
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/home}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
       grid_options: {columns: 6, rows: 2}
       content: >-
@@ -4446,7 +4446,7 @@ views:
       name: Home
       icon: mdi:home
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/home}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
       grid_options: {columns: 6, rows: 2}
       content: >-
@@ -4735,7 +4735,7 @@ views:
       name: Home
       icon: mdi:home
       show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray/home}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
       grid_options: {columns: 6, rows: 2}
       content: >-
