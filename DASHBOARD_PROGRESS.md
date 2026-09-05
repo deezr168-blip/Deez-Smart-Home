@@ -24,8 +24,10 @@ duplicate keys, templates, navigation, mass-damage, secrets. It does not mean
 anything rendered. Visible results stay unconfirmed until checked on the live
 dashboard; see `DASHBOARD_ISSUES.md` for status.
 
-Deployment: a push to `ha-deploy` reaches the live dashboard within 15
-minutes.
+**Deployment: currently none.** A push to `ha-deploy` is *intended* to reach
+the live dashboard within 15 minutes, but `CFG-003` has broken that path since
+`26c3b14`. Every entry below is committed, not deployed. Do not read "pushed"
+as "live" anywhere in this file.
 
 ---
 
@@ -33,7 +35,7 @@ minutes.
 
 Detailed. These are the batches current work and open verification depend on.
 
-### `PENDING-SHA` — casaray_v2: bilingual section headings; the architecture decision recorded
+### `1d1f443` — casaray_v2: bilingual section headings; the architecture decision recorded
 Purpose: the owner settled the architecture question on 2026-09-05 —
 `dashboards/casaray_v2.yaml` **is** CasaRay — and brought section headings
 inside the bilingual convention, which the previous batch had left outside it

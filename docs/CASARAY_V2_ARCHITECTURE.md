@@ -190,7 +190,7 @@ exactly one heading always shows. Verified: with the helper unavailable, 70 of
 70 headings still render.
 
 `icon`, `heading_style` and all 12 `badges` blocks are identical between each
-pair — checked programmatically, not by eye. Landed in `PENDING-SHA`.
+pair — checked programmatically, not by eye. Landed in `1d1f443`.
 
 ### View list (25)
 
