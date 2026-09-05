@@ -3987,11 +3987,15 @@ views:
     - type: tile
       entity: input_number.bill_history_electricity_payment
       name: Paid
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: input_number.bill_history_electricity_saving
       name: Saved
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: input_number.bill_history_electricity_discount
+      name: Discount
+      grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: input_datetime.bill_history_electricity_paid_date
       name: Paid on
@@ -4023,11 +4027,15 @@ views:
     - type: tile
       entity: input_number.bill_history_gas_payment
       name: Paid
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: input_number.bill_history_gas_saving
       name: Saved
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: input_number.bill_history_gas_discount
+      name: Discount
+      grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: input_datetime.bill_history_gas_paid_date
       name: Paid on
@@ -4059,11 +4067,15 @@ views:
     - type: tile
       entity: input_number.bill_history_water_payment
       name: Paid
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: input_number.bill_history_water_saving
       name: Saved
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: input_number.bill_history_water_discount
+      name: Discount
+      grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: input_datetime.bill_history_water_paid_date
       name: Paid on
@@ -4073,12 +4085,16 @@ views:
       name: Was due
       grid_options: {columns: 6, rows: 1}
 
+  # Was one narrow column carrying three bills as six anonymous tiles, with
+  # no dates and no discount even though every helper exists. Split into three
+  # labelled groups across the full width, each with the same five fields the
+  # utility histories show, so the six bills finally read the same way.
   - type: grid
-    column_span: 1
+    column_span: 2
     cards:
     - type: heading
       heading: Rates, insurance and rego history
-      heading_style: subtitle
+      heading_style: title
       icon: mdi:file-document-multiple-outline
       visibility:
       - condition: state
@@ -4086,35 +4102,119 @@ views:
         state_not: 'on'
     - type: heading
       heading: 市政费、车险与车辆注册记录
-      heading_style: subtitle
+      heading_style: title
       icon: mdi:file-document-multiple-outline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: heading
+      heading: Council rates
+      heading_style: subtitle
+      icon: mdi:city
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 市政费
+      heading_style: subtitle
+      icon: mdi:city
       visibility:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: tile
       entity: input_number.bill_history_council_rates_payment
-      name: Rates paid
-      grid_options: {columns: 6, rows: 1}
+      name: Paid
+      grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: input_number.bill_history_council_rates_saving
-      name: Rates saved
+      name: Saved
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: input_number.bill_history_council_rates_discount
+      name: Discount
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: input_datetime.bill_history_council_rates_paid_date
+      name: Paid on
       grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_datetime.bill_history_council_rates_due_date
+      name: Was due
+      grid_options: {columns: 6, rows: 1}
+    - type: heading
+      heading: Car insurance
+      heading_style: subtitle
+      icon: mdi:car-cog
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 车险
+      heading_style: subtitle
+      icon: mdi:car-cog
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: input_number.bill_history_car_insurance_payment
-      name: Insurance paid
-      grid_options: {columns: 6, rows: 1}
+      name: Paid
+      grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: input_number.bill_history_car_insurance_saving
-      name: Insurance saved
+      name: Saved
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: input_number.bill_history_car_insurance_discount
+      name: Discount
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: input_datetime.bill_history_car_insurance_paid_date
+      name: Paid on
       grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_datetime.bill_history_car_insurance_due_date
+      name: Was due
+      grid_options: {columns: 6, rows: 1}
+    - type: heading
+      heading: VicRoads rego
+      heading_style: subtitle
+      icon: mdi:card-account-details-outline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 车辆注册
+      heading_style: subtitle
+      icon: mdi:card-account-details-outline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: input_number.bill_history_rego_payment
-      name: Rego paid
-      grid_options: {columns: 6, rows: 1}
+      name: Paid
+      grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: input_number.bill_history_rego_saving
-      name: Rego saved
+      name: Saved
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: input_number.bill_history_rego_discount
+      name: Discount
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: input_datetime.bill_history_rego_paid_date
+      name: Paid on
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_datetime.bill_history_rego_due_date
+      name: Was due
       grid_options: {columns: 6, rows: 1}
 
   - type: grid
@@ -4138,12 +4238,26 @@ views:
         state: 'on'
     - type: markdown
       content: >-
-        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% if cn
-        %}**支出趋势图**仍未显示：需要这些助手实体的长期统计数据，目前还没有。**网络费**也没有对应的助手实体，因此不在此列。其余部分现已上线。{%
-        else %}The **spending trend chart** is still not shown: it needs long-term
-        statistics for these helpers, which do not exist yet. The **internet bill**
-        has no helper entities at all, so it is absent rather than empty. Everything
-        else on this page is now live.{% endif %}
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {% if cn %}**支出趋势图**仍未显示：需要这些助手实体的长期统计数据，目前还没有。**网络费**也没有对应的助手实体，因此不在此列。
+
+
+        六个 `bill_history_*_last_signature`
+        助手实体是记录账单时用于去重的内部标记，不是给人看的数据，因此故意不显示。
+
+
+        其余部分现已上线。{% else %}The **spending trend chart** is still not shown:
+        it needs long-term statistics for these helpers, which do not exist yet.
+        The **internet bill** has no helper entities at all, so it is absent
+        rather than empty.
+
+
+        The six `bill_history_*_last_signature` helpers are internal
+        de-duplication markers used when recording a payment, not figures for a
+        person to read, so they are deliberately not shown.
+
+
+        Everything else on this page is now live.{% endif %}
 
 # ===========================================================================
 # SECURITY. Doors, motion, camera health. There is no alarm_control_panel
