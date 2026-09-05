@@ -5261,12 +5261,14 @@ views:
         cn else '**The internet connection is down.**' }}{% else %}{{
         '**WAN 传感器无数据。**' if cn else '**The WAN sensor is not reporting.**' }}{%
         endif %} {% if ns.low | count %}{% if cn %} **{{ ns.low | count }} 个电池电量低于
-        30%：**{{ ns.low | join('、') }}。{% else %} **{{ ns.low | count }} batteries
-        under 30%:** {{ ns.low | join(', ') }}.{% endif %}{% endif %}{% if ns.unk %}{%
+        30%：**{{ ns.low | join('、') }}。{% else %} **{{ ns.low | count }} batter{{
+        'y is' if (ns.low | count) == 1 else 'ies are' }} under 30%:** {{ ns.low |
+        join(', ') }}.{% endif %}{% endif %}{% if ns.unk %}{%
         if cn %} {{ ns.unk }} 个电池无数据。{% else %} {{ ns.unk }} batter{{ 'y is' if
         ns.unk == 1 else 'ies are' }} not reporting.{% endif %}{% endif %}{% if ns.down
-        %}{% if cn %} **{{ ns.down }} 个设备离线。**{% else %} **{{ ns.down }} devices
-        are offline.**{% endif %}{% endif %}{% if not (ns.low | count) and not
+        %}{% if cn %} **{{ ns.down }} 个设备离线。**{% else %} **{{ ns.down }} device{{
+        '' if ns.down == 1 else 's' }} {{ 'is' if ns.down == 1 else 'are' }}
+        offline.**{% endif %}{% endif %}{% if not (ns.low | count) and not
         ns.down and wan == 'on' %}{{ ' 其他一切正常。' if cn else ' Nothing else needs
         attention.' }}{% endif %}
 
