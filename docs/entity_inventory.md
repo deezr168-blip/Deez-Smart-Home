@@ -1,7 +1,23 @@
 # Entity inventory — Deez Smart Home
 
-Reconciliation of every Home Assistant object `dashboards/deez_smart_home.yaml`
-references against what the live instance actually reports.
+Reconciliation of the Home Assistant objects this repository's dashboards
+reference against what the live instance actually reports.
+
+> **Read this first — B1 changed what this file can prove.**
+>
+> The tables below were originally built against the **legacy** dashboard,
+> `dashboards/deez_smart_home.yaml`, using the read-only connector, which
+> returns friendly names only and only for Assist-exposed entities. That is
+> why `NOT EXPOSED` exists as a status.
+>
+> **That limitation is gone.** `docs/live/states_export_2026-09-05.txt` is a
+> full Developer Tools export — 970 entities, every entity ID, friendly name,
+> area and availability. It is now the authority on whether an entity exists,
+> and a `NOT EXPOSED` row below means only "not re-checked yet", **never**
+> "missing". Check the export before treating anything here as a blocker.
+>
+> The canonical dashboard is now `dashboards/casaray_v2.yaml`. Reconciled
+> against B1 on 2026-09-05: **209 references, 0 absent from the export.**
 
 **Generated:** 2026-09-01, against `ha-deploy` at `b6e76f5`.
 **B1 reconciliation:** 2026-09-05 from the owner-supplied Home Assistant Developer Tools entity export.
@@ -12,9 +28,15 @@ references against what the live instance actually reports.
 | `dashboards/deez_smart_home.yaml` | The canonical **entity ID** a card uses. These IDs were originally read out of the live dashboard, so they are real IDs, not invented ones. | That the entity still exists, or what state it is in. |
 | Home Assistant connector (`GetLiveContext`) | That an object **exists right now**, its domain, its area and its current state. | The entity **ID**. The connector returns friendly names only. And it returns **only entities exposed to Assist** — absence is not evidence of non-existence. |
 
-Both limits matter, and the second one is the reason this file has a
-`NOT EXPOSED` column value rather than a `MISSING` one. 55 of the 166 IDs
-below cannot be confirmed or denied from this environment at all.
+Both limits applied **before B1**, and are the reason this file has a
+`NOT EXPOSED` column value rather than a `MISSING` one. They no longer bind:
+the third source below supersedes them.
+
+| `docs/live/states_export_2026-09-05.txt` | That an entity **exists**, its exact **ID**, friendly name, area and availability — for **every** entity, not just Assist-exposed ones. | Attribute values and history. It deliberately carries no state values, so no addresses or coordinates. |
+
+25 rows below still read `NOT EXPOSED`. That is a **stale label, not a
+finding** — it predates the export. Resolve any one of them by grepping the
+export rather than by re-querying the connector.
 
 > **Rule this file exists to serve:** never introduce an `entity_id` that is
 > not already in the dashboard or confirmed against the live instance. A

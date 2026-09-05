@@ -78,15 +78,20 @@ ls -l /config/dashboards/
 **Both** `casaray_v2.yaml` and `deez_smart_home.yaml` must be listed.
 
 - **Both there** → continue to step 5.
-- **`casaray_v2.yaml` missing** → copy it once by hand:
+- **`casaray_v2.yaml` missing** → run the sync helper:
 
 ```sh
-cp /config/deez_repo/dashboards/casaray_v2.yaml /config/dashboards/casaray_v2.yaml
+sh /config/deez_repo/scripts/sync_casaray_to_config.sh
 ```
 
-Then say so — the deploy script needs a line adding so this keeps happening on
-every future push, and that will be prepared separately rather than edited
-blind.
+It copies only CasaRay, never the legacy dashboard; refuses to publish a file
+that does not parse as YAML; refuses a source still carrying stale `/casaray/`
+links; backs up anything it replaces; and says "nothing to do" if the two are
+already identical. Safe to re-run after every future pull.
+
+`/config/deploy_deez_dashboard.sh` is protected under `CLAUDE.md` and was
+**not** modified. Adding CasaRay to it is a separate owner decision; until
+then, this helper is the bridge.
 
 ### 5. Confirm the links migrated in the file HA will read
 

@@ -130,6 +130,84 @@ on the iPad, landscape.
 
 ---
 
+# CasaRay v2 — `/casaray-v2/…`
+
+**A different dashboard.** Everything above this line is the legacy
+`/deez-smart-home/…` dashboard. Everything below is `dashboards/casaray_v2.yaml`,
+which has **never rendered even once**. Do not merge the two sets of results.
+
+Register it first — `docs/CASARAY_V2_DEPLOYMENT.md`. A new YAML dashboard needs
+a **full restart**, not a Lovelace reload.
+
+## CasaRay — does it load at all
+
+| ID | What to check live | Expected result | Commit | P | Result |
+|---|---|---|---|---|---|
+| CR-100 | Open `/casaray-v2/home` | The page renders. A **CasaRay** entry with a heart-house icon is in the sidebar. | `2203fc1` | **P1** | PENDING |
+| CR-101 | The legacy dashboard, straight after | Still at `/deez-smart-home/home`, unchanged. Registering CasaRay must not disturb it. | `2203fc1` | **P1** | PENDING |
+
+## CasaRay — navigation
+
+All 87 internal links moved to `/casaray-v2/`. If the dashboard was registered
+under any other key, **every one of them breaks** — that is the single most
+likely failure.
+
+| ID | What to check live | Expected result | Commit | P | Result |
+|---|---|---|---|---|---|
+| CR-110 | Home's 8 nav buttons | Rooms, Energy, Security, Cameras, Bills, Entertainment, Alerts, Health all open | `2203fc1` | **P1** | PENDING |
+| CR-111 | `rooms` · `energy` · `security` · `cameras` · `bills` | Each loads | `2203fc1` | **P1** | PENDING |
+| CR-112 | `entertainment` · `alerts` · `house-health` · `automations` · `lighting` · `climate` · `people` | Each loads | `2203fc1` | **P1** | PENDING |
+| CR-113 | One room, e.g. `living-room` | Loads; Back goes to `rooms`, Home to `home` | `2203fc1` | **P1** | PENDING |
+| CR-114 | A camera subview from the Cameras grid | Opens; Back returns to `cameras` | `2203fc1` | P2 | PENDING |
+
+## CasaRay — the features B1 unblocked
+
+These were connected from the entity export and have **never** rendered.
+Readiness was computed from B1 first, so each row states what it should do.
+
+| ID | What to check live | Expected result | Commit | P | Result |
+|---|---|---|---|---|---|
+| CR-120 | Room scene buttons — Living Room, Dining, Ray Bedroom | Tap one; the lights change. 29 scenes wired, all present in B1. A scene not recalled since the last restart shows no state — **normal, not an error** | `13d21c4` | **P1** | PENDING |
+| CR-121 | Lighting board | Per-light control works; scene rows present | `13d21c4` | P2 | PENDING |
+| CR-122 | Living Room air quality | PM1 / PM2.5 / PM10 with a health-concern word. All 5 sensors live in B1 | `13d21c4` | P2 | PENDING |
+| CR-123 | Energy → solar forecast | Today / tomorrow / peak-time figures. All 6 live. Works even when the inverter is down | `13d21c4` | P2 | PENDING |
+| CR-124 | Energy → Fronius + Powerpal | Inverter and whole-house power reporting. All 8 live in B1 | `13d21c4` | P2 | PENDING |
+| CR-125 | People board | Phone and iPad battery percentages, presence per person. All 6 live | `13d21c4` | P2 | PENDING |
+| CR-126 | Automations board | **Exactly three** automations, each with a working enable toggle. Three is all that exists — not a truncated list | `13d21c4` | P2 | PENDING |
+
+## CasaRay — expected-offline, do not chase
+
+Confirmed offline in B1. The cards are written to say so rather than assert a
+healthy state. **Seeing these as unavailable is the guard working.**
+
+| ID | What to check live | Expected result | Commit | P | Result |
+|---|---|---|---|---|---|
+| CR-130 | Security and Home door state | Says door state **cannot be confirmed** — all three contact sensors are down. It must **not** claim "All doors closed" | `6de86ba` | **P1** | PENDING |
+| CR-131 | Cameras grid | East Wall and South Wall show offline; the other four stream | `6de86ba` | P2 | PENDING |
+| CR-132 | House Health batteries | **One** East Wall row, not an East Wall plus a Backyard row. There is no Backyard camera on this dashboard | `6de86ba` | P2 | PENDING |
+| CR-133 | Living Room lights | Four Hue spots unavailable — Hue bridge, not the dashboard | `6de86ba` | P3 | PENDING |
+
+## CasaRay — the two mechanisms never yet rendered
+
+Highest risk after CR-100, because neither has run anywhere.
+
+| ID | What to check live | Expected result | Commit | P | Result |
+|---|---|---|---|---|---|
+| CR-140 | Flip the Chinese toggle on Home, then look at any board's section headings **[中]** | **Exactly one** heading per section — English off, Simplified Chinese on. **Both** showing means the `visibility` conditions are not applied; **neither** means they are inverted | `1d1f443` | **P1** | PENDING |
+| CR-141 | The clock, on any board except a camera subview | Time above, date directly below, reading `DD/MM/YY` — `05/09/26`, **not** `05/09/2026` | `885b03a` | **P1** | PENDING |
+| CR-142 | Chinese mode on House Health and Security **[中]** | Interpreted status sentences in Simplified Chinese — `摄像头`, not `攝影機` | `3faa830` | P2 | PENDING |
+| CR-143 | Heading icons and badges in Chinese mode **[中]** | Identical to English mode. Check Home → Security, which carries a door badge | `1d1f443` | P3 | PENDING |
+
+## CasaRay — layout
+
+| ID | What to check live | Expected result | Commit | P | Result |
+|---|---|---|---|---|---|
+| CR-150 | Any board, **iPad landscape** | Two readable columns. No label truncated, no empty grid tracks | `5dc6f50` | P2 | PENDING |
+| CR-151 | Home and one room, **iPhone** | Usable; cards stack rather than squash | `5dc6f50` | P3 | PENDING |
+| CR-152 | Any board | Frosted-glass cards over the night-sky background, as the legacy dashboard has. If surfaces look flat, the theme is not applying — v2 carries no `card_mod` and relies entirely on the theme | `5dc6f50` | P2 | PENDING |
+
+---
+
 ## Recording results
 
 Either edit the Result cell directly, or just tell the routine — one result
@@ -157,9 +235,27 @@ result does to the issue record, the backlog and ownership — are in
 - `PASS` rows stay for traceability. A page group with nothing left
   outstanding may collapse to a one-line summary naming its IDs and date.
 
-**47 checks pending** (45 carried forward + 2 rows added this run by the
-CasaRay Batch 1 implementation: `CR-001` and `CR-002`, the P1 clock/date
-component in the Home header — see `DASHBOARD_PROGRESS.md`. That 45 was
+**70 checks pending**, in two separate sets that must not be merged:
+
+| Set | Dashboard | Pending |
+|---|---|---|
+| `UI-*` / `REG-*` / `BILL-*` / `CR-001`–`CR-002` | legacy `/deez-smart-home/…` | 47 |
+| **`CR-1xx`** | **CasaRay `/casaray-v2/…`** | **23** |
+
+The 23 CasaRay rows were added 2026-09-05, ahead of first deployment. That
+dashboard has never rendered, so every row is genuinely unknown rather than
+merely unchecked. Start with `CR-100` (does it load) and `CR-110`–`CR-114`
+(navigation) — if the dashboard was registered under any key other than
+`casaray-v2`, all 87 internal links break at once and everything below is
+noise until that is fixed.
+
+The legacy 47 are **lower priority now**. That dashboard is the rollback
+baseline, not the build target; verifying its backlog matters less than
+verifying the one replacing it.
+
+*Legacy count derivation, retained:* 47 = 45 carried forward + 2 rows added by
+the CasaRay Batch 1 implementation: `CR-001` and `CR-002`, the P1 clock/date
+component in the legacy Home header — see `DASHBOARD_PROGRESS.md`. That 45 was
 44 carried forward + 1 row: `UI-032`,
 the battery-health alert on Home — see `DASHBOARD_ISSUES.md`. That 44 was
 43 carried forward + 1 row added by the Billing
