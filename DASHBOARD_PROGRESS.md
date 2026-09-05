@@ -28,7 +28,7 @@ minutes.
 
 Detailed. These are the batches current work and open verification depend on.
 
-### `PENDING-SHA` — casaray_v2: the bilingual meaning layer, completed
+### `3faa830` — casaray_v2: the bilingual meaning layer, completed
 Purpose: `docs/CASARAY_V2_ARCHITECTURE.md` states v2's bilingual rule — translate
 "the layer that carries meaning — page titles, room summaries, interpreted
 status" and leave device rows as native tiles. The rule is sound. It was not

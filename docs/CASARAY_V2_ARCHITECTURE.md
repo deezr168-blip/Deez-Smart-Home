@@ -102,7 +102,7 @@ before it was fully implemented. As first shipped, every page had a bilingual
 *title* but an English-only *subtitle*, and none of the eight interpreted-status
 panels translated at all — so in Chinese mode a reader got `客厅` followed by
 "Temperature not reporting · no motion", and a House Health page that was
-entirely English. `PENDING-SHA` closes that: all 13 room and board summaries and
+entirely English. `3faa830` closes that: all 13 room and board summaries and
 all 8 status panels are bilingual, plus the three "why this panel is absent"
 notes, which are on-screen text like anything else.
 
