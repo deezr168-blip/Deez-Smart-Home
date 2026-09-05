@@ -32,7 +32,7 @@ Run these in the **Terminal & SSH** add-on. Each is a single line.
 ### 1. See whether the host clone has anything unpushed
 
 ```sh
-git -C /config log --oneline origin/ha-deploy..HEAD
+git -C /config/deez_repo log --oneline origin/ha-deploy..HEAD
 ```
 
 **Expected: one commit**, the URL-path migration. That one is now on GitHub, so
@@ -43,39 +43,59 @@ it is safe to discard.
 - **Anything else listed** → stop and paste it back. It is work that exists
   nowhere else and must be saved first.
 
-*(If `/config` is not the clone, find it with
-`grep -n 'cd \|git ' /config/deploy_deez_dashboard.sh` and use that path in
-place of `/config` throughout.)*
+*(The host clone is `/config/deez_repo`, confirmed by the owner 2026-09-05.)*
 
 ### 2. Fetch
 
 ```sh
-git -C /config fetch origin ha-deploy
+git -C /config/deez_repo fetch origin ha-deploy
 ```
 
 ### 3. Take the GitHub version
 
 ```sh
-git -C /config reset --hard origin/ha-deploy
+git -C /config/deez_repo reset --hard origin/ha-deploy
 ```
 
 ### 4. Confirm the dashboard file is where the config will look for it
+
+There are **two** locations and they are not the same place:
+
+| Path | What it is |
+|---|---|
+| `/config/deez_repo/dashboards/` | the git clone — what step 3 just updated |
+| `/config/dashboards/` | what Home Assistant actually reads |
+
+`filename: dashboards/casaray_v2.yaml` is resolved relative to `/config`, so
+the file must exist at **`/config/dashboards/casaray_v2.yaml`**. Something has
+to copy it from the clone; `/config/deploy_deez_dashboard.sh` does that for the
+legacy dashboard and may not know about CasaRay yet.
 
 ```sh
 ls -l /config/dashboards/
 ```
 
-**Both** `casaray_v2.yaml` and `deez_smart_home.yaml` must be listed. If
-`casaray_v2.yaml` is missing, stop — the deploy script only syncs the legacy
-file and needs a line adding. Say so and it will be prepared.
+**Both** `casaray_v2.yaml` and `deez_smart_home.yaml` must be listed.
 
-### 5. Confirm the links migrated
+- **Both there** → continue to step 5.
+- **`casaray_v2.yaml` missing** → copy it once by hand:
+
+```sh
+cp /config/deez_repo/dashboards/casaray_v2.yaml /config/dashboards/casaray_v2.yaml
+```
+
+Then say so — the deploy script needs a line adding so this keeps happening on
+every future push, and that will be prepared separately rather than edited
+blind.
+
+### 5. Confirm the links migrated in the file HA will read
 
 ```sh
 grep -c "/casaray-v2/" /config/dashboards/casaray_v2.yaml
 ```
 
-**Expected: 87.** If it prints 0, step 3 did not take effect.
+**Expected: 87.** If it prints 0, the copy in `/config/dashboards/` is stale —
+redo the `cp` in step 4.
 
 ### 6. Add the dashboard to `configuration.yaml`
 

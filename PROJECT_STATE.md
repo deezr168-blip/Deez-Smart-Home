@@ -741,21 +741,53 @@ be implemented.
 ### Main queue — the ordered ladder (owner directive, 2026-09-05)
 
 Implementation is deliberately **stopped at the top of this ladder**. New
-CasaRay feature development does not resume until steps 1–5 are done, in order.
-Steps 1 and 2 are owner actions; no routine can perform them.
+CasaRay feature development does not resume until every step is done, in order.
+
+**Updated 2026-09-05: steps 1–3 are done.** The ladder now stands at step 4,
+which is an owner action on the Home Assistant host.
 
 | # | | Step | Owner or Claude | State |
 |---|---|---|---|---|
-| 1 | 🔴 | **Resolve `CFG-003`** — repair the delivery path. Nothing committed reaches Home Assistant until this is done. Procedure: `DASHBOARD_ISSUES.md` → *Owner recovery, on the host*. | **Owner** | BLOCKED |
-| 2 | 🔴 | **Obtain B1** — one Home Assistant Developer Tools → States export. Procedure: `docs/B1_STATES_EXPORT.md`. | **Owner** | BLOCKED |
-| 3 | 🟡 | **Reconcile v2 against the B1 entity inventory** — regenerate `docs/entity_inventory.md` from the export, then check every v2 entity ID, and add the scene / automation / air-quality / solar-forecast surfaces the export unblocks. | Claude | waits on 2 |
-| 4 | 🟡 | **Deploy v2** through the repaired delivery path, registered at url_path **`casaray`**. | Owner + Claude | waits on 1, 3 |
-| 5 | 🟡 | **Live visual verification** on iPad landscape and iPhone. Checklist: `docs/CASARAY_V2_ARCHITECTURE.md` → *What must be verified in the live interface*. | **Owner** | waits on 4 |
+| 1 | ✅ | **`CFG-003` — delivery path** | Owner | **RESOLVED 2026-09-05.** The owner deployed manually and observed `UI-032 PROBE v1` live, which is exactly the end-to-end criterion `DASHBOARD_ISSUES.md` set for the bridge. Pushes reach the host; `origin/ha-deploy` at `9cca3c4` arrived. |
+| 2 | ✅ | **B1 — live States export** | Owner | **COMPLETE 2026-09-05.** Persisted at `docs/live/states_export_2026-09-05.txt`, 970 entities. |
+| 3 | ✅ | **Reconcile v2 against B1** | Claude | **COMPLETE.** `13d21c4` connected the newly-readable scenes, air quality and solar forecast; `6de86ba` closed the last two gaps. **209 references, 0 absent from B1.** |
+| 4 | 🟡 | **Register and deploy v2** at url_path **`casaray-v2`**, alongside the legacy dashboard. Runbook: `docs/CASARAY_V2_DEPLOYMENT.md`. Needs a **full restart**, not a Lovelace reload. | **Owner** | **CURRENT STEP** |
+| 5 | 🟡 | **Live visual verification** on iPad landscape and iPhone. Checklists: `docs/CASARAY_V2_DEPLOYMENT.md` and `docs/CASARAY_V2_ARCHITECTURE.md`. | **Owner** | waits on 4 |
 | 6 | 🟢 | **Resume new CasaRay feature development** — and only then. | Claude | waits on 5 |
 
 **Do not start another major feature batch ahead of this ladder.** Documentation,
 non-destructive validation and small corrections to already-shipped v2 work
 remain in scope; new boards and new features do not.
+
+### url_path is `casaray-v2`, not `casaray`
+
+Home Assistant requires a YAML dashboard key to contain a hyphen. All 87
+internal links were migrated in `2203fc1`. Any document still saying `casaray`
+is stale; the live prefix is `/casaray-v2/<view>`.
+
+### Pre-deployment feature readiness (from B1, 2026-09-05)
+
+Computed against the export, so this is what should render once step 4 lands.
+**Nothing is missing.** Everything below that is offline is genuine hardware,
+and the cards are written to say so rather than assert a healthy state.
+
+| Feature | Refs | Live | Never activated | Offline |
+|---|---|---|---|---|
+| Room scene buttons | 29 | 13 | 16 | 0 |
+| Automations board | 3 | 3 | — | 0 |
+| Air quality | 5 | 5 | — | 0 |
+| Solar forecast | 6 | 6 | — | 0 |
+| Fronius / Powerpal | 8 | 8 | — | 0 |
+| People battery / status | 6 | 6 | — | 0 |
+| Cameras | 6 | 4 | — | **2** (East + South Wall streams) |
+| Doors / contact | 3 | 0 | — | **3** (all three contact sensors) |
+
+"Never activated" is normal for a Hue scene that has not been recalled since
+the last restart — it has no state yet, and that is not an error.
+
+**The three contact sensors being down means the house's door state genuinely
+cannot be confirmed right now.** Security and Home will say so. That is the
+guard working, not a bug.
 
 | Routine | Item | Priority | State | Reason Selected |
 |---|---|---|---|---|
