@@ -4,7 +4,8 @@ Reconciliation of every Home Assistant object `dashboards/deez_smart_home.yaml`
 references against what the live instance actually reports.
 
 **Generated:** 2026-09-01, against `ha-deploy` at `b6e76f5`.
-**Method:** two independent sources, joined by hand. Neither is sufficient alone.
+**B1 reconciliation:** 2026-09-05 from the owner-supplied Home Assistant Developer Tools entity export.
+**Method:** repository references plus live/owner-export evidence. The B1 export supplies exact entity IDs, friendly names, states and areas for the exported domains.
 
 | Source | What it proves | What it cannot prove |
 |---|---|---|
@@ -219,43 +220,22 @@ that way. Do not repoint them at Ray Bedroom.
 | `person.ai_q_huang` | Ai Q Huang | not_home | LIVE |
 | `person.raymond_du` | Raymond Du. | home | LIVE |
 | `person.vinh_du` | Vinh Du | home | LIVE |
-| `number.g_printer_p100_turn_off_in` | — | — | NOT EXPOSED |
-| `number.lg_fridge_freezer_temperature` | LG-Fridge freezer temperature | −18 °C | LIVE |
-| `number.lg_fridge_fridge_temperature` | LG-Fridge fridge temperature | 3 °C | LIVE |
-| `number.lph_se_dcd9_plants_age` | LPH-SE DCD9 Plants age | 61 d | LIVE |
-| `select.lph_se_dcd9_light_brightness` | LPH-SE DCD9 Light brightness | high | LIVE |
-| `select.lph_se_dcd9_light_mode` | LPH-SE DCD9 Light mode | vegetable | LIVE |
-| `button.bedroom_parents_room_ac_reset_filter` | Parents Room AC Reset filter | unknown | LIVE |
-| `update.bedroom_parents_room_ac_firmware` | — | — | NOT EXPOSED |
-| `update.home_assistant_core_update` | — | — | NOT EXPOSED |
-| `weather.forecast_home` | Forecast Home | rainy, 13.2 °C, 90 % RH | LIVE |
+| `weather.forecast_home` | Forecast Home | rainy | LIVE |
 | `zone.home` | Home | 2 | LIVE |
-
-### Helpers (`input_*`) — 52 referenced, 1 confirmed
-
-Only **`input_boolean.chinese_dashboard`** ("Chinese Dashboard", `off`) is
-exposed to the connector. The other 51 bill helpers — 8 `input_boolean`,
-14 `input_datetime`, 14 `input_number`, 15 `input_text` — are **NOT EXPOSED**
-and cannot be confirmed or denied from here.
-
-One near-match worth an owner check: the connector reports an `input_number`
-named **"Gas Bill Usage MJ"** at `9437.04 MJ`. The dashboard references
-`input_number.gas_bill_mj`. Those are plausibly the same helper under a
-friendly name that no longer matches its slug — but they are equally plausibly
-two helpers. **⚠ CHECK** before any Water & Gas board is built on it.
 
 ---
 
-## B. Live objects the dashboard does **not** use
+## B. Useful live objects not currently used by the dashboard
 
-Everything here is confirmed to exist. It is the honest supply side for
-CasaRay features the mockups ask for.
+These are not reasons to add cards automatically. They are the **real options**
+the design can choose from without inventing anything.
 
-| Live object | Domain | Area | State | What it unlocks |
+| Live object / family | Domain | Area | Current state | Design opportunity |
 |---|---|---|---|---|
-| Air purifier | `fan` **and** `switch` | Living Room | on | Living Room ventilation control (mockup asks for it) |
-| Air purifier PM1 / PM2.5 / PM10 + health concern | `sensor` | Living Room | 5 µg/m³, "good" | **Air Quality / AQI** — the mockups show this on Home, Living Room, Dining, Kitchen |
-| Air purifier Air quality (CAQI) / Odor sensor | `sensor` | Living Room | 1 / 1 | Same |
+| Air purifier PM1 / PM2.5 / PM10 + health concern | `sensor` | Living Room | all 5 μg/m³ / good | **Indoor Climate → Air Quality**; House Health |
+| Air purifier Odor Sensor | `sensor` | Living Room | 1 | Indoor Climate / air quality |
+| Air purifier Fan | `fan` | Living Room | off | Living Room / Climate control |
+| Air purifier Fan mode | `select` | Living Room | smart | Purifier detail |
 | Air purifier Lamp | `select` | Living Room | high | Purifier detail |
 | Living Room / Dining Room Motion Sensor Temperature + Illuminance + Battery | `sensor` | Living Room, Dining | 18.7 °C / 34 lx, 18.5 °C / 137 lx | Per-room temperature on room cards — **currently only Parents Room has one** |
 | Bedroom Hue Sensor Temperature / Illuminance / Battery | `sensor` | Dining | 19.5 °C / 138 lx | Dining climate readings |
@@ -276,21 +256,65 @@ CasaRay features the mockups ask for.
 | Presence Multi-Sensor FP300 (occupancy, temp, humidity, lux, battery) | mixed | Ray Bedroom | **all unavailable** | Ray Bedroom sensors — device is down |
 | Kogan Freezer temperature, B/Freezer plug | `sensor`, `switch` | Backyard | **unavailable** | Garage/utility freezer monitoring — device is down |
 
-### The scene problem
+### B1 scene catalogue — RESOLVED 2026-09-05
 
-**29 Hue scenes exist live** and are exactly what the mockups' Quick Actions
-and Lighting Studio need — `Living room Bright / Relax / Nightlight / Read /
-Concentrate / Dimmed / Energize / Midwinter`, six Dining equivalents, and
-fourteen Bedroom scenes including `Read`, `Nightlight`, `Nighttime` and
-`Concentrate`.
+The owner supplied a Developer Tools entity export containing the exact IDs for
+all **29 Hue scenes**, so the previous B1 scene blocker is closed. The catalogue
+is now safe to use in CasaRay Quick Actions and Lighting Studio.
 
-**Their entity IDs are not obtainable from here.** The connector returns
-friendly names only, and a Hue scene's slug is not reliably derivable from its
-name. Guessing `scene.living_room_relax` would be inventing an entity ID.
+- **Living Room (8):** `scene.living_room_living_room_relax`,
+  `scene.living_room_living_room_bright`, `scene.living_room_living_room_read`,
+  `scene.living_room_living_room_nightlight`,
+  `scene.living_room_living_room_energize`,
+  `scene.living_room_living_room_concentrate`,
+  `scene.living_room_living_room_dimmed`,
+  `scene.living_room_living_room_midwinter`.
+- **Dining (6):** `scene.dining_dining_relax`, `scene.dining_dining_read`,
+  `scene.dining_dining_nightlight`, `scene.dining_dining_energize`,
+  `scene.dining_dining_concentrate`, `scene.dining_dining_midwinter`.
+- **Ray Bedroom (15):** `scene.bedroom_bedroom_read`,
+  `scene.bedroom_bedroom_nightlight`, `scene.bedroom_bedroom_nighttime`,
+  `scene.bedroom_bedroom_concentrate`, `scene.bedroom_bedroom_silverstone`,
+  `scene.bedroom_bedroom_soho`, `scene.bedroom_bedroom_suzuka`,
+  `scene.bedroom_bedroom_baby_s_breath`, `scene.bedroom_bedroom_starlight`,
+  `scene.bedroom_bedroom_amber_bloom`, `scene.bedroom_bedroom_vapor_wave`,
+  `scene.bedroom_bedroom_blossom`, `scene.bedroom_bedroom_dreamy_dusk`,
+  `scene.bedroom_bedroom_pensive`, `scene.bedroom_bedroom_nature_s_colors`.
 
-This is the single highest-value unblock in the whole CasaRay programme: it
-converts every room's Quick Actions row from "cannot be built" to
-"AVAILABLE NOW". The owner action is one export — see the mapping pack.
+### Other B1-unblocked entities
+
+**Automations (3 exact IDs):**
+- `automation.deploy_deez_dashboard_updates`
+- `automation.gas_meter_pulse_counter`
+- `automation.bills_reset_ytd_totals`
+
+No `automation.*` entity matching Door → Dining Lights, Work Prep, Good Morning,
+Away Mode or Good Night appears in the B1 export. Those names remain design
+examples, not runtime facts.
+
+**Living Room air quality:**
+- `fan.living_room_air_purifier`
+- `sensor.living_room_air_purifier_air_quality`
+- `sensor.living_room_air_purifier_pm1`
+- `sensor.living_room_air_purifier_pm2_5`
+- `sensor.living_room_air_purifier_pm10`
+- `sensor.living_room_air_purifier_odor_sensor`
+- corresponding PM1/PM2.5/PM10 health-concern sensors are also present.
+
+**Solar forecast:**
+- `sensor.energy_production_today`
+- `sensor.energy_production_today_remaining`
+- `sensor.energy_production_tomorrow`
+- `sensor.power_production_now`
+- `sensor.energy_current_hour`
+- `sensor.energy_next_hour`
+- `sensor.power_highest_peak_time_today`
+- `sensor.power_highest_peak_time_tomorrow`
+
+**People/device status:** exact tracker and phone battery IDs are now confirmed,
+including `device_tracker.raymonds_iphone`, `device_tracker.ais_iphone`,
+`device_tracker.vine_s_phone`, `sensor.raymonds_iphone_battery_level`,
+`sensor.ais_iphone_battery_level` and `sensor.vine_s_phone_battery_level`.
 
 ### What is missing entirely
 
@@ -308,8 +332,9 @@ No live object of any kind exists for these, in any area:
 - **Battery storage** — no battery entity. "Battery Charging • 62 %".
 - **Grid import/export** — no such sensor. Powerpal (whole-house power) is not
   exposed, and the inverter is offline.
-- **`automation.*` / `script.*`** — none exposed. The Automations board cannot
-  list a single real rule from here.
+- **Automations are sparse, not absent.** B1 confirms exactly three `automation.*`
+  entities. CasaRay may show those three, but must not fabricate the design
+  examples that are not present.
 - **Network throughput** — no download/upload/uptime sensor. eero exposes WAN
   up/down only.
 
