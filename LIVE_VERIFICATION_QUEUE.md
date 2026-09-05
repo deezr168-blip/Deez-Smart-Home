@@ -313,19 +313,25 @@ result does to the issue record, the backlog and ownership — are in
 - `PASS` rows stay for traceability. A page group with nothing left
   outstanding may collapse to a one-line summary naming its IDs and date.
 
-**87 checks pending**, in two separate sets that must not be merged:
+**95 checks pending**, in two separate sets that must not be merged:
 
 | Set | Dashboard | Rows | Pending | Passed |
 |---|---|---|---|---|
 | `UI-*` / `REG-*` / `BILL-*` / `CR-001`–`CR-002` | legacy `/deez-smart-home/…` | 48 | 47 | 1 |
-| **`CR-1xx`** | **CasaRay `/casaray-v2/…`** | **46** | **40** | **6** |
+| **`CR-1xx`** | **CasaRay `/casaray-v2/…`** | **54** | **48** | **6** |
 
-`CR-183` and `CR-190` are excluded from both counts: they are questions for
-the owner, not checks that can pass or fail.
+**Three owner questions sit outside both counts** — they cannot pass or fail,
+they need an answer:
+
+| | |
+|---|---|
+| **`CR-195`** | **Do the Parents Room emergency buttons register a press?** The one safety question here. Answer this first. |
+| `CR-190` | Which of the three duplicate Parents Room TV entities is the real one? |
+| `CR-183` | What is the Family Location selector for? |
 
 The CasaRay rows started at 23, added 2026-09-05 ahead of first deployment;
 six passed on the 06/09 screenshots and the 2026-09-05 upgrade batches added
-`CR-170`–`CR-189`. Start with `CR-100` (does it load) and `CR-110`–`CR-114`
+`CR-170`–`CR-199`. Start with `CR-100` (does it load) and `CR-110`–`CR-114`
 (navigation) — if the dashboard was registered under any key other than
 `casaray-v2`, all 87 internal links break at once and everything below is
 noise until that is fixed. After that, `CR-179` is the one to check on every
