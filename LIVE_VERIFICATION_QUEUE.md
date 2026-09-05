@@ -221,7 +221,7 @@ checked against `docs/live/states_export_2026-09-05.txt` and is recorded
 | CR-187 | Entertainment — Parents Room TV | The card **works** now. It was pointing at `media_player.55_qled_4k_ai`, which is unavailable — see CR-190 | `0d2b58a` | **P1** | PENDING |
 | CR-188 | Entertainment — Ray Bedroom TV | A third TV section that has never appeared on this board | `0d2b58a` | P2 | PENDING |
 | CR-189 | Entertainment — TV power tiles and Pogo note | A Power tile under each Samsung TV; the Pogo section says it is not reporting rather than showing dead controls | `0d2b58a` | P3 | PENDING |
-| CR-191 | Automations — Hue Bridge section | Three switches: Coming home, Leaving home, Nightlight schedule, plus the note saying they run on the bridge and Home Assistant cannot see what they did | `PLACEHOLDER` | P2 | PENDING |
+| CR-191 | Automations — Hue Bridge section | Three switches: Coming home, Leaving home, Nightlight schedule, plus the note saying they run on the bridge and Home Assistant cannot see what they did | `9b02120` | P2 | PENDING |
 | CR-192 | Home — daylight | Sun, Sunrise and Sunset tiles beside the forecast | `120dba1` | P3 | PENDING |
 | CR-193 | Cameras — Floodlights | North Wall and Stockroom, each with a brightness slider. These **are** meant to be tappable, unlike the Security detection tiles | `120dba1` | P2 | PENDING |
 | CR-194 | Ray Bedroom — Nightlight | A light tile with brightness, distinct from the Nightlight scene button in Quick actions above it | `120dba1` | P3 | PENDING |
