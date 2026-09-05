@@ -3046,6 +3046,18 @@ views:
     - type: tile
       entity: sensor.primo_5_0_1_1_total_energy
       name: Solar lifetime
+    - type: tile
+      entity: binary_sensor.casa_solar_online
+      name: Inverter online
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.primo_5_0_1_1_status_message
+      name: Inverter status
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.primo_5_0_1_1_error_message
+      name: Inverter errors
+      grid_options: {columns: 6, rows: 1}
 
 
   - type: grid
@@ -3093,6 +3105,18 @@ views:
     - type: tile
       entity: sensor.energy_next_hour
       name: Next hour
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: sensor.power_highest_peak_time_today
+      name: Best sun today
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: sensor.power_highest_peak_time_tomorrow
+      name: Best sun tomorrow
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: sensor.casa_solar_expected_today
+      name: Expected today
       grid_options: {columns: 4, rows: 1}
 
   - type: grid
@@ -3167,6 +3191,14 @@ views:
     - type: tile
       entity: sensor.powerpal_gateway_powerpal_battery
       name: Powerpal battery
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.electricity_maps_co2_intensity
+      name: Grid carbon
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.electricity_maps_grid_fossil_fuel_percentage
+      name: Grid fossil fuel
       grid_options: {columns: 6, rows: 1}
 
 # ===========================================================================
