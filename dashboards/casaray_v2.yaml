@@ -1531,6 +1531,12 @@ views:
       entity: binary_sensor.sensor_group_motion
       name: Motion
       grid_options: {columns: 6, rows: 1}
+    # The same sensor the Climate board labels Dining. Its entity ID says
+    # living_room; B1 puts it in Dining, so the two boards agree rather than
+    # contradict each other.
+    - type: tile
+      entity: sensor.living_room_living_room_temperature
+      name: Temperature
     - type: tile
       entity: sensor.sensor_group_illuminance
       name: Light level
@@ -1764,6 +1770,21 @@ views:
       entity: sensor.emergency_button_mum_signal_level
       name: Mum's signal
       grid_options: {columns: 6, rows: 1}
+    # The two button-press events -- event.master_bedroom_emergency_button_dad_main
+    # and event.master_bedroom_emergency_button_mum_main -- both read
+    # `unavailable` in the B1 export. Adding them as tiles would put two
+    # permanently blank cards on an elder-safety page; saying nothing would let
+    # "Both emergency buttons are connected" be read as "a press will be seen".
+    # Neither is acceptable, so the card states its own scope. See CR-195: the
+    # owner needs to press one and confirm what actually happens.
+    - type: markdown
+      content: >-
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {% if cn %}以上显示的是按钮与云端的连接状态和信号强度。两个按键事件实体目前均无数据，因此按下按钮不会在此显示。请勿仅凭此页判断紧急按钮可用。{%
+        else %}What is shown above is the buttons' cloud connection and signal
+        strength. Both button-press event entities are currently not reporting,
+        so a press would not appear here. Do not treat this page alone as proof
+        the emergency buttons work.{% endif %}
 
   - type: grid
     column_span: 1
@@ -2203,6 +2224,10 @@ views:
       entity: switch.g_monitor_freezer_p110m
       name: Freezer plug
       icon: mdi:power-plug
+    - type: tile
+      entity: binary_sensor.g_monitor_freezer_p110m_cloud_connection
+      name: Socket reachable
+      icon: mdi:cloud-check-outline
     - type: markdown
       content: >-
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set o =
@@ -2245,6 +2270,10 @@ views:
     - type: tile
       entity: sensor.g_monitor_freezer_p110m_current
       name: Current
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.g_monitor_freezer_p110m_this_month_s_consumption
+      name: This month
       grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: sensor.g_monitor_freezer_p110m_voltage
