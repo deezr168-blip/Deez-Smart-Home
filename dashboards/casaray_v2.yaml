@@ -55,7 +55,7 @@ views:
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
-        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
         {{ now().strftime('%d/%m/%y') }}
 
@@ -689,7 +689,7 @@ views:
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
-        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
         {{ now().strftime('%d/%m/%y') }}
 
@@ -781,7 +781,7 @@ views:
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 4, rows: 2}
+      grid_options: {columns: 6, rows: 2}
       content: >-
         # {{ '客厅' if is_state('input_boolean.chinese_dashboard','on') else
         'Living Room' }}
@@ -796,7 +796,7 @@ views:
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
-        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
         {{ now().strftime('%d/%m/%y') }}
 
@@ -1137,7 +1137,7 @@ views:
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 4, rows: 2}
+      grid_options: {columns: 6, rows: 2}
       content: >-
         # {{ '厨房' if is_state('input_boolean.chinese_dashboard','on') else
         'Kitchen' }}
@@ -1150,7 +1150,7 @@ views:
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
-        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
         {{ now().strftime('%d/%m/%y') }}
 
@@ -1289,7 +1289,7 @@ views:
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 4, rows: 2}
+      grid_options: {columns: 6, rows: 2}
       content: >-
         # {{ '餐厅' if is_state('input_boolean.chinese_dashboard','on') else
         'Dining' }}
@@ -1305,7 +1305,7 @@ views:
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
-        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
         {{ now().strftime('%d/%m/%y') }}
 
@@ -1512,7 +1512,7 @@ views:
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 4, rows: 2}
+      grid_options: {columns: 6, rows: 2}
       content: >-
         # {{ '父母房' if is_state('input_boolean.chinese_dashboard','on') else
         'Parents Room' }}
@@ -1527,7 +1527,7 @@ views:
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
-        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
         {{ now().strftime('%d/%m/%y') }}
 
@@ -1782,7 +1782,7 @@ views:
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 4, rows: 2}
+      grid_options: {columns: 6, rows: 2}
       content: >-
         # {{ 'Ray 房间' if is_state('input_boolean.chinese_dashboard','on') else
         'Ray Bedroom' }}
@@ -1797,7 +1797,7 @@ views:
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
-        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
         {{ now().strftime('%d/%m/%y') }}
 
@@ -2045,7 +2045,7 @@ views:
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 4, rows: 2}
+      grid_options: {columns: 6, rows: 2}
       content: >-
         # {{ '车库' if is_state('input_boolean.chinese_dashboard','on') else
         'Garage' }}
@@ -2058,7 +2058,7 @@ views:
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
-        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
         {{ now().strftime('%d/%m/%y') }}
 
@@ -2171,7 +2171,7 @@ views:
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 4, rows: 2}
+      grid_options: {columns: 6, rows: 2}
       content: >-
         # {{ '客房' if is_state('input_boolean.chinese_dashboard','on') else
         'Guest Room' }}
@@ -2183,7 +2183,7 @@ views:
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
-        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
         {{ now().strftime('%d/%m/%y') }}
 
@@ -2293,7 +2293,7 @@ views:
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
-        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
         {{ now().strftime('%d/%m/%y') }}
 
@@ -2747,7 +2747,7 @@ views:
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
-        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
         {{ now().strftime('%d/%m/%y') }}
 
@@ -2876,7 +2876,7 @@ views:
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
-        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
         {{ now().strftime('%d/%m/%y') }}
 
@@ -3144,7 +3144,7 @@ views:
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
-        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
         {{ now().strftime('%d/%m/%y') }}
 
@@ -3654,7 +3654,7 @@ views:
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
-        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
         {{ now().strftime('%d/%m/%y') }}
 
@@ -3826,7 +3826,7 @@ views:
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
-        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
         {{ now().strftime('%d/%m/%y') }}
 
@@ -4116,7 +4116,7 @@ views:
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
-        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
         {{ now().strftime('%d/%m/%y') }}
 
@@ -4242,7 +4242,7 @@ views:
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
-        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
         {{ now().strftime('%d/%m/%y') }}
 
@@ -4340,7 +4340,7 @@ views:
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
-        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
         {{ now().strftime('%d/%m/%y') }}
 
@@ -4458,7 +4458,7 @@ views:
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
-        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
         {{ now().strftime('%d/%m/%y') }}
 
@@ -4747,7 +4747,7 @@ views:
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
-        # {{ now().strftime('%I:%M %p').lstrip('0') }}
+        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
         {{ now().strftime('%d/%m/%y') }}
 

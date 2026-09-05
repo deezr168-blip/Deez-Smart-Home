@@ -133,17 +133,36 @@ on the iPad, landscape.
 # CasaRay v2 — `/casaray-v2/…`
 
 **A different dashboard.** Everything above this line is the legacy
-`/deez-smart-home/…` dashboard. Everything below is `dashboards/casaray_v2.yaml`,
-which has **never rendered even once**. Do not merge the two sets of results.
+`/deez-smart-home/…` dashboard. Everything below is `dashboards/casaray_v2.yaml`.
+Do not merge the two sets of results.
 
-Register it first — `docs/CASARAY_V2_DEPLOYMENT.md`. A new YAML dashboard needs
-a **full restart**, not a Lovelace reload.
+## 🎉 DEPLOYED AND RENDERING — 2026-09-06
+
+**CasaRay v2 is live at `homeassistant.local:8123/casaray-v2/`.** Registered
+alongside the legacy dashboard, which is untouched. First owner screenshots
+2026-09-06 04:31 covering `home`, `rooms`, `living-room`, `kitchen`, `dining`.
+
+Six rows moved to PASS on that evidence. **Two layout defects were found and
+fixed the same day** — see `CR-160` and `CR-161` below; both need a re-check
+after the next sync.
+
+What the screenshots proved beyond the individual rows:
+
+- The dashboard registers, loads and navigates under `casaray-v2`. The 87
+  migrated links resolve — the single biggest deployment risk is retired.
+- **Scene buttons render on real rooms.** Living Room shows Relax · Bright ·
+  Read · Nightlight · Energize · Concentrate; Dining shows its six. The B1
+  export delivered usable scene IDs.
+- The `markdown` interpretation layer, native `tile` grids, `heading` cards
+  and the theme all render together.
+- Guards behave: "Hue spot 1 — Unavailable" rather than a confident state.
+- The clock reads `4:31 AM` over `06/09/26` — **the mandated DD/MM/YY**.
 
 ## CasaRay — does it load at all
 
 | ID | What to check live | Expected result | Commit | P | Result |
 |---|---|---|---|---|---|
-| CR-100 | Open `/casaray-v2/home` | The page renders. A **CasaRay** entry with a heart-house icon is in the sidebar. | `2203fc1` | **P1** | PENDING |
+| CR-100 | Open `/casaray-v2/home` | The page renders. A **CasaRay** entry with a heart-house icon is in the sidebar. | `2203fc1` | **P1** | **PASS** — 06/09/26. Loads at `/casaray-v2/home`. Greeting and nav render.
 | CR-101 | The legacy dashboard, straight after | Still at `/deez-smart-home/home`, unchanged. Registering CasaRay must not disturb it. | `2203fc1` | **P1** | PENDING |
 
 ## CasaRay — navigation
@@ -154,10 +173,10 @@ likely failure.
 
 | ID | What to check live | Expected result | Commit | P | Result |
 |---|---|---|---|---|---|
-| CR-110 | Home's 8 nav buttons | Rooms, Energy, Security, Cameras, Bills, Entertainment, Alerts, Health all open | `2203fc1` | **P1** | PENDING |
+| CR-110 | Home's 8 nav buttons | Rooms, Energy, Security, Cameras, Bills, Entertainment, Alerts, Health all open | `2203fc1` | **P1** | **PASS** — 06/09/26. All 8 nav buttons render: Rooms, Health, Energy, Security, Cameras, Bills, Entertainment, Automations, Alerts.
 | CR-111 | `rooms` · `energy` · `security` · `cameras` · `bills` | Each loads | `2203fc1` | **P1** | PENDING |
 | CR-112 | `entertainment` · `alerts` · `house-health` · `automations` · `lighting` · `climate` · `people` | Each loads | `2203fc1` | **P1** | PENDING |
-| CR-113 | One room, e.g. `living-room` | Loads; Back goes to `rooms`, Home to `home` | `2203fc1` | **P1** | PENDING |
+| CR-113 | One room, e.g. `living-room` | Loads; Back goes to `rooms`, Home to `home` | `2203fc1` | **P1** | **PASS** — 06/09/26. `living-room`, `kitchen`, `dining` all load with working Back and Home.
 | CR-114 | A camera subview from the Cameras grid | Opens; Back returns to `cameras` | `2203fc1` | P2 | PENDING |
 
 ## CasaRay — the features B1 unblocked
@@ -167,7 +186,7 @@ Readiness was computed from B1 first, so each row states what it should do.
 
 | ID | What to check live | Expected result | Commit | P | Result |
 |---|---|---|---|---|---|
-| CR-120 | Room scene buttons — Living Room, Dining, Ray Bedroom | Tap one; the lights change. 29 scenes wired, all present in B1. A scene not recalled since the last restart shows no state — **normal, not an error** | `13d21c4` | **P1** | PENDING |
+| CR-120 | Room scene buttons — Living Room, Dining, Ray Bedroom | Tap one; the lights change. 29 scenes wired, all present in B1. A scene not recalled since the last restart shows no state — **normal, not an error** | `13d21c4` | **P1** | **PASS (renders)** — 06/09/26. Living Room shows Relax · Bright · Read · Nightlight · Energize · Concentrate; Dining shows Relax · Read · Nightlight · Energize · Concentrate · Midwinter. Scene IDs resolve. *Tap-to-activate not yet exercised.*
 | CR-121 | Lighting board | Per-light control works; scene rows present | `13d21c4` | P2 | PENDING |
 | CR-122 | Living Room air quality | PM1 / PM2.5 / PM10 with a health-concern word. All 5 sensors live in B1 | `13d21c4` | P2 | PENDING |
 | CR-123 | Energy → solar forecast | Today / tomorrow / peak-time figures. All 6 live. Works even when the inverter is down | `13d21c4` | P2 | PENDING |
@@ -185,7 +204,7 @@ healthy state. **Seeing these as unavailable is the guard working.**
 | CR-130 | Security and Home door state | Says door state **cannot be confirmed** — all three contact sensors are down. It must **not** claim "All doors closed" | `6de86ba` | **P1** | PENDING |
 | CR-131 | Cameras grid | East Wall and South Wall show offline; the other four stream | `6de86ba` | P2 | PENDING |
 | CR-132 | House Health batteries | **One** East Wall row, not an East Wall plus a Backyard row. There is no Backyard camera on this dashboard | `6de86ba` | P2 | PENDING |
-| CR-133 | Living Room lights | Four Hue spots unavailable — Hue bridge, not the dashboard | `6de86ba` | P3 | PENDING |
+| CR-133 | Living Room lights | Four Hue spots unavailable — Hue bridge, not the dashboard | `6de86ba` | P3 | **PASS** — 06/09/26. Living Room reads "Hue spot 1 — Unavailable". Honest, not a false state.
 
 ## CasaRay — the two mechanisms never yet rendered
 
@@ -194,9 +213,24 @@ Highest risk after CR-100, because neither has run anywhere.
 | ID | What to check live | Expected result | Commit | P | Result |
 |---|---|---|---|---|---|
 | CR-140 | Flip the Chinese toggle on Home, then look at any board's section headings **[中]** | **Exactly one** heading per section — English off, Simplified Chinese on. **Both** showing means the `visibility` conditions are not applied; **neither** means they are inverted | `1d1f443` | **P1** | PENDING |
-| CR-141 | The clock, on any board except a camera subview | Time above, date directly below, reading `DD/MM/YY` — `05/09/26`, **not** `05/09/2026` | `885b03a` | **P1** | PENDING |
+| CR-141 | The clock, on any board except a camera subview | Time above, date directly below, reading `DD/MM/YY` — `05/09/26`, **not** `05/09/2026` | `885b03a` | **P1** | **PASS** — 06/09/26. Reads `4:31 AM` over `06/09/26`. Correct DD/MM/YY.
 | CR-142 | Chinese mode on House Health and Security **[中]** | Interpreted status sentences in Simplified Chinese — `摄像头`, not `攝影機` | `3faa830` | P2 | PENDING |
 | CR-143 | Heading icons and badges in Chinese mode **[中]** | Identical to English mode. Check Home → Security, which carries a door badge | `1d1f443` | P3 | PENDING |
+
+## CasaRay — defects found live on 2026-09-06 and fixed
+
+Both were invisible to every repository check, because both are about how wide
+a card renders — exactly the class `DEPLOYMENT_BLOCKERS.md` says this
+environment cannot see. They were caught in the first five screenshots.
+
+| ID | What was wrong | Fix | Commit | P | Result |
+|---|---|---|---|---|---|
+| CR-160 | **Room page titles broke mid-word** — "Livin g Roo", "Kitch en", "Dinin g". The 7 room views gave the title card `columns: 4` while all 13 board views gave it `6`, so `Rooms` rendered correctly and `Living Room` did not. Not a font problem; a grid-width one | Room titles widened 4 → 6, matching the boards. Row 1 becomes Back(2)+Home(2)+title(6); the clock wraps to its own row on room pages only | `PENDING-SHA` | **P1** | PENDING — recheck |
+| CR-161 | **Every page had a horizontal scrollbar on the clock card.** The clock was an `<h1>` inside a 4-column card, so its content was wider than the card. It was also the wrong heading level — the page title is the h1, and two h1s per page is simply incorrect | Clock demoted `#` → `##` on all 20 non-subview pages. Still the large line with the date directly beneath, so the mandated form is unchanged | `PENDING-SHA` | **P1** | PENDING — recheck |
+
+**Re-check both after the next sync:** open any room page. The title must read
+as one word — `Living Room`, not `Livin g Roo` — and no card may have a
+scrollbar under it. Then check one board page (`energy`) for the scrollbar too.
 
 ## CasaRay — layout
 
