@@ -3247,6 +3247,35 @@ views:
       name: Paid
       grid_options: {columns: 6, rows: 1}
     - type: tile
+      entity: input_number.electricity_bill_before_discount
+      name: Before discount
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.electricity_actual_paid
+      name: Actually paid
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.electricity_discount_percent
+      name: Discount
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.electricity_saving
+      name: Saved
+      grid_options: {columns: 6, rows: 1}
+    - type: button
+      entity: script.record_electricity_bill_payment
+      name: Record payment
+      icon: mdi:cash-check
+      show_state: false
+      grid_options: {columns: 12, rows: 1}
+      tap_action:
+        action: perform-action
+        perform_action: script.turn_on
+        target:
+          entity_id: script.record_electricity_bill_payment
+        confirmation:
+          text: Record this payment into the bill history?
+    - type: tile
       entity: input_number.elec_last_bill_amount
       name: Last bill
       grid_options: {columns: 6, rows: 1}
@@ -3309,6 +3338,35 @@ views:
       name: Paid
       grid_options: {columns: 6, rows: 1}
     - type: tile
+      entity: input_number.gas_bill_before_discount
+      name: Before discount
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.gas_actual_paid
+      name: Actually paid
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.gas_discount_percent
+      name: Discount
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.gas_saving
+      name: Saved
+      grid_options: {columns: 6, rows: 1}
+    - type: button
+      entity: script.record_gas_bill_payment
+      name: Record payment
+      icon: mdi:cash-check
+      show_state: false
+      grid_options: {columns: 12, rows: 1}
+      tap_action:
+        action: perform-action
+        perform_action: script.turn_on
+        target:
+          entity_id: script.record_gas_bill_payment
+        confirmation:
+          text: Record this payment into the bill history?
+    - type: tile
       entity: input_number.gas_last_bill_amount
       name: Last bill
       grid_options: {columns: 6, rows: 1}
@@ -3370,6 +3428,35 @@ views:
       entity: input_boolean.water_bill_paid
       name: Paid
       grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.water_bill_before_discount
+      name: Before discount
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.water_actual_paid
+      name: Actually paid
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.water_discount_percent
+      name: Discount
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.water_saving
+      name: Saved
+      grid_options: {columns: 6, rows: 1}
+    - type: button
+      entity: script.record_water_bill_payment
+      name: Record payment
+      icon: mdi:cash-check
+      show_state: false
+      grid_options: {columns: 12, rows: 1}
+      tap_action:
+        action: perform-action
+        perform_action: script.turn_on
+        target:
+          entity_id: script.record_water_bill_payment
+        confirmation:
+          text: Record this payment into the bill history?
     - type: tile
       entity: input_number.water_last_bill_amount
       name: Last bill
@@ -3437,6 +3524,35 @@ views:
       name: Paid
       grid_options: {columns: 6, rows: 1}
     - type: tile
+      entity: input_number.council_rates_bill_before_discount
+      name: Before discount
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.council_rates_actual_paid
+      name: Actually paid
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.council_rates_discount_percent
+      name: Discount
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.council_rates_saving
+      name: Saved
+      grid_options: {columns: 6, rows: 1}
+    - type: button
+      entity: script.record_council_rates_bill_payment
+      name: Record payment
+      icon: mdi:cash-check
+      show_state: false
+      grid_options: {columns: 12, rows: 1}
+      tap_action:
+        action: perform-action
+        perform_action: script.turn_on
+        target:
+          entity_id: script.record_council_rates_bill_payment
+        confirmation:
+          text: Record this payment into the bill history?
+    - type: tile
       entity: input_number.council_rate_last_amount
       name: Last amount
       grid_options: {columns: 6, rows: 1}
@@ -3498,6 +3614,35 @@ views:
       entity: input_boolean.car_insurance_paid
       name: Paid
       grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.car_insurance_bill_before_discount
+      name: Before discount
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.car_insurance_actual_paid
+      name: Actually paid
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.car_insurance_discount_percent
+      name: Discount
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.car_insurance_saving
+      name: Saved
+      grid_options: {columns: 6, rows: 1}
+    - type: button
+      entity: script.record_car_insurance_bill_payment
+      name: Record payment
+      icon: mdi:cash-check
+      show_state: false
+      grid_options: {columns: 12, rows: 1}
+      tap_action:
+        action: perform-action
+        perform_action: script.turn_on
+        target:
+          entity_id: script.record_car_insurance_bill_payment
+        confirmation:
+          text: Record this payment into the bill history?
     - type: tile
       entity: input_number.car_insurance_last_amount
       name: Last amount
@@ -3565,6 +3710,35 @@ views:
       name: Paid
       grid_options: {columns: 6, rows: 1}
     - type: tile
+      entity: input_number.rego_bill_before_discount
+      name: Before discount
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.rego_actual_paid
+      name: Actually paid
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.rego_discount_percent
+      name: Discount
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.rego_saving
+      name: Saved
+      grid_options: {columns: 6, rows: 1}
+    - type: button
+      entity: script.record_rego_bill_payment
+      name: Record payment
+      icon: mdi:cash-check
+      show_state: false
+      grid_options: {columns: 12, rows: 1}
+      tap_action:
+        action: perform-action
+        perform_action: script.turn_on
+        target:
+          entity_id: script.record_rego_bill_payment
+        confirmation:
+          text: Record this payment into the bill history?
+    - type: tile
       entity: input_number.rego_last_amount
       name: Last amount
       grid_options: {columns: 6, rows: 1}
@@ -3585,7 +3759,239 @@ views:
     column_span: 2
     cards:
     - type: heading
-      heading: Not yet available
+      heading: This year
+      heading_style: title
+      icon: mdi:chart-line
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 本年度
+      heading_style: title
+      icon: mdi:chart-line
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: tile
+      entity: input_number.bills_paid_ytd
+      name: Paid this year
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: input_number.bills_saved_ytd
+      name: Saved this year
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: input_number.bills_original_ytd
+      name: Before discounts
+      grid_options: {columns: 4, rows: 1}
+    - type: markdown
+      content: >-
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set
+        paid = states('input_number.bills_paid_ytd') %}{% set saved =
+        states('input_number.bills_saved_ytd') %}{% set orig =
+        states('input_number.bills_original_ytd') %}{% set bad =
+        ['unavailable','unknown','none',''] %}{% if paid in bad or saved in bad
+        %}{{ '年度合计暂无数据。' if cn else 'Year-to-date totals are not reporting.'
+        }}{% else %}{% set p = paid | float(-1) %}{% set sv = saved | float(-1)
+        %}{% set o = orig | float(-1) %}{% if p < 0 or sv < 0 %}{{ '年度合计暂无数据。'
+        if cn else 'Year-to-date totals are not reporting.' }}{% elif o > 0 %}{%
+        if cn %}今年已付 **${{ p | round(2) }}**，节省 **${{ sv | round(2) }}**，
+        相当于原价 ${{ o | round(2) }} 的 **{{ ((sv / o) * 100) | round(1) }}%**。{%
+        else %}Paid **${{ p | round(2) }}** so far this year and saved **${{ sv |
+        round(2) }}** — **{{ ((sv / o) * 100) | round(1) }}%** off an original
+        ${{ o | round(2) }}.{% endif %}{% else %}{% if cn %}今年已付 **${{ p |
+        round(2) }}**，节省 **${{ sv | round(2) }}**。{% else %}Paid **${{ p |
+        round(2) }}** so far this year, saving **${{ sv | round(2) }}**.{% endif
+        %}{% endif %}{% endif %}
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Bill history
+      heading_style: title
+      icon: mdi:history
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 账单记录
+      heading_style: title
+      icon: mdi:history
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: markdown
+      content: >-
+        {{ '选择一项账单，下方显示最近一次记录的付款。' if
+        is_state('input_boolean.chinese_dashboard','on') else 'Pick a bill to see
+        the last payment recorded for it.' }}
+    - type: tile
+      entity: input_select.bill_history_company
+      name: Bill
+      grid_options: {columns: 12, rows: 1}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Electricity history
+      heading_style: subtitle
+      icon: mdi:flash
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 电费记录
+      heading_style: subtitle
+      icon: mdi:flash
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: tile
+      entity: input_number.bill_history_electricity_payment
+      name: Paid
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.bill_history_electricity_saving
+      name: Saved
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_datetime.bill_history_electricity_paid_date
+      name: Paid on
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_datetime.bill_history_electricity_due_date
+      name: Was due
+      grid_options: {columns: 6, rows: 1}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Gas history
+      heading_style: subtitle
+      icon: mdi:fire
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 燃气费记录
+      heading_style: subtitle
+      icon: mdi:fire
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: tile
+      entity: input_number.bill_history_gas_payment
+      name: Paid
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.bill_history_gas_saving
+      name: Saved
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_datetime.bill_history_gas_paid_date
+      name: Paid on
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_datetime.bill_history_gas_due_date
+      name: Was due
+      grid_options: {columns: 6, rows: 1}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Water history
+      heading_style: subtitle
+      icon: mdi:water
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 水费记录
+      heading_style: subtitle
+      icon: mdi:water
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: tile
+      entity: input_number.bill_history_water_payment
+      name: Paid
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.bill_history_water_saving
+      name: Saved
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_datetime.bill_history_water_paid_date
+      name: Paid on
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_datetime.bill_history_water_due_date
+      name: Was due
+      grid_options: {columns: 6, rows: 1}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Rates, insurance and rego history
+      heading_style: subtitle
+      icon: mdi:file-document-multiple-outline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 市政费、车险与车辆注册记录
+      heading_style: subtitle
+      icon: mdi:file-document-multiple-outline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: tile
+      entity: input_number.bill_history_council_rates_payment
+      name: Rates paid
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.bill_history_council_rates_saving
+      name: Rates saved
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.bill_history_car_insurance_payment
+      name: Insurance paid
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.bill_history_car_insurance_saving
+      name: Insurance saved
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.bill_history_rego_payment
+      name: Rego paid
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: input_number.bill_history_rego_saving
+      name: Rego saved
+      grid_options: {columns: 6, rows: 1}
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Still missing
       heading_style: subtitle
       icon: mdi:database-clock-outline
       visibility:
@@ -3593,7 +3999,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
     - type: heading
-      heading: 暂未提供
+      heading: 仍然缺少
       heading_style: subtitle
       icon: mdi:database-clock-outline
       visibility:
@@ -3603,15 +4009,11 @@ views:
     - type: markdown
       content: >-
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% if cn
-        %}支出趋势、付款记录、年度已付与年度节省**目前不显示，因为还没有数据来源**。`billing/history.json`
-        文件存在，但没有任何机制把它送到 Lovelace，也没有年度统计传感器。折扣、费率与每日供电费均无对应助手实体。等数据到位这些面板就会出现
-        — 现在放一张空图表，会让人以为历史数据存在而且恰好为零。{% else %}Spending trend,
-        payment history, year-to-date paid and year-to-date savings are **not shown
-        because no data source produces them yet**. `billing/history.json` exists but
-        has no mechanism to reach Lovelace, and no year-to-date sensor exists.
-        Discounts, tariffs and the daily supply charge have no helper behind them.
-        These panels will appear when the data does — showing an empty chart in the
-        meantime would imply the history is there and merely zero.{% endif %}
+        %}**支出趋势图**仍未显示：需要这些助手实体的长期统计数据，目前还没有。**网络费**也没有对应的助手实体，因此不在此列。其余部分现已上线。{%
+        else %}The **spending trend chart** is still not shown: it needs long-term
+        statistics for these helpers, which do not exist yet. The **internet bill**
+        has no helper entities at all, so it is absent rather than empty. Everything
+        else on this page is now live.{% endif %}
 
 # ===========================================================================
 # SECURITY. Doors, motion, camera health. There is no alarm_control_panel

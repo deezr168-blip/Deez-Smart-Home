@@ -170,7 +170,12 @@ def check(path):
         de = len(entity_ids(old)) - len(entity_ids(raw))
         if de > MAX_ENTITY_DROP:
             fails.append(f"{path}: {de} entity IDs disappeared")
-        print(f"  vs HEAD                  : size {ratio:.0%}, views {dv:+d}, entities {de:+d}")
+        # dv and de are DROPS (old - new). Negate for display so the sign reads
+        # from the file's point of view: +3 means three were added, -3 lost.
+        # Printing the raw drop made "entities -53" mean 53 were *gained*, which
+        # every reader, human and machine, got backwards.
+        print(f"  vs HEAD                  : size {ratio:.0%}, "
+              f"views {-dv:+d}, entities {-de:+d}")
     except yaml.YAMLError:
         warns.append(f"{path}: committed version does not parse; skipped delta check")
 
