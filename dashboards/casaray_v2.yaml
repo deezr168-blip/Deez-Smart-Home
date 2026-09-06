@@ -2878,7 +2878,8 @@ views:
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set ts =
         ['sensor.living_room_living_hue_hue_sensor_temperature',
-        'sensor.bedroom_motion_sensor_temperature'] %} {% set ns =
+        'sensor.bedroom_motion_sensor_temperature',
+        'sensor.living_room_living_room_temperature'] %} {% set ns =
         namespace(sum=0.0, n=0, unk=0) %} {% for t in ts %}{% set s = states(t)
         %}{% if s in ['unavailable','unknown','none',''] %}{% set ns.unk =
         ns.unk + 1 %}{% else %}{% set f = s | float(-999) %}{% if f > -900 %}{%
@@ -2959,13 +2960,27 @@ views:
       entity: weather.forecast_home
       name: Outside
       grid_options: {columns: 6, rows: 1}
+    # Sensibo reports the unit's configured mode, which persists while the
+    # climate entity is off -- so this reads `fanOnly` beside a thermostat card
+    # showing Off, and both are correct. The label says which one it is, and
+    # the raw camelCase is humanised below. Unknown values are printed as-is
+    # rather than guessed at.
     - type: tile
       entity: sensor.master_bedroom_sensibo_sky_plus_air_conditioner_mode
-      name: AC mode
+      name: AC mode when on
       grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: sensor.master_bedroom_sensibo_sky_plus_cooling_setpoint
       name: AC setpoint
+    - type: markdown
+      content: >-
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {% set raw = states('sensor.master_bedroom_sensibo_sky_plus_air_conditioner_mode') -%}
+        {% set en = {'cool':'Cooling','heat':'Heating','dry':'Dry','fanOnly':'Fan only','auto':'Auto'} -%}
+        {% set zh = {'cool':'制冷','heat':'制热','dry':'除湿','fanOnly':'仅送风','auto':'自动'} -%}
+        {% set hv = states('climate.bedroom_parents_room_ac') -%}
+        {% if raw in ['unavailable','unknown','none',''] %}{{ '空调模式无数据。' if cn else 'The air conditioner mode is not reporting.' }}{% else %}{% set nice = (zh.get(raw, raw) if cn else en.get(raw, raw)) -%}
+        {% if hv == 'off' %}{% if cn %}空调当前**已关闭**。上方的“{{ nice }}”是它下次开启时将使用的模式，不是当前正在运行的模式。{% else %}The air conditioner is **off**. "{{ nice }}" above is the mode it will use when it is next turned on, not what it is doing now.{% endif %}{% else %}{% if cn %}空调正在运行，模式为 **{{ nice }}**。{% else %}The air conditioner is running in **{{ nice }}**.{% endif %}{% endif %}{% endif %}
       grid_options: {columns: 6, rows: 1}
 
   - type: grid
