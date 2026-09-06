@@ -21,6 +21,8 @@ Covers the checks that are possible without Home Assistant itself:
     never triggered renders as "Unknown"
   - no cover, climate, vacuum or media_player entity is compared to 'on' or
     'off', which its domain never reports
+  - day-difference arithmetic ceils rather than rounds, so a date due today
+    is never reported as overdue
   - /local/ resource paths exist in www/ when www/ is present
   - mass-damage detection against the committed version of the same file
 
@@ -256,7 +258,22 @@ def check(path):
     else:
         print("  /local/ resources        : none referenced")
 
-    # 7. domains that never report on/off must not be tested for it
+    # 7. day-difference arithmetic must ceil, not round
+    #
+    # A due date is midnight; `now()` is whatever time it is. Dividing the
+    # difference by 86400 and rounding to nearest makes a bill due today read
+    # as one day overdue from about 12:00 onwards, and one due tomorrow read
+    # as due today. `round(0, 'ceil')` gives the calendar-day delta at any
+    # hour. This shipped once and was found only by testing the boundary.
+    day_diff = re.compile(r"/\s*86400\s*\)?\s*\|\s*round\(\s*0\s*\)")
+    rounded_days = [m.group(0) for m in day_diff.finditer(raw)]
+    for hit in rounded_days:
+        fails.append(f"{path}: day difference rounded to nearest — a date due "
+                     f"today reads as overdue for most of the day; use "
+                     f"round(0, 'ceil') — {hit!r}")
+    print(f"  day diff rounded not ceil: {len(rounded_days)}")
+
+    # 8. domains that never report on/off must not be tested for it
     #
     # A `cover` is open/closed/opening/closing, a `climate` is an HVAC mode,
     # a `media_player` is playing/paused/idle/standby. Comparing any of them
@@ -273,7 +290,7 @@ def check(path):
                      f"never reports — the branch can never be taken")
     print(f"  on/off on wrong domain   : {len(bad_onoff)}")
 
-    # 8. stateless entities must not be shown as stateful tiles
+    # 9. stateless entities must not be shown as stateful tiles
     #
     # A `button` entity's state is the timestamp of its last press, and a
     # `scene`'s is when it was last applied — so one never triggered reads
@@ -296,7 +313,7 @@ def check(path):
                      f"or show_state: false — {name!r}")
     print(f"  stateless shown as state : {len(stateless)}")
 
-    # 9. CJK text must not be broken across a fold boundary
+    # 10. CJK text must not be broken across a fold boundary
     #
     # YAML folds a line break into a space. Between two Latin words that is
     # invisible; between two Chinese characters it is a stray space in the
@@ -325,7 +342,7 @@ def check(path):
                      f"inserts a space mid-sentence — {before!r} + {after!r}")
     print(f"  CJK split across folds   : {len(split_cjk)}")
 
-    # 10. bilingual headings come in pairs
+    # 11. bilingual headings come in pairs
     #
     # CLAUDE.md makes bilingual section headings mandatory, and the native
     # `heading` card cannot render a template — so each one is two cards with
@@ -362,7 +379,7 @@ def check(path):
                      f"languages; correct only for a proper noun")
     print(f"  unpaired bilingual heads : {len(unpaired)}")
 
-    # 11. mass-damage detection against HEAD
+    # 12. mass-damage detection against HEAD
     old = committed(path)
     if old is None:
         print("  mass-damage check        : new file, no baseline")

@@ -4525,6 +4525,70 @@ views:
       name: Customer number
       grid_options: {columns: 12, rows: 1}
 
+  # Upcoming bills timeline -- Master Design Briefing v1 section 6 asks the
+  # billing board for one, alongside the all-bills table it already has.
+  # Sorted by due date, each row carrying the amount, the date and how long
+  # away it is, so "what is next and how bad is it" is one glance.
+  #
+  # Same three helpers per bill as the cards and the overview, so all three
+  # agree by construction. Bills with no amount entered are counted, not
+  # listed: an unconfigured helper is not an upcoming bill.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Upcoming
+      heading_style: title
+      icon: mdi:calendar-clock
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 即将到期
+      heading_style: title
+      icon: mdi:calendar-clock
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: markdown
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set bills = [('Electricity','电费','input_number.elec_bill_amount','input_datetime.elec_bill_due','input_boolean.elec_bill_paid'),
+        ('Gas','燃气费','input_number.gas_bill_amount','input_datetime.gas_bill_due','input_boolean.gas_bill_paid'),
+        ('Water','水费','input_number.water_bill_amount','input_datetime.water_bill_due','input_boolean.water_bill_paid'),
+        ('Council rates','市政费','input_number.council_rate_amount','input_datetime.council_rate_due','input_boolean.council_rate_paid'),
+        ('Car insurance','车险','input_number.car_insurance_amount','input_datetime.car_insurance_due','input_boolean.car_insurance_paid'),
+        ('Rego','车辆注册','input_number.rego_amount','input_datetime.rego_due','input_boolean.rego_paid')] -%}
+        {%- set ns = namespace(rows=[], unset=0, nodate=0) -%}
+        {%- for n, z, a, d, p in bills -%}
+        {%- set label = z if cn else n -%}
+        {%- set av = states(a) | float(none) -%}
+        {%- set ds = states(d) -%}
+        {%- set ts = as_timestamp(ds, 0) if ds not in ['unavailable','unknown','none',''] else 0 -%}
+        {%- if is_state(p,'on') -%}
+        {%- elif av is none or av <= 0 -%}{% set ns.unset = ns.unset + 1 %}
+        {%- elif ts <= 0 -%}{% set ns.nodate = ns.nodate + 1 %}
+        {%- else -%}
+        {%- set days = ((ts - as_timestamp(now())) / 86400) | round(0, 'ceil') | int -%}
+        {%- set shown = ds[8:10] ~ '/' ~ ds[5:7] ~ '/' ~ ds[2:4] -%}
+        {%- set ns.rows = ns.rows + [(days, label, shown, av)] -%}
+        {%- endif -%}
+        {%- endfor -%}
+        {%- if ns.rows | count -%}
+        {% for days, label, shown, av in ns.rows | sort %}- **{{ label }}** · A${{ '%.2f' | format(av) }} · {{ shown }} — {% if days < 0 %}{% if cn %}已逾期 {{ days | abs }} 天{% else %}**{{ days | abs }} day{{ '' if days == -1 else 's' }} overdue**{% endif %}{% elif days == 0 %}{{ '今天到期' if cn else '**due today**' }}{% else %}{{ ('%d 天后到期' % days) if cn else ('due in %d day%s' % (days, '' if days == 1 else 's')) }}{% endif %}
+        {% endfor %}
+        {%- elif not ns.nodate -%}
+        {{ '没有待付账单。' if cn else 'Nothing is waiting to be paid.' }}
+        {%- endif -%}
+        {%- if ns.nodate %}
+        {{ ('%d 笔未付账单没有有效到期日，因此不在此列。' % ns.nodate) if cn else ('%d unpaid bill%s no valid due date, so %s not on this timeline.' % (ns.nodate, ' has' if ns.nodate == 1 else 's have', 'it is' if ns.nodate == 1 else 'they are')) }}
+        {%- endif -%}
+        {%- if ns.unset %}
+        {{ ('6 笔账单中有 %d 笔尚未填写金额。' % ns.unset) if cn else ('%d of 6 bills have no amount entered yet.' % ns.unset) }}
+        {%- endif -%}
+
   - type: grid
     column_span: 2
     cards:
