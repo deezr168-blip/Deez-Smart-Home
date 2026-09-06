@@ -1863,12 +1863,25 @@ views:
       entity: sensor.bedroom_parents_room_ac_filter_last_reset
       name: Filter last reset
       grid_options: {columns: 4, rows: 1}
-    - type: tile
+    # A `button` entity's state is the timestamp of its last press, so a
+    # button never pressed reads `Unknown` -- and as a tile that renders as
+    # "Reset filter — Unknown", which looks like a broken sensor rather than
+    # an action waiting to be taken. Presented as the action it is, with a
+    # confirmation, since resetting the timer discards the real filter age.
+    - type: button
       entity: button.bedroom_parents_room_ac_reset_filter
-      name: Reset filter
+      name: Reset filter timer
       icon: mdi:restart
+      show_state: false
       grid_options: {columns: 4, rows: 1}
-      tap_action: {action: toggle}
+      tap_action:
+        action: perform-action
+        perform_action: button.press
+        target:
+          entity_id: button.bedroom_parents_room_ac_reset_filter
+        confirmation:
+          text: Reset the AC filter timer? Do this only after the filter has
+            actually been cleaned.
     - type: tile
       entity: update.bedroom_parents_room_ac_firmware
       name: AC firmware

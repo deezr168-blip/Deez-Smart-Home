@@ -17,6 +17,8 @@ Covers the checks that are possible without Home Assistant itself:
     in one language
   - no Chinese sentence is broken across a fold boundary, which would insert
     a space into the middle of it
+  - no button or scene entity is shown as a state-bearing tile, where one
+    never triggered renders as "Unknown"
   - /local/ resource paths exist in www/ when www/ is present
   - mass-damage detection against the committed version of the same file
 
@@ -252,7 +254,30 @@ def check(path):
     else:
         print("  /local/ resources        : none referenced")
 
-    # 7. CJK text must not be broken across a fold boundary
+    # 7. stateless entities must not be shown as stateful tiles
+    #
+    # A `button` entity's state is the timestamp of its last press, and a
+    # `scene`'s is when it was last applied — so one never triggered reads
+    # `Unknown`. On a tile that renders as "Reset filter — Unknown", which
+    # looks like a broken sensor instead of an action waiting to be taken.
+    # Use a `button` card, or a tile with `show_state: false`.
+    stateless = []
+
+    def bare_action(node):
+        e = node.get("entity")
+        if (isinstance(e, str) and e.split(".")[0] in ("button", "scene")
+                and node.get("type") == "tile"
+                and node.get("show_state") is not False
+                and not node.get("hide_state")):
+            stateless.append((e, node.get("name")))
+    walk(doc, bare_action)
+    for e, name in stateless:
+        fails.append(f"{path}: {e} is a tile that shows its state; a button or "
+                     f"scene never triggered reads 'Unknown' — use a button card "
+                     f"or show_state: false — {name!r}")
+    print(f"  stateless shown as state : {len(stateless)}")
+
+    # 8. CJK text must not be broken across a fold boundary
     #
     # YAML folds a line break into a space. Between two Latin words that is
     # invisible; between two Chinese characters it is a stray space in the
@@ -281,7 +306,7 @@ def check(path):
                      f"inserts a space mid-sentence — {before!r} + {after!r}")
     print(f"  CJK split across folds   : {len(split_cjk)}")
 
-    # 8. bilingual headings come in pairs
+    # 9. bilingual headings come in pairs
     #
     # CLAUDE.md makes bilingual section headings mandatory, and the native
     # `heading` card cannot render a template — so each one is two cards with
@@ -318,7 +343,7 @@ def check(path):
                      f"languages; correct only for a proper noun")
     print(f"  unpaired bilingual heads : {len(unpaired)}")
 
-    # 9. mass-damage detection against HEAD
+    # 10. mass-damage detection against HEAD
     old = committed(path)
     if old is None:
         print("  mass-damage check        : new file, no baseline")
