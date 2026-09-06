@@ -5571,9 +5571,15 @@ views:
       entity: sensor.house_status
       name: House status
       grid_options: {columns: 12, rows: 1}
+    # NOT devices. This counts unavailable *entities*: the B1 export of the
+    # same instance holds 232 unavailable entities against this sensor's live
+    # 228, and the two offline Tapo cameras alone account for 48 of them --
+    # one dead device drags all of its entities down with it. Labelled
+    # "Offline devices" it made roughly twenty offline devices look like two
+    # hundred. See CR-200.
     - type: tile
       entity: sensor.casa_offline_devices
-      name: Offline devices
+      name: Unavailable entities
       grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: sensor.active_rooms_count
@@ -5583,6 +5589,13 @@ views:
       entity: sensor.house_lights_on
       name: Lights on
       grid_options: {columns: 4, rows: 1}
+    # Why the tile above and the paragraph below disagree, said once, so
+    # nobody has to reconcile 228 against 8 by eye.
+    - type: markdown
+      content: >-
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {% set e = states('sensor.casa_offline_devices') | int(-1) -%}
+        {% if cn %}**“不可用实体”与下方的“设备离线”统计的不是同一件事。**{% if e >= 0 %}上方的 {{ e }} 是不可用的**实体**数量，不是设备数量。{% endif %}一台设备离线，它的全部实体都会随之不可用——仅东墙与南墙两台 Tapo 摄像头就占了约 48 个实体。下方段落统计的是本仪表板明确列出的九台**设备**。电池传感器无数据、更新实体无数据，也各自计入上方的实体总数。{% else %}**"Unavailable entities" and "devices offline" below are not counting the same thing.**{% if e >= 0 %} The {{ e }} above is a count of **entities**, not devices.{% endif %} One dead device takes all of its entities with it — the East and South Wall Tapo cameras alone account for around 48 of them. The paragraph below counts the nine named **devices** this dashboard tracks. A battery sensor that stops reporting and an update entity that stops reporting each add to the entity total too, without a device being off.{% endif %}
     - type: markdown
       content: >-
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set bats = [('Front
@@ -5608,10 +5621,10 @@ views:
         'light.living_room_hue_ambiance_spot_2',
         'light.living_room_hue_ambiance_spot_3',
         'light.living_room_hue_ambiance_spot_4'] -%} {% set ns =
-        namespace(low=[], unk=0, down=0) -%} {% for n, z, b in bats %}{% set s =
+        namespace(low=[], unk=[], down=0) -%} {% for n, z, b in bats %}{% set s =
         states(b) %}{% if s in ['unavailable','unknown','none',''] %}{% set
-        ns.unk = ns.unk + 1 %}{% else %}{% set f = s | float(-1) %}{% if f < 0
-        %}{% set ns.unk = ns.unk + 1 %}{% elif f < 30 %}{% set ns.low = ns.low +
+        ns.unk = ns.unk + [z if cn else n] %}{% else %}{% set f = s | float(-1) %}{% if f < 0
+        %}{% set ns.unk = ns.unk + [z if cn else n] %}{% elif f < 30 %}{% set ns.low = ns.low +
         [z if cn else n] %}{% endif %}{% endif %}{% endfor -%} {% for d in devs %}{% if
         states(d) in ['unavailable','unknown'] %}{% set ns.down = ns.down + 1 %}{%
         endif %}{% endfor -%} {% set wan =
@@ -5622,12 +5635,13 @@ views:
         endif %} {% if ns.low | count %}{% if cn %} **{{ ns.low | count }} 个电池电量低于
         30%：**{{ ns.low | join('、') }}。{% else %} **{{ ns.low | count }} batter{{
         'y is' if (ns.low | count) == 1 else 'ies are' }} under 30%:** {{ ns.low |
-        join(', ') }}.{% endif %}{% endif %}{% if ns.unk %}{%
-        if cn %} {{ ns.unk }} 个电池无数据。{% else %} {{ ns.unk }} batter{{ 'y is' if
-        ns.unk == 1 else 'ies are' }} not reporting.{% endif %}{% endif %}{% if ns.down
+        join(', ') }}.{% endif %}{% endif %}{% if ns.unk | count %}{%
+        if cn %} {{ ns.unk | count }} 个电池无数据：{{ ns.unk | join('、') }}。{% else %} {{
+        ns.unk | count }} batter{{ 'y is' if (ns.unk | count) == 1 else 'ies are' }} not
+        reporting: {{ ns.unk | join(', ') }}.{% endif %}{% endif %}{% if ns.down
         %}{% if cn %} **{{ ns.down }} 个设备离线。**{% else %} **{{ ns.down }} device{{
         '' if ns.down == 1 else 's' }} {{ 'is' if ns.down == 1 else 'are' }}
-        offline.**{% endif %}{% endif %}{% if not (ns.low | count) and not
+        offline.**{% endif %}{% endif %}{% if not (ns.low | count) and not (ns.unk | count) and not
         ns.down and wan == 'on' %}{{ ' 其他一切正常。' if cn else ' Nothing else needs
         attention.' }}{% endif %}
 
