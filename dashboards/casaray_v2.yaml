@@ -699,6 +699,52 @@ views:
       tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
 
   # --- Footer: weather and the next bill. ---
+  # Recent activity -- Master Design Briefing v1 section 4 lists it among
+  # Home's core modules, and the Master Home render puts it in the lower band
+  # beside Cameras. Native logbook card: no template, no invented entity, and
+  # it reads the recorder the history graphs on this dashboard already use.
+  #
+  # `target:` rather than the older `entities:` -- this file already relies on
+  # `grid_options` and `heading` cards, which need 2024.7 and 2024.9, so the
+  # 2024.2 form is comfortably available.
+  #
+  # The three door contacts are included even though they are unavailable: a
+  # door that starts reporting again should appear here without an edit, and
+  # while it is down it simply contributes nothing.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Recent activity
+      heading_style: title
+      icon: mdi:history
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 近期活动
+      heading_style: title
+      icon: mdi:history
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: logbook
+      hours_to_show: 24
+      grid_options: {columns: 12, rows: 4}
+      target:
+        entity_id:
+        - person.raymond_du
+        - person.vinh_du
+        - person.ai_q_huang
+        - binary_sensor.f_contact_sensor_door
+        - binary_sensor.m_contact_sensor_door
+        - binary_sensor.b_contact_sensor_door
+        - climate.bedroom_parents_room_ac
+        - light.living_room
+        - light.dining
+
   - type: grid
     column_span: 2
     cards:
