@@ -245,6 +245,7 @@ checked against `docs/live/states_export_2026-09-05.txt` and is recorded
 | CR-225 | Every room page — status chips | A row of chips under the header: a bold value and a muted caption. Two across. Check one room in each language | `87d388f` | P2 | PENDING |
 | CR-226 | Ray Bedroom — blind chip | Reads **Blind open** or **Blind closed**, never "not reporting" while the blind plainly works. Covers report open/closed, and the first draft tested for on/off | `87d388f` | P2 | PENDING |
 | CR-227 | Every room page — footer | Home and All rooms buttons at the bottom of the page | `59bebfc` | P3 | PENDING |
+| CR-228 | Any board — icon colour | An open door, an overloaded socket and an unpaid bill are **red**; solar, internet and savings are **green**; house draw and outstanding bills are **amber**. Everything else keeps the theme's amber-active. Lights are deliberately untouched | `PLACEHOLDER` | P3 | PENDING |
 | CR-196 | Living Room — Air quality | PM1, PM2.5 and PM10, each paired with its health-concern word. This is what CR-122 always expected; only now is it built | `28b520e` | P2 | PENDING |
 | CR-197 | Ray Bedroom / Garage — socket overload | A "Socket overloaded" tile in Ray Bedroom's Power use, and "Socket reachable" in the Garage Freezer section | `28b520e` | P2 | PENDING |
 | CR-198 | House Health — updates | Core, Supervisor and Operating System tiles, plus a line counting every pending update across all 74 update entities | `614ad5e` | P2 | PENDING |
