@@ -125,6 +125,75 @@ views:
       tap_action: {action: navigate, navigation_path: /casaray-v2/house-health}
 
   # --- Attention. Conditional throughout: a healthy house shows nothing. ---
+  # KPI strip -- the frozen design's "status strip directly under the header":
+  # a small uppercase label, a large value and a caption, per Master Home.
+  # Four rather than the render's five, and 2x2 rather than 1x5, because iPad
+  # landscape gives two usable columns whatever the mockup shows. Every figure
+  # comes from an entity this dashboard already reads; nothing is invented,
+  # and each card keeps its own "not reporting" branch.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: markdown
+      grid_options: {columns: 6, rows: 3}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set p = states('sensor.powerpal_gateway_powerpal_power') | float(none) -%}
+        {%- set s = states('sensor.primo_5_0_1_1_ac_power') | float(none) -%}
+        {%- set hd = states('sensor.powerpal_gateway_powerpal_daily_energy') | float(none) -%}
+        {%- set sd = states('sensor.primo_5_0_1_1_energy_day') | float(none) -%}
+        **{{ '家庭用电' if cn else 'HOUSE POWER' }}**
+        {% if p is not none %}## {{ (p / 1000) | round(2) }} kW
+        {{ '当前总用电' if cn else 'Total usage' }}{% else %}## —
+        {{ '用电表无数据' if cn else 'Meter not reporting' }}{% endif %}
+
+        {{ '太阳能' if cn else 'Solar' }} **{{ (s | round(0) | int ~ ' W') if s is not none else '—' }}** · {{ '今日用电' if cn else 'Today' }} **{{ (hd | round(1) ~ ' kWh') if hd is not none else '—' }}** · {{ '今日发电' if cn else 'Solar today' }} **{{ (sd | round(1) ~ ' kWh') if sd is not none else '—' }}**
+    - type: markdown
+      grid_options: {columns: 6, rows: 3}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set ts = ['sensor.living_room_living_hue_hue_sensor_temperature','sensor.bedroom_motion_sensor_temperature','sensor.living_room_living_room_temperature'] -%}
+        {%- set ns = namespace(sum=0.0, n=0) -%}
+        {%- for t in ts %}{% set f = states(t) | float(none) %}{% if f is not none %}{% set ns.sum = ns.sum + f %}{% set ns.n = ns.n + 1 %}{% endif %}{% endfor -%}
+        {%- set h = states('sensor.bedroom_motion_sensor_humidity') | float(none) -%}
+        {%- set aq = states('sensor.living_room_air_purifier_air_quality') -%}
+        **{{ '室内气候' if cn else 'INDOOR CLIMATE' }}**
+        {% if ns.n %}{% set avg = (ns.sum / ns.n) %}## {{ avg | round(1) }} °C
+        {% if avg >= 18 and avg <= 25 %}{{ '舒适' if cn else 'Comfortable' }}{% elif avg < 18 %}{{ '偏冷' if cn else 'Cool' }}{% else %}{{ '偏热' if cn else 'Warm' }}{% endif %} · {{ ns.n }} {{ '个房间' if cn else ('room' if ns.n == 1 else 'rooms') }}{% else %}## —
+        {{ '没有室内温度数据' if cn else 'No indoor temperature reporting' }}{% endif %}
+
+        {{ '湿度' if cn else 'Humidity' }} **{{ (h | round(0) | int ~ '%') if h is not none else '—' }}** · {{ '空气质量' if cn else 'Air quality' }} **{{ aq if aq not in ['unavailable','unknown','none',''] else '—' }}**
+    - type: markdown
+      grid_options: {columns: 6, rows: 3}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set doors = ['binary_sensor.f_contact_sensor_door','binary_sensor.m_contact_sensor_door','binary_sensor.b_contact_sensor_door'] -%}
+        {%- set cams = ['camera.front_door_live_view','camera.tapo_c425_north_wall_hd_stream_direct','camera.tapo_c420_east_wall_hd_stream_direct','camera.tapo_c420_south_wall_hd_stream_direct','camera.tapo_c200_stockroom_hd_stream_direct','camera.smart_pet_feeder'] -%}
+        {%- set ns = namespace(dopen=0, dunk=0, con=0) -%}
+        {%- for d in doors %}{% set s = states(d) %}{% if s == 'on' %}{% set ns.dopen = ns.dopen + 1 %}{% elif s != 'off' %}{% set ns.dunk = ns.dunk + 1 %}{% endif %}{% endfor -%}
+        {%- for c in cams %}{% if states(c) not in ['unavailable','unknown'] %}{% set ns.con = ns.con + 1 %}{% endif %}{% endfor -%}
+        {%- set wan = states('binary_sensor.eero_wan_status') -%}
+        **{{ '安全' if cn else 'SECURITY' }}**
+        {% if ns.dopen %}## {{ '有门开启' if cn else 'Door open' }}
+        {{ '%d 扇门开启' % ns.dopen if cn else '%d of 3 doors open' % ns.dopen }}{% elif ns.dunk %}## {{ '无法确认' if cn else 'Unconfirmed' }}
+        {{ '%d 个门窗传感器无数据' % ns.dunk if cn else '%d of 3 door sensors not reporting' % ns.dunk }}{% else %}## {{ '安全' if cn else 'Secure' }}
+        {{ '三扇门全部关闭' if cn else 'All 3 doors closed' }}{% endif %}
+
+        {{ '摄像头' if cn else 'Cameras' }} **{{ ns.con }}/{{ cams | count }}** · {{ '网络' if cn else 'Internet' }} **{{ ('在线' if cn else 'Online') if wan == 'on' else (('离线' if cn else 'Offline') if wan == 'off' else ('无数据' if cn else 'Unknown')) }}**
+    - type: markdown
+      grid_options: {columns: 6, rows: 3}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set sd = states('sensor.primo_5_0_1_1_energy_day') | float(none) -%}
+        {%- set hd = states('sensor.powerpal_gateway_powerpal_daily_energy') | float(none) -%}
+        **{{ '今日太阳能' if cn else 'SOLAR TODAY' }}**
+        {% if sd is not none and hd is not none and hd > 0 %}{% set share = ((sd / hd) * 100) | round(0) | int %}## {{ share }}%
+        {% if share >= 100 %}{{ '已覆盖今日全部用电并有盈余' if cn else 'Covered all of today’s use, with surplus' }}{% else %}{{ '的今日用电来自太阳能' if cn else 'of today’s use came from solar' }}{% endif %}{% elif sd is not none %}## {{ sd | round(1) }} kWh
+        {{ '今日发电量。家庭用电量无数据，无法计算占比。' if cn else 'generated today. House use is not reporting, so the share cannot be worked out.' }}{% else %}## —
+        {{ '太阳能今日发电量无数据' if cn else 'Solar generation today is not reporting' }}{% endif %}
+
+        {{ '发电' if cn else 'Generated' }} **{{ (sd | round(1) ~ ' kWh') if sd is not none else '—' }}** · {{ '用电' if cn else 'Used' }} **{{ (hd | round(1) ~ ' kWh') if hd is not none else '—' }}**
+
   - type: grid
     column_span: 2
     cards:
