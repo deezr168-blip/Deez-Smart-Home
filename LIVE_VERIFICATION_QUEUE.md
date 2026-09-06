@@ -225,6 +225,18 @@ checked against `docs/live/states_export_2026-09-05.txt` and is recorded
 | CR-192 | Home — daylight | Sun, Sunrise and Sunset tiles beside the forecast | `120dba1` | P3 | PENDING |
 | CR-193 | Cameras — Floodlights | North Wall and Stockroom, each with a brightness slider. These **are** meant to be tappable, unlike the Security detection tiles | `120dba1` | P2 | PENDING |
 | CR-194 | Ray Bedroom — Nightlight | A light tile with brightness, distinct from the Nightlight scene button in Quick actions above it | `120dba1` | P3 | PENDING |
+| CR-200 | House Health — Overall | The tile reads **Unavailable entities**, not "Offline devices", and the card under it explains why that number and "N devices are offline" differ | `1d1f871` | **P1** | PENDING |
+| CR-201 | House Health — battery roll-up | "N batteries are not reporting" now **names** them. Cross-check the named one against the tile grid below — they must agree | `1d1f871` | P2 | PENDING |
+| CR-202 | Bills — overview paragraph | One canonical narrative computed from the same helpers the bill cards show. No more "5 overdue" beside "A$0.00" and "Unpaid 1". Any past-due bill is named **with its due date** | `81e7c8e` | **P1** | PENDING |
+| CR-203 | Bills — unconfigured helpers | The overview says how many of the six bills have no amount entered, and calls that an unconfigured helper rather than a zero balance | `81e7c8e` | **P1** | PENDING |
+| CR-204 | Bills — sensor disagreement | If `sensor.bills_unpaid_count` or `sensor.bills_outstanding_total` disagrees with the helper-derived figures, the paragraph says so by name. **If that note appears, paste it back** — it means the Home Assistant template sensors need fixing, which is outside this repository | `81e7c8e` | **P1** | PENDING |
+| CR-205 | Bills — electricity quarter | Reads "Imported this quarter **N kWh**", not "Billing cycle 1234.56789…" | `63ac907` | P2 | PENDING |
+| CR-206 | Energy — header and summaries | Whole watts, e.g. "1626 W now". No long decimals on Energy, Home, Living Room, Parents Room or Garage | `63ac907` | **P1** | PENDING |
+| CR-207 | Energy — solar above 100% | Reads "Solar is covering all household demand and producing surplus", with both figures. It must **not** claim an export amount — no import/export entity exists | `63ac907` | P2 | PENDING |
+| CR-208 | Energy — forecast section | Says the figures are forecast, not inverter readings, and that "still to come" is the integration's own remaining forecast rather than today minus generated | `63ac907` | P2 | PENDING |
+| CR-209 | Climate — indoor average | Says **3 rooms**, the mean of Living Room, Parents Room and Dining — the three the Readings section shows | `d2a8a18` | P2 | PENDING |
+| CR-210 | Climate — AC mode | Tile reads "AC mode when on"; the line below explains that with the unit off the mode is what it will use next. `fanOnly` shows as "Fan only" / 仅送风 | `d2a8a18` | P2 | PENDING |
+| CR-211 | Parents Room — Reset filter | A **button** labelled "Reset filter timer" with a confirmation, not a tile reading "Unknown" | `059f65a` | P2 | PENDING |
 | CR-196 | Living Room — Air quality | PM1, PM2.5 and PM10, each paired with its health-concern word. This is what CR-122 always expected; only now is it built | `28b520e` | P2 | PENDING |
 | CR-197 | Ray Bedroom / Garage — socket overload | A "Socket overloaded" tile in Ray Bedroom's Power use, and "Socket reachable" in the Garage Freezer section | `28b520e` | P2 | PENDING |
 | CR-198 | House Health — updates | Core, Supervisor and Operating System tiles, plus a line counting every pending update across all 74 update entities | `614ad5e` | P2 | PENDING |
@@ -237,6 +249,8 @@ checked against `docs/live/states_export_2026-09-05.txt` and is recorded
 | CR-183 | What is `input_select.input_select_family_location_selected` for, and what are its options? | Live and `ok`, but the B1 export carries names only, not option lists or the automations that read them. Surfacing a selector whose effect is unknown could change household state by mis-tap. Not added. |
 | CR-190 | **Three `media_player` entities exist for the one Parents Room TV.** Which is the real one? | `media_player.55_qled_4k_ai` reads `unavailable`; `..._qa55q7faawxxy` and `master_bedroom_55_qled_4k_ai` both read `ok`. CasaRay was pointing at the unavailable one, so that card has never worked. It now points at `..._qa55q7faawxxy`, chosen because it pairs with `remote.55_qled_4k_ai_qa55q7faawxxy` — a matched media_player + remote pair is what a current Samsung integration entry looks like, where `master_bedroom_` is the prefix carried by several known-dead duplicates in this instance. **Reasoned, not conclusive.** If the Parents Room TV card still does not work, the answer is one of the other two. The legacy dashboard was left on the old ID on purpose: it is the rollback baseline, and a TV that is switched off at the wall can legitimately read `unavailable`, so this is not conclusive enough to edit it. Deleting the stale duplicates is an owner action, not one this routine takes. |
 | CR-195 | **Do the Parents Room emergency buttons actually register a press?** | This is the one item in this queue that is a safety question rather than a display question. `binary_sensor.emergency_button_dad_cloud_connection` and the Mum equivalent both read `ok`, so the page can honestly say the buttons are connected and their signal is good. But the two press-event entities, `event.master_bedroom_emergency_button_dad_main` and `event.master_bedroom_emergency_button_mum_main`, both read **`unavailable`** — so as far as this export shows, a press produces nothing Home Assistant can see. The page now says so in both languages rather than letting "Both emergency buttons are connected" be read as "the buttons work". **Please press one and check Developer Tools → States for that event entity, or Settings → Devices for a logged press.** If it stays unavailable the buttons are connectivity indicators only, and whatever is meant to happen when someone presses one is not wired up. Nothing was added or changed on the devices themselves. |
+| CR-212 | **Where does "Not yet available" come from?** | It is no longer anywhere in `casaray_v2.yaml` — `df413b5` removed the last of it. So if it is still on screen it is an **entity state**, most likely `sensor.electricity_bill_status` or `sensor.gas_bill_status`, which the Bills page shows as "Status" tiles and whose templates live in Home Assistant's config, not this repository. **Check:** Developer Tools → States, filter `bill_status`, and read the two values. If either literally is "Not yet available", the fix belongs in the Home Assistant template that defines it. If neither is, the deployed copy of the dashboard is older than `df413b5` and the sync step needs running. |
+| CR-213 | **What do `sensor.house_status`, `sensor.active_rooms_count` and `sensor.house_lights_on` actually count?** | All three are template sensors defined in Home Assistant's config, so the dashboard shows them without being able to verify their definitions. `sensor.casa_offline_devices` turned out to count entities while being labelled devices (CR-200), so the same doubt applies to these three. **Check:** Developer Tools → Template, and paste back what each resolves to. Not changed in the meantime — the labels are plausible readings of their names. |
 
 ## CasaRay — expected-offline, do not chase
 
@@ -313,19 +327,21 @@ result does to the issue record, the backlog and ownership — are in
 - `PASS` rows stay for traceability. A page group with nothing left
   outstanding may collapse to a one-line summary naming its IDs and date.
 
-**95 checks pending**, in two separate sets that must not be merged:
+**107 checks pending**, in two separate sets that must not be merged:
 
 | Set | Dashboard | Rows | Pending | Passed |
 |---|---|---|---|---|
 | `UI-*` / `REG-*` / `BILL-*` / `CR-001`–`CR-002` | legacy `/deez-smart-home/…` | 48 | 47 | 1 |
-| **`CR-1xx`** | **CasaRay `/casaray-v2/…`** | **54** | **48** | **6** |
+| **`CR-1xx` / `CR-2xx`** | **CasaRay `/casaray-v2/…`** | **66** | **60** | **6** |
 
-**Three owner questions sit outside both counts** — they cannot pass or fail,
+**Five owner questions sit outside both counts** — they cannot pass or fail,
 they need an answer:
 
 | | |
 |---|---|
-| **`CR-195`** | **Do the Parents Room emergency buttons register a press?** The one safety question here. Answer this first. |
+| **`CR-195`** | **Do the Parents Room emergency buttons register a press?** The one safety question here. **Deferred by the owner 06/09/26** — left open, untouched, and not investigated this session. |
+| `CR-212` | Where does "Not yet available" come from? It is no longer in the dashboard file at all, so it is either an entity state or a stale deployed copy. |
+| `CR-213` | What do `house_status`, `active_rooms_count` and `house_lights_on` actually count? `casa_offline_devices` was mislabelled; these three are unverified. |
 | `CR-190` | Which of the three duplicate Parents Room TV entities is the real one? |
 | `CR-183` | What is the Family Location selector for? |
 
