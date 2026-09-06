@@ -3935,7 +3935,7 @@ views:
         {% if is_state(p,'on') %}{% set ns.paid = ns.paid + 1 -%}
         {% elif av is none or av <= 0 %}{% set ns.unset = ns.unset + 1 -%}
         {% else %}{% set ns.unpaid = ns.unpaid + 1 %}{% set ns.owing = ns.owing + av -%}
-        {% if ts > 0 %}{% set days = ((ts - as_timestamp(now())) / 86400) | round(0) | int -%}
+        {% if ts > 0 %}{% set days = ((ts - as_timestamp(now())) / 86400) | round(0, 'ceil') | int -%}
         {% set shown = ds[8:10] ~ '/' ~ ds[5:7] ~ '/' ~ ds[2:4] -%}
         {% if days < 0 %}{% set ns.over = ns.over + [label ~ ('（' if cn else ' (') ~ shown ~ ('）' if cn else ')')] %}{% endif -%}
         {% if days < ns.nextd %}{% set ns.nextd = days %}{% set ns.next = label %}{% set ns.nextw = shown %}{% endif -%}
@@ -3943,7 +3943,7 @@ views:
         {% endfor -%}
         {% set no = ns.over | count -%}
         {% if no %}{% if cn %}**{{ no }} 笔账单已逾期：**{{ ns.over | join('、') }}。{% else %}**{{ no }} bill{{ '' if no == 1 else 's' }} past due:** {{ ns.over | join(', ') }}.{% endif %} {% endif -%}
-        {% if ns.unpaid %}{% if cn %}未付 {{ ns.unpaid }} 笔，合计 **A${{ '%.2f' | format(ns.owing) }}**。{% else %}**A${{ '%.2f' | format(ns.owing) }}** owing across {{ ns.unpaid }} unpaid bill{{ '' if ns.unpaid == 1 else 's' }}.{% endif %} {% if ns.next and not no %}{% if cn %}下一笔：**{{ ns.next }}**，{{ ns.nextd }} 天后到期（{{ ns.nextw }}）。{% else %}Next up: **{{ ns.next }}**, due in {{ ns.nextd }} days ({{ ns.nextw }}).{% endif %} {% endif %}{% elif not ns.unset %}{{ '全部已付。' if cn else 'Everything is paid.' }} {% endif -%}
+        {% if ns.unpaid %}{% if cn %}未付 {{ ns.unpaid }} 笔，合计 **A${{ '%.2f' | format(ns.owing) }}**。{% else %}**A${{ '%.2f' | format(ns.owing) }}** owing across {{ ns.unpaid }} unpaid bill{{ '' if ns.unpaid == 1 else 's' }}.{% endif %} {% if ns.next and not no %}{% if cn %}下一笔：**{{ ns.next }}**，{% if ns.nextd == 0 %}今天到期{% else %}{{ ns.nextd }} 天后到期{% endif %}（{{ ns.nextw }}）。{% else %}Next up: **{{ ns.next }}**, {% if ns.nextd == 0 %}due today{% else %}due in {{ ns.nextd }} day{{ '' if ns.nextd == 1 else 's' }}{% endif %} ({{ ns.nextw }}).{% endif %} {% endif %}{% elif not ns.unset %}{{ '全部已付。' if cn else 'Everything is paid.' }} {% endif -%}
         {% if ns.nodate %}{% if cn %}{{ ns.nodate }} 笔未付账单没有有效到期日。{% else %}{{ ns.nodate }} unpaid bill{{ ' has' if ns.nodate == 1 else 's have' }} no valid due date.{% endif %} {% endif -%}
         {% if ns.unset %}{% if cn %}6 笔账单中有 {{ ns.unset }} 笔尚未填写金额，因此不计入应付总额——这是助手实体未配置，不是欠款为零。{% else %}{{ ns.unset }} of 6 bills have no amount entered, so they are not counted as owing — that is an unconfigured helper, not a zero balance.{% endif %}{% endif %}
         {%- set sc = states('sensor.bills_unpaid_count') | int(-1) -%}
