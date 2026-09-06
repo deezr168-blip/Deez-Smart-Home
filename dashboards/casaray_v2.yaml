@@ -1325,6 +1325,40 @@ views:
 
         {{ now().strftime('%d/%m/%y') }}
 
+  # Status chips, per the room mockups' row under the header: a bold value and
+  # a muted caption for the things you glance at on the way past. Two across
+  # rather than the render's five, for the iPad reason the Home KPI strip is
+  # 2x2. Every chip names its subject when the entity stops reporting.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: markdown
+      grid_options: {columns: 6, rows: 1}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set s = states('binary_sensor.k_motion_sensor_occupancy') -%}
+        {% if s == 'on' %}**{{ '有人' if cn else 'Occupied' }}** · {{ '厨房' if cn else 'kitchen' }}{% elif s == 'off' %}**{{ '无人' if cn else 'Empty' }}** · {{ '厨房' if cn else 'kitchen' }}{% else %}**{{ '无数据' if cn else 'No reading' }}** · {{ '厨房无数据' if cn else 'kitchen not reporting' }}{% endif %}
+    - type: markdown
+      grid_options: {columns: 6, rows: 1}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set t = states('sensor.kitchen_electrolux_fridge_temperature') | float(none) -%}
+        {% if t is not none %}**{{ t | round(1) }} °C** · {{ '冰箱' if cn else 'fridge' }}{% else %}**—** · {{ '冰箱无数据' if cn else 'fridge not reporting' }}{% endif %}
+    - type: markdown
+      grid_options: {columns: 6, rows: 1}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set s = states('binary_sensor.lg_fridge_door') -%}
+        {% if s == 'on' %}**{{ '冰箱门开启' if cn else 'Fridge door open' }}**{% elif s == 'off' %}**{{ '冰箱已关闭' if cn else 'Fridge closed' }}**{% else %}**{{ '无数据' if cn else 'No reading' }}** · {{ '冰箱门无数据' if cn else 'fridge door not reporting' }}{% endif %}
+    - type: markdown
+      grid_options: {columns: 6, rows: 1}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set es = ['switch.k_coffee_p100','switch.k_top_p100','switch.k_bot_p100'] -%}
+        {%- set ns = namespace(on=0, unk=0) -%}
+        {%- for e in es %}{% set s = states(e) %}{% if s == 'on' %}{% set ns.on = ns.on + 1 %}{% elif s != 'off' %}{% set ns.unk = ns.unk + 1 %}{% endif %}{% endfor -%}
+        **{{ ns.on }}/{{ es | count }}** · {{ '插座已开启' if cn else 'plugs on' }}{% if ns.unk %} · {{ ns.unk }} {{ '无数据' if cn else 'not reporting' }}{% endif %}
+
   - type: grid
     column_span: 1
     cards:
@@ -1559,6 +1593,39 @@ views:
 
         {{ now().strftime('%d/%m/%y') }}
 
+
+  # Status chips, per the room mockups' row under the header: a bold value and
+  # a muted caption for the things you glance at on the way past. Two across
+  # rather than the render's five, for the iPad reason the Home KPI strip is
+  # 2x2. Every chip names its subject when the entity stops reporting.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: markdown
+      grid_options: {columns: 6, rows: 1}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set s = states('binary_sensor.sensor_group_motion') -%}
+        {% if s == 'on' %}**{{ '有人' if cn else 'Occupied' }}** · {{ '餐厅' if cn else 'dining' }}{% elif s == 'off' %}**{{ '无人' if cn else 'No motion' }}** · {{ '餐厅' if cn else 'dining' }}{% else %}**{{ '无数据' if cn else 'No reading' }}** · {{ '餐厅无数据' if cn else 'dining not reporting' }}{% endif %}
+    - type: markdown
+      grid_options: {columns: 6, rows: 1}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set t = states('sensor.living_room_living_room_temperature') | float(none) -%}
+        {% if t is not none %}**{{ t | round(1) }} °C** · {% if t >= 18 and t <= 25 %}{{ '舒适' if cn else 'Comfortable' }}{% elif t < 18 %}{{ '偏冷' if cn else 'Cool' }}{% else %}{{ '偏热' if cn else 'Warm' }}{% endif %}{% else %}**—** · {{ '温度无数据' if cn else 'temperature not reporting' }}{% endif %}
+    - type: markdown
+      grid_options: {columns: 6, rows: 1}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set l = states('light.dining') -%}
+        {%- set b = state_attr('light.dining','brightness') -%}
+        {% if l == 'on' %}**{{ '灯光已开' if cn else 'Lights on' }}**{% if b is not none %} · {{ (b | float / 255 * 100) | round(0) | int }}%{% endif %}{% elif l == 'off' %}**{{ '灯光已关' if cn else 'Lights off' }}**{% else %}**{{ '无数据' if cn else 'No reading' }}** · {{ '灯光无数据' if cn else 'lights not reporting' }}{% endif %}
+    - type: markdown
+      grid_options: {columns: 6, rows: 1}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set t = states('sensor.sensor_group_illuminance') | float(none) -%}
+        {% if t is not none %}**{{ t | round(0) | int }} lx** · {{ '照度' if cn else 'light level' }}{% else %}**—** · {{ '照度无数据' if cn else 'light level not reporting' }}{% endif %}
 
   - type: grid
     column_span: 2
@@ -1807,6 +1874,40 @@ views:
         ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
         {{ now().strftime('%d/%m/%y') }}
+
+  # Status chips, per the room mockups' row under the header: a bold value and
+  # a muted caption for the things you glance at on the way past. Two across
+  # rather than the render's five, for the iPad reason the Home KPI strip is
+  # 2x2. Every chip names its subject when the entity stops reporting.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: markdown
+      grid_options: {columns: 6, rows: 1}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set s = states('binary_sensor.bedroom_parents_room_ac_room_occupied') -%}
+        {% if s == 'on' %}**{{ '有人' if cn else 'Occupied' }}** · {{ '父母房' if cn else 'parents room' }}{% elif s == 'off' %}**{{ '无人' if cn else 'Empty' }}** · {{ '父母房' if cn else 'parents room' }}{% else %}**{{ '无数据' if cn else 'No reading' }}** · {{ '父母房无数据' if cn else 'parents room not reporting' }}{% endif %}
+    - type: markdown
+      grid_options: {columns: 6, rows: 1}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set t = states('sensor.bedroom_motion_sensor_temperature') | float(none) -%}
+        {% if t is not none %}**{{ t | round(1) }} °C** · {% if t >= 18 and t <= 25 %}{{ '舒适' if cn else 'Comfortable' }}{% elif t < 18 %}{{ '偏冷' if cn else 'Cool' }}{% else %}{{ '偏热' if cn else 'Warm' }}{% endif %}{% else %}**—** · {{ '温度无数据' if cn else 'temperature not reporting' }}{% endif %}
+    - type: markdown
+      grid_options: {columns: 6, rows: 1}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set t = states('sensor.bedroom_motion_sensor_humidity') | float(none) -%}
+        {% if t is not none %}**{{ t | round(0) | int }}%** · {{ '湿度' if cn else 'humidity' }}{% else %}**—** · {{ '湿度无数据' if cn else 'humidity not reporting' }}{% endif %}
+    - type: markdown
+      grid_options: {columns: 6, rows: 1}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set h = states('climate.bedroom_parents_room_ac') -%}
+        {%- set en = {'off':'Off','cool':'Cooling','heat':'Heating','dry':'Dry','fan_only':'Fan only','auto':'Auto','heat_cool':'Auto'} -%}
+        {%- set zh = {'off':'已关闭','cool':'制冷','heat':'制热','dry':'除湿','fan_only':'仅送风','auto':'自动','heat_cool':'自动'} -%}
+        {% if h not in ['unavailable','unknown','none',''] %}**{{ zh.get(h, h) if cn else en.get(h, h) }}** · {{ '空调' if cn else 'air conditioner' }}{% else %}**—** · {{ '空调无数据' if cn else 'air conditioner not reporting' }}{% endif %}
 
   - type: grid
     column_span: 1
@@ -2128,6 +2229,39 @@ views:
         {{ now().strftime('%d/%m/%y') }}
 
 
+  # Status chips, per the room mockups' row under the header: a bold value and
+  # a muted caption for the things you glance at on the way past. Two across
+  # rather than the render's five, for the iPad reason the Home KPI strip is
+  # 2x2. Every chip names its subject when the entity stops reporting.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: markdown
+      grid_options: {columns: 6, rows: 1}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set l = states('light.bedroom_bedroom') -%}
+        {%- set b = state_attr('light.bedroom_bedroom','brightness') -%}
+        {% if l == 'on' %}**{{ '灯光已开' if cn else 'Lights on' }}**{% if b is not none %} · {{ (b | float / 255 * 100) | round(0) | int }}%{% endif %}{% elif l == 'off' %}**{{ '灯光已关' if cn else 'Lights off' }}**{% else %}**{{ '无数据' if cn else 'No reading' }}** · {{ '灯光无数据' if cn else 'lights not reporting' }}{% endif %}
+    - type: markdown
+      grid_options: {columns: 6, rows: 1}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set s = states('cover.aqara_roller_shade_driver_e1') -%}
+        {% if s == 'open' %}**{{ '卷帘已开' if cn else 'Blind open' }}**{% elif s == 'closed' %}**{{ '卷帘已关' if cn else 'Blind closed' }}**{% elif s in ['opening','closing'] %}**{{ '动作中' if cn else 'Moving' }}**{% else %}**{{ '无数据' if cn else 'No reading' }}** · {{ '卷帘无数据' if cn else 'blind not reporting' }}{% endif %}
+    - type: markdown
+      grid_options: {columns: 6, rows: 1}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set t = states('sensor.r_energy_monitor_p110m_current_consumption') | float(none) -%}
+        {% if t is not none %}**{{ t | round(0) | int }} W** · {{ '当前功率' if cn else 'drawing now' }}{% else %}**—** · {{ '当前功率无数据' if cn else 'drawing now not reporting' }}{% endif %}
+    - type: markdown
+      grid_options: {columns: 6, rows: 1}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set s = states('switch.lph_se_dcd9_power') -%}
+        {% if s == 'on' %}**{{ '种植机已开' if cn else 'Grow unit on' }}**{% elif s == 'off' %}**{{ '种植机已关' if cn else 'Grow unit off' }}**{% else %}**{{ '无数据' if cn else 'No reading' }}** · {{ '种植机无数据' if cn else 'grow unit not reporting' }}{% endif %}
+
   - type: grid
     column_span: 2
     cards:
@@ -2427,6 +2561,38 @@ views:
 
         {{ now().strftime('%d/%m/%y') }}
 
+  # Status chips, per the room mockups' row under the header: a bold value and
+  # a muted caption for the things you glance at on the way past. Two across
+  # rather than the render's five, for the iPad reason the Home KPI strip is
+  # 2x2. Every chip names its subject when the entity stops reporting.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: markdown
+      grid_options: {columns: 6, rows: 1}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set s = states('switch.g_monitor_freezer_p110m') -%}
+        {% if s == 'on' %}**{{ '冰柜插座已开' if cn else 'Freezer plug on' }}**{% elif s == 'off' %}**{{ '冰柜插座已关' if cn else 'Freezer plug off' }}**{% else %}**{{ '无数据' if cn else 'No reading' }}** · {{ '冰柜插座无数据' if cn else 'freezer plug not reporting' }}{% endif %}
+    - type: markdown
+      grid_options: {columns: 6, rows: 1}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set t = states('sensor.g_monitor_freezer_p110m_current_consumption') | float(none) -%}
+        {% if t is not none %}**{{ t | round(0) | int }} W** · {{ '当前功率' if cn else 'drawing now' }}{% else %}**—** · {{ '当前功率无数据' if cn else 'drawing now not reporting' }}{% endif %}
+    - type: markdown
+      grid_options: {columns: 6, rows: 1}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set s = states('binary_sensor.g_monitor_freezer_p110m_cloud_connection') -%}
+        {% if s == 'on' %}**{{ '插座可连接' if cn else 'Socket reachable' }}**{% elif s == 'off' %}**{{ '插座无法连接' if cn else 'Socket unreachable' }}**{% else %}**{{ '无数据' if cn else 'No reading' }}** · {{ '插座连接无数据' if cn else 'socket link not reporting' }}{% endif %}
+    - type: markdown
+      grid_options: {columns: 6, rows: 1}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set t = states('sensor.g_monitor_freezer_p110m_today_s_consumption') | float(none) -%}
+        {% if t is not none %}**{{ t | round(1) }} kWh** · {{ '今日用电' if cn else 'used today' }}{% else %}**—** · {{ '今日用电无数据' if cn else 'used today not reporting' }}{% endif %}
+
   - type: grid
     column_span: 1
     cards:
@@ -2580,6 +2746,26 @@ views:
         ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
         {{ now().strftime('%d/%m/%y') }}
+
+  # Status chips, per the room mockups' row under the header: a bold value and
+  # a muted caption for the things you glance at on the way past. Two across
+  # rather than the render's five, for the iPad reason the Home KPI strip is
+  # 2x2. Every chip names its subject when the entity stops reporting.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: markdown
+      grid_options: {columns: 6, rows: 1}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set s = states('switch.g_printer_p100') -%}
+        {% if s == 'on' %}**{{ '打印机已开' if cn else 'Printer on' }}**{% elif s == 'off' %}**{{ '打印机已关' if cn else 'Printer off' }}**{% else %}**{{ '无数据' if cn else 'No reading' }}** · {{ '打印机无数据' if cn else 'printer not reporting' }}{% endif %}
+    - type: markdown
+      grid_options: {columns: 6, rows: 1}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set s = states('light.kogan_tv') -%}
+        {% if s == 'on' %}**{{ '电视背光已开' if cn else 'TV backlight on' }}**{% elif s == 'off' %}**{{ '电视背光已关' if cn else 'TV backlight off' }}**{% else %}**{{ '无数据' if cn else 'No reading' }}** · {{ '电视背光无数据' if cn else 'TV backlight not reporting' }}{% endif %}
 
   - type: grid
     column_span: 1
