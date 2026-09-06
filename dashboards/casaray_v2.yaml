@@ -56,7 +56,7 @@ views:
         '午安' if cn else 'Good afternoon' %}{% else %}{% set g = '晚安' if cn
         else 'Good evening' %}{% endif %}
 
-        # {{ g }}
+        # {{ g }}{{ '，Ray' if cn else ', Ray' }}
 
         {{ 'CasaRay 家庭控制中心' if cn else 'CasaRay household control centre' }}
     - type: markdown
@@ -776,7 +776,7 @@ views:
       grid_options: {columns: 6, rows: 2}
       content: >-
         # {{ '房间' if is_state('input_boolean.chinese_dashboard','on') else
-        'Rooms' }}
+        'ROOMS' }}
 
         {{ '选择一个房间' if is_state('input_boolean.chinese_dashboard','on')
         else 'Choose a room' }}
@@ -878,7 +878,7 @@ views:
       grid_options: {columns: 6, rows: 2}
       content: >-
         # {{ '客厅' if is_state('input_boolean.chinese_dashboard','on') else
-        'Living Room' }}
+        'LIVING ROOM' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
         {% set t = states('sensor.living_room_living_hue_hue_sensor_temperature') |
@@ -895,6 +895,40 @@ views:
 
         {{ now().strftime('%d/%m/%y') }}
 
+
+  # Status chips, per the Living Room mockup's row under the header: a bold
+  # value and a muted caption, one per thing you would glance at on the way
+  # past. Two across rather than the render's five, for the same iPad reason
+  # the Home KPI strip is 2x2. Every chip has an offline branch.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: markdown
+      grid_options: {columns: 6, rows: 1}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set m = states('binary_sensor.living_room_living_hue_hue_sensor_motion') -%}
+        {% if m == 'on' %}**{{ '有人' if cn else 'Occupied' }}** · {{ '刚检测到动作' if cn else 'motion just now' }}{% elif m == 'off' %}**{{ '无人' if cn else 'No motion' }}** · {{ '客厅' if cn else 'Living Room' }}{% else %}**{{ '无数据' if cn else 'No reading' }}** · {{ '动作传感器离线' if cn else 'motion sensor offline' }}{% endif %}
+    - type: markdown
+      grid_options: {columns: 6, rows: 1}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set t = states('sensor.living_room_living_hue_hue_sensor_temperature') | float(none) -%}
+        {% if t is not none %}**{{ t | round(1) }} °C** · {% if t >= 18 and t <= 25 %}{{ '舒适' if cn else 'Comfortable' }}{% elif t < 18 %}{{ '偏冷' if cn else 'Cool' }}{% else %}{{ '偏热' if cn else 'Warm' }}{% endif %}{% else %}**—** · {{ '温度无数据' if cn else 'temperature not reporting' }}{% endif %}
+    - type: markdown
+      grid_options: {columns: 6, rows: 1}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set l = states('light.living_room') -%}
+        {%- set b = state_attr('light.living_room','brightness') -%}
+        {% if l == 'on' %}**{{ '灯光已开' if cn else 'Lights on' }}**{% if b is not none %} · {{ (b | float / 255 * 100) | round(0) | int }}%{% endif %}{% elif l == 'off' %}**{{ '灯光已关' if cn else 'Lights off' }}**{% else %}**—** · {{ '灯光无数据' if cn else 'lights not reporting' }}{% endif %}
+    - type: markdown
+      grid_options: {columns: 6, rows: 1}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set aq = states('sensor.living_room_air_purifier_air_quality') -%}
+        {%- set pm = states('sensor.living_room_air_purifier_pm2_5') | float(none) -%}
+        {% if aq not in ['unavailable','unknown','none',''] %}**{{ aq }}** · {{ '空气质量' if cn else 'air quality' }}{% if pm is not none %} · PM2.5 {{ pm | round(0) | int }}{% endif %}{% else %}**—** · {{ '空气质量无数据' if cn else 'air quality not reporting' }}{% endif %}
 
   - type: grid
     column_span: 2
@@ -1227,6 +1261,27 @@ views:
       name: RingRing battery
       grid_options: {columns: 6, rows: 1}
 
+  # Footer navigation, per the room mockups' bottom bar. The header already
+  # carries Back and Home; repeating the way out at the end of the page is
+  # the point -- a room page is long enough that leaving it should not mean
+  # scrolling back to the top. Back is omitted: Lovelace has no browser-back
+  # action, so it would be a second button to the same place as All rooms.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: All rooms
+      icon: mdi:view-grid-outline
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+
 # ===========================================================================
 # KITCHEN. Appliances and cooking-oriented controls (briefing section 5).
 # ===========================================================================
@@ -1256,7 +1311,7 @@ views:
       grid_options: {columns: 6, rows: 2}
       content: >-
         # {{ '厨房' if is_state('input_boolean.chinese_dashboard','on') else
-        'Kitchen' }}
+        'KITCHEN' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set m =
         states('binary_sensor.k_motion_sensor_motion') %}{% if m == 'on' %}{{ '厨房有人'
@@ -1437,6 +1492,27 @@ views:
     - type: todo-list
       entity: todo.shopping_list
 
+  # Footer navigation, per the room mockups' bottom bar. The header already
+  # carries Back and Home; repeating the way out at the end of the page is
+  # the point -- a room page is long enough that leaving it should not mean
+  # scrolling back to the top. Back is omitted: Lovelace has no browser-back
+  # action, so it would be a second button to the same place as All rooms.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: All rooms
+      icon: mdi:view-grid-outline
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+
 # ===========================================================================
 # DINING. Dining light, the motion group, and the pet feeder.
 # ===========================================================================
@@ -1466,7 +1542,7 @@ views:
       grid_options: {columns: 6, rows: 2}
       content: >-
         # {{ '餐厅' if is_state('input_boolean.chinese_dashboard','on') else
-        'Dining' }}
+        'DINING' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set m =
         states('binary_sensor.sensor_group_motion') %}{% set l =
@@ -1660,6 +1736,27 @@ views:
       name: Privacy mode
       grid_options: {columns: 6, rows: 1}
 
+  # Footer navigation, per the room mockups' bottom bar. The header already
+  # carries Back and Home; repeating the way out at the end of the page is
+  # the point -- a room page is long enough that leaving it should not mean
+  # scrolling back to the top. Back is omitted: Lovelace has no browser-back
+  # action, so it would be a second button to the same place as All rooms.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: All rooms
+      icon: mdi:view-grid-outline
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+
 # ===========================================================================
 # PARENTS ROOM. The only climate entity in the house, so the native
 # thermostat card lives here. Emergency buttons are surfaced as connection
@@ -1695,7 +1792,7 @@ views:
       grid_options: {columns: 6, rows: 2}
       content: >-
         # {{ '父母房' if is_state('input_boolean.chinese_dashboard','on') else
-        'Parents Room' }}
+        'PARENTS ROOM' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
         {% set t = states('sensor.bedroom_motion_sensor_temperature') | float(none) -%}
@@ -1963,6 +2060,27 @@ views:
       name: AC firmware
       grid_options: {columns: 4, rows: 1}
 
+  # Footer navigation, per the room mockups' bottom bar. The header already
+  # carries Back and Home; repeating the way out at the end of the page is
+  # the point -- a room page is long enough that leaving it should not mean
+  # scrolling back to the top. Back is omitted: Lovelace has no browser-back
+  # action, so it would be a second button to the same place as All rooms.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: All rooms
+      icon: mdi:view-grid-outline
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+
 # ===========================================================================
 # RAY BEDROOM. Bed, blind, and the LetPot hydroponic grow unit, which is
 # genuinely room-specific content the old dashboard under-used.
@@ -1993,7 +2111,7 @@ views:
       grid_options: {columns: 6, rows: 2}
       content: >-
         # {{ 'Ray 房间' if is_state('input_boolean.chinese_dashboard','on') else
-        'Ray Bedroom' }}
+        'RAY BEDROOM' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set l = states('light.bedroom_bedroom') %}{% set c =
         states('cover.aqara_roller_shade_driver_e1') %}{% if l == 'on' %}{{ '灯开启' if
@@ -2242,6 +2360,27 @@ views:
       - entity: sensor.r_energy_monitor_p110m_current_consumption
         name: Power
 
+  # Footer navigation, per the room mockups' bottom bar. The header already
+  # carries Back and Home; repeating the way out at the end of the page is
+  # the point -- a room page is long enough that leaving it should not mean
+  # scrolling back to the top. Back is omitted: Lovelace has no browser-back
+  # action, so it would be a second button to the same place as All rooms.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: All rooms
+      icon: mdi:view-grid-outline
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+
 # ===========================================================================
 # GARAGE. Freezer monitoring and workshop power. There is no cover entity
 # in Garage, so there is no garage-door control -- the mockup's "Open Door"
@@ -2273,7 +2412,7 @@ views:
       grid_options: {columns: 6, rows: 2}
       content: >-
         # {{ '车库' if is_state('input_boolean.chinese_dashboard','on') else
-        'Garage' }}
+        'GARAGE' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
         {% set p = states('sensor.g_monitor_freezer_p110m_current_consumption') |
@@ -2378,6 +2517,27 @@ views:
       - entity: sensor.g_monitor_freezer_p110m_current_consumption
         name: Freezer power
 
+  # Footer navigation, per the room mockups' bottom bar. The header already
+  # carries Back and Home; repeating the way out at the end of the page is
+  # the point -- a room page is long enough that leaving it should not mean
+  # scrolling back to the top. Back is omitted: Lovelace has no browser-back
+  # action, so it would be a second button to the same place as All rooms.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: All rooms
+      icon: mdi:view-grid-outline
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+
 # ===========================================================================
 # GUEST ROOM. Printer plug and the Kogan TV. Both TV entities read
 # unavailable at inventory time; the cards are retained and honest.
@@ -2408,7 +2568,7 @@ views:
       grid_options: {columns: 6, rows: 2}
       content: >-
         # {{ '客房' if is_state('input_boolean.chinese_dashboard','on') else
-        'Guest Room' }}
+        'GUEST ROOM' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set p = states('switch.g_printer_p100') %}{% if p == 'on' %}{{
         '打印机开启' if cn else 'Printer on' }}{% elif p == 'off' %}{{ '打印机关闭' if
@@ -2489,6 +2649,27 @@ views:
     - type: media-control
       entity: media_player.pogo
 
+  # Footer navigation, per the room mockups' bottom bar. The header already
+  # carries Back and Home; repeating the way out at the end of the page is
+  # the point -- a room page is long enough that leaving it should not mean
+  # scrolling back to the top. Back is omitted: Lovelace has no browser-back
+  # action, so it would be a second button to the same place as All rooms.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: All rooms
+      icon: mdi:view-grid-outline
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+
 # ===========================================================================
 # LIGHTING. Whole-house light control plus the verified Hue scene catalogue.
 # Scene entity IDs were confirmed by the owner-supplied B1 export on 2026-09-05.
@@ -2513,7 +2694,7 @@ views:
       grid_options: {columns: 6, rows: 2}
       content: >-
         # {{ '灯光' if is_state('input_boolean.chinese_dashboard','on') else
-        'Lighting' }}
+        'LIGHTING' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set ls = ['light.living_room', 'light.dining',
         'light.bedroom_bedroom', 'light.kogan_tv',
@@ -2963,7 +3144,7 @@ views:
       grid_options: {columns: 6, rows: 2}
       content: >-
         # {{ '气候' if is_state('input_boolean.chinese_dashboard','on') else
-        'Climate' }}
+        'CLIMATE' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set ts =
         ['sensor.living_room_living_hue_hue_sensor_temperature',
@@ -3129,7 +3310,7 @@ views:
       grid_options: {columns: 6, rows: 2}
       content: >-
         # {{ '能源' if is_state('input_boolean.chinese_dashboard','on') else
-        'Energy' }}
+        'ENERGY' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
         {% set p = states('sensor.powerpal_gateway_powerpal_power') | float(none) -%}
@@ -3451,7 +3632,7 @@ views:
       grid_options: {columns: 6, rows: 2}
       content: >-
         # {{ '账单' if is_state('input_boolean.chinese_dashboard','on') else
-        'Bills' }}
+        'BILLS' }}
 
         {{ '家庭开支与到期日' if is_state('input_boolean.chinese_dashboard','on')
         else 'Household expenses and due dates' }}
@@ -4481,7 +4662,7 @@ views:
       grid_options: {columns: 6, rows: 2}
       content: >-
         # {{ '安全' if is_state('input_boolean.chinese_dashboard','on') else
-        'Security' }}
+        'SECURITY' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set doors = ['binary_sensor.f_contact_sensor_door',
         'binary_sensor.m_contact_sensor_door',
@@ -4819,7 +5000,7 @@ views:
       grid_options: {columns: 6, rows: 2}
       content: >-
         # {{ '摄像头' if is_state('input_boolean.chinese_dashboard','on') else
-        'Cameras' }}
+        'CAMERAS' }}
 
         {{ '点击放大实时画面' if is_state('input_boolean.chinese_dashboard','on')
         else 'Tap a camera for the live view' }}
@@ -5144,7 +5325,7 @@ views:
       grid_options: {columns: 6, rows: 2}
       content: >-
         # {{ '家人' if is_state('input_boolean.chinese_dashboard','on') else
-        'People' }}
+        'PEOPLE' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set ps = ['person.raymond_du', 'person.vinh_du',
         'person.ai_q_huang'] %} {% set ns = namespace(home=0, away=0, unk=0) %}
@@ -5340,7 +5521,7 @@ views:
     - type: markdown
       grid_options: {columns: 6, rows: 2}
       content: >-
-        # {{ '自动化' if is_state('input_boolean.chinese_dashboard','on') else 'Automations' }}
+        # {{ '自动化' if is_state('input_boolean.chinese_dashboard','on') else 'AUTOMATIONS' }}
 
         {{ '仅显示 Home Assistant 当前实际存在的自动化。' if is_state('input_boolean.chinese_dashboard','on') else 'Only automations that currently exist in Home Assistant are shown.' }}
     - type: markdown
@@ -5470,7 +5651,7 @@ views:
       grid_options: {columns: 6, rows: 2}
       content: >-
         # {{ '娱乐' if is_state('input_boolean.chinese_dashboard','on') else
-        'Entertainment' }}
+        'ENTERTAINMENT' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set ms =
         ['media_player.living_room_tv_samsung_q9_series_65',
@@ -5641,7 +5822,7 @@ views:
       grid_options: {columns: 6, rows: 2}
       content: >-
         # {{ '系统健康' if is_state('input_boolean.chinese_dashboard','on') else
-        'House Health' }}
+        'HOUSE HEALTH' }}
 
         {{ '系统状态与维护' if is_state('input_boolean.chinese_dashboard','on')
         else 'System status and maintenance' }}
@@ -6033,7 +6214,7 @@ views:
       grid_options: {columns: 6, rows: 2}
       content: >-
         # {{ '通知' if is_state('input_boolean.chinese_dashboard','on') else
-        'Alerts' }}
+        'ALERTS' }}
 
         {{ '目前需要注意的事项' if is_state('input_boolean.chinese_dashboard','on')
         else 'What needs attention right now' }}
