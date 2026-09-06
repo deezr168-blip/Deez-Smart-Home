@@ -237,6 +237,14 @@ checked against `docs/live/states_export_2026-09-05.txt` and is recorded
 | CR-209 | Climate — indoor average | Says **3 rooms**, the mean of Living Room, Parents Room and Dining — the three the Readings section shows | `d2a8a18` | P2 | PENDING |
 | CR-210 | Climate — AC mode | Tile reads "AC mode when on"; the line below explains that with the unit off the mode is what it will use next. `fanOnly` shows as "Fan only" / 仅送风 | `d2a8a18` | P2 | PENDING |
 | CR-211 | Parents Room — Reset filter | A **button** labelled "Reset filter timer" with a confirmation, not a tile reading "Unknown" | `059f65a` | P2 | PENDING |
+| CR-220 | **Any page — is it themed at all?** | Night-sky background, frosted-glass cards, the amber/cyan palette. CasaRay now declares its own `theme: CasaRay`. **If the page is plain grey on white, the theme did not reach `/config/themes/` or was not reloaded** — run the sync helper and Developer Tools → YAML → Reload Themes | `f310cc1` | **P1** | PENDING |
+| CR-221 | Any board — card titles | Section headings are small, UPPERCASE and letter-spaced, as the mockups render them. Chinese headings are unaffected — CJK has no case | `f310cc1` | P2 | PENDING |
+| CR-222 | Any board — page title | Large and uppercase: LIVING ROOM, CAMERAS, HOUSE HEALTH. **Home is the exception** and should still read "Good morning, Ray" in sentence case | `59bebfc` | P2 | PENDING |
+| CR-223 | Home — KPI strip | Four cards under the nav row: HOUSE POWER in kW, INDOOR CLIMATE with a comfort word, SECURITY, SOLAR TODAY as a percentage. 2×2 on the iPad | `03e6633` | **P1** | PENDING |
+| CR-224 | Home — KPI honesty | The SECURITY card should read **Unconfirmed**, not "Secure". All three door sensors are down; the mockup's "Secure" is a design, not a claim about this house | `03e6633` | **P1** | PENDING |
+| CR-225 | Every room page — status chips | A row of chips under the header: a bold value and a muted caption. Two across. Check one room in each language | `87d388f` | P2 | PENDING |
+| CR-226 | Ray Bedroom — blind chip | Reads **Blind open** or **Blind closed**, never "not reporting" while the blind plainly works. Covers report open/closed, and the first draft tested for on/off | `87d388f` | P2 | PENDING |
+| CR-227 | Every room page — footer | Home and All rooms buttons at the bottom of the page | `59bebfc` | P3 | PENDING |
 | CR-196 | Living Room — Air quality | PM1, PM2.5 and PM10, each paired with its health-concern word. This is what CR-122 always expected; only now is it built | `28b520e` | P2 | PENDING |
 | CR-197 | Ray Bedroom / Garage — socket overload | A "Socket overloaded" tile in Ray Bedroom's Power use, and "Socket reachable" in the Garage Freezer section | `28b520e` | P2 | PENDING |
 | CR-198 | House Health — updates | Core, Supervisor and Operating System tiles, plus a line counting every pending update across all 74 update entities | `614ad5e` | P2 | PENDING |
@@ -327,12 +335,16 @@ result does to the issue record, the backlog and ownership — are in
 - `PASS` rows stay for traceability. A page group with nothing left
   outstanding may collapse to a one-line summary naming its IDs and date.
 
-**107 checks pending**, in two separate sets that must not be merged:
+**115 checks pending**, in two separate sets that must not be merged:
 
 | Set | Dashboard | Rows | Pending | Passed |
 |---|---|---|---|---|
 | `UI-*` / `REG-*` / `BILL-*` / `CR-001`–`CR-002` | legacy `/deez-smart-home/…` | 48 | 47 | 1 |
-| **`CR-1xx` / `CR-2xx`** | **CasaRay `/casaray-v2/…`** | **66** | **60** | **6** |
+| **`CR-1xx` / `CR-2xx`** | **CasaRay `/casaray-v2/…`** | **74** | **68** | **6** |
+
+**Check `CR-220` first.** CasaRay now declares its own theme, so a deploy
+that misses `themes/deez_your_name.yaml` renders the whole dashboard
+unstyled. Everything else on the list is unreadable through that.
 
 **Five owner questions sit outside both counts** — they cannot pass or fail,
 they need an answer:

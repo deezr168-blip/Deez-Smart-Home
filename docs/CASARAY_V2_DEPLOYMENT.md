@@ -89,6 +89,24 @@ that does not parse as YAML; refuses a source still carrying stale `/casaray/`
 links; backs up anything it replaces; and says "nothing to do" if the two are
 already identical. Safe to re-run after every future pull.
 
+**It also syncs the theme, and that is now load-bearing.** CasaRay declares
+`theme: CasaRay`, which lives in `themes/deez_your_name.yaml`. A dashboard
+that reaches the host without its theme falls back to the user's default and
+loses the night-sky background, the frosted-glass surfaces and the whole
+palette — it will look broken rather than unstyled. The helper copies the
+theme to `/config/themes/` with the same parse check and backup, and prints
+the reload step when it changes anything:
+
+```sh
+# after the helper reports "theme copied", in Home Assistant:
+# Developer Tools -> YAML -> Reload Themes
+```
+
+No restart is needed for a theme change — only a reload and a browser
+refresh. If CasaRay ever renders as plain grey cards on a white page, this
+is the cause: the theme did not reach `/config/themes/`, or it was not
+reloaded.
+
 `/config/deploy_deez_dashboard.sh` is protected under `CLAUDE.md` and was
 **not** modified. Adding CasaRay to it is a separate owner decision; until
 then, this helper is the bridge.
