@@ -22,7 +22,14 @@ kiosk_mode:
   hide_sidebar: true
   hide_header: true
   ignore_per_user: false
-theme: Deez Smart Home
+# The CasaRay theme adds the frozen design's card-title typography -- small,
+# uppercase, letter-spaced -- on top of the shared surface treatment. It is a
+# separate theme so the legacy dashboard, which shares the same base anchor,
+# keeps its own look. themes/deez_your_name.yaml must be deployed to
+# /config/themes/ and themes reloaded, or this falls back to the user's
+# default theme and CasaRay loses its background and glass entirely.
+# scripts/sync_casaray_to_config.sh syncs both.
+theme: CasaRay
 
 views:
 

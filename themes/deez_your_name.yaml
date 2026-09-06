@@ -154,3 +154,35 @@ deez_base: &deez_base
   primary-color: "#b078d8"
   accent-color: "#7fd4f0"
   ha-card-border-color: "rgba(176, 120, 216, 0.20)"
+
+# ---------------------------------------------------------------------------
+# CasaRay — the theme dashboards/casaray_v2.yaml uses.
+#
+# Everything above is shared. This adds only the typography the frozen
+# CasaRay Design v1 specifies for card titles, which DESIGN_REFERENCE.md
+# records as "small, uppercase, letter-spaced, muted" and the Master Home
+# mockup shows as HOUSE POWER / INDOOR CLIMATE / SECURITY / ROOMS.
+#
+# It is a SEPARATE theme rather than a change to *deez_base on purpose: the
+# legacy dashboard shares that anchor, and uppercasing its headings would be
+# a visual restructure of the rollback baseline, which CLAUDE.md forbids.
+# Legacy keeps "Deez Smart Home" and is unaffected by anything here.
+#
+# `text-transform`, `letter-spacing` and `font-size` are inherited CSS
+# properties, so setting them on the card's host element reaches the heading
+# text without this needing to know the card's internal DOM -- the same
+# reason the shared text-shadow works. `uppercase` is a no-op on Chinese
+# characters, so the bilingual pairs stay correct in both languages.
+"CasaRay":
+  <<: *deez_base
+  primary-color: "#7fd4f0"
+  accent-color: "#ffc98a"
+  label-badge-background-color: "rgba(16, 31, 54, 0.6)"
+  card-mod-theme: CasaRay
+  card-mod-card-heading: |
+    :host {
+      text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      font-size: 0.88em;
+    }

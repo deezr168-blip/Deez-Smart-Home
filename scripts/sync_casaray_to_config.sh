@@ -23,7 +23,7 @@ set -eu
 #
 #   - It never touches dashboards/deez_smart_home.yaml. That is the rollback
 #     baseline and the running system; the existing bridge owns it.
-#   - It never writes outside /config/dashboards/.
+#   - It never writes outside /config/dashboards/ and /config/themes/.
 #   - It refuses to copy a file that does not parse as YAML, so a half-written
 #     or truncated pull cannot take the dashboard down.
 #   - It keeps a timestamped backup of whatever it replaces.
@@ -35,6 +35,15 @@ set -eu
 REPO="${REPO:-/config/deez_repo}"
 DEST="${DEST:-/config/dashboards}"
 NAME="casaray_v2.yaml"
+
+# The dashboard declares `theme: CasaRay`, which lives in the theme file. A
+# dashboard deployed without its theme falls back to the user's default and
+# loses the background, the glass surfaces and the palette -- so the two are
+# synced together rather than left as two things to remember.
+THEME_DEST="${THEME_DEST:-/config/themes}"
+THEME_NAME="deez_your_name.yaml"
+THEME_SRC="$REPO/themes/$THEME_NAME"
+THEME_TGT="$THEME_DEST/$THEME_NAME"
 
 SRC="$REPO/dashboards/$NAME"
 TGT="$DEST/$NAME"
@@ -91,6 +100,35 @@ fi
 
 cp "$SRC" "$TGT"
 echo "copied           : yes"
+
+# --- theme -----------------------------------------------------------------
+echo
+if [ ! -f "$THEME_SRC" ]; then
+  echo "WARNING: $THEME_SRC not found; theme not synced." >&2
+elif [ ! -d "$THEME_DEST" ]; then
+  echo "WARNING: $THEME_DEST does not exist, so the theme was not synced." >&2
+  echo "         Create it and re-run, or CasaRay will render unthemed." >&2
+elif [ -f "$THEME_TGT" ] && cmp -s "$THEME_SRC" "$THEME_TGT"; then
+  echo "theme            : already identical"
+else
+  if command -v python3 >/dev/null 2>&1; then
+    if ! err="$(python3 -c "import sys,yaml; yaml.safe_load(open(sys.argv[1],encoding='utf-8'))" "$THEME_SRC" 2>&1)"; then
+      echo "ERROR: $THEME_SRC does not parse as YAML. Refusing to copy it." >&2
+      echo "$err" | tail -3 >&2
+      exit 1
+    fi
+  fi
+  if [ -f "$THEME_TGT" ]; then
+    TBAK="$THEME_TGT.bak.$(date +%Y%m%d-%H%M%S)"
+    cp "$THEME_TGT" "$TBAK"
+    echo "theme backup     : $TBAK"
+  fi
+  cp "$THEME_SRC" "$THEME_TGT"
+  echo "theme copied     : yes"
+  echo
+  echo "The theme changed. Reload it before looking at the dashboard:"
+  echo "  Developer Tools -> YAML -> Reload Themes    (no restart needed)"
+fi
 
 echo
 echo "Done. $NAME is now in place for Home Assistant."
