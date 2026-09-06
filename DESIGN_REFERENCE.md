@@ -21,7 +21,7 @@ this repository did not previously know about:
 | Artefact | Kind | Role |
 |---|---|---|
 | **CasaRay Master Design Briefing v1** | Google Doc, 25 sections | The authority on *intent* — design theory, visual language, per-board purpose, the Home Assistant implementation ladder, the component system, the validation gate and the implementation order. This transcription covers the *renders*; the briefing covers the *reasoning*. |
-| 24 rendered mockups | PNG | The visual source of truth, including the twelve transcribed below |
+| 22 rendered mockups | PNG | The visual source of truth, including the twelve transcribed below. *Counted in Drive 2026-09-06: 22 PNGs in the `CasaRay Mockups` folder, plus one duplicate of the billing render at the Drive root. The earlier figure of 24 was never verified against the folder.* |
 | CasaRay HA Implementation Checklist | Spreadsheet | Owner-maintained implementation tracking |
 
 CasaRay Design v1 is **frozen** as of 2026-09-01. The mockups and the briefing
