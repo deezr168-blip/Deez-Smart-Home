@@ -3356,35 +3356,38 @@ views:
         state: 'on'
     - type: markdown
       content: >-
-        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set dues =
-        [('Electricity','电费','input_datetime.elec_bill_due',
-        'input_boolean.elec_bill_paid'),
-        ('Gas','燃气费','input_datetime.gas_bill_due','input_boolean.gas_bill_paid'),
-        ('Water','水费','input_datetime.water_bill_due','input_boolean.water_bill_paid'),
-        ('Council rates','市政费','input_datetime.council_rate_due',
-        'input_boolean.council_rate_paid'),
-        ('Car insurance','车险','input_datetime.car_insurance_due',
-        'input_boolean.car_insurance_paid'),
-        ('Rego','车辆注册','input_datetime.rego_due','input_boolean.rego_paid')] -%} {%
-        set ns = namespace(soonest=99999, name='', overdue=0, unk=0) -%} {% for n, z, d,
-        p in dues %}{% set ds = states(d) %}{% set ps = states(p) %}{% if ds in
-        ['unavailable','unknown','none',''] %}{% set ns.unk = ns.unk + 1 %}{%
-        elif ps != 'on' %}{% set ts = as_timestamp(ds, 0) %}{% if ts > 0 %}{% set
-        days = ((ts - as_timestamp(now())) / 86400) | round(0) | int %}{% if days
-        < 0 %}{% set ns.overdue = ns.overdue + 1 %}{% endif %}{% if days <
-        ns.soonest %}{% set ns.soonest = days %}{% set ns.name = z if cn else n %}{%
-        endif %}{% else %}{% set ns.unk = ns.unk + 1 %}{% endif %}{% endif %}{% endfor
-        -%} {% if ns.overdue %}{% if cn %}**{{ ns.overdue }} 笔账单已逾期。** {% else
-        %}**{{ ns.overdue }} bill{{ 's' if ns.overdue > 1 else '' }} overdue.** {% endif
-        %}{% endif %}{% if ns.name %}{% if cn %}下一笔：**{{ ns.name }}**{% if ns.soonest
-        < 0 %}，已逾期 {{ ns.soonest | abs }} 天。{% elif ns.soonest == 0 %}，今天到期。{%
-        else %}，{{ ns.soonest }} 天后到期。{% endif %}{% else %}Next up: **{{ ns.name
-        }}**{% if ns.soonest < 0 %}, {{ ns.soonest | abs }} days overdue.{% elif
-        ns.soonest == 0 %}, due today.{% else %}, due in {{ ns.soonest }} days.{%
-        endif %}{% endif %}{% elif ns.unk == 0 %}{{ '全部已付。' if cn else 'Everything
-        is paid.' }}{% endif %}{% if ns.unk %}{% if cn %} {{ ns.unk }}
-        笔账单日期无数据。{% else %} {{ ns.unk }} bill date{{ 's' if ns.unk > 1 else ''
-        }} not reporting.{% endif %}{% endif %}
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {% set bills = [('Electricity','电费','input_number.elec_bill_amount','input_datetime.elec_bill_due','input_boolean.elec_bill_paid'),
+        ('Gas','燃气费','input_number.gas_bill_amount','input_datetime.gas_bill_due','input_boolean.gas_bill_paid'),
+        ('Water','水费','input_number.water_bill_amount','input_datetime.water_bill_due','input_boolean.water_bill_paid'),
+        ('Council rates','市政费','input_number.council_rate_amount','input_datetime.council_rate_due','input_boolean.council_rate_paid'),
+        ('Car insurance','车险','input_number.car_insurance_amount','input_datetime.car_insurance_due','input_boolean.car_insurance_paid'),
+        ('Rego','车辆注册','input_number.rego_amount','input_datetime.rego_due','input_boolean.rego_paid')] -%}
+        {% set ns = namespace(owing=0.0, unpaid=0, paid=0, unset=0, nodate=0, over=[], next='', nextd=99999, nextw='') -%}
+        {% for n, z, a, d, p in bills -%}
+        {% set label = z if cn else n -%}
+        {% set av = states(a) | float(none) -%}
+        {% set ds = states(d) -%}
+        {% set ok = ds not in ['unavailable','unknown','none',''] -%}
+        {% set ts = as_timestamp(ds, 0) if ok else 0 -%}
+        {% if is_state(p,'on') %}{% set ns.paid = ns.paid + 1 -%}
+        {% elif av is none or av <= 0 %}{% set ns.unset = ns.unset + 1 -%}
+        {% else %}{% set ns.unpaid = ns.unpaid + 1 %}{% set ns.owing = ns.owing + av -%}
+        {% if ts > 0 %}{% set days = ((ts - as_timestamp(now())) / 86400) | round(0) | int -%}
+        {% set shown = ds[8:10] ~ '/' ~ ds[5:7] ~ '/' ~ ds[2:4] -%}
+        {% if days < 0 %}{% set ns.over = ns.over + [label ~ ('（' if cn else ' (') ~ shown ~ ('）' if cn else ')')] %}{% endif -%}
+        {% if days < ns.nextd %}{% set ns.nextd = days %}{% set ns.next = label %}{% set ns.nextw = shown %}{% endif -%}
+        {% else %}{% set ns.nodate = ns.nodate + 1 %}{% endif %}{% endif -%}
+        {% endfor -%}
+        {% set no = ns.over | count -%}
+        {% if no %}{% if cn %}**{{ no }} 笔账单已逾期：**{{ ns.over | join('、') }}。{% else %}**{{ no }} bill{{ '' if no == 1 else 's' }} past due:** {{ ns.over | join(', ') }}.{% endif %} {% endif -%}
+        {% if ns.unpaid %}{% if cn %}未付 {{ ns.unpaid }} 笔，合计 **A${{ '%.2f' | format(ns.owing) }}**。{% else %}**A${{ '%.2f' | format(ns.owing) }}** owing across {{ ns.unpaid }} unpaid bill{{ '' if ns.unpaid == 1 else 's' }}.{% endif %} {% if ns.next and not no %}{% if cn %}下一笔：**{{ ns.next }}**，{{ ns.nextd }} 天后到期（{{ ns.nextw }}）。{% else %}Next up: **{{ ns.next }}**, due in {{ ns.nextd }} days ({{ ns.nextw }}).{% endif %} {% endif %}{% elif not ns.unset %}{{ '全部已付。' if cn else 'Everything is paid.' }} {% endif -%}
+        {% if ns.nodate %}{% if cn %}{{ ns.nodate }} 笔未付账单没有有效到期日。{% else %}{{ ns.nodate }} unpaid bill{{ ' has' if ns.nodate == 1 else 's have' }} no valid due date.{% endif %} {% endif -%}
+        {% if ns.unset %}{% if cn %}6 笔账单中有 {{ ns.unset }} 笔尚未填写金额，因此不计入应付总额——这是助手实体未配置，不是欠款为零。{% else %}{{ ns.unset }} of 6 bills have no amount entered, so they are not counted as owing — that is an unconfigured helper, not a zero balance.{% endif %}{% endif %}
+        {%- set sc = states('sensor.bills_unpaid_count') | int(-1) -%}
+        {% set so = states('sensor.bills_outstanding_total') | float(none) -%}
+        {% if sc >= 0 and sc != ns.unpaid %} {% if cn %}**注意：**`sensor.bills_unpaid_count` 显示 {{ sc }} 笔，与上述按助手实体计算的 {{ ns.unpaid }} 笔不一致。{% else %}**Note:** `sensor.bills_unpaid_count` reports {{ sc }}, which disagrees with the {{ ns.unpaid }} counted from the bill helpers above.{% endif %}{% endif -%}
+        {% if so is not none and (so - ns.owing) | abs > 0.005 %} {% if cn %}**注意：**`sensor.bills_outstanding_total` 显示 A${{ '%.2f' | format(so) }}，与上述 A${{ '%.2f' | format(ns.owing) }} 不一致。{% else %}**Note:** `sensor.bills_outstanding_total` reports A${{ '%.2f' | format(so) }}, which disagrees with the A${{ '%.2f' | format(ns.owing) }} above.{% endif %}{% endif %}
     - type: tile
       entity: sensor.bills_outstanding_total
       name: Outstanding
