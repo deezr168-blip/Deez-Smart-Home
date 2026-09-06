@@ -15,6 +15,8 @@ Covers the checks that are possible without Home Assistant itself:
     would stop YAML folding it and break a sentence in half
   - bilingual section headings come in pairs, so no section loses its label
     in one language
+  - no Chinese sentence is broken across a fold boundary, which would insert
+    a space into the middle of it
   - /local/ resource paths exist in www/ when www/ is present
   - mass-damage detection against the committed version of the same file
 
@@ -250,7 +252,36 @@ def check(path):
     else:
         print("  /local/ resources        : none referenced")
 
-    # 7. bilingual headings come in pairs
+    # 7. CJK text must not be broken across a fold boundary
+    #
+    # YAML folds a line break into a space. Between two Latin words that is
+    # invisible; between two Chinese characters it is a stray space in the
+    # middle of a sentence, and Chinese does not space its words. The fix is
+    # to keep the sentence on one line -- YAML has no line-length limit.
+    cjk = "[\u3000-\u303f\u4e00-\u9fff\uff00-\uffef]"
+    split_cjk = []
+    src = raw.split("\n")
+    in_block, block_indent = False, 0
+    for k, line in enumerate(src):
+        m = re.match(r"^(\s*)\S.*:\s*>-?\s*$", line)
+        if m:
+            in_block, block_indent = True, len(m.group(1))
+            continue
+        if in_block and line.strip() and (len(line) - len(line.lstrip())) <= block_indent:
+            in_block = False
+        if not in_block or not line.strip() or k + 1 >= len(src):
+            continue
+        nxt = src[k + 1]
+        if not nxt.strip() or (len(nxt) - len(nxt.lstrip())) <= block_indent:
+            continue
+        if re.search(cjk + r"\s*$", line) and re.match(r"^\s*" + cjk, nxt):
+            split_cjk.append((k + 1, line.strip()[-24:], nxt.strip()[:24]))
+    for n, before, after in split_cjk:
+        fails.append(f"{path}:{n}: Chinese sentence broken across a fold, which "
+                     f"inserts a space mid-sentence — {before!r} + {after!r}")
+    print(f"  CJK split across folds   : {len(split_cjk)}")
+
+    # 8. bilingual headings come in pairs
     #
     # CLAUDE.md makes bilingual section headings mandatory, and the native
     # `heading` card cannot render a template — so each one is two cards with
@@ -287,7 +318,7 @@ def check(path):
                      f"languages; correct only for a proper noun")
     print(f"  unpaired bilingual heads : {len(unpaired)}")
 
-    # 8. mass-damage detection against HEAD
+    # 9. mass-damage detection against HEAD
     old = committed(path)
     if old is None:
         print("  mass-damage check        : new file, no baseline")

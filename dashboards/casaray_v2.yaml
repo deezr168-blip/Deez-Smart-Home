@@ -422,11 +422,13 @@ views:
         = states('sensor.powerpal_gateway_powerpal_power') -%} {% set s =
         states('sensor.primo_5_0_1_1_ac_power') -%} {% set pk = p not in
         ['unavailable','unknown','none',''] and p | float(-1) >= 0 -%} {% set sk =
-        s not in ['unavailable','unknown','none',''] and s | float(-1) >= 0 -%} {%
-        if pk %}{{ '目前用电 %s W。' % p if cn else 'Drawing **%s W** right
-        now.' % p }}{% else %}{{ '用电量无数据。' if cn else 'House power is not
-        reporting.' }}{% endif %} {% if sk %}{{ ' 太阳能发电 %s W。' % s if cn
-        else ' Solar generating **%s W**.' % s }}{% else %}{{ '
+        s not in ['unavailable','unknown','none',''] and s | float(-1) >= 0 -%}
+        {% set pw = p | float(-1) | round(0) | int -%}
+        {% set sw = s | float(-1) | round(0) | int -%}
+        {% if pk %}{{ '目前用电 %d W。' % pw if cn else 'Drawing **%d W** right
+        now.' % pw }}{% else %}{{ '用电量无数据。' if cn else 'House power is not
+        reporting.' }}{% endif %} {% if sk %}{{ ' 太阳能发电 %d W。' % sw if cn
+        else ' Solar generating **%d W**.' % sw }}{% else %}{{ '
         太阳能逆变器离线。' if cn else ' The solar inverter is offline, so
         generation is unknown.' }}{% endif %}
     - type: tile
@@ -802,10 +804,11 @@ views:
         # {{ '客厅' if is_state('input_boolean.chinese_dashboard','on') else
         'Living Room' }}
 
-        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set t =
-        states('sensor.living_room_living_hue_hue_sensor_temperature') %}{% set m =
-        states('binary_sensor.living_room_living_hue_hue_sensor_motion') %}{% if t not
-        in ['unavailable','unknown','none',''] %}{{ t }} °C{% else %}{{ '温度无数据' if
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {% set t = states('sensor.living_room_living_hue_hue_sensor_temperature') |
+        float(none) -%}
+        {% set m = states('binary_sensor.living_room_living_hue_hue_sensor_motion') -%}
+        {% if t is not none %}{{ t | round(1) }} °C{% else %}{{ '温度无数据' if
         cn else 'Temperature not reporting' }}{% endif %}{% if m == 'on' %}{{ ' · 有人'
         if cn else ' · occupied' }}{% elif m == 'off' %}{{ ' · 无人' if cn else ' · no
         motion' }}{% endif %}
@@ -1618,10 +1621,10 @@ views:
         # {{ '父母房' if is_state('input_boolean.chinese_dashboard','on') else
         'Parents Room' }}
 
-        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set t =
-        states('sensor.bedroom_motion_sensor_temperature') %}{% set o =
-        states('binary_sensor.bedroom_parents_room_ac_room_occupied') %}{% if t not in
-        ['unavailable','unknown','none',''] %}{{ t }} °C{% else %}{{ '温度无数据' if cn
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {% set t = states('sensor.bedroom_motion_sensor_temperature') | float(none) -%}
+        {% set o = states('binary_sensor.bedroom_parents_room_ac_room_occupied') -%}
+        {% if t is not none %}{{ t | round(1) }} °C{% else %}{{ '温度无数据' if cn
         else 'Temperature not reporting' }}{% endif %}{% if o == 'on' %}{{ ' · 有人' if
         cn else ' · occupied' }}{% elif o == 'off' %}{{ ' · 无人' if cn else ' · empty'
         }}{% endif %}
@@ -2183,11 +2186,12 @@ views:
         # {{ '车库' if is_state('input_boolean.chinese_dashboard','on') else
         'Garage' }}
 
-        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set p =
-        states('sensor.g_monitor_freezer_p110m_current_consumption') %}{% if p not in
-        ['unavailable','unknown','none',''] %}{% if cn %}冰柜功率 {{ p }} W{% else
-        %}Freezer drawing {{ p }} W{% endif %}{% else %}{{ '冰柜监测无数据' if cn else
-        'Freezer monitor not reporting' }}{% endif %}
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {% set p = states('sensor.g_monitor_freezer_p110m_current_consumption') |
+        float(none) -%}
+        {% if p is not none %}{% if cn %}冰柜功率 {{ p | round(0) | int }} W{% else
+        %}Freezer drawing {{ p | round(0) | int }} W{% endif %}{% else %}{{ '冰柜监测无数据'
+        if cn else 'Freezer monitor not reporting' }}{% endif %}
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
@@ -3023,11 +3027,11 @@ views:
         # {{ '能源' if is_state('input_boolean.chinese_dashboard','on') else
         'Energy' }}
 
-        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set p =
-        states('sensor.powerpal_gateway_powerpal_power') %}{% if p not in
-        ['unavailable','unknown','none',''] %}{% if cn %}当前 {{ p }} W{% else %}{{ p }}
-        W now{% endif %}{% else %}{{ '用电量无数据' if cn else 'House power not
-        reporting' }}{% endif %}
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {% set p = states('sensor.powerpal_gateway_powerpal_power') | float(none) -%}
+        {% if p is not none %}{% if cn %}当前 {{ p | round(0) | int }} W{% else %}{{ p |
+        round(0) | int }} W now{% endif %}{% else %}{{ '用电量无数据' if cn else 'House
+        power not reporting' }}{% endif %}
     - type: markdown
       grid_options: {columns: 4, rows: 2}
       content: >-
@@ -3056,23 +3060,28 @@ views:
         state: 'on'
     - type: markdown
       content: >-
-        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set p =
-        states('sensor.powerpal_gateway_powerpal_power') -%} {% set s =
-        states('sensor.primo_5_0_1_1_ac_power') -%} {% set pk = p not in
-        ['unavailable','unknown','none',''] and p | float(-1) >= 0 -%} {% set sk =
-        s not in ['unavailable','unknown','none',''] and s | float(-1) >= 0 -%} {%
-        if pk and sk %}{% set pf = p | float(-1) %}{% set sf = s | float(-1) %}{%
-        if pf > 0 %}{% if cn %}太阳能供应了家庭用电的 **{{ ((sf / pf) * 100) | round(0) |
-        int }}%**。{% else %}Solar is supplying **{{ ((sf / pf) * 100) | round(0) | int
-        }}%** of household demand.{% endif %}{% else %}{% if cn %}家庭用电 {{ pf }} W。{%
-        else %}House draw is {{ pf }} W.{% endif %}{% endif %}{% elif pk %}{% if cn
-        %}当前用电 **{{ p }} W**。太阳能逆变器离线，无法计算太阳能占比。{% else %}Drawing
-        **{{ p }} W**. The solar inverter is offline, so solar contribution cannot be
-        calculated.{% endif %}{% elif sk %}{% if cn %}太阳能发电 **{{ s }}
-        W**。家庭用电量无数据。{% else %}Solar generating **{{ s }} W**. House
-        consumption is not reporting.{% endif %}{% else %}{{
-        '用电表与太阳能逆变器目前均无数据。' if cn else 'Neither the house power meter nor
-        the solar inverter is reporting right now.' }}{% endif %}
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {% set p = states('sensor.powerpal_gateway_powerpal_power') -%}
+        {% set s = states('sensor.primo_5_0_1_1_ac_power') -%}
+        {% set pk = p not in ['unavailable','unknown','none',''] and p | float(-1) >= 0 -%}
+        {% set sk = s not in ['unavailable','unknown','none',''] and s | float(-1) >= 0 -%}
+        {% set pw = p | float(-1) | round(0) | int -%}
+        {% set sw = s | float(-1) | round(0) | int -%}
+        {% if pk and sk %}{% set pf = p | float(-1) %}{% set sf = s | float(-1) -%}
+        {% if pf > 0 %}{% set share = ((sf / pf) * 100) | round(0) | int -%}
+        {% if share >= 100 %}{% if cn %}太阳能已覆盖全部家庭用电并有盈余：发电 **{{ sw }}
+        W**，家庭用电 **{{ pw }} W**。{% else %}Solar is covering all household demand and
+        producing surplus: **{{ sw }} W** generated against **{{ pw }} W** drawn.{% endif
+        %}{% else %}{% if cn %}太阳能供应了家庭用电的 **{{ share }}%**。{% else %}Solar is
+        supplying **{{ share }}%** of household demand.{% endif %}{% endif %}{% else %}{%
+        if cn %}家庭用电 {{ pw }} W。{% else %}House draw is {{ pw }} W.{% endif %}{% endif
+        %}{% elif pk %}{% if cn %}当前用电 **{{ pw }} W**。太阳能逆变器离线，无法计算太阳能占比。{%
+        else %}Drawing **{{ pw }} W**. The solar inverter is offline, so solar
+        contribution cannot be calculated.{% endif %}{% elif sk %}{% if cn %}太阳能发电 **{{
+        sw }} W**。家庭用电量无数据。{% else %}Solar generating **{{ sw }} W**. House
+        consumption is not reporting.{% endif %}{% else %}{{ '用电表与太阳能逆变器目前均无数据。'
+        if cn else 'Neither the house power meter nor the solar inverter is reporting
+        right now.' }}{% endif %}
     - type: tile
       entity: sensor.powerpal_gateway_powerpal_power
       name: House power
@@ -3164,7 +3173,21 @@ views:
         state: 'on'
     - type: markdown
       content: >-
-        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set t = states('sensor.energy_production_today') %}{% set r = states('sensor.energy_production_today_remaining') %}{% set n = states('sensor.power_production_now') %}{% if t not in ['unknown','unavailable','none',''] %}{{ ('今日预计太阳能 **%s kWh**' % t) if cn else ('Forecast **%s kWh** solar today.' % t) }}{% if r not in ['unknown','unavailable','none',''] %} {{ ('今日剩余 **%s kWh**。' % r) if cn else (' **%s kWh** remains in today’s forecast.' % r) }}{% endif %}{% else %}{{ '太阳能预测目前无数据。' if cn else 'Solar forecast is not reporting.' }}{% endif %}{% if n not in ['unknown','unavailable','none',''] %} {{ ('当前预测功率 **%s W**。' % n) if cn else (' Forecast production now: **%s W**.' % n) }}{% endif %}
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {% set t = states('sensor.energy_production_today') | float(none) -%}
+        {% set r = states('sensor.energy_production_today_remaining') | float(none) -%}
+        {% set n = states('sensor.power_production_now') | float(none) -%}
+        {% if t is not none %}{{ ('今日预计太阳能 **%.1f kWh**' % t) if cn else ('Forecast
+        **%.1f kWh** solar today.' % t) }}{% if r is not none %}{{ ('，其中剩余 **%.1f
+        kWh**。' % r) if cn else (' **%.1f kWh** of that is still to come.' % r) }}{%
+        endif %}{% else %}{{ '太阳能预测目前无数据。' if cn else 'Solar forecast is not
+        reporting.' }}{% endif %}{% if n is not none %}{{ ('当前预测功率 **%d W**。' % n)
+        if cn else (' Forecast production now: **%d W**.' % n) }}{% endif %}
+        {%- if cn %} 以上均为预测值，来自太阳能预测集成，不是逆变器实测值；“剩余”是该集成对今日余下时段的预测，并非“今日预测减去已发电量”。实测发电量见上方的“今日太阳能”。{% else %} These are forecast
+        figures from the solar-forecast integration, not inverter readings, and
+        "still to come" is that integration's own forecast for the rest of the day —
+        not today's forecast minus what has already been generated. Actual generation
+        is the "Solar today" tile above.{% endif %}
     - type: tile
       entity: sensor.energy_production_today
       name: Forecast today
@@ -3235,7 +3258,7 @@ views:
       grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: sensor.g_monitor_freezer_p110m_today_s_consumption
-      name: Garage freezer today
+      name: Freezer today
       grid_options: {columns: 6, rows: 1}
 
   - type: grid
@@ -3269,7 +3292,7 @@ views:
         name: House daily energy
     - type: tile
       entity: sensor.powerpal_gateway_powerpal_total_energy
-      name: Meter lifetime total
+      name: Meter lifetime
       grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: sensor.powerpal_gateway_powerpal_battery
@@ -3477,10 +3500,20 @@ views:
       entity: sensor.electricity_bill_status
       name: Status
       grid_options: {columns: 6, rows: 1}
-    - type: tile
-      entity: sensor.electricity_billing_cycle
-      name: Billing cycle
+    # `sensor.electricity_billing_cycle` is NOT a billing cycle. The legacy
+    # dashboard -- this repository's reference for proven logic -- renders it
+    # as "kWh imported this quarter", and has done since before CasaRay
+    # existed. Named "Billing cycle" here it read as a date range, and as a
+    # bare tile it printed the raw float to full precision. A tile cannot
+    # round, so this is a markdown card.
+    - type: markdown
       grid_options: {columns: 6, rows: 1}
+      content: >-
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {% set c = states('sensor.electricity_billing_cycle') | float(none) -%}
+        {% if c is not none %}{{ '本季度用电' if cn else 'Imported this quarter' }}
+        **{{ c | round(1) }} kWh**{% else %}{{ '本季度用电量无数据' if cn else 'Quarterly
+        usage not reporting' }}{% endif %}
     - type: tile
       entity: input_datetime.elec_bill_period_start
       name: Period start
@@ -3987,8 +4020,7 @@ views:
         }}{% else %}{% set p = paid | float(-1) %}{% set sv = saved | float(-1)
         %}{% set o = orig | float(-1) %}{% if p < 0 or sv < 0 %}{{ '年度合计暂无数据。'
         if cn else 'Year-to-date totals are not reporting.' }}{% elif o > 0 %}{%
-        if cn %}今年已付 **${{ p | round(2) }}**，节省 **${{ sv | round(2) }}**，
-        相当于原价 ${{ o | round(2) }} 的 **{{ ((sv / o) * 100) | round(1) }}%**。{%
+        if cn %}今年已付 **${{ p | round(2) }}**，节省 **${{ sv | round(2) }}**，相当于原价 ${{ o | round(2) }} 的 **{{ ((sv / o) * 100) | round(1) }}%**。{%
         else %}Paid **${{ p | round(2) }}** so far this year and saved **${{ sv |
         round(2) }}** — **{{ ((sv / o) * 100) | round(1) }}%** off an original
         ${{ o | round(2) }}.{% endif %}{% else %}{% if cn %}今年已付 **${{ p |
