@@ -141,7 +141,11 @@ views:
         {%- set p = states('sensor.powerpal_gateway_powerpal_power') | float(none) -%}
         {%- set s = states('sensor.primo_5_0_1_1_ac_power') | float(none) -%}
         {%- set hd = states('sensor.powerpal_gateway_powerpal_daily_energy') | float(none) -%}
-        {%- set sd = states('sensor.primo_5_0_1_1_energy_day') | float(none) -%}
+        {#- primo energy_day is Wh, powerpal daily_energy is kWh. Convert here
+            so nothing below can mix the two -- see the legacy dashboard, which
+            divides the same sensor by 1000, and UI-011. -#}
+        {%- set sdw = states('sensor.primo_5_0_1_1_energy_day') | float(none) -%}
+        {%- set sd = (sdw / 1000) if sdw is not none else none -%}
         **{{ '家庭用电' if cn else 'HOUSE POWER' }}**
         {% if p is not none %}## {{ (p / 1000) | round(2) }} kW
         {{ '当前总用电' if cn else 'Total usage' }}{% else %}## —
@@ -184,7 +188,10 @@ views:
       grid_options: {columns: 6, rows: 3}
       content: |
         {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
-        {%- set sd = states('sensor.primo_5_0_1_1_energy_day') | float(none) -%}
+        {#- primo energy_day is Wh, powerpal daily_energy is kWh. Convert here
+            so the share below is not out by a factor of 1000. -#}
+        {%- set sdw = states('sensor.primo_5_0_1_1_energy_day') | float(none) -%}
+        {%- set sd = (sdw / 1000) if sdw is not none else none -%}
         {%- set hd = states('sensor.powerpal_gateway_powerpal_daily_energy') | float(none) -%}
         **{{ '今日太阳能' if cn else 'SOLAR TODAY' }}**
         {% if sd is not none and hd is not none and hd > 0 %}{% set share = ((sd / hd) * 100) | round(0) | int %}## {{ share }}%

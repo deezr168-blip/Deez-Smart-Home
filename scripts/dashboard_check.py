@@ -23,6 +23,8 @@ Covers the checks that are possible without Home Assistant itself:
     'off', which its domain never reports
   - day-difference arithmetic ceils rather than rounds, so a date due today
     is never reported as overdue
+  - the Fronius energy sensors, which report Wh, are divided by 1000 before
+    being printed as kWh
   - /local/ resource paths exist in www/ when www/ is present
   - mass-damage detection against the committed version of the same file
 
@@ -258,7 +260,39 @@ def check(path):
     else:
         print("  /local/ resources        : none referenced")
 
-    # 7. day-difference arithmetic must ceil, not round
+    # 7. the Fronius energy sensors report Wh, and read as kWh
+    #
+    # `primo_5_0_1_1_energy_day`, `_energy_year` and `_total_energy` carry
+    # `unit_of_measurement: Wh` -- confirmed live 2026-09-07 -- while Powerpal's
+    # daily energy carries kWh. A template that prints one of the Fronius
+    # sensors next to a literal "kWh" without dividing by 1000 is out by three
+    # orders of magnitude. That is UI-011 on the legacy dashboard, and it
+    # happened again in the Home KPI strip. Tiles are exempt: they render the
+    # entity's own unit and are correct without help.
+    WH_SENSORS = ("primo_5_0_1_1_energy_day", "primo_5_0_1_1_energy_year",
+                  "primo_5_0_1_1_total_energy")
+    wh_misuse = []
+
+    def wh_units(node):
+        if node.get("type") != "markdown":
+            return
+        body = node.get("content")
+        if not isinstance(body, str) or "kWh" not in body:
+            return
+        # Strip Jinja comments first. A comment explaining the conversion
+        # contains "1000" and would otherwise satisfy the check on its own --
+        # which is exactly how the first version of this gate failed its probe.
+        code = re.sub(r"\{#.*?#\}", "", body, flags=re.S)
+        for sensor in WH_SENSORS:
+            if sensor in code and "1000" not in code:
+                wh_misuse.append((sensor, re.sub(r"\s+", " ", code)[:60]))
+    walk(doc, wh_units)
+    for sensor, who in wh_misuse:
+        fails.append(f"{path}: {sensor} reports Wh but this card prints kWh "
+                     f"without dividing by 1000 — a 1000x error — {who!r}")
+    print(f"  Wh sensor printed as kWh : {len(wh_misuse)}")
+
+    # 8. day-difference arithmetic must ceil, not round
     #
     # A due date is midnight; `now()` is whatever time it is. Dividing the
     # difference by 86400 and rounding to nearest makes a bill due today read
@@ -273,7 +307,7 @@ def check(path):
                      f"round(0, 'ceil') — {hit!r}")
     print(f"  day diff rounded not ceil: {len(rounded_days)}")
 
-    # 8. domains that never report on/off must not be tested for it
+    # 9. domains that never report on/off must not be tested for it
     #
     # A `cover` is open/closed/opening/closing, a `climate` is an HVAC mode,
     # a `media_player` is playing/paused/idle/standby. Comparing any of them
@@ -290,7 +324,7 @@ def check(path):
                      f"never reports — the branch can never be taken")
     print(f"  on/off on wrong domain   : {len(bad_onoff)}")
 
-    # 9. stateless entities must not be shown as stateful tiles
+    # 10. stateless entities must not be shown as stateful tiles
     #
     # A `button` entity's state is the timestamp of its last press, and a
     # `scene`'s is when it was last applied — so one never triggered reads
@@ -313,7 +347,7 @@ def check(path):
                      f"or show_state: false — {name!r}")
     print(f"  stateless shown as state : {len(stateless)}")
 
-    # 10. CJK text must not be broken across a fold boundary
+    # 11. CJK text must not be broken across a fold boundary
     #
     # YAML folds a line break into a space. Between two Latin words that is
     # invisible; between two Chinese characters it is a stray space in the
@@ -342,7 +376,7 @@ def check(path):
                      f"inserts a space mid-sentence — {before!r} + {after!r}")
     print(f"  CJK split across folds   : {len(split_cjk)}")
 
-    # 11. bilingual headings come in pairs
+    # 12. bilingual headings come in pairs
     #
     # CLAUDE.md makes bilingual section headings mandatory, and the native
     # `heading` card cannot render a template — so each one is two cards with
@@ -379,7 +413,7 @@ def check(path):
                      f"languages; correct only for a proper noun")
     print(f"  unpaired bilingual heads : {len(unpaired)}")
 
-    # 12. mass-damage detection against HEAD
+    # 13. mass-damage detection against HEAD
     old = committed(path)
     if old is None:
         print("  mass-damage check        : new file, no baseline")
