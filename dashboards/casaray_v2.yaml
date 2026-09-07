@@ -42,6 +42,19 @@ views:
   path: home
   icon: mdi:home-heart
   max_columns: 2
+  # Status pills under the page header, per DESIGN_REFERENCE section 2:
+  # "Right: status pills where relevant (People Home, Internet Online)".
+  # Native `badges` on a sections view render exactly that strip, so this
+  # needs no custom card and no card_mod. No `name` is set deliberately --
+  # a badge with only an icon and a value is language-neutral, which keeps
+  # the bilingual toggle out of a place where two heading cards cannot go.
+  # No `color` either: CR-232 has not settled blue against amber, so the
+  # badges take the theme's own colour rather than pre-empting that answer.
+  badges:
+  - type: entity
+    entity: zone.home
+  - type: entity
+    entity: binary_sensor.eero_wan_status
   sections:
 
   - type: grid
@@ -824,6 +837,19 @@ views:
   path: rooms
   icon: mdi:floor-plan
   max_columns: 2
+  # Status pills under the page header, per DESIGN_REFERENCE section 2:
+  # "Right: status pills where relevant (People Home, Internet Online)".
+  # Native `badges` on a sections view render exactly that strip, so this
+  # needs no custom card and no card_mod. No `name` is set deliberately --
+  # a badge with only an icon and a value is language-neutral, which keeps
+  # the bilingual toggle out of a place where two heading cards cannot go.
+  # No `color` either: CR-232 has not settled blue against amber, so the
+  # badges take the theme's own colour rather than pre-empting that answer.
+  badges:
+  - type: entity
+    entity: zone.home
+  - type: entity
+    entity: binary_sensor.eero_wan_status
   sections:
 
   - type: grid
@@ -920,6 +946,19 @@ views:
   path: living-room
   icon: mdi:sofa
   max_columns: 2
+  # Status pills under the page header, per DESIGN_REFERENCE section 2:
+  # "Right: status pills where relevant (People Home, Internet Online)".
+  # Native `badges` on a sections view render exactly that strip, so this
+  # needs no custom card and no card_mod. No `name` is set deliberately --
+  # a badge with only an icon and a value is language-neutral, which keeps
+  # the bilingual toggle out of a place where two heading cards cannot go.
+  # No `color` either: CR-232 has not settled blue against amber, so the
+  # badges take the theme's own colour rather than pre-empting that answer.
+  badges:
+  - type: entity
+    entity: zone.home
+  - type: entity
+    entity: binary_sensor.eero_wan_status
   sections:
 
   - type: grid
@@ -1478,6 +1517,19 @@ views:
   path: kitchen
   icon: mdi:silverware-fork-knife
   max_columns: 2
+  # Status pills under the page header, per DESIGN_REFERENCE section 2:
+  # "Right: status pills where relevant (People Home, Internet Online)".
+  # Native `badges` on a sections view render exactly that strip, so this
+  # needs no custom card and no card_mod. No `name` is set deliberately --
+  # a badge with only an icon and a value is language-neutral, which keeps
+  # the bilingual toggle out of a place where two heading cards cannot go.
+  # No `color` either: CR-232 has not settled blue against amber, so the
+  # badges take the theme's own colour rather than pre-empting that answer.
+  badges:
+  - type: entity
+    entity: zone.home
+  - type: entity
+    entity: binary_sensor.eero_wan_status
   sections:
 
   - type: grid
@@ -1804,6 +1856,19 @@ views:
   path: dining
   icon: mdi:table-chair
   max_columns: 2
+  # Status pills under the page header, per DESIGN_REFERENCE section 2:
+  # "Right: status pills where relevant (People Home, Internet Online)".
+  # Native `badges` on a sections view render exactly that strip, so this
+  # needs no custom card and no card_mod. No `name` is set deliberately --
+  # a badge with only an icon and a value is language-neutral, which keeps
+  # the bilingual toggle out of a place where two heading cards cannot go.
+  # No `color` either: CR-232 has not settled blue against amber, so the
+  # badges take the theme's own colour rather than pre-empting that answer.
+  badges:
+  - type: entity
+    entity: zone.home
+  - type: entity
+    entity: binary_sensor.eero_wan_status
   sections:
 
   - type: grid
@@ -2184,6 +2249,19 @@ views:
   path: parents-room
   icon: mdi:bed-king
   max_columns: 2
+  # Status pills under the page header, per DESIGN_REFERENCE section 2:
+  # "Right: status pills where relevant (People Home, Internet Online)".
+  # Native `badges` on a sections view render exactly that strip, so this
+  # needs no custom card and no card_mod. No `name` is set deliberately --
+  # a badge with only an icon and a value is language-neutral, which keeps
+  # the bilingual toggle out of a place where two heading cards cannot go.
+  # No `color` either: CR-232 has not settled blue against amber, so the
+  # badges take the theme's own colour rather than pre-empting that answer.
+  badges:
+  - type: entity
+    entity: zone.home
+  - type: entity
+    entity: binary_sensor.eero_wan_status
   sections:
 
   - type: grid
@@ -2668,6 +2746,19 @@ views:
   path: ray-bedroom
   icon: mdi:bed
   max_columns: 2
+  # Status pills under the page header, per DESIGN_REFERENCE section 2:
+  # "Right: status pills where relevant (People Home, Internet Online)".
+  # Native `badges` on a sections view render exactly that strip, so this
+  # needs no custom card and no card_mod. No `name` is set deliberately --
+  # a badge with only an icon and a value is language-neutral, which keeps
+  # the bilingual toggle out of a place where two heading cards cannot go.
+  # No `color` either: CR-232 has not settled blue against amber, so the
+  # badges take the theme's own colour rather than pre-empting that answer.
+  badges:
+  - type: entity
+    entity: zone.home
+  - type: entity
+    entity: binary_sensor.eero_wan_status
   sections:
 
   - type: grid
@@ -3084,6 +3175,19 @@ views:
   path: garage
   icon: mdi:garage
   max_columns: 2
+  # Status pills under the page header, per DESIGN_REFERENCE section 2:
+  # "Right: status pills where relevant (People Home, Internet Online)".
+  # Native `badges` on a sections view render exactly that strip, so this
+  # needs no custom card and no card_mod. No `name` is set deliberately --
+  # a badge with only an icon and a value is language-neutral, which keeps
+  # the bilingual toggle out of a place where two heading cards cannot go.
+  # No `color` either: CR-232 has not settled blue against amber, so the
+  # badges take the theme's own colour rather than pre-empting that answer.
+  badges:
+  - type: entity
+    entity: zone.home
+  - type: entity
+    entity: binary_sensor.eero_wan_status
   sections:
 
   - type: grid
@@ -3311,6 +3415,19 @@ views:
   path: guest-room
   icon: mdi:bed-empty
   max_columns: 2
+  # Status pills under the page header, per DESIGN_REFERENCE section 2:
+  # "Right: status pills where relevant (People Home, Internet Online)".
+  # Native `badges` on a sections view render exactly that strip, so this
+  # needs no custom card and no card_mod. No `name` is set deliberately --
+  # a badge with only an icon and a value is language-neutral, which keeps
+  # the bilingual toggle out of a place where two heading cards cannot go.
+  # No `color` either: CR-232 has not settled blue against amber, so the
+  # badges take the theme's own colour rather than pre-empting that answer.
+  badges:
+  - type: entity
+    entity: zone.home
+  - type: entity
+    entity: binary_sensor.eero_wan_status
   sections:
 
   - type: grid
@@ -3463,6 +3580,19 @@ views:
   path: lighting
   icon: mdi:lightbulb-group
   max_columns: 2
+  # Status pills under the page header, per DESIGN_REFERENCE section 2:
+  # "Right: status pills where relevant (People Home, Internet Online)".
+  # Native `badges` on a sections view render exactly that strip, so this
+  # needs no custom card and no card_mod. No `name` is set deliberately --
+  # a badge with only an icon and a value is language-neutral, which keeps
+  # the bilingual toggle out of a place where two heading cards cannot go.
+  # No `color` either: CR-232 has not settled blue against amber, so the
+  # badges take the theme's own colour rather than pre-empting that answer.
+  badges:
+  - type: entity
+    entity: zone.home
+  - type: entity
+    entity: binary_sensor.eero_wan_status
   sections:
 
   - type: grid
@@ -3913,6 +4043,19 @@ views:
   path: climate
   icon: mdi:thermometer
   max_columns: 2
+  # Status pills under the page header, per DESIGN_REFERENCE section 2:
+  # "Right: status pills where relevant (People Home, Internet Online)".
+  # Native `badges` on a sections view render exactly that strip, so this
+  # needs no custom card and no card_mod. No `name` is set deliberately --
+  # a badge with only an icon and a value is language-neutral, which keeps
+  # the bilingual toggle out of a place where two heading cards cannot go.
+  # No `color` either: CR-232 has not settled blue against amber, so the
+  # badges take the theme's own colour rather than pre-empting that answer.
+  badges:
+  - type: entity
+    entity: zone.home
+  - type: entity
+    entity: binary_sensor.eero_wan_status
   sections:
 
   - type: grid
@@ -4079,6 +4222,19 @@ views:
   path: energy
   icon: mdi:lightning-bolt
   max_columns: 2
+  # Status pills under the page header, per DESIGN_REFERENCE section 2:
+  # "Right: status pills where relevant (People Home, Internet Online)".
+  # Native `badges` on a sections view render exactly that strip, so this
+  # needs no custom card and no card_mod. No `name` is set deliberately --
+  # a badge with only an icon and a value is language-neutral, which keeps
+  # the bilingual toggle out of a place where two heading cards cannot go.
+  # No `color` either: CR-232 has not settled blue against amber, so the
+  # badges take the theme's own colour rather than pre-empting that answer.
+  badges:
+  - type: entity
+    entity: zone.home
+  - type: entity
+    entity: binary_sensor.eero_wan_status
   sections:
 
   - type: grid
@@ -4407,6 +4563,19 @@ views:
   path: bills
   icon: mdi:file-document-outline
   max_columns: 2
+  # Status pills under the page header, per DESIGN_REFERENCE section 2:
+  # "Right: status pills where relevant (People Home, Internet Online)".
+  # Native `badges` on a sections view render exactly that strip, so this
+  # needs no custom card and no card_mod. No `name` is set deliberately --
+  # a badge with only an icon and a value is language-neutral, which keeps
+  # the bilingual toggle out of a place where two heading cards cannot go.
+  # No `color` either: CR-232 has not settled blue against amber, so the
+  # badges take the theme's own colour rather than pre-empting that answer.
+  badges:
+  - type: entity
+    entity: zone.home
+  - type: entity
+    entity: binary_sensor.eero_wan_status
   sections:
 
   - type: grid
@@ -5509,6 +5678,19 @@ views:
   path: security
   icon: mdi:shield-home
   max_columns: 2
+  # Status pills under the page header, per DESIGN_REFERENCE section 2:
+  # "Right: status pills where relevant (People Home, Internet Online)".
+  # Native `badges` on a sections view render exactly that strip, so this
+  # needs no custom card and no card_mod. No `name` is set deliberately --
+  # a badge with only an icon and a value is language-neutral, which keeps
+  # the bilingual toggle out of a place where two heading cards cannot go.
+  # No `color` either: CR-232 has not settled blue against amber, so the
+  # badges take the theme's own colour rather than pre-empting that answer.
+  badges:
+  - type: entity
+    entity: zone.home
+  - type: entity
+    entity: binary_sensor.eero_wan_status
   sections:
 
   - type: grid
@@ -5853,6 +6035,19 @@ views:
   path: cameras
   icon: mdi:cctv
   max_columns: 2
+  # Status pills under the page header, per DESIGN_REFERENCE section 2:
+  # "Right: status pills where relevant (People Home, Internet Online)".
+  # Native `badges` on a sections view render exactly that strip, so this
+  # needs no custom card and no card_mod. No `name` is set deliberately --
+  # a badge with only an icon and a value is language-neutral, which keeps
+  # the bilingual toggle out of a place where two heading cards cannot go.
+  # No `color` either: CR-232 has not settled blue against amber, so the
+  # badges take the theme's own colour rather than pre-empting that answer.
+  badges:
+  - type: entity
+    entity: zone.home
+  - type: entity
+    entity: binary_sensor.eero_wan_status
   sections:
 
   - type: grid
@@ -6179,6 +6374,19 @@ views:
   path: people
   icon: mdi:account-group
   max_columns: 2
+  # Status pills under the page header, per DESIGN_REFERENCE section 2:
+  # "Right: status pills where relevant (People Home, Internet Online)".
+  # Native `badges` on a sections view render exactly that strip, so this
+  # needs no custom card and no card_mod. No `name` is set deliberately --
+  # a badge with only an icon and a value is language-neutral, which keeps
+  # the bilingual toggle out of a place where two heading cards cannot go.
+  # No `color` either: CR-232 has not settled blue against amber, so the
+  # badges take the theme's own colour rather than pre-empting that answer.
+  badges:
+  - type: entity
+    entity: zone.home
+  - type: entity
+    entity: binary_sensor.eero_wan_status
   sections:
 
   - type: grid
@@ -6376,6 +6584,19 @@ views:
   path: automations
   icon: mdi:robot
   max_columns: 2
+  # Status pills under the page header, per DESIGN_REFERENCE section 2:
+  # "Right: status pills where relevant (People Home, Internet Online)".
+  # Native `badges` on a sections view render exactly that strip, so this
+  # needs no custom card and no card_mod. No `name` is set deliberately --
+  # a badge with only an icon and a value is language-neutral, which keeps
+  # the bilingual toggle out of a place where two heading cards cannot go.
+  # No `color` either: CR-232 has not settled blue against amber, so the
+  # badges take the theme's own colour rather than pre-empting that answer.
+  badges:
+  - type: entity
+    entity: zone.home
+  - type: entity
+    entity: binary_sensor.eero_wan_status
   sections:
 
   - type: grid
@@ -6505,6 +6726,19 @@ views:
   path: entertainment
   icon: mdi:television-play
   max_columns: 2
+  # Status pills under the page header, per DESIGN_REFERENCE section 2:
+  # "Right: status pills where relevant (People Home, Internet Online)".
+  # Native `badges` on a sections view render exactly that strip, so this
+  # needs no custom card and no card_mod. No `name` is set deliberately --
+  # a badge with only an icon and a value is language-neutral, which keeps
+  # the bilingual toggle out of a place where two heading cards cannot go.
+  # No `color` either: CR-232 has not settled blue against amber, so the
+  # badges take the theme's own colour rather than pre-empting that answer.
+  badges:
+  - type: entity
+    entity: zone.home
+  - type: entity
+    entity: binary_sensor.eero_wan_status
   sections:
 
   - type: grid
@@ -6679,6 +6913,19 @@ views:
   path: house-health
   icon: mdi:heart-pulse
   max_columns: 2
+  # Status pills under the page header, per DESIGN_REFERENCE section 2:
+  # "Right: status pills where relevant (People Home, Internet Online)".
+  # Native `badges` on a sections view render exactly that strip, so this
+  # needs no custom card and no card_mod. No `name` is set deliberately --
+  # a badge with only an icon and a value is language-neutral, which keeps
+  # the bilingual toggle out of a place where two heading cards cannot go.
+  # No `color` either: CR-232 has not settled blue against amber, so the
+  # badges take the theme's own colour rather than pre-empting that answer.
+  badges:
+  - type: entity
+    entity: zone.home
+  - type: entity
+    entity: binary_sensor.eero_wan_status
   sections:
 
   - type: grid
@@ -7074,6 +7321,19 @@ views:
   path: alerts
   icon: mdi:bell-alert
   max_columns: 2
+  # Status pills under the page header, per DESIGN_REFERENCE section 2:
+  # "Right: status pills where relevant (People Home, Internet Online)".
+  # Native `badges` on a sections view render exactly that strip, so this
+  # needs no custom card and no card_mod. No `name` is set deliberately --
+  # a badge with only an icon and a value is language-neutral, which keeps
+  # the bilingual toggle out of a place where two heading cards cannot go.
+  # No `color` either: CR-232 has not settled blue against amber, so the
+  # badges take the theme's own colour rather than pre-empting that answer.
+  badges:
+  - type: entity
+    entity: zone.home
+  - type: entity
+    entity: binary_sensor.eero_wan_status
   sections:
 
   - type: grid
