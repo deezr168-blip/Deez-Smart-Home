@@ -17,8 +17,8 @@ Covers the checks that are possible without Home Assistant itself:
     in one language
   - no Chinese sentence is broken across a fold boundary, which would insert
     a space into the middle of it
-  - no button or scene entity is shown as a state-bearing tile, where one
-    never triggered renders as "Unknown"
+  - no button, scene or event entity is shown as a state-bearing tile, where
+    one never triggered renders as "Unknown"
   - no cover, climate, vacuum or media_player entity is compared to 'on' or
     'off', which its domain never reports
   - day-difference arithmetic ceils rather than rounds, so a date due today
@@ -326,25 +326,26 @@ def check(path):
 
     # 10. stateless entities must not be shown as stateful tiles
     #
-    # A `button` entity's state is the timestamp of its last press, and a
-    # `scene`'s is when it was last applied — so one never triggered reads
-    # `Unknown`. On a tile that renders as "Reset filter — Unknown", which
-    # looks like a broken sensor instead of an action waiting to be taken.
-    # Use a `button` card, or a tile with `show_state: false`.
+    # A `button` entity's state is the timestamp of its last press, a
+    # `scene`'s is when it was last applied, and an `event`'s is when it last
+    # fired — so one never triggered reads `Unknown`. On a tile that renders
+    # as "Reset filter — Unknown", which looks like a broken sensor instead of
+    # an action waiting to be taken. Use a `button` card, or a tile with
+    # `show_state: false`.
     stateless = []
 
     def bare_action(node):
         e = node.get("entity")
-        if (isinstance(e, str) and e.split(".")[0] in ("button", "scene")
+        if (isinstance(e, str) and e.split(".")[0] in ("button", "scene", "event")
                 and node.get("type") == "tile"
                 and node.get("show_state") is not False
                 and not node.get("hide_state")):
             stateless.append((e, node.get("name")))
     walk(doc, bare_action)
     for e, name in stateless:
-        fails.append(f"{path}: {e} is a tile that shows its state; a button or "
-                     f"scene never triggered reads 'Unknown' — use a button card "
-                     f"or show_state: false — {name!r}")
+        fails.append(f"{path}: {e} is a tile that shows its state; a button, "
+                     f"scene or event never triggered reads 'Unknown' — use a "
+                     f"button card or show_state: false — {name!r}")
     print(f"  stateless shown as state : {len(stateless)}")
 
     # 11. CJK text must not be broken across a fold boundary

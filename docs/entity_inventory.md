@@ -61,6 +61,40 @@ export rather than by re-querying the connector.
 
 ---
 
+## Duplicate entities that are deliberately not used
+
+This instance carries several pairs where two entity IDs describe one physical
+thing. CasaRay drives one of each and leaves the other alone. They are listed
+here so a future session does not "discover" them as gaps and wire them up a
+second time.
+
+| Not used | Because CasaRay uses | Note |
+|---|---|---|
+| `light.living_room_living_room` | `light.living_room` | same group, same area |
+| `light.dining_dining` | `light.dining` | same group, same area |
+| `light.ray_bedroom_bedroomlight_switch_1` | `switch.bedroomlight_switch_1` | light-domain view of the same switch |
+| `switch.living_room_air_purifier` | `fan.living_room_air_purifier` | the fan entity carries speed control |
+| `media_player.living_room_samsung_q9_series_65` | `media_player.living_room_tv_samsung_q9_series_65` | speaker endpoint vs the TV; see `CR-190` |
+| `media_player.master_bedroom_55_qled_4k_ai` | `media_player.55_qled_4k_ai_qa55q7faawxxy` | two Parents Room entries, both live; see `CR-190` |
+
+**A `_2` suffix does not mean a duplicate, and the ID prefix does not mean the
+area.** `binary_sensor.living_room_living_room_motion` is the *Dining Room*
+Motion Sensor; `binary_sensor.living_room_living_room_motion_2` is the Living
+Room one. Likewise the whole `*.master_bedroom_living_hue_*` family sits in the
+Living Room and `*.master_bedroom_bedroom_hue_*` sits in Dining — these are
+different areas, different hardware, and the entity ID prefix is misleading in
+both cases. Read the friendly name and area from the export, never the ID.
+
+**`event.*` entities are also deliberately absent** — doorbell ding and motion,
+the four Ray Bedroom switch buttons, the fridge notification. An event entity's
+state is when it last fired, so one that has never fired renders as `Unknown`,
+exactly like the `button` case `CR-211` fixed. Where the information matters it
+is available better elsewhere: `sensor.front_door_last_activity` carries the
+doorbell's last activity and is on the Cameras board. `dashboard_check.py`
+fails on any of the three domains shown as a state-bearing tile.
+
+---
+
 ## Status vocabulary
 
 | Value | Meaning |

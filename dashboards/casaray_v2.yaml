@@ -1325,6 +1325,130 @@ views:
       name: RingRing battery
       grid_options: {columns: 6, rows: 1}
 
+  # The doorbell's own controls, assigned to Living Room and on no page.
+  # `light.living_room_living_room` is deliberately left out: it is the same
+  # group as `light.living_room`, which this page already drives.
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Doorbell
+      heading_style: title
+      icon: mdi:doorbell-video
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 门铃
+      heading_style: title
+      icon: mdi:doorbell-video
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: tile
+      entity: number.front_door_volume
+      name: Chime volume
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: binary_sensor.living_room_ringring_motion
+      name: RingRing motion
+      grid_options: {columns: 6, rows: 1}
+
+  # Three motion sensors report from the Living Room area. The page above
+  # drives "Living Room Motion Sensor"; these are the other two, which were
+  # on no page. They are named here by their Home Assistant friendly names
+  # rather than "sensor 2" and "sensor 3", so a reading can be traced back to
+  # the device that produced it. Whether all three are separate hardware or
+  # one device exposed twice is not decidable from the export -- see CR-235.
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Other motion sensors
+      heading_style: title
+      icon: mdi:motion-sensor
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 其他动作传感器
+      heading_style: title
+      icon: mdi:motion-sensor
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: tile
+      entity: binary_sensor.master_bedroom_living_hue_hue_sensor_motion
+      name: Living Hue motion
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.master_bedroom_living_hue_hue_sensor_temperature
+      name: Living Hue temp
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.master_bedroom_living_hue_hue_sensor_illuminance
+      name: Living Hue light
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.master_bedroom_living_hue_hue_sensor_battery
+      name: Living Hue battery
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: binary_sensor.living_room_living_room_motion_2
+      name: Living room motion
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.living_room_living_room_illuminance_2
+      name: Living room light
+      grid_options: {columns: 6, rows: 1}
+
+  # Level-3: the air purifier's lamp mode and the motion sensor's own enable
+  # switches. Turning a motion sensor off from here changes what the room
+  # reports, so it belongs below the controls, not among them.
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Device settings
+      heading_style: subtitle
+      icon: mdi:tune
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 设备设置
+      heading_style: subtitle
+      icon: mdi:tune
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: tile
+      entity: select.living_room_air_purifier_lamp
+      name: Purifier lamp
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: switch.living_room_living_hue_hue_sensor_motion_sensor_enabled
+      name: Room sensor motion on
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: switch.living_room_living_hue_hue_sensor_light_sensor_enabled
+      name: Room sensor light on
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: switch.genio_power_board_with_usb_livingroom_child_lock
+      name: Power board child lock
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: select.genio_power_board_with_usb_livingroom_power_on_behavior
+      name: Power board on boot
+      grid_options: {columns: 6, rows: 1}
+
   # Footer navigation, per the room mockups' bottom bar. The header already
   # carries Back and Home; repeating the way out at the end of the page is
   # the point -- a room page is long enough that leaving it should not mean
@@ -1590,6 +1714,66 @@ views:
         state: 'on'
     - type: todo-list
       entity: todo.shopping_list
+
+  # Level-3 detail per the briefing's progressive disclosure. Each Kitchen
+  # plug carries an LED, an auto-off toggle and an auto-off delay; they are
+  # assigned to this area and were on no page. Grouped at the end rather than
+  # mixed into the three plug switches above, which is what people tap.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Plug settings
+      heading_style: subtitle
+      icon: mdi:tune
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 插座设置
+      heading_style: subtitle
+      icon: mdi:tune
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: tile
+      entity: switch.k_coffee_p100_led
+      name: Coffee LED
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: switch.k_coffee_p100_auto_off_enabled
+      name: Coffee auto-off
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: number.k_coffee_p100_turn_off_in
+      name: Coffee off in
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: switch.k_top_p100_led
+      name: Top LED
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: switch.k_top_p100_auto_off_enabled
+      name: Top auto-off
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: number.k_top_p100_turn_off_in
+      name: Top off in
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: switch.k_bot_p100_led
+      name: Bottom LED
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: switch.k_bot_p100_auto_off_enabled
+      name: Bottom auto-off
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: number.k_bot_p100_turn_off_in
+      name: Bottom off in
+      grid_options: {columns: 4, rows: 1}
 
   # Footer navigation, per the room mockups' bottom bar. The header already
   # carries Back and Home; repeating the way out at the end of the page is
@@ -1866,6 +2050,103 @@ views:
     - type: tile
       entity: switch.smart_pet_feeder_privacy_mode
       name: Privacy mode
+      grid_options: {columns: 6, rows: 1}
+
+  # Two motion sensors report from the Dining area and neither was fully on
+  # the page: "Bedroom Hue Sensor" (whose entity IDs read master_bedroom_*,
+  # but the registry puts it here) and "Dining Room Motion Sensor" (whose IDs
+  # read living_room_*), of which the page above already shows only the
+  # temperature. Tiles are named for the device that produces the reading, not
+  # for the entity ID prefix, which is wrong for both of them.
+  # `light.dining_dining` is left out: it duplicates `light.dining`, which
+  # this page already drives.
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Motion sensors
+      heading_style: title
+      icon: mdi:motion-sensor
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 动作传感器
+      heading_style: title
+      icon: mdi:motion-sensor
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: tile
+      entity: binary_sensor.master_bedroom_bedroom_hue_sensor_motion
+      name: Bedroom Hue motion
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.master_bedroom_bedroom_hue_sensor_temperature
+      name: Bedroom Hue temp
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.master_bedroom_bedroom_hue_sensor_illuminance
+      name: Bedroom Hue light
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.master_bedroom_bedroom_hue_sensor_battery
+      name: Bedroom Hue battery
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: binary_sensor.living_room_living_room_motion
+      name: Dining sensor motion
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.living_room_living_room_illuminance
+      name: Dining sensor light
+      grid_options: {columns: 6, rows: 1}
+
+  # Level-3: pet feeder tuning and the motion sensor's enable switches.
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Device settings
+      heading_style: subtitle
+      icon: mdi:tune
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 设备设置
+      heading_style: subtitle
+      icon: mdi:tune
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: tile
+      entity: number.smart_pet_feeder_volume
+      name: Feeder volume
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: select.smart_pet_feeder_night_vision
+      name: Feeder night vision
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: select.smart_pet_feeder_motion_detection_sensitivity
+      name: Feeder sensitivity
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: switch.smart_pet_feeder_time_watermark
+      name: Feeder timestamp
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: switch.living_room_living_room_motion_sensor_enabled
+      name: Dining sensor motion on
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: switch.living_room_living_room_light_sensor_enabled
+      name: Dining sensor light on
       grid_options: {columns: 6, rows: 1}
 
   # Footer navigation, per the room mockups' bottom bar. The header already
@@ -2691,6 +2972,87 @@ views:
       - entity: sensor.r_energy_monitor_p110m_current_consumption
         name: Power
 
+  # The energy monitor's fuller picture -- this month, voltage and current --
+  # beside the now/today figures the room already shows. All assigned to this
+  # area and previously unused.
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Power detail
+      heading_style: title
+      icon: mdi:flash-outline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 用电详情
+      heading_style: title
+      icon: mdi:flash-outline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: tile
+      entity: sensor.r_energy_monitor_p110m_this_month_s_consumption
+      name: This month
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.r_energy_monitor_p110m_voltage
+      name: Voltage
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.r_energy_monitor_p110m_current
+      name: Current
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.aqara_roller_shade_driver_e1_battery_charge_state
+      name: Blind battery
+      grid_options: {columns: 6, rows: 1}
+
+  # Level-3: the socket's protection and auto-off configuration, and the
+  # blind's configuration status. Set once, not touched daily.
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Device settings
+      heading_style: subtitle
+      icon: mdi:tune
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 设备设置
+      heading_style: subtitle
+      icon: mdi:tune
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: tile
+      entity: switch.r_energy_monitor_p110m_led
+      name: Socket LED
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: switch.r_energy_monitor_p110m_auto_off_enabled
+      name: Auto-off
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: number.r_energy_monitor_p110m_turn_off_in
+      name: Auto-off in
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: number.r_energy_monitor_p110m_power_protection
+      name: Power protection
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: binary_sensor.aqara_roller_shade_driver_e1_configuration_status
+      name: Blind configured
+      grid_options: {columns: 6, rows: 1}
+
   # Footer navigation, per the room mockups' bottom bar. The header already
   # carries Back and Home; repeating the way out at the end of the page is
   # the point -- a room page is long enough that leaving it should not mean
@@ -2880,6 +3242,44 @@ views:
       entities:
       - entity: sensor.g_monitor_freezer_p110m_current_consumption
         name: Freezer power
+
+  # Level-3: the freezer socket's protection and auto-off configuration.
+  # Power protection matters here -- this socket runs a freezer.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Device settings
+      heading_style: subtitle
+      icon: mdi:tune
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 设备设置
+      heading_style: subtitle
+      icon: mdi:tune
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: tile
+      entity: number.g_monitor_freezer_p110m_power_protection
+      name: Power protection
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: switch.g_monitor_freezer_p110m_auto_off_enabled
+      name: Auto-off
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: number.g_monitor_freezer_p110m_turn_off_in
+      name: Auto-off in
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: switch.g_monitor_freezer_p110m_led
+      name: Socket LED
+      grid_options: {columns: 6, rows: 1}
 
   # Footer navigation, per the room mockups' bottom bar. The header already
   # carries Back and Home; repeating the way out at the end of the page is
@@ -6163,6 +6563,9 @@ views:
       entity: remote.living_room_tv_samsung_q9_series_65
       name: Power
       icon: mdi:remote-tv
+    - type: tile
+      entity: sensor.living_room_samsung_q9_series_65_tv_channel_name
+      name: Channel
 
   - type: grid
     column_span: 1
