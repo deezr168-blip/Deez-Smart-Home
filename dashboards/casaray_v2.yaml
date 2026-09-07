@@ -2228,6 +2228,135 @@ views:
       name: AC firmware
       grid_options: {columns: 4, rows: 1}
 
+  # The five-socket power point in this room was assigned to Parents Room in
+  # Home Assistant and appeared on no page at all. All five confirmed live
+  # 2026-09-07: device_class outlet, all on.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Power point
+      heading_style: title
+      icon: mdi:power-socket-au
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 插座
+      heading_style: title
+      icon: mdi:power-socket-au
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: tile
+      entity: switch.master_bedroom_power_point_socket_1
+      name: Socket 1
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: switch.master_bedroom_power_point_socket_2
+      name: Socket 2
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: switch.master_bedroom_power_point_socket_3
+      name: Socket 3
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: switch.master_bedroom_power_point_socket_4
+      name: Socket 4
+      grid_options: {columns: 4, rows: 1}
+    - type: tile
+      entity: switch.master_bedroom_power_point_socket_5
+      name: Socket 5
+      grid_options: {columns: 4, rows: 1}
+
+  # The television's own energy monitoring, and the light sensor mounted with
+  # it. Both are assigned to this room and were unused.
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Television
+      heading_style: title
+      icon: mdi:television
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 电视
+      heading_style: title
+      icon: mdi:television
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: tile
+      entity: sensor.master_bedroom_55_qled_4k_ai_power
+      name: Drawing now
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.master_bedroom_55_qled_4k_ai_energy
+      name: Energy used
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.master_bedroom_55_qled_4k_ai_energy_saved
+      name: Energy saved
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.master_bedroom_55_qled_4k_ai_tv_channel_name
+      name: Channel
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.master_bedroom_light_sensor_55_qled_4k_ai_illuminance
+      name: Room light
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: sensor.master_bedroom_light_sensor_55_qled_4k_ai_brightness_intensity
+      name: Brightness level
+      grid_options: {columns: 6, rows: 1}
+
+  # Level-3 detail per the briefing's progressive disclosure: the per-device
+  # enable and health switches that belong to this room's hardware but are not
+  # things anyone adjusts daily. Grouped at the end rather than mixed into the
+  # controls above.
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Device settings
+      heading_style: subtitle
+      icon: mdi:tune
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 设备设置
+      heading_style: subtitle
+      icon: mdi:tune
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: tile
+      entity: switch.master_bedroom_sensibo_sky_plus
+      name: Sensibo unit
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: switch.master_bedroom_light_sensor_55_qled_4k_ai
+      name: TV light sensor
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: binary_sensor.bedroom_motion_sensor_connectivity
+      name: Motion sensor link
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: binary_sensor.bedroom_motion_sensor_main_sensor
+      name: Motion sensor core
+      grid_options: {columns: 6, rows: 1}
+
   # Footer navigation, per the room mockups' bottom bar. The header already
   # carries Back and Home; repeating the way out at the end of the page is
   # the point -- a room page is long enough that leaving it should not mean
