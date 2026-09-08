@@ -3626,6 +3626,84 @@ views:
 
         {{ now().strftime('%d/%m/%y') }}
 
+  # KPI strip, per DESIGN_REFERENCE's content-grid rule. The Lighting Studio
+  # mockup opens with an at-a-glance count; this is that count, built from the
+  # seven light and switch entities that actually report, with the dead Hue
+  # spots carried in their own card rather than quietly dropped from the total.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: markdown
+      grid_options: {columns: 6, rows: 3}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set ls = [('light.living_room','Living Room','客厅'),
+                      ('light.dining','Dining','餐厅'),
+                      ('light.bedroom_bedroom','Ray Bedroom','Ray 卧室'),
+                      ('light.bedroom_nightlight','Night light','夜灯'),
+                      ('switch.mainroomlight_switch_1','Parents Room','父母房'),
+                      ('switch.bedroomlight_switch_1','Ray wall switch','Ray 墙壁开关'),
+                      ('switch.dinning_light_switch_1','Dining wall switch','餐厅墙壁开关')] -%}
+        {%- set ns = namespace(on=[], off=0, quiet=0) -%}
+        {%- for l, en, zh in ls %}{% set s = states(l) %}{% if s == 'on' %}{% set ns.on = ns.on + [zh if cn else en] %}{% elif s == 'off' %}{% set ns.off = ns.off + 1 %}{% else %}{% set ns.quiet = ns.quiet + 1 %}{% endif %}{% endfor -%}
+        **{{ '开启的灯' if cn else 'LIGHTS ON' }}**
+        {% if ns.quiet == ls | count %}## —
+        {{ '没有灯具报告状态' if cn else 'No light is reporting a state' }}{% else %}## {{ ns.on | count }}/{{ (ns.on | count) + ns.off }}
+        {% if ns.on %}{{ ns.on | join('、') if cn else ns.on | join(', ') }}{% else %}{{ '全部已关闭' if cn else 'Everything is off' }}{% endif %}{% endif %}
+
+        {% if ns.quiet %}{{ ('另有 %d 个灯具无数据，未计入。' % ns.quiet) if cn else (('1 more is not reporting and is left out of the count.' if ns.quiet == 1 else '%d more are not reporting and are left out of the count.' % ns.quiet)) }}{% else %}{{ '七个灯具全部有数据。' if cn else 'All 7 are reporting.' }}{% endif %}
+    - type: markdown
+      grid_options: {columns: 6, rows: 3}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {# Only the three group lights are dimmable; the wall switches report
+           on/off alone and would drag an average towards nothing if counted.
+           Brightness is 0-255 on the attribute and is shown as a percentage. #}
+        {%- set dim = [('light.living_room','Living Room','客厅'),
+                       ('light.dining','Dining','餐厅'),
+                       ('light.bedroom_bedroom','Ray Bedroom','Ray 卧室')] -%}
+        {%- set ns = namespace(sum=0.0, n=0) -%}
+        {%- for l, en, zh in dim %}{% if is_state(l,'on') %}{% set b = state_attr(l,'brightness') | float(none) %}{% if b is not none %}{% set ns.sum = ns.sum + b %}{% set ns.n = ns.n + 1 %}{% endif %}{% endif %}{% endfor -%}
+        **{{ '亮度' if cn else 'BRIGHTNESS' }}**
+        {% if ns.n %}## {{ ((ns.sum / ns.n) / 255 * 100) | round(0) | int }}%
+        {{ ('%d 组已开启的灯的平均亮度' % ns.n) if cn else ('averaged over %d group%s that are on' % (ns.n, '' if ns.n == 1 else 's')) }}{% else %}## —
+        {{ '没有可调光的灯组处于开启状态' if cn else 'No dimmable group is on' }}{% endif %}
+
+        {{ '墙壁开关只有开与关，不计入平均亮度。' if cn else 'The wall switches are on/off only and are not averaged in.' }}
+    - type: markdown
+      grid_options: {columns: 6, rows: 3}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set spots = [('light.living_room_hue_ambiance_spot_1','Inner Left','内左'),
+                         ('light.living_room_hue_ambiance_spot_2','Inner Right','内右'),
+                         ('light.living_room_hue_ambiance_spot_3','Outer Left','外左'),
+                         ('light.living_room_hue_ambiance_spot_4','Outer Right','外右')] -%}
+        {%- set ns = namespace(down=[], up=0) -%}
+        {%- for s, en, zh in spots %}{% if states(s) in ['unavailable','unknown'] %}{% set ns.down = ns.down + [zh if cn else en] %}{% else %}{% set ns.up = ns.up + 1 %}{% endif %}{% endfor -%}
+        **{{ '客厅射灯' if cn else 'LIVING ROOM SPOTS' }}**
+        {% if ns.down %}## {{ ns.up }}/{{ spots | count }}
+        {{ ('无数据：' ~ ns.down | join('、')) if cn else ('Not reporting: ' ~ ns.down | join(', ')) }}{% else %}## {{ spots | count }}/{{ spots | count }}
+        {{ '四个射灯全部有数据' if cn else 'All 4 spots are reporting' }}{% endif %}
+
+        {{ '这四个是独立的 Hue 射灯，与上方的“客厅”灯组是不同的实体；灯组开启并不代表射灯在线。' if cn else 'These are the individual Hue spots, separate entities from the Living Room group above; the group being on does not mean the spots are online.' }}
+    - type: markdown
+      grid_options: {columns: 6, rows: 3}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set fl = [('light.tapo_c425_north_wall_floodlight_timed','North Wall','北墙'),
+                      ('light.tapo_c200_stockroom_floodlight_timed','Stockroom','储藏室'),
+                      ('light.tapo_c420_south_wall_floodlight_timed','South Wall','南墙'),
+                      ('light.tapo_c420_east_wall_floodlight_timed','East Wall','东墙')] -%}
+        {%- set ns = namespace(on=[], off=0, quiet=[]) -%}
+        {%- for f, en, zh in fl %}{% set s = states(f) %}{% if s == 'on' %}{% set ns.on = ns.on + [zh if cn else en] %}{% elif s == 'off' %}{% set ns.off = ns.off + 1 %}{% else %}{% set ns.quiet = ns.quiet + [zh if cn else en] %}{% endif %}{% endfor -%}
+        **{{ '室外泛光灯' if cn else 'FLOODLIGHTS' }}**
+        {% if ns.on %}## {{ ns.on | count }} {{ '开启' if cn else 'on' }}
+        {{ ns.on | join('、') if cn else ns.on | join(', ') }}{% elif ns.off %}## {{ '关闭' if cn else 'Off' }}
+        {{ ('%d 个泛光灯有数据且已关闭' % ns.off) if cn else ('%d reporting floodlights are off' % ns.off) }}{% else %}## —
+        {{ '没有泛光灯报告状态' if cn else 'No floodlight is reporting' }}{% endif %}
+
+        {% if ns.quiet %}{{ ('无数据：' ~ ns.quiet | join('、') ~ '，随其摄像头一同离线。') if cn else ('Not reporting: ' ~ ns.quiet | join(', ') ~ ' — offline with their cameras.') }}{% else %}{{ '四个摄像头泛光灯全部有数据。' if cn else 'All 4 camera floodlights are reporting.' }}{% endif %}
+
   - type: grid
     column_span: 1
     cards:
@@ -7074,6 +7152,77 @@ views:
         ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
         {{ now().strftime('%d/%m/%y') }}
+
+  # KPI strip, per DESIGN_REFERENCE's content-grid rule. Four screens and one
+  # speaker are integrated; two of those five do not report at all, and the
+  # last card names them rather than letting a "3 playing" headline imply the
+  # house has three sources and nothing more to say.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: markdown
+      grid_options: {columns: 6, rows: 3}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set mp = [('media_player.living_room_tv_samsung_q9_series_65','Living Room TV','客厅电视'),
+                      ('media_player.55_qled_4k_ai_qa55q7faawxxy','Parents Room TV','父母房电视'),
+                      ('media_player.q70f8036','Ray Bedroom TV','Ray 卧室电视'),
+                      ('media_player.pogo','Pogo','Pogo')] -%}
+        {%- set ns = namespace(live=[], idle=0, quiet=0) -%}
+        {%- for m, en, zh in mp %}{% set s = states(m) %}{% if s in ['playing','paused','on','buffering'] %}{% set ns.live = ns.live + [zh if cn else en] %}{% elif s in ['off','idle','standby'] %}{% set ns.idle = ns.idle + 1 %}{% else %}{% set ns.quiet = ns.quiet + 1 %}{% endif %}{% endfor -%}
+        **{{ '正在使用' if cn else 'IN USE' }}**
+        {% if ns.quiet == mp | count %}## —
+        {{ '没有播放设备报告状态' if cn else 'No media player is reporting' }}{% else %}## {{ ns.live | count }}/{{ (ns.live | count) + ns.idle }}
+        {% if ns.live %}{{ ns.live | join('、') if cn else ns.live | join(', ') }}{% else %}{{ '全部处于待机或关闭' if cn else 'Everything is idle or off' }}{% endif %}{% endif %}
+
+        {% if ns.quiet %}{{ ('另有 %d 台设备无数据，未计入。' % ns.quiet) if cn else (('1 more is not reporting and is left out of the count.' if ns.quiet == 1 else '%d more are not reporting and are left out of the count.' % ns.quiet)) }}{% else %}{{ '四台设备全部有数据。' if cn else 'All 4 are reporting.' }}{% endif %}
+    - type: markdown
+      grid_options: {columns: 6, rows: 3}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set s = states('media_player.living_room_tv_samsung_q9_series_65') -%}
+        {%- set ch = states('sensor.living_room_samsung_q9_series_65_tv_channel_name') -%}
+        {%- set src = state_attr('media_player.living_room_tv_samsung_q9_series_65','source') -%}
+        {%- set vol = state_attr('media_player.living_room_tv_samsung_q9_series_65','volume_level') | float(none) -%}
+        **{{ '客厅电视' if cn else 'LIVING ROOM TV' }}**
+        {% if s in ['playing','on','buffering'] %}## {{ '播放中' if cn else 'On' }}
+        {{ (ch if ch not in ['unavailable','unknown','none',''] else (src or ('信号源未知' if cn else 'Source unknown'))) }}{% elif s == 'paused' %}## {{ '已暂停' if cn else 'Paused' }}
+        {{ (ch if ch not in ['unavailable','unknown','none',''] else ('已暂停播放' if cn else 'Playback is paused')) }}{% elif s in ['off','idle','standby'] %}## {{ '已关闭' if cn else 'Off' }}
+        {{ '电视处于关闭或待机' if cn else 'The TV is off or on standby' }}{% else %}## —
+        {{ '电视无数据' if cn else 'The TV is not reporting' }}{% endif %}
+
+        {{ '音量' if cn else 'Volume' }} **{{ ((vol * 100) | round(0) | int ~ '%') if vol is not none else '—' }}**
+    - type: markdown
+      grid_options: {columns: 6, rows: 3}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set p = states('media_player.55_qled_4k_ai_qa55q7faawxxy') -%}
+        {%- set r = states('media_player.q70f8036') -%}
+        {%- set lbl = {'playing':('Playing','播放中'),'paused':('Paused','已暂停'),'on':('On','已开启'),
+                       'buffering':('Buffering','缓冲中'),'off':('Off','已关闭'),
+                       'idle':('Idle','待机'),'standby':('Standby','待机')} -%}
+        {%- set act = ['playing','paused','on','buffering'] -%}
+        {%- set live = (1 if p in act else 0) + (1 if r in act else 0) -%}
+        **{{ '其他屏幕' if cn else 'OTHER SCREENS' }}**
+        {% if p in ['unavailable','unknown','none',''] and r in ['unavailable','unknown','none',''] %}## —
+        {{ '两台电视都没有数据' if cn else 'Neither TV is reporting' }}{% else %}## {{ live }}/2
+        {{ '台屏幕正在使用中' if cn else ('screen in use right now' if live == 1 else 'screens in use right now') }}{% endif %}
+
+        {{ '父母房' if cn else 'Parents Room' }} **{{ (lbl[p][1] if cn else lbl[p][0]) if p in lbl else '—' }}** · {{ 'Ray 卧室' if cn else 'Ray Bedroom' }} **{{ (lbl[r][1] if cn else lbl[r][0]) if r in lbl else '—' }}**
+    - type: markdown
+      grid_options: {columns: 6, rows: 3}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set dead = [('media_player.pogo','Pogo speaker','Pogo 音箱'),
+                        ('light.kogan_tv','Kogan TV backlight','Kogan 电视背光')] -%}
+        {%- set ns = namespace(down=[], up=0) -%}
+        {%- for e, en, zh in dead %}{% if states(e) in ['unavailable','unknown'] %}{% set ns.down = ns.down + [zh if cn else en] %}{% else %}{% set ns.up = ns.up + 1 %}{% endif %}{% endfor -%}
+        **{{ '未接入的设备' if cn else 'NOT REPORTING' }}**
+        {% if ns.down %}## {{ ns.down | count }}
+        {{ ns.down | join('、') if cn else ns.down | join(', ') }}{% else %}## 0
+        {{ '所有影音设备都有数据' if cn else 'Every entertainment device is reporting' }}{% endif %}
+
+        {{ 'Pogo 音箱与 Kogan 电视背光都位于客房。此卡片存在的意义，是让上方的统计不必假装它们不存在。' if cn else 'Pogo and the Kogan TV backlight both live in the Guest Room. This card exists so the counts above do not have to pretend they are not there.' }}
 
   - type: grid
     column_span: 1
