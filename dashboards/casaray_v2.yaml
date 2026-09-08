@@ -6074,6 +6074,90 @@ views:
 
         {{ now().strftime('%d/%m/%y') }}
 
+  # KPI strip, per DESIGN_REFERENCE section 3 ("Cameras") and the content-grid
+  # rule that an overview page opens with 4-5 equal status cards. Same shape as
+  # the Home strip: uppercase micro-label, one large value, a caption, then a
+  # detail row. Every figure is counted from entities this page already reads,
+  # and each card keeps its own "not reporting" branch -- two of the six
+  # cameras are down today and the strip must say so rather than round up.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: markdown
+      grid_options: {columns: 6, rows: 3}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set cams = [('camera.front_door_live_view','Front Door','前门'),
+                        ('camera.tapo_c425_north_wall_hd_stream_direct','North Wall','北墙'),
+                        ('camera.tapo_c420_east_wall_hd_stream_direct','East Wall','东墙'),
+                        ('camera.tapo_c420_south_wall_hd_stream_direct','South Wall','南墙'),
+                        ('camera.tapo_c200_stockroom_hd_stream_direct','Stockroom','储藏室'),
+                        ('camera.smart_pet_feeder','Pet Feeder','宠物喂食器')] -%}
+        {%- set ns = namespace(up=0, down=[]) -%}
+        {%- for c, en, zh in cams %}{% if states(c) not in ['unavailable','unknown'] %}{% set ns.up = ns.up + 1 %}{% else %}{% set ns.down = ns.down + [zh if cn else en] %}{% endif %}{% endfor -%}
+        **{{ '在线摄像头' if cn else 'CAMERAS ONLINE' }}**
+        ## {{ ns.up }}/{{ cams | count }}
+        {% if ns.down %}{{ ('离线：' ~ ns.down | join('、')) if cn else ('Offline: ' ~ ns.down | join(', ')) }}{% else %}{{ '全部摄像头正在推流' if cn else 'Every camera is streaming' }}{% endif %}
+
+        {{ '离线的摄像头不会录制，也不会触发动作提醒。' if cn else 'An offline camera records nothing and raises no motion alert.' }}
+    - type: markdown
+      grid_options: {columns: 6, rows: 3}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set bats = [('sensor.front_door_battery','Front Door','前门'),
+                        ('sensor.living_room_ringring_battery','RingRing','RingRing'),
+                        ('sensor.tapo_c425_north_wall_battery','North Wall','北墙'),
+                        ('sensor.tapo_camera_bcca_battery','East Wall','东墙'),
+                        ('sensor.tapo_c420_south_wall_battery','South Wall','南墙')] -%}
+        {%- set ns = namespace(low=none, who='', n=0, dead=0) -%}
+        {%- for b, en, zh in bats %}{% set v = states(b) | float(none) %}{% if v is not none %}{% set ns.n = ns.n + 1 %}{% if ns.low is none or v < ns.low %}{% set ns.low = v %}{% set ns.who = zh if cn else en %}{% endif %}{% else %}{% set ns.dead = ns.dead + 1 %}{% endif %}{% endfor -%}
+        **{{ '摄像头电量' if cn else 'CAMERA BATTERY' }}**
+        {% if ns.low is not none %}## {{ ns.low | round(0) | int }}%
+        {{ (ns.who ~ ' 电量最低') if cn else ('Lowest is ' ~ ns.who) }}{% else %}## —
+        {{ '没有摄像头报告电量' if cn else 'No camera is reporting a battery level' }}{% endif %}
+
+        {{ ns.n }}{{ '/' }}{{ bats | count }} {{ '个电池传感器有数据' if cn else 'battery sensors reporting' }}{% if ns.dead %} · {{ ns.dead }} {{ '个无数据' if cn else 'not reporting' }}{% endif %}
+    - type: markdown
+      grid_options: {columns: 6, rows: 3}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set la = states('sensor.front_door_last_activity') -%}
+        {%- set lat = as_timestamp(la, default=none) -%}
+        {%- set fb = states('sensor.front_door_battery') | float(none) -%}
+        {%- set md = states('switch.front_door_motion_detection') -%}
+        **{{ '门铃' if cn else 'DOORBELL' }}**
+        {# A future timestamp is possible (clock skew on the doorbell, or a
+            sensor that reports ahead) and must not render as "-128 mins ago".
+            Anything under a minute, in either direction, is "just now". -#}
+        {% if lat is not none %}{% set mins = ((as_timestamp(now()) - lat) / 60) | round(0) | int %}{% if mins < 1 %}## {{ '刚刚' if cn else 'Just now' }}
+        {% elif mins < 60 %}## {{ mins }} {{ '分钟前' if cn else ('min ago' if mins == 1 else 'mins ago') }}
+        {% elif mins < 1440 %}## {{ (mins / 60) | round(0) | int }} {{ '小时前' if cn else 'hours ago' }}
+        {% else %}## {{ (mins / 1440) | round(0) | int }} {{ '天前' if cn else 'days ago' }}
+        {% endif %}{{ '前门最近一次活动' if cn else 'Last activity at the front door' }}{% else %}## —
+        {{ '前门尚未报告活动时间' if cn else 'The front door has not reported an activity time' }}{% endif %}
+
+        {{ '电量' if cn else 'Battery' }} **{{ (fb | round(0) | int ~ '%') if fb is not none else '—' }}** · {{ '动作侦测' if cn else 'Motion detection' }} **{{ ('开启' if cn else 'On') if md == 'on' else (('关闭' if cn else 'Off') if md == 'off' else ('无数据' if cn else 'Unknown')) }}**
+    - type: markdown
+      grid_options: {columns: 6, rows: 3}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {#- Privacy mode blinds a camera while leaving it "online", so it is
+            the one camera setting worth carrying in the strip. Only the three
+            that report are counted; the South and East Wall privacy switches
+            are unavailable with their cameras and are named, not assumed. -#}
+        {%- set privs = [('switch.tapo_c425_north_wall_privacy','North Wall','北墙'),
+                         ('switch.tapo_c200_stockroom_privacy','Stockroom','储藏室'),
+                         ('switch.smart_pet_feeder_privacy_mode','Pet Feeder','宠物喂食器')] -%}
+        {%- set ns = namespace(on=[], off=0, unk=0) -%}
+        {%- for p, en, zh in privs %}{% set s = states(p) %}{% if s == 'on' %}{% set ns.on = ns.on + [zh if cn else en] %}{% elif s == 'off' %}{% set ns.off = ns.off + 1 %}{% else %}{% set ns.unk = ns.unk + 1 %}{% endif %}{% endfor -%}
+        **{{ '隐私模式' if cn else 'PRIVACY MODE' }}**
+        {% if ns.on %}## {{ '已开启' if cn else 'On' }}
+        {{ ('以下摄像头已被遮蔽：' ~ ns.on | join('、')) if cn else ('Blinded: ' ~ ns.on | join(', ')) }}{% elif ns.unk == privs | count %}## —
+        {{ '没有摄像头报告隐私模式状态' if cn else 'No camera is reporting its privacy setting' }}{% else %}## {{ '关闭' if cn else 'Off' }}
+        {{ '%d 个报告中的摄像头都在正常监看' % ns.off if cn else '%d reporting cameras are watching normally' % ns.off }}{% endif %}
+
+        {{ '南墙与东墙的隐私开关随摄像头一同离线，此处不作假设。' if cn else 'The South and East Wall privacy switches are offline with their cameras; nothing is assumed for them.' }}
+
   - type: grid
     column_span: 2
     cards:
@@ -6418,6 +6502,76 @@ views:
         ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
         {{ now().strftime('%d/%m/%y') }}
+
+  # KPI strip, per DESIGN_REFERENCE section 2 ("People Mapping"), reduced to
+  # what this instance can actually answer. The mockup's Total People Tracked,
+  # At Home and Away are real; Active Zones and the map are not, because the
+  # only zone entity here is zone.home. Same card shape as the Home strip.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: markdown
+      grid_options: {columns: 6, rows: 3}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set people = ['person.raymond_du','person.vinh_du','person.ai_q_huang'] -%}
+        {%- set ns = namespace(home=[], away=[], unk=0) -%}
+        {%- for p in people %}{% set s = states(p) %}{% set n = state_attr(p,'friendly_name') or p %}{% if s == 'home' %}{% set ns.home = ns.home + [n] %}{% elif s in ['unavailable','unknown','none'] %}{% set ns.unk = ns.unk + 1 %}{% else %}{% set ns.away = ns.away + [n] %}{% endif %}{% endfor -%}
+        **{{ '在家' if cn else 'AT HOME' }}**
+        ## {{ ns.home | count }}/{{ people | count }}
+        {% if ns.home %}{{ ns.home | join('、') if cn else ns.home | join(', ') }}{% elif ns.unk == people | count %}{{ '没有成员报告位置' if cn else 'Nobody is reporting a location' }}{% else %}{{ '家中无人' if cn else 'Nobody is home' }}{% endif %}
+
+        {{ '外出' if cn else 'Away' }} **{{ ns.away | count }}**{% if ns.unk %} · {{ '位置无数据' if cn else 'Location unknown' }} **{{ ns.unk }}**{% endif %}
+    - type: markdown
+      grid_options: {columns: 6, rows: 3}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {#- zone.home is Home Assistant's own count of everything tracked in
+            the Home zone, which includes device trackers that are not tied to
+            a person. It can therefore disagree with the person count above,
+            and that disagreement is the point of showing both. -#}
+        {%- set z = states('zone.home') | int(none) -%}
+        {%- set people = ['person.raymond_du','person.vinh_du','person.ai_q_huang'] -%}
+        {%- set ns = namespace(home=0) -%}
+        {%- for p in people %}{% if is_state(p,'home') %}{% set ns.home = ns.home + 1 %}{% endif %}{% endfor -%}
+        **{{ '住宅区域' if cn else 'HOME ZONE' }}**
+        {% if z is not none %}## {{ z }}
+        {{ '个被追踪对象在住宅范围内' if cn else ('tracker in the home zone' if z == 1 else 'trackers in the home zone') }}{% else %}## —
+        {{ '住宅区域没有报告数量' if cn else 'The home zone is not reporting a count' }}{% endif %}
+
+        {% if z is not none and z != ns.home %}{{ '与上方按成员统计的 %d 不一致：住宅区域也会统计未绑定成员的设备。' % ns.home if cn else 'Differs from the %d counted by person above: the zone also counts trackers not tied to a person.' % ns.home }}{% else %}{{ '与按成员统计的结果一致。' if cn else 'Agrees with the count by person.' }}{% endif %}
+    - type: markdown
+      grid_options: {columns: 6, rows: 3}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set devs = [('sensor.raymonds_iphone_battery_level','Ray iPhone','Ray iPhone'),
+                        ('sensor.raymonds_ipad_battery_level','Ray iPad','Ray iPad'),
+                        ('sensor.ais_iphone_battery_level','Ai iPhone','Ai iPhone'),
+                        ('sensor.vine_s_phone_battery_level','Vinh phone','Vinh 手机')] -%}
+        {%- set ns = namespace(low=none, who='', n=0, dead=0) -%}
+        {%- for b, en, zh in devs %}{% set v = states(b) | float(none) %}{% if v is not none %}{% set ns.n = ns.n + 1 %}{% if ns.low is none or v < ns.low %}{% set ns.low = v %}{% set ns.who = zh if cn else en %}{% endif %}{% else %}{% set ns.dead = ns.dead + 1 %}{% endif %}{% endfor -%}
+        **{{ '设备电量' if cn else 'DEVICE BATTERY' }}**
+        {% if ns.low is not none %}## {{ ns.low | round(0) | int }}%
+        {{ (ns.who ~ ' 电量最低') if cn else ('Lowest is ' ~ ns.who) }}{% else %}## —
+        {{ '没有设备报告电量' if cn else 'No device is reporting a battery level' }}{% endif %}
+
+        {{ ns.n }}{{ '/' }}{{ devs | count }} {{ '台设备有数据' if cn else 'devices reporting' }}{% if ns.dead %} · {{ ns.dead }} {{ '台无数据' if cn else 'not reporting' }}{% endif %}
+    - type: markdown
+      grid_options: {columns: 6, rows: 3}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {#- Only Ray's iPhone reports distance and activity; the other phones
+            expose battery alone. The card says so rather than implying the
+            household is one person. -#}
+        {%- set d = states('sensor.raymonds_iphone_distance') | float(none) -%}
+        {%- set u = state_attr('sensor.raymonds_iphone_distance','unit_of_measurement') or '' -%}
+        {%- set a = states('sensor.raymonds_iphone_activity') -%}
+        **{{ 'RAY 的 iPhone' if cn else 'RAY’S IPHONE' }}**
+        {% if d is not none %}## {{ d | round(1) }} {{ u }}
+        {{ '距离住宅' if cn else 'from home' }}{% else %}## —
+        {{ '距离传感器无数据' if cn else 'The distance sensor is not reporting' }}{% endif %}
+
+        {{ '活动状态' if cn else 'Activity' }} **{{ a if a not in ['unavailable','unknown','none',''] else '—' }}** · {{ '仅此设备报告距离与活动。' if cn else 'Only this device reports distance and activity.' }}
 
   - type: grid
     column_span: 1
