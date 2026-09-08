@@ -4094,6 +4094,72 @@ views:
 
         {{ now().strftime('%d/%m/%y') }}
 
+  # KPI strip, per DESIGN_REFERENCE's content-grid rule and the Home mockup's
+  # INDOOR CLIMATE card. The average names the rooms it averaged: an earlier
+  # version of this figure read "19.1 across 2 rooms" beside a page showing
+  # three, and the only fix for that is to print the working.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: markdown
+      grid_options: {columns: 6, rows: 3}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set ts = [('sensor.living_room_living_hue_hue_sensor_temperature','Living Room','客厅'),
+                      ('sensor.bedroom_motion_sensor_temperature','Parents Room','父母房'),
+                      ('sensor.living_room_living_room_temperature','Dining','餐厅')] -%}
+        {%- set ns = namespace(sum=0.0, n=0, got=[], quiet=[]) -%}
+        {%- for t, en, zh in ts %}{% set f = states(t) | float(none) %}{% if f is not none %}{% set ns.sum = ns.sum + f %}{% set ns.n = ns.n + 1 %}{% set ns.got = ns.got + [zh if cn else en] %}{% else %}{% set ns.quiet = ns.quiet + [zh if cn else en] %}{% endif %}{% endfor -%}
+        **{{ '室内平均温度' if cn else 'INDOOR AVERAGE' }}**
+        {% if ns.n %}{% set avg = ns.sum / ns.n %}## {{ avg | round(1) }} °C
+        {% if avg >= 18 and avg <= 25 %}{{ '舒适' if cn else 'Comfortable' }}{% elif avg < 18 %}{{ '偏冷' if cn else 'Cool' }}{% else %}{{ '偏热' if cn else 'Warm' }}{% endif %}{% else %}## —
+        {{ '没有房间报告温度' if cn else 'No room is reporting a temperature' }}{% endif %}
+
+        {% if ns.n %}{{ ('取自：' ~ ns.got | join('、')) if cn else ('Averaged over ' ~ ns.got | join(', ')) }}{% endif %}{% if ns.quiet %} · {{ ('无数据：' ~ ns.quiet | join('、')) if cn else ('not reporting: ' ~ ns.quiet | join(', ')) }}{% endif %}
+    - type: markdown
+      grid_options: {columns: 6, rows: 3}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set h = states('sensor.bedroom_motion_sensor_humidity') | float(none) -%}
+        **{{ '湿度' if cn else 'HUMIDITY' }}**
+        {% if h is not none %}## {{ h | round(0) | int }}%
+        {% if h >= 30 and h <= 60 %}{{ '舒适区间' if cn else 'Comfortable range' }}{% elif h < 30 %}{{ '偏干' if cn else 'Dry' }}{% else %}{{ '偏湿' if cn else 'Humid' }}{% endif %}{% else %}## —
+        {{ '湿度传感器无数据' if cn else 'The humidity sensor is not reporting' }}{% endif %}
+
+        {{ '全屋只有父母房的传感器报告湿度，因此这不是全屋平均值。' if cn else 'Only the Parents Room sensor reports humidity, so this is one room, not a house average.' }}
+    - type: markdown
+      grid_options: {columns: 6, rows: 3}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set hv = states('climate.bedroom_parents_room_ac') -%}
+        {%- set raw = states('sensor.master_bedroom_sensibo_sky_plus_air_conditioner_mode') -%}
+        {%- set en = {'cool':'Cooling','heat':'Heating','dry':'Dry','fanOnly':'Fan only','auto':'Auto'} -%}
+        {%- set zh = {'cool':'制冷','heat':'制热','dry':'除湿','fanOnly':'仅送风','auto':'自动'} -%}
+        {%- set sp = states('sensor.master_bedroom_sensibo_sky_plus_cooling_setpoint') | float(none) -%}
+        {%- set cur = state_attr('climate.bedroom_parents_room_ac','current_temperature') | float(none) -%}
+        **{{ '父母房空调' if cn else 'PARENTS ROOM AC' }}**
+        {% if hv in ['unavailable','unknown','none',''] %}## —
+        {{ '空调无数据' if cn else 'The air conditioner is not reporting' }}{% elif hv == 'off' %}## {{ '已关闭' if cn else 'Off' }}
+        {{ '当前未运行' if cn else 'Not running' }}{% else %}## {{ zh.get(raw, raw) if cn else en.get(raw, raw) }}
+        {{ '正在运行' if cn else 'Running' }}{% endif %}
+
+        {{ '室温' if cn else 'Room' }} **{{ (cur | round(1) ~ ' °C') if cur is not none else '—' }}** · {{ '制冷设定' if cn else 'Cool setpoint' }} **{{ (sp | round(0) | int ~ ' °C') if sp is not none else '—' }}**
+    - type: markdown
+      grid_options: {columns: 6, rows: 3}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set f = states('binary_sensor.bedroom_parents_room_ac_filter_clean_required') -%}
+        {%- set occ = states('binary_sensor.bedroom_parents_room_ac_room_occupied') -%}
+        {%- set lr = states('sensor.bedroom_parents_room_ac_filter_last_reset') -%}
+        {%- set lrt = as_timestamp(lr, default=none) -%}
+        **{{ '空调滤网' if cn else 'AC FILTER' }}**
+        {% if f == 'on' %}## {{ '需要清洁' if cn else 'Clean it' }}
+        {{ '空调报告滤网需要清洁' if cn else 'The unit is asking for a filter clean' }}{% elif f == 'off' %}## {{ '正常' if cn else 'Clean' }}
+        {{ '空调没有要求清洁滤网' if cn else 'The unit is not asking for a clean' }}{% else %}## —
+        {{ '滤网状态无数据' if cn else 'Filter status is not reporting' }}{% endif %}
+
+        {% if lrt is not none %}{% set days = ((as_timestamp(now()) - lrt) / 86400) | round(0, 'floor') | int %}{{ ('上次重置：%d 天前' % days) if cn else ('Last reset %d days ago' % days) }}{% else %}{{ '尚未记录重置时间' if cn else 'No reset has been recorded' }}{% endif %} · {{ '房间' if cn else 'Room' }} **{{ ('有人' if cn else 'Occupied') if occ == 'on' else (('无人' if cn else 'Empty') if occ == 'off' else ('无数据' if cn else 'Unknown')) }}**
+
   - type: grid
     column_span: 1
     cards:
@@ -5724,6 +5790,89 @@ views:
         ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
         {{ now().strftime('%d/%m/%y') }}
+
+  # KPI strip, per DESIGN_REFERENCE's content-grid rule and the Home mockup's
+  # SECURITY card. Same shape as the Home and Cameras strips. Every count is
+  # taken from entities already on this page, and the doors card leads with
+  # "Unconfirmed" rather than "Secure" because all three contact sensors are
+  # down -- CLAUDE.md forbids a card asserting a reassuring state it cannot
+  # see, and this is the page where that matters most.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: markdown
+      grid_options: {columns: 6, rows: 3}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set doors = [('binary_sensor.f_contact_sensor_door','Front','前门'),
+                         ('binary_sensor.m_contact_sensor_door','Parents Room','父母房'),
+                         ('binary_sensor.b_contact_sensor_door','Backyard','后院')] -%}
+        {%- set ns = namespace(open=[], shut=0, quiet=[]) -%}
+        {%- for d, en, zh in doors %}{% set s = states(d) %}{% if s == 'on' %}{% set ns.open = ns.open + [zh if cn else en] %}{% elif s == 'off' %}{% set ns.shut = ns.shut + 1 %}{% else %}{% set ns.quiet = ns.quiet + [zh if cn else en] %}{% endif %}{% endfor -%}
+        **{{ '外门' if cn else 'EXTERNAL DOORS' }}**
+        {% if ns.open %}## {{ '有门开启' if cn else 'Open' }}
+        {{ (ns.open | join('、') ~ '开启') if cn else (ns.open | join(', ') ~ ' open') }}{% elif ns.quiet %}## {{ '无法确认' if cn else 'Unconfirmed' }}
+        {{ ('%d/%d 个门磁没有数据' % (ns.quiet | count, doors | count)) if cn else ('%d of %d door sensors are not reporting' % (ns.quiet | count, doors | count)) }}{% else %}## {{ '已关闭' if cn else 'Closed' }}
+        {{ '三扇外门全部关闭' if cn else 'All 3 external doors are closed' }}{% endif %}
+
+        {% if ns.quiet %}{{ ('无数据：' ~ ns.quiet | join('、') ~ '。门磁离线时，此处不会显示“已关闭”。') if cn else ('Silent: ' ~ ns.quiet | join(', ') ~ '. A door with no sensor is never reported as closed.') }}{% else %}{{ '三个门磁都有数据。' if cn else 'All 3 door sensors are reporting.' }}{% endif %}
+    - type: markdown
+      grid_options: {columns: 6, rows: 3}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set mot = [('binary_sensor.living_room_living_hue_hue_sensor_motion','Living Room','客厅'),
+                       ('binary_sensor.k_motion_sensor_motion','Kitchen','厨房'),
+                       ('binary_sensor.bedroom_motion_sensor_motion','Parents Room','父母房'),
+                       ('binary_sensor.sensor_group_motion','Dining','餐厅')] -%}
+        {%- set ns = namespace(active=[], still=0, quiet=0) -%}
+        {%- for m, en, zh in mot %}{% set s = states(m) %}{% if s == 'on' %}{% set ns.active = ns.active + [zh if cn else en] %}{% elif s == 'off' %}{% set ns.still = ns.still + 1 %}{% else %}{% set ns.quiet = ns.quiet + 1 %}{% endif %}{% endfor -%}
+        **{{ '动作' if cn else 'MOTION' }}**
+        {% if ns.active %}## {{ ns.active | count }} {{ '个房间' if cn else ('room' if ns.active | count == 1 else 'rooms') }}
+        {{ (ns.active | join('、') ~ '检测到动作') if cn else ('Movement in ' ~ ns.active | join(', ')) }}{% elif ns.quiet == mot | count %}## —
+        {{ '没有动作传感器有数据' if cn else 'No motion sensor is reporting' }}{% else %}## {{ '安静' if cn else 'Still' }}
+        {{ ('%d 个传感器都没有检测到动作' % ns.still) if cn else ('%d sensors report no movement' % ns.still) }}{% endif %}
+
+        {{ ns.still + (ns.active | count) }}{{ '/' }}{{ mot | count }} {{ '个传感器有数据' if cn else 'sensors reporting' }}{% if ns.quiet %} · {{ ns.quiet }} {{ '个无数据' if cn else 'silent' }}{% endif %}
+    - type: markdown
+      grid_options: {columns: 6, rows: 3}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set cams = [('camera.front_door_live_view','Front Door','前门'),
+                        ('camera.tapo_c425_north_wall_hd_stream_direct','North Wall','北墙'),
+                        ('camera.tapo_c420_east_wall_hd_stream_direct','East Wall','东墙'),
+                        ('camera.tapo_c420_south_wall_hd_stream_direct','South Wall','南墙'),
+                        ('camera.tapo_c200_stockroom_hd_stream_direct','Stockroom','储藏室'),
+                        ('camera.smart_pet_feeder','Pet Feeder','宠物喂食器')] -%}
+        {%- set ns = namespace(up=0, down=[]) -%}
+        {%- for c, en, zh in cams %}{% if states(c) not in ['unavailable','unknown'] %}{% set ns.up = ns.up + 1 %}{% else %}{% set ns.down = ns.down + [zh if cn else en] %}{% endif %}{% endfor -%}
+        **{{ '摄像头' if cn else 'CAMERAS' }}**
+        ## {{ ns.up }}/{{ cams | count }}
+        {% if ns.down %}{{ ('离线：' ~ ns.down | join('、')) if cn else ('Offline: ' ~ ns.down | join(', ')) }}{% else %}{{ '全部摄像头正在推流' if cn else 'Every camera is streaming' }}{% endif %}
+
+        {{ '网络' if cn else 'Internet' }} **{{ ('在线' if cn else 'Online') if is_state('binary_sensor.eero_wan_status','on') else (('离线' if cn else 'Offline') if is_state('binary_sensor.eero_wan_status','off') else ('无数据' if cn else 'Unknown')) }}**
+    - type: markdown
+      grid_options: {columns: 6, rows: 3}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {# Six switches, one question: will this camera tell anyone? They are
+           not all named the same thing by their integrations -- motion
+           detection, person detection, notifications, motion alarm -- so the
+           card counts cameras that have their alerting switch on rather than
+           claiming they are one setting. #}
+        {%- set al = [('switch.front_door_motion_detection','Front Door','前门'),
+                      ('switch.tapo_c425_north_wall_notifications','North Wall','北墙'),
+                      ('switch.tapo_camera_bcca_motion_detection','East Wall','东墙'),
+                      ('switch.tapo_c420_south_wall_motion_detection','South Wall','南墙'),
+                      ('switch.tapo_c200_stockroom_notifications','Stockroom','储藏室'),
+                      ('switch.smart_pet_feeder_motion_alarm','Pet Feeder','宠物喂食器')] -%}
+        {%- set ns = namespace(on=0, off=[], quiet=0) -%}
+        {%- for a, en, zh in al %}{% set s = states(a) %}{% if s == 'on' %}{% set ns.on = ns.on + 1 %}{% elif s == 'off' %}{% set ns.off = ns.off + [zh if cn else en] %}{% else %}{% set ns.quiet = ns.quiet + 1 %}{% endif %}{% endfor -%}
+        **{{ '警报设置' if cn else 'ALERTING' }}**
+        {% if ns.on + (ns.off | count) %}## {{ ns.on }}/{{ ns.on + (ns.off | count) }}
+        {% if ns.off %}{{ ('未开启：' ~ ns.off | join('、')) if cn else ('Not alerting: ' ~ ns.off | join(', ')) }}{% else %}{{ '所有报告中的摄像头都会发出提醒' if cn else 'Every reporting camera will raise an alert' }}{% endif %}{% else %}## —
+        {{ '没有摄像头报告警报设置' if cn else 'No camera is reporting an alerting setting' }}{% endif %}
+
+        {{ '各集成对这项设置的命名不同（动作侦测、人形侦测、通知、动作警报），此处统计的是“会不会通知你”。' if cn else 'The integrations name this differently — motion detection, person detection, notifications, motion alarm — so this counts cameras that will tell you, not one shared setting.' }}
 
   - type: grid
     column_span: 1
