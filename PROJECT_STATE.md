@@ -83,11 +83,48 @@ B1 confirmed live but no board was reading:
 
 These are settled. Do not revert or re-litigate them.
 
+**2026-09-06 → 2026-09-08 live-verification and mockup-fidelity session** —
+grouped rather than listed batch by batch; `git log 0d2b58a..HEAD` has the full
+sequence.
+
+*Correctness, from live data.* `81e7c8e` resolved the Bills three-way
+contradiction (the overview never read `<x>_amount`, so an unconfigured helper
+read as overdue forever). `1d1f871` proved the House Health "228 offline
+devices" figure counts *entities*, not devices, and relabelled it. `d2a8a18`
+fixed a climate average that skipped a room the page displays and read
+`fanOnly` as a fault. `399e57a` fixed day-difference arithmetic that reported a
+bill due today as one day overdue — `round(0)` where `round(0, 'ceil')` was
+meant, now gated. `1fbf73e` fixed a 1000× error in the Home KPI strip, which
+read Wh as kWh; found by the live connector, now gated. `059f65a` turned
+"Reset filter — Unknown" back into an action.
+
+*Mockup fidelity.* `f310cc1` moved card-title typography into the theme.
+`03e6633`, `87d388f`, `59bebfc` brought the Home KPI strip, room status chips,
+footer navigation and uppercase page titles across. `dd93a54` applied the
+mockup's colour semantics to 40 tiles. `da22100` added native status badges to
+all 20 full views. `624736d`, `896ca34`, `28752c3` gave Cameras, People,
+Security, Climate, Lighting and Entertainment the KPI strip the content-grid
+rule calls for.
+
+*Coverage.* `57858e8` and `75b27c8` swept every room area in the entity
+registry and put the devices Home Assistant assigns to a room onto that room's
+page. Backyard was deliberately left unbuilt — all sixteen of its entities are
+unavailable; see `CR-234`.
+
+*New gates in `dashboard_check.py`* — now 13 checks. Wh printed as kWh,
+day-difference rounding, on/off tested against a domain that never reports it,
+`button`/`scene`/`event` shown as a state-bearing tile, CJK broken across a
+fold boundary, unpaired bilingual heading cards.
+
+These are settled. Do not revert or re-litigate them.
+
 ### Facts a routine needs before editing v2
 
 - Native-first: 1 custom card type (`custom:webrtc-camera`) against the legacy
   file's 6, no `card_mod`, no Mushroom, surface treatment from the theme.
-- It references **311 entities**, every one of them present in the B1 export.
+- It references **404 entities**, every one of them present in the B1 export.
+  (311 at the 2026-09-05 freeze; the growth is the area sweep and the KPI
+  strips, not new invention — the gate below would have caught that.)
   Re-check with `python3 scripts/reconcile_entities.py` — this is a gate in
   `ha_validate.sh`, section 3, so a fabricated ID cannot be committed.
 - url_path is **`casaray-v2`** — Home Assistant requires the hyphen in a YAML
