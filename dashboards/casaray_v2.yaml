@@ -5989,18 +5989,22 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: binary_sensor.f_contact_sensor_door
       color: red
       name: Front door
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: binary_sensor.m_contact_sensor_door
       color: red
       name: Parents Room door
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: binary_sensor.b_contact_sensor_door
       color: red
       name: Backyard door
     - type: history-graph
+      grid_options: {columns: 12, rows: 4}
       hours_to_show: 24
       entities:
       - entity: binary_sensor.f_contact_sensor_door
@@ -6030,15 +6034,19 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: binary_sensor.living_room_living_hue_hue_sensor_motion
       name: Living Room
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: binary_sensor.k_motion_sensor_motion
       name: Kitchen
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: binary_sensor.sensor_group_motion
       name: Dining
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: binary_sensor.bedroom_motion_sensor_motion
       name: Parents Room
 
@@ -6067,6 +6075,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: markdown
+      grid_options: {columns: 12, rows: 2}
       content: >-
         {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
         {% set priv = ['switch.tapo_c425_north_wall_privacy',
@@ -6100,62 +6109,62 @@ views:
     - type: tile
       entity: switch.front_door_motion_detection
       name: Front Door motion
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
       tap_action: {action: more-info}
     - type: tile
       entity: switch.front_door_in_home_chime
       name: Front Door chime
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
       tap_action: {action: more-info}
     - type: tile
       entity: switch.tapo_c425_north_wall_privacy
       name: North Wall privacy
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
       tap_action: {action: more-info}
     - type: tile
       entity: switch.tapo_c425_north_wall_notifications
       name: North Wall alerts
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
       tap_action: {action: more-info}
     - type: tile
       entity: switch.tapo_camera_bcca_motion_detection
       name: East Wall motion
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
       tap_action: {action: more-info}
     - type: tile
       entity: switch.tapo_camera_bcca_person_detection
       name: East Wall person
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
       tap_action: {action: more-info}
     - type: tile
       entity: switch.tapo_c420_south_wall_motion_detection
       name: South Wall motion
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
       tap_action: {action: more-info}
     - type: tile
       entity: switch.tapo_c420_south_wall_person_detection
       name: South Wall person
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
       tap_action: {action: more-info}
     - type: tile
       entity: switch.tapo_c200_stockroom_privacy
       name: Stockroom privacy
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
       tap_action: {action: more-info}
     - type: tile
       entity: switch.tapo_c200_stockroom_notifications
       name: Stockroom alerts
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
       tap_action: {action: more-info}
     - type: tile
       entity: switch.smart_pet_feeder_privacy_mode
       name: Pet feeder privacy
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
       tap_action: {action: more-info}
     - type: tile
       entity: switch.smart_pet_feeder_motion_alarm
       name: Pet feeder alarm
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
       tap_action: {action: more-info}
 
   - type: grid
@@ -6196,6 +6205,7 @@ views:
       grid_options: {columns: 12, rows: 1}
       tap_action: {action: more-info}
     - type: markdown
+      grid_options: {columns: 12, rows: 2}
       content: >-
         {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
         {% if cn %}这些警报器仅显示状态。点按打开详情，不会直接触发。H200
@@ -6223,6 +6233,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: markdown
+      grid_options: {columns: 12, rows: 2}
       content: >-
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set cams = [('Front
         Door','前门','camera.front_door_live_view'), ('North
