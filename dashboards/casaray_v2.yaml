@@ -3785,16 +3785,19 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: light.living_room
       name: Living Room
       features:
       - type: light-brightness
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: light.dining
       name: Dining
       features:
       - type: light-brightness
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: light.bedroom_bedroom
       name: Ray Bedroom
       features:
@@ -3820,12 +3823,15 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: switch.mainroomlight_switch_1
       name: Parents Room
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: switch.dinning_light_switch_1
       name: Dining
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: switch.bedroomlight_switch_1
       name: Ray Bedroom
 
@@ -3885,9 +3891,11 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: light.smart_pet_feeder_indicator_light
       name: Pet feeder indicator
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: light.kogan_tv
       name: Kogan TV backlight
 
@@ -4319,6 +4327,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: thermostat
+      grid_options: {columns: 12, rows: 5}
       entity: climate.bedroom_parents_room_ac
       features:
       - type: climate-hvac-modes
@@ -4372,6 +4381,7 @@ views:
       name: AC mode when on
       grid_options: {columns: 6, rows: 1}
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: sensor.master_bedroom_sensibo_sky_plus_cooling_setpoint
       name: AC setpoint
     - type: markdown
@@ -4383,7 +4393,7 @@ views:
         {% set hv = states('climate.bedroom_parents_room_ac') -%}
         {% if raw in ['unavailable','unknown','none',''] %}{{ '空调模式无数据。' if cn else 'The air conditioner mode is not reporting.' }}{% else %}{% set nice = (zh.get(raw, raw) if cn else en.get(raw, raw)) -%}
         {% if hv == 'off' %}{% if cn %}空调当前**已关闭**。上方的“{{ nice }}”是它下次开启时将使用的模式，不是当前正在运行的模式。{% else %}The air conditioner is **off**. "{{ nice }}" above is the mode it will use when it is next turned on, not what it is doing now.{% endif %}{% else %}{% if cn %}空调正在运行，模式为 **{{ nice }}**。{% else %}The air conditioner is running in **{{ nice }}**.{% endif %}{% endif %}{% endif %}
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 12, rows: 3}
 
   - type: grid
     column_span: 2
@@ -7099,10 +7109,12 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: automation.gas_meter_pulse_counter
       name: Gas meter pulse counter
       icon: mdi:meter-gas
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: automation.bills_reset_ytd_totals
       name: Reset bills YTD totals
       icon: mdi:calendar-refresh
@@ -7127,18 +7139,22 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: switch.hue_bridge_automation_coming_home
       name: Coming home
       icon: mdi:home-import-outline
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: switch.hue_bridge_automation_leaving_home
       name: Leaving home
       icon: mdi:home-export-outline
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: switch.hue_bridge_automation_nightlight_on_nightlight_off
       name: Nightlight schedule
       icon: mdi:lightbulb-night-outline
     - type: markdown
+      grid_options: {columns: 12, rows: 2}
       content: >-
         {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
         {% if cn %}这三项自动化在 Hue 网桥上运行，不在 Home Assistant
@@ -7167,10 +7183,12 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: automation.deploy_deez_dashboard_updates
       name: Dashboard deployment updates
       icon: mdi:source-branch-sync
     - type: markdown
+      grid_options: {columns: 12, rows: 2}
       content: >-
         {{ '设计简报中的 Door → Dining、Work Prep、Good Morning、Away Mode 和 Good Night 是目标示例；B1 导出没有这些 automation.* 实体，所以此处不会虚构它们。' if is_state('input_boolean.chinese_dashboard','on') else 'Door → Dining, Work Prep, Good Morning, Away Mode and Good Night are design targets only. The B1 export contains no matching automation.* entities, so CasaRay does not fabricate them.' }}
 
@@ -7321,12 +7339,15 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: media-control
+      grid_options: {columns: 12, rows: 3}
       entity: media_player.living_room_tv_samsung_q9_series_65
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: remote.living_room_tv_samsung_q9_series_65
       name: Power
       icon: mdi:remote-tv
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: sensor.living_room_samsung_q9_series_65_tv_channel_name
       name: Channel
 
@@ -7360,8 +7381,10 @@ views:
     # ID: it is the rollback baseline, and the evidence is not conclusive
     # enough to edit it.
     - type: media-control
+      grid_options: {columns: 12, rows: 3}
       entity: media_player.55_qled_4k_ai_qa55q7faawxxy
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: remote.55_qled_4k_ai_qa55q7faawxxy
       name: Power
       icon: mdi:remote-tv
@@ -7386,6 +7409,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: media-control
+      grid_options: {columns: 12, rows: 3}
       entity: media_player.q70f8036
 
   - type: grid
@@ -7396,8 +7420,10 @@ views:
       heading_style: title
       icon: mdi:speaker
     - type: media-control
+      grid_options: {columns: 12, rows: 3}
       entity: media_player.pogo
     - type: markdown
+      grid_options: {columns: 12, rows: 2}
       content: >-
         {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
         {% if states('media_player.pogo') in ['unavailable','unknown'] %}{% if cn
@@ -7424,11 +7450,13 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: light.living_room
       name: Living Room
       features:
       - type: light-brightness
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: light.kogan_tv
       name: Kogan TV backlight
 
@@ -7909,6 +7937,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: conditional
+      grid_options: {columns: 6, rows: 1}
       conditions:
       - condition: state
         entity: binary_sensor.eero_wan_status
@@ -7920,6 +7949,7 @@ views:
         icon: mdi:wan
         color: red
     - type: conditional
+      grid_options: {columns: 6, rows: 1}
       conditions:
       - condition: state
         entity: binary_sensor.g_monitor_freezer_p110m_overloaded
@@ -7931,6 +7961,7 @@ views:
         icon: mdi:flash-alert
         color: red
     - type: conditional
+      grid_options: {columns: 6, rows: 1}
       conditions:
       - condition: state
         entity: binary_sensor.emergency_button_dad_cloud_connection
@@ -7942,6 +7973,7 @@ views:
         icon: mdi:bell-off
         color: red
     - type: conditional
+      grid_options: {columns: 6, rows: 1}
       conditions:
       - condition: state
         entity: binary_sensor.emergency_button_mum_cloud_connection
@@ -7973,6 +8005,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: conditional
+      grid_options: {columns: 6, rows: 1}
       conditions:
       - condition: state
         entity: binary_sensor.f_contact_sensor_door
@@ -7983,6 +8016,7 @@ views:
         name: Front door open
         color: orange
     - type: conditional
+      grid_options: {columns: 6, rows: 1}
       conditions:
       - condition: state
         entity: binary_sensor.b_contact_sensor_door
@@ -7993,6 +8027,7 @@ views:
         name: Backyard door open
         color: orange
     - type: conditional
+      grid_options: {columns: 6, rows: 1}
       conditions:
       - condition: state
         entity: binary_sensor.lg_fridge_door
@@ -8003,6 +8038,7 @@ views:
         name: Fridge door open
         color: orange
     - type: conditional
+      grid_options: {columns: 6, rows: 1}
       conditions:
       - condition: numeric_state
         entity: sensor.front_door_battery
@@ -8013,6 +8049,7 @@ views:
         name: Front Door battery low
         color: orange
     - type: conditional
+      grid_options: {columns: 6, rows: 1}
       conditions:
       - condition: numeric_state
         entity: sensor.living_room_ringring_battery
@@ -8023,6 +8060,7 @@ views:
         name: RingRing battery low
         color: orange
     - type: conditional
+      grid_options: {columns: 6, rows: 1}
       conditions:
       - condition: numeric_state
         entity: sensor.tapo_c425_north_wall_battery
@@ -8033,6 +8071,7 @@ views:
         name: North Wall camera battery low
         color: orange
     - type: conditional
+      grid_options: {columns: 6, rows: 1}
       conditions:
       - condition: numeric_state
         entity: sensor.aqara_roller_shade_driver_e1_battery
@@ -8063,6 +8102,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: conditional
+      grid_options: {columns: 6, rows: 1}
       conditions:
       - condition: state
         entity: binary_sensor.bedroom_parents_room_ac_filter_clean_required
@@ -8073,6 +8113,7 @@ views:
         name: Parents Room AC filter needs cleaning
         color: blue
     - type: conditional
+      grid_options: {columns: 6, rows: 1}
       conditions:
       - condition: state
         entity: sensor.primo_5_0_1_1_ac_power
@@ -8083,6 +8124,7 @@ views:
         name: Solar inverter offline
         color: blue
     - type: conditional
+      grid_options: {columns: 6, rows: 1}
       conditions:
       - condition: state
         entity: binary_sensor.lph_se_dcd9_pump
@@ -8093,6 +8135,7 @@ views:
         name: Grow unit pump running
         color: blue
     - type: markdown
+      grid_options: {columns: 12, rows: 2}
       content: >-
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% if cn
         %}此处的严重程度由实时状态计算得出。已读标记、通知历史与免打扰时段**尚未实现**：本实例没有任何通知或持久化警报实体来保存这些状态，而一个每次刷新就忘记的已读标记比没有更糟。{%
