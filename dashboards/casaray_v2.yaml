@@ -1143,6 +1143,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: light.living_room
       name: Living Room
       features:
@@ -1164,6 +1165,7 @@ views:
       name: Hue spot 4
       grid_options: {columns: 6, rows: 1}
     - type: markdown
+      grid_options: {columns: 12, rows: 2}
       content: >-
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set spots =
         ['light.living_room_hue_ambiance_spot_1',
@@ -1238,6 +1240,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: media-control
+      grid_options: {columns: 12, rows: 3}
       entity: media_player.living_room_tv_samsung_q9_series_65
 
 
@@ -1261,6 +1264,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: fan.living_room_air_purifier
       name: Air purifier
       features:
@@ -1340,6 +1344,7 @@ views:
       name: Front door
       grid_options: {columns: 6, rows: 1}
     - type: history-graph
+      grid_options: {columns: 12, rows: 4}
       hours_to_show: 12
       entities:
       - entity: sensor.living_room_living_hue_hue_sensor_temperature
@@ -1367,6 +1372,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: picture-entity
+      grid_options: {columns: 12, rows: 4}
       entity: camera.front_door_live_view
       name: Front Door
       camera_view: auto
@@ -1636,14 +1642,17 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: switch.k_coffee_p100
       name: Coffee
       icon: mdi:coffee-maker
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: switch.k_bot_p100
       name: Bottom bench
       icon: mdi:power-plug
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: switch.k_top_p100
       name: Top bench
       icon: mdi:power-plug
@@ -1674,22 +1683,26 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: binary_sensor.lg_fridge_door
       color: amber
       name: Fridge door
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: number.lg_fridge_fridge_temperature
       name: Fridge setpoint
       features:
       - type: numeric-input
         style: buttons
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: number.lg_fridge_freezer_temperature
       name: Freezer setpoint
       features:
       - type: numeric-input
         style: buttons
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: switch.lg_fridge_express_mode
       name: Express mode
       icon: mdi:snowflake-alert
@@ -1727,7 +1740,7 @@ views:
       grid_options: {columns: 6, rows: 1}
 
   - type: grid
-    column_span: 2
+    column_span: 1
     cards:
     - type: heading
       heading: Sensors
@@ -1782,6 +1795,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: todo-list
+      grid_options: {columns: 12, rows: 5}
       entity: todo.shopping_list
 
   # Level-3 detail per the briefing's progressive disclosure. Each Kitchen
@@ -2052,11 +2066,13 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: light.dining
       name: Dining light
       features:
       - type: light-brightness
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: switch.dinning_light_switch_1
       name: Wall switch
       icon: mdi:light-switch
@@ -2088,6 +2104,7 @@ views:
     # living_room; B1 puts it in Dining, so the two boards agree rather than
     # contradict each other.
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: sensor.living_room_living_room_temperature
       name: Temperature
     - type: tile
@@ -2370,6 +2387,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: thermostat
+      grid_options: {columns: 12, rows: 5}
       entity: climate.bedroom_parents_room_ac
       features:
       - type: climate-hvac-modes
@@ -2385,6 +2403,7 @@ views:
       icon: mdi:timer-outline
       grid_options: {columns: 6, rows: 1}
     - type: conditional
+      grid_options: {columns: 6, rows: 1}
       conditions:
       - condition: state
         entity: switch.bedroom_parents_room_ac_timer
@@ -2415,6 +2434,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: switch.mainroomlight_switch_1
       name: Main light
       icon: mdi:light-switch
@@ -2435,6 +2455,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: media-control
+      grid_options: {columns: 12, rows: 3}
       entity: media_player.55_qled_4k_ai_qa55q7faawxxy
 
   - type: grid
@@ -2457,6 +2478,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: markdown
+      grid_options: {columns: 12, rows: 2}
       content: >-
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set d =
         states('binary_sensor.emergency_button_dad_cloud_connection') -%} {% set m =
@@ -2496,6 +2518,7 @@ views:
     # Neither is acceptable, so the card states its own scope. See CR-195: the
     # owner needs to press one and confirm what actually happens.
     - type: markdown
+      grid_options: {columns: 12, rows: 2}
       content: >-
         {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
         {% if cn %}以上显示的是按钮与云端的连接状态和信号强度。两个按键事件实体目前均无数据，因此按下按钮不会在此显示。请勿仅凭此页判断紧急按钮可用。{%
@@ -2545,6 +2568,7 @@ views:
       name: Door
       grid_options: {columns: 6, rows: 1}
     - type: history-graph
+      grid_options: {columns: 12, rows: 4}
       hours_to_show: 24
       entities:
       - entity: sensor.bedroom_motion_sensor_temperature
@@ -2553,7 +2577,7 @@ views:
         name: Humidity
 
   - type: grid
-    column_span: 2
+    column_span: 1
     cards:
     - type: heading
       heading: AC maintenance
@@ -2575,11 +2599,11 @@ views:
       entity: binary_sensor.bedroom_parents_room_ac_filter_clean_required
       color: amber
       name: Filter clean required
-      grid_options: {columns: 4, rows: 1}
+      grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: sensor.bedroom_parents_room_ac_filter_last_reset
       name: Filter last reset
-      grid_options: {columns: 4, rows: 1}
+      grid_options: {columns: 6, rows: 1}
     # A `button` entity's state is the timestamp of its last press, so a
     # button never pressed reads `Unknown` -- and as a tile that renders as
     # "Reset filter — Unknown", which looks like a broken sensor rather than
@@ -2590,7 +2614,7 @@ views:
       name: Reset filter timer
       icon: mdi:restart
       show_state: false
-      grid_options: {columns: 4, rows: 1}
+      grid_options: {columns: 6, rows: 1}
       tap_action:
         action: perform-action
         perform_action: button.press
@@ -2602,13 +2626,13 @@ views:
     - type: tile
       entity: update.bedroom_parents_room_ac_firmware
       name: AC firmware
-      grid_options: {columns: 4, rows: 1}
+      grid_options: {columns: 6, rows: 1}
 
   # The five-socket power point in this room was assigned to Parents Room in
   # Home Assistant and appeared on no page at all. All five confirmed live
   # 2026-09-07: device_class outlet, all on.
   - type: grid
-    column_span: 2
+    column_span: 1
     cards:
     - type: heading
       heading: Power point
@@ -2629,23 +2653,23 @@ views:
     - type: tile
       entity: switch.master_bedroom_power_point_socket_1
       name: Socket 1
-      grid_options: {columns: 4, rows: 1}
+      grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: switch.master_bedroom_power_point_socket_2
       name: Socket 2
-      grid_options: {columns: 4, rows: 1}
+      grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: switch.master_bedroom_power_point_socket_3
       name: Socket 3
-      grid_options: {columns: 4, rows: 1}
+      grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: switch.master_bedroom_power_point_socket_4
       name: Socket 4
-      grid_options: {columns: 4, rows: 1}
+      grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: switch.master_bedroom_power_point_socket_5
       name: Socket 5
-      grid_options: {columns: 4, rows: 1}
+      grid_options: {columns: 6, rows: 1}
 
   # The television's own energy monitoring, and the light sensor mounted with
   # it. Both are assigned to this room and were unused.
@@ -2941,11 +2965,13 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: light.bedroom_bedroom
       name: Bedroom light
       features:
       - type: light-brightness
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: switch.bedroomlight_switch_1
       name: Wall switch
       icon: mdi:light-switch
@@ -2954,6 +2980,7 @@ views:
     # `light.master_bedroom_nightlight` is the dead duplicate; this is the one
     # that reports.
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: light.bedroom_nightlight
       name: Nightlight
       icon: mdi:lightbulb-night-outline
@@ -2980,12 +3007,14 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: cover.aqara_roller_shade_driver_e1
       name: Roller shade
       features:
       - type: cover-open-close
       - type: cover-position
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: sensor.aqara_roller_shade_driver_e1_battery
       name: Blind battery
 
@@ -3015,24 +3044,30 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: switch.lph_se_dcd9_power
       name: Power
       icon: mdi:power
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: switch.lph_se_dcd9_pump_cycling
       name: Pump cycling
       icon: mdi:water-sync
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: binary_sensor.lph_se_dcd9_pump
       name: Pump running
       icon: mdi:water-pump
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: select.lph_se_dcd9_light_mode
       name: Light mode
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: select.lph_se_dcd9_light_brightness
       name: Light brightness
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: number.lph_se_dcd9_plants_age
       name: Plant age
 
@@ -3056,6 +3091,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: switch.r_energy_monitor_p110m
       name: Energy monitor plug
     - type: tile
@@ -3075,6 +3111,7 @@ views:
       icon: mdi:flash-alert
       grid_options: {columns: 12, rows: 1}
     - type: history-graph
+      grid_options: {columns: 12, rows: 4}
       hours_to_show: 24
       entities:
       - entity: sensor.r_energy_monitor_p110m_current_consumption
@@ -3299,15 +3336,18 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: switch.g_monitor_freezer_p110m
       name: Freezer plug
       icon: mdi:power-plug
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: binary_sensor.g_monitor_freezer_p110m_cloud_connection
       color: green
       name: Socket reachable
       icon: mdi:cloud-check-outline
     - type: markdown
+      grid_options: {columns: 12, rows: 2}
       content: >-
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set o =
         states('binary_sensor.g_monitor_freezer_p110m_overloaded') %} {% set s =
@@ -3359,6 +3399,7 @@ views:
       name: Voltage
       grid_options: {columns: 6, rows: 1}
     - type: history-graph
+      grid_options: {columns: 12, rows: 4}
       hours_to_show: 24
       entities:
       - entity: sensor.g_monitor_freezer_p110m_current_consumption
@@ -3367,7 +3408,7 @@ views:
   # Level-3: the freezer socket's protection and auto-off configuration.
   # Power protection matters here -- this socket runs a freezer.
   - type: grid
-    column_span: 2
+    column_span: 1
     cards:
     - type: heading
       heading: Device settings
@@ -3519,6 +3560,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: switch.g_printer_p100
       name: Printer plug
     - type: tile
@@ -3562,9 +3604,11 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: light.kogan_tv
       name: Kogan TV backlight
     - type: media-control
+      grid_options: {columns: 12, rows: 3}
       entity: media_player.pogo
 
   # Footer navigation, per the room mockups' bottom bar. The header already
