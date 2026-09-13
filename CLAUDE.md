@@ -157,6 +157,25 @@ Global first: put surface treatment in the theme so future cards inherit it,
 rather than adding a `card_mod` block per card. Reach for a native Tile or
 Section treatment before custom CSS.
 
+**Every card declares its own geometry.** A card with no `grid_options`
+takes whatever width the renderer gives it, which goes ragged beside sized
+siblings — and only on the device you were not looking at. `dashboard_check.py`
+check 13 fails the build on an unsized card in `casaray_v2.yaml`.
+
+The width follows the section, and that is the page's visual hierarchy:
+
+- **`column_span: 1`** is a detail list. Tiles, buttons and conditionals take
+  `columns: 6` (two across); prose, graphs, media and thermostats take
+  `columns: 12`.
+- **`column_span: 2`** is page-level — the header row, the status chip strip,
+  Quick actions, media blocks, the footer. Tiles take `columns: 3` or `4`,
+  chosen so the card count divides evenly and no row is left with an orphan.
+
+Two deliberate exceptions, both full-width-of-a-half-section: the Security
+sirens and the Ray Bedroom overload alarm. Long names, and controls that must
+not be mis-tapped. If you normalise them to 6 columns you have made the page
+worse, not more consistent.
+
 **iPad landscape renders about two usable columns.** Design for two,
 whatever `max_columns` says. Do not cram four narrow columns onto the iPad.
 

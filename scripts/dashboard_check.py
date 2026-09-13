@@ -103,6 +103,17 @@ def strip_jinja_tags(body):
     return "".join(out)
 
 
+# Card types that occupy a slot in a sections-view grid and must say how big
+# that slot is. `heading` is excluded: it is a section label, not a card, and
+# HA sizes it itself. Nested cards (inside `conditional`) are not listed
+# either -- the wrapper owns the slot, so the wrapper is what must declare it.
+CARD_TYPES_NEEDING_GRID = {
+    "tile", "button", "markdown", "conditional", "history-graph",
+    "statistics-graph", "media-control", "thermostat", "picture-entity",
+    "todo-list", "logbook", "weather-forecast", "entities", "gauge",
+}
+
+
 def committed(path):
     """The version of `path` in HEAD, or None if it is a new file."""
     r = subprocess.run(["git", "show", f"HEAD:{path}"],
@@ -414,7 +425,34 @@ def check(path):
                      f"languages; correct only for a proper noun")
     print(f"  unpaired bilingual heads : {len(unpaired)}")
 
-    # 13. mass-damage detection against HEAD
+    # 13. every card in the canonical dashboard must declare its geometry
+    #
+    # A card with no `grid_options` takes whatever width the renderer gives
+    # it. Beside siblings that are sized, the row goes ragged -- and it goes
+    # ragged only on the device the author was not looking at. The polish
+    # pass of 2026-09-13 sized all 141 such cards; this keeps them sized.
+    #
+    # Scoped to casaray_v2 on purpose. The legacy dashboard is a Masonry
+    # layout where `grid_options` means nothing, and it is not ours to
+    # restyle -- see CLAUDE.md.
+    if path.endswith("casaray_v2.yaml"):
+        bare = []
+
+        def sized(node):
+            if (node.get("type") in CARD_TYPES_NEEDING_GRID
+                    and not node.get("grid_options")):
+                bare.append((node.get("type"),
+                             node.get("entity") or node.get("name") or ""))
+        for view in views:
+            for section in view.get("sections") or []:
+                for card in section.get("cards") or []:
+                    sized(card)
+        for t, ident in bare:
+            fails.append(f"{path}: a {t} card declares no grid_options, so its "
+                         f"width is whatever the renderer picks — {ident!r}")
+        print(f"  cards without geometry   : {len(bare)}")
+
+    # 14. mass-damage detection against HEAD
     old = committed(path)
     if old is None:
         print("  mass-damage check        : new file, no baseline")
