@@ -83,55 +83,55 @@ views:
     column_span: 2
     cards:
     - type: button
-      grid_options: {columns: 3, rows: 1}
+      grid_options: {columns: 4, rows: 1}
       name: Rooms
       icon: mdi:floor-plan
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
     - type: button
-      grid_options: {columns: 3, rows: 1}
+      grid_options: {columns: 4, rows: 1}
       name: Energy
       icon: mdi:lightning-bolt
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
     - type: button
-      grid_options: {columns: 3, rows: 1}
+      grid_options: {columns: 4, rows: 1}
       name: Security
       icon: mdi:shield-home
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/security}
     - type: button
-      grid_options: {columns: 3, rows: 1}
+      grid_options: {columns: 4, rows: 1}
       name: Cameras
       icon: mdi:cctv
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
     - type: button
-      grid_options: {columns: 3, rows: 1}
+      grid_options: {columns: 4, rows: 1}
       name: Bills
       icon: mdi:file-document-outline
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/bills}
     - type: button
-      grid_options: {columns: 3, rows: 1}
+      grid_options: {columns: 4, rows: 1}
       name: Entertainment
       icon: mdi:television-play
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/entertainment}
     - type: button
-      grid_options: {columns: 3, rows: 1}
+      grid_options: {columns: 4, rows: 1}
       name: Automations
       icon: mdi:robot
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/automations}
     - type: button
-      grid_options: {columns: 3, rows: 1}
+      grid_options: {columns: 4, rows: 1}
       name: Alerts
       icon: mdi:bell-alert
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/alerts}
     - type: button
-      grid_options: {columns: 3, rows: 1}
+      grid_options: {columns: 4, rows: 1}
       name: Health
       icon: mdi:heart-pulse
       show_state: false
@@ -234,6 +234,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: markdown
+      grid_options: {columns: 12, rows: 2}
       content: >-
         {% set cn = is_state('input_boolean.chinese_dashboard','on') -%} {% set
         doors = ['binary_sensor.f_contact_sensor_door',
@@ -278,6 +279,7 @@ views:
 
         {% endif %}{% endif %}
     - type: conditional
+      grid_options: {columns: 6, rows: 1}
       conditions:
       - condition: state
         entity: binary_sensor.f_contact_sensor_door
@@ -290,6 +292,7 @@ views:
         color: red
         tap_action: {action: navigate, navigation_path: /casaray-v2/security}
     - type: conditional
+      grid_options: {columns: 6, rows: 1}
       conditions:
       - condition: state
         entity: binary_sensor.b_contact_sensor_door
@@ -302,6 +305,7 @@ views:
         color: red
         tap_action: {action: navigate, navigation_path: /casaray-v2/security}
     - type: conditional
+      grid_options: {columns: 6, rows: 1}
       conditions:
       - condition: state
         entity: binary_sensor.m_contact_sensor_door
@@ -313,6 +317,7 @@ views:
         icon: mdi:door-open
         color: orange
     - type: conditional
+      grid_options: {columns: 6, rows: 1}
       conditions:
       - condition: numeric_state
         entity: sensor.front_door_battery
@@ -325,6 +330,7 @@ views:
         color: orange
         tap_action: {action: navigate, navigation_path: /casaray-v2/house-health}
     - type: conditional
+      grid_options: {columns: 6, rows: 1}
       conditions:
       - condition: numeric_state
         entity: sensor.living_room_ringring_battery
@@ -337,6 +343,7 @@ views:
         color: orange
         tap_action: {action: navigate, navigation_path: /casaray-v2/house-health}
     - type: conditional
+      grid_options: {columns: 6, rows: 1}
       conditions:
       - condition: numeric_state
         entity: sensor.tapo_c425_north_wall_battery
@@ -349,6 +356,7 @@ views:
         color: orange
         tap_action: {action: navigate, navigation_path: /casaray-v2/house-health}
     - type: conditional
+      grid_options: {columns: 6, rows: 1}
       conditions:
       - condition: state
         entity: binary_sensor.eero_wan_status
@@ -361,6 +369,7 @@ views:
         color: red
         tap_action: {action: navigate, navigation_path: /casaray-v2/house-health}
     - type: conditional
+      grid_options: {columns: 6, rows: 1}
       conditions:
       - condition: state
         entity: binary_sensor.g_monitor_freezer_p110m_overloaded
@@ -372,6 +381,7 @@ views:
         icon: mdi:flash-alert
         color: red
     - type: conditional
+      grid_options: {columns: 6, rows: 1}
       conditions:
       - condition: state
         entity: binary_sensor.bedroom_parents_room_ac_filter_clean_required
@@ -383,6 +393,7 @@ views:
         icon: mdi:air-filter
         color: orange
     - type: conditional
+      grid_options: {columns: 6, rows: 1}
       conditions:
       - condition: state
         entity: binary_sensor.lg_fridge_door
@@ -415,20 +426,22 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: zone.home
       name: People home
       icon: mdi:home-account
       tap_action: {action: navigate, navigation_path: /casaray-v2/people}
     - type: tile
       entity: person.raymond_du
-      grid_options: {columns: 4, rows: 1}
+      grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: person.vinh_du
-      grid_options: {columns: 4, rows: 1}
+      grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: person.ai_q_huang
-      grid_options: {columns: 4, rows: 1}
+      grid_options: {columns: 6, rows: 1}
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: binary_sensor.eero_wan_status
       color: green
       name: Internet
@@ -461,6 +474,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: markdown
+      grid_options: {columns: 12, rows: 2}
       content: >-
         {% set cn = is_state('input_boolean.chinese_dashboard','on') -%} {% set
         doors = ['binary_sensor.f_contact_sensor_door',
@@ -478,17 +492,17 @@ views:
       entity: binary_sensor.f_contact_sensor_door
       color: red
       name: Front door
-      grid_options: {columns: 4, rows: 1}
+      grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: binary_sensor.m_contact_sensor_door
       color: red
       name: Parents Room
-      grid_options: {columns: 4, rows: 1}
+      grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: binary_sensor.b_contact_sensor_door
       color: red
       name: Backyard
-      grid_options: {columns: 4, rows: 1}
+      grid_options: {columns: 6, rows: 1}
 
   # --- Energy now. The inverter is offline right now; guard every read. ---
   - type: grid
@@ -517,6 +531,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: markdown
+      grid_options: {columns: 12, rows: 2}
       content: >-
         {% set cn = is_state('input_boolean.chinese_dashboard','on') -%} {% set p
         = states('sensor.powerpal_gateway_powerpal_power') -%} {% set s =
@@ -536,28 +551,28 @@ views:
       color: amber
       name: House power
       icon: mdi:transmission-tower
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 3, rows: 1}
       tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
     - type: tile
       entity: sensor.powerpal_gateway_powerpal_daily_energy
       color: amber
       name: Used today
       icon: mdi:counter
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 3, rows: 1}
       tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
     - type: tile
       entity: sensor.primo_5_0_1_1_ac_power
       color: green
       name: Solar now
       icon: mdi:solar-power-variant
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 3, rows: 1}
       tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
     - type: tile
       entity: sensor.primo_5_0_1_1_energy_day
       color: green
       name: Solar today
       icon: mdi:weather-sunny
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 3, rows: 1}
       tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
 
   # --- Rooms. P5: one line of state per room, tap to open. ---
@@ -707,12 +722,14 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: picture-entity
+      grid_options: {columns: 12, rows: 4}
       entity: camera.front_door_live_view
       name: Front Door
       camera_view: auto
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/camera-front-door}
     - type: button
+      grid_options: {columns: 12, rows: 1}
       name: All cameras
       icon: mdi:cctv
       show_state: false
