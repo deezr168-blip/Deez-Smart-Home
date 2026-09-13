@@ -6369,21 +6369,26 @@ views:
       content: |
         {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
         {#- Privacy mode blinds a camera while leaving it "online", so it is
-            the one camera setting worth carrying in the strip. Only the three
-            that report are counted; the South and East Wall privacy switches
-            are unavailable with their cameras and are named, not assumed. -#}
+            the one camera setting worth carrying in the strip. All five
+            privacy switches are listed -- the Front Door camera has none --
+            and the ones that are silent are named from live state rather
+            than hardcoded. The first version of this card named South and
+            East Wall in fixed text; when the Pet Feeder went offline too,
+            the caption was quietly wrong and the count could not show it. -#}
         {%- set privs = [('switch.tapo_c425_north_wall_privacy','North Wall','北墙'),
                          ('switch.tapo_c200_stockroom_privacy','Stockroom','储藏室'),
-                         ('switch.smart_pet_feeder_privacy_mode','Pet Feeder','宠物喂食器')] -%}
-        {%- set ns = namespace(on=[], off=0, unk=0) -%}
-        {%- for p, en, zh in privs %}{% set s = states(p) %}{% if s == 'on' %}{% set ns.on = ns.on + [zh if cn else en] %}{% elif s == 'off' %}{% set ns.off = ns.off + 1 %}{% else %}{% set ns.unk = ns.unk + 1 %}{% endif %}{% endfor -%}
+                         ('switch.smart_pet_feeder_privacy_mode','Pet Feeder','宠物喂食器'),
+                         ('switch.tapo_c420_south_wall_privacy','South Wall','南墙'),
+                         ('switch.tapo_c420_east_wall_privacy','East Wall','东墙')] -%}
+        {%- set ns = namespace(on=[], off=0, unk=[]) -%}
+        {%- for p, en, zh in privs %}{% set s = states(p) %}{% if s == 'on' %}{% set ns.on = ns.on + [zh if cn else en] %}{% elif s == 'off' %}{% set ns.off = ns.off + 1 %}{% else %}{% set ns.unk = ns.unk + [zh if cn else en] %}{% endif %}{% endfor -%}
         **{{ '隐私模式' if cn else 'PRIVACY MODE' }}**
         {% if ns.on %}## {{ '已开启' if cn else 'On' }}
-        {{ ('以下摄像头已被遮蔽：' ~ ns.on | join('、')) if cn else ('Blinded: ' ~ ns.on | join(', ')) }}{% elif ns.unk == privs | count %}## —
+        {{ ('以下摄像头已被遮蔽：' ~ ns.on | join('、')) if cn else ('Blinded: ' ~ ns.on | join(', ')) }}{% elif (ns.unk | count) == (privs | count) %}## —
         {{ '没有摄像头报告隐私模式状态' if cn else 'No camera is reporting its privacy setting' }}{% else %}## {{ '关闭' if cn else 'Off' }}
-        {{ '%d 个报告中的摄像头都在正常监看' % ns.off if cn else '%d reporting cameras are watching normally' % ns.off }}{% endif %}
+        {{ '%d 个报告中的摄像头都在正常监看' % ns.off if cn else ('%d reporting camera is watching normally' % ns.off if ns.off == 1 else '%d reporting cameras are watching normally' % ns.off) }}{% endif %}
 
-        {{ '南墙与东墙的隐私开关随摄像头一同离线，此处不作假设。' if cn else 'The South and East Wall privacy switches are offline with their cameras; nothing is assumed for them.' }}
+        {% if ns.unk %}{{ ('隐私开关无数据：' ~ ns.unk | join('、') ~ '，随其设备一同离线，此处不作假设。') if cn else ('No privacy reading from ' ~ ns.unk | join(', ') ~ ' — offline with their devices, and nothing is assumed for them.') }}{% else %}{{ '五个隐私开关全部有数据。前门摄像头没有隐私开关。' if cn else 'All 5 privacy switches are reporting. The Front Door camera has none.' }}{% endif %}
 
   - type: grid
     column_span: 2

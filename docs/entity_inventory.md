@@ -76,6 +76,26 @@ second time.
 | `switch.living_room_air_purifier` | `fan.living_room_air_purifier` | the fan entity carries speed control |
 | `media_player.living_room_samsung_q9_series_65` | `media_player.living_room_tv_samsung_q9_series_65` | speaker endpoint vs the TV; see `CR-190` |
 | `media_player.master_bedroom_55_qled_4k_ai` | `media_player.55_qled_4k_ai_qa55q7faawxxy` | two Parents Room entries, both live; see `CR-190` |
+| `binary_sensor.front_door_f_contact_sensor_door` | `binary_sensor.f_contact_sensor_door` | orphan duplicate; see the door note below |
+| `binary_sensor.master_bedroom_m_contact_sensor_door` | `binary_sensor.m_contact_sensor_door` | orphan duplicate; see the door note below |
+| `binary_sensor.backyard_b_contact_sensor_door` | `binary_sensor.b_contact_sensor_door` | orphan duplicate; see the door note below |
+
+**The three external door sensors each exist twice, and the live one is the
+un-prefixed ID.** Verified live 2026-09-13: for each door, exactly one of the
+pair reports `off` and the other reports `unavailable`, and the two are
+indistinguishable by friendly name and area. What settles it is the siblings:
+only the un-prefixed family has a `_cloud_connection` and a `_signal_level`
+entity, and live those report `on` and a signal number for all three doors. A
+device whose cloud connection and signal level are alive is the device that is
+alive, so `binary_sensor.f_contact_sensor_door`,
+`binary_sensor.m_contact_sensor_door` and `binary_sensor.b_contact_sensor_door`
+are the live ones. The area-prefixed three have no siblings at all. CasaRay
+already drives the un-prefixed IDs; do not "fix" them to the prefixed ones on
+the strength of the area prefix looking tidier.
+
+Note also that all six read `unavailable` in the 2026-09-05 export. The export
+is a snapshot, not a verdict: these sensors recovered afterwards. Availability
+in the export proves an ID exists, never that a device is dead today.
 
 **A `_2` suffix does not mean a duplicate, and the ID prefix does not mean the
 area.** `binary_sensor.living_room_living_room_motion` is the *Dining Room*
