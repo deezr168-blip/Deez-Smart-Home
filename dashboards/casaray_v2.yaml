@@ -6372,22 +6372,29 @@ views:
   - type: grid
     column_span: 2
     cards:
+    # `rows: auto` on all three, so the band is as tall as its tallest card
+    # and no taller. At rows: 2 the Home button was a mostly empty column the
+    # height of the title, and the subtitle was cut off mid-phrase.
     - type: button
-      grid_options: {columns: 2, rows: 1}
+      grid_options: {columns: 2, rows: auto}
       name: Home
       icon: mdi:home
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+    # The page title is `##`, not `#`. At `#` it renders around 40px, and
+    # "CAMERAS" needs ~217px of the 162px this card gets on a phone -- so it
+    # broke as "CAMER / AS". `##` fits with room to spare and is still the
+    # largest type on the page.
     - type: markdown
-      grid_options: {columns: 6, rows: 2}
+      grid_options: {columns: 6, rows: auto}
       content: >-
-        # {{ '摄像头' if is_state('input_boolean.chinese_dashboard','on') else
+        ## {{ '摄像头' if is_state('input_boolean.chinese_dashboard','on') else
         'CAMERAS' }}
 
         {{ '点击放大实时画面' if is_state('input_boolean.chinese_dashboard','on')
         else 'Tap a camera for the live view' }}
     - type: markdown
-      grid_options: {columns: 4, rows: 2}
+      grid_options: {columns: 4, rows: auto}
       content: >-
         ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
@@ -6403,7 +6410,7 @@ views:
     column_span: 2
     cards:
     - type: markdown
-      grid_options: {columns: 6, rows: 3}
+      grid_options: {columns: 6, rows: auto}
       content: |
         {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
         {%- set cams = [('camera.front_door_live_view','Front Door','前门'),
@@ -6416,11 +6423,9 @@ views:
         {%- for c, en, zh in cams %}{% if states(c) not in ['unavailable','unknown'] %}{% set ns.up = ns.up + 1 %}{% else %}{% set ns.down = ns.down + [zh if cn else en] %}{% endif %}{% endfor -%}
         **{{ '在线摄像头' if cn else 'CAMERAS ONLINE' }}**
         ## {{ ns.up }}/{{ cams | count }}
-        {% if ns.down %}{{ ('离线：' ~ ns.down | join('、')) if cn else ('Offline: ' ~ ns.down | join(', ')) }}{% else %}{{ '全部摄像头正在推流' if cn else 'Every camera is streaming' }}{% endif %}
-
-        {{ '离线的摄像头不会录制，也不会触发动作提醒。' if cn else 'An offline camera records nothing and raises no motion alert.' }}
+        {% if ns.down %}{{ ('离线：' ~ ns.down | join('、')) if cn else ('Offline: ' ~ ns.down | join(', ')) }}{% else %}{{ '全部在线' if cn else 'All streaming' }}{% endif %}
     - type: markdown
-      grid_options: {columns: 6, rows: 3}
+      grid_options: {columns: 6, rows: auto}
       content: |
         {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
         {%- set bats = [('sensor.front_door_battery','Front Door','前门'),
@@ -6433,11 +6438,11 @@ views:
         **{{ '摄像头电量' if cn else 'CAMERA BATTERY' }}**
         {% if ns.low is not none %}## {{ ns.low | round(0) | int }}%
         {{ (ns.who ~ ' 电量最低') if cn else ('Lowest is ' ~ ns.who) }}{% else %}## —
-        {{ '没有摄像头报告电量' if cn else 'No camera is reporting a battery level' }}{% endif %}
+        {{ '没有摄像头报告电量' if cn else 'No camera is reporting a battery level' }}{% endif %}{% if ns.dead %}
 
-        {{ ns.n }}{{ '/' }}{{ bats | count }} {{ '个电池传感器有数据' if cn else 'battery sensors reporting' }}{% if ns.dead %} · {{ ns.dead }} {{ '个无数据' if cn else 'not reporting' }}{% endif %}
+        {{ ns.dead }}{{ '/' }}{{ bats | count }} {{ '个电池无数据' if cn else 'batteries not reporting' }}{% endif %}
     - type: markdown
-      grid_options: {columns: 6, rows: 3}
+      grid_options: {columns: 6, rows: auto}
       content: |
         {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
         {%- set la = states('sensor.front_door_last_activity') -%}
@@ -6452,12 +6457,12 @@ views:
         {% elif mins < 60 %}## {{ mins }} {{ '分钟前' if cn else ('min ago' if mins == 1 else 'mins ago') }}
         {% elif mins < 1440 %}## {{ (mins / 60) | round(0) | int }} {{ '小时前' if cn else 'hours ago' }}
         {% else %}## {{ (mins / 1440) | round(0) | int }} {{ '天前' if cn else 'days ago' }}
-        {% endif %}{{ '前门最近一次活动' if cn else 'Last activity at the front door' }}{% else %}## —
-        {{ '前门尚未报告活动时间' if cn else 'The front door has not reported an activity time' }}{% endif %}
+        {% endif %}{{ '前门' if cn else 'Front door' }}{% else %}## —
+        {{ '尚未报告活动时间' if cn else 'No activity time reported' }}{% endif %}
 
         {{ '电量' if cn else 'Battery' }} **{{ (fb | round(0) | int ~ '%') if fb is not none else '—' }}** · {{ '动作侦测' if cn else 'Motion detection' }} **{{ ('开启' if cn else 'On') if md == 'on' else (('关闭' if cn else 'Off') if md == 'off' else ('无数据' if cn else 'Unknown')) }}**
     - type: markdown
-      grid_options: {columns: 6, rows: 3}
+      grid_options: {columns: 6, rows: auto}
       content: |
         {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
         {#- Privacy mode blinds a camera while leaving it "online", so it is
@@ -6478,9 +6483,9 @@ views:
         {% if ns.on %}## {{ '已开启' if cn else 'On' }}
         {{ ('以下摄像头已被遮蔽：' ~ ns.on | join('、')) if cn else ('Blinded: ' ~ ns.on | join(', ')) }}{% elif (ns.unk | count) == (privs | count) %}## —
         {{ '没有摄像头报告隐私模式状态' if cn else 'No camera is reporting its privacy setting' }}{% else %}## {{ '关闭' if cn else 'Off' }}
-        {{ '%d 个报告中的摄像头都在正常监看' % ns.off if cn else ('%d reporting camera is watching normally' % ns.off if ns.off == 1 else '%d reporting cameras are watching normally' % ns.off) }}{% endif %}
+        {{ ('%d/%d 个摄像头有数据' % (ns.off, privs | count)) if cn else ('%d of %d reporting' % (ns.off, privs | count)) }}{% endif %}{% if ns.unk %}
 
-        {% if ns.unk %}{{ ('隐私开关无数据：' ~ ns.unk | join('、') ~ '，随其设备一同离线，此处不作假设。') if cn else ('No privacy reading from ' ~ ns.unk | join(', ') ~ ' — offline with their devices, and nothing is assumed for them.') }}{% else %}{{ '五个隐私开关全部有数据。前门摄像头没有隐私开关。' if cn else 'All 5 privacy switches are reporting. The Front Door camera has none.' }}{% endif %}
+        {{ ('无数据：' ~ ns.unk | join('、')) if cn else ('No reading: ' ~ ns.unk | join(', ')) }}{% endif %}
 
   - type: grid
     column_span: 2
@@ -6553,7 +6558,7 @@ views:
       grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: sensor.front_door_last_activity
-      name: Front Door last seen
+      name: Last activity
       icon: mdi:motion-sensor
       grid_options: {columns: 4, rows: 1}
     - type: tile
@@ -6598,13 +6603,13 @@ views:
         state: 'on'
     - type: tile
       entity: light.tapo_c425_north_wall_floodlight_timed
-      name: North Wall floodlight
+      name: North Wall
       grid_options: {columns: 6, rows: 1}
       features:
       - type: light-brightness
     - type: tile
       entity: light.tapo_c200_stockroom_floodlight_timed
-      name: Stockroom floodlight
+      name: Stockroom
       grid_options: {columns: 6, rows: 1}
       features:
       - type: light-brightness
