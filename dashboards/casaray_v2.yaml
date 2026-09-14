@@ -61,19 +61,19 @@ views:
     column_span: 2
     cards:
     - type: markdown
-      grid_options: {columns: 8, rows: 2}
+      grid_options: {columns: 9, rows: auto}
       content: >-
-        {% set h = now().hour %} {% set cn =
-        is_state('input_boolean.chinese_dashboard','on') %} {% if h < 12 %}{%
+        {% set h = now().hour -%} {% set cn =
+        is_state('input_boolean.chinese_dashboard','on') -%} {% if h < 12 %}{%
         set g = '早安' if cn else 'Good morning' %}{% elif h < 18 %}{% set g =
         '午安' if cn else 'Good afternoon' %}{% else %}{% set g = '晚安' if cn
         else 'Good evening' %}{% endif %}
 
-        # {{ g }}{{ '，Ray' if cn else ', Ray' }}
+        ## {{ g }}{{ '，Ray' if cn else ', Ray' }}
 
         {{ 'CasaRay 家庭控制中心' if cn else 'CasaRay household control centre' }}
     - type: markdown
-      grid_options: {columns: 4, rows: 2}
+      grid_options: {columns: 3, rows: auto}
       content: >-
         ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
@@ -873,21 +873,21 @@ views:
     column_span: 2
     cards:
     - type: button
-      grid_options: {columns: 2, rows: 1}
+      grid_options: {columns: 2, rows: auto}
       name: Home
       icon: mdi:home
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 6, rows: 2}
+      grid_options: {columns: 7, rows: auto}
       content: >-
-        # {{ '房间' if is_state('input_boolean.chinese_dashboard','on') else
+        ## {{ '房间' if is_state('input_boolean.chinese_dashboard','on') else
         'ROOMS' }}
 
         {{ '选择一个房间' if is_state('input_boolean.chinese_dashboard','on')
         else 'Choose a room' }}
     - type: markdown
-      grid_options: {columns: 4, rows: 2}
+      grid_options: {columns: 3, rows: auto}
       content: >-
         ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
@@ -982,21 +982,21 @@ views:
     column_span: 2
     cards:
     - type: button
-      grid_options: {columns: 2, rows: 1}
+      grid_options: {columns: 2, rows: auto}
       name: Back
       icon: mdi:arrow-left
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
     - type: button
-      grid_options: {columns: 2, rows: 1}
+      grid_options: {columns: 2, rows: auto}
       name: Home
       icon: mdi:home
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 6, rows: 2}
+      grid_options: {columns: 6, rows: auto}
       content: >-
-        # {{ '客厅' if is_state('input_boolean.chinese_dashboard','on') else
+        ## {{ '客厅' if is_state('input_boolean.chinese_dashboard','on') else
         'LIVING ROOM' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
@@ -1008,7 +1008,7 @@ views:
         if cn else ' · occupied' }}{% elif m == 'off' %}{{ ' · 无人' if cn else ' · no
         motion' }}{% endif %}
     - type: markdown
-      grid_options: {columns: 4, rows: 2}
+      grid_options: {columns: 4, rows: auto}
       content: >-
         ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
@@ -1171,10 +1171,10 @@ views:
         ['light.living_room_hue_ambiance_spot_1',
         'light.living_room_hue_ambiance_spot_2',
         'light.living_room_hue_ambiance_spot_3',
-        'light.living_room_hue_ambiance_spot_4'] %} {% set ns =
-        namespace(down=0) %} {% for s in spots %}{% if states(s) in
+        'light.living_room_hue_ambiance_spot_4'] -%} {% set ns =
+        namespace(down=0) -%} {% for s in spots %}{% if states(s) in
         ['unavailable','unknown'] %}{% set ns.down = ns.down + 1 %}{% endif %}{%
-        endfor %} {% if ns.down == 4 %}{{ '四盏 Hue 射灯全部离线。Hue
+        endfor -%} {% if ns.down == 4 %}{{ '四盏 Hue 射灯全部离线。Hue
         桥接器无响应，这是桥接器故障，不是面板问题。' if cn else 'All four Hue spots are
         unavailable. The Hue bridge is not answering — this is a bridge fault, not a
         dashboard one.' }}{% elif ns.down %}{% if cn %}{{ ns.down }} 盏 Hue 射灯离线（共
@@ -1559,21 +1559,21 @@ views:
     column_span: 2
     cards:
     - type: button
-      grid_options: {columns: 2, rows: 1}
+      grid_options: {columns: 2, rows: auto}
       name: Back
       icon: mdi:arrow-left
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
     - type: button
-      grid_options: {columns: 2, rows: 1}
+      grid_options: {columns: 2, rows: auto}
       name: Home
       icon: mdi:home
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 6, rows: 2}
+      grid_options: {columns: 6, rows: auto}
       content: >-
-        # {{ '厨房' if is_state('input_boolean.chinese_dashboard','on') else
+        ## {{ '厨房' if is_state('input_boolean.chinese_dashboard','on') else
         'KITCHEN' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set m =
@@ -1582,7 +1582,7 @@ views:
         cn else 'No motion' }}{% else %}{{ '动作传感器离线' if cn else 'Motion sensor
         not reporting' }}{% endif %}
     - type: markdown
-      grid_options: {columns: 4, rows: 2}
+      grid_options: {columns: 4, rows: auto}
       content: >-
         ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
@@ -1906,21 +1906,21 @@ views:
     column_span: 2
     cards:
     - type: button
-      grid_options: {columns: 2, rows: 1}
+      grid_options: {columns: 2, rows: auto}
       name: Back
       icon: mdi:arrow-left
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
     - type: button
-      grid_options: {columns: 2, rows: 1}
+      grid_options: {columns: 2, rows: auto}
       name: Home
       icon: mdi:home
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 6, rows: 2}
+      grid_options: {columns: 6, rows: auto}
       content: >-
-        # {{ '餐厅' if is_state('input_boolean.chinese_dashboard','on') else
+        ## {{ '餐厅' if is_state('input_boolean.chinese_dashboard','on') else
         'DINING' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set m =
@@ -1932,7 +1932,7 @@ views:
         if cn else 'light off' }}{% else %}{{ '灯无数据' if cn else 'light not
         reporting' }}{% endif %}
     - type: markdown
-      grid_options: {columns: 4, rows: 2}
+      grid_options: {columns: 4, rows: auto}
       content: >-
         ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
@@ -2302,21 +2302,21 @@ views:
     column_span: 2
     cards:
     - type: button
-      grid_options: {columns: 2, rows: 1}
+      grid_options: {columns: 2, rows: auto}
       name: Back
       icon: mdi:arrow-left
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
     - type: button
-      grid_options: {columns: 2, rows: 1}
+      grid_options: {columns: 2, rows: auto}
       name: Home
       icon: mdi:home
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 6, rows: 2}
+      grid_options: {columns: 6, rows: auto}
       content: >-
-        # {{ '父母房' if is_state('input_boolean.chinese_dashboard','on') else
+        ## {{ '父母房' if is_state('input_boolean.chinese_dashboard','on') else
         'PARENTS ROOM' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
@@ -2327,7 +2327,7 @@ views:
         cn else ' · occupied' }}{% elif o == 'off' %}{{ ' · 无人' if cn else ' · empty'
         }}{% endif %}
     - type: markdown
-      grid_options: {columns: 4, rows: 2}
+      grid_options: {columns: 4, rows: auto}
       content: >-
         ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
@@ -2806,21 +2806,21 @@ views:
     column_span: 2
     cards:
     - type: button
-      grid_options: {columns: 2, rows: 1}
+      grid_options: {columns: 2, rows: auto}
       name: Back
       icon: mdi:arrow-left
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
     - type: button
-      grid_options: {columns: 2, rows: 1}
+      grid_options: {columns: 2, rows: auto}
       name: Home
       icon: mdi:home
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 6, rows: 2}
+      grid_options: {columns: 6, rows: auto}
       content: >-
-        # {{ 'Ray 房间' if is_state('input_boolean.chinese_dashboard','on') else
+        ## {{ 'Ray 房间' if is_state('input_boolean.chinese_dashboard','on') else
         'RAY BEDROOM' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set l = states('light.bedroom_bedroom') %}{% set c =
@@ -2831,7 +2831,7 @@ views:
         %}{{ '窗帘已关闭' if cn else 'blind closed' }}{% else %}{{ '窗帘无数据' if cn
         else 'blind not reporting' }}{% endif %}
     - type: markdown
-      grid_options: {columns: 4, rows: 2}
+      grid_options: {columns: 4, rows: auto}
       content: >-
         ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
@@ -3248,21 +3248,21 @@ views:
     column_span: 2
     cards:
     - type: button
-      grid_options: {columns: 2, rows: 1}
+      grid_options: {columns: 2, rows: auto}
       name: Back
       icon: mdi:arrow-left
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
     - type: button
-      grid_options: {columns: 2, rows: 1}
+      grid_options: {columns: 2, rows: auto}
       name: Home
       icon: mdi:home
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 6, rows: 2}
+      grid_options: {columns: 6, rows: auto}
       content: >-
-        # {{ '车库' if is_state('input_boolean.chinese_dashboard','on') else
+        ## {{ '车库' if is_state('input_boolean.chinese_dashboard','on') else
         'GARAGE' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
@@ -3272,7 +3272,7 @@ views:
         %}Freezer drawing {{ p | round(0) | int }} W{% endif %}{% else %}{{ '冰柜监测无数据'
         if cn else 'Freezer monitor not reporting' }}{% endif %}
     - type: markdown
-      grid_options: {columns: 4, rows: 2}
+      grid_options: {columns: 4, rows: auto}
       content: >-
         ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
@@ -3350,8 +3350,8 @@ views:
       grid_options: {columns: 12, rows: 2}
       content: >-
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set o =
-        states('binary_sensor.g_monitor_freezer_p110m_overloaded') %} {% set s =
-        states('switch.g_monitor_freezer_p110m') %} {% if o == 'on' %}{{
+        states('binary_sensor.g_monitor_freezer_p110m_overloaded') -%} {% set s =
+        states('switch.g_monitor_freezer_p110m') -%} {% if o == 'on' %}{{
         '**冰柜电路过载。**请先检查电器再恢复供电。' if cn else '**The freezer circuit is
         overloaded.** Check the appliance before resetting.' }}{% elif o == 'off' and s
         == 'on' %}{{ '冰柜运行正常。' if cn else 'Freezer running normally.' }}{% elif s
@@ -3492,21 +3492,21 @@ views:
     column_span: 2
     cards:
     - type: button
-      grid_options: {columns: 2, rows: 1}
+      grid_options: {columns: 2, rows: auto}
       name: Back
       icon: mdi:arrow-left
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
     - type: button
-      grid_options: {columns: 2, rows: 1}
+      grid_options: {columns: 2, rows: auto}
       name: Home
       icon: mdi:home
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 6, rows: 2}
+      grid_options: {columns: 6, rows: auto}
       content: >-
-        # {{ '客房' if is_state('input_boolean.chinese_dashboard','on') else
+        ## {{ '客房' if is_state('input_boolean.chinese_dashboard','on') else
         'GUEST ROOM' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set p = states('switch.g_printer_p100') %}{% if p == 'on' %}{{
@@ -3514,7 +3514,7 @@ views:
         cn else 'Printer off' }}{% else %}{{ '打印机插座无数据' if cn else 'Printer plug
         not reporting' }}{% endif %}
     - type: markdown
-      grid_options: {columns: 4, rows: 2}
+      grid_options: {columns: 4, rows: auto}
       content: >-
         ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
@@ -3660,28 +3660,28 @@ views:
     column_span: 2
     cards:
     - type: button
-      grid_options: {columns: 2, rows: 1}
+      grid_options: {columns: 2, rows: auto}
       name: Home
       icon: mdi:home
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 6, rows: 2}
+      grid_options: {columns: 7, rows: auto}
       content: >-
-        # {{ '灯光' if is_state('input_boolean.chinese_dashboard','on') else
+        ## {{ '灯光' if is_state('input_boolean.chinese_dashboard','on') else
         'LIGHTING' }}
 
-        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set ls = ['light.living_room', 'light.dining',
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}{% set ls = ['light.living_room', 'light.dining',
         'light.bedroom_bedroom', 'light.kogan_tv',
-        'light.smart_pet_feeder_indicator_light'] %} {% set ns =
-        namespace(on=0, unk=0) %} {% for l in ls %}{% set s = states(l) %}{% if s
-        == 'on' %}{% set ns.on = ns.on + 1 %}{% elif s != 'off' %}{% set ns.unk =
-        ns.unk + 1 %}{% endif %}{% endfor %} {% if cn %}{{ ls | count }} 盏灯中 {{ ns.on
+        'light.smart_pet_feeder_indicator_light'] -%} {% set ns =
+        namespace(on=0, unk=0) -%} {% for l in ls -%}{% set s = states(l) -%}{% if s
+        == 'on' %}{% set ns.on = ns.on + 1 -%}{% elif s != 'off' %}{% set ns.unk =
+        ns.unk + 1 -%}{% endif %}{% endfor -%} {% if cn %}{{ ls | count }} 盏灯中 {{ ns.on
         }} 盏开启{% if ns.unk %} · {{ ns.unk }} 盏无数据{% endif %}{% else %}{{ ns.on }}
         of {{ ls | count }} lights on{% if ns.unk %} · {{ ns.unk }} not reporting{%
         endif %}{% endif %}
     - type: markdown
-      grid_options: {columns: 4, rows: 2}
+      grid_options: {columns: 3, rows: auto}
       content: >-
         ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
@@ -4209,33 +4209,33 @@ views:
     column_span: 2
     cards:
     - type: button
-      grid_options: {columns: 2, rows: 1}
+      grid_options: {columns: 2, rows: auto}
       name: Home
       icon: mdi:home
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 6, rows: 2}
+      grid_options: {columns: 7, rows: auto}
       content: >-
-        # {{ '气候' if is_state('input_boolean.chinese_dashboard','on') else
+        ## {{ '气候' if is_state('input_boolean.chinese_dashboard','on') else
         'CLIMATE' }}
 
-        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set ts =
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}{% set ts =
         ['sensor.living_room_living_hue_hue_sensor_temperature',
         'sensor.bedroom_motion_sensor_temperature',
-        'sensor.living_room_living_room_temperature'] %} {% set ns =
-        namespace(sum=0.0, n=0, unk=0) %} {% for t in ts %}{% set s = states(t)
-        %}{% if s in ['unavailable','unknown','none',''] %}{% set ns.unk =
-        ns.unk + 1 %}{% else %}{% set f = s | float(-999) %}{% if f > -900 %}{%
-        set ns.sum = ns.sum + f %}{% set ns.n = ns.n + 1 %}{% else %}{% set
-        ns.unk = ns.unk + 1 %}{% endif %}{% endif %}{% endfor %} {% if ns.n %}{% if cn
+        'sensor.living_room_living_room_temperature'] -%} {% set ns =
+        namespace(sum=0.0, n=0, unk=0) -%} {% for t in ts -%}{% set s = states(t)
+        -%}{% if s in ['unavailable','unknown','none',''] %}{% set ns.unk =
+        ns.unk + 1 -%}{% else %}{% set f = s | float(-999) -%}{% if f > -900 %}{%
+        set ns.sum = ns.sum + f -%}{% set ns.n = ns.n + 1 -%}{% else %}{% set
+        ns.unk = ns.unk + 1 -%}{% endif %}{% endif %}{% endfor -%} {% if ns.n %}{% if cn
         %}室内平均 {{ (ns.sum / ns.n) | round(1) }} °C（{{ ns.n }} 个房间）{% if ns.unk
         %} · {{ ns.unk }} 个无数据{% endif %}{% else %}Indoor average {{ (ns.sum / ns.n)
         | round(1) }} °C across {{ ns.n }} {{ 'room' if ns.n == 1 else 'rooms' }}{% if
         ns.unk %} · {{ ns.unk }} not reporting{% endif %}{% endif %}{% else %}{{
         '没有室内温度数据。' if cn else 'No indoor temperature is reporting.' }}{% endif %}
     - type: markdown
-      grid_options: {columns: 4, rows: 2}
+      grid_options: {columns: 3, rows: auto}
       content: >-
         ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
@@ -4456,15 +4456,15 @@ views:
     column_span: 2
     cards:
     - type: button
-      grid_options: {columns: 2, rows: 1}
+      grid_options: {columns: 2, rows: auto}
       name: Home
       icon: mdi:home
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 6, rows: 2}
+      grid_options: {columns: 7, rows: auto}
       content: >-
-        # {{ '能源' if is_state('input_boolean.chinese_dashboard','on') else
+        ## {{ '能源' if is_state('input_boolean.chinese_dashboard','on') else
         'ENERGY' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
@@ -4473,7 +4473,7 @@ views:
         round(0) | int }} W now{% endif %}{% else %}{{ '用电量无数据' if cn else 'House
         power not reporting' }}{% endif %}
     - type: markdown
-      grid_options: {columns: 4, rows: 2}
+      grid_options: {columns: 3, rows: auto}
       content: >-
         ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
@@ -4571,7 +4571,7 @@ views:
       grid_options: {columns: 12, rows: 2}
       content: >-
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set s =
-        states('sensor.primo_5_0_1_1_ac_power') %} {% if s in
+        states('sensor.primo_5_0_1_1_ac_power') -%} {% if s in
         ['unavailable','unknown'] %}{{ '**Fronius Primo
         逆变器离线。**在重新连接之前，下方所有太阳能数据均为过期或缺失。这是硬件或网络故障，不是面板问题。'
         if cn else '**The Fronius Primo inverter is offline.** Every solar reading
@@ -4802,21 +4802,21 @@ views:
     column_span: 2
     cards:
     - type: button
-      grid_options: {columns: 2, rows: 1}
+      grid_options: {columns: 2, rows: auto}
       name: Home
       icon: mdi:home
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 6, rows: 2}
+      grid_options: {columns: 7, rows: auto}
       content: >-
-        # {{ '账单' if is_state('input_boolean.chinese_dashboard','on') else
+        ## {{ '账单' if is_state('input_boolean.chinese_dashboard','on') else
         'BILLS' }}
 
         {{ '家庭开支与到期日' if is_state('input_boolean.chinese_dashboard','on')
         else 'Household expenses and due dates' }}
     - type: markdown
-      grid_options: {columns: 4, rows: 2}
+      grid_options: {columns: 3, rows: auto}
       content: >-
         ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
@@ -5495,8 +5495,8 @@ views:
         {%- set ds = states(d) -%}
         {%- set ts = as_timestamp(ds, 0) if ds not in ['unavailable','unknown','none',''] else 0 -%}
         {%- if is_state(p,'on') -%}
-        {%- elif av is none or av <= 0 -%}{% set ns.unset = ns.unset + 1 %}
-        {%- elif ts <= 0 -%}{% set ns.nodate = ns.nodate + 1 %}
+        {%- elif av is none or av <= 0 -%}{% set ns.unset = ns.unset + 1 -%}
+        {%- elif ts <= 0 -%}{% set ns.nodate = ns.nodate + 1 -%}
         {%- else -%}
         {%- set days = ((ts - as_timestamp(now())) / 86400) | round(0, 'ceil') | int -%}
         {%- set shown = ds[8:10] ~ '/' ~ ds[5:7] ~ '/' ~ ds[2:4] -%}
@@ -5922,29 +5922,29 @@ views:
     column_span: 2
     cards:
     - type: button
-      grid_options: {columns: 2, rows: 1}
+      grid_options: {columns: 2, rows: auto}
       name: Home
       icon: mdi:home
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 6, rows: 2}
+      grid_options: {columns: 7, rows: auto}
       content: >-
-        # {{ '安全' if is_state('input_boolean.chinese_dashboard','on') else
+        ## {{ '安全' if is_state('input_boolean.chinese_dashboard','on') else
         'SECURITY' }}
 
-        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set doors = ['binary_sensor.f_contact_sensor_door',
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}{% set doors = ['binary_sensor.f_contact_sensor_door',
         'binary_sensor.m_contact_sensor_door',
-        'binary_sensor.b_contact_sensor_door'] %} {% set ns = namespace(open=0,
-        unk=0) %} {% for d in doors %}{% set s = states(d) %}{% if s == 'on' %}{%
-        set ns.open = ns.open + 1 %}{% elif s != 'off' %}{% set ns.unk = ns.unk +
-        1 %}{% endif %}{% endfor %} {% if ns.unk %}{% if cn %}3 个门传感器中 {{ ns.unk }}
+        'binary_sensor.b_contact_sensor_door'] -%} {% set ns = namespace(open=0,
+        unk=0) -%} {% for d in doors -%}{% set s = states(d) -%}{% if s == 'on' %}{%
+        set ns.open = ns.open + 1 -%}{% elif s != 'off' %}{% set ns.unk = ns.unk +
+        1 -%}{% endif %}{% endfor -%} {% if ns.unk %}{% if cn %}3 个门传感器中 {{ ns.unk }}
         个无数据{% else %}{{ ns.unk }} of 3 door sensors not reporting{% endif %}{% elif
         ns.open %}{% if cn %}3 扇门中 {{ ns.open }} 扇开启{% else %}{{ ns.open }} of 3
         doors open{% endif %}{% else %}{{ '所有门已关闭' if cn else 'All doors closed'
         }}{% endif %}
     - type: markdown
-      grid_options: {columns: 4, rows: 2}
+      grid_options: {columns: 3, rows: auto}
       content: >-
         ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
@@ -6305,9 +6305,9 @@ views:
         Wall','东墙','camera.tapo_c420_east_wall_hd_stream_direct'), ('South
         Wall','南墙','camera.tapo_c420_south_wall_hd_stream_direct'),
         ('Stockroom','储藏室','camera.tapo_c200_stockroom_hd_stream_direct'), ('Pet
-        Feeder','喂食器','camera.smart_pet_feeder')] %} {% set ns = namespace(down=[]) %}
+        Feeder','喂食器','camera.smart_pet_feeder')] -%} {% set ns = namespace(down=[]) -%}
         {% for n, z, c in cams %}{% if states(c) in ['unavailable','unknown'] %}{%
-        set ns.down = ns.down + [z if cn else n] %}{% endif %}{% endfor %} {% if ns.down
+        set ns.down = ns.down + [z if cn else n] %}{% endif %}{% endfor -%} {% if ns.down
         | count %}{% if cn %}**{{ cams | count }} 个摄像头中 {{ ns.down | count }}
         个离线：**{{ ns.down | join('、') }}。{% else %}**{{ ns.down | count }} of {{
         cams | count }} cameras offline:** {{ ns.down | join(', ') }}.{% endif %}{% else
@@ -6386,7 +6386,7 @@ views:
     # broke as "CAMER / AS". `##` fits with room to spare and is still the
     # largest type on the page.
     - type: markdown
-      grid_options: {columns: 6, rows: auto}
+      grid_options: {columns: 7, rows: auto}
       content: >-
         ## {{ '摄像头' if is_state('input_boolean.chinese_dashboard','on') else
         'CAMERAS' }}
@@ -6394,7 +6394,7 @@ views:
         {{ '点击放大实时画面' if is_state('input_boolean.chinese_dashboard','on')
         else 'Tap a camera for the live view' }}
     - type: markdown
-      grid_options: {columns: 4, rows: auto}
+      grid_options: {columns: 3, rows: auto}
       content: >-
         ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
@@ -6814,27 +6814,27 @@ views:
     column_span: 2
     cards:
     - type: button
-      grid_options: {columns: 2, rows: 1}
+      grid_options: {columns: 2, rows: auto}
       name: Home
       icon: mdi:home
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 6, rows: 2}
+      grid_options: {columns: 7, rows: auto}
       content: >-
-        # {{ '家人' if is_state('input_boolean.chinese_dashboard','on') else
+        ## {{ '家人' if is_state('input_boolean.chinese_dashboard','on') else
         'PEOPLE' }}
 
-        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set ps = ['person.raymond_du', 'person.vinh_du',
-        'person.ai_q_huang'] %} {% set ns = namespace(home=0, away=0, unk=0) %}
-        {% for p in ps %}{% set s = states(p) %}{% if s == 'home' %}{% set
-        ns.home = ns.home + 1 %}{% elif s in ['unavailable','unknown','none','']
-        %}{% set ns.unk = ns.unk + 1 %}{% else %}{% set ns.away = ns.away + 1
-        %}{% endif %}{% endfor %} {% if cn %}{{ ns.home }} 人在家 · {{ ns.away }} 人外出{%
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}{% set ps = ['person.raymond_du', 'person.vinh_du',
+        'person.ai_q_huang'] -%} {% set ns = namespace(home=0, away=0, unk=0) -%}
+        {% for p in ps -%}{% set s = states(p) -%}{% if s == 'home' %}{% set
+        ns.home = ns.home + 1 -%}{% elif s in ['unavailable','unknown','none','']
+        %}{% set ns.unk = ns.unk + 1 -%}{% else %}{% set ns.away = ns.away + 1
+        -%}{% endif %}{% endfor -%} {% if cn %}{{ ns.home }} 人在家 · {{ ns.away }} 人外出{%
         if ns.unk %} · {{ ns.unk }} 人未知{% endif %}{% else %}{{ ns.home }} home · {{
         ns.away }} out{% if ns.unk %} · {{ ns.unk }} unknown{% endif %}{% endif %}
     - type: markdown
-      grid_options: {columns: 4, rows: 2}
+      grid_options: {columns: 3, rows: auto}
       content: >-
         ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
@@ -7103,19 +7103,19 @@ views:
     column_span: 2
     cards:
     - type: button
-      grid_options: {columns: 2, rows: 1}
+      grid_options: {columns: 2, rows: auto}
       name: Home
       icon: mdi:home
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 6, rows: 2}
+      grid_options: {columns: 7, rows: auto}
       content: >-
-        # {{ '自动化' if is_state('input_boolean.chinese_dashboard','on') else 'AUTOMATIONS' }}
+        ## {{ '自动化' if is_state('input_boolean.chinese_dashboard','on') else 'AUTOMATIONS' }}
 
-        {{ '仅显示 Home Assistant 当前实际存在的自动化。' if is_state('input_boolean.chinese_dashboard','on') else 'Only automations that currently exist in Home Assistant are shown.' }}
+        {{ '家中现有的自动化' if is_state('input_boolean.chinese_dashboard','on') else 'The automations this house has' }}
     - type: markdown
-      grid_options: {columns: 4, rows: 2}
+      grid_options: {columns: 3, rows: auto}
       content: >-
         ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
@@ -7253,28 +7253,28 @@ views:
     column_span: 2
     cards:
     - type: button
-      grid_options: {columns: 2, rows: 1}
+      grid_options: {columns: 2, rows: auto}
       name: Home
       icon: mdi:home
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 6, rows: 2}
+      grid_options: {columns: 7, rows: auto}
       content: >-
-        # {{ '娱乐' if is_state('input_boolean.chinese_dashboard','on') else
+        ## {{ '娱乐' if is_state('input_boolean.chinese_dashboard','on') else
         'ENTERTAINMENT' }}
 
-        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set ms =
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}{% set ms =
         ['media_player.living_room_tv_samsung_q9_series_65',
-        'media_player.55_qled_4k_ai_qa55q7faawxxy', 'media_player.pogo'] %} {% set ns =
-        namespace(on=0, unk=0) %} {% for m in ms %}{% set s = states(m) %}{% if s
-        in ['unavailable','unknown'] %}{% set ns.unk = ns.unk + 1 %}{% elif s !=
-        'off' %}{% set ns.on = ns.on + 1 %}{% endif %}{% endfor %} {% if cn %}{{ ms |
+        'media_player.55_qled_4k_ai_qa55q7faawxxy', 'media_player.pogo'] -%} {% set ns =
+        namespace(on=0, unk=0) -%} {% for m in ms -%}{% set s = states(m) -%}{% if s
+        in ['unavailable','unknown'] %}{% set ns.unk = ns.unk + 1 -%}{% elif s !=
+        'off' %}{% set ns.on = ns.on + 1 -%}{% endif %}{% endfor -%} {% if cn %}{{ ms |
         count }} 台设备中 {{ ns.on }} 台使用中{% if ns.unk %} · {{ ns.unk }} 台无数据{%
         endif %}{% else %}{{ ns.on }} of {{ ms | count }} players active{% if ns.unk %}
         · {{ ns.unk }} not reporting{% endif %}{% endif %}
     - type: markdown
-      grid_options: {columns: 4, rows: 2}
+      grid_options: {columns: 3, rows: auto}
       content: >-
         ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
@@ -7521,21 +7521,21 @@ views:
     column_span: 2
     cards:
     - type: button
-      grid_options: {columns: 2, rows: 1}
+      grid_options: {columns: 2, rows: auto}
       name: Home
       icon: mdi:home
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 6, rows: 2}
+      grid_options: {columns: 7, rows: auto}
       content: >-
-        # {{ '系统健康' if is_state('input_boolean.chinese_dashboard','on') else
+        ## {{ '系统健康' if is_state('input_boolean.chinese_dashboard','on') else
         'HOUSE HEALTH' }}
 
         {{ '系统状态与维护' if is_state('input_boolean.chinese_dashboard','on')
         else 'System status and maintenance' }}
     - type: markdown
-      grid_options: {columns: 4, rows: 2}
+      grid_options: {columns: 3, rows: auto}
       content: >-
         ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 
@@ -7948,21 +7948,21 @@ views:
     column_span: 2
     cards:
     - type: button
-      grid_options: {columns: 2, rows: 1}
+      grid_options: {columns: 2, rows: auto}
       name: Home
       icon: mdi:home
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 6, rows: 2}
+      grid_options: {columns: 7, rows: auto}
       content: >-
-        # {{ '通知' if is_state('input_boolean.chinese_dashboard','on') else
+        ## {{ '通知' if is_state('input_boolean.chinese_dashboard','on') else
         'ALERTS' }}
 
         {{ '目前需要注意的事项' if is_state('input_boolean.chinese_dashboard','on')
         else 'What needs attention right now' }}
     - type: markdown
-      grid_options: {columns: 4, rows: 2}
+      grid_options: {columns: 3, rows: auto}
       content: >-
         ## {{ now().strftime('%I:%M %p').lstrip('0') }}
 

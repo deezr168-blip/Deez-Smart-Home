@@ -82,15 +82,21 @@ def walk(node, fn):
 
 
 def strip_jinja_tags(body):
-    """`body` with every {% ... %} removed, honouring Jinja whitespace control.
+    """`body` with every {% ... %} and {# ... #} removed, honouring whitespace
+    control.
 
     `{%- ... %}` eats the whitespace before the tag and `{% ... -%}` the
     whitespace after it, so a naive strip would report whitespace that Jinja
     never emits and flag cards that are already correct.
+
+    Comments are stripped for the same reason and by the same rules: a
+    `{# ... #}` block emits nothing, so leaving its text in the measured
+    output made a multi-line explanatory comment look like indented content
+    and fail checks that are about what the card actually renders.
     """
     out, pos = [], 0
-    for m in re.finditer(r"\{%(.*?)%\}", body, flags=re.S):
-        inner = m.group(1)
+    for m in re.finditer(r"\{%(.*?)%\}|\{#(.*?)#\}", body, flags=re.S):
+        inner = m.group(1) if m.group(1) is not None else m.group(2)
         chunk = body[pos:m.start()]
         if inner.startswith("-"):
             chunk = chunk.rstrip()
@@ -425,7 +431,37 @@ def check(path):
                      f"languages; correct only for a proper noun")
     print(f"  unpaired bilingual heads : {len(unpaired)}")
 
-    # 13. every card in the canonical dashboard must declare its geometry
+    # 13. a markdown line must not render with one to three leading spaces
+    #
+    # Sibling of check 4, which catches four or more. Four is loud -- the card
+    # becomes a grey code block and somebody notices. One to three is worse in
+    # practice: the line is silently pushed in, so five page subtitles sat
+    # three spaces right of their titles and read as a rendering fault. Same
+    # cause both times: a `{% set %}` preamble emits the spaces between its
+    # tags. Close them with `-%}`.
+    # Scoped to casaray_v2, like check 14. The legacy dashboard has one such
+    # line and is not ours to restyle -- see CLAUDE.md.
+    leaked = []
+
+    def md_leak(node):
+        if not path.endswith("casaray_v2.yaml"):
+            return
+        if node.get("type") != "markdown":
+            return
+        body = node.get("content")
+        if not isinstance(body, str) or "{%" not in body:
+            return
+        for ln in strip_jinja_tags(body).split("\n"):
+            n = len(ln) - len(ln.lstrip(" "))
+            if ln.strip() and 1 <= n <= 3:
+                leaked.append((n, ln.strip()[:60]))
+    walk(doc, md_leak)
+    for n, who in leaked:
+        fails.append(f"{path}: markdown line emits {n} leading space(s) and "
+                     f"renders indented; use -%}} on the preamble tags — {who!r}")
+    print(f"  markdown leaked indent   : {len(leaked)}")
+
+    # 14. every card in the canonical dashboard must declare its geometry
     #
     # A card with no `grid_options` takes whatever width the renderer gives
     # it. Beside siblings that are sized, the row goes ragged -- and it goes
@@ -452,7 +488,7 @@ def check(path):
                          f"width is whatever the renderer picks — {ident!r}")
         print(f"  cards without geometry   : {len(bare)}")
 
-    # 14. mass-damage detection against HEAD
+    # 15. mass-damage detection against HEAD
     old = committed(path)
     if old is None:
         print("  mass-damage check        : new file, no baseline")
