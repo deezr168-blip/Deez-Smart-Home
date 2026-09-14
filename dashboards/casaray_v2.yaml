@@ -628,16 +628,43 @@ views:
       color: red
       name: Front door
       grid_options: {columns: 6, rows: 1}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
     - type: tile
       entity: binary_sensor.m_contact_sensor_door
       color: red
       name: Parents Room
       grid_options: {columns: 6, rows: 1}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
     - type: tile
       entity: binary_sensor.b_contact_sensor_door
       color: red
       name: Backyard
       grid_options: {columns: 6, rows: 1}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
 
   # --- Energy now. The inverter is offline right now; guard every read. ---
   - type: grid
@@ -1353,18 +1380,54 @@ views:
       entity: light.living_room_hue_ambiance_spot_1
       name: Hue spot 1
       grid_options: {columns: 6, rows: 1}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
     - type: tile
       entity: light.living_room_hue_ambiance_spot_2
       name: Hue spot 2
       grid_options: {columns: 6, rows: 1}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
     - type: tile
       entity: light.living_room_hue_ambiance_spot_3
       name: Hue spot 3
       grid_options: {columns: 6, rows: 1}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
     - type: tile
       entity: light.living_room_hue_ambiance_spot_4
       name: Hue spot 4
       grid_options: {columns: 6, rows: 1}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
     - type: markdown
       grid_options: {columns: 12, rows: 2}
       content: >-
@@ -1544,6 +1607,15 @@ views:
       color: red
       name: Front door
       grid_options: {columns: 6, rows: 1}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
     - type: history-graph
       grid_options: {columns: 12, rows: 4}
       hours_to_show: 12
@@ -2865,6 +2937,15 @@ views:
       color: red
       name: Door
       grid_options: {columns: 6, rows: 1}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
     - type: history-graph
       grid_options: {columns: 12, rows: 4}
       hours_to_show: 24
@@ -3369,28 +3450,82 @@ views:
       entity: switch.lph_se_dcd9_power
       name: Power
       icon: mdi:power
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
     - type: tile
       grid_options: {columns: 6, rows: 1}
       entity: switch.lph_se_dcd9_pump_cycling
       name: Pump cycling
       icon: mdi:water-sync
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
     - type: tile
       grid_options: {columns: 6, rows: 1}
       entity: binary_sensor.lph_se_dcd9_pump
       name: Pump running
       icon: mdi:water-pump
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
     - type: tile
       grid_options: {columns: 6, rows: 1}
       entity: select.lph_se_dcd9_light_mode
       name: Light mode
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
     - type: tile
       grid_options: {columns: 6, rows: 1}
       entity: select.lph_se_dcd9_light_brightness
       name: Light brightness
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
     - type: tile
       grid_options: {columns: 6, rows: 1}
       entity: number.lph_se_dcd9_plants_age
       name: Plant age
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
 
   - type: grid
     column_span: 1
@@ -3974,6 +4109,15 @@ views:
       grid_options: {columns: 6, rows: 1}
       entity: light.kogan_tv
       name: Kogan TV backlight
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
     - type: media-control
       grid_options: {columns: 12, rows: 3}
       entity: media_player.pogo
@@ -4262,18 +4406,54 @@ views:
       entity: light.living_room_hue_ambiance_spot_1
       name: Spot 1
       grid_options: {columns: 6, rows: 1}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
     - type: tile
       entity: light.living_room_hue_ambiance_spot_2
       name: Spot 2
       grid_options: {columns: 6, rows: 1}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
     - type: tile
       entity: light.living_room_hue_ambiance_spot_3
       name: Spot 3
       grid_options: {columns: 6, rows: 1}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
     - type: tile
       entity: light.living_room_hue_ambiance_spot_4
       name: Spot 4
       grid_options: {columns: 6, rows: 1}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
 
   - type: grid
     column_span: 1
@@ -4302,6 +4482,15 @@ views:
       grid_options: {columns: 6, rows: 1}
       entity: light.kogan_tv
       name: Kogan TV backlight
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
 
 
   - type: grid
@@ -6595,16 +6784,43 @@ views:
       entity: binary_sensor.f_contact_sensor_door
       color: red
       name: Front door
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
     - type: tile
       grid_options: {columns: 6, rows: 1}
       entity: binary_sensor.m_contact_sensor_door
       color: red
       name: Parents Room door
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
     - type: tile
       grid_options: {columns: 6, rows: 1}
       entity: binary_sensor.b_contact_sensor_door
       color: red
       name: Backyard door
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
     - type: history-graph
       grid_options: {columns: 12, rows: 4}
       hours_to_show: 24
@@ -6866,11 +7082,29 @@ views:
       name: East Wall
       grid_options: {columns: 4, rows: 1}
       tap_action: {action: navigate, navigation_path: /casaray-v2/camera-east-wall}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
     - type: tile
       entity: camera.tapo_c420_south_wall_hd_stream_direct
       name: South Wall
       grid_options: {columns: 4, rows: 1}
       tap_action: {action: navigate, navigation_path: /casaray-v2/camera-south-wall}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
     - type: tile
       entity: camera.tapo_c200_stockroom_hd_stream_direct
       name: Stockroom
@@ -7220,6 +7454,15 @@ views:
       entity: binary_sensor.f_contact_sensor_door
       color: red
       name: Front door contact
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
 
 - type: sections
   title: North Wall
@@ -8135,6 +8378,15 @@ views:
       grid_options: {columns: 6, rows: 1}
       entity: light.kogan_tv
       name: Kogan TV backlight
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
 
 # ===========================================================================
 # HOUSE HEALTH. Also absorbs Network -- an eero WAN binary sensor and a

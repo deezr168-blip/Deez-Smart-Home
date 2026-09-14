@@ -178,6 +178,11 @@ deez_base: &deez_base
   primary-color: "#7fd4f0"
   accent-color: "#ffc98a"
   label-badge-background-color: "rgba(16, 31, 54, 0.6)"
+  # CR-232 grey: unavailable, offline, unknown, no data. Set here so every
+  # card in the dashboard greys a dead entity the same way, rather than by
+  # a rule per card.
+  state-unavailable-color: "#8b919c"
+  disabled-text-color: "#7d838e"
   card-mod-theme: CasaRay
   # Sentence case, per the 14/09 mockups -- every heading in them reads
   # "Right now", "Who's home", "Needs attention", never RIGHT NOW. The
