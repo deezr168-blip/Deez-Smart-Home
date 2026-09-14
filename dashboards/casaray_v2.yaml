@@ -3531,6 +3531,10 @@ views:
       grid_options: {columns: 6, rows: 1}
       entity: sensor.aqara_roller_shade_driver_e1_battery
       name: Blind battery
+    - type: tile
+      grid_options: {columns: 6, rows: 1}
+      entity: sensor.aqara_roller_shade_driver_e1_battery_charge_state
+      name: Blind charge
 
   - type: grid
     column_span: 1
@@ -3719,13 +3723,9 @@ views:
       name: Voltage
       grid_options: {columns: 6, rows: 1}
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: sensor.r_energy_monitor_p110m_current
       name: Current
-      grid_options: {columns: 6, rows: 1}
-    - type: tile
-      entity: sensor.aqara_roller_shade_driver_e1_battery_charge_state
-      name: Blind battery
-      grid_options: {columns: 6, rows: 1}
 
   # Level-3: the socket's protection and auto-off configuration, and the
   # blind's configuration status. Set once, not touched daily.
@@ -4180,6 +4180,52 @@ views:
         {% if s == 'on' %}**{{ '电视背光已开' if cn else 'TV backlight on' }}**{% elif s == 'off' %}**{{ '电视背光已关' if cn else 'TV backlight off' }}**{% else %}**{{ '无数据' if cn else 'No reading' }}** · {{ '电视背光无数据' if cn else 'TV backlight not reporting' }}{% endif %}
 
   - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Entertainment
+      heading_style: title
+      icon: mdi:television
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 娱乐
+      heading_style: title
+      icon: mdi:television
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: tile
+      grid_options: {columns: 4, rows: 1}
+      entity: light.kogan_tv
+      name: Kogan TV backlight
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
+    - type: media-control
+      grid_options: {columns: 8, rows: 3}
+      entity: media_player.pogo
+
+  # Footer navigation, per the room mockups' bottom bar. The header already
+  # carries Back and Home; repeating the way out at the end of the page is
+  # the point -- a room page is long enough that leaving it should not mean
+  # scrolling back to the top. Back is omitted: Lovelace has no browser-back
+  # action, so it would be a second button to the same place as All rooms.
+  # Footer navigation, per the room mockups' bottom bar. The header already
+  # carries Back and Home; repeating the way out at the end of the page is
+  # the point -- a room page is long enough that leaving it should not mean
+  # scrolling back to the top. Back is omitted: Lovelace has no browser-back
+  # action, so it would be a second button to the same place as All rooms.
+  - type: grid
     column_span: 1
     cards:
     - type: heading
@@ -4202,6 +4248,26 @@ views:
       grid_options: {columns: 6, rows: 1}
       entity: switch.g_printer_p100
       name: Printer plug
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Printer settings
+      heading_style: subtitle
+      icon: mdi:tune
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 打印机设置
+      heading_style: subtitle
+      icon: mdi:tune
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
       entity: switch.g_printer_p100_led
       name: Plug LED
@@ -4223,52 +4289,6 @@ views:
       name: Auto update
       grid_options: {columns: 6, rows: 1}
 
-  - type: grid
-    column_span: 1
-    cards:
-    - type: heading
-      heading: Entertainment
-      heading_style: title
-      icon: mdi:television
-      visibility:
-      - condition: state
-        entity: input_boolean.chinese_dashboard
-        state_not: 'on'
-    - type: heading
-      heading: 娱乐
-      heading_style: title
-      icon: mdi:television
-      visibility:
-      - condition: state
-        entity: input_boolean.chinese_dashboard
-        state: 'on'
-    - type: tile
-      grid_options: {columns: 6, rows: 1}
-      entity: light.kogan_tv
-      name: Kogan TV backlight
-      card_mod:
-        style: |
-          ha-card {
-            {% if states(config.entity) in ['unavailable','unknown','none'] %}
-            border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
-            {% endif %}
-          }
-    - type: media-control
-      grid_options: {columns: 12, rows: 3}
-      entity: media_player.pogo
-
-  # Footer navigation, per the room mockups' bottom bar. The header already
-  # carries Back and Home; repeating the way out at the end of the page is
-  # the point -- a room page is long enough that leaving it should not mean
-  # scrolling back to the top. Back is omitted: Lovelace has no browser-back
-  # action, so it would be a second button to the same place as All rooms.
-  # Footer navigation, per the room mockups' bottom bar. The header already
-  # carries Back and Home; repeating the way out at the end of the page is
-  # the point -- a room page is long enough that leaving it should not mean
-  # scrolling back to the top. Back is omitted: Lovelace has no browser-back
-  # action, so it would be a second button to the same place as All rooms.
   - type: grid
     column_span: 2
     cards:
