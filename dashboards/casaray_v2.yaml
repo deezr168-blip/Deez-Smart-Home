@@ -6153,10 +6153,110 @@ views:
       name: Was due
       grid_options: {columns: 6, rows: 1}
 
-  # The helper controls, unchanged and moved to the foot of the page. These
-  # are how a bill gets entered -- amount, due date, discount, account
-  # number -- so they stay reachable. They are simply no longer the first
-  # thing the page shows.
+  # One way through to the setup page. The six helper sections that used to
+  # sit below this line are behind it now.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 12, rows: 1}
+      name: Bill setup & details
+      icon: mdi:file-cog-outline
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/bills-details}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 12, rows: 1}
+      name: 账单设置与详情
+      icon: mdi:file-cog-outline
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/bills-details}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+
+- type: sections
+  title: Bill setup & details
+  path: bills-details
+  icon: mdi:file-cog-outline
+  subview: true
+  max_columns: 2
+  badges:
+  - type: entity
+    entity: sensor.bills_outstanding_total
+    name: Outstanding
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: sensor.bills_outstanding_total
+    name: 未付总额
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
+  - type: entity
+    entity: sensor.bills_unpaid_count
+    name: Unpaid
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: sensor.bills_unpaid_count
+    name: 未付数量
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
+  sections:
+
+  # Top navigation only. The camera subviews established this shape: a row of
+  # small buttons, no footer repeat -- the way out is at the top where the
+  # thumb already is.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 2, rows: auto}
+      name: Bills
+      icon: mdi:arrow-left
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/bills}
+    - type: button
+      grid_options: {columns: 2, rows: auto}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+    - type: markdown
+      grid_options: {columns: 8, rows: auto}
+      content: >-
+        ## {{ '账单设置与详情' if
+        is_state('input_boolean.chinese_dashboard','on') else 'Bill setup &
+        details' }}
+
+        {{ '账单的详细设置与助手数值' if
+        is_state('input_boolean.chinese_dashboard','on') else 'Detailed bill
+        configuration and helper values' }}
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: markdown
+      grid_options: {columns: 12, rows: auto}
+      content: >-
+        {{ '此页为每张账单的设置项：账户、周期、折扣前后金额与实付金额。网络费尚未配置助手实体，因此不在此列。'
+        if is_state('input_boolean.chinese_dashboard','on') else 'Everything a
+        bill needs setting up: account, period, amounts before and after
+        discount, and what was actually paid. The internet bill has no helper
+        entities configured, so it is not listed.' }}
+
   - type: grid
     column_span: 1
     cards:
@@ -6727,55 +6827,6 @@ views:
   # Same three helpers per bill as the cards and the overview, so all three
   # agree by construction. Bills with no amount entered are counted, not
   # listed: an unconfigured helper is not an upcoming bill.
-  - type: grid
-    column_span: 2
-    cards:
-    - type: heading
-      heading: Still missing
-      heading_style: subtitle
-      icon: mdi:database-clock-outline
-      visibility:
-      - condition: state
-        entity: input_boolean.chinese_dashboard
-        state_not: 'on'
-    - type: heading
-      heading: 仍然缺少
-      heading_style: subtitle
-      icon: mdi:database-clock-outline
-      visibility:
-      - condition: state
-        entity: input_boolean.chinese_dashboard
-        state: 'on'
-    - type: markdown
-      grid_options: {columns: 12, rows: 2}
-      content: >-
-        {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
-        {% if cn %}**支出趋势图**仍未显示：需要这些助手实体的长期统计数据，目前还没有。**网络费**也没有对应的助手实体，因此不在此列。
-
-
-        六个 `bill_history_*_last_signature`
-        助手实体是记录账单时用于去重的内部标记，不是给人看的数据，因此故意不显示。
-
-
-        其余部分现已上线。{% else %}The **spending trend chart** is still not shown:
-        it needs long-term statistics for these helpers, which do not exist yet.
-        The **internet bill** has no helper entities at all, so it is absent
-        rather than empty.
-
-
-        The six `bill_history_*_last_signature` helpers are internal
-        de-duplication markers used when recording a payment, not figures for a
-        person to read, so they are deliberately not shown.
-
-
-        Everything else on this page is now live.{% endif %}
-
-# ===========================================================================
-# SECURITY. Doors, motion, camera health. There is no alarm_control_panel
-# and no lock entity in this instance, so there is no arm/disarm control and
-# no lock row -- the mockup's "Armed (Away)" and "Front Door unlocked" have
-# no source. Their absence is the honest state, not an omission.
-# ===========================================================================
 - type: sections
   title: Security
   path: security

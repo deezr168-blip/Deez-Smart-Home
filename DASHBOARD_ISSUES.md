@@ -42,6 +42,36 @@ close goes through the same gate as everything else.
 
 ## Open
 
+## BILLS-001 — what the Bills page still cannot show, and why
+
+Moved off the dashboard on 2026-09-14. This was a "Still missing" card at the
+foot of the Bills page: correct, useful to whoever was building the page, and
+not something a household reads on a wall panel. It lives here now.
+
+**The spending trend chart is not built.** It needs long-term statistics for
+the `input_number.*` bill helpers, and those statistics do not exist yet —
+Home Assistant only records long-term statistics for entities with a
+`state_class`, which input helpers do not have by default. Options, when it
+matters enough: give the helpers a `state_class` via a template sensor and
+wait for history to accumulate, or record each payment into a
+`sensor` with `state_class: total` at the moment the payment script runs.
+Until one of those exists there is nothing to plot, so no trend section is
+shown at all — a chart of nothing is worse than no chart.
+
+**The internet bill has no helper entities.** Every other bill has an
+amount / due / paid triple plus discount helpers; internet has none, so it is
+absent from the six bill rows rather than present and empty. The Bill setup &
+details subview says so in one line. Creating the helpers is an owner action
+in Home Assistant, after which the row can be added in one batch alongside the
+other six.
+
+**The six `bill_history_*_last_signature` helpers are deliberately on no
+board.** They are de-duplication markers the payment scripts write so a bill
+cannot be recorded twice; they are internal bookkeeping, not a figure anyone
+reads, and showing them would be exactly the helper-wall the 14/09 cleanup
+removed.
+
+
 | ID | Sev | View / component | Summary | Status |
 |---|---|---|---|---|
 | CFG-001 | S1 | Home Assistant **Energy dashboard configuration** (`.storage/energy`) — *not* `dashboards/deez_smart_home.yaml` | Energy → Totals reports Grid total **47.83 kWh** costing **A$437.60**, an implied **A$9.1491/kWh** and about **31.8×** the real tariff. Observed live by the owner 30 Aug 2026 while verifying `UI-011`. **Not a scaling bug — an accumulation read as a period total.** The one exposed monetary entity is named literally `sensor Cost` (`device_class: monetary`, `AUD`, no area) and read **451.1649** the same day; `451.1649 − 437.60 = 13.5649`, and A$13.5649 over 47.83 kWh is **0.2836 AUD/kWh** — an entirely ordinary rate, within 1.6% of the `SolarNet Grid import tariff` entity (0.2880 AUD/kWh) and 3.7% of the contracted peak rate (0.2734996 incl GST, per the `bill-electricity` view). So today's true cost is ≈A$13.56 sitting inside a wrong figure; the ≈A$437.60 on screen is the cost entity's accumulated total, not its increase across the selected period. That also explains why the factor is an odd 31.8× rather than a clean power of ten. **Leading hypothesis, stated as a hypothesis:** grid-consumption cost is set to *use an entity tracking the total costs*, pointed at a cumulative lifetime cost sensor whose statistic history effectively begins inside the current period, so its whole accumulated total was recorded as one jump and attributed to today. `451.16 ÷ 0.288 ≈ 1567 kWh` ≈ 33 days of import, consistent with a counter that started about a month ago. The sensor's name is itself a signal: HA auto-names a cost sensor `<source name> Cost`, so a bare `sensor Cost` means the source-name half resolved to nothing — consistent with a renamed source or a hand-made sensor. A `state_class: total` without `last_reset`, or a `total_increasing` sensor that reset, would produce similar symptoms by a different route. **Not diagnosable from here and deliberately not changed:** the cost source lives in `.storage/energy`, which this environment cannot read (`/config` unmounted, REST/WebSocket blocked — `DEPLOYMENT_BLOCKERS.md` Blockers 2/3), and the grid source entity itself is a Powerpal sensor, not exposed to Assist. Editing a production money figure blind is exactly what the owner's instruction ruled out. **Owner action to unblock:** Settings → Dashboards → Energy → Grid consumption → its cost setting. Report (1) which entity is the grid consumption source; (2) which cost option is selected — *do not track costs* / *static price* / *entity with the current price* / *entity tracking the total costs*; (3) if an entity is named, which one, plus its `state_class`, `device_class`, unit and current state from Developer Tools → States (≈451 if it is the `sensor Cost` above); (4) from Developer Tools → Statistics, whether that entity is flagged with a units/reset issue and when its history starts. **Nothing in this repository changes as part of the fix** — the Energy dashboard's configuration is not under version control here. Take a full backup first; HA backups are unavailable from this environment (`MAINTENANCE.md`). | OPEN — blocked on owner diagnosis |

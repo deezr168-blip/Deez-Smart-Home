@@ -18,8 +18,8 @@ Energy or House Health feature targets **this file**, unless the owner says
 otherwise in so many words.
 
 Identity: url_path **`casaray-v2`** — Home Assistant requires the hyphen in a
-YAML dashboard key (all 87 internal links are `/casaray-v2/<view>`; mounted
-anywhere else, navigation breaks), 26 views (6 subviews), native-first —
+YAML dashboard key (all 105 internal links are `/casaray-v2/<view>`; mounted
+anywhere else, navigation breaks), 27 views (7 subviews), native-first —
 one custom card type (`custom:webrtc-camera`), no Mushroom, surface treatment from the
 theme, and `card_mod` only where a native card provably cannot reach the
 mockup — currently the tinted surface on alert cards, since `color:` paints
