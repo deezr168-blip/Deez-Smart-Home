@@ -342,8 +342,15 @@ views:
         entity: binary_sensor.f_contact_sensor_door
         name: Front door open
         icon: mdi:door-open
-        color: red
+        color: orange
         tap_action: {action: navigate, navigation_path: /casaray-v2/security}
+        state_content: [state, last_changed]
+        card_mod:
+          style: |
+            ha-card {
+              background: rgba(120, 82, 24, 0.26);
+              border-color: rgba(232, 163, 61, 0.42);
+            }
     - type: conditional
       grid_options: {columns: 6, rows: 1}
       conditions:
@@ -355,8 +362,15 @@ views:
         entity: binary_sensor.b_contact_sensor_door
         name: Backyard door open
         icon: mdi:door-open
-        color: red
+        color: orange
         tap_action: {action: navigate, navigation_path: /casaray-v2/security}
+        state_content: [state, last_changed]
+        card_mod:
+          style: |
+            ha-card {
+              background: rgba(120, 82, 24, 0.26);
+              border-color: rgba(232, 163, 61, 0.42);
+            }
     - type: conditional
       grid_options: {columns: 6, rows: 1}
       conditions:
@@ -369,6 +383,13 @@ views:
         name: Parents Room door open
         icon: mdi:door-open
         color: orange
+        state_content: [state, last_changed]
+        card_mod:
+          style: |
+            ha-card {
+              background: rgba(120, 82, 24, 0.26);
+              border-color: rgba(232, 163, 61, 0.42);
+            }
     - type: conditional
       grid_options: {columns: 6, rows: 1}
       conditions:
@@ -380,8 +401,15 @@ views:
         entity: sensor.front_door_battery
         name: Front Door battery low
         icon: mdi:battery-alert-variant-outline
-        color: orange
+        color: red
         tap_action: {action: navigate, navigation_path: /casaray-v2/house-health}
+        state_content: [state, last_changed]
+        card_mod:
+          style: |
+            ha-card {
+              background: rgba(120, 32, 32, 0.30);
+              border-color: rgba(224, 106, 106, 0.45);
+            }
     - type: conditional
       grid_options: {columns: 6, rows: 1}
       conditions:
@@ -393,8 +421,15 @@ views:
         entity: sensor.living_room_ringring_battery
         name: RingRing battery low
         icon: mdi:battery-alert-variant-outline
-        color: orange
+        color: red
         tap_action: {action: navigate, navigation_path: /casaray-v2/house-health}
+        state_content: [state, last_changed]
+        card_mod:
+          style: |
+            ha-card {
+              background: rgba(120, 32, 32, 0.30);
+              border-color: rgba(224, 106, 106, 0.45);
+            }
     - type: conditional
       grid_options: {columns: 6, rows: 1}
       conditions:
@@ -406,8 +441,15 @@ views:
         entity: sensor.tapo_c425_north_wall_battery
         name: North Wall camera battery low
         icon: mdi:battery-alert-variant-outline
-        color: orange
+        color: red
         tap_action: {action: navigate, navigation_path: /casaray-v2/house-health}
+        state_content: [state, last_changed]
+        card_mod:
+          style: |
+            ha-card {
+              background: rgba(120, 32, 32, 0.30);
+              border-color: rgba(224, 106, 106, 0.45);
+            }
     - type: conditional
       grid_options: {columns: 6, rows: 1}
       conditions:
@@ -421,6 +463,13 @@ views:
         icon: mdi:wan
         color: red
         tap_action: {action: navigate, navigation_path: /casaray-v2/house-health}
+        state_content: [state, last_changed]
+        card_mod:
+          style: |
+            ha-card {
+              background: rgba(120, 32, 32, 0.30);
+              border-color: rgba(224, 106, 106, 0.45);
+            }
     - type: conditional
       grid_options: {columns: 6, rows: 1}
       conditions:
@@ -433,6 +482,13 @@ views:
         name: Garage freezer circuit overloaded
         icon: mdi:flash-alert
         color: red
+        state_content: [state, last_changed]
+        card_mod:
+          style: |
+            ha-card {
+              background: rgba(120, 32, 32, 0.30);
+              border-color: rgba(224, 106, 106, 0.45);
+            }
     - type: conditional
       grid_options: {columns: 6, rows: 1}
       conditions:
@@ -444,7 +500,14 @@ views:
         entity: binary_sensor.bedroom_parents_room_ac_filter_clean_required
         name: Parents Room AC filter needs cleaning
         icon: mdi:air-filter
-        color: orange
+        color: red
+        state_content: [state, last_changed]
+        card_mod:
+          style: |
+            ha-card {
+              background: rgba(120, 32, 32, 0.30);
+              border-color: rgba(224, 106, 106, 0.45);
+            }
     - type: conditional
       grid_options: {columns: 6, rows: 1}
       conditions:
@@ -458,6 +521,13 @@ views:
         icon: mdi:fridge-alert-outline
         color: orange
 
+        state_content: [state, last_changed]
+        card_mod:
+          style: |
+            ha-card {
+              background: rgba(120, 82, 24, 0.26);
+              border-color: rgba(232, 163, 61, 0.42);
+            }
   # --- Household: who is in, and is the house secure. ---
   - type: grid
     column_span: 1
@@ -8372,7 +8442,14 @@ views:
         entity: sensor.primo_5_0_1_1_ac_power
         name: Solar inverter offline
         icon: mdi:solar-power-variant-outline
-        color: red
+        color: grey
+        state_content: [state, last_changed]
+        card_mod:
+          style: |
+            ha-card {
+              background: rgba(58, 62, 70, 0.30);
+              border-color: rgba(150, 156, 166, 0.30);
+            }
     - type: conditional
       grid_options: {columns: 6, rows: 1}
       conditions:
@@ -8601,6 +8678,13 @@ views:
         name: Internet connection is down
         icon: mdi:wan
         color: red
+        state_content: [state, last_changed]
+        card_mod:
+          style: |
+            ha-card {
+              background: rgba(120, 32, 32, 0.30);
+              border-color: rgba(224, 106, 106, 0.45);
+            }
     - type: conditional
       grid_options: {columns: 6, rows: 1}
       conditions:
@@ -8613,6 +8697,13 @@ views:
         name: Garage freezer circuit overloaded
         icon: mdi:flash-alert
         color: red
+        state_content: [state, last_changed]
+        card_mod:
+          style: |
+            ha-card {
+              background: rgba(120, 32, 32, 0.30);
+              border-color: rgba(224, 106, 106, 0.45);
+            }
     - type: conditional
       grid_options: {columns: 6, rows: 1}
       conditions:
@@ -8625,6 +8716,13 @@ views:
         name: Dad's emergency button is not connected
         icon: mdi:bell-off
         color: red
+        state_content: [state, last_changed]
+        card_mod:
+          style: |
+            ha-card {
+              background: rgba(120, 32, 32, 0.30);
+              border-color: rgba(224, 106, 106, 0.45);
+            }
     - type: conditional
       grid_options: {columns: 6, rows: 1}
       conditions:
@@ -8638,6 +8736,13 @@ views:
         icon: mdi:bell-off
         color: red
 
+        state_content: [state, last_changed]
+        card_mod:
+          style: |
+            ha-card {
+              background: rgba(120, 32, 32, 0.30);
+              border-color: rgba(224, 106, 106, 0.45);
+            }
   - type: grid
     column_span: 1
     cards:
@@ -8668,6 +8773,13 @@ views:
         entity: binary_sensor.f_contact_sensor_door
         name: Front door open
         color: orange
+        state_content: [state, last_changed]
+        card_mod:
+          style: |
+            ha-card {
+              background: rgba(120, 82, 24, 0.26);
+              border-color: rgba(232, 163, 61, 0.42);
+            }
     - type: conditional
       grid_options: {columns: 6, rows: 1}
       conditions:
@@ -8679,6 +8791,13 @@ views:
         entity: binary_sensor.b_contact_sensor_door
         name: Backyard door open
         color: orange
+        state_content: [state, last_changed]
+        card_mod:
+          style: |
+            ha-card {
+              background: rgba(120, 82, 24, 0.26);
+              border-color: rgba(232, 163, 61, 0.42);
+            }
     - type: conditional
       grid_options: {columns: 6, rows: 1}
       conditions:
@@ -8690,6 +8809,13 @@ views:
         entity: binary_sensor.lg_fridge_door
         name: Fridge door open
         color: orange
+        state_content: [state, last_changed]
+        card_mod:
+          style: |
+            ha-card {
+              background: rgba(120, 82, 24, 0.26);
+              border-color: rgba(232, 163, 61, 0.42);
+            }
     - type: conditional
       grid_options: {columns: 6, rows: 1}
       conditions:
@@ -8700,7 +8826,14 @@ views:
         type: tile
         entity: sensor.front_door_battery
         name: Front Door battery low
-        color: orange
+        color: red
+        state_content: [state, last_changed]
+        card_mod:
+          style: |
+            ha-card {
+              background: rgba(120, 32, 32, 0.30);
+              border-color: rgba(224, 106, 106, 0.45);
+            }
     - type: conditional
       grid_options: {columns: 6, rows: 1}
       conditions:
@@ -8711,7 +8844,14 @@ views:
         type: tile
         entity: sensor.living_room_ringring_battery
         name: RingRing battery low
-        color: orange
+        color: red
+        state_content: [state, last_changed]
+        card_mod:
+          style: |
+            ha-card {
+              background: rgba(120, 32, 32, 0.30);
+              border-color: rgba(224, 106, 106, 0.45);
+            }
     - type: conditional
       grid_options: {columns: 6, rows: 1}
       conditions:
@@ -8722,7 +8862,14 @@ views:
         type: tile
         entity: sensor.tapo_c425_north_wall_battery
         name: North Wall camera battery low
-        color: orange
+        color: red
+        state_content: [state, last_changed]
+        card_mod:
+          style: |
+            ha-card {
+              background: rgba(120, 32, 32, 0.30);
+              border-color: rgba(224, 106, 106, 0.45);
+            }
     - type: conditional
       grid_options: {columns: 6, rows: 1}
       conditions:
@@ -8733,8 +8880,15 @@ views:
         type: tile
         entity: sensor.aqara_roller_shade_driver_e1_battery
         name: Roller shade battery low
-        color: orange
+        color: red
 
+        state_content: [state, last_changed]
+        card_mod:
+          style: |
+            ha-card {
+              background: rgba(120, 32, 32, 0.30);
+              border-color: rgba(224, 106, 106, 0.45);
+            }
   - type: grid
     column_span: 1
     cards:
@@ -8764,7 +8918,14 @@ views:
         type: tile
         entity: binary_sensor.bedroom_parents_room_ac_filter_clean_required
         name: Parents Room AC filter needs cleaning
-        color: blue
+        color: red
+        state_content: [state, last_changed]
+        card_mod:
+          style: |
+            ha-card {
+              background: rgba(120, 32, 32, 0.30);
+              border-color: rgba(224, 106, 106, 0.45);
+            }
     - type: conditional
       grid_options: {columns: 6, rows: 1}
       conditions:
@@ -8775,7 +8936,14 @@ views:
         type: tile
         entity: sensor.primo_5_0_1_1_ac_power
         name: Solar inverter offline
-        color: blue
+        color: grey
+        state_content: [state, last_changed]
+        card_mod:
+          style: |
+            ha-card {
+              background: rgba(58, 62, 70, 0.30);
+              border-color: rgba(150, 156, 166, 0.30);
+            }
     - type: conditional
       grid_options: {columns: 6, rows: 1}
       conditions:
@@ -8786,7 +8954,14 @@ views:
         type: tile
         entity: binary_sensor.lph_se_dcd9_pump
         name: Grow unit pump running
-        color: blue
+        color: orange
+        state_content: [state, last_changed]
+        card_mod:
+          style: |
+            ha-card {
+              background: rgba(120, 82, 24, 0.26);
+              border-color: rgba(232, 163, 61, 0.42);
+            }
     - type: markdown
       grid_options: {columns: 12, rows: 2}
       content: >-

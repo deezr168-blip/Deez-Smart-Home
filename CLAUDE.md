@@ -20,8 +20,10 @@ otherwise in so many words.
 Identity: url_path **`casaray-v2`** — Home Assistant requires the hyphen in a
 YAML dashboard key (all 87 internal links are `/casaray-v2/<view>`; mounted
 anywhere else, navigation breaks), 26 views (6 subviews), native-first —
-one custom card type (`custom:webrtc-camera`), no Mushroom, no `card_mod`,
-surface treatment from the theme. Bilingual on
+one custom card type (`custom:webrtc-camera`), no Mushroom, surface treatment from the
+theme, and `card_mod` only where a native card provably cannot reach the
+mockup — currently the tinted surface on alert cards, since `color:` paints
+a tile's icon and the renders tint the whole card. Bilingual on
 `input_boolean.chinese_dashboard`; see *Bilingual conventions* below.
 
 ### `dashboards/deez_smart_home.yaml` — legacy, and the reference baseline
@@ -153,8 +155,15 @@ or with `DESIGN_REFERENCE.md`, they win. What they settle so far:
 
 - **Sentence case everywhere** — page titles, section headings, KPI labels.
   No uppercase transform; the theme no longer applies one.
-- **Amber is on or active**; grey is at rest; green is reserved for good
-  security states (a closed door, a camera's live dot).
+- **The semantic colour system, owner-approved 14/09 (CR-232 closed, amber
+  wins; blue does not appear in the mockups at all):**
+  **green** healthy, secure, connected, closed, normal ·
+  **amber** active, running, currently on, selected ·
+  **red** fault, urgent issue, needs attention ·
+  **grey** unavailable, offline, unknown, no data.
+  An alert card's colour follows what its condition *means*: a flat battery
+  or a dead link is red; a door that is simply open is amber; an inverter
+  that is not answering is grey.
 - **Unavailable is drawn, never hidden**: muted card, a "no data" or "offline"
   note, and it keeps its place in the layout.
 - **Controls are tile features** — a light's brightness bar, a fan's speed —
