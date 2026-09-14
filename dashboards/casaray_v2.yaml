@@ -42,19 +42,72 @@ views:
   path: home
   icon: mdi:home-heart
   max_columns: 2
-  # Status pills under the page header, per DESIGN_REFERENCE section 2:
-  # "Right: status pills where relevant (People Home, Internet Online)".
-  # Native `badges` on a sections view render exactly that strip, so this
-  # needs no custom card and no card_mod. No `name` is set deliberately --
-  # a badge with only an icon and a value is language-neutral, which keeps
-  # the bilingual toggle out of a place where two heading cards cannot go.
-  # No `color` either: CR-232 has not settled blue against amber, so the
-  # badges take the theme's own colour rather than pre-empting that answer.
+  # The chip strip, per the 14/09 mockups: a pill row under the page header,
+  # dim label then bright value -- `Outside 10°`, `Room 19.7°`, `Movement
+  # Quiet`. A native badge is exactly that pill, so this needs no custom card
+  # and no card_mod. Page-specific, three or four at most, every one a real
+  # entity: nothing here is a computed figure a badge cannot honestly show.
+  # Bilingual the way headings are -- two badges with opposite `visibility`,
+  # because a badge name cannot be templated either.
   badges:
   - type: entity
-    entity: zone.home
+    entity: weather.forecast_home
+    name: Outside
+    state_content: temperature
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
   - type: entity
-    entity: binary_sensor.eero_wan_status
+    entity: weather.forecast_home
+    name: 室外
+    state_content: temperature
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
+  - type: entity
+    entity: sensor.living_room_living_hue_hue_sensor_temperature
+    name: Living Room
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: sensor.living_room_living_hue_hue_sensor_temperature
+    name: 客厅
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
+  - type: entity
+    entity: zone.home
+    name: Home
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: zone.home
+    name: 在家
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
+  - type: entity
+    entity: sensor.powerpal_gateway_powerpal_power
+    name: House power
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: sensor.powerpal_gateway_powerpal_power
+    name: 家庭用电
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
   sections:
 
   - type: grid
@@ -854,19 +907,42 @@ views:
   path: rooms
   icon: mdi:floor-plan
   max_columns: 2
-  # Status pills under the page header, per DESIGN_REFERENCE section 2:
-  # "Right: status pills where relevant (People Home, Internet Online)".
-  # Native `badges` on a sections view render exactly that strip, so this
-  # needs no custom card and no card_mod. No `name` is set deliberately --
-  # a badge with only an icon and a value is language-neutral, which keeps
-  # the bilingual toggle out of a place where two heading cards cannot go.
-  # No `color` either: CR-232 has not settled blue against amber, so the
-  # badges take the theme's own colour rather than pre-empting that answer.
+  # The chip strip, per the 14/09 mockups: a pill row under the page header,
+  # dim label then bright value -- `Outside 10°`, `Room 19.7°`, `Movement
+  # Quiet`. A native badge is exactly that pill, so this needs no custom card
+  # and no card_mod. Page-specific, three or four at most, every one a real
+  # entity: nothing here is a computed figure a badge cannot honestly show.
+  # Bilingual the way headings are -- two badges with opposite `visibility`,
+  # because a badge name cannot be templated either.
   badges:
   - type: entity
     entity: zone.home
+    name: Home
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: zone.home
+    name: 在家
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
   - type: entity
     entity: binary_sensor.eero_wan_status
+    name: Internet
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: binary_sensor.eero_wan_status
+    name: 网络
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
   sections:
 
   - type: grid
@@ -963,19 +1039,56 @@ views:
   path: living-room
   icon: mdi:sofa
   max_columns: 2
-  # Status pills under the page header, per DESIGN_REFERENCE section 2:
-  # "Right: status pills where relevant (People Home, Internet Online)".
-  # Native `badges` on a sections view render exactly that strip, so this
-  # needs no custom card and no card_mod. No `name` is set deliberately --
-  # a badge with only an icon and a value is language-neutral, which keeps
-  # the bilingual toggle out of a place where two heading cards cannot go.
-  # No `color` either: CR-232 has not settled blue against amber, so the
-  # badges take the theme's own colour rather than pre-empting that answer.
+  # The chip strip, per the 14/09 mockups: a pill row under the page header,
+  # dim label then bright value -- `Outside 10°`, `Room 19.7°`, `Movement
+  # Quiet`. A native badge is exactly that pill, so this needs no custom card
+  # and no card_mod. Page-specific, three or four at most, every one a real
+  # entity: nothing here is a computed figure a badge cannot honestly show.
+  # Bilingual the way headings are -- two badges with opposite `visibility`,
+  # because a badge name cannot be templated either.
   badges:
   - type: entity
-    entity: zone.home
+    entity: sensor.living_room_living_hue_hue_sensor_temperature
+    name: Room
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
   - type: entity
-    entity: binary_sensor.eero_wan_status
+    entity: sensor.living_room_living_hue_hue_sensor_temperature
+    name: 室温
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
+  - type: entity
+    entity: binary_sensor.living_room_living_hue_hue_sensor_motion
+    name: Movement
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: binary_sensor.living_room_living_hue_hue_sensor_motion
+    name: 动作
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
+  - type: entity
+    entity: sensor.living_room_living_hue_hue_sensor_illuminance
+    name: Light level
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: sensor.living_room_living_hue_hue_sensor_illuminance
+    name: 光照
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
   sections:
 
   - type: grid
@@ -1540,19 +1653,42 @@ views:
   path: kitchen
   icon: mdi:silverware-fork-knife
   max_columns: 2
-  # Status pills under the page header, per DESIGN_REFERENCE section 2:
-  # "Right: status pills where relevant (People Home, Internet Online)".
-  # Native `badges` on a sections view render exactly that strip, so this
-  # needs no custom card and no card_mod. No `name` is set deliberately --
-  # a badge with only an icon and a value is language-neutral, which keeps
-  # the bilingual toggle out of a place where two heading cards cannot go.
-  # No `color` either: CR-232 has not settled blue against amber, so the
-  # badges take the theme's own colour rather than pre-empting that answer.
+  # The chip strip, per the 14/09 mockups: a pill row under the page header,
+  # dim label then bright value -- `Outside 10°`, `Room 19.7°`, `Movement
+  # Quiet`. A native badge is exactly that pill, so this needs no custom card
+  # and no card_mod. Page-specific, three or four at most, every one a real
+  # entity: nothing here is a computed figure a badge cannot honestly show.
+  # Bilingual the way headings are -- two badges with opposite `visibility`,
+  # because a badge name cannot be templated either.
   badges:
   - type: entity
-    entity: zone.home
+    entity: binary_sensor.k_motion_sensor_motion
+    name: Movement
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
   - type: entity
-    entity: binary_sensor.eero_wan_status
+    entity: binary_sensor.k_motion_sensor_motion
+    name: 动作
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
+  - type: entity
+    entity: sensor.kitchen_electrolux_fridge_temperature
+    name: Fridge
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: sensor.kitchen_electrolux_fridge_temperature
+    name: 冰箱
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
   sections:
 
   - type: grid
@@ -1887,19 +2023,56 @@ views:
   path: dining
   icon: mdi:table-chair
   max_columns: 2
-  # Status pills under the page header, per DESIGN_REFERENCE section 2:
-  # "Right: status pills where relevant (People Home, Internet Online)".
-  # Native `badges` on a sections view render exactly that strip, so this
-  # needs no custom card and no card_mod. No `name` is set deliberately --
-  # a badge with only an icon and a value is language-neutral, which keeps
-  # the bilingual toggle out of a place where two heading cards cannot go.
-  # No `color` either: CR-232 has not settled blue against amber, so the
-  # badges take the theme's own colour rather than pre-empting that answer.
+  # The chip strip, per the 14/09 mockups: a pill row under the page header,
+  # dim label then bright value -- `Outside 10°`, `Room 19.7°`, `Movement
+  # Quiet`. A native badge is exactly that pill, so this needs no custom card
+  # and no card_mod. Page-specific, three or four at most, every one a real
+  # entity: nothing here is a computed figure a badge cannot honestly show.
+  # Bilingual the way headings are -- two badges with opposite `visibility`,
+  # because a badge name cannot be templated either.
   badges:
   - type: entity
-    entity: zone.home
+    entity: sensor.living_room_living_room_temperature
+    name: Room
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
   - type: entity
-    entity: binary_sensor.eero_wan_status
+    entity: sensor.living_room_living_room_temperature
+    name: 室温
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
+  - type: entity
+    entity: binary_sensor.sensor_group_motion
+    name: Movement
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: binary_sensor.sensor_group_motion
+    name: 动作
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
+  - type: entity
+    entity: sensor.sensor_group_illuminance
+    name: Light level
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: sensor.sensor_group_illuminance
+    name: 光照
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
   sections:
 
   - type: grid
@@ -2283,19 +2456,56 @@ views:
   path: parents-room
   icon: mdi:bed-king
   max_columns: 2
-  # Status pills under the page header, per DESIGN_REFERENCE section 2:
-  # "Right: status pills where relevant (People Home, Internet Online)".
-  # Native `badges` on a sections view render exactly that strip, so this
-  # needs no custom card and no card_mod. No `name` is set deliberately --
-  # a badge with only an icon and a value is language-neutral, which keeps
-  # the bilingual toggle out of a place where two heading cards cannot go.
-  # No `color` either: CR-232 has not settled blue against amber, so the
-  # badges take the theme's own colour rather than pre-empting that answer.
+  # The chip strip, per the 14/09 mockups: a pill row under the page header,
+  # dim label then bright value -- `Outside 10°`, `Room 19.7°`, `Movement
+  # Quiet`. A native badge is exactly that pill, so this needs no custom card
+  # and no card_mod. Page-specific, three or four at most, every one a real
+  # entity: nothing here is a computed figure a badge cannot honestly show.
+  # Bilingual the way headings are -- two badges with opposite `visibility`,
+  # because a badge name cannot be templated either.
   badges:
   - type: entity
-    entity: zone.home
+    entity: sensor.bedroom_motion_sensor_temperature
+    name: Room
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
   - type: entity
-    entity: binary_sensor.eero_wan_status
+    entity: sensor.bedroom_motion_sensor_temperature
+    name: 室温
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
+  - type: entity
+    entity: sensor.bedroom_motion_sensor_humidity
+    name: Humidity
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: sensor.bedroom_motion_sensor_humidity
+    name: 湿度
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
+  - type: entity
+    entity: climate.bedroom_parents_room_ac
+    name: Air conditioner
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: climate.bedroom_parents_room_ac
+    name: 空调
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
   sections:
 
   - type: grid
@@ -2787,19 +2997,42 @@ views:
   path: ray-bedroom
   icon: mdi:bed
   max_columns: 2
-  # Status pills under the page header, per DESIGN_REFERENCE section 2:
-  # "Right: status pills where relevant (People Home, Internet Online)".
-  # Native `badges` on a sections view render exactly that strip, so this
-  # needs no custom card and no card_mod. No `name` is set deliberately --
-  # a badge with only an icon and a value is language-neutral, which keeps
-  # the bilingual toggle out of a place where two heading cards cannot go.
-  # No `color` either: CR-232 has not settled blue against amber, so the
-  # badges take the theme's own colour rather than pre-empting that answer.
+  # The chip strip, per the 14/09 mockups: a pill row under the page header,
+  # dim label then bright value -- `Outside 10°`, `Room 19.7°`, `Movement
+  # Quiet`. A native badge is exactly that pill, so this needs no custom card
+  # and no card_mod. Page-specific, three or four at most, every one a real
+  # entity: nothing here is a computed figure a badge cannot honestly show.
+  # Bilingual the way headings are -- two badges with opposite `visibility`,
+  # because a badge name cannot be templated either.
   badges:
   - type: entity
-    entity: zone.home
+    entity: sensor.r_energy_monitor_p110m_current_consumption
+    name: Desk power
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
   - type: entity
-    entity: binary_sensor.eero_wan_status
+    entity: sensor.r_energy_monitor_p110m_current_consumption
+    name: 书桌用电
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
+  - type: entity
+    entity: cover.aqara_roller_shade_driver_e1
+    name: Blind
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: cover.aqara_roller_shade_driver_e1
+    name: 窗帘
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
   sections:
 
   - type: grid
@@ -3229,19 +3462,42 @@ views:
   path: garage
   icon: mdi:garage
   max_columns: 2
-  # Status pills under the page header, per DESIGN_REFERENCE section 2:
-  # "Right: status pills where relevant (People Home, Internet Online)".
-  # Native `badges` on a sections view render exactly that strip, so this
-  # needs no custom card and no card_mod. No `name` is set deliberately --
-  # a badge with only an icon and a value is language-neutral, which keeps
-  # the bilingual toggle out of a place where two heading cards cannot go.
-  # No `color` either: CR-232 has not settled blue against amber, so the
-  # badges take the theme's own colour rather than pre-empting that answer.
+  # The chip strip, per the 14/09 mockups: a pill row under the page header,
+  # dim label then bright value -- `Outside 10°`, `Room 19.7°`, `Movement
+  # Quiet`. A native badge is exactly that pill, so this needs no custom card
+  # and no card_mod. Page-specific, three or four at most, every one a real
+  # entity: nothing here is a computed figure a badge cannot honestly show.
+  # Bilingual the way headings are -- two badges with opposite `visibility`,
+  # because a badge name cannot be templated either.
   badges:
   - type: entity
-    entity: zone.home
+    entity: sensor.g_monitor_freezer_p110m_current_consumption
+    name: Freezer power
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
   - type: entity
-    entity: binary_sensor.eero_wan_status
+    entity: sensor.g_monitor_freezer_p110m_current_consumption
+    name: 冰柜用电
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
+  - type: entity
+    entity: binary_sensor.g_monitor_freezer_p110m_overloaded
+    name: Overload
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: binary_sensor.g_monitor_freezer_p110m_overloaded
+    name: 过载
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
   sections:
 
   - type: grid
@@ -3473,19 +3729,42 @@ views:
   path: guest-room
   icon: mdi:bed-empty
   max_columns: 2
-  # Status pills under the page header, per DESIGN_REFERENCE section 2:
-  # "Right: status pills where relevant (People Home, Internet Online)".
-  # Native `badges` on a sections view render exactly that strip, so this
-  # needs no custom card and no card_mod. No `name` is set deliberately --
-  # a badge with only an icon and a value is language-neutral, which keeps
-  # the bilingual toggle out of a place where two heading cards cannot go.
-  # No `color` either: CR-232 has not settled blue against amber, so the
-  # badges take the theme's own colour rather than pre-empting that answer.
+  # The chip strip, per the 14/09 mockups: a pill row under the page header,
+  # dim label then bright value -- `Outside 10°`, `Room 19.7°`, `Movement
+  # Quiet`. A native badge is exactly that pill, so this needs no custom card
+  # and no card_mod. Page-specific, three or four at most, every one a real
+  # entity: nothing here is a computed figure a badge cannot honestly show.
+  # Bilingual the way headings are -- two badges with opposite `visibility`,
+  # because a badge name cannot be templated either.
   badges:
   - type: entity
-    entity: zone.home
+    entity: switch.g_printer_p100
+    name: Printer
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: switch.g_printer_p100
+    name: 打印机
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
   - type: entity
     entity: binary_sensor.eero_wan_status
+    name: Internet
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: binary_sensor.eero_wan_status
+    name: 网络
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
   sections:
 
   - type: grid
@@ -3641,19 +3920,56 @@ views:
   path: lighting
   icon: mdi:lightbulb-group
   max_columns: 2
-  # Status pills under the page header, per DESIGN_REFERENCE section 2:
-  # "Right: status pills where relevant (People Home, Internet Online)".
-  # Native `badges` on a sections view render exactly that strip, so this
-  # needs no custom card and no card_mod. No `name` is set deliberately --
-  # a badge with only an icon and a value is language-neutral, which keeps
-  # the bilingual toggle out of a place where two heading cards cannot go.
-  # No `color` either: CR-232 has not settled blue against amber, so the
-  # badges take the theme's own colour rather than pre-empting that answer.
+  # The chip strip, per the 14/09 mockups: a pill row under the page header,
+  # dim label then bright value -- `Outside 10°`, `Room 19.7°`, `Movement
+  # Quiet`. A native badge is exactly that pill, so this needs no custom card
+  # and no card_mod. Page-specific, three or four at most, every one a real
+  # entity: nothing here is a computed figure a badge cannot honestly show.
+  # Bilingual the way headings are -- two badges with opposite `visibility`,
+  # because a badge name cannot be templated either.
   badges:
   - type: entity
-    entity: zone.home
+    entity: light.living_room
+    name: Living Room
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
   - type: entity
-    entity: binary_sensor.eero_wan_status
+    entity: light.living_room
+    name: 客厅
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
+  - type: entity
+    entity: light.dining
+    name: Dining
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: light.dining
+    name: 餐厅
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
+  - type: entity
+    entity: light.bedroom_bedroom
+    name: Ray Bedroom
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: light.bedroom_bedroom
+    name: Ray 卧室
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
   sections:
 
   - type: grid
@@ -4190,19 +4506,56 @@ views:
   path: climate
   icon: mdi:thermometer
   max_columns: 2
-  # Status pills under the page header, per DESIGN_REFERENCE section 2:
-  # "Right: status pills where relevant (People Home, Internet Online)".
-  # Native `badges` on a sections view render exactly that strip, so this
-  # needs no custom card and no card_mod. No `name` is set deliberately --
-  # a badge with only an icon and a value is language-neutral, which keeps
-  # the bilingual toggle out of a place where two heading cards cannot go.
-  # No `color` either: CR-232 has not settled blue against amber, so the
-  # badges take the theme's own colour rather than pre-empting that answer.
+  # The chip strip, per the 14/09 mockups: a pill row under the page header,
+  # dim label then bright value -- `Outside 10°`, `Room 19.7°`, `Movement
+  # Quiet`. A native badge is exactly that pill, so this needs no custom card
+  # and no card_mod. Page-specific, three or four at most, every one a real
+  # entity: nothing here is a computed figure a badge cannot honestly show.
+  # Bilingual the way headings are -- two badges with opposite `visibility`,
+  # because a badge name cannot be templated either.
   badges:
   - type: entity
-    entity: zone.home
+    entity: sensor.bedroom_motion_sensor_temperature
+    name: Parents Room
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
   - type: entity
-    entity: binary_sensor.eero_wan_status
+    entity: sensor.bedroom_motion_sensor_temperature
+    name: 父母房
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
+  - type: entity
+    entity: sensor.bedroom_motion_sensor_humidity
+    name: Humidity
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: sensor.bedroom_motion_sensor_humidity
+    name: 湿度
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
+  - type: entity
+    entity: climate.bedroom_parents_room_ac
+    name: Air conditioner
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: climate.bedroom_parents_room_ac
+    name: 空调
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
   sections:
 
   - type: grid
@@ -4437,19 +4790,56 @@ views:
   path: energy
   icon: mdi:lightning-bolt
   max_columns: 2
-  # Status pills under the page header, per DESIGN_REFERENCE section 2:
-  # "Right: status pills where relevant (People Home, Internet Online)".
-  # Native `badges` on a sections view render exactly that strip, so this
-  # needs no custom card and no card_mod. No `name` is set deliberately --
-  # a badge with only an icon and a value is language-neutral, which keeps
-  # the bilingual toggle out of a place where two heading cards cannot go.
-  # No `color` either: CR-232 has not settled blue against amber, so the
-  # badges take the theme's own colour rather than pre-empting that answer.
+  # The chip strip, per the 14/09 mockups: a pill row under the page header,
+  # dim label then bright value -- `Outside 10°`, `Room 19.7°`, `Movement
+  # Quiet`. A native badge is exactly that pill, so this needs no custom card
+  # and no card_mod. Page-specific, three or four at most, every one a real
+  # entity: nothing here is a computed figure a badge cannot honestly show.
+  # Bilingual the way headings are -- two badges with opposite `visibility`,
+  # because a badge name cannot be templated either.
   badges:
   - type: entity
-    entity: zone.home
+    entity: sensor.powerpal_gateway_powerpal_power
+    name: Now
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
   - type: entity
-    entity: binary_sensor.eero_wan_status
+    entity: sensor.powerpal_gateway_powerpal_power
+    name: 当前
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
+  - type: entity
+    entity: sensor.energy_production_today
+    name: Solar forecast
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: sensor.energy_production_today
+    name: 太阳能预测
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
+  - type: entity
+    entity: sensor.electricity_maps_co2_intensity
+    name: Grid carbon
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: sensor.electricity_maps_co2_intensity
+    name: 电网碳强度
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
   sections:
 
   - type: grid
@@ -4783,19 +5173,42 @@ views:
   path: bills
   icon: mdi:file-document-outline
   max_columns: 2
-  # Status pills under the page header, per DESIGN_REFERENCE section 2:
-  # "Right: status pills where relevant (People Home, Internet Online)".
-  # Native `badges` on a sections view render exactly that strip, so this
-  # needs no custom card and no card_mod. No `name` is set deliberately --
-  # a badge with only an icon and a value is language-neutral, which keeps
-  # the bilingual toggle out of a place where two heading cards cannot go.
-  # No `color` either: CR-232 has not settled blue against amber, so the
-  # badges take the theme's own colour rather than pre-empting that answer.
+  # The chip strip, per the 14/09 mockups: a pill row under the page header,
+  # dim label then bright value -- `Outside 10°`, `Room 19.7°`, `Movement
+  # Quiet`. A native badge is exactly that pill, so this needs no custom card
+  # and no card_mod. Page-specific, three or four at most, every one a real
+  # entity: nothing here is a computed figure a badge cannot honestly show.
+  # Bilingual the way headings are -- two badges with opposite `visibility`,
+  # because a badge name cannot be templated either.
   badges:
   - type: entity
-    entity: zone.home
+    entity: sensor.bills_outstanding_total
+    name: Outstanding
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
   - type: entity
-    entity: binary_sensor.eero_wan_status
+    entity: sensor.bills_outstanding_total
+    name: 未付总额
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
+  - type: entity
+    entity: sensor.bills_unpaid_count
+    name: Unpaid
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: sensor.bills_unpaid_count
+    name: 未付数量
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
   sections:
 
   - type: grid
@@ -5903,19 +6316,56 @@ views:
   path: security
   icon: mdi:shield-home
   max_columns: 2
-  # Status pills under the page header, per DESIGN_REFERENCE section 2:
-  # "Right: status pills where relevant (People Home, Internet Online)".
-  # Native `badges` on a sections view render exactly that strip, so this
-  # needs no custom card and no card_mod. No `name` is set deliberately --
-  # a badge with only an icon and a value is language-neutral, which keeps
-  # the bilingual toggle out of a place where two heading cards cannot go.
-  # No `color` either: CR-232 has not settled blue against amber, so the
-  # badges take the theme's own colour rather than pre-empting that answer.
+  # The chip strip, per the 14/09 mockups: a pill row under the page header,
+  # dim label then bright value -- `Outside 10°`, `Room 19.7°`, `Movement
+  # Quiet`. A native badge is exactly that pill, so this needs no custom card
+  # and no card_mod. Page-specific, three or four at most, every one a real
+  # entity: nothing here is a computed figure a badge cannot honestly show.
+  # Bilingual the way headings are -- two badges with opposite `visibility`,
+  # because a badge name cannot be templated either.
   badges:
   - type: entity
-    entity: zone.home
+    entity: binary_sensor.f_contact_sensor_door
+    name: Front door
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: binary_sensor.f_contact_sensor_door
+    name: 前门
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
+  - type: entity
+    entity: sensor.front_door_last_activity
+    name: Last doorbell
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: sensor.front_door_last_activity
+    name: 门铃最近活动
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
   - type: entity
     entity: binary_sensor.eero_wan_status
+    name: Internet
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: binary_sensor.eero_wan_status
+    name: 网络
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
   sections:
 
   - type: grid
@@ -6354,19 +6804,56 @@ views:
   path: cameras
   icon: mdi:cctv
   max_columns: 2
-  # Status pills under the page header, per DESIGN_REFERENCE section 2:
-  # "Right: status pills where relevant (People Home, Internet Online)".
-  # Native `badges` on a sections view render exactly that strip, so this
-  # needs no custom card and no card_mod. No `name` is set deliberately --
-  # a badge with only an icon and a value is language-neutral, which keeps
-  # the bilingual toggle out of a place where two heading cards cannot go.
-  # No `color` either: CR-232 has not settled blue against amber, so the
-  # badges take the theme's own colour rather than pre-empting that answer.
+  # The chip strip, per the 14/09 mockups: a pill row under the page header,
+  # dim label then bright value -- `Outside 10°`, `Room 19.7°`, `Movement
+  # Quiet`. A native badge is exactly that pill, so this needs no custom card
+  # and no card_mod. Page-specific, three or four at most, every one a real
+  # entity: nothing here is a computed figure a badge cannot honestly show.
+  # Bilingual the way headings are -- two badges with opposite `visibility`,
+  # because a badge name cannot be templated either.
   badges:
   - type: entity
-    entity: zone.home
+    entity: sensor.front_door_battery
+    name: Doorbell battery
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: sensor.front_door_battery
+    name: 门铃电量
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
+  - type: entity
+    entity: sensor.front_door_last_activity
+    name: Last activity
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: sensor.front_door_last_activity
+    name: 最近活动
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
   - type: entity
     entity: binary_sensor.eero_wan_status
+    name: Internet
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: binary_sensor.eero_wan_status
+    name: 网络
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
   sections:
 
   - type: grid
@@ -6795,19 +7282,42 @@ views:
   path: people
   icon: mdi:account-group
   max_columns: 2
-  # Status pills under the page header, per DESIGN_REFERENCE section 2:
-  # "Right: status pills where relevant (People Home, Internet Online)".
-  # Native `badges` on a sections view render exactly that strip, so this
-  # needs no custom card and no card_mod. No `name` is set deliberately --
-  # a badge with only an icon and a value is language-neutral, which keeps
-  # the bilingual toggle out of a place where two heading cards cannot go.
-  # No `color` either: CR-232 has not settled blue against amber, so the
-  # badges take the theme's own colour rather than pre-empting that answer.
+  # The chip strip, per the 14/09 mockups: a pill row under the page header,
+  # dim label then bright value -- `Outside 10°`, `Room 19.7°`, `Movement
+  # Quiet`. A native badge is exactly that pill, so this needs no custom card
+  # and no card_mod. Page-specific, three or four at most, every one a real
+  # entity: nothing here is a computed figure a badge cannot honestly show.
+  # Bilingual the way headings are -- two badges with opposite `visibility`,
+  # because a badge name cannot be templated either.
   badges:
   - type: entity
     entity: zone.home
+    name: Home
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
   - type: entity
-    entity: binary_sensor.eero_wan_status
+    entity: zone.home
+    name: 在家
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
+  - type: entity
+    entity: person.raymond_du
+    name: Ray
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: person.raymond_du
+    name: Ray
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
   sections:
 
   - type: grid
@@ -7084,19 +7594,42 @@ views:
   path: automations
   icon: mdi:robot
   max_columns: 2
-  # Status pills under the page header, per DESIGN_REFERENCE section 2:
-  # "Right: status pills where relevant (People Home, Internet Online)".
-  # Native `badges` on a sections view render exactly that strip, so this
-  # needs no custom card and no card_mod. No `name` is set deliberately --
-  # a badge with only an icon and a value is language-neutral, which keeps
-  # the bilingual toggle out of a place where two heading cards cannot go.
-  # No `color` either: CR-232 has not settled blue against amber, so the
-  # badges take the theme's own colour rather than pre-empting that answer.
+  # The chip strip, per the 14/09 mockups: a pill row under the page header,
+  # dim label then bright value -- `Outside 10°`, `Room 19.7°`, `Movement
+  # Quiet`. A native badge is exactly that pill, so this needs no custom card
+  # and no card_mod. Page-specific, three or four at most, every one a real
+  # entity: nothing here is a computed figure a badge cannot honestly show.
+  # Bilingual the way headings are -- two badges with opposite `visibility`,
+  # because a badge name cannot be templated either.
   badges:
   - type: entity
     entity: zone.home
+    name: Home
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: zone.home
+    name: 在家
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
   - type: entity
     entity: binary_sensor.eero_wan_status
+    name: Internet
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: binary_sensor.eero_wan_status
+    name: 网络
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
   sections:
 
   - type: grid
@@ -7234,19 +7767,42 @@ views:
   path: entertainment
   icon: mdi:television-play
   max_columns: 2
-  # Status pills under the page header, per DESIGN_REFERENCE section 2:
-  # "Right: status pills where relevant (People Home, Internet Online)".
-  # Native `badges` on a sections view render exactly that strip, so this
-  # needs no custom card and no card_mod. No `name` is set deliberately --
-  # a badge with only an icon and a value is language-neutral, which keeps
-  # the bilingual toggle out of a place where two heading cards cannot go.
-  # No `color` either: CR-232 has not settled blue against amber, so the
-  # badges take the theme's own colour rather than pre-empting that answer.
+  # The chip strip, per the 14/09 mockups: a pill row under the page header,
+  # dim label then bright value -- `Outside 10°`, `Room 19.7°`, `Movement
+  # Quiet`. A native badge is exactly that pill, so this needs no custom card
+  # and no card_mod. Page-specific, three or four at most, every one a real
+  # entity: nothing here is a computed figure a badge cannot honestly show.
+  # Bilingual the way headings are -- two badges with opposite `visibility`,
+  # because a badge name cannot be templated either.
   badges:
   - type: entity
-    entity: zone.home
+    entity: media_player.living_room_tv_samsung_q9_series_65
+    name: Living Room TV
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
   - type: entity
-    entity: binary_sensor.eero_wan_status
+    entity: media_player.living_room_tv_samsung_q9_series_65
+    name: 客厅电视
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
+  - type: entity
+    entity: media_player.55_qled_4k_ai_qa55q7faawxxy
+    name: Parents Room TV
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: media_player.55_qled_4k_ai_qa55q7faawxxy
+    name: 父母房电视
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
   sections:
 
   - type: grid
@@ -7502,19 +8058,42 @@ views:
   path: house-health
   icon: mdi:heart-pulse
   max_columns: 2
-  # Status pills under the page header, per DESIGN_REFERENCE section 2:
-  # "Right: status pills where relevant (People Home, Internet Online)".
-  # Native `badges` on a sections view render exactly that strip, so this
-  # needs no custom card and no card_mod. No `name` is set deliberately --
-  # a badge with only an icon and a value is language-neutral, which keeps
-  # the bilingual toggle out of a place where two heading cards cannot go.
-  # No `color` either: CR-232 has not settled blue against amber, so the
-  # badges take the theme's own colour rather than pre-empting that answer.
+  # The chip strip, per the 14/09 mockups: a pill row under the page header,
+  # dim label then bright value -- `Outside 10°`, `Room 19.7°`, `Movement
+  # Quiet`. A native badge is exactly that pill, so this needs no custom card
+  # and no card_mod. Page-specific, three or four at most, every one a real
+  # entity: nothing here is a computed figure a badge cannot honestly show.
+  # Bilingual the way headings are -- two badges with opposite `visibility`,
+  # because a badge name cannot be templated either.
   badges:
   - type: entity
-    entity: zone.home
+    entity: binary_sensor.eero_wan_status
+    name: Internet
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
   - type: entity
     entity: binary_sensor.eero_wan_status
+    name: 网络
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
+  - type: entity
+    entity: sensor.powerpal_gateway_powerpal_battery
+    name: Meter battery
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: sensor.powerpal_gateway_powerpal_battery
+    name: 电表电量
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
   sections:
 
   - type: grid
@@ -7929,19 +8508,42 @@ views:
   path: alerts
   icon: mdi:bell-alert
   max_columns: 2
-  # Status pills under the page header, per DESIGN_REFERENCE section 2:
-  # "Right: status pills where relevant (People Home, Internet Online)".
-  # Native `badges` on a sections view render exactly that strip, so this
-  # needs no custom card and no card_mod. No `name` is set deliberately --
-  # a badge with only an icon and a value is language-neutral, which keeps
-  # the bilingual toggle out of a place where two heading cards cannot go.
-  # No `color` either: CR-232 has not settled blue against amber, so the
-  # badges take the theme's own colour rather than pre-empting that answer.
+  # The chip strip, per the 14/09 mockups: a pill row under the page header,
+  # dim label then bright value -- `Outside 10°`, `Room 19.7°`, `Movement
+  # Quiet`. A native badge is exactly that pill, so this needs no custom card
+  # and no card_mod. Page-specific, three or four at most, every one a real
+  # entity: nothing here is a computed figure a badge cannot honestly show.
+  # Bilingual the way headings are -- two badges with opposite `visibility`,
+  # because a badge name cannot be templated either.
   badges:
   - type: entity
     entity: zone.home
+    name: Home
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: zone.home
+    name: 在家
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
   - type: entity
     entity: binary_sensor.eero_wan_status
+    name: Internet
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: binary_sensor.eero_wan_status
+    name: 网络
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
   sections:
 
   - type: grid
