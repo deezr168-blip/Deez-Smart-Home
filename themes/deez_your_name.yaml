@@ -179,10 +179,15 @@ deez_base: &deez_base
   accent-color: "#ffc98a"
   label-badge-background-color: "rgba(16, 31, 54, 0.6)"
   card-mod-theme: CasaRay
+  # Sentence case, per the 14/09 mockups -- every heading in them reads
+  # "Right now", "Who's home", "Needs attention", never RIGHT NOW. The
+  # uppercase transform and its wide tracking are gone; what is left is a
+  # slightly larger, brighter heading than Home Assistant's default, which is
+  # what the renders show. See docs/CASARAY_MOCKUPS_2026-09-14.md.
   card-mod-card-heading: |
     :host {
       text-shadow: 0 1px 3px rgba(4, 10, 20, 0.55);
-      text-transform: uppercase;
-      letter-spacing: 0.09em;
-      font-size: 0.88em;
+      letter-spacing: 0.01em;
+      font-size: 1.02em;
+      font-weight: 600;
     }

@@ -159,7 +159,7 @@ views:
             divides the same sensor by 1000, and UI-011. -#}
         {%- set sdw = states('sensor.primo_5_0_1_1_energy_day') | float(none) -%}
         {%- set sd = (sdw / 1000) if sdw is not none else none -%}
-        **{{ '家庭用电' if cn else 'HOUSE POWER' }}**
+        **{{ '家庭用电' if cn else 'House power' }}**
         {% if p is not none %}## {{ (p / 1000) | round(2) }} kW
         {{ '当前总用电' if cn else 'Total usage' }}{% else %}## —
         {{ '用电表无数据' if cn else 'Meter not reporting' }}{% endif %}
@@ -174,7 +174,7 @@ views:
         {%- for t in ts %}{% set f = states(t) | float(none) %}{% if f is not none %}{% set ns.sum = ns.sum + f %}{% set ns.n = ns.n + 1 %}{% endif %}{% endfor -%}
         {%- set h = states('sensor.bedroom_motion_sensor_humidity') | float(none) -%}
         {%- set aq = states('sensor.living_room_air_purifier_air_quality') -%}
-        **{{ '室内气候' if cn else 'INDOOR CLIMATE' }}**
+        **{{ '室内气候' if cn else 'Indoor climate' }}**
         {% if ns.n %}{% set avg = (ns.sum / ns.n) %}## {{ avg | round(1) }} °C
         {% if avg >= 18 and avg <= 25 %}{{ '舒适' if cn else 'Comfortable' }}{% elif avg < 18 %}{{ '偏冷' if cn else 'Cool' }}{% else %}{{ '偏热' if cn else 'Warm' }}{% endif %} · {{ ns.n }} {{ '个房间' if cn else ('room' if ns.n == 1 else 'rooms') }}{% else %}## —
         {{ '没有室内温度数据' if cn else 'No indoor temperature reporting' }}{% endif %}
@@ -190,7 +190,7 @@ views:
         {%- for d in doors %}{% set s = states(d) %}{% if s == 'on' %}{% set ns.dopen = ns.dopen + 1 %}{% elif s != 'off' %}{% set ns.dunk = ns.dunk + 1 %}{% endif %}{% endfor -%}
         {%- for c in cams %}{% if states(c) not in ['unavailable','unknown'] %}{% set ns.con = ns.con + 1 %}{% endif %}{% endfor -%}
         {%- set wan = states('binary_sensor.eero_wan_status') -%}
-        **{{ '安全' if cn else 'SECURITY' }}**
+        **{{ '安全' if cn else 'Security' }}**
         {% if ns.dopen %}## {{ '有门开启' if cn else 'Door open' }}
         {{ '%d 扇门开启' % ns.dopen if cn else '%d of 3 doors open' % ns.dopen }}{% elif ns.dunk %}## {{ '无法确认' if cn else 'Unconfirmed' }}
         {{ '%d 个门窗传感器无数据' % ns.dunk if cn else '%d of 3 door sensors not reporting' % ns.dunk }}{% else %}## {{ '安全' if cn else 'Secure' }}
@@ -206,7 +206,7 @@ views:
         {%- set sdw = states('sensor.primo_5_0_1_1_energy_day') | float(none) -%}
         {%- set sd = (sdw / 1000) if sdw is not none else none -%}
         {%- set hd = states('sensor.powerpal_gateway_powerpal_daily_energy') | float(none) -%}
-        **{{ '今日太阳能' if cn else 'SOLAR TODAY' }}**
+        **{{ '今日太阳能' if cn else 'Solar today' }}**
         {% if sd is not none and hd is not none and hd > 0 %}{% set share = ((sd / hd) * 100) | round(0) | int %}## {{ share }}%
         {% if share >= 100 %}{{ '已覆盖今日全部用电并有盈余' if cn else 'Covered all of today’s use, with surplus' }}{% else %}{{ '的今日用电来自太阳能' if cn else 'of today’s use came from solar' }}{% endif %}{% elif sd is not none %}## {{ sd | round(1) }} kWh
         {{ '今日发电量。家庭用电量无数据，无法计算占比。' if cn else 'generated today. House use is not reporting, so the share cannot be worked out.' }}{% else %}## —
@@ -882,7 +882,7 @@ views:
       grid_options: {columns: 7, rows: auto}
       content: >-
         ## {{ '房间' if is_state('input_boolean.chinese_dashboard','on') else
-        'ROOMS' }}
+        'Rooms' }}
 
         {{ '选择一个房间' if is_state('input_boolean.chinese_dashboard','on')
         else 'Choose a room' }}
@@ -997,7 +997,7 @@ views:
       grid_options: {columns: 6, rows: auto}
       content: >-
         ## {{ '客厅' if is_state('input_boolean.chinese_dashboard','on') else
-        'LIVING ROOM' }}
+        'Living Room' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
         {% set t = states('sensor.living_room_living_hue_hue_sensor_temperature') |
@@ -1574,7 +1574,7 @@ views:
       grid_options: {columns: 6, rows: auto}
       content: >-
         ## {{ '厨房' if is_state('input_boolean.chinese_dashboard','on') else
-        'KITCHEN' }}
+        'Kitchen' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set m =
         states('binary_sensor.k_motion_sensor_motion') %}{% if m == 'on' %}{{ '厨房有人'
@@ -1921,7 +1921,7 @@ views:
       grid_options: {columns: 6, rows: auto}
       content: >-
         ## {{ '餐厅' if is_state('input_boolean.chinese_dashboard','on') else
-        'DINING' }}
+        'Dining' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set m =
         states('binary_sensor.sensor_group_motion') %}{% set l =
@@ -2317,7 +2317,7 @@ views:
       grid_options: {columns: 6, rows: auto}
       content: >-
         ## {{ '父母房' if is_state('input_boolean.chinese_dashboard','on') else
-        'PARENTS ROOM' }}
+        'Parents Room' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
         {% set t = states('sensor.bedroom_motion_sensor_temperature') | float(none) -%}
@@ -2821,7 +2821,7 @@ views:
       grid_options: {columns: 6, rows: auto}
       content: >-
         ## {{ 'Ray 房间' if is_state('input_boolean.chinese_dashboard','on') else
-        'RAY BEDROOM' }}
+        'Ray Bedroom' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set l = states('light.bedroom_bedroom') %}{% set c =
         states('cover.aqara_roller_shade_driver_e1') %}{% if l == 'on' %}{{ '灯开启' if
@@ -3263,7 +3263,7 @@ views:
       grid_options: {columns: 6, rows: auto}
       content: >-
         ## {{ '车库' if is_state('input_boolean.chinese_dashboard','on') else
-        'GARAGE' }}
+        'Garage' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
         {% set p = states('sensor.g_monitor_freezer_p110m_current_consumption') |
@@ -3507,7 +3507,7 @@ views:
       grid_options: {columns: 6, rows: auto}
       content: >-
         ## {{ '客房' if is_state('input_boolean.chinese_dashboard','on') else
-        'GUEST ROOM' }}
+        'Guest Room' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set p = states('switch.g_printer_p100') %}{% if p == 'on' %}{{
         '打印机开启' if cn else 'Printer on' }}{% elif p == 'off' %}{{ '打印机关闭' if
@@ -3669,7 +3669,7 @@ views:
       grid_options: {columns: 7, rows: auto}
       content: >-
         ## {{ '灯光' if is_state('input_boolean.chinese_dashboard','on') else
-        'LIGHTING' }}
+        'Lighting' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}{% set ls = ['light.living_room', 'light.dining',
         'light.bedroom_bedroom', 'light.kogan_tv',
@@ -3707,7 +3707,7 @@ views:
                       ('switch.dinning_light_switch_1','Dining wall switch','餐厅墙壁开关')] -%}
         {%- set ns = namespace(on=[], off=0, quiet=0) -%}
         {%- for l, en, zh in ls %}{% set s = states(l) %}{% if s == 'on' %}{% set ns.on = ns.on + [zh if cn else en] %}{% elif s == 'off' %}{% set ns.off = ns.off + 1 %}{% else %}{% set ns.quiet = ns.quiet + 1 %}{% endif %}{% endfor -%}
-        **{{ '开启的灯' if cn else 'LIGHTS ON' }}**
+        **{{ '开启的灯' if cn else 'Lights on' }}**
         {% if ns.quiet == ls | count %}## —
         {{ '没有灯具报告状态' if cn else 'No light is reporting a state' }}{% else %}## {{ ns.on | count }}/{{ (ns.on | count) + ns.off }}
         {% if ns.on %}{{ ns.on | join('、') if cn else ns.on | join(', ') }}{% else %}{{ '全部已关闭' if cn else 'Everything is off' }}{% endif %}{% endif %}
@@ -3725,7 +3725,7 @@ views:
                        ('light.bedroom_bedroom','Ray Bedroom','Ray 卧室')] -%}
         {%- set ns = namespace(sum=0.0, n=0) -%}
         {%- for l, en, zh in dim %}{% if is_state(l,'on') %}{% set b = state_attr(l,'brightness') | float(none) %}{% if b is not none %}{% set ns.sum = ns.sum + b %}{% set ns.n = ns.n + 1 %}{% endif %}{% endif %}{% endfor -%}
-        **{{ '亮度' if cn else 'BRIGHTNESS' }}**
+        **{{ '亮度' if cn else 'Brightness' }}**
         {% if ns.n %}## {{ ((ns.sum / ns.n) / 255 * 100) | round(0) | int }}%
         {{ ('%d 组已开启的灯的平均亮度' % ns.n) if cn else ('averaged over %d group%s that are on' % (ns.n, '' if ns.n == 1 else 's')) }}{% else %}## —
         {{ '没有可调光的灯组处于开启状态' if cn else 'No dimmable group is on' }}{% endif %}
@@ -3741,7 +3741,7 @@ views:
                          ('light.living_room_hue_ambiance_spot_4','Outer Right','外右')] -%}
         {%- set ns = namespace(down=[], up=0) -%}
         {%- for s, en, zh in spots %}{% if states(s) in ['unavailable','unknown'] %}{% set ns.down = ns.down + [zh if cn else en] %}{% else %}{% set ns.up = ns.up + 1 %}{% endif %}{% endfor -%}
-        **{{ '客厅射灯' if cn else 'LIVING ROOM SPOTS' }}**
+        **{{ '客厅射灯' if cn else 'Living Room spots' }}**
         {% if ns.down %}## {{ ns.up }}/{{ spots | count }}
         {{ ('无数据：' ~ ns.down | join('、')) if cn else ('Not reporting: ' ~ ns.down | join(', ')) }}{% else %}## {{ spots | count }}/{{ spots | count }}
         {{ '四个射灯全部有数据' if cn else 'All 4 spots are reporting' }}{% endif %}
@@ -3757,7 +3757,7 @@ views:
                       ('light.tapo_c420_east_wall_floodlight_timed','East Wall','东墙')] -%}
         {%- set ns = namespace(on=[], off=0, quiet=[]) -%}
         {%- for f, en, zh in fl %}{% set s = states(f) %}{% if s == 'on' %}{% set ns.on = ns.on + [zh if cn else en] %}{% elif s == 'off' %}{% set ns.off = ns.off + 1 %}{% else %}{% set ns.quiet = ns.quiet + [zh if cn else en] %}{% endif %}{% endfor -%}
-        **{{ '室外泛光灯' if cn else 'FLOODLIGHTS' }}**
+        **{{ '室外泛光灯' if cn else 'Floodlights' }}**
         {% if ns.on %}## {{ ns.on | count }} {{ '开启' if cn else 'on' }}
         {{ ns.on | join('、') if cn else ns.on | join(', ') }}{% elif ns.off %}## {{ '关闭' if cn else 'Off' }}
         {{ ('%d 个泛光灯有数据且已关闭' % ns.off) if cn else ('%d reporting floodlights are off' % ns.off) }}{% else %}## —
@@ -4218,7 +4218,7 @@ views:
       grid_options: {columns: 7, rows: auto}
       content: >-
         ## {{ '气候' if is_state('input_boolean.chinese_dashboard','on') else
-        'CLIMATE' }}
+        'Climate' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}{% set ts =
         ['sensor.living_room_living_hue_hue_sensor_temperature',
@@ -4257,7 +4257,7 @@ views:
                       ('sensor.living_room_living_room_temperature','Dining','餐厅')] -%}
         {%- set ns = namespace(sum=0.0, n=0, got=[], quiet=[]) -%}
         {%- for t, en, zh in ts %}{% set f = states(t) | float(none) %}{% if f is not none %}{% set ns.sum = ns.sum + f %}{% set ns.n = ns.n + 1 %}{% set ns.got = ns.got + [zh if cn else en] %}{% else %}{% set ns.quiet = ns.quiet + [zh if cn else en] %}{% endif %}{% endfor -%}
-        **{{ '室内平均温度' if cn else 'INDOOR AVERAGE' }}**
+        **{{ '室内平均温度' if cn else 'Indoor average' }}**
         {% if ns.n %}{% set avg = ns.sum / ns.n %}## {{ avg | round(1) }} °C
         {% if avg >= 18 and avg <= 25 %}{{ '舒适' if cn else 'Comfortable' }}{% elif avg < 18 %}{{ '偏冷' if cn else 'Cool' }}{% else %}{{ '偏热' if cn else 'Warm' }}{% endif %}{% else %}## —
         {{ '没有房间报告温度' if cn else 'No room is reporting a temperature' }}{% endif %}
@@ -4268,7 +4268,7 @@ views:
       content: |
         {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
         {%- set h = states('sensor.bedroom_motion_sensor_humidity') | float(none) -%}
-        **{{ '湿度' if cn else 'HUMIDITY' }}**
+        **{{ '湿度' if cn else 'Humidity' }}**
         {% if h is not none %}## {{ h | round(0) | int }}%
         {% if h >= 30 and h <= 60 %}{{ '舒适区间' if cn else 'Comfortable range' }}{% elif h < 30 %}{{ '偏干' if cn else 'Dry' }}{% else %}{{ '偏湿' if cn else 'Humid' }}{% endif %}{% else %}## —
         {{ '湿度传感器无数据' if cn else 'The humidity sensor is not reporting' }}{% endif %}
@@ -4284,7 +4284,7 @@ views:
         {%- set zh = {'cool':'制冷','heat':'制热','dry':'除湿','fanOnly':'仅送风','auto':'自动'} -%}
         {%- set sp = states('sensor.master_bedroom_sensibo_sky_plus_cooling_setpoint') | float(none) -%}
         {%- set cur = state_attr('climate.bedroom_parents_room_ac','current_temperature') | float(none) -%}
-        **{{ '父母房空调' if cn else 'PARENTS ROOM AC' }}**
+        **{{ '父母房空调' if cn else 'Parents Room AC' }}**
         {% if hv in ['unavailable','unknown','none',''] %}## —
         {{ '空调无数据' if cn else 'The air conditioner is not reporting' }}{% elif hv == 'off' %}## {{ '已关闭' if cn else 'Off' }}
         {{ '当前未运行' if cn else 'Not running' }}{% else %}## {{ zh.get(raw, raw) if cn else en.get(raw, raw) }}
@@ -4299,7 +4299,7 @@ views:
         {%- set occ = states('binary_sensor.bedroom_parents_room_ac_room_occupied') -%}
         {%- set lr = states('sensor.bedroom_parents_room_ac_filter_last_reset') -%}
         {%- set lrt = as_timestamp(lr, default=none) -%}
-        **{{ '空调滤网' if cn else 'AC FILTER' }}**
+        **{{ '空调滤网' if cn else 'AC filter' }}**
         {% if f == 'on' %}## {{ '需要清洁' if cn else 'Clean it' }}
         {{ '空调报告滤网需要清洁' if cn else 'The unit is asking for a filter clean' }}{% elif f == 'off' %}## {{ '正常' if cn else 'Clean' }}
         {{ '空调没有要求清洁滤网' if cn else 'The unit is not asking for a clean' }}{% else %}## —
@@ -4465,7 +4465,7 @@ views:
       grid_options: {columns: 7, rows: auto}
       content: >-
         ## {{ '能源' if is_state('input_boolean.chinese_dashboard','on') else
-        'ENERGY' }}
+        'Energy' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
         {% set p = states('sensor.powerpal_gateway_powerpal_power') | float(none) -%}
@@ -4811,7 +4811,7 @@ views:
       grid_options: {columns: 7, rows: auto}
       content: >-
         ## {{ '账单' if is_state('input_boolean.chinese_dashboard','on') else
-        'BILLS' }}
+        'Bills' }}
 
         {{ '家庭开支与到期日' if is_state('input_boolean.chinese_dashboard','on')
         else 'Household expenses and due dates' }}
@@ -5931,7 +5931,7 @@ views:
       grid_options: {columns: 7, rows: auto}
       content: >-
         ## {{ '安全' if is_state('input_boolean.chinese_dashboard','on') else
-        'SECURITY' }}
+        'Security' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}{% set doors = ['binary_sensor.f_contact_sensor_door',
         'binary_sensor.m_contact_sensor_door',
@@ -5968,7 +5968,7 @@ views:
                          ('binary_sensor.b_contact_sensor_door','Backyard','后院')] -%}
         {%- set ns = namespace(open=[], shut=0, quiet=[]) -%}
         {%- for d, en, zh in doors %}{% set s = states(d) %}{% if s == 'on' %}{% set ns.open = ns.open + [zh if cn else en] %}{% elif s == 'off' %}{% set ns.shut = ns.shut + 1 %}{% else %}{% set ns.quiet = ns.quiet + [zh if cn else en] %}{% endif %}{% endfor -%}
-        **{{ '外门' if cn else 'EXTERNAL DOORS' }}**
+        **{{ '外门' if cn else 'External doors' }}**
         {% if ns.open %}## {{ '有门开启' if cn else 'Open' }}
         {{ (ns.open | join('、') ~ '开启') if cn else (ns.open | join(', ') ~ ' open') }}{% elif ns.quiet %}## {{ '无法确认' if cn else 'Unconfirmed' }}
         {{ ('%d/%d 个门磁没有数据' % (ns.quiet | count, doors | count)) if cn else ('%d of %d door sensors are not reporting' % (ns.quiet | count, doors | count)) }}{% else %}## {{ '已关闭' if cn else 'Closed' }}
@@ -5985,7 +5985,7 @@ views:
                        ('binary_sensor.sensor_group_motion','Dining','餐厅')] -%}
         {%- set ns = namespace(active=[], still=0, quiet=0) -%}
         {%- for m, en, zh in mot %}{% set s = states(m) %}{% if s == 'on' %}{% set ns.active = ns.active + [zh if cn else en] %}{% elif s == 'off' %}{% set ns.still = ns.still + 1 %}{% else %}{% set ns.quiet = ns.quiet + 1 %}{% endif %}{% endfor -%}
-        **{{ '动作' if cn else 'MOTION' }}**
+        **{{ '动作' if cn else 'Motion' }}**
         {% if ns.active %}## {{ ns.active | count }} {{ '个房间' if cn else ('room' if ns.active | count == 1 else 'rooms') }}
         {{ (ns.active | join('、') ~ '检测到动作') if cn else ('Movement in ' ~ ns.active | join(', ')) }}{% elif ns.quiet == mot | count %}## —
         {{ '没有动作传感器有数据' if cn else 'No motion sensor is reporting' }}{% else %}## {{ '安静' if cn else 'Still' }}
@@ -6004,7 +6004,7 @@ views:
                         ('camera.smart_pet_feeder','Pet Feeder','宠物喂食器')] -%}
         {%- set ns = namespace(up=0, down=[]) -%}
         {%- for c, en, zh in cams %}{% if states(c) not in ['unavailable','unknown'] %}{% set ns.up = ns.up + 1 %}{% else %}{% set ns.down = ns.down + [zh if cn else en] %}{% endif %}{% endfor -%}
-        **{{ '摄像头' if cn else 'CAMERAS' }}**
+        **{{ '摄像头' if cn else 'Cameras' }}**
         ## {{ ns.up }}/{{ cams | count }}
         {% if ns.down %}{{ ('离线：' ~ ns.down | join('、')) if cn else ('Offline: ' ~ ns.down | join(', ')) }}{% else %}{{ '全部摄像头正在推流' if cn else 'Every camera is streaming' }}{% endif %}
 
@@ -6026,7 +6026,7 @@ views:
                       ('switch.smart_pet_feeder_motion_alarm','Pet Feeder','宠物喂食器')] -%}
         {%- set ns = namespace(on=0, off=[], quiet=0) -%}
         {%- for a, en, zh in al %}{% set s = states(a) %}{% if s == 'on' %}{% set ns.on = ns.on + 1 %}{% elif s == 'off' %}{% set ns.off = ns.off + [zh if cn else en] %}{% else %}{% set ns.quiet = ns.quiet + 1 %}{% endif %}{% endfor -%}
-        **{{ '警报设置' if cn else 'ALERTING' }}**
+        **{{ '警报设置' if cn else 'Alerting' }}**
         {% if ns.on + (ns.off | count) %}## {{ ns.on }}/{{ ns.on + (ns.off | count) }}
         {% if ns.off %}{{ ('未开启：' ~ ns.off | join('、')) if cn else ('Not alerting: ' ~ ns.off | join(', ')) }}{% else %}{{ '所有报告中的摄像头都会发出提醒' if cn else 'Every reporting camera will raise an alert' }}{% endif %}{% else %}## —
         {{ '没有摄像头报告警报设置' if cn else 'No camera is reporting an alerting setting' }}{% endif %}
@@ -6389,7 +6389,7 @@ views:
       grid_options: {columns: 7, rows: auto}
       content: >-
         ## {{ '摄像头' if is_state('input_boolean.chinese_dashboard','on') else
-        'CAMERAS' }}
+        'Cameras' }}
 
         {{ '点击放大实时画面' if is_state('input_boolean.chinese_dashboard','on')
         else 'Tap a camera for the live view' }}
@@ -6421,7 +6421,7 @@ views:
                         ('camera.smart_pet_feeder','Pet Feeder','宠物喂食器')] -%}
         {%- set ns = namespace(up=0, down=[]) -%}
         {%- for c, en, zh in cams %}{% if states(c) not in ['unavailable','unknown'] %}{% set ns.up = ns.up + 1 %}{% else %}{% set ns.down = ns.down + [zh if cn else en] %}{% endif %}{% endfor -%}
-        **{{ '在线摄像头' if cn else 'CAMERAS ONLINE' }}**
+        **{{ '在线摄像头' if cn else 'Cameras online' }}**
         ## {{ ns.up }}/{{ cams | count }}
         {% if ns.down %}{{ ('离线：' ~ ns.down | join('、')) if cn else ('Offline: ' ~ ns.down | join(', ')) }}{% else %}{{ '全部在线' if cn else 'All streaming' }}{% endif %}
     - type: markdown
@@ -6435,7 +6435,7 @@ views:
                         ('sensor.tapo_c420_south_wall_battery','South Wall','南墙')] -%}
         {%- set ns = namespace(low=none, who='', n=0, dead=0) -%}
         {%- for b, en, zh in bats %}{% set v = states(b) | float(none) %}{% if v is not none %}{% set ns.n = ns.n + 1 %}{% if ns.low is none or v < ns.low %}{% set ns.low = v %}{% set ns.who = zh if cn else en %}{% endif %}{% else %}{% set ns.dead = ns.dead + 1 %}{% endif %}{% endfor -%}
-        **{{ '摄像头电量' if cn else 'CAMERA BATTERY' }}**
+        **{{ '摄像头电量' if cn else 'Camera battery' }}**
         {% if ns.low is not none %}## {{ ns.low | round(0) | int }}%
         {{ (ns.who ~ ' 电量最低') if cn else ('Lowest is ' ~ ns.who) }}{% else %}## —
         {{ '没有摄像头报告电量' if cn else 'No camera is reporting a battery level' }}{% endif %}{% if ns.dead %}
@@ -6449,7 +6449,7 @@ views:
         {%- set lat = as_timestamp(la, default=none) -%}
         {%- set fb = states('sensor.front_door_battery') | float(none) -%}
         {%- set md = states('switch.front_door_motion_detection') -%}
-        **{{ '门铃' if cn else 'DOORBELL' }}**
+        **{{ '门铃' if cn else 'Doorbell' }}**
         {# A future timestamp is possible (clock skew on the doorbell, or a
             sensor that reports ahead) and must not render as "-128 mins ago".
             Anything under a minute, in either direction, is "just now". -#}
@@ -6479,7 +6479,7 @@ views:
                          ('switch.tapo_c420_east_wall_privacy','East Wall','东墙')] -%}
         {%- set ns = namespace(on=[], off=0, unk=[]) -%}
         {%- for p, en, zh in privs %}{% set s = states(p) %}{% if s == 'on' %}{% set ns.on = ns.on + [zh if cn else en] %}{% elif s == 'off' %}{% set ns.off = ns.off + 1 %}{% else %}{% set ns.unk = ns.unk + [zh if cn else en] %}{% endif %}{% endfor -%}
-        **{{ '隐私模式' if cn else 'PRIVACY MODE' }}**
+        **{{ '隐私模式' if cn else 'Privacy mode' }}**
         {% if ns.on %}## {{ '已开启' if cn else 'On' }}
         {{ ('以下摄像头已被遮蔽：' ~ ns.on | join('、')) if cn else ('Blinded: ' ~ ns.on | join(', ')) }}{% elif (ns.unk | count) == (privs | count) %}## —
         {{ '没有摄像头报告隐私模式状态' if cn else 'No camera is reporting its privacy setting' }}{% else %}## {{ '关闭' if cn else 'Off' }}
@@ -6823,7 +6823,7 @@ views:
       grid_options: {columns: 7, rows: auto}
       content: >-
         ## {{ '家人' if is_state('input_boolean.chinese_dashboard','on') else
-        'PEOPLE' }}
+        'People' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}{% set ps = ['person.raymond_du', 'person.vinh_du',
         'person.ai_q_huang'] -%} {% set ns = namespace(home=0, away=0, unk=0) -%}
@@ -6854,7 +6854,7 @@ views:
         {%- set people = ['person.raymond_du','person.vinh_du','person.ai_q_huang'] -%}
         {%- set ns = namespace(home=[], away=[], unk=0) -%}
         {%- for p in people %}{% set s = states(p) %}{% set n = state_attr(p,'friendly_name') or p %}{% if s == 'home' %}{% set ns.home = ns.home + [n] %}{% elif s in ['unavailable','unknown','none'] %}{% set ns.unk = ns.unk + 1 %}{% else %}{% set ns.away = ns.away + [n] %}{% endif %}{% endfor -%}
-        **{{ '在家' if cn else 'AT HOME' }}**
+        **{{ '在家' if cn else 'At home' }}**
         ## {{ ns.home | count }}/{{ people | count }}
         {% if ns.home %}{{ ns.home | join('、') if cn else ns.home | join(', ') }}{% elif ns.unk == people | count %}{{ '没有成员报告位置' if cn else 'Nobody is reporting a location' }}{% else %}{{ '家中无人' if cn else 'Nobody is home' }}{% endif %}
 
@@ -6871,7 +6871,7 @@ views:
         {%- set people = ['person.raymond_du','person.vinh_du','person.ai_q_huang'] -%}
         {%- set ns = namespace(home=0) -%}
         {%- for p in people %}{% if is_state(p,'home') %}{% set ns.home = ns.home + 1 %}{% endif %}{% endfor -%}
-        **{{ '住宅区域' if cn else 'HOME ZONE' }}**
+        **{{ '住宅区域' if cn else 'Home zone' }}**
         {% if z is not none %}## {{ z }}
         {{ '个被追踪对象在住宅范围内' if cn else ('tracker in the home zone' if z == 1 else 'trackers in the home zone') }}{% else %}## —
         {{ '住宅区域没有报告数量' if cn else 'The home zone is not reporting a count' }}{% endif %}
@@ -6887,7 +6887,7 @@ views:
                         ('sensor.vine_s_phone_battery_level','Vinh phone','Vinh 手机')] -%}
         {%- set ns = namespace(low=none, who='', n=0, dead=0) -%}
         {%- for b, en, zh in devs %}{% set v = states(b) | float(none) %}{% if v is not none %}{% set ns.n = ns.n + 1 %}{% if ns.low is none or v < ns.low %}{% set ns.low = v %}{% set ns.who = zh if cn else en %}{% endif %}{% else %}{% set ns.dead = ns.dead + 1 %}{% endif %}{% endfor -%}
-        **{{ '设备电量' if cn else 'DEVICE BATTERY' }}**
+        **{{ '设备电量' if cn else 'Device battery' }}**
         {% if ns.low is not none %}## {{ ns.low | round(0) | int }}%
         {{ (ns.who ~ ' 电量最低') if cn else ('Lowest is ' ~ ns.who) }}{% else %}## —
         {{ '没有设备报告电量' if cn else 'No device is reporting a battery level' }}{% endif %}
@@ -6903,7 +6903,7 @@ views:
         {%- set d = states('sensor.raymonds_iphone_distance') | float(none) -%}
         {%- set u = state_attr('sensor.raymonds_iphone_distance','unit_of_measurement') or '' -%}
         {%- set a = states('sensor.raymonds_iphone_activity') -%}
-        **{{ 'RAY 的 iPhone' if cn else 'RAY’S IPHONE' }}**
+        **{{ 'RAY 的 iPhone' if cn else 'Ray’s iPhone' }}**
         {% if d is not none %}## {{ d | round(1) }} {{ u }}
         {{ '距离住宅' if cn else 'from home' }}{% else %}## —
         {{ '距离传感器无数据' if cn else 'The distance sensor is not reporting' }}{% endif %}
@@ -7111,7 +7111,7 @@ views:
     - type: markdown
       grid_options: {columns: 7, rows: auto}
       content: >-
-        ## {{ '自动化' if is_state('input_boolean.chinese_dashboard','on') else 'AUTOMATIONS' }}
+        ## {{ '自动化' if is_state('input_boolean.chinese_dashboard','on') else 'Automations' }}
 
         {{ '家中现有的自动化' if is_state('input_boolean.chinese_dashboard','on') else 'The automations this house has' }}
     - type: markdown
@@ -7262,7 +7262,7 @@ views:
       grid_options: {columns: 7, rows: auto}
       content: >-
         ## {{ '娱乐' if is_state('input_boolean.chinese_dashboard','on') else
-        'ENTERTAINMENT' }}
+        'Entertainment' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}{% set ms =
         ['media_player.living_room_tv_samsung_q9_series_65',
@@ -7297,7 +7297,7 @@ views:
                       ('media_player.pogo','Pogo','Pogo')] -%}
         {%- set ns = namespace(live=[], idle=0, quiet=0) -%}
         {%- for m, en, zh in mp %}{% set s = states(m) %}{% if s in ['playing','paused','on','buffering'] %}{% set ns.live = ns.live + [zh if cn else en] %}{% elif s in ['off','idle','standby'] %}{% set ns.idle = ns.idle + 1 %}{% else %}{% set ns.quiet = ns.quiet + 1 %}{% endif %}{% endfor -%}
-        **{{ '正在使用' if cn else 'IN USE' }}**
+        **{{ '正在使用' if cn else 'In use' }}**
         {% if ns.quiet == mp | count %}## —
         {{ '没有播放设备报告状态' if cn else 'No media player is reporting' }}{% else %}## {{ ns.live | count }}/{{ (ns.live | count) + ns.idle }}
         {% if ns.live %}{{ ns.live | join('、') if cn else ns.live | join(', ') }}{% else %}{{ '全部处于待机或关闭' if cn else 'Everything is idle or off' }}{% endif %}{% endif %}
@@ -7311,7 +7311,7 @@ views:
         {%- set ch = states('sensor.living_room_samsung_q9_series_65_tv_channel_name') -%}
         {%- set src = state_attr('media_player.living_room_tv_samsung_q9_series_65','source') -%}
         {%- set vol = state_attr('media_player.living_room_tv_samsung_q9_series_65','volume_level') | float(none) -%}
-        **{{ '客厅电视' if cn else 'LIVING ROOM TV' }}**
+        **{{ '客厅电视' if cn else 'Living Room TV' }}**
         {% if s in ['playing','on','buffering'] %}## {{ '播放中' if cn else 'On' }}
         {{ (ch if ch not in ['unavailable','unknown','none',''] else (src or ('信号源未知' if cn else 'Source unknown'))) }}{% elif s == 'paused' %}## {{ '已暂停' if cn else 'Paused' }}
         {{ (ch if ch not in ['unavailable','unknown','none',''] else ('已暂停播放' if cn else 'Playback is paused')) }}{% elif s in ['off','idle','standby'] %}## {{ '已关闭' if cn else 'Off' }}
@@ -7330,7 +7330,7 @@ views:
                        'idle':('Idle','待机'),'standby':('Standby','待机')} -%}
         {%- set act = ['playing','paused','on','buffering'] -%}
         {%- set live = (1 if p in act else 0) + (1 if r in act else 0) -%}
-        **{{ '其他屏幕' if cn else 'OTHER SCREENS' }}**
+        **{{ '其他屏幕' if cn else 'Other screens' }}**
         {% if p in ['unavailable','unknown','none',''] and r in ['unavailable','unknown','none',''] %}## —
         {{ '两台电视都没有数据' if cn else 'Neither TV is reporting' }}{% else %}## {{ live }}/2
         {{ '台屏幕正在使用中' if cn else ('screen in use right now' if live == 1 else 'screens in use right now') }}{% endif %}
@@ -7344,7 +7344,7 @@ views:
                         ('light.kogan_tv','Kogan TV backlight','Kogan 电视背光')] -%}
         {%- set ns = namespace(down=[], up=0) -%}
         {%- for e, en, zh in dead %}{% if states(e) in ['unavailable','unknown'] %}{% set ns.down = ns.down + [zh if cn else en] %}{% else %}{% set ns.up = ns.up + 1 %}{% endif %}{% endfor -%}
-        **{{ '未接入的设备' if cn else 'NOT REPORTING' }}**
+        **{{ '未接入的设备' if cn else 'Not reporting' }}**
         {% if ns.down %}## {{ ns.down | count }}
         {{ ns.down | join('、') if cn else ns.down | join(', ') }}{% else %}## 0
         {{ '所有影音设备都有数据' if cn else 'Every entertainment device is reporting' }}{% endif %}
@@ -7530,7 +7530,7 @@ views:
       grid_options: {columns: 7, rows: auto}
       content: >-
         ## {{ '系统健康' if is_state('input_boolean.chinese_dashboard','on') else
-        'HOUSE HEALTH' }}
+        'House Health' }}
 
         {{ '系统状态与维护' if is_state('input_boolean.chinese_dashboard','on')
         else 'System status and maintenance' }}
@@ -7957,7 +7957,7 @@ views:
       grid_options: {columns: 7, rows: auto}
       content: >-
         ## {{ '通知' if is_state('input_boolean.chinese_dashboard','on') else
-        'ALERTS' }}
+        'Alerts' }}
 
         {{ '目前需要注意的事项' if is_state('input_boolean.chinese_dashboard','on')
         else 'What needs attention right now' }}

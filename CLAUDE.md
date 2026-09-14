@@ -146,6 +146,20 @@ build if one appears.
 
 ## Design direction
 
+**The 14/09 mockups are the current visual target.** Seven owner-supplied
+renders live in `docs/mockups/`, transcribed in
+`docs/CASARAY_MOCKUPS_2026-09-14.md`. Where they disagree with anything below
+or with `DESIGN_REFERENCE.md`, they win. What they settle so far:
+
+- **Sentence case everywhere** — page titles, section headings, KPI labels.
+  No uppercase transform; the theme no longer applies one.
+- **Amber is on or active**; grey is at rest; green is reserved for good
+  security states (a closed door, a camera's live dot).
+- **Unavailable is drawn, never hidden**: muted card, a "no data" or "offline"
+  note, and it keeps its place in the layout.
+- **Controls are tile features** — a light's brightness bar, a fan's speed —
+  not custom cards.
+
 **CasaRay × Your Name.** Cinematic, calm, premium, midnight-blue, slightly
 translucent, and still native to Home Assistant. The background is the Your
 Name night-sky frame at `/local/your_name_night_sky.jpg`, fixed and covering
