@@ -4875,67 +4875,59 @@ views:
   # INDOOR CLIMATE card. The average names the rooms it averaged: an earlier
   # version of this figure read "19.1 across 2 rooms" beside a page showing
   # three, and the only fix for that is to print the working.
+  # Summary strip. Four readings, each a label, a value and a state word --
+  # nothing else. The previous version explained its own working in a
+  # paragraph under each card, which is right for a queue entry and wrong for
+  # a wall panel you read from across the room. What the cards still will not
+  # do is assert a state they cannot see: no reading means an em dash.
   - type: grid
     column_span: 2
     cards:
     - type: markdown
-      grid_options: {columns: 6, rows: 3}
+      grid_options: {columns: 6, rows: auto}
       content: |
         {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
-        {%- set ts = [('sensor.living_room_living_hue_hue_sensor_temperature','Living Room','客厅'),
-                      ('sensor.bedroom_motion_sensor_temperature','Parents Room','父母房'),
-                      ('sensor.living_room_living_room_temperature','Dining','餐厅')] -%}
-        {%- set ns = namespace(sum=0.0, n=0, got=[], quiet=[]) -%}
-        {%- for t, en, zh in ts %}{% set f = states(t) | float(none) %}{% if f is not none %}{% set ns.sum = ns.sum + f %}{% set ns.n = ns.n + 1 %}{% set ns.got = ns.got + [zh if cn else en] %}{% else %}{% set ns.quiet = ns.quiet + [zh if cn else en] %}{% endif %}{% endfor -%}
+        {%- set ts = ['sensor.living_room_living_hue_hue_sensor_temperature',
+                      'sensor.bedroom_motion_sensor_temperature',
+                      'sensor.living_room_living_room_temperature'] -%}
+        {%- set ns = namespace(sum=0.0, n=0) -%}
+        {%- for t in ts %}{% set f = states(t) | float(none) %}{% if f is not none %}{% set ns.sum = ns.sum + f %}{% set ns.n = ns.n + 1 %}{% endif %}{% endfor -%}
         **{{ '室内平均温度' if cn else 'Indoor average' }}**
         {% if ns.n %}{% set avg = ns.sum / ns.n %}## {{ avg | round(1) }} °C
-        {% if avg >= 18 and avg <= 25 %}{{ '舒适' if cn else 'Comfortable' }}{% elif avg < 18 %}{{ '偏冷' if cn else 'Cool' }}{% else %}{{ '偏热' if cn else 'Warm' }}{% endif %}{% else %}## —
-        {{ '没有房间报告温度' if cn else 'No room is reporting a temperature' }}{% endif %}
-
-        {% if ns.n %}{{ ('取自：' ~ ns.got | join('、')) if cn else ('Averaged over ' ~ ns.got | join(', ')) }}{% endif %}{% if ns.quiet %} · {{ ('无数据：' ~ ns.quiet | join('、')) if cn else ('not reporting: ' ~ ns.quiet | join(', ')) }}{% endif %}
+        {% if avg >= 18 and avg <= 25 %}{{ '舒适' if cn else 'Comfortable' }}{% elif avg < 18 %}{{ '偏冷' if cn else 'Cool' }}{% else %}{{ '偏热' if cn else 'Warm' }}{% endif %} · {{ ns.n }}/{{ ts | count }} {{ '个房间' if cn else 'rooms' }}{% else %}## —
+        {{ '无数据' if cn else 'No reading' }}{% endif %}
     - type: markdown
-      grid_options: {columns: 6, rows: 3}
+      grid_options: {columns: 6, rows: auto}
       content: |
         {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
         {%- set h = states('sensor.bedroom_motion_sensor_humidity') | float(none) -%}
         **{{ '湿度' if cn else 'Humidity' }}**
         {% if h is not none %}## {{ h | round(0) | int }}%
-        {% if h >= 30 and h <= 60 %}{{ '舒适区间' if cn else 'Comfortable range' }}{% elif h < 30 %}{{ '偏干' if cn else 'Dry' }}{% else %}{{ '偏湿' if cn else 'Humid' }}{% endif %}{% else %}## —
-        {{ '湿度传感器无数据' if cn else 'The humidity sensor is not reporting' }}{% endif %}
-
-        {{ '全屋只有父母房的传感器报告湿度，因此这不是全屋平均值。' if cn else 'Only the Parents Room sensor reports humidity, so this is one room, not a house average.' }}
+        {% if h >= 30 and h <= 60 %}{{ '舒适' if cn else 'Comfortable' }}{% elif h < 30 %}{{ '偏干' if cn else 'Dry' }}{% else %}{{ '偏湿' if cn else 'Humid' }}{% endif %} · {{ '父母房' if cn else 'Parents Room' }}{% else %}## —
+        {{ '无数据' if cn else 'No reading' }}{% endif %}
     - type: markdown
-      grid_options: {columns: 6, rows: 3}
+      grid_options: {columns: 6, rows: auto}
       content: |
         {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
         {%- set hv = states('climate.bedroom_parents_room_ac') -%}
-        {%- set raw = states('sensor.master_bedroom_sensibo_sky_plus_air_conditioner_mode') -%}
-        {%- set en = {'cool':'Cooling','heat':'Heating','dry':'Dry','fanOnly':'Fan only','auto':'Auto'} -%}
-        {%- set zh = {'cool':'制冷','heat':'制热','dry':'除湿','fanOnly':'仅送风','auto':'自动'} -%}
-        {%- set sp = states('sensor.master_bedroom_sensibo_sky_plus_cooling_setpoint') | float(none) -%}
         {%- set cur = state_attr('climate.bedroom_parents_room_ac','current_temperature') | float(none) -%}
+        {%- set sp = state_attr('climate.bedroom_parents_room_ac','temperature') | float(none) -%}
         **{{ '父母房空调' if cn else 'Parents Room AC' }}**
         {% if hv in ['unavailable','unknown','none',''] %}## —
-        {{ '空调无数据' if cn else 'The air conditioner is not reporting' }}{% elif hv == 'off' %}## {{ '已关闭' if cn else 'Off' }}
-        {{ '当前未运行' if cn else 'Not running' }}{% else %}## {{ zh.get(raw, raw) if cn else en.get(raw, raw) }}
-        {{ '正在运行' if cn else 'Running' }}{% endif %}
-
-        {{ '室温' if cn else 'Room' }} **{{ (cur | round(1) ~ ' °C') if cur is not none else '—' }}** · {{ '制冷设定' if cn else 'Cool setpoint' }} **{{ (sp | round(0) | int ~ ' °C') if sp is not none else '—' }}**
+        {{ '无数据' if cn else 'No reading' }}{% elif hv == 'off' %}## {{ '已关闭' if cn else 'Off' }}
+        {{ (cur | round(1) ~ ' °C ' ~ ('室温' if cn else 'room')) if cur is not none else ('无室温数据' if cn else 'no room reading') }}{% else %}## {{ '运行中' if cn else 'On' }}
+        {{ (cur | round(1) ~ ' °C') if cur is not none else '—' }} → {{ (sp | round(0) | int ~ ' °C') if sp is not none else '—' }}{% endif %}
     - type: markdown
-      grid_options: {columns: 6, rows: 3}
+      grid_options: {columns: 6, rows: auto}
       content: |
         {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
         {%- set f = states('binary_sensor.bedroom_parents_room_ac_filter_clean_required') -%}
-        {%- set occ = states('binary_sensor.bedroom_parents_room_ac_room_occupied') -%}
-        {%- set lr = states('sensor.bedroom_parents_room_ac_filter_last_reset') -%}
-        {%- set lrt = as_timestamp(lr, default=none) -%}
-        **{{ '空调滤网' if cn else 'AC filter' }}**
-        {% if f == 'on' %}## {{ '需要清洁' if cn else 'Clean it' }}
-        {{ '空调报告滤网需要清洁' if cn else 'The unit is asking for a filter clean' }}{% elif f == 'off' %}## {{ '正常' if cn else 'Clean' }}
-        {{ '空调没有要求清洁滤网' if cn else 'The unit is not asking for a clean' }}{% else %}## —
-        {{ '滤网状态无数据' if cn else 'Filter status is not reporting' }}{% endif %}
-
-        {% if lrt is not none %}{% set days = ((as_timestamp(now()) - lrt) / 86400) | round(0, 'floor') | int %}{{ ('上次重置：%d 天前' % days) if cn else ('Last reset %d days ago' % days) }}{% else %}{{ '尚未记录重置时间' if cn else 'No reset has been recorded' }}{% endif %} · {{ '房间' if cn else 'Room' }} **{{ ('有人' if cn else 'Occupied') if occ == 'on' else (('无人' if cn else 'Empty') if occ == 'off' else ('无数据' if cn else 'Unknown')) }}**
+        {%- set lrt = as_timestamp(states('sensor.bedroom_parents_room_ac_filter_last_reset'), default=none) -%}
+        **{{ '空调滤网' if cn else 'Filter' }}**
+        {% if f == 'on' %}## {{ '需要清洁' if cn else 'Needs attention' }}
+        {% elif f == 'off' %}## {{ '正常' if cn else 'Clean' }}
+        {% else %}## —
+        {% endif %}{% if lrt is not none %}{% set days = ((as_timestamp(now()) - lrt) / 86400) | round(0, 'floor') | int %}{{ ('%d 天前重置' % days) if cn else ('Reset %d days ago' % days) }}{% else %}{{ '未记录重置时间' if cn else 'No reset recorded' }}{% endif %}
 
   - type: grid
     column_span: 1
@@ -4966,64 +4958,41 @@ views:
     column_span: 1
     cards:
     - type: heading
-      heading: Readings
+      heading: Room readings
       heading_style: title
-      icon: mdi:thermometer-lines
+      icon: mdi:thermometer
       visibility:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
     - type: heading
-      heading: 读数
+      heading: 房间读数
       heading_style: title
-      icon: mdi:thermometer-lines
+      icon: mdi:thermometer
       visibility:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: sensor.living_room_living_hue_hue_sensor_temperature
       name: Living Room
-      grid_options: {columns: 6, rows: 1}
     - type: tile
+      grid_options: {columns: 6, rows: 1}
       entity: sensor.bedroom_motion_sensor_temperature
       name: Parents Room
-      grid_options: {columns: 6, rows: 1}
     - type: tile
-      entity: sensor.bedroom_motion_sensor_humidity
-      name: Parents Room humidity
       grid_options: {columns: 6, rows: 1}
-    - type: tile
       entity: sensor.living_room_living_room_temperature
       name: Dining
-      grid_options: {columns: 6, rows: 1}
     - type: tile
+      grid_options: {columns: 6, rows: 1}
+      entity: sensor.bedroom_motion_sensor_humidity
+      name: Humidity
+    - type: tile
+      grid_options: {columns: 12, rows: 1}
       entity: weather.forecast_home
       name: Outside
-      grid_options: {columns: 6, rows: 1}
-    # Sensibo reports the unit's configured mode, which persists while the
-    # climate entity is off -- so this reads `fanOnly` beside a thermostat card
-    # showing Off, and both are correct. The label says which one it is, and
-    # the raw camelCase is humanised below. Unknown values are printed as-is
-    # rather than guessed at.
-    - type: tile
-      entity: sensor.master_bedroom_sensibo_sky_plus_air_conditioner_mode
-      name: AC mode when on
-      grid_options: {columns: 6, rows: 1}
-    - type: tile
-      grid_options: {columns: 6, rows: 1}
-      entity: sensor.master_bedroom_sensibo_sky_plus_cooling_setpoint
-      name: AC setpoint
-    - type: markdown
-      content: >-
-        {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
-        {% set raw = states('sensor.master_bedroom_sensibo_sky_plus_air_conditioner_mode') -%}
-        {% set en = {'cool':'Cooling','heat':'Heating','dry':'Dry','fanOnly':'Fan only','auto':'Auto'} -%}
-        {% set zh = {'cool':'制冷','heat':'制热','dry':'除湿','fanOnly':'仅送风','auto':'自动'} -%}
-        {% set hv = states('climate.bedroom_parents_room_ac') -%}
-        {% if raw in ['unavailable','unknown','none',''] %}{{ '空调模式无数据。' if cn else 'The air conditioner mode is not reporting.' }}{% else %}{% set nice = (zh.get(raw, raw) if cn else en.get(raw, raw)) -%}
-        {% if hv == 'off' %}{% if cn %}空调当前**已关闭**。上方的“{{ nice }}”是它下次开启时将使用的模式，不是当前正在运行的模式。{% else %}The air conditioner is **off**. "{{ nice }}" above is the mode it will use when it is next turned on, not what it is doing now.{% endif %}{% else %}{% if cn %}空调正在运行，模式为 **{{ nice }}**。{% else %}The air conditioner is running in **{{ nice }}**.{% endif %}{% endif %}{% endif %}
-      grid_options: {columns: 12, rows: 3}
 
   - type: grid
     column_span: 2
@@ -5062,6 +5031,53 @@ views:
 # offline and every read of it is guarded. No grid import/export sensor and
 # no battery entity exists, so those mockup panels are absent.
 # ===========================================================================
+  # Advanced. The Sensibo bridge exposes the unit's own configured mode and
+  # cooling setpoint, which persist while the climate entity is off -- so they
+  # read "fanOnly" and "19 °C" beside a thermostat showing Off, and both are
+  # correct. That needs explaining, and the explanation belongs here rather
+  # than in the summary a wall panel is read from.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Advanced
+      heading_style: subtitle
+      icon: mdi:tune
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 高级
+      heading_style: subtitle
+      icon: mdi:tune
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: tile
+      grid_options: {columns: 4, rows: 1}
+      entity: sensor.master_bedroom_sensibo_sky_plus_air_conditioner_mode
+      name: Mode when on
+    - type: tile
+      grid_options: {columns: 4, rows: 1}
+      entity: sensor.master_bedroom_sensibo_sky_plus_cooling_setpoint
+      name: Cooling setpoint
+    - type: tile
+      grid_options: {columns: 4, rows: 1}
+      entity: switch.master_bedroom_sensibo_sky_plus
+      name: Sensibo bridge
+    - type: markdown
+      grid_options: {columns: 12, rows: auto}
+      content: >-
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {% set raw = states('sensor.master_bedroom_sensibo_sky_plus_air_conditioner_mode') -%}
+        {% set en = {'cool':'Cooling','heat':'Heating','dry':'Dry','fanOnly':'Fan only','auto':'Auto'} -%}
+        {% set zh = {'cool':'制冷','heat':'制热','dry':'除湿','fanOnly':'仅送风','auto':'自动'} -%}
+        {% set hv = states('climate.bedroom_parents_room_ac') -%}
+        {% if raw in ['unavailable','unknown','none',''] %}{{ '空调模式无数据。' if cn else 'The air conditioner mode is not reporting.' }}{% else %}{% set nice = (zh.get(raw, raw) if cn else en.get(raw, raw)) -%}
+        {% if hv == 'off' %}{{ ('空调已关闭。上方的“' ~ nice ~ '”是下次开启时使用的模式。') if cn else ('The air conditioner is off. "' ~ nice ~ '" is the mode it will use when next turned on.') }}{% else %}{{ ('空调正在以 ' ~ nice ~ ' 模式运行。') if cn else ('Running in ' ~ nice ~ '.') }}{% endif %}{% endif %}
+
 - type: sections
   title: Energy
   path: energy
