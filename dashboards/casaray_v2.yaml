@@ -136,55 +136,55 @@ views:
     column_span: 2
     cards:
     - type: button
-      grid_options: {columns: 4, rows: 1}
+      grid_options: {columns: 3, rows: 1}
       name: Rooms
       icon: mdi:floor-plan
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
     - type: button
-      grid_options: {columns: 4, rows: 1}
+      grid_options: {columns: 3, rows: 1}
       name: Energy
       icon: mdi:lightning-bolt
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
     - type: button
-      grid_options: {columns: 4, rows: 1}
+      grid_options: {columns: 3, rows: 1}
       name: Security
       icon: mdi:shield-home
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/security}
     - type: button
-      grid_options: {columns: 4, rows: 1}
+      grid_options: {columns: 3, rows: 1}
       name: Cameras
       icon: mdi:cctv
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
     - type: button
-      grid_options: {columns: 4, rows: 1}
+      grid_options: {columns: 3, rows: 1}
       name: Bills
       icon: mdi:file-document-outline
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/bills}
     - type: button
-      grid_options: {columns: 4, rows: 1}
+      grid_options: {columns: 3, rows: 1}
       name: Entertainment
       icon: mdi:television-play
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/entertainment}
     - type: button
-      grid_options: {columns: 4, rows: 1}
+      grid_options: {columns: 3, rows: 1}
       name: Automations
       icon: mdi:robot
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/automations}
     - type: button
-      grid_options: {columns: 4, rows: 1}
+      grid_options: {columns: 3, rows: 1}
       name: Alerts
       icon: mdi:bell-alert
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/alerts}
     - type: button
-      grid_options: {columns: 4, rows: 1}
+      grid_options: {columns: 3, rows: 1}
       name: Health
       icon: mdi:heart-pulse
       show_state: false
@@ -197,6 +197,18 @@ views:
   # landscape gives two usable columns whatever the mockup shows. Every figure
   # comes from an entity this dashboard already reads; nothing is invented,
   # and each card keeps its own "not reporting" branch.
+    - type: button
+      grid_options: {columns: 3, rows: 1}
+      name: Lighting
+      icon: mdi:lightbulb-group
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/lighting}
+    - type: button
+      grid_options: {columns: 3, rows: 1}
+      name: Climate
+      icon: mdi:thermometer
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/climate}
   - type: grid
     column_span: 2
     cards:
@@ -718,70 +730,76 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
-    - type: button
-      grid_options: {columns: 4, rows: 1}
+    # Rooms as full-width rows, per the 14/09 renders: icon, name, a live
+    # secondary line, and the whole row navigating. A tile bound to the
+    # room's own entity colours itself amber when that entity is on, which
+    # is the active-state indication the mockups show -- no card_mod needed.
+    # Lighting and Climate moved up to the quick-nav strip: they are boards,
+    # not rooms, and every other board link already lives there.
+    # Both are still one tap from Home.
+    - type: tile
+      grid_options: {columns: 12, rows: 1}
+      entity: light.living_room
       name: Living Room
       icon: mdi:sofa
-      entity: light.living_room
-      show_state: true
+      state_content: [state, last_changed]
+      vertical: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/living-room}
-    - type: button
-      grid_options: {columns: 4, rows: 1}
+      icon_tap_action: {action: none}
+    - type: tile
+      grid_options: {columns: 12, rows: 1}
+      entity: binary_sensor.k_motion_sensor_motion
       name: Kitchen
       icon: mdi:silverware-fork-knife
-      entity: binary_sensor.k_motion_sensor_motion
-      show_state: true
+      state_content: [state, last_changed]
+      vertical: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/kitchen}
-    - type: button
-      grid_options: {columns: 4, rows: 1}
+      icon_tap_action: {action: none}
+    - type: tile
+      grid_options: {columns: 12, rows: 1}
+      entity: light.dining
       name: Dining
       icon: mdi:table-chair
-      entity: light.dining
-      show_state: true
+      state_content: [state, last_changed]
+      vertical: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/dining}
-    - type: button
-      grid_options: {columns: 4, rows: 1}
+      icon_tap_action: {action: none}
+    - type: tile
+      grid_options: {columns: 12, rows: 1}
+      entity: climate.bedroom_parents_room_ac
       name: Parents Room
       icon: mdi:bed-king
-      entity: climate.bedroom_parents_room_ac
-      show_state: true
+      state_content: [state, last_changed]
+      vertical: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/parents-room}
-    - type: button
-      grid_options: {columns: 4, rows: 1}
+      icon_tap_action: {action: none}
+    - type: tile
+      grid_options: {columns: 12, rows: 1}
+      entity: light.bedroom_bedroom
       name: Ray Bedroom
       icon: mdi:bed
-      entity: light.bedroom_bedroom
-      show_state: true
+      state_content: [state, last_changed]
+      vertical: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/ray-bedroom}
-    - type: button
-      grid_options: {columns: 4, rows: 1}
+      icon_tap_action: {action: none}
+    - type: tile
+      grid_options: {columns: 12, rows: 1}
+      entity: switch.g_monitor_freezer_p110m
       name: Garage
       icon: mdi:garage
-      entity: switch.g_monitor_freezer_p110m
-      show_state: true
+      state_content: [state, last_changed]
+      vertical: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/garage}
-    - type: button
-      grid_options: {columns: 4, rows: 1}
+      icon_tap_action: {action: none}
+    - type: tile
+      grid_options: {columns: 12, rows: 1}
+      entity: switch.g_printer_p100
       name: Guest Room
       icon: mdi:bed-empty
-      entity: switch.g_printer_p100
-      show_state: true
+      state_content: [state, last_changed]
+      vertical: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/guest-room}
-    - type: button
-      grid_options: {columns: 4, rows: 1}
-      name: Lighting
-      icon: mdi:lightbulb-group
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/lighting}
-    - type: button
-      grid_options: {columns: 4, rows: 1}
-      name: Climate
-      icon: mdi:thermometer
-      entity: sensor.bedroom_motion_sensor_temperature
-      show_state: true
-      tap_action: {action: navigate, navigation_path: /casaray-v2/climate}
-
-  # --- Indoor climate at a glance. ---
+      icon_tap_action: {action: none}
   - type: grid
     column_span: 1
     cards:
