@@ -5162,11 +5162,14 @@ views:
 
         {{ now().strftime('%d/%m/%y') }}
 
+  # 1. Current. Four figures and, when it matters, one alert. The inverter
+  # explanation that used to sit here as a paragraph is now a short line in
+  # the alert and a fuller note under Solar details.
   - type: grid
     column_span: 2
     cards:
     - type: heading
-      heading: Right now
+      heading: Current
       heading_style: title
       icon: mdi:flash
       visibility:
@@ -5182,182 +5185,113 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: markdown
-      grid_options: {columns: 12, rows: 2}
-      content: >-
-        {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
-        {% set p = states('sensor.powerpal_gateway_powerpal_power') -%}
-        {% set s = states('sensor.primo_5_0_1_1_ac_power') -%}
-        {% set pk = p not in ['unavailable','unknown','none',''] and p | float(-1) >= 0 -%}
-        {% set sk = s not in ['unavailable','unknown','none',''] and s | float(-1) >= 0 -%}
-        {% set pw = p | float(-1) | round(0) | int -%}
-        {% set sw = s | float(-1) | round(0) | int -%}
-        {% if pk and sk %}{% set pf = p | float(-1) %}{% set sf = s | float(-1) -%}
-        {% if pf > 0 %}{% set share = ((sf / pf) * 100) | round(0) | int -%}
-        {% if share >= 100 %}{% if cn %}太阳能已覆盖全部家庭用电并有盈余：发电 **{{ sw }}
-        W**，家庭用电 **{{ pw }} W**。{% else %}Solar is covering all household demand and
-        producing surplus: **{{ sw }} W** generated against **{{ pw }} W** drawn.{% endif
-        %}{% else %}{% if cn %}太阳能供应了家庭用电的 **{{ share }}%**。{% else %}Solar is
-        supplying **{{ share }}%** of household demand.{% endif %}{% endif %}{% else %}{%
-        if cn %}家庭用电 {{ pw }} W。{% else %}House draw is {{ pw }} W.{% endif %}{% endif
-        %}{% elif pk %}{% if cn %}当前用电 **{{ pw }} W**。太阳能逆变器离线，无法计算太阳能占比。{%
-        else %}Drawing **{{ pw }} W**. The solar inverter is offline, so solar
-        contribution cannot be calculated.{% endif %}{% elif sk %}{% if cn %}太阳能发电 **{{
-        sw }} W**。家庭用电量无数据。{% else %}Solar generating **{{ sw }} W**. House
-        consumption is not reporting.{% endif %}{% else %}{{ '用电表与太阳能逆变器目前均无数据。'
-        if cn else 'Neither the house power meter nor the solar inverter is reporting
-        right now.' }}{% endif %}
-    - type: tile
-      entity: sensor.powerpal_gateway_powerpal_power
-      color: amber
-      name: House power
-      icon: mdi:transmission-tower
-      grid_options: {columns: 6, rows: 1}
-    - type: tile
-      entity: sensor.primo_5_0_1_1_ac_power
-      color: green
-      name: Solar power
-      icon: mdi:solar-power-variant
-      grid_options: {columns: 6, rows: 1}
-    - type: tile
-      entity: sensor.powerpal_gateway_powerpal_daily_energy
-      color: amber
-      name: House today
-      icon: mdi:counter
-      grid_options: {columns: 6, rows: 1}
-    - type: tile
-      entity: sensor.primo_5_0_1_1_energy_day
-      color: green
-      name: Solar today
-      icon: mdi:weather-sunny
-      grid_options: {columns: 6, rows: 1}
-
-  - type: grid
-    column_span: 1
-    cards:
-    - type: heading
-      heading: Solar system
-      heading_style: title
-      icon: mdi:solar-panel
-      visibility:
-      - condition: state
-        entity: input_boolean.chinese_dashboard
-        state_not: 'on'
-    - type: heading
-      heading: 太阳能系统
-      heading_style: title
-      icon: mdi:solar-panel
-      visibility:
-      - condition: state
-        entity: input_boolean.chinese_dashboard
-        state: 'on'
+      grid_options: {columns: 6, rows: auto}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set p = states('sensor.powerpal_gateway_powerpal_power') | float(none) -%}
+        **{{ '家庭用电' if cn else 'House power' }}**
+        {% if p is not none %}## {{ (p / 1000) | round(2) }} kW
+        {{ '当前' if cn else 'now' }}{% else %}## —
+        {{ '用电表无数据' if cn else 'Meter not reporting' }}{% endif %}
     - type: markdown
-      grid_options: {columns: 12, rows: 2}
-      content: >-
-        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set s =
-        states('sensor.primo_5_0_1_1_ac_power') -%} {% if s in
-        ['unavailable','unknown'] %}{{ '**Fronius Primo
-        逆变器离线。**在重新连接之前，下方所有太阳能数据均为过期或缺失。这是硬件或网络故障，不是面板问题。'
-        if cn else '**The Fronius Primo inverter is offline.** Every solar reading
-        below is stale or absent until it reconnects. This is a hardware or network
-        fault, not a dashboard one.' }}{% else %}{{ '逆变器运行正常。' if cn else
-        'Inverter reporting normally.' }}{% endif %}
-    - type: tile
-      grid_options: {columns: 6, rows: 1}
-      entity: sensor.primo_5_0_1_1_energy_year
-      name: Solar this year
-    - type: tile
-      grid_options: {columns: 6, rows: 1}
-      entity: sensor.primo_5_0_1_1_total_energy
-      color: green
-      name: Solar lifetime
-    - type: tile
-      entity: binary_sensor.casa_solar_online
-      color: green
-      name: Inverter online
-      grid_options: {columns: 6, rows: 1}
-    - type: tile
-      entity: sensor.primo_5_0_1_1_status_message
-      name: Inverter status
-      grid_options: {columns: 6, rows: 1}
-    - type: tile
-      entity: sensor.primo_5_0_1_1_error_message
-      name: Inverter errors
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 6, rows: auto}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set hd = states('sensor.powerpal_gateway_powerpal_daily_energy') | float(none) -%}
+        **{{ '今日用电' if cn else 'House today' }}**
+        {% if hd is not none %}## {{ hd | round(1) }} kWh
+        {{ '自午夜起' if cn else 'since midnight' }}{% else %}## —
+        {{ '用电表无数据' if cn else 'Meter not reporting' }}{% endif %}
+    - type: markdown
+      grid_options: {columns: 6, rows: auto}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set s = states('sensor.primo_5_0_1_1_ac_power') | float(none) -%}
+        {%- set up = is_state('binary_sensor.casa_solar_online','on') -%}
+        **{{ '当前发电' if cn else 'Solar now' }}**
+        {% if not up %}## —
+        {{ '逆变器离线' if cn else 'Inverter offline' }}{% elif s is not none %}## {{ s | round(0) | int }} W
+        {{ '正在发电' if cn else 'generating' }}{% else %}## —
+        {{ '无发电数据' if cn else 'No generation data' }}{% endif %}
+    - type: markdown
+      grid_options: {columns: 6, rows: auto}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {#- energy_day is Wh. Convert at the binding so nothing downstream can
+            mix it with the kWh figures beside it. -#}
+        {%- set sdw = states('sensor.primo_5_0_1_1_energy_day') | float(none) -%}
+        {%- set sd = (sdw / 1000) if sdw is not none else none -%}
+        {%- set up = is_state('binary_sensor.casa_solar_online','on') -%}
+        **{{ '今日发电' if cn else 'Solar today' }}**
+        {% if not up %}## —
+        {{ '逆变器离线' if cn else 'Inverter offline' }}{% elif sd is not none %}## {{ sd | round(1) }} kWh
+        {{ '自午夜起' if cn else 'since midnight' }}{% else %}## —
+        {{ '无发电数据' if cn else 'No generation data' }}{% endif %}
+    - type: conditional
+      grid_options: {columns: 12, rows: auto}
+      conditions:
+      - condition: state
+        entity: binary_sensor.casa_solar_online
+        state_not: 'on'
+      card:
+        type: markdown
+        content: |
+          {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+          **{{ '太阳能逆变器离线' if cn else 'Solar inverter offline' }}**
+          {{ '发电数据不可用。' if cn else 'Solar generation data unavailable.' }}
+        card_mod:
+          style: |
+            ha-card {
+              background: rgba(58, 62, 70, 0.30);
+              border-color: rgba(150, 156, 166, 0.30);
+              border-style: dashed;
+            }
 
-
+  # 2. Solar. Forecast first, because it is what the day gets planned
+  # around; the inverter's own registers are one section down under details.
   - type: grid
     column_span: 2
     cards:
     - type: heading
-      heading: Solar forecast
+      heading: Solar
       heading_style: title
-      icon: mdi:weather-sunny-alert
+      icon: mdi:solar-power
       visibility:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
     - type: heading
-      heading: 太阳能预测
+      heading: 太阳能
       heading_style: title
-      icon: mdi:weather-sunny-alert
+      icon: mdi:solar-power
       visibility:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
-    - type: markdown
-      grid_options: {columns: 12, rows: 2}
-      content: >-
-        {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
-        {% set t = states('sensor.energy_production_today') | float(none) -%}
-        {% set r = states('sensor.energy_production_today_remaining') | float(none) -%}
-        {% set n = states('sensor.power_production_now') | float(none) -%}
-        {% if t is not none %}{{ ('今日预计太阳能 **%.1f kWh**' % t) if cn else ('Forecast
-        **%.1f kWh** solar today.' % t) }}{% if r is not none %}{{ ('，其中剩余 **%.1f
-        kWh**。' % r) if cn else (' **%.1f kWh** of that is still to come.' % r) }}{%
-        endif %}{% else %}{{ '太阳能预测目前无数据。' if cn else 'Solar forecast is not
-        reporting.' }}{% endif %}{% if n is not none %}{{ ('当前预测功率 **%d W**。' % n)
-        if cn else (' Forecast production now: **%d W**.' % n) }}{% endif %}
-        {%- if cn %} 以上均为预测值，来自太阳能预测集成，不是逆变器实测值；“剩余”是该集成对今日余下时段的预测，并非“今日预测减去已发电量”。实测发电量见上方的“今日太阳能”。{% else %} These are forecast
-        figures from the solar-forecast integration, not inverter readings, and
-        "still to come" is that integration's own forecast for the rest of the day —
-        not today's forecast minus what has already been generated. Actual generation
-        is the "Solar today" tile above.{% endif %}
     - type: tile
+      grid_options: {columns: 4, rows: 1}
       entity: sensor.energy_production_today
       name: Forecast today
-      grid_options: {columns: 4, rows: 1}
     - type: tile
+      grid_options: {columns: 4, rows: 1}
       entity: sensor.energy_production_today_remaining
       name: Remaining today
-      grid_options: {columns: 4, rows: 1}
     - type: tile
-      entity: sensor.energy_production_tomorrow
-      name: Forecast tomorrow
       grid_options: {columns: 4, rows: 1}
+      entity: sensor.power_highest_peak_time_today
+      name: Best sun time
     - type: tile
-      entity: sensor.power_production_now
-      name: Forecast power now
       grid_options: {columns: 4, rows: 1}
-    - type: tile
       entity: sensor.energy_current_hour
       name: This hour
-      grid_options: {columns: 4, rows: 1}
     - type: tile
+      grid_options: {columns: 4, rows: 1}
       entity: sensor.energy_next_hour
       name: Next hour
-      grid_options: {columns: 4, rows: 1}
     - type: tile
-      entity: sensor.power_highest_peak_time_today
-      name: Best sun today
       grid_options: {columns: 4, rows: 1}
-    - type: tile
-      entity: sensor.power_highest_peak_time_tomorrow
-      name: Best sun tomorrow
-      grid_options: {columns: 4, rows: 1}
-    - type: tile
-      entity: sensor.casa_solar_expected_today
-      name: Expected today
-      grid_options: {columns: 4, rows: 1}
+      entity: sensor.energy_production_tomorrow
+      name: Forecast tomorrow
 
   - type: grid
     column_span: 1
@@ -5424,43 +5358,102 @@ views:
       entities:
       - entity: sensor.powerpal_gateway_powerpal_daily_energy
         name: House daily energy
+
+  # 5. Grid and meter. The Powerpal's own health and what the grid is
+  # burning, kept together and kept last.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Grid and meter
+      heading_style: title
+      icon: mdi:transmission-tower
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 电网与电表
+      heading_style: title
+      icon: mdi:transmission-tower
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: tile
+      grid_options: {columns: 3, rows: 1}
       entity: sensor.powerpal_gateway_powerpal_total_energy
-      name: Meter lifetime
-      grid_options: {columns: 6, rows: 1}
+      name: Meter total
     - type: tile
+      grid_options: {columns: 3, rows: 1}
       entity: sensor.powerpal_gateway_powerpal_battery
-      name: Powerpal battery
-      grid_options: {columns: 6, rows: 1}
+      name: Meter battery
     - type: tile
+      grid_options: {columns: 3, rows: 1}
       entity: sensor.electricity_maps_co2_intensity
       name: Grid carbon
-      grid_options: {columns: 6, rows: 1}
     - type: tile
+      grid_options: {columns: 3, rows: 1}
       entity: sensor.electricity_maps_grid_fossil_fuel_percentage
-      name: Grid fossil fuel
-      grid_options: {columns: 6, rows: 1}
+      name: Fossil share
 
-# ===========================================================================
-# BILLS. A household accounting board, not a card collection.
-#
-# CURRENTLY FUNCTIONAL: amount, due date, billing period, paid/unpaid,
-# account identifiers, provider, per-utility usage, and the two roll-up
-# sensors. All of it rests on helpers that HA computes.
-#
-# FUTURE INTEGRATION / DATA SOURCE REQUIRED, and therefore absent here
-# rather than stubbed:
-#   - spending trend and payment history: billing/history.json has no
-#     mechanism to reach Lovelace (blocker B6)
-#   - year-to-date paid and year-to-date savings: no YTD sensor exists
-#   - discounts, tariffs and daily supply charge: no helper carries them
-#   - automated ingestion from email or documents: no integration exists
-#
-# All 51 input_* bill helpers are canonical IDs taken from the production
-# dashboard, but only input_boolean.chinese_dashboard could be confirmed
-# against the live instance. The rest are unverified -- see the delivery
-# report's verification list.
-# ===========================================================================
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Solar details
+      heading_style: subtitle
+      icon: mdi:tune
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 太阳能详情
+      heading_style: subtitle
+      icon: mdi:tune
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: tile
+      grid_options: {columns: 4, rows: 1}
+      entity: binary_sensor.casa_solar_online
+      name: Inverter
+    - type: tile
+      grid_options: {columns: 4, rows: 1}
+      entity: sensor.primo_5_0_1_1_status_message
+      name: Status
+    - type: tile
+      grid_options: {columns: 4, rows: 1}
+      entity: sensor.primo_5_0_1_1_error_message
+      name: Error
+    - type: tile
+      grid_options: {columns: 4, rows: 1}
+      entity: sensor.primo_5_0_1_1_energy_year
+      name: This year
+    - type: tile
+      grid_options: {columns: 4, rows: 1}
+      entity: sensor.primo_5_0_1_1_total_energy
+      name: Lifetime
+    - type: tile
+      grid_options: {columns: 4, rows: 1}
+      entity: sensor.power_production_now
+      name: Forecast now
+    - type: tile
+      grid_options: {columns: 4, rows: 1}
+      entity: sensor.power_highest_peak_time_tomorrow
+      name: Peak tomorrow
+    - type: tile
+      grid_options: {columns: 4, rows: 1}
+      entity: sensor.casa_solar_expected_today
+      name: Expected today
+    - type: markdown
+      grid_options: {columns: 12, rows: auto}
+      content: >-
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {{ 'Forecast.Solar 的预测与逆变器无关，逆变器离线时预测依然可用。逆变器离线期间 SolarNet 仍会发布 0 W，因此本页显示“无数据”而不是 0。' if cn else 'The Forecast.Solar figures come from a forecast service, not the inverter, so they keep working while it is offline. SolarNet publishes 0 W while the inverter is unreachable, which is why this page shows no data rather than a zero.' }}
+
 - type: sections
   title: Bills
   path: bills
