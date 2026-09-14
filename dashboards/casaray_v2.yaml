@@ -994,7 +994,7 @@ views:
     - type: tile
       entity: sensor.bills_outstanding_total
       color: amber
-      name: Outstanding bills
+      name: Outstanding
       icon: mdi:cash-multiple
       grid_options: {columns: 4, rows: 1}
       tap_action: {action: navigate, navigation_path: /casaray-v2/bills}
@@ -1718,7 +1718,7 @@ views:
         state: 'on'
     - type: tile
       entity: binary_sensor.master_bedroom_living_hue_hue_sensor_motion
-      name: Living Hue motion
+      name: Hue motion
       grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: sensor.master_bedroom_living_hue_hue_sensor_temperature
@@ -1726,19 +1726,19 @@ views:
       grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: sensor.master_bedroom_living_hue_hue_sensor_illuminance
-      name: Living Hue light
+      name: Hue lux
       grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: sensor.master_bedroom_living_hue_hue_sensor_battery
-      name: Living Hue battery
+      name: Hue battery
       grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: binary_sensor.living_room_living_room_motion_2
-      name: Living room motion
+      name: Room motion
       grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: sensor.living_room_living_room_illuminance_2
-      name: Living room light
+      name: Room lux
       grid_options: {columns: 6, rows: 1}
 
   # Level-3: the air purifier's lamp mode and the motion sensor's own enable
@@ -1769,19 +1769,19 @@ views:
       grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: switch.living_room_living_hue_hue_sensor_motion_sensor_enabled
-      name: Room sensor motion on
+      name: Motion sensing
       grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: switch.living_room_living_hue_hue_sensor_light_sensor_enabled
-      name: Room sensor light on
+      name: Light sensing
       grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: switch.genio_power_board_with_usb_livingroom_child_lock
-      name: Power board child lock
+      name: Board child lock
       grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: select.genio_power_board_with_usb_livingroom_power_on_behavior
-      name: Power board on boot
+      name: Board on boot
       grid_options: {columns: 6, rows: 1}
 
   # Footer navigation, per the room mockups' bottom bar. The header already
@@ -2513,27 +2513,27 @@ views:
         state: 'on'
     - type: tile
       entity: binary_sensor.master_bedroom_bedroom_hue_sensor_motion
-      name: Bedroom Hue motion
+      name: Bedroom motion
       grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: sensor.master_bedroom_bedroom_hue_sensor_temperature
-      name: Bedroom Hue temp
+      name: Bedroom temp
       grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: sensor.master_bedroom_bedroom_hue_sensor_illuminance
-      name: Bedroom Hue light
+      name: Bedroom lux
       grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: sensor.master_bedroom_bedroom_hue_sensor_battery
-      name: Bedroom Hue battery
+      name: Bedroom battery
       grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: binary_sensor.living_room_living_room_motion
-      name: Dining sensor motion
+      name: Dining motion
       grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: sensor.living_room_living_room_illuminance
-      name: Dining sensor light
+      name: Dining lux
       grid_options: {columns: 6, rows: 1}
 
   # Level-3: pet feeder tuning and the motion sensor's enable switches.
@@ -2562,7 +2562,7 @@ views:
       grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: select.smart_pet_feeder_night_vision
-      name: Feeder night vision
+      name: Night mode
       grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: select.smart_pet_feeder_motion_detection_sensitivity
@@ -2570,15 +2570,15 @@ views:
       grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: switch.smart_pet_feeder_time_watermark
-      name: Feeder timestamp
+      name: Timestamp
       grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: switch.living_room_living_room_motion_sensor_enabled
-      name: Dining sensor motion on
+      name: Dining motion on
       grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: switch.living_room_living_room_light_sensor_enabled
-      name: Dining sensor light on
+      name: Dining lux on
       grid_options: {columns: 6, rows: 1}
 
   # Footer navigation, per the room mockups' bottom bar. The header already
@@ -2977,7 +2977,7 @@ views:
     - type: tile
       entity: binary_sensor.bedroom_parents_room_ac_filter_clean_required
       color: amber
-      name: Filter clean required
+      name: Filter status
       grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: sensor.bedroom_parents_room_ac_filter_last_reset
@@ -2990,7 +2990,7 @@ views:
     # confirmation, since resetting the timer discards the real filter age.
     - type: button
       entity: button.bedroom_parents_room_ac_reset_filter
-      name: Reset filter timer
+      name: Reset filter
       icon: mdi:restart
       show_state: false
       grid_options: {columns: 6, rows: 1}
@@ -3129,11 +3129,11 @@ views:
       grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: binary_sensor.bedroom_motion_sensor_connectivity
-      name: Motion sensor link
+      name: Sensor link
       grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: binary_sensor.bedroom_motion_sensor_main_sensor
-      name: Motion sensor core
+      name: Sensor core
       grid_options: {columns: 6, rows: 1}
 
   # Footer navigation, per the room mockups' bottom bar. The header already
@@ -3503,7 +3503,7 @@ views:
     - type: tile
       grid_options: {columns: 6, rows: 1}
       entity: select.lph_se_dcd9_light_brightness
-      name: Light brightness
+      name: Brightness
       card_mod:
         style: |
           ha-card {
@@ -3549,7 +3549,7 @@ views:
     - type: tile
       grid_options: {columns: 6, rows: 1}
       entity: switch.r_energy_monitor_p110m
-      name: Energy monitor plug
+      name: Desk plug
     - type: tile
       entity: sensor.r_energy_monitor_p110m_current_consumption
       name: Drawing now
@@ -3651,7 +3651,7 @@ views:
       grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: binary_sensor.aqara_roller_shade_driver_e1_configuration_status
-      name: Blind configured
+      name: Blind config
       grid_options: {columns: 6, rows: 1}
 
   # Footer navigation, per the room mockups' bottom bar. The header already
@@ -3823,7 +3823,7 @@ views:
       grid_options: {columns: 6, rows: 1}
       entity: binary_sensor.g_monitor_freezer_p110m_cloud_connection
       color: green
-      name: Socket reachable
+      name: Socket online
       icon: mdi:cloud-check-outline
     - type: markdown
       grid_options: {columns: 12, rows: 2}
@@ -4477,7 +4477,7 @@ views:
     - type: tile
       grid_options: {columns: 6, rows: 1}
       entity: light.smart_pet_feeder_indicator_light
-      name: Pet feeder indicator
+      name: Feeder light
     - type: tile
       grid_options: {columns: 6, rows: 1}
       entity: light.kogan_tv
@@ -5291,7 +5291,7 @@ views:
     - type: tile
       grid_options: {columns: 4, rows: 1}
       entity: sensor.energy_production_tomorrow
-      name: Forecast tomorrow
+      name: Tomorrow
 
   - type: grid
     column_span: 1
@@ -5318,11 +5318,11 @@ views:
       grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: sensor.r_energy_monitor_p110m_today_s_consumption
-      name: Ray Bedroom today
+      name: Desk today
       grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: sensor.g_monitor_freezer_p110m_current_consumption
-      name: Garage freezer now
+      name: Freezer now
       grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: sensor.g_monitor_freezer_p110m_today_s_consumption
@@ -5849,7 +5849,7 @@ views:
       grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: input_number.bills_original_ytd
-      name: Before discounts
+      name: Before discount
       grid_options: {columns: 4, rows: 1}
     - type: markdown
       grid_options: {columns: 12, rows: 2}
@@ -7692,7 +7692,7 @@ views:
       grid_options: {columns: 6, rows: 1}
       entity: binary_sensor.f_contact_sensor_door
       color: red
-      name: Front door contact
+      name: Door contact
       card_mod:
         style: |
           ha-card {
@@ -8024,7 +8024,7 @@ views:
     - type: tile
       grid_options: {columns: 6, rows: 1}
       entity: zone.home
-      name: People in the home zone
+      name: In home zone
       icon: mdi:home-account
     # more-info rather than a tap-toggle: guest mode may drive automations
     # this dashboard cannot see, so flipping it is a deliberate act.
@@ -8110,7 +8110,7 @@ views:
     - type: tile
       grid_options: {columns: 6, rows: 1}
       entity: sensor.raymonds_iphone_distance
-      name: Raymond distance from home
+      name: Ray distance
     - type: tile
       grid_options: {columns: 6, rows: 1}
       entity: sensor.raymonds_iphone_activity
@@ -8246,12 +8246,12 @@ views:
     - type: tile
       grid_options: {columns: 6, rows: 1}
       entity: automation.gas_meter_pulse_counter
-      name: Gas meter pulse counter
+      name: Gas pulses
       icon: mdi:meter-gas
     - type: tile
       grid_options: {columns: 6, rows: 1}
       entity: automation.bills_reset_ytd_totals
-      name: Reset bills YTD totals
+      name: Reset YTD totals
       icon: mdi:calendar-refresh
 
   - type: grid
@@ -8286,7 +8286,7 @@ views:
     - type: tile
       grid_options: {columns: 6, rows: 1}
       entity: switch.hue_bridge_automation_nightlight_on_nightlight_off
-      name: Nightlight schedule
+      name: Nightlight timer
       icon: mdi:lightbulb-night-outline
     - type: markdown
       grid_options: {columns: 12, rows: 2}
@@ -8320,7 +8320,7 @@ views:
     - type: tile
       grid_options: {columns: 6, rows: 1}
       entity: automation.deploy_deez_dashboard_updates
-      name: Dashboard deployment updates
+      name: Deploy updates
       icon: mdi:source-branch-sync
     - type: markdown
       grid_options: {columns: 12, rows: 2}
@@ -8730,7 +8730,7 @@ views:
     # hundred. See CR-200.
     - type: tile
       entity: sensor.casa_offline_devices
-      name: Unavailable entities
+      name: Not reporting
       grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: sensor.active_rooms_count
@@ -9046,7 +9046,7 @@ views:
     - type: tile
       grid_options: {columns: 6, rows: 1}
       entity: update.home_assistant_core_update
-      name: Home Assistant Core
+      name: HA Core
     - type: tile
       grid_options: {columns: 6, rows: 1}
       entity: update.home_assistant_supervisor_update
@@ -9058,7 +9058,7 @@ views:
     - type: tile
       grid_options: {columns: 6, rows: 1}
       entity: update.bedroom_parents_room_ac_firmware
-      name: Parents Room AC firmware
+      name: AC firmware
     # 74 update entities exist. Listing them as tiles would bury this page,
     # and listing a hand-picked few would quietly hide the rest -- a firmware
     # update nobody can see is one nobody installs. This counts them live off
