@@ -1285,6 +1285,10 @@ views:
   # value and a muted caption, one per thing you would glance at on the way
   # past. Two across rather than the render's five, for the same iPad reason
   # the Home KPI strip is 2x2. Every chip has an offline branch.
+  # Status chips, per the Living Room mockup's row under the header: a bold
+  # value and a muted caption, one per thing you would glance at on the way
+  # past. Two across rather than the render's five, for the same iPad reason
+  # the Home KPI strip is 2x2. Every chip has an offline branch.
   - type: grid
     column_span: 2
     cards:
@@ -1701,6 +1705,9 @@ views:
   # The doorbell's own controls, assigned to Living Room and on no page.
   # `light.living_room_living_room` is deliberately left out: it is the same
   # group as `light.living_room`, which this page already drives.
+  # The doorbell's own controls, assigned to Living Room and on no page.
+  # `light.living_room_living_room` is deliberately left out: it is the same
+  # group as `light.living_room`, which this page already drives.
   - type: grid
     column_span: 1
     cards:
@@ -1729,6 +1736,12 @@ views:
       name: RingRing motion
       grid_options: {columns: 6, rows: 1}
 
+  # Three motion sensors report from the Living Room area. The page above
+  # drives "Living Room Motion Sensor"; these are the other two, which were
+  # on no page. They are named here by their Home Assistant friendly names
+  # rather than "sensor 2" and "sensor 3", so a reading can be traced back to
+  # the device that produced it. Whether all three are separate hardware or
+  # one device exposed twice is not decidable from the export -- see CR-235.
   # Three motion sensors report from the Living Room area. The page above
   # drives "Living Room Motion Sensor"; these are the other two, which were
   # on no page. They are named here by their Home Assistant friendly names
@@ -1782,8 +1795,11 @@ views:
   # Level-3: the air purifier's lamp mode and the motion sensor's own enable
   # switches. Turning a motion sensor off from here changes what the room
   # reports, so it belongs below the controls, not among them.
+  # Level-3: the air purifier's lamp mode and the motion sensor's own enable
+  # switches. Turning a motion sensor off from here changes what the room
+  # reports, so it belongs below the controls, not among them.
   - type: grid
-    column_span: 1
+    column_span: 2
     cards:
     - type: heading
       heading: Device settings
@@ -1804,24 +1820,29 @@ views:
     - type: tile
       entity: select.living_room_air_purifier_lamp
       name: Purifier lamp
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: switch.living_room_living_hue_hue_sensor_motion_sensor_enabled
       name: Motion sensing
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: switch.living_room_living_hue_hue_sensor_light_sensor_enabled
       name: Light sensing
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: switch.genio_power_board_with_usb_livingroom_child_lock
       name: Board child lock
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: select.genio_power_board_with_usb_livingroom_power_on_behavior
       name: Board on boot
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
 
+  # Footer navigation, per the room mockups' bottom bar. The header already
+  # carries Back and Home; repeating the way out at the end of the page is
+  # the point -- a room page is long enough that leaving it should not mean
+  # scrolling back to the top. Back is omitted: Lovelace has no browser-back
+  # action, so it would be a second button to the same place as All rooms.
   # Footer navigation, per the room mockups' bottom bar. The header already
   # carries Back and Home; repeating the way out at the end of the page is
   # the point -- a room page is long enough that leaving it should not mean
@@ -1922,6 +1943,10 @@ views:
 
         {{ now().strftime('%d/%m/%y') }}
 
+  # Status chips, per the room mockups' row under the header: a bold value and
+  # a muted caption for the things you glance at on the way past. Two across
+  # rather than the render's five, for the iPad reason the Home KPI strip is
+  # 2x2. Every chip names its subject when the entity stops reporting.
   # Status chips, per the room mockups' row under the header: a bold value and
   # a muted caption for the things you glance at on the way past. Two across
   # rather than the render's five, for the iPad reason the Home KPI strip is
@@ -2110,7 +2135,7 @@ views:
         name: Fridge door
 
   - type: grid
-    column_span: 2
+    column_span: 1
     cards:
     - type: heading
       heading: Shopping list
@@ -2132,6 +2157,10 @@ views:
       grid_options: {columns: 12, rows: 5}
       entity: todo.shopping_list
 
+  # Level-3 detail per the briefing's progressive disclosure. Each Kitchen
+  # plug carries an LED, an auto-off toggle and an auto-off delay; they are
+  # assigned to this area and were on no page. Grouped at the end rather than
+  # mixed into the three plug switches above, which is what people tap.
   # Level-3 detail per the briefing's progressive disclosure. Each Kitchen
   # plug carries an LED, an auto-off toggle and an auto-off delay; they are
   # assigned to this area and were on no page. Grouped at the end rather than
@@ -2192,6 +2221,11 @@ views:
       name: Bottom off in
       grid_options: {columns: 4, rows: 1}
 
+  # Footer navigation, per the room mockups' bottom bar. The header already
+  # carries Back and Home; repeating the way out at the end of the page is
+  # the point -- a room page is long enough that leaving it should not mean
+  # scrolling back to the top. Back is omitted: Lovelace has no browser-back
+  # action, so it would be a second button to the same place as All rooms.
   # Footer navigation, per the room mockups' bottom bar. The header already
   # carries Back and Home; repeating the way out at the end of the page is
   # the point -- a room page is long enough that leaving it should not mean
@@ -2310,6 +2344,10 @@ views:
         {{ now().strftime('%d/%m/%y') }}
 
 
+  # Status chips, per the room mockups' row under the header: a bold value and
+  # a muted caption for the things you glance at on the way past. Two across
+  # rather than the render's five, for the iPad reason the Home KPI strip is
+  # 2x2. Every chip names its subject when the entity stops reporting.
   # Status chips, per the room mockups' row under the header: a bold value and
   # a muted caption for the things you glance at on the way past. Two across
   # rather than the render's five, for the iPad reason the Home KPI strip is
@@ -2483,45 +2521,6 @@ views:
       name: Light level
       grid_options: {columns: 6, rows: 1}
 
-  - type: grid
-    column_span: 2
-    cards:
-    - type: heading
-      heading: Pet feeder
-      heading_style: title
-      icon: mdi:paw
-      visibility:
-      - condition: state
-        entity: input_boolean.chinese_dashboard
-        state_not: 'on'
-    - type: heading
-      heading: 喂食器
-      heading_style: title
-      icon: mdi:paw
-      visibility:
-      - condition: state
-        entity: input_boolean.chinese_dashboard
-        state: 'on'
-    - type: picture-entity
-      entity: camera.smart_pet_feeder
-      name: Pet Feeder
-      camera_view: auto
-      show_state: false
-      grid_options: {columns: 6, rows: 4}
-      tap_action: {action: navigate, navigation_path: /casaray-v2/camera-pet-feeder}
-    - type: tile
-      entity: light.smart_pet_feeder_indicator_light
-      name: Indicator light
-      grid_options: {columns: 6, rows: 1}
-    - type: tile
-      entity: switch.smart_pet_feeder_motion_alarm
-      name: Motion alarm
-      grid_options: {columns: 6, rows: 1}
-    - type: tile
-      entity: switch.smart_pet_feeder_privacy_mode
-      name: Privacy mode
-      grid_options: {columns: 6, rows: 1}
-
   # Two motion sensors report from the Dining area and neither was fully on
   # the page: "Bedroom Hue Sensor" (whose entity IDs read master_bedroom_*,
   # but the registry puts it here) and "Dining Room Motion Sensor" (whose IDs
@@ -2576,7 +2575,55 @@ views:
 
   # Level-3: pet feeder tuning and the motion sensor's enable switches.
   - type: grid
-    column_span: 1
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Pet feeder
+      heading_style: title
+      icon: mdi:paw
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 喂食器
+      heading_style: title
+      icon: mdi:paw
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: picture-entity
+      entity: camera.smart_pet_feeder
+      name: Pet Feeder
+      camera_view: auto
+      show_state: false
+      grid_options: {columns: 6, rows: 4}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/camera-pet-feeder}
+    - type: tile
+      entity: light.smart_pet_feeder_indicator_light
+      name: Indicator light
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: switch.smart_pet_feeder_motion_alarm
+      name: Motion alarm
+      grid_options: {columns: 6, rows: 1}
+    - type: tile
+      entity: switch.smart_pet_feeder_privacy_mode
+      name: Privacy mode
+      grid_options: {columns: 6, rows: 1}
+
+  # Two motion sensors report from the Dining area and neither was fully on
+  # the page: "Bedroom Hue Sensor" (whose entity IDs read master_bedroom_*,
+  # but the registry puts it here) and "Dining Room Motion Sensor" (whose IDs
+  # read living_room_*), of which the page above already shows only the
+  # temperature. Tiles are named for the device that produces the reading, not
+  # for the entity ID prefix, which is wrong for both of them.
+  # `light.dining_dining` is left out: it duplicates `light.dining`, which
+  # this page already drives.
+  # Level-3: pet feeder tuning and the motion sensor's enable switches.
+  - type: grid
+    column_span: 2
     cards:
     - type: heading
       heading: Device settings
@@ -2597,28 +2644,33 @@ views:
     - type: tile
       entity: number.smart_pet_feeder_volume
       name: Feeder volume
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: select.smart_pet_feeder_night_vision
       name: Night mode
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: select.smart_pet_feeder_motion_detection_sensitivity
       name: Feeder sensitivity
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: switch.smart_pet_feeder_time_watermark
       name: Timestamp
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: switch.living_room_living_room_motion_sensor_enabled
       name: Dining motion on
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: switch.living_room_living_room_light_sensor_enabled
       name: Dining lux on
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
 
+  # Footer navigation, per the room mockups' bottom bar. The header already
+  # carries Back and Home; repeating the way out at the end of the page is
+  # the point -- a room page is long enough that leaving it should not mean
+  # scrolling back to the top. Back is omitted: Lovelace has no browser-back
+  # action, so it would be a second button to the same place as All rooms.
   # Footer navigation, per the room mockups' bottom bar. The header already
   # carries Back and Home; repeating the way out at the end of the page is
   # the point -- a room page is long enough that leaving it should not mean
@@ -2741,6 +2793,10 @@ views:
 
         {{ now().strftime('%d/%m/%y') }}
 
+  # Status chips, per the room mockups' row under the header: a bold value and
+  # a muted caption for the things you glance at on the way past. Two across
+  # rather than the render's five, for the iPad reason the Home KPI strip is
+  # 2x2. Every chip names its subject when the entity stops reporting.
   # Status chips, per the room mockups' row under the header: a bold value and
   # a muted caption for the things you glance at on the way past. Two across
   # rather than the render's five, for the iPad reason the Home KPI strip is
@@ -2993,58 +3049,6 @@ views:
       - entity: sensor.bedroom_motion_sensor_humidity
         name: Humidity
 
-  - type: grid
-    column_span: 1
-    cards:
-    - type: heading
-      heading: AC maintenance
-      heading_style: subtitle
-      icon: mdi:air-filter
-      visibility:
-      - condition: state
-        entity: input_boolean.chinese_dashboard
-        state_not: 'on'
-    - type: heading
-      heading: 空调维护
-      heading_style: subtitle
-      icon: mdi:air-filter
-      visibility:
-      - condition: state
-        entity: input_boolean.chinese_dashboard
-        state: 'on'
-    - type: tile
-      entity: binary_sensor.bedroom_parents_room_ac_filter_clean_required
-      color: amber
-      name: Filter status
-      grid_options: {columns: 6, rows: 1}
-    - type: tile
-      entity: sensor.bedroom_parents_room_ac_filter_last_reset
-      name: Filter last reset
-      grid_options: {columns: 6, rows: 1}
-    # A `button` entity's state is the timestamp of its last press, so a
-    # button never pressed reads `Unknown` -- and as a tile that renders as
-    # "Reset filter — Unknown", which looks like a broken sensor rather than
-    # an action waiting to be taken. Presented as the action it is, with a
-    # confirmation, since resetting the timer discards the real filter age.
-    - type: button
-      entity: button.bedroom_parents_room_ac_reset_filter
-      name: Reset filter
-      icon: mdi:restart
-      show_state: false
-      grid_options: {columns: 6, rows: 1}
-      tap_action:
-        action: perform-action
-        perform_action: button.press
-        target:
-          entity_id: button.bedroom_parents_room_ac_reset_filter
-        confirmation:
-          text: Reset the AC filter timer? Do this only after the filter has
-            actually been cleaned.
-    - type: tile
-      entity: update.bedroom_parents_room_ac_firmware
-      name: AC firmware
-      grid_options: {columns: 6, rows: 1}
-
   # The five-socket power point in this room was assigned to Parents Room in
   # Home Assistant and appeared on no page at all. All five confirmed live
   # 2026-09-07: device_class outlet, all on.
@@ -3088,6 +3092,8 @@ views:
       name: Socket 5
       grid_options: {columns: 6, rows: 1}
 
+  # The television's own energy monitoring, and the light sensor mounted with
+  # it. Both are assigned to this room and were unused.
   # The television's own energy monitoring, and the light sensor mounted with
   # it. Both are assigned to this room and were unused.
   - type: grid
@@ -3139,7 +3145,66 @@ views:
   # things anyone adjusts daily. Grouped at the end rather than mixed into the
   # controls above.
   - type: grid
-    column_span: 1
+    column_span: 2
+    cards:
+    - type: heading
+      heading: AC maintenance
+      heading_style: subtitle
+      icon: mdi:air-filter
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 空调维护
+      heading_style: subtitle
+      icon: mdi:air-filter
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: tile
+      entity: binary_sensor.bedroom_parents_room_ac_filter_clean_required
+      color: amber
+      name: Filter status
+      grid_options: {columns: 3, rows: 1}
+    - type: tile
+      entity: sensor.bedroom_parents_room_ac_filter_last_reset
+      name: Filter last reset
+      grid_options: {columns: 3, rows: 1}
+    # A `button` entity's state is the timestamp of its last press, so a
+    # button never pressed reads `Unknown` -- and as a tile that renders as
+    # "Reset filter — Unknown", which looks like a broken sensor rather than
+    # an action waiting to be taken. Presented as the action it is, with a
+    # confirmation, since resetting the timer discards the real filter age.
+    - type: button
+      entity: button.bedroom_parents_room_ac_reset_filter
+      name: Reset filter
+      icon: mdi:restart
+      show_state: false
+      grid_options: {columns: 3, rows: 1}
+      tap_action:
+        action: perform-action
+        perform_action: button.press
+        target:
+          entity_id: button.bedroom_parents_room_ac_reset_filter
+        confirmation:
+          text: Reset the AC filter timer? Do this only after the filter has
+            actually been cleaned.
+    - type: tile
+      entity: update.bedroom_parents_room_ac_firmware
+      name: AC firmware
+      grid_options: {columns: 3, rows: 1}
+
+  # The five-socket power point in this room was assigned to Parents Room in
+  # Home Assistant and appeared on no page at all. All five confirmed live
+  # 2026-09-07: device_class outlet, all on.
+  # Level-3 detail per the briefing's progressive disclosure: the per-device
+  # enable and health switches that belong to this room's hardware but are not
+  # things anyone adjusts daily. Grouped at the end rather than mixed into the
+  # controls above.
+  - type: grid
+    column_span: 2
     cards:
     - type: heading
       heading: Device settings
@@ -3160,20 +3225,25 @@ views:
     - type: tile
       entity: switch.master_bedroom_sensibo_sky_plus
       name: Sensibo unit
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 3, rows: 1}
     - type: tile
       entity: switch.master_bedroom_light_sensor_55_qled_4k_ai
       name: TV light sensor
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 3, rows: 1}
     - type: tile
       entity: binary_sensor.bedroom_motion_sensor_connectivity
       name: Sensor link
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 3, rows: 1}
     - type: tile
       entity: binary_sensor.bedroom_motion_sensor_main_sensor
       name: Sensor core
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 3, rows: 1}
 
+  # Footer navigation, per the room mockups' bottom bar. The header already
+  # carries Back and Home; repeating the way out at the end of the page is
+  # the point -- a room page is long enough that leaving it should not mean
+  # scrolling back to the top. Back is omitted: Lovelace has no browser-back
+  # action, so it would be a second button to the same place as All rooms.
   # Footer navigation, per the room mockups' bottom bar. The header already
   # carries Back and Home; repeating the way out at the end of the page is
   # the point -- a room page is long enough that leaving it should not mean
@@ -3278,6 +3348,10 @@ views:
         {{ now().strftime('%d/%m/%y') }}
 
 
+  # Status chips, per the room mockups' row under the header: a bold value and
+  # a muted caption for the things you glance at on the way past. Two across
+  # rather than the render's five, for the iPad reason the Home KPI strip is
+  # 2x2. Every chip names its subject when the entity stops reporting.
   # Status chips, per the room mockups' row under the header: a bold value and
   # a muted caption for the things you glance at on the way past. Two across
   # rather than the render's five, for the iPad reason the Home KPI strip is
@@ -3614,6 +3688,9 @@ views:
   # The energy monitor's fuller picture -- this month, voltage and current --
   # beside the now/today figures the room already shows. All assigned to this
   # area and previously unused.
+  # The energy monitor's fuller picture -- this month, voltage and current --
+  # beside the now/today figures the room already shows. All assigned to this
+  # area and previously unused.
   - type: grid
     column_span: 1
     cards:
@@ -3652,8 +3729,10 @@ views:
 
   # Level-3: the socket's protection and auto-off configuration, and the
   # blind's configuration status. Set once, not touched daily.
+  # Level-3: the socket's protection and auto-off configuration, and the
+  # blind's configuration status. Set once, not touched daily.
   - type: grid
-    column_span: 1
+    column_span: 2
     cards:
     - type: heading
       heading: Device settings
@@ -3674,24 +3753,29 @@ views:
     - type: tile
       entity: switch.r_energy_monitor_p110m_led
       name: Socket LED
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: switch.r_energy_monitor_p110m_auto_off_enabled
       name: Auto-off
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: number.r_energy_monitor_p110m_turn_off_in
       name: Auto-off in
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: number.r_energy_monitor_p110m_power_protection
       name: Power protection
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: binary_sensor.aqara_roller_shade_driver_e1_configuration_status
       name: Blind config
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
 
+  # Footer navigation, per the room mockups' bottom bar. The header already
+  # carries Back and Home; repeating the way out at the end of the page is
+  # the point -- a room page is long enough that leaving it should not mean
+  # scrolling back to the top. Back is omitted: Lovelace has no browser-back
+  # action, so it would be a second button to the same place as All rooms.
   # Footer navigation, per the room mockups' bottom bar. The header already
   # carries Back and Home; repeating the way out at the end of the page is
   # the point -- a room page is long enough that leaving it should not mean
@@ -3795,6 +3879,10 @@ views:
 
         {{ now().strftime('%d/%m/%y') }}
 
+  # Status chips, per the room mockups' row under the header: a bold value and
+  # a muted caption for the things you glance at on the way past. Two across
+  # rather than the render's five, for the iPad reason the Home KPI strip is
+  # 2x2. Every chip names its subject when the entity stops reporting.
   # Status chips, per the room mockups' row under the header: a bold value and
   # a muted caption for the things you glance at on the way past. Two across
   # rather than the render's five, for the iPad reason the Home KPI strip is
@@ -3924,8 +4012,10 @@ views:
 
   # Level-3: the freezer socket's protection and auto-off configuration.
   # Power protection matters here -- this socket runs a freezer.
+  # Level-3: the freezer socket's protection and auto-off configuration.
+  # Power protection matters here -- this socket runs a freezer.
   - type: grid
-    column_span: 1
+    column_span: 2
     cards:
     - type: heading
       heading: Device settings
@@ -3946,20 +4036,25 @@ views:
     - type: tile
       entity: number.g_monitor_freezer_p110m_power_protection
       name: Power protection
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 3, rows: 1}
     - type: tile
       entity: switch.g_monitor_freezer_p110m_auto_off_enabled
       name: Auto-off
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 3, rows: 1}
     - type: tile
       entity: number.g_monitor_freezer_p110m_turn_off_in
       name: Auto-off in
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 3, rows: 1}
     - type: tile
       entity: switch.g_monitor_freezer_p110m_led
       name: Socket LED
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 3, rows: 1}
 
+  # Footer navigation, per the room mockups' bottom bar. The header already
+  # carries Back and Home; repeating the way out at the end of the page is
+  # the point -- a room page is long enough that leaving it should not mean
+  # scrolling back to the top. Back is omitted: Lovelace has no browser-back
+  # action, so it would be a second button to the same place as All rooms.
   # Footer navigation, per the room mockups' bottom bar. The header already
   # carries Back and Home; repeating the way out at the end of the page is
   # the point -- a room page is long enough that leaving it should not mean
@@ -4064,6 +4159,10 @@ views:
   # a muted caption for the things you glance at on the way past. Two across
   # rather than the render's five, for the iPad reason the Home KPI strip is
   # 2x2. Every chip names its subject when the entity stops reporting.
+  # Status chips, per the room mockups' row under the header: a bold value and
+  # a muted caption for the things you glance at on the way past. Two across
+  # rather than the render's five, for the iPad reason the Home KPI strip is
+  # 2x2. Every chip names its subject when the entity stops reporting.
   - type: grid
     column_span: 2
     cards:
@@ -4160,6 +4259,11 @@ views:
       grid_options: {columns: 12, rows: 3}
       entity: media_player.pogo
 
+  # Footer navigation, per the room mockups' bottom bar. The header already
+  # carries Back and Home; repeating the way out at the end of the page is
+  # the point -- a room page is long enough that leaving it should not mean
+  # scrolling back to the top. Back is omitted: Lovelace has no browser-back
+  # action, so it would be a second button to the same place as All rooms.
   # Footer navigation, per the room mockups' bottom bar. The header already
   # carries Back and Home; repeating the way out at the end of the page is
   # the point -- a room page is long enough that leaving it should not mean
