@@ -18,13 +18,24 @@ Energy or House Health feature targets **this file**, unless the owner says
 otherwise in so many words.
 
 Identity: url_path **`casaray-v2`** — Home Assistant requires the hyphen in a
-YAML dashboard key (all 105 internal links are `/casaray-v2/<view>`; mounted
-anywhere else, navigation breaks), 27 views (7 subviews), native-first —
+YAML dashboard key (all 124 internal links are `/casaray-v2/<view>`; mounted
+anywhere else, navigation breaks), 28 views (7 subviews), native-first —
 one custom card type (`custom:webrtc-camera`), no Mushroom, surface treatment from the
 theme, and `card_mod` only where a native card provably cannot reach the
-mockup — currently the tinted surface on alert cards, since `color:` paints
-a tile's icon and the renders tint the whole card. Bilingual on
-`input_boolean.chinese_dashboard`; see *Bilingual conventions* below.
+mockup: the tinted surface on alert cards (since `color:` paints a tile's icon
+and the renders tint the whole card), the state-driven dashed treatment on
+offline tiles, the pill radius on Home's chip strip, and right-aligning
+Home's clock. Bilingual on `input_boolean.chinese_dashboard`; see *Bilingual
+conventions* below.
+
+**Home carries the design system.** It was rebuilt against the 14/09 wall
+render on 2026-09-15 and is the reference every other view follows as it is
+rebuilt in turn: a top bar (wordmark · icon nav rail · clock over date), a
+chip strip, a full-width Needs attention band, three equal body columns, then
+full-width bands. Navigation lives **in the page**, not in Home Assistant's
+chrome — `kiosk_mode` hides the sidebar and header, so Home's icon rail and
+its named More boards index are the only way around the dashboard. Do not
+remove either.
 
 ### `dashboards/deez_smart_home.yaml` — legacy, and the reference baseline
 
@@ -187,20 +198,29 @@ check 13 fails the build on an unsized card in `casaray_v2.yaml`.
 
 The width follows the section, and that is the page's visual hierarchy:
 
-- **`column_span: 1`** is a detail list. Tiles, buttons and conditionals take
-  `columns: 6` (two across); prose, graphs, media and thermostats take
-  `columns: 12`.
-- **`column_span: 2`** is page-level — the header row, the status chip strip,
-  Quick actions, media blocks, the footer. Tiles take `columns: 3` or `4`,
-  chosen so the card count divides evenly and no row is left with an orphan.
+- **A body column** (`column_span: 1`) is a detail list. Tiles, buttons and
+  conditionals take `columns: 6` (two across); prose, graphs, media, rooms and
+  thermostats take `columns: 12`.
+- **A page-level band** (`column_span` equal to the view's `max_columns`) is
+  the top bar, the chip strip, Needs attention, Quick actions, media blocks,
+  the footer. Tiles take `columns: 2`, `3` or `4`, chosen so the card count
+  divides evenly and no row is left with an orphan.
 
 Two deliberate exceptions, both full-width-of-a-half-section: the Security
 sirens and the Ray Bedroom overload alarm. Long names, and controls that must
 not be mis-tapped. If you normalise them to 6 columns you have made the page
 worse, not more consistent.
 
-**iPad landscape renders about two usable columns.** Design for two,
-whatever `max_columns` says. Do not cram four narrow columns onto the iPad.
+**Home is three columns; everything else is still two.** Home's `max_columns`
+is `3`, matching the 14/09 wall render's three equal body columns — a wall
+panel and an iPad in landscape both resolve three at a comfortable width, and
+a phone still collapses to one. Its page-level bands therefore use
+`column_span: 3`. Every other view keeps `max_columns: 2` and `column_span: 2`
+until it is rebuilt against the mockups in turn; do not raise one without
+rebuilding its composition at the same time, or its bands span a column that
+is not there.
+
+Whatever `max_columns` says, never cram four narrow columns onto the iPad.
 
 Still true from the previous direction: calm, minimal, Apple-like.
 Sections layout with `grid_options`, not nested `grid` cards. One `heading`

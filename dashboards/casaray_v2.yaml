@@ -34,106 +34,189 @@ theme: CasaRay
 views:
 
 # ===========================================================================
-# HOME -- executive overview. Status before controls, exceptions before
-# status. Briefing section 4: answer "is the house okay" in seconds.
+# HOME -- the CasaRay command centre, rebuilt 2026-09-15 against the approved
+# 14/09 wall mockup (docs/mockups/2026-09-14_wall_home.png) rather than grown
+# card by card. The mockup's composition, not Home Assistant's defaults, sets
+# the geometry:
+#
+#   band 1  top bar      CasaRay wordmark | icon nav rail | clock over date
+#   band 2  chip strip   native badges -- Outside, Inside, Home, Monitored
+#   band 3  needs attn   full width, red/amber alert cards two across
+#   band 4  three cols   Right now | Who's home + One tap | Rooms + Shopping
+#   band 5  security     full width, composed panel
+#   band 6  energy       full width, four figures
+#   band 7  recent       full width, quiet
+#   band 8  more boards  full width, named index + the language toggle
+#
+# The mockup has NO left sidebar: branding, navigation and clock share one top
+# bar. That is also the only shape a sections view can hold -- a section cannot
+# be pinned as a rail -- so design and platform agree here. See the batch note
+# in DASHBOARD_ISSUES.md.
+#
+# max_columns is 3, matching the mockup's three equal body columns. It is a
+# maximum, not a fixed count: iPad landscape still resolves three at ~390px
+# each, and a phone collapses to one.
 # ===========================================================================
 - type: sections
   title: CasaRay
   path: home
   icon: mdi:home-heart
-  max_columns: 2
-  # The chip strip, per the 14/09 mockups: a pill row under the page header,
-  # dim label then bright value -- `Outside 10°`, `Room 19.7°`, `Movement
-  # Quiet`. A native badge is exactly that pill, so this needs no custom card
-  # and no card_mod. Page-specific, three or four at most, every one a real
-  # entity: nothing here is a computed figure a badge cannot honestly show.
-  # Bilingual the way headings are -- two badges with opposite `visibility`,
-  # because a badge name cannot be templated either.
-  badges:
-  - type: entity
-    entity: weather.forecast_home
-    name: Outside
-    state_content: temperature
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state_not: 'on'
-  - type: entity
-    entity: weather.forecast_home
-    name: 室外
-    state_content: temperature
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state: 'on'
-  - type: entity
-    entity: sensor.living_room_living_hue_hue_sensor_temperature
-    name: Living Room
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state_not: 'on'
-  - type: entity
-    entity: sensor.living_room_living_hue_hue_sensor_temperature
-    name: 客厅
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state: 'on'
-  - type: entity
-    entity: zone.home
-    name: Home
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state_not: 'on'
-  - type: entity
-    entity: zone.home
-    name: 在家
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state: 'on'
-  - type: entity
-    entity: sensor.powerpal_gateway_powerpal_power
-    name: House power
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state_not: 'on'
-  - type: entity
-    entity: sensor.powerpal_gateway_powerpal_power
-    name: 家庭用电
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state: 'on'
+  max_columns: 3
   sections:
 
+  # -------------------------------------------------------------------------
+  # BAND 1 -- top bar. Wordmark (3) + six icon buttons (1 each) + clock (3)
+  # fills the 12-column grid exactly, which is the mockup's proportion: brand
+  # hard left, rail right of centre, time hard right. The rail is the ONLY
+  # navigation on this dashboard -- kiosk_mode hides Home Assistant's own
+  # header and sidebar -- so every icon here is load-bearing.
+  # -------------------------------------------------------------------------
   - type: grid
-    column_span: 2
+    column_span: 3
     cards:
     - type: markdown
-      grid_options: {columns: 9, rows: auto}
-      content: >-
-        {% set h = now().hour -%} {% set cn =
-        is_state('input_boolean.chinese_dashboard','on') -%} {% if h < 12 %}{%
-        set g = '早安' if cn else 'Good morning' %}{% elif h < 18 %}{% set g =
-        '午安' if cn else 'Good afternoon' %}{% else %}{% set g = '晚安' if cn
-        else 'Good evening' %}{% endif %}
-
-        ## {{ g }}{{ '，Ray' if cn else ', Ray' }}
-
-        {{ 'CasaRay 家庭控制中心' if cn else 'CasaRay household control centre' }}
+      grid_options: {columns: 3, rows: auto}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set h = now().hour -%}
+        {%- if h < 12 %}{% set g = '早安' if cn else 'Good morning' %}
+        {%- elif h < 18 %}{% set g = '午安' if cn else 'Good afternoon' %}
+        {%- else %}{% set g = '晚安' if cn else 'Good evening' %}{% endif -%}
+        # CasaRay
+        {{ g }}{{ '，Ray' if cn else ', Ray' }}
+    # Icon-only, per the mockup. The named equivalents live in the More boards
+    # index at the foot of the page, which is what an older reader looking for
+    # a word rather than a glyph will use.
+    - type: button
+      grid_options: {columns: 1, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      # The selected state, amber, exactly as the render tints the home glyph.
+      # Static rather than templated: this card only ever renders on Home.
+      card_mod:
+        style: |
+          ha-card {
+            background: rgba(120, 82, 24, 0.30);
+            border-color: rgba(232, 163, 61, 0.45);
+          }
+    - type: button
+      grid_options: {columns: 1, rows: 1}
+      name: Rooms
+      icon: mdi:floor-plan
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+    - type: button
+      grid_options: {columns: 1, rows: 1}
+      name: Security
+      icon: mdi:shield-home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/security}
+    - type: button
+      grid_options: {columns: 1, rows: 1}
+      name: Energy
+      icon: mdi:lightning-bolt
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
+    - type: button
+      grid_options: {columns: 1, rows: 1}
+      name: Climate
+      icon: mdi:thermometer
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/climate}
+    - type: button
+      grid_options: {columns: 1, rows: 1}
+      name: Cameras
+      icon: mdi:cctv
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
+    # Time dominant, date beneath in DD/MM/YY -- never %Y. Right-aligned to the
+    # page edge the way the render places it; text-align is the one thing a
+    # markdown card cannot reach natively.
     - type: markdown
       grid_options: {columns: 3, rows: auto}
-      content: >-
-        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
-
+      content: |
+        {#- Lowercase meridiem -- `8:14 pm`, as the render draws it. The other
+            20 clocks on this dashboard still print `PM`; they follow when
+            their own views are rebuilt. DD/MM/YY is mandatory, never %Y. -#}
+        # {{ now().strftime('%I:%M %p').lstrip('0').lower() }}
         {{ now().strftime('%d/%m/%y') }}
+      card_mod:
+        style: |
+          ha-card { text-align: right; }
 
+  # -------------------------------------------------------------------------
+  # BAND 2 -- the chip strip. Pill, dim label, bright value, exactly as the
+  # render draws it: `Outside 10deg`, `Inside 19.7deg`, `Home 2 of 3`,
+  # `Monitored 147.9 W`.
+  #
+  # These were native `badges` until this rebuild. Home Assistant renders a
+  # view's badges ABOVE its sections, which put the pill row on top of the
+  # CasaRay wordmark -- the one ordering the mockup is unambiguous about. A
+  # markdown card in a section can sit where the render puts it, so the strip
+  # is four of them with the pill shape restored by card_mod. The cost is the
+  # small leading icon a badge draws for free; the gain is the right order and
+  # one templated card per chip instead of a bilingual pair.
+  #
+  # Each chip guards its own reading: an unavailable sensor says so rather
+  # than printing a zero or an empty pill.
+  # -------------------------------------------------------------------------
   - type: grid
-    column_span: 2
+    column_span: 3
+    cards:
+    - type: markdown
+      grid_options: {columns: 3, rows: auto}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set t = state_attr('weather.forecast_home','temperature') -%}
+        {{ '室外' if cn else 'Outside' }} **{{ ((t | round(0) | int) ~ '°') if t is not none else ('无数据' if cn else 'No data') }}**
+      card_mod: &casaray_chip
+        style: |
+          ha-card {
+            border-radius: 999px;
+          }
+    - type: markdown
+      grid_options: {columns: 3, rows: auto}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set t = states('sensor.living_room_living_hue_hue_sensor_temperature') | float(none) -%}
+        {{ '室内' if cn else 'Inside' }} **{{ ((t | round(1)) ~ '°') if t is not none else ('无数据' if cn else 'No data') }}**
+      card_mod: *casaray_chip
+    - type: markdown
+      grid_options: {columns: 3, rows: auto}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set ppl = ['person.raymond_du','person.vinh_du','person.ai_q_huang'] -%}
+        {%- set ns = namespace(h=0, u=0) -%}
+        {%- for p in ppl %}{% set st = states(p) %}{% if st == 'home' %}{% set ns.h = ns.h + 1 %}{% elif st in ['unavailable','unknown','none',''] %}{% set ns.u = ns.u + 1 %}{% endif %}{% endfor -%}
+        {%- set n = ppl | count -%}
+        {%- if ns.u == n %}{% set val = '无数据' if cn else 'No data' %}
+        {%- elif ns.u %}{% set val = ('%d 人中 %d 人 · %d 人无数据' % (n, ns.h, ns.u)) if cn else ('%d of %d · %d unknown' % (ns.h, n, ns.u)) %}
+        {%- else %}{% set val = ('%d 人中 %d 人' % (n, ns.h)) if cn else ('%d of %d' % (ns.h, n)) %}{% endif -%}
+        {{ '在家' if cn else 'Home' }} **{{ val }}**
+      card_mod: *casaray_chip
+    - type: markdown
+      grid_options: {columns: 3, rows: auto}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set w = states('sensor.casa_monitored_power') | float(none) -%}
+        {{ '监测用电' if cn else 'Monitored' }} **{{ ((w | round(1)) ~ ' W') if w is not none else ('无数据' if cn else 'No data') }}**
+      card_mod: *casaray_chip
+  # -------------------------------------------------------------------------
+  # BAND 3 -- needs attention. Full width, cards two across, red for a fault
+  # and amber for a door simply left open, per CR-232. The roll-up line no
+  # longer repeats what the cards already say: it counts them, then reports
+  # only the things that have no card because there is no reading to show.
+  # -------------------------------------------------------------------------
+  - type: grid
+    column_span: 3
     cards:
     - type: heading
       heading: Needs attention
@@ -152,52 +235,35 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: markdown
-      grid_options: {columns: 12, rows: 2}
-      content: >-
-        {% set cn = is_state('input_boolean.chinese_dashboard','on') -%} {% set
-        doors = ['binary_sensor.f_contact_sensor_door',
-        'binary_sensor.m_contact_sensor_door',
-        'binary_sensor.b_contact_sensor_door'] -%} {% set bats =
-        ['sensor.front_door_battery', 'sensor.living_room_ringring_battery',
-        'sensor.tapo_c425_north_wall_battery',
-        'sensor.tapo_camera_bcca_battery',
-        'sensor.tapo_c420_south_wall_battery',
-        'sensor.aqara_roller_shade_driver_e1_battery'] -%} {% set cams =
-        ['camera.front_door_live_view',
-        'camera.tapo_c425_north_wall_hd_stream_direct',
-        'camera.tapo_c420_east_wall_hd_stream_direct',
-        'camera.tapo_c420_south_wall_hd_stream_direct',
-        'camera.tapo_c200_stockroom_hd_stream_direct',
-        'camera.smart_pet_feeder'] -%} {% set ns = namespace(dopen=0, dunk=0,
-        blow=0, bunk=0, coff=0) -%} {% for d in doors %}{% set s = states(d) %}{%
-        if s == 'on' %}{% set ns.dopen = ns.dopen + 1 %}{% elif s != 'off' %}{%
-        set ns.dunk = ns.dunk + 1 %}{% endif %}{% endfor -%} {% for b in bats %}{%
-        set s = states(b) %}{% if s in ['unavailable','unknown','none',''] %}{%
-        set ns.bunk = ns.bunk + 1 %}{% else %}{% set f = s | float(-1) %}{% if f
-        < 0 %}{% set ns.bunk = ns.bunk + 1 %}{% elif f < 30 %}{% set ns.blow =
-        ns.blow + 1 %}{% endif %}{% endif %}{% endfor -%} {% for c in cams %}{% if
-        states(c) in ['unavailable','unknown'] %}{% set ns.coff = ns.coff + 1
-        %}{% endif %}{% endfor -%} {% set total = ns.dopen + ns.blow + ns.coff -%}
-        {% if total == 0 and ns.dunk == 0 and ns.bunk == 0 %}{{ '一切正常。' if
-        cn else 'All clear. Nothing needs attention.' }}{% else %}{% if ns.dopen
-        %}- **{{ ns.dopen }}** {{ '扇门开启' if cn else ('door open' if ns.dopen
-        == 1 else 'doors open') }}
-
-        {% endif %}{% if ns.blow %}- **{{ ns.blow }}** {{ '个电池低于 30%' if cn
-        else 'batteries under 30%' }}
-
-        {% endif %}{% if ns.coff %}- **{{ ns.coff }}** {{ '个摄像头离线' if cn
-        else ('camera offline' if ns.coff == 1 else 'cameras offline') }}
-
-        {% endif %}{% if ns.dunk %}- {{ ns.dunk }} {{ '扇门传感器离线' if cn else
-        'door sensors not reporting' }}
-
-        {% endif %}{% if ns.bunk %}- {{ ns.bunk }} {{ '个电池无数据' if cn else
-        'batteries not reporting' }}
-
-        {% endif %}{% endif %}
+      grid_options: {columns: 12, rows: auto}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set doors = ['binary_sensor.f_contact_sensor_door','binary_sensor.m_contact_sensor_door','binary_sensor.b_contact_sensor_door'] -%}
+        {%- set bats = ['sensor.front_door_battery','sensor.living_room_ringring_battery','sensor.tapo_c425_north_wall_battery','sensor.tapo_camera_bcca_battery','sensor.tapo_c420_south_wall_battery','sensor.aqara_roller_shade_driver_e1_battery'] -%}
+        {%- set cams = ['camera.front_door_live_view','camera.tapo_c425_north_wall_hd_stream_direct','camera.tapo_c420_east_wall_hd_stream_direct','camera.tapo_c420_south_wall_hd_stream_direct','camera.tapo_c200_stockroom_hd_stream_direct','camera.smart_pet_feeder'] -%}
+        {%- set ns = namespace(dopen=0, dunk=0, blow=0, bunk=0, coff=0) -%}
+        {%- for d in doors %}{% set s = states(d) %}{% if s == 'on' %}{% set ns.dopen = ns.dopen + 1 %}{% elif s != 'off' %}{% set ns.dunk = ns.dunk + 1 %}{% endif %}{% endfor -%}
+        {%- for b in bats %}{% set s = states(b) %}{% if s in ['unavailable','unknown','none',''] %}{% set ns.bunk = ns.bunk + 1 %}{% else %}{% set f = s | float(-1) %}{% if f < 0 %}{% set ns.bunk = ns.bunk + 1 %}{% elif f < 30 %}{% set ns.blow = ns.blow + 1 %}{% endif %}{% endif %}{% endfor -%}
+        {%- for c in cams %}{% if states(c) in ['unavailable','unknown'] %}{% set ns.coff = ns.coff + 1 %}{% endif %}{% endfor -%}
+        {#- bills_unpaid_count is a real sensor, but an unavailable one must not
+            read as zero outstanding bills, so it is guarded rather than piped
+            through int(0). -#}
+        {%- set bu = states('sensor.bills_unpaid_count') -%}
+        {%- set bn = (bu | int(-1)) if bu not in ['unavailable','unknown','none',''] else -1 -%}
+        {%- set total = ns.dopen + ns.blow + ns.coff + (bn if bn > 0 else 0) -%}
+        {#- Built as a list and joined, rather than printed with separators
+            between conditionals: an omitted first clause would otherwise leave
+            the line starting with a space, and one to three leading spaces is
+            a silent CommonMark indent. -#}
+        {%- set p = namespace(txt=[]) -%}
+        {%- if total %}{% set p.txt = p.txt + [('有 %d 项需要处理。' % total) if cn else (('%d thing needs attention.' % total) if total == 1 else ('%d things need attention.' % total))] %}{% endif -%}
+        {%- if ns.dunk %}{% set p.txt = p.txt + [('%d 个门窗传感器无数据。' % ns.dunk) if cn else (('%d door sensor is not reporting.' % ns.dunk) if ns.dunk == 1 else ('%d door sensors are not reporting.' % ns.dunk))] %}{% endif -%}
+        {%- if ns.bunk %}{% set p.txt = p.txt + [('%d 个电池无数据。' % ns.bunk) if cn else (('%d battery is not reporting.' % ns.bunk) if ns.bunk == 1 else ('%d batteries are not reporting.' % ns.bunk))] %}{% endif -%}
+        {#- Chinese sentences butt against each other after the full stop;
+            only the English list takes a space. -#}
+        {% if p.txt %}{{ p.txt | join('' if cn else ' ') }}{% else %}{{ '一切正常，无需处理。' if cn else 'All clear. Nothing needs attention.' }}{% endif %}
     - type: conditional
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 6, rows: auto}
       conditions:
       - condition: state
         entity: binary_sensor.f_contact_sensor_door
@@ -217,7 +283,7 @@ views:
               border-color: rgba(232, 163, 61, 0.42);
             }
     - type: conditional
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 6, rows: auto}
       conditions:
       - condition: state
         entity: binary_sensor.b_contact_sensor_door
@@ -237,7 +303,7 @@ views:
               border-color: rgba(232, 163, 61, 0.42);
             }
     - type: conditional
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 6, rows: auto}
       conditions:
       - condition: state
         entity: binary_sensor.m_contact_sensor_door
@@ -248,6 +314,7 @@ views:
         name: Parents Room door open
         icon: mdi:door-open
         color: orange
+        tap_action: {action: navigate, navigation_path: /casaray-v2/security}
         state_content: [state, last_changed]
         card_mod:
           style: |
@@ -256,7 +323,7 @@ views:
               border-color: rgba(232, 163, 61, 0.42);
             }
     - type: conditional
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 6, rows: auto}
       conditions:
       - condition: numeric_state
         entity: sensor.front_door_battery
@@ -276,7 +343,7 @@ views:
               border-color: rgba(224, 106, 106, 0.45);
             }
     - type: conditional
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 6, rows: auto}
       conditions:
       - condition: numeric_state
         entity: sensor.living_room_ringring_battery
@@ -296,7 +363,7 @@ views:
               border-color: rgba(224, 106, 106, 0.45);
             }
     - type: conditional
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 6, rows: auto}
       conditions:
       - condition: numeric_state
         entity: sensor.tapo_c425_north_wall_battery
@@ -316,7 +383,7 @@ views:
               border-color: rgba(224, 106, 106, 0.45);
             }
     - type: conditional
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 6, rows: auto}
       conditions:
       - condition: state
         entity: binary_sensor.eero_wan_status
@@ -327,7 +394,7 @@ views:
         name: Internet
         icon: mdi:wan
         color: red
-        tap_action: {action: navigate, navigation_path: /casaray-v2/house-health}
+        tap_action: {action: navigate, navigation_path: /casaray-v2/network}
         state_content: [state, last_changed]
         card_mod:
           style: |
@@ -336,7 +403,7 @@ views:
               border-color: rgba(224, 106, 106, 0.45);
             }
     - type: conditional
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 6, rows: auto}
       conditions:
       - condition: state
         entity: binary_sensor.g_monitor_freezer_p110m_overloaded
@@ -355,7 +422,7 @@ views:
               border-color: rgba(224, 106, 106, 0.45);
             }
     - type: conditional
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 6, rows: auto}
       conditions:
       - condition: state
         entity: binary_sensor.bedroom_parents_room_ac_filter_clean_required
@@ -374,7 +441,7 @@ views:
               border-color: rgba(224, 106, 106, 0.45);
             }
     - type: conditional
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 6, rows: auto}
       conditions:
       - condition: state
         entity: binary_sensor.lg_fridge_door
@@ -385,7 +452,6 @@ views:
         name: Fridge door open
         icon: mdi:fridge-alert-outline
         color: orange
-
         state_content: [state, last_changed]
         card_mod:
           style: |
@@ -393,83 +459,131 @@ views:
               background: rgba(120, 82, 24, 0.26);
               border-color: rgba(232, 163, 61, 0.42);
             }
-  # --- Household: who is in, and is the house secure. ---
-  - type: grid
-    column_span: 2
-    cards:
-    - type: markdown
-      grid_options: {columns: 6, rows: 3}
-      content: |
-        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
-        {%- set p = states('sensor.powerpal_gateway_powerpal_power') | float(none) -%}
-        {%- set s = states('sensor.primo_5_0_1_1_ac_power') | float(none) -%}
-        {%- set hd = states('sensor.powerpal_gateway_powerpal_daily_energy') | float(none) -%}
-        {#- primo energy_day is Wh, powerpal daily_energy is kWh. Convert here
-            so nothing below can mix the two -- see the legacy dashboard, which
-            divides the same sensor by 1000, and UI-011. -#}
-        {%- set sdw = states('sensor.primo_5_0_1_1_energy_day') | float(none) -%}
-        {%- set sd = (sdw / 1000) if sdw is not none else none -%}
-        **{{ '家庭用电' if cn else 'House power' }}**
-        {% if p is not none %}## {{ (p / 1000) | round(2) }} kW
-        {{ '当前总用电' if cn else 'Total usage' }}{% else %}## —
-        {{ '用电表无数据' if cn else 'Meter not reporting' }}{% endif %}
-
-        {{ '太阳能' if cn else 'Solar' }} **{{ (s | round(0) | int ~ ' W') if s is not none else '—' }}** · {{ '今日用电' if cn else 'Today' }} **{{ (hd | round(1) ~ ' kWh') if hd is not none else '—' }}** · {{ '今日发电' if cn else 'Solar today' }} **{{ (sd | round(1) ~ ' kWh') if sd is not none else '—' }}**
-    - type: markdown
-      grid_options: {columns: 6, rows: 3}
-      content: |
-        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
-        {%- set ts = ['sensor.living_room_living_hue_hue_sensor_temperature','sensor.bedroom_motion_sensor_temperature','sensor.living_room_living_room_temperature'] -%}
-        {%- set ns = namespace(sum=0.0, n=0) -%}
-        {%- for t in ts %}{% set f = states(t) | float(none) %}{% if f is not none %}{% set ns.sum = ns.sum + f %}{% set ns.n = ns.n + 1 %}{% endif %}{% endfor -%}
-        {%- set h = states('sensor.bedroom_motion_sensor_humidity') | float(none) -%}
-        {%- set aq = states('sensor.living_room_air_purifier_air_quality') -%}
-        **{{ '室内气候' if cn else 'Indoor climate' }}**
-        {% if ns.n %}{% set avg = (ns.sum / ns.n) %}## {{ avg | round(1) }} °C
-        {% if avg >= 18 and avg <= 25 %}{{ '舒适' if cn else 'Comfortable' }}{% elif avg < 18 %}{{ '偏冷' if cn else 'Cool' }}{% else %}{{ '偏热' if cn else 'Warm' }}{% endif %} · {{ ns.n }} {{ '个房间' if cn else ('room' if ns.n == 1 else 'rooms') }}{% else %}## —
-        {{ '没有室内温度数据' if cn else 'No indoor temperature reporting' }}{% endif %}
-
-        {{ '湿度' if cn else 'Humidity' }} **{{ (h | round(0) | int ~ '%') if h is not none else '—' }}** · {{ '空气质量' if cn else 'Air quality' }} **{{ aq if aq not in ['unavailable','unknown','none',''] else '—' }}**
-    - type: markdown
-      grid_options: {columns: 6, rows: 3}
-      content: |
-        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
-        {%- set doors = ['binary_sensor.f_contact_sensor_door','binary_sensor.m_contact_sensor_door','binary_sensor.b_contact_sensor_door'] -%}
-        {%- set cams = ['camera.front_door_live_view','camera.tapo_c425_north_wall_hd_stream_direct','camera.tapo_c420_east_wall_hd_stream_direct','camera.tapo_c420_south_wall_hd_stream_direct','camera.tapo_c200_stockroom_hd_stream_direct','camera.smart_pet_feeder'] -%}
-        {%- set ns = namespace(dopen=0, dunk=0, con=0) -%}
-        {%- for d in doors %}{% set s = states(d) %}{% if s == 'on' %}{% set ns.dopen = ns.dopen + 1 %}{% elif s != 'off' %}{% set ns.dunk = ns.dunk + 1 %}{% endif %}{% endfor -%}
-        {%- for c in cams %}{% if states(c) not in ['unavailable','unknown'] %}{% set ns.con = ns.con + 1 %}{% endif %}{% endfor -%}
-        {%- set wan = states('binary_sensor.eero_wan_status') -%}
-        **{{ '安全' if cn else 'Security' }}**
-        {% if ns.dopen %}## {{ '有门开启' if cn else 'Door open' }}
-        {{ '%d 扇门开启' % ns.dopen if cn else '%d of 3 doors open' % ns.dopen }}{% elif ns.dunk %}## {{ '无法确认' if cn else 'Unconfirmed' }}
-        {{ '%d 个门窗传感器无数据' % ns.dunk if cn else '%d of 3 door sensors not reporting' % ns.dunk }}{% else %}## {{ '安全' if cn else 'Secure' }}
-        {{ '三扇门全部关闭' if cn else 'All 3 doors closed' }}{% endif %}
-
-        {{ '摄像头' if cn else 'Cameras' }} **{{ ns.con }}/{{ cams | count }}** · {{ '网络' if cn else 'Internet' }} **{{ ('在线' if cn else 'Online') if wan == 'on' else (('离线' if cn else 'Offline') if wan == 'off' else ('无数据' if cn else 'Unknown')) }}**
-    - type: markdown
-      grid_options: {columns: 6, rows: 3}
-      content: |
-        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
-        {#- primo energy_day is Wh, powerpal daily_energy is kWh. Convert here
-            so the share below is not out by a factor of 1000. -#}
-        {%- set sdw = states('sensor.primo_5_0_1_1_energy_day') | float(none) -%}
-        {%- set sd = (sdw / 1000) if sdw is not none else none -%}
-        {%- set hd = states('sensor.powerpal_gateway_powerpal_daily_energy') | float(none) -%}
-        **{{ '今日太阳能' if cn else 'Solar today' }}**
-        {% if sd is not none and hd is not none and hd > 0 %}{% set share = ((sd / hd) * 100) | round(0) | int %}## {{ share }}%
-        {% if share >= 100 %}{{ '已覆盖今日全部用电并有盈余' if cn else 'Covered all of today’s use, with surplus' }}{% else %}{{ '的今日用电来自太阳能' if cn else 'of today’s use came from solar' }}{% endif %}{% elif sd is not none %}## {{ sd | round(1) }} kWh
-        {{ '今日发电量。家庭用电量无数据，无法计算占比。' if cn else 'generated today. House use is not reporting, so the share cannot be worked out.' }}{% else %}## —
-        {{ '太阳能今日发电量无数据' if cn else 'Solar generation today is not reporting' }}{% endif %}
-
-        {{ '发电' if cn else 'Generated' }} **{{ (sd | round(1) ~ ' kWh') if sd is not none else '—' }}** · {{ '用电' if cn else 'Used' }} **{{ (hd | round(1) ~ ' kWh') if hd is not none else '—' }}**
-
-  # --- Household: who is in, and is the house secure. ---
+    # An unpaid bill is an attention item, and this is where an executive
+    # overview should raise it -- which is why the two bill tiles that used to
+    # sit in Home's footer are no longer needed there.
+    - type: conditional
+      grid_options: {columns: 6, rows: auto}
+      conditions:
+      - condition: numeric_state
+        entity: sensor.bills_unpaid_count
+        above: 0
+      card:
+        type: tile
+        entity: sensor.bills_unpaid_count
+        name: Bills unpaid
+        icon: mdi:file-alert-outline
+        color: orange
+        tap_action: {action: navigate, navigation_path: /casaray-v2/bills}
+        state_content: state
+        card_mod:
+          style: |
+            ha-card {
+              background: rgba(120, 82, 24, 0.26);
+              border-color: rgba(232, 163, 61, 0.42);
+            }
+  # -------------------------------------------------------------------------
+  # BAND 4, COLUMN 1 -- "Right now". The render's left column: one large
+  # weather panel, then two composed status cards, then a grey footnote that
+  # qualifies the section above it.
+  # -------------------------------------------------------------------------
   - type: grid
     column_span: 1
     cards:
     - type: heading
-      heading: Household
+      heading: Right now
+      heading_style: title
+      icon: mdi:weather-partly-cloudy
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 此刻
+      heading_style: title
+      icon: mdi:weather-partly-cloudy
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    # The mockup's hero: big temperature, condition and humidity, then a row
+    # of days beneath. That is precisely what the native weather card draws
+    # with both flags on, so no custom card and no template is involved.
+    - type: weather-forecast
+      entity: weather.forecast_home
+      forecast_type: daily
+      show_current: true
+      show_forecast: true
+      grid_options: {columns: 12, rows: auto}
+    # Amber border: this is live load, and amber is CR-232's "active". The
+    # figure is the metered-circuit total, which the footnote below explains.
+    - type: tile
+      entity: sensor.casa_monitored_power
+      name: Monitored power
+      icon: mdi:flash
+      color: amber
+      grid_options: {columns: 12, rows: auto}
+      state_content: [state, last_changed]
+      tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% else %}
+            background: rgba(120, 82, 24, 0.22);
+            border-color: rgba(232, 163, 61, 0.40);
+            {% endif %}
+          }
+    - type: tile
+      entity: sensor.casa_solar_expected_today
+      name: Solar expected today
+      icon: mdi:solar-power-variant
+      grid_options: {columns: 12, rows: auto}
+      state_content: state
+      tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
+    # Daylight, kept from the previous Home footer. Two across, because they
+    # are a pair and because the left column would otherwise sit noticeably
+    # shorter than the two beside it.
+    - type: tile
+      entity: sensor.sun_next_rising
+      name: Sunrise
+      icon: mdi:weather-sunset-up
+      grid_options: {columns: 6, rows: auto}
+    - type: tile
+      entity: sensor.sun_next_setting
+      name: Sunset
+      icon: mdi:weather-sunset-down
+      grid_options: {columns: 6, rows: auto}
+    # "Footnotes explain, in grey, below the section they qualify" -- the
+    # 14/09 transcription, and this is the render's own wording.
+    - type: markdown
+      grid_options: {columns: 12, rows: auto}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        *{{ '只有两个回路装了计量插座，因此这是被监测的用电量，并非全屋。' if cn else 'Two circuits are metered, so this is monitored load — not the whole house.' }}*
+
+  # -------------------------------------------------------------------------
+  # BAND 4, COLUMN 2 -- "Who's home" over "One tap". Two headings in one
+  # section so the pair always stays in the same column, which separate
+  # sections could not guarantee.
+  # -------------------------------------------------------------------------
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Who's home
       heading_style: title
       icon: mdi:account-group
       visibility:
@@ -477,122 +591,123 @@ views:
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
     - type: heading
-      heading: 家庭
+      heading: 谁在家
       heading_style: title
       icon: mdi:account-group
       visibility:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
-    - type: tile
-      grid_options: {columns: 6, rows: 1}
-      entity: zone.home
-      name: People home
-      icon: mdi:home-account
-      tap_action: {action: navigate, navigation_path: /casaray-v2/people}
+    # Three across, as drawn. A person tile already renders the round avatar,
+    # the name and Home/Away, so this is the mockup's card with no additions.
     - type: tile
       entity: person.raymond_du
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 2}
+      vertical: true
+      tap_action: {action: navigate, navigation_path: /casaray-v2/people}
     - type: tile
       entity: person.vinh_du
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 2}
+      vertical: true
+      tap_action: {action: navigate, navigation_path: /casaray-v2/people}
     - type: tile
       entity: person.ai_q_huang
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 2}
+      vertical: true
+      tap_action: {action: navigate, navigation_path: /casaray-v2/people}
+    # "Parents' room — Occupied · 4 minutes ago" in the render. The AC's own
+    # occupancy sensor is the reading behind it; state_content adds the age.
     - type: tile
-      grid_options: {columns: 6, rows: 1}
-      entity: binary_sensor.eero_wan_status
-      color: green
-      name: Internet
-      icon: mdi:wan
-
-  # --- Security roll-up. No alarm row: no alarm_control_panel exists. ---
-  # --- Security roll-up. No alarm row: no alarm_control_panel exists. ---
-  - type: grid
-    column_span: 1
-    cards:
+      entity: binary_sensor.bedroom_parents_room_ac_room_occupied
+      name: Parents Room
+      icon: mdi:motion-sensor
+      grid_options: {columns: 12, rows: auto}
+      state_content: [state, last_changed]
+      tap_action: {action: navigate, navigation_path: /casaray-v2/parents-room}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
     - type: heading
-      heading: Security
+      heading: One tap
       heading_style: title
-      icon: mdi:shield-home
-      badges:
-      - type: entity
-        entity: binary_sensor.f_contact_sensor_door
+      icon: mdi:flash
       visibility:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
     - type: heading
-      heading: 安全
+      heading: 一键
       heading_style: title
-      icon: mdi:shield-home
-      badges:
-      - type: entity
-        entity: binary_sensor.f_contact_sensor_door
+      icon: mdi:flash
       visibility:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
-    - type: markdown
-      grid_options: {columns: 12, rows: 2}
-      content: >-
-        {% set cn = is_state('input_boolean.chinese_dashboard','on') -%} {% set
-        doors = ['binary_sensor.f_contact_sensor_door',
-        'binary_sensor.m_contact_sensor_door',
-        'binary_sensor.b_contact_sensor_door'] -%} {% set ns =
-        namespace(open=0, unk=0) -%} {% for d in doors %}{% set s = states(d) %}{%
-        if s == 'on' %}{% set ns.open = ns.open + 1 %}{% elif s != 'off' %}{% set
-        ns.unk = ns.unk + 1 %}{% endif %}{% endfor -%} {% if ns.unk %}{{
-        '门窗传感器有 %d 个无数据。' % ns.unk if cn else '%d of 3 door sensors
-        are not reporting. Security state cannot be confirmed.' % ns.unk }}{%
-        elif ns.open %}{{ '%d 扇门开启。' % ns.open if cn else '%d of 3 doors
-        open.' % ns.open }}{% else %}{{ '三扇门全部关闭。' if cn else 'All 3
-        doors closed.' }}{% endif %}
-    - type: tile
-      entity: binary_sensor.f_contact_sensor_door
-      color: red
-      name: Front door
-      grid_options: {columns: 6, rows: 1}
-      card_mod:
-        style: |
-          ha-card {
-            {% if states(config.entity) in ['unavailable','unknown','none'] %}
-            border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
-            {% endif %}
-          }
-    - type: tile
-      entity: binary_sensor.m_contact_sensor_door
-      color: red
-      name: Parents Room
-      grid_options: {columns: 6, rows: 1}
-      card_mod:
-        style: |
-          ha-card {
-            {% if states(config.entity) in ['unavailable','unknown','none'] %}
-            border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
-            {% endif %}
-          }
-    - type: tile
-      entity: binary_sensor.b_contact_sensor_door
-      color: red
-      name: Backyard
-      grid_options: {columns: 6, rows: 1}
-      card_mod:
-        style: |
-          ha-card {
-            {% if states(config.entity) in ['unavailable','unknown','none'] %}
-            border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
-            {% endif %}
-          }
+    # 2x2, as drawn. The four presets are the ones the legacy dashboard has
+    # run for months (deez_smart_home.yaml, Whole Home Presets) -- same
+    # services, same targets, same brightness values, carried across unchanged.
+    # They are brightness calls on confirmed light groups, NOT whole-home
+    # scenes: CR-233 stays open, because a real Goodnight that also handles
+    # TVs and the blind still needs scenes this instance does not have.
+    - type: button
+      grid_options: {columns: 6, rows: 2}
+      name: Evening
+      icon: mdi:weather-sunset
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: light.turn_on
+        target: {entity_id: light.living_room}
+        data: {brightness_pct: 55}
+    - type: button
+      grid_options: {columns: 6, rows: 2}
+      name: Night
+      icon: mdi:weather-night
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: light.turn_on
+        target:
+          entity_id: [light.living_room, light.bedroom_bedroom, light.dining]
+        data: {brightness_pct: 10}
+    - type: button
+      grid_options: {columns: 6, rows: 2}
+      name: Bright
+      icon: mdi:white-balance-sunny
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: light.turn_on
+        target:
+          entity_id: [light.living_room, light.bedroom_bedroom, light.dining]
+        data: {brightness_pct: 100}
+    - type: button
+      grid_options: {columns: 6, rows: 2}
+      name: All lights off
+      icon: mdi:lightbulb-group-off
+      show_state: false
+      tap_action:
+        action: perform-action
+        perform_action: homeassistant.turn_off
+        target:
+          entity_id:
+          - light.living_room
+          - light.dining
+          - light.bedroom_bedroom
+          - switch.mainroomlight_switch_1
 
-  # --- Energy now. The inverter is offline right now; guard every read. ---
-  # --- Rooms. P5: one line of state per room, tap to open. ---
+  # -------------------------------------------------------------------------
+  # BAND 4, COLUMN 3 -- "Rooms" over "Shopping list". Rooms are full-width
+  # rows, never a button grid: icon, name, a live secondary line, the whole
+  # row navigating. A tile bound to the room's own entity turns amber by
+  # itself when that entity is on, which is the render's active state.
+  # -------------------------------------------------------------------------
   - type: grid
     column_span: 1
     cards:
@@ -612,15 +727,8 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
-    # Rooms as full-width rows, per the 14/09 renders: icon, name, a live
-    # secondary line, and the whole row navigating. A tile bound to the
-    # room's own entity colours itself amber when that entity is on, which
-    # is the active-state indication the mockups show -- no card_mod needed.
-    # Lighting and Climate moved up to the quick-nav strip: they are boards,
-    # not rooms, and every other board link already lives there.
-    # Both are still one tap from Home.
     - type: tile
-      grid_options: {columns: 12, rows: 1}
+      grid_options: {columns: 12, rows: auto}
       entity: light.living_room
       name: Living Room
       icon: mdi:sofa
@@ -629,16 +737,7 @@ views:
       tap_action: {action: navigate, navigation_path: /casaray-v2/living-room}
       icon_tap_action: {action: none}
     - type: tile
-      grid_options: {columns: 12, rows: 1}
-      entity: binary_sensor.k_motion_sensor_motion
-      name: Kitchen
-      icon: mdi:silverware-fork-knife
-      state_content: [state, last_changed]
-      vertical: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/kitchen}
-      icon_tap_action: {action: none}
-    - type: tile
-      grid_options: {columns: 12, rows: 1}
+      grid_options: {columns: 12, rows: auto}
       entity: light.dining
       name: Dining
       icon: mdi:table-chair
@@ -647,7 +746,16 @@ views:
       tap_action: {action: navigate, navigation_path: /casaray-v2/dining}
       icon_tap_action: {action: none}
     - type: tile
-      grid_options: {columns: 12, rows: 1}
+      grid_options: {columns: 12, rows: auto}
+      entity: binary_sensor.k_motion_sensor_motion
+      name: Kitchen
+      icon: mdi:silverware-fork-knife
+      state_content: [state, last_changed]
+      vertical: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/kitchen}
+      icon_tap_action: {action: none}
+    - type: tile
+      grid_options: {columns: 12, rows: auto}
       entity: climate.bedroom_parents_room_ac
       name: Parents Room
       icon: mdi:bed-king
@@ -656,7 +764,7 @@ views:
       tap_action: {action: navigate, navigation_path: /casaray-v2/parents-room}
       icon_tap_action: {action: none}
     - type: tile
-      grid_options: {columns: 12, rows: 1}
+      grid_options: {columns: 12, rows: auto}
       entity: light.bedroom_bedroom
       name: Ray Bedroom
       icon: mdi:bed
@@ -665,7 +773,7 @@ views:
       tap_action: {action: navigate, navigation_path: /casaray-v2/ray-bedroom}
       icon_tap_action: {action: none}
     - type: tile
-      grid_options: {columns: 12, rows: 1}
+      grid_options: {columns: 12, rows: auto}
       entity: switch.g_monitor_freezer_p110m
       name: Garage
       icon: mdi:garage
@@ -674,7 +782,7 @@ views:
       tap_action: {action: navigate, navigation_path: /casaray-v2/garage}
       icon_tap_action: {action: none}
     - type: tile
-      grid_options: {columns: 12, rows: 1}
+      grid_options: {columns: 12, rows: auto}
       entity: switch.g_printer_p100
       name: Guest Room
       icon: mdi:bed-empty
@@ -682,107 +790,144 @@ views:
       vertical: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/guest-room}
       icon_tap_action: {action: none}
-  - type: grid
-    column_span: 1
-    cards:
     - type: heading
-      heading: Indoor climate
+      heading: Shopping list
       heading_style: title
-      icon: mdi:home-thermometer
+      icon: mdi:cart-outline
       visibility:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
     - type: heading
-      heading: 室内气候
+      heading: 购物清单
       heading_style: title
-      icon: mdi:home-thermometer
+      icon: mdi:cart-outline
       visibility:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
-    - type: tile
-      entity: sensor.living_room_living_hue_hue_sensor_temperature
-      name: Living Room
-      grid_options: {columns: 6, rows: 1}
-    - type: tile
-      entity: sensor.bedroom_motion_sensor_temperature
-      name: Parents Room
-      grid_options: {columns: 6, rows: 1}
-    - type: tile
-      entity: sensor.bedroom_motion_sensor_humidity
-      name: Humidity
-      grid_options: {columns: 6, rows: 1}
-    - type: tile
-      entity: sensor.living_room_living_hue_hue_sensor_illuminance
-      name: Light level
-      grid_options: {columns: 6, rows: 1}
+    # todo.shopping_list is a real list this instance already keeps; the
+    # render shows it in exactly this position, under Rooms.
+    - type: todo-list
+      entity: todo.shopping_list
+      grid_options: {columns: 12, rows: auto}
 
-  # --- Cameras preview. ---
-  # --- Cameras preview. ---
+  # -------------------------------------------------------------------------
+  # BAND 5 -- security, as one composed panel rather than scattered rows:
+  # the interpreted summary and the front-door image side by side above, the
+  # four things you might tap below. Quiet when everything is closed; a red
+  # tile and a red alert card above the moment it is not.
+  # -------------------------------------------------------------------------
   - type: grid
-    column_span: 1
+    column_span: 3
     cards:
     - type: heading
-      heading: Cameras
+      heading: Security
       heading_style: title
-      icon: mdi:cctv
-      badges:
-      - type: entity
-        entity: camera.front_door_live_view
+      icon: mdi:shield-home
       visibility:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
     - type: heading
-      heading: 摄像头
+      heading: 安全
       heading_style: title
-      icon: mdi:cctv
-      badges:
-      - type: entity
-        entity: camera.front_door_live_view
+      icon: mdi:shield-home
       visibility:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+    - type: markdown
+      grid_options: {columns: 6, rows: 4}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set doors = ['binary_sensor.f_contact_sensor_door','binary_sensor.m_contact_sensor_door','binary_sensor.b_contact_sensor_door'] -%}
+        {%- set cams = ['camera.front_door_live_view','camera.tapo_c425_north_wall_hd_stream_direct','camera.tapo_c420_east_wall_hd_stream_direct','camera.tapo_c420_south_wall_hd_stream_direct','camera.tapo_c200_stockroom_hd_stream_direct','camera.smart_pet_feeder'] -%}
+        {%- set ns = namespace(open=0, unk=0, con=0) -%}
+        {%- for d in doors %}{% set s = states(d) %}{% if s == 'on' %}{% set ns.open = ns.open + 1 %}{% elif s != 'off' %}{% set ns.unk = ns.unk + 1 %}{% endif %}{% endfor -%}
+        {%- for c in cams %}{% if states(c) not in ['unavailable','unknown'] %}{% set ns.con = ns.con + 1 %}{% endif %}{% endfor -%}
+        {%- set wan = states('binary_sensor.eero_wan_status') -%}
+        {%- if ns.open %}{% set head = '有门开启' if cn else 'Door open' %}{% set sub = ('%d 扇门开启' % ns.open) if cn else ('%d of 3 doors open' % ns.open) %}
+        {%- elif ns.unk %}{% set head = '无法确认' if cn else 'Unconfirmed' %}{% set sub = ('%d 个门窗传感器无数据' % ns.unk) if cn else ('%d of 3 door sensors are not reporting' % ns.unk) %}
+        {%- else %}{% set head = '安全' if cn else 'Secure' %}{% set sub = '三扇门全部关闭' if cn else 'All 3 doors closed' %}{% endif -%}
+        ## {{ head }}
+        {{ sub }}
+
+        {{ '摄像头' if cn else 'Cameras' }} **{{ ns.con }}/{{ cams | count }}** · {{ '网络' if cn else 'Internet' }} **{{ ('在线' if cn else 'Online') if wan == 'on' else (('离线' if cn else 'Offline') if wan == 'off' else ('无数据' if cn else 'No data')) }}**
     - type: picture-entity
-      grid_options: {columns: 12, rows: 4}
+      grid_options: {columns: 6, rows: 4}
       entity: camera.front_door_live_view
       name: Front Door
       camera_view: auto
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/camera-front-door}
+    - type: tile
+      entity: binary_sensor.f_contact_sensor_door
+      color: green
+      name: Front door
+      grid_options: {columns: 3, rows: auto}
+      state_content: [state, last_changed]
+      tap_action: {action: navigate, navigation_path: /casaray-v2/security}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
+    - type: tile
+      entity: binary_sensor.m_contact_sensor_door
+      color: green
+      name: Parents Room
+      grid_options: {columns: 3, rows: auto}
+      state_content: [state, last_changed]
+      tap_action: {action: navigate, navigation_path: /casaray-v2/security}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
+    - type: tile
+      entity: binary_sensor.b_contact_sensor_door
+      color: green
+      name: Backyard
+      grid_options: {columns: 3, rows: auto}
+      state_content: [state, last_changed]
+      tap_action: {action: navigate, navigation_path: /casaray-v2/security}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
     - type: button
-      grid_options: {columns: 12, rows: 1}
+      grid_options: {columns: 3, rows: auto}
       name: All cameras
       icon: mdi:cctv
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
 
-  # --- Footer: weather and the next bill. ---
-  # Recent activity -- Master Design Briefing v1 section 4 lists it among
-  # Home's core modules, and the Master Home render puts it in the lower band
-  # beside Cameras. Native logbook card: no template, no invented entity, and
-  # it reads the recorder the history graphs on this dashboard already use.
-  #
-  # `target:` rather than the older `entities:` -- this file already relies on
-  # `grid_options` and `heading` cards, which need 2024.7 and 2024.9, so the
-  # 2024.2 form is comfortably available.
-  #
-  # The three door contacts are included even though they are unavailable: a
-  # door that starts reporting again should appear here without an edit, and
-  # while it is down it simply contributes nothing.
-  # --- Energy now. The inverter is offline right now; guard every read. ---
+  # -------------------------------------------------------------------------
+  # BAND 6 -- energy. Four figures across the full width, the same shape the
+  # alternate render gives its ENERGY panel. Every read is guarded; the
+  # inverter is frequently unreachable and must never show as a zero.
+  # -------------------------------------------------------------------------
   - type: grid
-    column_span: 2
+    column_span: 3
     cards:
     - type: heading
       heading: Energy now
       heading_style: title
       icon: mdi:lightning-bolt
-      badges:
-      - type: entity
-        entity: sensor.powerpal_gateway_powerpal_power
       visibility:
       - condition: state
         entity: input_boolean.chinese_dashboard
@@ -791,78 +936,82 @@ views:
       heading: 当前能耗
       heading_style: title
       icon: mdi:lightning-bolt
-      badges:
-      - type: entity
-        entity: sensor.powerpal_gateway_powerpal_power
       visibility:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: markdown
-      grid_options: {columns: 12, rows: 2}
-      content: >-
-        {% set cn = is_state('input_boolean.chinese_dashboard','on') -%} {% set p
-        = states('sensor.powerpal_gateway_powerpal_power') -%} {% set s =
-        states('sensor.primo_5_0_1_1_ac_power') -%} {% set pk = p not in
-        ['unavailable','unknown','none',''] and p | float(-1) >= 0 -%} {% set sk =
-        s not in ['unavailable','unknown','none',''] and s | float(-1) >= 0 -%}
-        {% set pw = p | float(-1) | round(0) | int -%}
-        {% set sw = s | float(-1) | round(0) | int -%}
-        {% if pk %}{{ '目前用电 %d W。' % pw if cn else 'Drawing **%d W** right
-        now.' % pw }}{% else %}{{ '用电量无数据。' if cn else 'House power is not
-        reporting.' }}{% endif %} {% if sk %}{{ ' 太阳能发电 %d W。' % sw if cn
-        else ' Solar generating **%d W**.' % sw }}{% else %}{{ '
-        太阳能逆变器离线。' if cn else ' The solar inverter is offline, so
-        generation is unknown.' }}{% endif %}
+      grid_options: {columns: 12, rows: auto}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set p = states('sensor.powerpal_gateway_powerpal_power') -%}
+        {%- set s = states('sensor.primo_5_0_1_1_ac_power') -%}
+        {%- set pk = p not in ['unavailable','unknown','none',''] and p | float(-1) >= 0 -%}
+        {%- set sk = s not in ['unavailable','unknown','none',''] and s | float(-1) >= 0 -%}
+        {%- set pw = p | float(-1) | round(0) | int -%}
+        {%- set sw = s | float(-1) | round(0) | int -%}
+        {% if pk %}{{ ('目前全屋用电 %d W。' % pw) if cn else ('The meter reads **%d W** right now.' % pw) }}{% else %}{{ '用电表无数据。' if cn else 'The house meter is not reporting.' }}{% endif %}{%- set sep = '' if cn else ' ' %}{% if sk %}{{ sep ~ (('太阳能发电 %d W。' % sw) if cn else ('Solar is generating **%d W**.' % sw)) }}{% else %}{{ sep ~ ('太阳能逆变器离线，发电量未知。' if cn else 'The solar inverter is offline, so generation is unknown.') }}{% endif %}
     - type: tile
       entity: sensor.powerpal_gateway_powerpal_power
       color: amber
       name: House power
       icon: mdi:transmission-tower
-      grid_options: {columns: 3, rows: 1}
+      grid_options: {columns: 3, rows: auto}
       tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
     - type: tile
       entity: sensor.powerpal_gateway_powerpal_daily_energy
       color: amber
       name: Used today
       icon: mdi:counter
-      grid_options: {columns: 3, rows: 1}
+      grid_options: {columns: 3, rows: auto}
       tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
     - type: tile
       entity: sensor.primo_5_0_1_1_ac_power
       color: green
       name: Solar now
       icon: mdi:solar-power-variant
-      grid_options: {columns: 3, rows: 1}
+      grid_options: {columns: 3, rows: auto}
       tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
     - type: tile
       entity: sensor.primo_5_0_1_1_energy_day
       color: green
       name: Solar today
       icon: mdi:weather-sunny
-      grid_options: {columns: 3, rows: 1}
+      grid_options: {columns: 3, rows: auto}
       tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+            {% endif %}
+          }
 
-  # --- Rooms. P5: one line of state per room, tap to open. ---
-  # --- Footer: weather and the next bill. ---
-  # Recent activity -- Master Design Briefing v1 section 4 lists it among
-  # Home's core modules, and the Master Home render puts it in the lower band
-  # beside Cameras. Native logbook card: no template, no invented entity, and
-  # it reads the recorder the history graphs on this dashboard already use.
+  # -------------------------------------------------------------------------
+  # BAND 7 -- recent activity. Not in the wall render, kept because a wall
+  # panel's "what just happened" has no other home on this dashboard. Quiet,
+  # low, and short: a subtitle heading and three rows.
   #
-  # `target:` rather than the older `entities:` -- this file already relies on
-  # `grid_options` and `heading` cards, which need 2024.7 and 2024.9, so the
-  # 2024.2 form is comfortably available.
-  #
-  # The three door contacts are included even though they are unavailable: a
-  # door that starts reporting again should appear here without an edit, and
-  # while it is down it simply contributes nothing.
+  # The three door contacts stay in the target list even while unavailable, so
+  # a door that starts reporting again appears here without an edit.
+  # -------------------------------------------------------------------------
   - type: grid
-    column_span: 2
+    column_span: 3
     cards:
     - type: heading
       heading: Recent activity
-      heading_style: title
+      heading_style: subtitle
       icon: mdi:history
       visibility:
       - condition: state
@@ -870,7 +1019,7 @@ views:
         state_not: 'on'
     - type: heading
       heading: 近期活动
-      heading_style: title
+      heading_style: subtitle
       icon: mdi:history
       visibility:
       - condition: state
@@ -878,7 +1027,7 @@ views:
         state: 'on'
     - type: logbook
       hours_to_show: 24
-      grid_options: {columns: 12, rows: 4}
+      grid_options: {columns: 12, rows: 3}
       target:
         entity_id:
         - person.raymond_du
@@ -891,81 +1040,18 @@ views:
         - light.living_room
         - light.dining
 
+  # -------------------------------------------------------------------------
+  # BAND 8 -- the named index. The top rail is six glyphs; this is every board
+  # spelled out, for anyone who would rather read a word than decode an icon.
+  # Twelve at two columns fills two rows exactly, then the language toggle
+  # takes a full row of its own -- it is the control an older reader is most
+  # likely to need and the hardest to find if it is small.
+  # -------------------------------------------------------------------------
   - type: grid
-    column_span: 2
+    column_span: 3
     cards:
     - type: heading
-      heading: Outside
-      heading_style: subtitle
-      icon: mdi:weather-partly-cloudy
-      visibility:
-      - condition: state
-        entity: input_boolean.chinese_dashboard
-        state_not: 'on'
-    - type: heading
-      heading: 室外
-      heading_style: subtitle
-      icon: mdi:weather-partly-cloudy
-      visibility:
-      - condition: state
-        entity: input_boolean.chinese_dashboard
-        state: 'on'
-    - type: weather-forecast
-      entity: weather.forecast_home
-      forecast_type: daily
-      show_current: true
-      show_forecast: true
-      grid_options: {columns: 8, rows: 3}
-    # Daylight, beside the forecast it belongs with. Dedicated sensors rather
-    # than sun.sun attributes, so each is a plain tile with no templating.
-    - type: tile
-      entity: sun.sun
-      name: Sun
-      grid_options: {columns: 4, rows: 1}
-    - type: tile
-      entity: sensor.sun_next_rising
-      name: Sunrise
-      icon: mdi:weather-sunset-up
-      grid_options: {columns: 4, rows: 1}
-    - type: tile
-      entity: sensor.sun_next_setting
-      name: Sunset
-      icon: mdi:weather-sunset-down
-      grid_options: {columns: 4, rows: 1}
-    - type: tile
-      entity: sensor.bills_outstanding_total
-      color: amber
-      name: Outstanding
-      icon: mdi:cash-multiple
-      grid_options: {columns: 4, rows: 1}
-      tap_action: {action: navigate, navigation_path: /casaray-v2/bills}
-    - type: tile
-      entity: sensor.bills_unpaid_count
-      color: red
-      name: Unpaid
-      icon: mdi:file-alert-outline
-      grid_options: {columns: 4, rows: 1}
-      tap_action: {action: navigate, navigation_path: /casaray-v2/bills}
-    - type: button
-      grid_options: {columns: 4, rows: 1}
-      name: Language
-      icon: mdi:translate
-      entity: input_boolean.chinese_dashboard
-      show_state: true
-      tap_action: {action: toggle}
-
-# ===========================================================================
-# ROOMS -- index. The parent that every room's Back button returns to.
-# Lovelace has no native browser-back action, so Back is the logical parent.
-# ===========================================================================
-  # Board links. Home Assistant already carries a tab row, so these are a
-  # convenience rather than the way around; they sit at the foot of the
-  # page instead of above the first piece of live information.
-  - type: grid
-    column_span: 2
-    cards:
-    - type: heading
-      heading: All boards
+      heading: More boards
       heading_style: subtitle
       icon: mdi:view-grid-outline
       visibility:
@@ -973,7 +1059,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
     - type: heading
-      heading: 全部面板
+      heading: 更多面板
       heading_style: subtitle
       icon: mdi:view-grid-outline
       visibility:
@@ -981,85 +1067,91 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: button
-      grid_options: {columns: 3, rows: 1}
+      grid_options: {columns: 2, rows: auto}
       name: Rooms
       icon: mdi:floor-plan
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
     - type: button
-      grid_options: {columns: 3, rows: 1}
-      name: Energy
-      icon: mdi:lightning-bolt
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
-    - type: button
-      grid_options: {columns: 3, rows: 1}
-      name: Security
-      icon: mdi:shield-home
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/security}
-    - type: button
-      grid_options: {columns: 3, rows: 1}
-      name: Cameras
-      icon: mdi:cctv
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
-    - type: button
-      grid_options: {columns: 3, rows: 1}
-      name: Bills
-      icon: mdi:file-document-outline
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/bills}
-    - type: button
-      grid_options: {columns: 3, rows: 1}
-      name: Entertainment
-      icon: mdi:television-play
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/entertainment}
-    - type: button
-      grid_options: {columns: 3, rows: 1}
-      name: Automations
-      icon: mdi:robot
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/automations}
-    - type: button
-      grid_options: {columns: 3, rows: 1}
-      name: Alerts
-      icon: mdi:bell-alert
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/alerts}
-    - type: button
-      grid_options: {columns: 3, rows: 1}
-      name: Health
-      icon: mdi:heart-pulse
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/house-health}
-
-  # --- Attention. Conditional throughout: a healthy house shows nothing. ---
-  # KPI strip -- the frozen design's "status strip directly under the header":
-  # a small uppercase label, a large value and a caption, per Master Home.
-  # Four rather than the render's five, and 2x2 rather than 1x5, because iPad
-  # landscape gives two usable columns whatever the mockup shows. Every figure
-  # comes from an entity this dashboard already reads; nothing is invented,
-  # and each card keeps its own "not reporting" branch.
-    - type: button
-      grid_options: {columns: 3, rows: 1}
+      grid_options: {columns: 2, rows: auto}
       name: Lighting
       icon: mdi:lightbulb-group
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/lighting}
     - type: button
-      grid_options: {columns: 3, rows: 1}
+      grid_options: {columns: 2, rows: auto}
       name: Climate
       icon: mdi:thermometer
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/climate}
     - type: button
-      grid_options: {columns: 3, rows: 1}
+      grid_options: {columns: 2, rows: auto}
+      name: Energy
+      icon: mdi:lightning-bolt
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
+    - type: button
+      grid_options: {columns: 2, rows: auto}
+      name: Bills
+      icon: mdi:file-document-outline
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/bills}
+    - type: button
+      grid_options: {columns: 2, rows: auto}
+      name: Entertainment
+      icon: mdi:television-play
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/entertainment}
+    - type: button
+      grid_options: {columns: 2, rows: auto}
+      name: Security
+      icon: mdi:shield-home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/security}
+    - type: button
+      grid_options: {columns: 2, rows: auto}
+      name: Cameras
+      icon: mdi:cctv
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
+    - type: button
+      grid_options: {columns: 2, rows: auto}
       name: Network
       icon: mdi:wifi
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/network}
+    - type: button
+      grid_options: {columns: 2, rows: auto}
+      name: People
+      icon: mdi:account-group
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/people}
+    - type: button
+      grid_options: {columns: 2, rows: auto}
+      name: Automations
+      icon: mdi:robot
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/automations}
+    - type: button
+      grid_options: {columns: 2, rows: auto}
+      name: Alerts
+      icon: mdi:bell-alert
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/alerts}
+    - type: button
+      grid_options: {columns: 6, rows: auto}
+      name: House health
+      icon: mdi:heart-pulse
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/house-health}
+    - type: button
+      grid_options: {columns: 6, rows: auto}
+      name: English / 中文
+      icon: mdi:translate
+      entity: input_boolean.chinese_dashboard
+      show_state: true
+      tap_action: {action: toggle}
+
 
 - type: sections
   title: Rooms

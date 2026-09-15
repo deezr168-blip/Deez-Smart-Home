@@ -42,6 +42,68 @@ close goes through the same gate as everything else.
 
 ## Open
 
+## DR-010 — the approved mockup has no left sidebar, and a sections view cannot hold one
+
+**Status:** `FIXED — AWAITING LIVE VERIFICATION` · **Severity:** S3 ·
+raised and settled during the 2026-09-15 Home visual rebuild.
+
+The rebuild brief asked for "a persistent large left sidebar", roughly
+180–210 px on a 16:9 wall display — and, in the same brief, made the approved
+CasaRay mockup the visual specification, not inspiration. Those two
+instructions disagree, and the brief itself names the tie-breaker: the
+sidebar figure holds *"unless measurement of the actual reference indicates
+otherwise."*
+
+Measurement indicates otherwise. Neither approved Home render has a left
+sidebar:
+
+| Render | Navigation |
+|---|---|
+| `docs/mockups/2026-09-14_wall_home.png` | Top bar — `CasaRay` hard left, a row of six icon chips right of centre with the selected one tinted amber, the time hard right. Nothing in the left margin; the first body column starts at the page gutter. |
+| `docs/mockups/2026-09-14_dash_home.png` | Top band — `Casa Ray` and the date left, weather chip and person avatars right. Again nothing in the left margin. |
+
+The platform agrees with the drawing. A Lovelace **sections** view lays its
+sections out in a responsive grid; there is no way to pin one as a rail that
+survives scrolling, and no native card renders a persistent left nav. The
+only sidebar Home Assistant has is its own chrome, which `kiosk_mode`
+deliberately hides on this dashboard. Building a fake one would mean a custom
+card, which CasaRay's native-first rule rules out, and it would still scroll
+away with the content.
+
+**Resolved as:** Home ships the mockup's top bar. The wordmark takes 3 of the
+12 columns, six icon nav buttons take 1 each, and the clock takes the last 3
+— hard left, centre-right, hard right, which is the render's proportion.
+
+**If Ray wants a real sidebar anyway** it needs one of: a custom card
+(`custom:sidebar-card` or similar, installed through HACS), or a `panel`-type
+view with a hand-built two-column layout, which would forfeit the sections
+grid and every `grid_options` width on the page. Both are larger decisions
+than a visual batch, so neither was taken unilaterally. Say the word and
+either can be costed.
+
+## DR-011 — the chip strip could not stay a native badge row
+
+**Status:** `FIXED — AWAITING LIVE VERIFICATION` · **Severity:** S3 ·
+2026-09-15.
+
+Home's four chips were native `badges`. Home Assistant renders a view's
+badges **above** its sections, with no way to put content above them — so
+with the mockup's top bar built as the first section, the pill row landed on
+top of the CasaRay wordmark. That inverts the one ordering the render is
+unambiguous about: brand and clock first, chips beneath.
+
+Rebuilt as four `markdown` cards in a `column_span: 3` section immediately
+under the top bar, with the pill radius restored by `card_mod`. What was
+gained: the right order, and one templated card per chip instead of a
+bilingual pair (a badge `name` cannot be templated, so each chip needed two
+badges with opposite `visibility`). What was lost: the small leading icon a
+badge draws for free, and tap-for-more-info.
+
+Each chip now guards its own reading. In particular `Home` no longer prints
+`0 of 3` when every device tracker is down — that read as "nobody is home",
+a reassuring claim the chip could not see. It says `No data` when all three
+are unreadable and `1 of 3 · 1 unknown` when some are.
+
 ## BILLS-001 — what the Bills page still cannot show, and why
 
 Moved off the dashboard on 2026-09-14. This was a "Still missing" card at the
