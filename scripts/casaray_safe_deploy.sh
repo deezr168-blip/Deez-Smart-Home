@@ -1,0 +1,164 @@
+#!/bin/sh
+# CasaRay safe deploy — back up, deploy, validate, roll back on failure.
+#
+# WHAT IT DOES, IN ORDER
+#   1. pre-flight   source exists and parses
+#   2. backup       timestamped copy of the live dashboard into backups/
+#   3. deploy       runs the EXISTING deploy process, unmodified
+#   4. post-flight  live exists, live parses, `ha core check` passes
+#   5. rollback     restores the backup if any of step 4 failed
+#   6. prune        keeps the newest 30 of OUR backups, nothing else
+#
+# It never restarts Home Assistant. A dashboard update needs a browser
+# refresh, not a restart, and an unattended 03:30 restart is not something
+# this should ever decide to do on its own.
+#
+# USAGE (on the Home Assistant host)
+#   sh /config/casaray/casaray_safe_deploy.sh
+#   sh /config/casaray/casaray_safe_deploy.sh --pull     # fetch ha-deploy first
+#   sh /config/casaray/casaray_safe_deploy.sh --dry-run  # check, change nothing
+#
+# EXIT CODES
+#   0  deployed and validated, or already identical
+#   1  deployment failed and the previous dashboard was restored
+#   2  refused before touching anything (bad source, missing paths)
+
+set -eu
+
+DIR="$(dirname "$0")"
+# shellcheck source=casaray_common.sh
+. "$DIR/casaray_common.sh"
+
+PULL=0
+DRY=0
+for arg in "$@"; do
+  case "$arg" in
+    --pull)    PULL=1 ;;
+    --dry-run) DRY=1 ;;
+    *) echo "unknown option: $arg" >&2; exit 2 ;;
+  esac
+done
+
+log INFO "=== safe deploy starting (pull=$PULL dry_run=$DRY) ==="
+
+# ---------------------------------------------------------------- pre-flight
+[ -d "$REPO" ] || { log ERROR "repo not found: $REPO"; exit 2; }
+[ -d "$LIVE_DIR" ] || { log ERROR "live dashboard dir not found: $LIVE_DIR"; exit 2; }
+
+if [ "$PULL" -eq 1 ]; then
+  if command -v git >/dev/null 2>&1; then
+    log INFO "fetching origin/ha-deploy"
+    if ! git -C "$REPO" fetch --quiet origin ha-deploy 2>/dev/null \
+       || ! git -C "$REPO" reset --quiet --hard origin/ha-deploy 2>/dev/null; then
+      log ERROR "git pull failed; deploying whatever the clone already has"
+    fi
+  else
+    log ERROR "--pull asked for but git is not on PATH; skipping the pull"
+  fi
+fi
+
+[ -f "$SRC" ] || { log ERROR "source dashboard missing: $SRC"; exit 2; }
+
+if have_python; then
+  if yaml_parses "$SRC"; then
+    log INFO "pre-flight: source parses"
+  else
+    log ERROR "pre-flight: $SRC does not parse as YAML. Nothing was changed."
+    exit 2
+  fi
+else
+  log WARN "pre-flight: no python3 on this host, YAML parsing not checked"
+fi
+
+if [ "$(sync_status)" = "synced" ]; then
+  log INFO "already identical; nothing to deploy"
+  log INFO "=== safe deploy finished: no change ==="
+  exit 0
+fi
+
+if [ "$DRY" -eq 1 ]; then
+  log INFO "dry run: would back up $LIVE and deploy $SRC"
+  log INFO "=== safe deploy finished: dry run, nothing changed ==="
+  exit 0
+fi
+
+# ------------------------------------------------------------------- backup
+mkdir -p "$BACKUP_DIR"
+BACKUP=""
+if [ -f "$LIVE" ]; then
+  BACKUP="$BACKUP_DIR/$BACKUP_PREFIX$(ts)"
+  cp "$LIVE" "$BACKUP"
+  log INFO "backup: $BACKUP"
+else
+  log WARN "no live dashboard to back up; this looks like a first install"
+fi
+
+# ------------------------------------------------------------------- deploy
+# The EXISTING deploy process, whichever of the two this host has. Neither is
+# modified here -- this only wraps them. /config/deploy_casaray.sh wins if it
+# exists, because a host that has one is using it.
+if [ -f /config/deploy_casaray.sh ]; then
+  DEPLOY_CMD="sh /config/deploy_casaray.sh"
+elif [ -f "$REPO/scripts/sync_casaray_to_config.sh" ]; then
+  DEPLOY_CMD="sh $REPO/scripts/sync_casaray_to_config.sh"
+else
+  log ERROR "no deploy process found (/config/deploy_casaray.sh or the repo sync script)"
+  exit 2
+fi
+log INFO "deploy: $DEPLOY_CMD"
+
+# Pass the resolved paths down. On a real host these are the defaults the
+# child already uses, so nothing changes; off a host it is what makes the
+# whole chain testable against a scratch directory instead of /config.
+DEPLOY_OK=1
+if REPO="$REPO" DEST="$LIVE_DIR" $DEPLOY_CMD >>"$LOG" 2>&1; then
+  log INFO "deploy: command succeeded"
+else
+  DEPLOY_OK=0
+  log ERROR "deploy: command FAILED"
+fi
+
+# --------------------------------------------------------------- post-flight
+FAIL=""
+[ "$DEPLOY_OK" -eq 1 ] || FAIL="deploy command returned non-zero"
+
+if [ -z "$FAIL" ] && [ ! -f "$LIVE" ]; then
+  FAIL="live dashboard missing after deploy"
+fi
+
+if [ -z "$FAIL" ] && have_python && ! yaml_parses "$LIVE"; then
+  FAIL="live dashboard does not parse after deploy"
+fi
+
+if [ -z "$FAIL" ]; then
+  if ha_core_check; then rc=0; else rc=$?; fi
+  case "$rc" in
+    0) log INFO "post-flight: ha core check passed" ;;
+    1) FAIL="ha core check failed" ;;
+    2) log WARN "post-flight: no supervisor CLI on this host, ha core check skipped" ;;
+  esac
+fi
+
+# ----------------------------------------------------------------- rollback
+if [ -n "$FAIL" ]; then
+  log ERROR "post-flight FAILED: $FAIL"
+  if [ -n "$BACKUP" ] && [ -f "$BACKUP" ]; then
+    cp "$BACKUP" "$LIVE"
+    log INFO "rolled back: restored $(basename "$BACKUP")"
+    if have_python && yaml_parses "$LIVE"; then
+      log INFO "rollback verified: restored dashboard parses"
+    else
+      log ERROR "ROLLBACK DID NOT VERIFY. Restore by hand from $BACKUP_DIR"
+    fi
+  else
+    log ERROR "no backup to roll back to; the live dashboard is as the deploy left it"
+  fi
+  log INFO "=== safe deploy finished: FAILED ==="
+  exit 1
+fi
+
+# -------------------------------------------------------------------- prune
+prune_backups
+log INFO "backups retained: $(backup_count) (keep $BACKUP_KEEP)"
+log INFO "=== safe deploy finished: OK ==="
+exit 0

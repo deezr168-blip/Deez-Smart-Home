@@ -1,0 +1,106 @@
+#!/bin/sh
+# CasaRay maintenance — shared paths and helpers.
+#
+# Sourced by casaray_safe_deploy.sh, casaray_rollback.sh,
+# casaray_health_check.sh and casaray_sync_status.sh. Not executable on its
+# own; it defines and never acts.
+#
+# POSIX sh throughout: the Home Assistant OS Terminal add-on is BusyBox ash,
+# not bash. No arrays, no [[ ]], no ${x^^}.
+#
+# Every path can be overridden from the environment so the suite can be
+# exercised somewhere other than a live host:
+#   REPO=/tmp/clone LIVE_DIR=/tmp/live sh scripts/casaray_health_check.sh
+
+REPO="${REPO:-/config/deez_repo}"
+LIVE_DIR="${LIVE_DIR:-/config/dashboards}"
+NAME="${NAME:-casaray_v2.yaml}"
+
+SRC="$REPO/dashboards/$NAME"
+LIVE="$LIVE_DIR/$NAME"
+
+# Our own backups live in their own directory with their own filename shape.
+# The sync script's `.bak.<timestamp>` files sit directly in $LIVE_DIR and are
+# NEVER touched by anything here -- pruning only ever looks inside $BACKUP_DIR
+# for files matching $BACKUP_GLOB.
+BACKUP_DIR="${BACKUP_DIR:-$LIVE_DIR/backups}"
+BACKUP_PREFIX="casaray_v2.yaml.predeploy."
+BACKUP_KEEP="${BACKUP_KEEP:-30}"
+
+LOG="${CASARAY_LOG:-/config/casaray_maintenance.log}"
+
+# Where the onboarding script installs these scripts on the host.
+INSTALL_DIR="${INSTALL_DIR:-/config/casaray}"
+
+ts()  { date +%Y%m%d-%H%M%S; }
+now() { date '+%Y-%m-%d %H:%M:%S'; }
+
+# log LEVEL MESSAGE... -- to stdout and, if the log is writable, to the log.
+log() {
+  _lvl="$1"; shift
+  _line="$(now) [$_lvl] $*"
+  echo "$_line"
+  if [ -w "$(dirname "$LOG")" ] 2>/dev/null || [ -w "$LOG" ] 2>/dev/null; then
+    echo "$_line" >> "$LOG" 2>/dev/null || true
+  fi
+}
+
+# yaml_parses FILE -- true if python3 can load it. If there is no python3 the
+# check is skipped rather than failed: refusing to deploy because the host
+# lacks a checker would be worse than deploying an already-validated file.
+yaml_parses() {
+  [ -f "$1" ] || return 1
+  if ! command -v python3 >/dev/null 2>&1; then
+    return 0
+  fi
+  python3 -c 'import sys,yaml
+class L(yaml.SafeLoader): pass
+def _op(loader, suffix, node): return None
+L.add_multi_constructor("!", _op)
+yaml.load(open(sys.argv[1], encoding="utf-8"), Loader=L)' "$1" >/dev/null 2>&1
+}
+
+# have_python -- whether the YAML checks above are real or skipped.
+have_python() { command -v python3 >/dev/null 2>&1; }
+
+# ha_core_check -- 0 pass, 1 fail, 2 unavailable (no supervisor CLI here).
+ha_core_check() {
+  command -v ha >/dev/null 2>&1 || return 2
+  ha core check >/dev/null 2>&1
+}
+
+# backup_count -- how many of OUR pre-deploy backups exist.
+backup_count() {
+  [ -d "$BACKUP_DIR" ] || { echo 0; return; }
+  find "$BACKUP_DIR" -maxdepth 1 -type f -name "$BACKUP_PREFIX*" 2>/dev/null | wc -l | tr -d ' '
+}
+
+# latest_backup -- newest pre-deploy backup path, or empty.
+latest_backup() {
+  [ -d "$BACKUP_DIR" ] || return 0
+  find "$BACKUP_DIR" -maxdepth 1 -type f -name "$BACKUP_PREFIX*" 2>/dev/null \
+    | sort | tail -1
+}
+
+# prune_backups -- keep the newest $BACKUP_KEEP of OUR files only.
+# The glob is anchored to $BACKUP_PREFIX inside $BACKUP_DIR, so the sync
+# script's .bak.* files and Home Assistant's own backups cannot be reached
+# even if someone points BACKUP_DIR somewhere careless.
+prune_backups() {
+  [ -d "$BACKUP_DIR" ] || return 0
+  _total="$(backup_count)"
+  [ "$_total" -gt "$BACKUP_KEEP" ] || return 0
+  _drop=$((_total - BACKUP_KEEP))
+  find "$BACKUP_DIR" -maxdepth 1 -type f -name "$BACKUP_PREFIX*" 2>/dev/null \
+    | sort | head -n "$_drop" \
+    | while read -r _f; do
+        rm -f "$_f" && log INFO "pruned old backup: $(basename "$_f")"
+      done
+}
+
+# sync_status -- synced | out_of_sync | missing_repo | missing_live
+sync_status() {
+  if [ ! -f "$SRC" ];  then echo missing_repo; return; fi
+  if [ ! -f "$LIVE" ]; then echo missing_live; return; fi
+  if cmp -s "$SRC" "$LIVE"; then echo synced; else echo out_of_sync; fi
+}

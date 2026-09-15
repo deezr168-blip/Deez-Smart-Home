@@ -9,6 +9,14 @@ steps are not, because nothing in this environment can observe the live
 instance. Detail in "Blocked capabilities" below. Nothing here is claimed as
 working unless it was executed and its output checked.
 
+> **Automatic rollback now exists — on the host, not here.** The CasaRay
+> maintenance suite added 2026-09-15 performs backup → deploy → validate →
+> rollback-on-failure where it can actually see the result, and adds a health
+> check, an out-of-sync sensor and six device-health watchdogs. It is installed
+> with one command and is entirely additive. See
+> **`docs/CASARAY_AUTOMATION.md`**. This environment still cannot observe the
+> live instance; what changed is that something on the host now can.
+
 ---
 
 ## Verified environment
