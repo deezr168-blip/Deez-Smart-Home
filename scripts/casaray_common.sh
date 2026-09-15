@@ -21,10 +21,17 @@ LIVE="$LIVE_DIR/$NAME"
 
 # Our own backups live in their own directory with their own filename shape.
 # The sync script's `.bak.<timestamp>` files sit directly in $LIVE_DIR and are
-# NEVER touched by anything here -- pruning only ever looks inside $BACKUP_DIR
-# for files matching $BACKUP_GLOB.
+# NEVER touched by anything here -- pruning only ever looks inside $BACKUP_DIR,
+# and only at the two prefixes below.
 BACKUP_DIR="${BACKUP_DIR:-$LIVE_DIR/backups}"
 BACKUP_PREFIX="casaray_v2.yaml.predeploy."
+# A parallel implementation that reached ha-deploy first named its backups
+# casaray_v2_predeploy_<ts>.yaml. A host that ran it has real backups under
+# that name; they are counted, listed and pruned alongside ours so neither
+# scheme can grow without limit. Anything NOT matching one of these two
+# patterns -- the sync script's .bak.*, Home Assistant's own backups -- is
+# still untouchable.
+BACKUP_PREFIX_ALT="casaray_v2_predeploy_"
 BACKUP_KEEP="${BACKUP_KEEP:-30}"
 
 LOG="${CASARAY_LOG:-/config/casaray_maintenance.log}"
@@ -72,30 +79,41 @@ ha_core_check() {
 # backup_count -- how many of OUR pre-deploy backups exist.
 backup_count() {
   [ -d "$BACKUP_DIR" ] || { echo 0; return; }
-  find "$BACKUP_DIR" -maxdepth 1 -type f -name "$BACKUP_PREFIX*" 2>/dev/null | wc -l | tr -d ' '
+  find "$BACKUP_DIR" -maxdepth 1 -type f \
+       \( -name "$BACKUP_PREFIX*" -o -name "$BACKUP_PREFIX_ALT*" \) 2>/dev/null \
+    | wc -l | tr -d ' '
 }
 
 # latest_backup -- newest pre-deploy backup path, or empty.
 latest_backup() {
   [ -d "$BACKUP_DIR" ] || return 0
-  find "$BACKUP_DIR" -maxdepth 1 -type f -name "$BACKUP_PREFIX*" 2>/dev/null \
+  find "$BACKUP_DIR" -maxdepth 1 -type f \
+       \( -name "$BACKUP_PREFIX*" -o -name "$BACKUP_PREFIX_ALT*" \) 2>/dev/null \
     | sort | tail -1
 }
 
-# prune_backups -- keep the newest $BACKUP_KEEP of OUR files only.
-# The glob is anchored to $BACKUP_PREFIX inside $BACKUP_DIR, so the sync
-# script's .bak.* files and Home Assistant's own backups cannot be reached
-# even if someone points BACKUP_DIR somewhere careless.
+# prune_backups -- keep the newest $BACKUP_KEEP of each naming scheme.
+#
+# Each scheme is pruned on its own rather than as one merged list: the two
+# names sort lexically by prefix, not by time, so a merged sort would delete
+# every file of one scheme before touching the other regardless of age. Within
+# a scheme the timestamps are zero-padded, so a plain sort IS chronological.
+#
+# The patterns are anchored inside $BACKUP_DIR, so the sync script's .bak.*
+# files and Home Assistant's own backups cannot be reached even if someone
+# points BACKUP_DIR somewhere careless.
 prune_backups() {
   [ -d "$BACKUP_DIR" ] || return 0
-  _total="$(backup_count)"
-  [ "$_total" -gt "$BACKUP_KEEP" ] || return 0
-  _drop=$((_total - BACKUP_KEEP))
-  find "$BACKUP_DIR" -maxdepth 1 -type f -name "$BACKUP_PREFIX*" 2>/dev/null \
-    | sort | head -n "$_drop" \
-    | while read -r _f; do
-        rm -f "$_f" && log INFO "pruned old backup: $(basename "$_f")"
-      done
+  for _pat in "$BACKUP_PREFIX" "$BACKUP_PREFIX_ALT"; do
+    _n="$(find "$BACKUP_DIR" -maxdepth 1 -type f -name "$_pat*" 2>/dev/null | wc -l | tr -d ' ')"
+    [ "$_n" -gt "$BACKUP_KEEP" ] || continue
+    _drop=$((_n - BACKUP_KEEP))
+    find "$BACKUP_DIR" -maxdepth 1 -type f -name "$_pat*" 2>/dev/null \
+      | sort | head -n "$_drop" \
+      | while read -r _f; do
+          rm -f "$_f" && log INFO "pruned old backup: $(basename "$_f")"
+        done
+  done
 }
 
 # sync_status -- synced | out_of_sync | missing_repo | missing_live

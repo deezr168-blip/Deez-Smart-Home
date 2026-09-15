@@ -24,7 +24,8 @@ if [ "${1:-}" = "--list" ]; then
   if [ "$(backup_count)" -eq 0 ]; then
     echo "  (none)"
   else
-    find "$BACKUP_DIR" -maxdepth 1 -type f -name "$BACKUP_PREFIX*" | sort \
+    find "$BACKUP_DIR" -maxdepth 1 -type f \
+         \( -name "$BACKUP_PREFIX*" -o -name "$BACKUP_PREFIX_ALT*" \) | sort \
       | while read -r f; do printf '  %s  %s\n' "$(basename "$f")" "$(wc -c <"$f" | tr -d ' ') bytes"; done
   fi
   exit 0
@@ -37,7 +38,7 @@ if [ -n "${1:-}" ]; then
     *) CAND="$BACKUP_DIR/$CAND" ;;
   esac
   case "$(basename "$CAND")" in
-    "$BACKUP_PREFIX"*) : ;;
+    "$BACKUP_PREFIX"*|"$BACKUP_PREFIX_ALT"*) : ;;
     *) log ERROR "refusing: $CAND is not one of this suite's backups"; exit 2 ;;
   esac
 else

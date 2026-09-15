@@ -7,6 +7,18 @@ Built 2026-09-15. **Everything here is additive and reversible.** No existing
 dashboard, entity, service call, theme or navigation target was changed to make
 it work, and nothing in it restarts Home Assistant.
 
+> **A parallel implementation reached `ha-deploy` first** — three commits
+> (`0ebde71`, `9c4dce0`, `07d9b3d`) adding the same package and two of the same
+> scripts. It was **merged, not overwritten**. What came across from it: the
+> backup-count and live-file-present sensors, the startup health check, and the
+> offline threshold of 240. What this version keeps: the rollback script (that
+> one referenced `shell_command.casaray_rollback` with no script behind it, and
+> an installer that did not exist), post-deploy validation with rollback on a
+> *validation* failure rather than only on a non-zero deploy, dry-run, logging
+> and onboarding. Both backup naming schemes are counted, listed and pruned, so
+> a host that already ran the other one keeps its backups and does not
+> accumulate them forever.
+
 ---
 
 ## Install
@@ -155,16 +167,18 @@ integration hiccup stays quiet. It clears when **both** are healthy.
 
 ### Unavailable-entity spike
 
-**Disarmed by default, deliberately.** `sensor.casa_offline_devices` counts
-unavailable **entities**, not devices (`CR-200`). The 2026-09-05 export had 232
-unavailable and 86 unknown out of 970, so a plausible-looking threshold like 10
-would fire immediately and never clear. The build environment cannot read the
-live value, so rather than guess a number that spams, the automation is skipped
-while `input_number.casaray_offline_threshold` is `0`.
+`sensor.casa_offline_devices` counts unavailable **entities**, not devices
+(`CR-200`), so the resting value is in the hundreds. A plausible-looking
+threshold of 10 would fire immediately and never clear.
 
-**To arm it:** read `sensor.casa_offline_devices` in Developer Tools → States,
-then set the helper to roughly 20% above that resting value. The alert then
-needs the count held above it for **15 minutes**, and clears when it drops.
+`input_number.casaray_offline_threshold` defaults to **240**, taken from the
+2026-09-05 export: 232 unavailable and 86 unknown out of 970 entities. That is
+a reasoned starting point from the only evidence the build environment has,
+**not a live measurement** — check `sensor.casa_offline_devices` in Developer
+Tools → States and adjust. Setting it to `0` disarms the alert entirely.
+
+The alert needs the count held above the threshold for **15 minutes**, and
+clears when it drops below.
 
 ---
 
@@ -173,12 +187,16 @@ needs the count held above it for **15 minutes**, and clears when it drops.
 | Kind | Where | Pruned by |
 |---|---|---|
 | Pre-deploy dashboards | `/config/dashboards/backups/casaray_v2.yaml.predeploy.<ts>` | this suite, newest 30 kept |
+| The earlier build's | `/config/dashboards/backups/casaray_v2_predeploy_<ts>.yaml` | this suite, newest 30 kept **separately** |
 | The sync script's own | `/config/dashboards/casaray_v2.yaml.bak.<ts>` | **nothing here** |
 | Onboarding replacements | `/config/casaray/backups/` | **nothing here** |
 | Home Assistant's own backups | wherever HA keeps them | **nothing here** |
 
-Pruning is anchored to one directory *and* one filename prefix. It cannot reach
-anything else even if `BACKUP_DIR` were pointed somewhere careless.
+Pruning is anchored to one directory *and* two known filename prefixes. It
+cannot reach anything else even if `BACKUP_DIR` were pointed somewhere
+careless. Each scheme is pruned on its own, because the two names sort by
+prefix rather than by time — a merged sort would delete every file of one
+scheme before touching the other regardless of age.
 
 ---
 
@@ -228,6 +246,12 @@ cp /config/dashboards/backups/casaray_v2.yaml.predeploy.<newest> \
   say so rather than pretending it passed.
 - **`--pull` does a hard reset** to `origin/ha-deploy`. Local edits in
   `/config/deez_repo` would be lost, so it is off by default.
+- **If the earlier implementation is already installed live**, its scripts sit
+  flat in `/config` (`casaray_safe_deploy.sh`, `casaray_health_check.sh`) and
+  its package pointed `shell_command` at them. Onboarding installs to
+  `/config/casaray/` and replaces the package, backing the old one up first. It
+  **reports** the orphaned flat files and prints the `rm` command, but never
+  deletes them. Its backups are kept and pruned alongside the new ones.
 - **Nothing notifies through a phone.** Everything uses
   `persistent_notification`, which is visible in the Home Assistant UI. Mobile
   push would need the companion app's notify service, which is a separate
@@ -259,6 +283,9 @@ Run in the build environment against a simulated `/config`, 2026-09-15:
 | onboard `--dry-run` | no writes |
 | onboard, real | five scripts at mode 755, package installed, YAML parsed |
 | onboard `--uninstall` | clean, backups kept |
+| prune with 40 + 35 backups in **both** schemes | 30 of each kept; sync script's `.bak.*` and an unrelated backup untouched |
+| rollback rejects a path outside the backup schemes | exit 2 |
+| onboard detects the earlier flat `/config/casaray_*.sh` install | reported, not deleted |
 
 Two real bugs were found by running it rather than reading it, and both are
 fixed: `set -e` aborted on `ha_core_check; rc=$?` before the result could be

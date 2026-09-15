@@ -53,24 +53,25 @@ input_number:
     initial: 20
 
   casaray_offline_threshold:
-    # DISARMED AT 0 ON PURPOSE.
-    #
     # sensor.casa_offline_devices counts unavailable ENTITIES, not devices
-    # (CR-200). The 2026-09-05 export had 232 unavailable and 86 unknown out of
-    # 970, so a plausible-looking threshold like 10 would fire immediately and
-    # never clear. This environment cannot read the live value, so rather than
-    # guess a number that spams, the automation is skipped entirely while the
-    # threshold is 0.
+    # (CR-200), so the resting value is in the hundreds, not single figures. A
+    # plausible-looking threshold like 10 would fire immediately and never
+    # clear.
     #
-    # TO ARM IT: look at sensor.casa_offline_devices in Developer Tools, then
-    # set this slider to roughly 20% above that resting value.
+    # 240 comes from the 2026-09-05 export: 232 unavailable and 86 unknown out
+    # of 970 entities. It is a reasoned starting point from the only evidence
+    # this build environment has, NOT a live measurement -- check
+    # sensor.casa_offline_devices in Developer Tools and adjust.
+    #
+    # Setting this to 0 disarms the alert entirely; the automation has a
+    # matching condition, so 0 means silent rather than "everything is a spike".
     name: CasaRay offline entity threshold
     icon: mdi:lan-disconnect
     min: 0
     max: 500
     step: 5
     mode: box
-    initial: 0
+    initial: 240
 
 # ------------------------------------------------------------ shell commands
 # Absolute paths: a shell_command does not inherit a working directory.
@@ -89,6 +90,30 @@ command_line:
       command: "sh /config/casaray/casaray_sync_status.sh"
       scan_interval: 300
       icon: mdi:source-branch-sync
+
+  # Both filename schemes are counted: this suite writes
+  # casaray_v2.yaml.predeploy.<ts>, and the parallel implementation that was
+  # already on ha-deploy wrote casaray_v2_predeploy_<ts>.yaml. A host that ran
+  # either one has real backups, and neither should read as zero.
+  - sensor:
+      name: CasaRay backup count
+      unique_id: casaray_backup_count
+      command: >-
+        find /config/dashboards/backups -maxdepth 1 -type f
+        \( -name 'casaray_v2.yaml.predeploy.*' -o -name 'casaray_v2_predeploy_*.yaml' \)
+        2>/dev/null | wc -l
+      scan_interval: 300
+      unit_of_measurement: "backups"
+      icon: mdi:archive-outline
+
+  - binary_sensor:
+      name: CasaRay live file present
+      unique_id: casaray_live_file_present
+      command: "test -s /config/dashboards/casaray_v2.yaml && echo ON || echo OFF"
+      payload_on: "ON"
+      payload_off: "OFF"
+      scan_interval: 60
+      icon: mdi:file-check-outline
 
 # ---------------------------------------------------------------- templates
 template:
@@ -281,6 +306,30 @@ script:
 
 # -------------------------------------------------------------- automations
 automation:
+  # --- 0. startup health check ---------------------------------------------
+  # Carried across from the implementation already on ha-deploy. Two minutes
+  # after a restart everything has settled; if the chain is broken then, it is
+  # broken now rather than at 03:30.
+  - id: casaray_startup_health_check
+    alias: CasaRay — health check at startup
+    mode: single
+    max_exceeded: silent
+    triggers:
+      - trigger: homeassistant
+        event: start
+    actions:
+      - delay: "00:02:00"
+      - action: shell_command.casaray_health_check
+        response_variable: health
+      - condition: template
+        value_template: "{{ health.returncode != 0 }}"
+      - action: persistent_notification.create
+        data:
+          notification_id: casaray_health
+          title: CasaRay health check failed at startup
+          message: >-
+            {{ health.stdout | trim if health.stdout | trim else 'No output.' }}
+
   # --- 1. nightly safe deploy ----------------------------------------------
   - id: casaray_nightly_safe_deploy
     alias: CasaRay — nightly safe deploy

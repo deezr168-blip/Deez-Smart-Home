@@ -91,6 +91,25 @@ if ! grep -qs 'packages:' "$CONFIG/configuration.yaml"; then
   echo "                packages: !include_dir_named packages" >&2
 fi
 
+# An earlier implementation of this suite installed its scripts flat in
+# /config and pointed shell_commands at /config/casaray_*.sh. If a host ran it,
+# those files are still there and still referenced by the package it installed
+# -- which this one replaces. They are REPORTED, never deleted: removing
+# someone else's files unasked is not this script's business.
+OLD_FLAT=""
+for f in casaray_safe_deploy.sh casaray_health_check.sh casaray_rollback.sh; do
+  [ -f "$CONFIG/$f" ] && OLD_FLAT="$OLD_FLAT $f"
+done
+if [ -n "$OLD_FLAT" ]; then
+  echo
+  echo "   NOTE: an earlier install left these in $CONFIG:"
+  for f in $OLD_FLAT; do echo "           $f"; done
+  echo "         This suite installs to $INSTALL_DIR instead, and the package"
+  echo "         it installs points there. The old files are now unused but are"
+  echo "         NOT removed. Delete them yourself once you are happy:"
+  echo "           rm$(for f in $OLD_FLAT; do printf ' %s/%s' "$CONFIG" "$f"; done)"
+fi
+
 for f in $SCRIPTS; do
   [ -f "$REPO_ROOT/scripts/$f" ] || { echo "ERROR: missing $REPO_ROOT/scripts/$f" >&2; exit 2; }
 done
