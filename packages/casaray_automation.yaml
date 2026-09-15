@@ -1,0 +1,339 @@
+# CasaRay maintenance automations
+# Installed to /config/packages/casaray_automation.yaml by
+# scripts/install_casaray_automation.sh
+
+input_boolean:
+  casaray_auto_deploy:
+    name: CasaRay auto deploy
+    icon: mdi:sync
+    initial: true
+
+input_number:
+  casaray_offline_entity_threshold:
+    name: CasaRay unavailable-entity alert threshold
+    icon: mdi:alert-circle-outline
+    min: 1
+    max: 500
+    step: 1
+    mode: box
+    initial: 240
+
+shell_command:
+  casaray_safe_deploy: /config/casaray_safe_deploy.sh
+  casaray_health_check: /config/casaray_health_check.sh
+  casaray_rollback: /config/casaray_rollback.sh
+
+command_line:
+  - sensor:
+      name: CasaRay Sync Status
+      unique_id: casaray_sync_status
+      command: >-
+        if [ -f /config/deez_repo/dashboards/casaray_v2.yaml ] &&
+           [ -f /config/dashboards/casaray_v2.yaml ] &&
+           cmp -s /config/deez_repo/dashboards/casaray_v2.yaml /config/dashboards/casaray_v2.yaml;
+        then echo synced; else echo out_of_sync; fi
+      scan_interval: 60
+
+  - sensor:
+      name: CasaRay Backup Count
+      unique_id: casaray_backup_count
+      command: >-
+        find /config/dashboards/backups -maxdepth 1 -type f -name 'casaray_v2_*.yaml' 2>/dev/null | wc -l
+      scan_interval: 300
+      unit_of_measurement: backups
+
+  - binary_sensor:
+      name: CasaRay Live File Present
+      unique_id: casaray_live_file_present
+      command: >-
+        test -s /config/dashboards/casaray_v2.yaml && echo ON || echo OFF
+      payload_on: "ON"
+      payload_off: "OFF"
+      scan_interval: 60
+
+
+template:
+  - sensor:
+      - name: CasaRay Low Battery Count
+        unique_id: casaray_low_battery_count
+        icon: mdi:battery-alert
+        unit_of_measurement: devices
+        state: >-
+          {% set ns = namespace(n=0) %}
+          {% for s in states.sensor %}
+            {% if s.attributes.device_class == 'battery'
+                  and s.state not in ['unknown','unavailable','none','']
+                  and (s.state | float(101)) < 20 %}
+              {% set ns.n = ns.n + 1 %}
+            {% endif %}
+          {% endfor %}
+          {{ ns.n }}
+        attributes:
+          devices: >-
+            {% set ns = namespace(items=[]) %}
+            {% for s in states.sensor %}
+              {% if s.attributes.device_class == 'battery'
+                    and s.state not in ['unknown','unavailable','none','']
+                    and (s.state | float(101)) < 20 %}
+                {% set ns.items = ns.items + [(s.name ~ ' (' ~ (s.state | round(0) | string) ~ '%)')] %}
+              {% endif %}
+            {% endfor %}
+            {{ ns.items | join(', ') }}
+
+  - binary_sensor:
+      - name: CasaRay Powerpal Stale
+        unique_id: casaray_powerpal_stale
+        device_class: problem
+        state: >-
+          {% set matches = states.sensor | selectattr('entity_id','eq','sensor.powerpal_gateway_powerpal_power') | list %}
+          {% if matches | count == 0 %}
+            true
+          {% else %}
+            {% set e = matches[0] %}
+            {{ e.state in ['unknown','unavailable','none',''] or
+               (as_timestamp(now()) - as_timestamp(e.last_updated)) > 1200 }}
+          {% endif %}
+
+      - name: CasaRay Fronius Stale
+        unique_id: casaray_fronius_stale
+        device_class: problem
+        state: >-
+          {% set matches = states.sensor | selectattr('entity_id','eq','sensor.primo_5_0_1_1_ac_power') | list %}
+          {% if matches | count == 0 %}
+            true
+          {% else %}
+            {% set e = matches[0] %}
+            {{ e.state in ['unknown','unavailable','none',''] or
+               (as_timestamp(now()) - as_timestamp(e.last_updated)) > 1200 }}
+          {% endif %}
+
+  - button:
+      - name: CasaRay Deploy Now
+        unique_id: casaray_deploy_now
+        icon: mdi:cloud-sync-outline
+        press:
+          - action: shell_command.casaray_safe_deploy
+
+      - name: CasaRay Rollback Previous
+        unique_id: casaray_rollback_previous
+        icon: mdi:backup-restore
+        press:
+          - action: shell_command.casaray_rollback
+
+
+automation:
+  - id: casaray_startup_health_check
+    alias: CasaRay - Startup health check
+    description: Validate CasaRay shortly after Home Assistant starts and report failures.
+    mode: single
+    triggers:
+      - trigger: homeassistant
+        event: start
+    actions:
+      - delay: "00:02:00"
+      - action: shell_command.casaray_health_check
+        response_variable: health
+        continue_on_error: true
+      - choose:
+          - conditions: "{{ health is not defined or health.returncode | int(-1) != 0 }}"
+            sequence:
+              - action: persistent_notification.create
+                data:
+                  notification_id: casaray_health
+                  title: CasaRay health check failed
+                  message: >-
+                    Startup validation failed. {{ health.stderr if health is defined else 'No result returned.' }}
+        default:
+          - action: persistent_notification.dismiss
+            data:
+              notification_id: casaray_health
+
+  - id: casaray_nightly_safe_deploy
+    alias: CasaRay - Nightly safe deploy
+    description: Pull, back up, sync and validate CasaRay once each night.
+    mode: single
+    triggers:
+      - trigger: time
+        at: "03:30:00"
+    conditions:
+      - condition: state
+        entity_id: input_boolean.casaray_auto_deploy
+        state: "on"
+    actions:
+      - action: shell_command.casaray_safe_deploy
+        response_variable: deploy
+        continue_on_error: true
+      - choose:
+          - conditions: "{{ deploy is not defined or deploy.returncode | int(-1) != 0 }}"
+            sequence:
+              - action: persistent_notification.create
+                data:
+                  notification_id: casaray_deploy
+                  title: CasaRay deploy failed
+                  message: >-
+                    Safe deploy failed and the previous live dashboard was retained/restored.
+                    {{ deploy.stderr if deploy is defined else 'No result returned.' }}
+        default:
+          - action: persistent_notification.dismiss
+            data:
+              notification_id: casaray_deploy
+
+  - id: casaray_source_live_mismatch
+    alias: CasaRay - Dashboard out of sync
+    description: Report when the repo dashboard and live dashboard differ.
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: sensor.casaray_sync_status
+        to: out_of_sync
+        for: "00:03:00"
+    actions:
+      - action: persistent_notification.create
+        data:
+          notification_id: casaray_sync
+          title: CasaRay is out of sync
+          message: The repo dashboard differs from the live dashboard. Use CasaRay Deploy Now or wait for the nightly safe deploy.
+
+  - id: casaray_source_live_resynced
+    alias: CasaRay - Dashboard resynced
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: sensor.casaray_sync_status
+        to: synced
+    actions:
+      - action: persistent_notification.dismiss
+        data:
+          notification_id: casaray_sync
+
+  - id: casaray_low_battery_daily
+    alias: CasaRay - Low battery summary
+    description: Daily summary of battery sensors below 20 percent.
+    mode: single
+    triggers:
+      - trigger: time
+        at: "09:00:00"
+    conditions:
+      - condition: numeric_state
+        entity_id: sensor.casaray_low_battery_count
+        above: 0
+    actions:
+      - action: persistent_notification.create
+        data:
+          notification_id: casaray_low_battery
+          title: CasaRay low batteries
+          message: >-
+            {{ states('sensor.casaray_low_battery_count') }} battery device(s) are below 20%:
+            {{ state_attr('sensor.casaray_low_battery_count','devices') }}
+
+  - id: casaray_low_battery_clear
+    alias: CasaRay - Clear low battery alert
+    mode: restart
+    triggers:
+      - trigger: numeric_state
+        entity_id: sensor.casaray_low_battery_count
+        below: 1
+    actions:
+      - action: persistent_notification.dismiss
+        data:
+          notification_id: casaray_low_battery
+
+  - id: casaray_internet_down
+    alias: CasaRay - Internet down
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.eero_wan_status
+        to: "off"
+        for: "00:02:00"
+      - trigger: template
+        value_template: "{{ states('binary_sensor.eero_wan_status') in ['unknown','unavailable'] }}"
+        for: "00:05:00"
+    actions:
+      - action: persistent_notification.create
+        data:
+          notification_id: casaray_internet
+          title: Home internet problem
+          message: Eero WAN has been down or not reporting long enough to treat it as an outage.
+
+  - id: casaray_internet_recovered
+    alias: CasaRay - Internet recovered
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.eero_wan_status
+        to: "on"
+        for: "00:01:00"
+    actions:
+      - action: persistent_notification.dismiss
+        data:
+          notification_id: casaray_internet
+
+  - id: casaray_energy_reporting_problem
+    alias: CasaRay - Energy reporting problem
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.casaray_powerpal_stale
+        to: "on"
+        for: "00:05:00"
+      - trigger: state
+        entity_id: binary_sensor.casaray_fronius_stale
+        to: "on"
+        for: "00:05:00"
+    actions:
+      - action: persistent_notification.create
+        data:
+          notification_id: casaray_energy_stale
+          title: CasaRay energy data stale
+          message: >-
+            Powerpal stale: {{ states('binary_sensor.casaray_powerpal_stale') }}.
+            Fronius stale: {{ states('binary_sensor.casaray_fronius_stale') }}.
+            A sensor is unavailable or has not updated for at least 20 minutes.
+
+  - id: casaray_energy_reporting_recovered
+    alias: CasaRay - Energy reporting recovered
+    mode: restart
+    triggers:
+      - trigger: template
+        value_template: >-
+          {{ is_state('binary_sensor.casaray_powerpal_stale','off') and
+             is_state('binary_sensor.casaray_fronius_stale','off') }}
+        for: "00:02:00"
+    actions:
+      - action: persistent_notification.dismiss
+        data:
+          notification_id: casaray_energy_stale
+
+  - id: casaray_unavailable_entity_spike
+    alias: CasaRay - Unavailable entity spike
+    description: Warn only when the existing entity roll-up rises above the adjustable baseline.
+    mode: restart
+    triggers:
+      - trigger: template
+        value_template: >-
+          {{ states('sensor.casa_offline_devices') | int(-1) >=
+             states('input_number.casaray_offline_entity_threshold') | int(240) }}
+        for: "00:15:00"
+    actions:
+      - action: persistent_notification.create
+        data:
+          notification_id: casaray_unavailable
+          title: CasaRay unavailable entities increased
+          message: >-
+            {{ states('sensor.casa_offline_devices') }} entities are not reporting.
+            Alert threshold: {{ states('input_number.casaray_offline_entity_threshold') | int }}.
+
+  - id: casaray_unavailable_entity_recovered
+    alias: CasaRay - Unavailable entity count recovered
+    mode: restart
+    triggers:
+      - trigger: template
+        value_template: >-
+          {{ states('sensor.casa_offline_devices') | int(9999) <
+             states('input_number.casaray_offline_entity_threshold') | int(240) }}
+        for: "00:10:00"
+    actions:
+      - action: persistent_notification.dismiss
+        data:
+          notification_id: casaray_unavailable
