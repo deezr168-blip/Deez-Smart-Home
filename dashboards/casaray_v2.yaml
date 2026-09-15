@@ -9459,19 +9459,19 @@ views:
     - type: tile
       grid_options: {columns: 6, rows: 1}
       entity: sensor.tapo_c200_stockroom_rssi
-      name: Stockroom cam
+      name: Stockroom camera
     - type: tile
       grid_options: {columns: 6, rows: 1}
       entity: sensor.tapo_c425_north_wall_rssi
-      name: North Wall cam
+      name: North Wall camera
     - type: tile
       grid_options: {columns: 6, rows: 1}
       entity: sensor.deez_ssid
-      name: Wall panel network
+      name: Wall panel
     - type: tile
       grid_options: {columns: 6, rows: 1}
       entity: sensor.raymonds_iphone_ssid
-      name: Ray phone network
+      name: Ray phone
 
   - type: grid
     column_span: 2
@@ -9533,14 +9533,14 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: markdown
-      grid_options: {columns: 3, rows: auto}
+      grid_options: {columns: 6, rows: auto}
       content: |
         {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
         **{{ '实时速率' if cn else 'Live speed' }}**
         ## —
         {{ '需要 UPnP' if cn else 'Needs UPnP' }}
 
-        {{ '吞吐量需要路由器的字节计数。' if cn else 'Throughput needs the router’s byte counters.' }}
+        {{ '路由器吞吐量' if cn else 'Router throughput' }}
       card_mod:
         style: |
           ha-card {
@@ -9549,14 +9549,14 @@ views:
             background: rgba(58, 62, 70, 0.22);
           }
     - type: markdown
-      grid_options: {columns: 3, rows: auto}
+      grid_options: {columns: 6, rows: auto}
       content: |
         {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
         **{{ '延迟' if cn else 'Latency' }}**
         ## —
         {{ '需要 Ping' if cn else 'Needs Ping' }}
 
-        {{ '往返延迟需要 Ping 集成。' if cn else 'Round-trip time needs the Ping integration.' }}
+        {{ '往返延迟' if cn else 'Round-trip time' }}
       card_mod:
         style: |
           ha-card {
@@ -9565,14 +9565,14 @@ views:
             background: rgba(58, 62, 70, 0.22);
           }
     - type: markdown
-      grid_options: {columns: 3, rows: auto}
+      grid_options: {columns: 6, rows: auto}
       content: |
         {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
         **{{ '数据用量' if cn else 'Data used' }}**
         ## —
         {{ '需要 UPnP' if cn else 'Needs UPnP' }}
 
-        {{ '每日与每月用量需要同一组计数。' if cn else 'Daily and monthly totals need the same counters.' }}
+        {{ '用量合计' if cn else 'Usage totals' }}
       card_mod:
         style: |
           ha-card {
@@ -9581,14 +9581,14 @@ views:
             background: rgba(58, 62, 70, 0.22);
           }
     - type: markdown
-      grid_options: {columns: 3, rows: auto}
+      grid_options: {columns: 6, rows: auto}
       content: |
         {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
         **{{ '可用性' if cn else 'Reliability' }}**
         ## —
         {{ '需要历史数据' if cn else 'Needs history' }}
 
-        {{ '在线时长与断网次数需要历史统计。' if cn else 'Uptime and outage counts need recorded history.' }}
+        {{ '在线与断网' if cn else 'Uptime & outages' }}
       card_mod:
         style: |
           ha-card {
