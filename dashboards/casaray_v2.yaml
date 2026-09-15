@@ -42,26 +42,30 @@ views:
 #   band 1  top bar      CasaRay wordmark | icon nav rail | clock over date
 #   band 2  chip strip   native badges -- Outside, Inside, Home, Monitored
 #   band 3  needs attn   full width, red/amber alert cards two across
-#   band 4  three cols   Right now | Who's home + One tap | Rooms + Shopping
-#   band 5  security     full width, composed panel
-#   band 6  energy       full width, four figures
-#   band 7  recent       full width, quiet
-#   band 8  more boards  full width, named index + the language toggle
+#   band 4  two cols     Right now | Who's home
+#   band 5  one tap      full width, four scene cards across
+#   band 6  two cols     Rooms | Shopping list
+#   band 7  security     full width, composed panel
+#   band 8  two cols     Energy now | Recent activity
+#   band 9  more boards  full width, named index + the language toggle
 #
 # The mockup has NO left sidebar: branding, navigation and clock share one top
 # bar. That is also the only shape a sections view can hold -- a section cannot
 # be pinned as a rail -- so design and platform agree here. See the batch note
 # in DASHBOARD_ISSUES.md.
 #
-# max_columns is 3, matching the mockup's three equal body columns. It is a
-# maximum, not a fixed count: iPad landscape still resolves three at ~390px
-# each, and a phone collapses to one.
+# max_columns is 2, and that is measured rather than chosen. The rebuild set
+# it to 3 to match the mockup's three equal body columns; live, with the
+# sidebar and header hidden by kiosk_mode, the wall iPad still resolved the
+# view as TWO columns, so `column_span: 3` clamped to 2 and every group meant
+# for a third column fell onto its own row with a hole beside it. Two is the
+# official CasaRay Home baseline -- see DR-013.
 # ===========================================================================
 - type: sections
   title: CasaRay
   path: home
   icon: mdi:home-heart
-  max_columns: 3
+  max_columns: 2
   sections:
 
   # -------------------------------------------------------------------------
@@ -82,7 +86,7 @@ views:
   # load-bearing.
   # -------------------------------------------------------------------------
   - type: grid
-    column_span: 3
+    column_span: 2
     cards:
     - type: markdown
       grid_options: {columns: 6, rows: auto}
@@ -191,7 +195,7 @@ views:
   # is home", a reassuring claim it cannot see.
   # -------------------------------------------------------------------------
   - type: grid
-    column_span: 3
+    column_span: 2
     cards:
     - type: markdown
       grid_options: {columns: 12, rows: auto}
@@ -230,7 +234,7 @@ views:
   # only the things that have no card because there is no reading to show.
   # -------------------------------------------------------------------------
   - type: grid
-    column_span: 3
+    column_span: 2
     cards:
     - type: heading
       heading: Needs attention
@@ -649,14 +653,19 @@ views:
           }
 
   # -------------------------------------------------------------------------
-  # BAND A, COLUMN 3 -- "One tap". Split out of the Who's home section: paired
-  # in one column they made that column far taller than Right now beside it,
-  # and a grid row is only as short as its tallest member, so the difference
-  # came out as dead space. Three similar-height groups across one band is the
-  # composition the live render needed.
+  # BAND B -- "One tap", the full width of both columns, four scene cards
+  # across. Split out of the Who's home section earlier because the pair made
+  # that column much taller than Right now beside it.
+  #
+  # At two resolved columns there is no third group to pair it with: every
+  # other section on this page is already spoken for, and inventing content to
+  # fill half a row would be worse than using the row. Four buttons at 3
+  # columns each fill the 12-column grid exactly, so they land 4-across and the
+  # renderer has nowhere else to put them. Same four presets, same services,
+  # same brightness values -- only the width changed.
   # -------------------------------------------------------------------------
   - type: grid
-    column_span: 1
+    column_span: 2
     cards:
     - type: heading
       heading: One tap
@@ -681,7 +690,7 @@ views:
     # scenes: CR-233 stays open, because a real Goodnight that also handles
     # TVs and the blind still needs scenes this instance does not have.
     - type: button
-      grid_options: {columns: 6, rows: 3}
+      grid_options: {columns: 3, rows: 3}
       name: Evening
       icon: mdi:weather-sunset
       show_state: false
@@ -691,7 +700,7 @@ views:
         target: {entity_id: light.living_room}
         data: {brightness_pct: 55}
     - type: button
-      grid_options: {columns: 6, rows: 3}
+      grid_options: {columns: 3, rows: 3}
       name: Night
       icon: mdi:weather-night
       show_state: false
@@ -702,7 +711,7 @@ views:
           entity_id: [light.living_room, light.bedroom_bedroom, light.dining]
         data: {brightness_pct: 10}
     - type: button
-      grid_options: {columns: 6, rows: 3}
+      grid_options: {columns: 3, rows: 3}
       name: Bright
       icon: mdi:white-balance-sunny
       show_state: false
@@ -713,7 +722,7 @@ views:
           entity_id: [light.living_room, light.bedroom_bedroom, light.dining]
         data: {brightness_pct: 100}
     - type: button
-      grid_options: {columns: 6, rows: 3}
+      grid_options: {columns: 3, rows: 3}
       name: All lights off
       icon: mdi:lightbulb-group-off
       show_state: false
@@ -728,17 +737,18 @@ views:
           - switch.mainroomlight_switch_1
 
   # -------------------------------------------------------------------------
-  # BAND B, LEFT -- "Rooms", two thirds of the band. Rooms are full-width
-  # rows, never a button grid: icon, name, a live secondary line, the whole
-  # row navigating. A tile bound to the room's own entity turns amber by
-  # itself when that entity is on, which is the render's active state.
+  # BAND C, LEFT -- "Rooms", one of the two columns. Rooms are full-width
+  # rows of that column, never a button grid: icon, name, a live secondary
+  # line, the whole row navigating. A tile bound to the room's own entity
+  # turns amber by itself when that entity is on, which is the render's
+  # active state.
   #
-  # At one column of three these rows were a narrow strip with the room name
-  # and its state fighting for the same few hundred pixels. Two columns gives
-  # them roughly the width the render draws.
+  # Half of a two-column page is close to the width the 14/09 render draws
+  # these rows at. Across the whole page they would be a name and a state at
+  # opposite ends of a very long, mostly empty row.
   # -------------------------------------------------------------------------
   - type: grid
-    column_span: 2
+    column_span: 1
     cards:
     - type: heading
       heading: Rooms
@@ -821,8 +831,8 @@ views:
       icon_tap_action: {action: none}
 
   # -------------------------------------------------------------------------
-  # BAND B, RIGHT -- "Shopping list", one third of the band beside Rooms, so
-  # it fills the space Rooms does not rather than hanging underneath it.
+  # BAND C, RIGHT -- "Shopping list", the other column, so it fills the space
+  # beside Rooms rather than hanging underneath it.
   # -------------------------------------------------------------------------
   - type: grid
     column_span: 1
@@ -861,7 +871,7 @@ views:
   # tile and a red alert card above the moment it is not.
   # -------------------------------------------------------------------------
   - type: grid
-    column_span: 3
+    column_span: 2
     cards:
     - type: heading
       heading: Security
@@ -959,13 +969,14 @@ views:
       tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
 
   # -------------------------------------------------------------------------
-  # BAND D, LEFT -- energy. Four figures across two thirds of the band, with
-  # Recent activity filling the third. Every read is guarded; the inverter is
-  # frequently unreachable and must never show as a zero, and nothing here
-  # substitutes a number for a reading that is not there.
+  # BAND E, LEFT -- energy, one column, with Recent activity in the other.
+  # Four figures two across rather than four: at half the page width, four in
+  # a row is about 140px each and `House power` breaks. Every read is guarded;
+  # the inverter is frequently unreachable and must never show as a zero, and
+  # nothing here substitutes a number for a reading that is not there.
   # -------------------------------------------------------------------------
   - type: grid
-    column_span: 2
+    column_span: 1
     cards:
     - type: heading
       heading: Energy now
@@ -999,21 +1010,21 @@ views:
       color: amber
       name: House power
       icon: mdi:transmission-tower
-      grid_options: {columns: 3, rows: auto}
+      grid_options: {columns: 6, rows: auto}
       tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
     - type: tile
       entity: sensor.powerpal_gateway_powerpal_daily_energy
       color: amber
       name: Used today
       icon: mdi:counter
-      grid_options: {columns: 3, rows: auto}
+      grid_options: {columns: 6, rows: auto}
       tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
     - type: tile
       entity: sensor.primo_5_0_1_1_ac_power
       color: green
       name: Solar now
       icon: mdi:solar-power-variant
-      grid_options: {columns: 3, rows: auto}
+      grid_options: {columns: 6, rows: auto}
       tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
       card_mod:
         style: |
@@ -1029,7 +1040,7 @@ views:
       color: green
       name: Solar today
       icon: mdi:weather-sunny
-      grid_options: {columns: 3, rows: auto}
+      grid_options: {columns: 6, rows: auto}
       tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
       card_mod:
         style: |
@@ -1042,10 +1053,10 @@ views:
           }
 
   # -------------------------------------------------------------------------
-  # BAND D, RIGHT -- recent activity. Not in the wall render, kept because a
+  # BAND E, RIGHT -- recent activity. Not in the wall render, kept because a
   # wall panel's "what just happened" has no other home on this dashboard.
-  # One third of the band, two rows deep, which lands it close to the Energy
-  # group beside it instead of running a near-empty strip across the page.
+  # Four rows deep, which lands it level with the Energy group beside it now
+  # that Energy carries two rows of tiles.
   #
   # The three door contacts stay in the target list even while unavailable, so
   # a door that starts reporting again appears here without an edit.
@@ -1071,7 +1082,7 @@ views:
         state: 'on'
     - type: logbook
       hours_to_show: 24
-      grid_options: {columns: 12, rows: 2}
+      grid_options: {columns: 12, rows: 4}
       target:
         entity_id:
         - person.raymond_du
@@ -1085,13 +1096,15 @@ views:
         - light.dining
 
   # -------------------------------------------------------------------------
-  # BAND E -- the named index. The top rail is six glyphs; this is every board
+  # BAND F -- the named index. The top rail is six glyphs; this is every board
   # spelled out, for anyone who would rather read a word than decode an icon.
   #
   # Twelve at TWO columns -- six across -- is what shipped, and live on the
   # iPad the labels ran into each other: `Entertainment` and `Automations` do
   # not fit a 2/12 cell at any sane font size. Four across at three columns
-  # each is 50% more width per label, in three clean rows:
+  # each is 50% more width per label, and because 4 x 3 fills the 12-column
+  # grid exactly the renderer cannot pack them any other way -- eight across
+  # would need 24 columns of 12. Three clean rows:
   #
   #   Rooms | Lighting | Climate | Energy
   #   Bills | Entertainment | Security | Cameras
@@ -1102,7 +1115,7 @@ views:
   # a one-row button is a thin strip to hit.
   # -------------------------------------------------------------------------
   - type: grid
-    column_span: 3
+    column_span: 2
     cards:
     - type: heading
       heading: More boards

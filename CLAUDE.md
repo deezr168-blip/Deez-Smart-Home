@@ -29,13 +29,15 @@ Home's clock. Bilingual on `input_boolean.chinese_dashboard`; see *Bilingual
 conventions* below.
 
 **Home carries the design system.** It was rebuilt against the 14/09 wall
-render on 2026-09-15, then corrected against the live iPad the same day, and
-is the reference every other view follows as it is rebuilt in turn. Eight
-bands, top to bottom: **top bar** (wordmark and clock over a row of six nav
-icons) · **chip strip** (one full-width card) · **Needs attention** ·
-**Right now / Who's home / One tap** · **Rooms (2 of 3) / Shopping list** ·
-**Security** · **Energy now (2 of 3) / Recent activity** · **More boards**.
-Horizontal bands, not vertical stacks — see the geometry rules below for why.
+render on 2026-09-15 and corrected twice against the live iPad, and is the
+reference every other view follows as it is rebuilt in turn. Nine bands, top
+to bottom: **top bar** (wordmark and clock over a row of six nav icons) ·
+**chip strip** (one full-width card) · **Needs attention** ·
+**Right now | Who's home** · **One tap** (full width) ·
+**Rooms | Shopping list** · **Security** (full width) ·
+**Energy now | Recent activity** · **More boards** (full width).
+Two columns, horizontal bands, not vertical stacks — see the geometry rules
+below for why, and do not raise `max_columns` without a live screenshot.
 Navigation lives **in the page**, not in Home Assistant's
 chrome — `kiosk_mode` hides the sidebar and header, so Home's icon rail and
 its named More boards index are the only way around the dashboard. Do not
@@ -215,16 +217,42 @@ sirens and the Ray Bedroom overload alarm. Long names, and controls that must
 not be mis-tapped. If you normalise them to 6 columns you have made the page
 worse, not more consistent.
 
-**Home is three columns; everything else is still two.** Home's `max_columns`
-is `3`, matching the 14/09 wall render's three equal body columns — a wall
-panel and an iPad in landscape both resolve three at a comfortable width, and
-a phone still collapses to one. Its page-level bands therefore use
-`column_span: 3`. Every other view keeps `max_columns: 2` and `column_span: 2`
-until it is rebuilt against the mockups in turn; do not raise one without
-rebuilding its composition at the same time, or its bands span a column that
-is not there.
+**The wall iPad resolves TWO columns. This is measured, not chosen.** Home
+was set to `max_columns: 3` on 2026-09-15 to match the 14/09 render's three
+equal body columns. Live — with `kiosk_mode` hiding both the sidebar and the
+header, so nothing was stealing width — the wall iPad still resolved the
+sections view as **two** columns. `column_span: 3` clamped to 2, and every
+group meant for a third column dropped onto a row of its own with a hole
+beside it. Home is now `max_columns: 2` and every view on this dashboard is
+two. See `DR-013`.
 
-Whatever `max_columns` says, never cram four narrow columns onto the iPad.
+Do not raise `max_columns` above 2 on any view without a live screenshot
+proving the extra column resolves. A passing validation run cannot see it, the
+geometry arithmetic here was wrong twice, and the failure mode is silent:
+the YAML is valid, the page just grows holes.
+
+**Compose for two, in explicit horizontal bands.** A section is a grid item;
+sections in a row top-align and the row is as tall as its tallest member, so
+a lone `column_span: 1` section leaves half a row empty. Every band is either
+a pair of comparable height or one full-width group:
+
+| Band | Layout |
+|---|---|
+| top bar | full width — wordmark(6) + clock(6), then six nav icons at 2 each |
+| chip strip | full width — one card |
+| Needs attention | full width — alert cards at `columns: 6`, two across |
+| Right now \| Who's home | one column each |
+| One tap | full width — four scene cards at `columns: 3`, four across |
+| Rooms \| Shopping list | one column each |
+| Security | full width |
+| Energy now \| Recent activity | one column each |
+| More boards | full width |
+
+**A row of buttons that must not reflow should sum to exactly 12.** Four at
+`columns: 3` fill the grid, so the renderer cannot pack five onto a row or
+spread them to eight — eight would need 24 columns of 12. That is how More
+boards holds its four-across shape and how One tap holds its scene bar. Do not
+rely on wrapping.
 
 **`columns` is a fraction of the RENDERED width, and this environment cannot
 measure it.** The 2026-09-15 Home rebuild assumed a full-width band on an iPad

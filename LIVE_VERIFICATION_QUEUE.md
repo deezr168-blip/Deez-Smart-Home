@@ -321,6 +321,33 @@ rendering fault, not a data one.
 | CR-249 | **RESOLVED, not accepted.** The four pills were nearly circular because a markdown card has a minimum height and a 3/12 cell came out narrower than that height. One full-width card cannot deform that way at any size | Confirm the chip strip is a compact horizontal strip | Short, wide, readable, grouped left. If it still looks wrong the container is narrower than anything assumed here — say so and I will drop it to plain text | `b5e8522` | P2 | PENDING |
 | CR-250 | **Bilingual** [中] | Toggle `input_boolean.chinese_dashboard` on Home | Every heading, chip, summary and footnote switches; entity names, room names and board names stay English by the established convention | `262d59d` | P2 | PENDING |
 
+## CasaRay — Home recomposed for TWO columns, 2026-09-15
+
+Ray's live check of `9534181` settled the question the last two passes had to
+assume: **with kiosk_mode hiding both the sidebar and the header, the wall
+iPad resolves the sections view as two columns, not three.** Right now went
+left, Who's home went right, and One tap dropped to a row of its own with a
+hole beside it — the signature of a `column_span: 3` page getting two columns.
+
+So Home is now `max_columns: 2`, composed as bands in which every row is
+either a matched pair or one full-width group. `DR-013`.
+
+**Layout only.** No entity, service call, template, navigation target,
+bilingual rule, kiosk setting or data guard changed. Entity references 434,
+distinct entities 447, navigation 124 links across 28 targets, five
+service-call types — every one identical to `b5e8522`.
+
+| ID | What changed | What to check live | Expected result | Commit | P | Result |
+|---|---|---|---|---|---|---|
+| CR-260 | **`max_columns` 3 → 2**, and every page-level band `column_span` 3 → 2 | Open Home on the wall iPad | Two body columns, and **no row with an empty half**. This is the check that matters; everything below is detail | `PH3` | **P1** | PENDING |
+| CR-261 | **Row: Right now \| Who's home** | Look below Needs attention | Side by side. Right now is the taller of the two — a modest gap under Who's home is expected and is not the defect being fixed | `PH3` | **P1** | PENDING |
+| CR-262 | **One tap is now full width**, four scene cards across at `columns: 3` | Look at the One tap band | Evening, Night, Bright, All lights off in **one row of four**, evenly spaced, large. Tap each — same brightness presets, unchanged | `PH3` | **P1** | PENDING |
+| CR-263 | **Row: Rooms \| Shopping list** | Look at the Rooms band | Seven room rows in the left column at roughly the width the 14/09 render draws them; the list beside them, not under them | `PH3` | **P1** | PENDING |
+| CR-264 | **Security stays full width** — splitting the summary/camera/tiles panel would have broken a composition that already reads well | Look at the Security band | Unchanged from the last sync | `PH3` | P2 | PENDING |
+| CR-265 | **Row: Energy now \| Recent activity.** Energy's four tiles went 4-across to **2-across, two rows** — at half the page width four in a row is ~140px each and `House power` breaks. Logbook `rows` 2 → 4 to sit level | Look at the lower band | Four energy figures in two rows on the left, logbook on the right, roughly level. `House power` on one line. Solar still reads no data while the inverter is unreachable — that is correct, not a bug | `PH3` | **P1** | PENDING |
+| CR-266 | **More boards unchanged in shape**, now full width of two columns | Read every label | Still three rows of four, then House health and English / 中文. 4 × `columns: 3` fills the 12-column grid exactly, so the renderer **cannot** pack them eight-across — that was the explicit ask | `PH3` | P2 | PENDING |
+| CR-267 | **Deviation from the requested Row B.** The brief asked for One tap on the left with compact content on the right. At two columns every other section is already paired, and the only candidates were sections pinned to other rows or content that would have had to be invented. Full width was the honest answer | Judge whether the One tap scene bar works | If you would rather have One tap \| Shopping list with Rooms full width, say so — it is two `column_span` values. Note Rooms across the whole page becomes a name and a state at opposite ends of a long empty row | `PH3` | P3 | PENDING |
+
 ## CasaRay — Home live-render geometry correction, 2026-09-15
 
 The 2026-09-15 rebuild was structurally right and visually wrong on the real

@@ -83,6 +83,38 @@ grid and every `grid_options` width on the page. Both are larger decisions
 than a visual batch, so neither was taken unilaterally. Say the word and
 either can be costed.
 
+## DR-013 — the wall iPad resolves TWO section columns, not three
+
+**Status:** `FIXED — AWAITING LIVE VERIFICATION` · **Severity:** S3 ·
+2026-09-15, from Ray's live check of `9534181`.
+
+`DR-012` widened every card on the assumption that the three columns Home
+asked for were the three it was getting. They were not. With `kiosk_mode`
+hiding both the sidebar and the header — so nothing was taking width away —
+the wall iPad still resolved the sections view as **two** columns.
+
+Ray's evidence, and it is conclusive: Right now landed in the left column,
+Who's home in the right, and **One tap fell onto the next row** with a large
+blank space beside it. That is exactly what a `column_span: 3` page does when
+it gets two columns: the span clamps to 2, and every group intended for a
+third column becomes a row of its own, half empty.
+
+The same packing accounted for the rest of the holes — Rooms took a whole row
+at `column_span: 2`, leaving Shopping list alone on the next; Energy did the
+same to Recent activity.
+
+**Resolved as:** `max_columns: 2`, and the page recomposed as explicit
+horizontal bands in which every row is either a pair of comparable height or
+one full-width group. One tap takes the full width with four scene cards
+across, because at two columns there is no third group to pair it with and
+inventing content to fill half a row would have been worse than using the row.
+
+**The rule this leaves behind**, now in `CLAUDE.md`: do not raise
+`max_columns` above 2 on any view without a live screenshot proving the extra
+column resolves. This environment cannot measure it, the arithmetic was wrong
+twice, and the failure is silent — the YAML validates and the page just grows
+holes.
+
 ## DR-012 — `grid_options.columns` is a fraction of the *rendered* width, and the render was narrower than the arithmetic
 
 **Status:** `FIXED — AWAITING LIVE VERIFICATION` · **Severity:** S3 ·
