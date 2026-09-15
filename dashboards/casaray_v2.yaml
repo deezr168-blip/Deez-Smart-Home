@@ -1054,6 +1054,12 @@ views:
       icon: mdi:thermometer
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/climate}
+    - type: button
+      grid_options: {columns: 3, rows: 1}
+      name: Network
+      icon: mdi:wifi
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/network}
 
 - type: sections
   title: Rooms
@@ -9243,6 +9249,369 @@ views:
         {% endif %}{% if not np and not nq %}{% if cn %}{{ ups | count }}
         个更新实体全部为最新。{% else %}All {{ ups | count }} update entities are up to
         date.{% endif %}{% endif %}
+
+# ===========================================================================
+# NETWORK -- Step 1. Built only from entities this instance already has.
+# The eero integration exposes exactly two: `binary_sensor.eero_wan_status`
+# and `sensor.eero_external_ip`. There is no throughput, latency, client
+# count or router uptime anywhere in the export, so the four cards that need
+# them carry no numbers at all -- they keep their place in the layout, dashed
+# and grey, saying which integration would light them. See
+# docs/NETWORK_BOARD_DESIGN.md for the mapping and the order of work.
+# ===========================================================================
+- type: sections
+  title: Network
+  path: network
+  icon: mdi:wifi
+  max_columns: 2
+  badges:
+  - type: entity
+    entity: binary_sensor.eero_wan_status
+    name: Internet
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: binary_sensor.eero_wan_status
+    name: 网络
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
+  - type: entity
+    entity: sensor.eero_external_ip
+    name: WAN IP
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: sensor.eero_external_ip
+    name: 外网 IP
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
+  - type: entity
+    entity: binary_sensor.remote_ui
+    name: Remote access
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state_not: 'on'
+  - type: entity
+    entity: binary_sensor.remote_ui
+    name: 远程访问
+    visibility:
+    - condition: state
+      entity: input_boolean.chinese_dashboard
+      state: 'on'
+  sections:
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 2, rows: auto}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+    - type: markdown
+      grid_options: {columns: 7, rows: auto}
+      content: >-
+        ## {{ '网络' if is_state('input_boolean.chinese_dashboard','on') else
+        'Network' }}
+
+        {{ '家庭宽带与 Wi-Fi' if is_state('input_boolean.chinese_dashboard','on')
+        else 'Home internet and Wi-Fi' }}
+    - type: markdown
+      grid_options: {columns: 3, rows: auto}
+      content: >-
+        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
+
+        {{ now().strftime('%d/%m/%y') }}
+
+  # Hero. The only tinted card on the page, so internet state reads from
+  # across the room. Green on, red off, grey when the WAN sensor itself is
+  # not reporting -- it never claims online from a state it cannot see.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: markdown
+      grid_options: {columns: 12, rows: auto}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set w = states('binary_sensor.eero_wan_status') -%}
+        {%- set ip = states('sensor.eero_external_ip') -%}
+        {% if w == 'on' %}## {{ '网络已连接' if cn else 'Internet online' }}
+        {{ 'More NBN · 500 / 45 Mbps' if not cn else 'More NBN · 500 / 45 Mbps' }}{% elif w == 'off' %}## {{ '网络已断开' if cn else 'Internet offline' }}
+        {{ 'eero 网关报告 WAN 已断开。' if cn else 'The eero gateway reports the WAN is down.' }}{% else %}## {{ '网络状态未知' if cn else 'Internet state unknown' }}
+        {{ 'WAN 传感器无数据，此处不作判断。' if cn else 'The WAN sensor is not reporting, so nothing is assumed.' }}{% endif %}
+
+        {{ '外网 IP' if cn else 'WAN IP' }} **{{ ip if ip not in ['unavailable','unknown','none',''] else '—' }}** · {{ '网关' if cn else 'Gateway' }} **{{ ('正常' if cn else 'Healthy') if w == 'on' else (('故障' if cn else 'Fault') if w == 'off' else ('无数据' if cn else 'No data')) }}**
+      card_mod:
+        style: |
+          ha-card {
+            {% if is_state('binary_sensor.eero_wan_status','on') %}
+            background: rgba(24, 64, 52, 0.42);
+            border-color: rgba(95, 211, 154, 0.34);
+            {% elif is_state('binary_sensor.eero_wan_status','off') %}
+            background: rgba(120, 32, 32, 0.32);
+            border-color: rgba(224, 106, 106, 0.45);
+            {% else %}
+            background: rgba(58, 62, 70, 0.26);
+            border-color: rgba(150, 156, 166, 0.34);
+            border-style: dashed;
+            {% endif %}
+          }
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Network health
+      heading_style: title
+      icon: mdi:lan-connect
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 网络状态
+      heading_style: title
+      icon: mdi:lan-connect
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: tile
+      grid_options: {columns: 6, rows: 1}
+      entity: binary_sensor.eero_wan_status
+      name: Internet
+    - type: tile
+      grid_options: {columns: 6, rows: 1}
+      entity: binary_sensor.remote_ui
+      name: Remote access
+    - type: tile
+      grid_options: {columns: 6, rows: 1}
+      entity: binary_sensor.matter_zigbee_hub_problem
+      name: Zigbee hub
+    - type: tile
+      grid_options: {columns: 6, rows: 1}
+      entity: sensor.eero_external_ip
+      name: WAN IP
+    - type: markdown
+      grid_options: {columns: 12, rows: auto}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set cloud = ['binary_sensor.k_coffee_p100_cloud_connection','binary_sensor.k_top_p100_cloud_connection','binary_sensor.k_bot_p100_cloud_connection','binary_sensor.g_printer_p100_cloud_connection',
+                        'binary_sensor.g_monitor_freezer_p110m_cloud_connection','binary_sensor.r_energy_monitor_p110m_cloud_connection','binary_sensor.k_smart_button_cloud_connection','binary_sensor.k_motion_sensor_cloud_connection',
+                        'binary_sensor.emergency_button_dad_cloud_connection','binary_sensor.emergency_button_mum_cloud_connection','binary_sensor.f_contact_sensor_cloud_connection','binary_sensor.m_contact_sensor_cloud_connection',
+                        'binary_sensor.b_contact_sensor_cloud_connection','binary_sensor.network_tp_linkhub_h100_cloud_connection'] -%}
+        {%- set ns = namespace(up=0, down=0, quiet=0) -%}
+        {%- for c in cloud %}{% set s = states(c) %}{% if s == 'on' %}{% set ns.up = ns.up + 1 %}{% elif s == 'off' %}{% set ns.down = ns.down + 1 %}{% else %}{% set ns.quiet = ns.quiet + 1 %}{% endif %}{% endfor -%}
+        {{ '云端连接' if cn else 'Cloud-linked devices' }} **{{ ns.up }}/{{ ns.up + ns.down }}**{% if ns.quiet %} · {{ ns.quiet }} {{ '个无数据' if cn else 'not reporting' }}{% endif %}
+
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Wi-Fi link quality
+      heading_style: title
+      icon: mdi:wifi-strength-2
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: Wi-Fi 信号
+      heading_style: title
+      icon: mdi:wifi-strength-2
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: markdown
+      grid_options: {columns: 12, rows: auto}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {#- Tapo devices report signal as a small bar count, not dBm, so the
+            two camera RSSI readings are kept on their own line rather than
+            averaged in. Mixing the two scales would produce a number that
+            means nothing. -#}
+        {%- set links = [('sensor.k_coffee_p100_signal_level','Coffee plug','咖啡插座'),('sensor.k_top_p100_signal_level','Top plug','上插座'),
+                      ('sensor.k_bot_p100_signal_level','Bottom plug','下插座'),('sensor.g_printer_p100_signal_level','Printer plug','打印机插座'),
+                      ('sensor.g_monitor_freezer_p110m_signal_level','Freezer plug','冰柜插座'),('sensor.r_energy_monitor_p110m_signal_level','Desk plug','书桌插座'),
+                      ('sensor.k_smart_button_signal_level','Kitchen button','厨房按钮'),('sensor.k_motion_sensor_signal_level','Kitchen motion','厨房动作'),
+                      ('sensor.emergency_button_dad_signal_level','Dad button','爸爸按钮'),('sensor.emergency_button_mum_signal_level','Mum button','妈妈按钮'),
+                      ('sensor.f_contact_sensor_signal_level','Front door','前门'),('sensor.m_contact_sensor_signal_level','Parents door','父母房门'),
+                      ('sensor.b_contact_sensor_signal_level','Backyard door','后院门'),('sensor.network_tp_linkhub_h100_signal_level','Tapo hub','Tapo 中枢')] -%}
+        {%- set ns = namespace(low=none, who='', n=0, quiet=0) -%}
+        {%- for e, en, zh in links %}{% set v = states(e) | float(none) %}{% if v is not none %}{% set ns.n = ns.n + 1 %}{% if ns.low is none or v < ns.low %}{% set ns.low = v %}{% set ns.who = zh if cn else en %}{% endif %}{% else %}{% set ns.quiet = ns.quiet + 1 %}{% endif %}{% endfor -%}
+        **{{ '最弱信号' if cn else 'Weakest link' }}**
+        {% if ns.low is not none %}## {{ ns.who }}
+        {{ ('信号强度 %d 格' % (ns.low | int)) if cn else ('%d bar%s' % (ns.low | int, '' if (ns.low | int) == 1 else 's')) }}{% else %}## —
+        {{ '没有设备报告信号强度' if cn else 'No device is reporting a signal level' }}{% endif %}
+
+        {{ ns.n }}/{{ links | count }} {{ '个设备有信号数据' if cn else 'devices reporting' }}{% if ns.quiet %} · {{ ns.quiet }} {{ '个无数据' if cn else 'silent' }}{% endif %}
+    - type: tile
+      grid_options: {columns: 6, rows: 1}
+      entity: sensor.tapo_c200_stockroom_rssi
+      name: Stockroom cam
+    - type: tile
+      grid_options: {columns: 6, rows: 1}
+      entity: sensor.tapo_c425_north_wall_rssi
+      name: North Wall cam
+    - type: tile
+      grid_options: {columns: 6, rows: 1}
+      entity: sensor.deez_ssid
+      name: Wall panel network
+    - type: tile
+      grid_options: {columns: 6, rows: 1}
+      entity: sensor.raymonds_iphone_ssid
+      name: Ray phone network
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Monitored devices
+      heading_style: title
+      icon: mdi:devices
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 已监控设备
+      heading_style: title
+      icon: mdi:devices
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: markdown
+      grid_options: {columns: 12, rows: auto}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set groups = [(['camera.front_door_live_view','camera.tapo_c425_north_wall_hd_stream_direct','camera.tapo_c420_east_wall_hd_stream_direct','camera.tapo_c420_south_wall_hd_stream_direct',
+                        'camera.tapo_c200_stockroom_hd_stream_direct','camera.smart_pet_feeder'], 'Cameras', '摄像头'),
+                        (['switch.k_coffee_p100','switch.k_top_p100','switch.k_bot_p100','switch.g_printer_p100',
+                        'switch.g_monitor_freezer_p110m','switch.r_energy_monitor_p110m'], 'Smart plugs', '智能插座'),
+                        (['media_player.living_room_tv_samsung_q9_series_65','media_player.55_qled_4k_ai_qa55q7faawxxy','media_player.q70f8036','media_player.pogo'], 'Screens and speakers', '影音设备'),
+                        (['sensor.raymonds_iphone_battery_level','sensor.raymonds_ipad_battery_level','sensor.ais_iphone_battery_level','sensor.vine_s_phone_battery_level'], 'Phones and tablets', '手机与平板')] -%}
+        {%- set ns = namespace(up=0, tot=0, lines=[]) -%}
+        {%- for ids, en, zh in groups %}{% set g = namespace(u=0) %}{% for e in ids %}{% if states(e) not in ['unavailable','unknown'] %}{% set g.u = g.u + 1 %}{% endif %}{% endfor %}{% set ns.up = ns.up + g.u %}{% set ns.tot = ns.tot + (ids | count) %}{% set ns.lines = ns.lines + [(zh if cn else en) ~ ' ' ~ g.u ~ '/' ~ (ids | count)] %}{% endfor -%}
+        **{{ '设备在线' if cn else 'Devices reporting' }}**
+        ## {{ ns.up }}/{{ ns.tot }}
+        {{ ns.lines | join('、') if cn else ns.lines | join(' · ') }}
+
+        {{ '这是 Home Assistant 能读取到的设备，不是路由器的客户端列表。' if cn else 'These are the devices Home Assistant can read, not the router’s client list.' }}
+
+  # Four cards with no data source on this instance. They keep their place so
+  # the page reads as a finished design with known gaps, and each names the
+  # integration that would fill it. No illustrative numbers: an em dash.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Not measured yet
+      heading_style: subtitle
+      icon: mdi:progress-question
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 尚未监测
+      heading_style: subtitle
+      icon: mdi:progress-question
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: markdown
+      grid_options: {columns: 3, rows: auto}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        **{{ '实时速率' if cn else 'Live speed' }}**
+        ## —
+        {{ '需要 UPnP' if cn else 'Needs UPnP' }}
+
+        {{ '吞吐量需要路由器的字节计数。' if cn else 'Throughput needs the router’s byte counters.' }}
+      card_mod:
+        style: |
+          ha-card {
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+          }
+    - type: markdown
+      grid_options: {columns: 3, rows: auto}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        **{{ '延迟' if cn else 'Latency' }}**
+        ## —
+        {{ '需要 Ping' if cn else 'Needs Ping' }}
+
+        {{ '往返延迟需要 Ping 集成。' if cn else 'Round-trip time needs the Ping integration.' }}
+      card_mod:
+        style: |
+          ha-card {
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+          }
+    - type: markdown
+      grid_options: {columns: 3, rows: auto}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        **{{ '数据用量' if cn else 'Data used' }}**
+        ## —
+        {{ '需要 UPnP' if cn else 'Needs UPnP' }}
+
+        {{ '每日与每月用量需要同一组计数。' if cn else 'Daily and monthly totals need the same counters.' }}
+      card_mod:
+        style: |
+          ha-card {
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+          }
+    - type: markdown
+      grid_options: {columns: 3, rows: auto}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        **{{ '可用性' if cn else 'Reliability' }}**
+        ## —
+        {{ '需要历史数据' if cn else 'Needs history' }}
+
+        {{ '在线时长与断网次数需要历史统计。' if cn else 'Uptime and outage counts need recorded history.' }}
+      card_mod:
+        style: |
+          ha-card {
+            border-style: dashed;
+            border-color: rgba(150, 156, 166, 0.38);
+            background: rgba(58, 62, 70, 0.22);
+          }
+
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: House health
+      icon: mdi:heart-pulse
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/house-health}
 
 # ===========================================================================
 # ALERTS. The unified alert centre from briefing section 16, built from the

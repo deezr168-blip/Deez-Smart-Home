@@ -1,8 +1,14 @@
 # CasaRay — Network board: design, data mapping, implementation path
 
-**Status: mockup only.** Nothing in this document has been deployed, and
-`dashboards/casaray_v2.yaml` is untouched. Proposed route `/casaray-v2/network`,
-title **Network**, with a `network-diagnostics` subview.
+**Status: Step 1 implemented.** The board is built at `/casaray-v2/network`,
+title **Network**, from entities that already exist — no integration, helper or
+add-on was added. Steps 2 to 5 below are still proposals and need separate
+approval.
+
+`/casaray-v2/network-diagnostics` is **reserved, not built.** With today's data
+the page would be a title and four dashed cards, which is worse than no page;
+the four placeholders live on the main board instead, where they double as the
+build list. Build it when Step 2 gives it something to hold.
 
 - Visual mockup: `mockups/2026-09-15_network_board.png`
 - Editable source: `mockups/network_board_mockup.html` (1600 × 900, opens in any
@@ -101,6 +107,17 @@ goes off the card turns red, if it goes unavailable it turns grey and reads
 | Connected client count | The eero *cloud* API has it; the HA integration does not expose it |
 | Wi-Fi band breakdown | Same |
 | NBN service status | No integration. A `rest` sensor against More's status page is possible but scraping a status page is fragile, and I would not build the family-facing board on it |
+
+## 4a. What Step 1 actually shipped
+
+Live, from real entities: internet state (hero, tinted green / red / grey from
+`binary_sensor.eero_wan_status`), WAN IP, gateway health, remote access, the
+Zigbee hub, cloud-linked device count, Wi-Fi weakest link across 14 signal-level
+sensors, two camera RSSI readings, two SSID readings, and monitored devices by
+category across cameras, plugs, screens and mobiles.
+
+Placeholders, dashed and grey with no numbers: Live speed (Needs UPnP), Latency
+(Needs Ping), Data used (Needs UPnP), Reliability (Needs history).
 
 ## 5. Recommended implementation path
 
