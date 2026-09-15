@@ -321,6 +321,30 @@ rendering fault, not a data one.
 | CR-249 | **RESOLVED, not accepted.** The four pills were nearly circular because a markdown card has a minimum height and a 3/12 cell came out narrower than that height. One full-width card cannot deform that way at any size | Confirm the chip strip is a compact horizontal strip | Short, wide, readable, grouped left. If it still looks wrong the container is narrower than anything assumed here — say so and I will drop it to plain text | `b5e8522` | P2 | PENDING |
 | CR-250 | **Bilingual** [中] | Toggle `input_boolean.chinese_dashboard` on Home | Every heading, chip, summary and footnote switches; entity names, room names and board names stay English by the established convention | `262d59d` | P2 | PENDING |
 
+## CasaRay — theme, background and glass rebuild, 2026-09-15
+
+The dashboard did not look like the renders because of what was underneath it:
+the approved 14/09 mockups have **no photographic background**, and the theme
+was compositing glass over one. Every surface colour is now sampled from the
+renders and lives in a `--casaray-*` token; the dashboard carries no hardcoded
+colour at all. `DR-014`.
+
+**Layout is untouched.** No card moved, no `grid_options` changed, no section
+span changed. Entity references 434, navigation 124 links across 28 targets,
+all identical. The legacy dashboard and its five themes keep the photograph.
+
+| ID | What changed | What to check live | Expected result | Commit | P | Result |
+|---|---|---|---|---|---|---|
+| CR-268 | **Background is four CSS gradients, not the night-sky photo** | Open any CasaRay view | A deep charcoal-navy field, marginally lighter at the top, one soft blue bloom bleeding down from the upper right, edges slightly darker. **No photograph.** If you want it back it is one commented line in the theme — say so | `PH4` | **P1** | PENDING |
+| CR-269 | **Legacy dashboard must be unaffected** | Open `/deez-smart-home/` | Still the Your Name night sky, exactly as before. If this changed, something reached the shared anchor and I need to know | `PH4` | **P1** | PENDING |
+| CR-270 | **Card surfaces rebuilt from sampled values** — one glass tint at three alphas | Look at any card against the background | Cards clearly float above the background but stay quiet; they *lighten* what is behind them rather than being a flat colour | `PH4` | **P1** | PENDING |
+| CR-271 | **Three depth levels.** L1 background · L2 ordinary card · L3 chip strip and status cards, brighter with a stronger border | Compare the chip strip against an ordinary tile | Visibly different, not identical. If they read the same the third level is not landing | `PH4` | P2 | PENDING |
+| CR-272 | **138 hardcoded rgba literals replaced by theme tokens** across 69 card_mod blocks | Look at a red alert, an amber alert, and a dashed grey unavailable tile | All three still tinted correctly. This is the change most likely to have broken something invisible, because it touched 69 blocks | `PH4` | **P1** | PENDING |
+| CR-273 | **Blur halved and `saturate` dropped** — `blur(14px) saturate(118%)` to `blur(6px)` | Scroll Home on the wall iPad | Should feel *smoother* than before, not worse. Over a flat gradient the heavy blur was doing almost nothing visible | `PH4` | **P1** | PENDING |
+| CR-274 | **Typography lifted for the darker background** — secondary `#9fb0c6` → `#9aa7b8`, muted → `#6f7b8c` | Read a tile's second line and a footnote from across the room | Six levels legible: heading, value, name, secondary, muted, "no data". Tell me if anything is too dim — the background is darker than it was, so these were raised, not carried across | `PH4` | **P1** | PENDING |
+| CR-275 | **Section containers were deliberately NOT given a surface** | Look at any section heading | Headings sit on the background with a dim icon, as the renders draw them. Wrapping sections in a panel would have moved cards, which this pass was not allowed to do | `PH4` | P3 | PENDING |
+| CR-276 | **Domain state colours now come from the theme** (`error`/`warning`/`success`/`info`) | Look at a tile that colours itself by state | CR-232 semantics without a per-card `color:` | `PH4` | P3 | PENDING |
+
 ## CasaRay — Home recomposed for TWO columns, 2026-09-15
 
 Ray's live check of `9534181` settled the question the last two passes had to

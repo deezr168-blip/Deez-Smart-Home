@@ -130,8 +130,8 @@ views:
       card_mod:
         style: |
           ha-card {
-            background: rgba(120, 82, 24, 0.30);
-            border-color: rgba(232, 163, 61, 0.45);
+            background: var(--casaray-amber-bg);
+            border-color: var(--casaray-amber-border);
           }
     - type: button
       grid_options: {columns: 2, rows: 1}
@@ -225,7 +225,11 @@ views:
         {{ '室外' if cn else 'Outside' }} **{{ outside }}** · {{ '室内' if cn else 'Inside' }} **{{ inside }}** · {{ '在家' if cn else 'Home' }} **{{ home }}** · {{ '监测用电' if cn else 'Monitored' }} **{{ mon }}**
       card_mod:
         style: |
-          ha-card { border-radius: 999px; }
+          ha-card {
+            border-radius: 999px;
+            background: var(--casaray-surface-3);
+            border-color: var(--casaray-border-strong);
+          }
 
   # -------------------------------------------------------------------------
   # BAND 3 -- needs attention. Full width, cards two across, red for a fault
@@ -297,8 +301,8 @@ views:
         card_mod:
           style: |
             ha-card {
-              background: rgba(120, 82, 24, 0.26);
-              border-color: rgba(232, 163, 61, 0.42);
+              background: var(--casaray-amber-bg);
+              border-color: var(--casaray-amber-border);
             }
     - type: conditional
       grid_options: {columns: 6, rows: auto}
@@ -317,8 +321,8 @@ views:
         card_mod:
           style: |
             ha-card {
-              background: rgba(120, 82, 24, 0.26);
-              border-color: rgba(232, 163, 61, 0.42);
+              background: var(--casaray-amber-bg);
+              border-color: var(--casaray-amber-border);
             }
     - type: conditional
       grid_options: {columns: 6, rows: auto}
@@ -337,8 +341,8 @@ views:
         card_mod:
           style: |
             ha-card {
-              background: rgba(120, 82, 24, 0.26);
-              border-color: rgba(232, 163, 61, 0.42);
+              background: var(--casaray-amber-bg);
+              border-color: var(--casaray-amber-border);
             }
     - type: conditional
       grid_options: {columns: 6, rows: auto}
@@ -357,8 +361,8 @@ views:
         card_mod:
           style: |
             ha-card {
-              background: rgba(120, 32, 32, 0.30);
-              border-color: rgba(224, 106, 106, 0.45);
+              background: var(--casaray-red-bg);
+              border-color: var(--casaray-red-border);
             }
     - type: conditional
       grid_options: {columns: 6, rows: auto}
@@ -377,8 +381,8 @@ views:
         card_mod:
           style: |
             ha-card {
-              background: rgba(120, 32, 32, 0.30);
-              border-color: rgba(224, 106, 106, 0.45);
+              background: var(--casaray-red-bg);
+              border-color: var(--casaray-red-border);
             }
     - type: conditional
       grid_options: {columns: 6, rows: auto}
@@ -397,8 +401,8 @@ views:
         card_mod:
           style: |
             ha-card {
-              background: rgba(120, 32, 32, 0.30);
-              border-color: rgba(224, 106, 106, 0.45);
+              background: var(--casaray-red-bg);
+              border-color: var(--casaray-red-border);
             }
     - type: conditional
       grid_options: {columns: 6, rows: auto}
@@ -417,8 +421,8 @@ views:
         card_mod:
           style: |
             ha-card {
-              background: rgba(120, 32, 32, 0.30);
-              border-color: rgba(224, 106, 106, 0.45);
+              background: var(--casaray-red-bg);
+              border-color: var(--casaray-red-border);
             }
     - type: conditional
       grid_options: {columns: 6, rows: auto}
@@ -436,8 +440,8 @@ views:
         card_mod:
           style: |
             ha-card {
-              background: rgba(120, 32, 32, 0.30);
-              border-color: rgba(224, 106, 106, 0.45);
+              background: var(--casaray-red-bg);
+              border-color: var(--casaray-red-border);
             }
     - type: conditional
       grid_options: {columns: 6, rows: auto}
@@ -455,8 +459,8 @@ views:
         card_mod:
           style: |
             ha-card {
-              background: rgba(120, 32, 32, 0.30);
-              border-color: rgba(224, 106, 106, 0.45);
+              background: var(--casaray-red-bg);
+              border-color: var(--casaray-red-border);
             }
     - type: conditional
       grid_options: {columns: 6, rows: auto}
@@ -474,8 +478,8 @@ views:
         card_mod:
           style: |
             ha-card {
-              background: rgba(120, 82, 24, 0.26);
-              border-color: rgba(232, 163, 61, 0.42);
+              background: var(--casaray-amber-bg);
+              border-color: var(--casaray-amber-border);
             }
     # An unpaid bill is an attention item, and this is where an executive
     # overview should raise it -- which is why the two bill tiles that used to
@@ -497,8 +501,8 @@ views:
         card_mod:
           style: |
             ha-card {
-              background: rgba(120, 82, 24, 0.26);
-              border-color: rgba(232, 163, 61, 0.42);
+              background: var(--casaray-amber-bg);
+              border-color: var(--casaray-amber-border);
             }
   # -------------------------------------------------------------------------
   # BAND 4, COLUMN 1 -- "Right now". The render's left column: one large
@@ -548,11 +552,11 @@ views:
           ha-card {
             {% if states(config.entity) in ['unavailable','unknown','none'] %}
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
             {% else %}
-            background: rgba(120, 82, 24, 0.22);
-            border-color: rgba(232, 163, 61, 0.40);
+            background: var(--casaray-amber-bg);
+            border-color: var(--casaray-amber-border);
             {% endif %}
           }
     - type: tile
@@ -567,8 +571,8 @@ views:
           ha-card {
             {% if states(config.entity) in ['unavailable','unknown','none'] %}
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
             {% endif %}
           }
     # Daylight, kept from the previous Home footer. Two across, because they
@@ -647,8 +651,8 @@ views:
           ha-card {
             {% if states(config.entity) in ['unavailable','unknown','none'] %}
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
             {% endif %}
           }
 
@@ -925,8 +929,8 @@ views:
           ha-card {
             {% if states(config.entity) in ['unavailable','unknown','none'] %}
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
             {% endif %}
           }
     - type: tile
@@ -941,8 +945,8 @@ views:
           ha-card {
             {% if states(config.entity) in ['unavailable','unknown','none'] %}
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
             {% endif %}
           }
     - type: tile
@@ -957,8 +961,8 @@ views:
           ha-card {
             {% if states(config.entity) in ['unavailable','unknown','none'] %}
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
             {% endif %}
           }
     - type: button
@@ -1031,8 +1035,8 @@ views:
           ha-card {
             {% if states(config.entity) in ['unavailable','unknown','none'] %}
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
             {% endif %}
           }
     - type: tile
@@ -1047,8 +1051,8 @@ views:
           ha-card {
             {% if states(config.entity) in ['unavailable','unknown','none'] %}
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
             {% endif %}
           }
 
@@ -1592,8 +1596,8 @@ views:
           ha-card {
             {% if states(config.entity) in ['unavailable','unknown','none'] %}
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
             {% endif %}
           }
     - type: tile
@@ -1605,8 +1609,8 @@ views:
           ha-card {
             {% if states(config.entity) in ['unavailable','unknown','none'] %}
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
             {% endif %}
           }
     - type: tile
@@ -1618,8 +1622,8 @@ views:
           ha-card {
             {% if states(config.entity) in ['unavailable','unknown','none'] %}
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
             {% endif %}
           }
     - type: tile
@@ -1631,8 +1635,8 @@ views:
           ha-card {
             {% if states(config.entity) in ['unavailable','unknown','none'] %}
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
             {% endif %}
           }
     - type: markdown
@@ -1819,8 +1823,8 @@ views:
           ha-card {
             {% if states(config.entity) in ['unavailable','unknown','none'] %}
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
             {% endif %}
           }
     - type: history-graph
@@ -3201,8 +3205,8 @@ views:
           ha-card {
             {% if states(config.entity) in ['unavailable','unknown','none'] %}
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
             {% endif %}
           }
     - type: history-graph
@@ -3736,8 +3740,8 @@ views:
           ha-card {
             {% if states(config.entity) in ['unavailable','unknown','none'] %}
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
             {% endif %}
           }
     - type: tile
@@ -3750,8 +3754,8 @@ views:
           ha-card {
             {% if states(config.entity) in ['unavailable','unknown','none'] %}
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
             {% endif %}
           }
     - type: tile
@@ -3764,8 +3768,8 @@ views:
           ha-card {
             {% if states(config.entity) in ['unavailable','unknown','none'] %}
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
             {% endif %}
           }
     - type: tile
@@ -3777,8 +3781,8 @@ views:
           ha-card {
             {% if states(config.entity) in ['unavailable','unknown','none'] %}
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
             {% endif %}
           }
     - type: tile
@@ -3790,8 +3794,8 @@ views:
           ha-card {
             {% if states(config.entity) in ['unavailable','unknown','none'] %}
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
             {% endif %}
           }
     - type: tile
@@ -3803,8 +3807,8 @@ views:
           ha-card {
             {% if states(config.entity) in ['unavailable','unknown','none'] %}
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
             {% endif %}
           }
 
@@ -4372,8 +4376,8 @@ views:
           ha-card {
             {% if states(config.entity) in ['unavailable','unknown','none'] %}
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
             {% endif %}
           }
     - type: media-control
@@ -4738,8 +4742,8 @@ views:
           ha-card {
             {% if states(config.entity) in ['unavailable','unknown','none'] %}
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
             {% endif %}
           }
     - type: tile
@@ -4751,8 +4755,8 @@ views:
           ha-card {
             {% if states(config.entity) in ['unavailable','unknown','none'] %}
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
             {% endif %}
           }
     - type: tile
@@ -4764,8 +4768,8 @@ views:
           ha-card {
             {% if states(config.entity) in ['unavailable','unknown','none'] %}
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
             {% endif %}
           }
     - type: tile
@@ -4777,8 +4781,8 @@ views:
           ha-card {
             {% if states(config.entity) in ['unavailable','unknown','none'] %}
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
             {% endif %}
           }
 
@@ -4814,8 +4818,8 @@ views:
           ha-card {
             {% if states(config.entity) in ['unavailable','unknown','none'] %}
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
             {% endif %}
           }
 
@@ -5569,8 +5573,8 @@ views:
         card_mod:
           style: |
             ha-card {
-              background: rgba(58, 62, 70, 0.30);
-              border-color: rgba(150, 156, 166, 0.30);
+              background: var(--casaray-grey-bg);
+              border-color: var(--casaray-grey-border);
               border-style: dashed;
             }
 
@@ -7355,8 +7359,8 @@ views:
           ha-card {
             {% if states(config.entity) in ['unavailable','unknown','none'] %}
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
             {% endif %}
           }
     - type: tile
@@ -7369,8 +7373,8 @@ views:
           ha-card {
             {% if states(config.entity) in ['unavailable','unknown','none'] %}
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
             {% endif %}
           }
     - type: tile
@@ -7383,8 +7387,8 @@ views:
           ha-card {
             {% if states(config.entity) in ['unavailable','unknown','none'] %}
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
             {% endif %}
           }
     - type: history-graph
@@ -7653,8 +7657,8 @@ views:
           ha-card {
             {% if states(config.entity) in ['unavailable','unknown','none'] %}
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
             {% endif %}
           }
     - type: tile
@@ -7667,8 +7671,8 @@ views:
           ha-card {
             {% if states(config.entity) in ['unavailable','unknown','none'] %}
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
             {% endif %}
           }
     - type: tile
@@ -8025,8 +8029,8 @@ views:
           ha-card {
             {% if states(config.entity) in ['unavailable','unknown','none'] %}
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
             {% endif %}
           }
 
@@ -8949,8 +8953,8 @@ views:
           ha-card {
             {% if states(config.entity) in ['unavailable','unknown','none'] %}
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
             {% endif %}
           }
 
@@ -9283,8 +9287,8 @@ views:
         card_mod:
           style: |
             ha-card {
-              background: rgba(58, 62, 70, 0.30);
-              border-color: rgba(150, 156, 166, 0.30);
+              background: var(--casaray-grey-bg);
+              border-color: var(--casaray-grey-border);
             }
     - type: conditional
       grid_options: {columns: 6, rows: 1}
@@ -9514,14 +9518,14 @@ views:
         style: |
           ha-card {
             {% if is_state('binary_sensor.eero_wan_status','on') %}
-            background: rgba(24, 64, 52, 0.42);
-            border-color: rgba(95, 211, 154, 0.34);
+            background: var(--casaray-green-bg);
+            border-color: var(--casaray-green-border);
             {% elif is_state('binary_sensor.eero_wan_status','off') %}
-            background: rgba(120, 32, 32, 0.32);
-            border-color: rgba(224, 106, 106, 0.45);
+            background: var(--casaray-red-bg);
+            border-color: var(--casaray-red-border);
             {% else %}
-            background: rgba(58, 62, 70, 0.26);
-            border-color: rgba(150, 156, 166, 0.34);
+            background: var(--casaray-grey-bg);
+            border-color: var(--casaray-grey-border);
             border-style: dashed;
             {% endif %}
           }
@@ -9704,8 +9708,8 @@ views:
         style: |
           ha-card {
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
           }
     - type: markdown
       grid_options: {columns: 6, rows: auto}
@@ -9720,8 +9724,8 @@ views:
         style: |
           ha-card {
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
           }
     - type: markdown
       grid_options: {columns: 6, rows: auto}
@@ -9736,8 +9740,8 @@ views:
         style: |
           ha-card {
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
           }
     - type: markdown
       grid_options: {columns: 6, rows: auto}
@@ -9752,8 +9756,8 @@ views:
         style: |
           ha-card {
             border-style: dashed;
-            border-color: rgba(150, 156, 166, 0.38);
-            background: rgba(58, 62, 70, 0.22);
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
           }
 
   - type: grid
@@ -9881,8 +9885,8 @@ views:
         card_mod:
           style: |
             ha-card {
-              background: rgba(120, 32, 32, 0.30);
-              border-color: rgba(224, 106, 106, 0.45);
+              background: var(--casaray-red-bg);
+              border-color: var(--casaray-red-border);
             }
     - type: conditional
       grid_options: {columns: 6, rows: 1}
@@ -9900,8 +9904,8 @@ views:
         card_mod:
           style: |
             ha-card {
-              background: rgba(120, 32, 32, 0.30);
-              border-color: rgba(224, 106, 106, 0.45);
+              background: var(--casaray-red-bg);
+              border-color: var(--casaray-red-border);
             }
     - type: conditional
       grid_options: {columns: 6, rows: 1}
@@ -9919,8 +9923,8 @@ views:
         card_mod:
           style: |
             ha-card {
-              background: rgba(120, 32, 32, 0.30);
-              border-color: rgba(224, 106, 106, 0.45);
+              background: var(--casaray-red-bg);
+              border-color: var(--casaray-red-border);
             }
     - type: conditional
       grid_options: {columns: 6, rows: 1}
@@ -9939,8 +9943,8 @@ views:
         card_mod:
           style: |
             ha-card {
-              background: rgba(120, 32, 32, 0.30);
-              border-color: rgba(224, 106, 106, 0.45);
+              background: var(--casaray-red-bg);
+              border-color: var(--casaray-red-border);
             }
   - type: grid
     column_span: 1
@@ -9976,8 +9980,8 @@ views:
         card_mod:
           style: |
             ha-card {
-              background: rgba(120, 82, 24, 0.26);
-              border-color: rgba(232, 163, 61, 0.42);
+              background: var(--casaray-amber-bg);
+              border-color: var(--casaray-amber-border);
             }
     - type: conditional
       grid_options: {columns: 6, rows: 1}
@@ -9994,8 +9998,8 @@ views:
         card_mod:
           style: |
             ha-card {
-              background: rgba(120, 82, 24, 0.26);
-              border-color: rgba(232, 163, 61, 0.42);
+              background: var(--casaray-amber-bg);
+              border-color: var(--casaray-amber-border);
             }
     - type: conditional
       grid_options: {columns: 6, rows: 1}
@@ -10012,8 +10016,8 @@ views:
         card_mod:
           style: |
             ha-card {
-              background: rgba(120, 82, 24, 0.26);
-              border-color: rgba(232, 163, 61, 0.42);
+              background: var(--casaray-amber-bg);
+              border-color: var(--casaray-amber-border);
             }
     - type: conditional
       grid_options: {columns: 6, rows: 1}
@@ -10030,8 +10034,8 @@ views:
         card_mod:
           style: |
             ha-card {
-              background: rgba(120, 32, 32, 0.30);
-              border-color: rgba(224, 106, 106, 0.45);
+              background: var(--casaray-red-bg);
+              border-color: var(--casaray-red-border);
             }
     - type: conditional
       grid_options: {columns: 6, rows: 1}
@@ -10048,8 +10052,8 @@ views:
         card_mod:
           style: |
             ha-card {
-              background: rgba(120, 32, 32, 0.30);
-              border-color: rgba(224, 106, 106, 0.45);
+              background: var(--casaray-red-bg);
+              border-color: var(--casaray-red-border);
             }
     - type: conditional
       grid_options: {columns: 6, rows: 1}
@@ -10066,8 +10070,8 @@ views:
         card_mod:
           style: |
             ha-card {
-              background: rgba(120, 32, 32, 0.30);
-              border-color: rgba(224, 106, 106, 0.45);
+              background: var(--casaray-red-bg);
+              border-color: var(--casaray-red-border);
             }
     - type: conditional
       grid_options: {columns: 6, rows: 1}
@@ -10085,8 +10089,8 @@ views:
         card_mod:
           style: |
             ha-card {
-              background: rgba(120, 32, 32, 0.30);
-              border-color: rgba(224, 106, 106, 0.45);
+              background: var(--casaray-red-bg);
+              border-color: var(--casaray-red-border);
             }
   - type: grid
     column_span: 1
@@ -10122,8 +10126,8 @@ views:
         card_mod:
           style: |
             ha-card {
-              background: rgba(120, 32, 32, 0.30);
-              border-color: rgba(224, 106, 106, 0.45);
+              background: var(--casaray-red-bg);
+              border-color: var(--casaray-red-border);
             }
     - type: conditional
       grid_options: {columns: 6, rows: 1}
@@ -10140,8 +10144,8 @@ views:
         card_mod:
           style: |
             ha-card {
-              background: rgba(58, 62, 70, 0.30);
-              border-color: rgba(150, 156, 166, 0.30);
+              background: var(--casaray-grey-bg);
+              border-color: var(--casaray-grey-border);
             }
     - type: conditional
       grid_options: {columns: 6, rows: 1}
@@ -10158,8 +10162,8 @@ views:
         card_mod:
           style: |
             ha-card {
-              background: rgba(120, 82, 24, 0.26);
-              border-color: rgba(232, 163, 61, 0.42);
+              background: var(--casaray-amber-bg);
+              border-color: var(--casaray-amber-border);
             }
     - type: markdown
       grid_options: {columns: 12, rows: 2}

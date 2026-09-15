@@ -83,6 +83,47 @@ grid and every `grid_options` width on the page. Both are larger decisions
 than a visual batch, so neither was taken unilaterally. Say the word and
 either can be costed.
 
+## DR-014 — the theme was a photograph behind a scrim; the mockups are not
+
+**Status:** `FIXED — AWAITING LIVE VERIFICATION` · **Severity:** S3 ·
+2026-09-15.
+
+The live dashboard did not look like the renders, and the reason was
+underneath everything else: the approved 14/09 renders have **no photographic
+background**. A canvas readback of all three wall renders returns a flat
+`#0d1114` in the body and `#0f1418` at the top edge from every probe — corners,
+mid-edges, top, bottom — with no image detail at any of them. The theme was
+compositing frosted-glass cards over a night-sky photograph and a two-stop
+scrim, which is a different picture from the one that was approved.
+
+CLAUDE.md's design direction specified that photograph. The same file says the
+mockups win where they disagree with it, so the renders decide.
+
+**What was actually wrong, in order of how much it mattered:**
+
+| | |
+|---|---|
+| Background | a photograph, where the renders have four flat gradient stops |
+| Surface colours | invented, not sampled — `rgba(16,31,54,0.52)` against a measured `#161b1f` |
+| Depth | two levels, page and card. The renders have three |
+| Colour ownership | **138 hardcoded rgba literals** across 69 card_mod blocks, with drift: the same amber existed at 0.22, 0.26 and 0.30, the same grey border at 0.30, 0.34 and 0.38 |
+| Blur cost | `blur(14px) saturate(118%)` on every card — two filter passes per frame on a wall iPad, most of it invisible |
+
+**Resolved as:** a self-contained `CasaRay` theme built from sampled values,
+with the whole palette in `--casaray-*` tokens and the dashboard carrying no
+colour of its own. Verified by rendering the theme file's own values and
+reading the pixels back: card over the flat background lands on `#161b1f`
+(exact), page body `#0d1114` (exact), top edge `#10161b` against `#0f1418`,
+alert red `#1f1616` against `#201615`.
+
+**The legacy dashboard is untouched.** It keeps the photograph and its five
+themes still share the old anchor; nothing in the new CasaRay block can reach
+them.
+
+**To restore the photograph:** uncomment the marked line in the `CasaRay`
+theme's `lovelace-background`. The glass is alpha-composited, so it keeps
+working over an image with no other change.
+
 ## DR-013 — the wall iPad resolves TWO section columns, not three
 
 **Status:** `FIXED — AWAITING LIVE VERIFICATION` · **Severity:** S3 ·

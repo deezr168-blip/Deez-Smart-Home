@@ -186,12 +186,27 @@ or with `DESIGN_REFERENCE.md`, they win. What they settle so far:
 - **Controls are tile features** — a light's brightness bar, a fan's speed —
   not custom cards.
 
-**CasaRay × Your Name.** Cinematic, calm, premium, midnight-blue, slightly
-translucent, and still native to Home Assistant. The background is the Your
-Name night-sky frame at `/local/your_name_night_sky.jpg`, fixed and covering
-the viewport; the palette is sampled from that image (see
-`themes/deez_your_name.yaml`). Cards are frosted glass over the sky —
-translucent, light-bordered, no heavy shadows.
+**Cinematic, calm, premium, and still native to Home Assistant.** Cards are
+frosted glass — translucent, light-bordered, no heavy shadows.
+
+**The background is CSS, not the photograph, as of 2026-09-15.** The Your Name
+night-sky frame is still what the LEGACY dashboard uses and its five themes are
+untouched. CasaRay's is four stacked gradients — vignette, one soft blue bloom
+centred above the viewport, a vertical lift, a base colour. The reason is
+measurement, not taste: a canvas readback of all three approved wall renders
+returns a flat `#0d1114` body and `#0f1418` top edge at every background probe,
+with no image detail anywhere, and the mockups win where they disagree with
+this section. `DR-014`. Restoring the photograph is one commented line in the
+`CasaRay` theme's `lovelace-background`.
+
+**Every CasaRay surface colour is sampled, and lives in a token.** The renders
+give `#0d1114` page, `#161b1f` card, `#1a1f25` elevated, `#201615` alert red.
+One glass tint at three alphas reproduces all of them, so cards *lighten what
+is behind them* rather than being painted a fixed colour. The tokens are
+`--casaray-*` in `themes/deez_your_name.yaml`; the dashboard carries **no
+hardcoded colour at all** — 138 rgba literals were replaced by `var()` on
+2026-09-15. Retune from the theme; never reintroduce a literal into a card_mod
+block.
 
 Global first: put surface treatment in the theme so future cards inherit it,
 rather than adding a `card_mod` block per card. Reach for a native Tile or
