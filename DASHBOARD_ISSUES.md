@@ -70,9 +70,11 @@ deliberately hides on this dashboard. Building a fake one would mean a custom
 card, which CasaRay's native-first rule rules out, and it would still scroll
 away with the content.
 
-**Resolved as:** Home ships the mockup's top bar. The wordmark takes 3 of the
-12 columns, six icon nav buttons take 1 each, and the clock takes the last 3
-— hard left, centre-right, hard right, which is the render's proportion.
+**Resolved as:** Home ships the mockup's top bar. It was built as one row —
+wordmark(3), six icon buttons(1 each), clock(3) — which is the render's exact
+proportion, and which the live iPad could not hold: see `DR-012`. It is now
+two rows, wordmark(6) and clock(6) over six icons at 2 columns each. Same
+composition, same elements, widths that survive the real renderer.
 
 **If Ray wants a real sidebar anyway** it needs one of: a custom card
 (`custom:sidebar-card` or similar, installed through HACS), or a `panel`-type
@@ -80,6 +82,46 @@ view with a hand-built two-column layout, which would forfeit the sections
 grid and every `grid_options` width on the page. Both are larger decisions
 than a visual batch, so neither was taken unilaterally. Say the word and
 either can be costed.
+
+## DR-012 — `grid_options.columns` is a fraction of the *rendered* width, and the render was narrower than the arithmetic
+
+**Status:** `FIXED — AWAITING LIVE VERIFICATION` · **Severity:** S3 ·
+2026-09-15, from Ray's live iPad review of `262d59d`.
+
+Four separate complaints turned out to be one defect:
+
+| Symptom | Card | Width asked for |
+|---|---|---|
+| `CasaRay` broke vertically into stacked fragments | brand markdown | `columns: 3` |
+| Nav rail ate the header row | six buttons | `columns: 1` each |
+| Chips rendered "almost circular" | four markdown pills | `columns: 3` each |
+| More boards labels ran together | twelve buttons | `columns: 2` each |
+
+Every one is a card that was given a small fraction of twelve. The arithmetic
+said a `column_span: 3` section on an iPad in landscape is roughly 1150 px, so
+`columns: 3` should be ~280 px and `columns: 1` ~95 px — comfortable. The live
+render disagreed, and disagreed by enough that a 3/12 markdown card came out
+*narrower than a markdown card's own minimum height*, which is what made the
+chips circles rather than pills.
+
+**The lesson, which is now in `CLAUDE.md`:** `columns` is a fraction of the
+width the renderer actually hands the section, which this environment cannot
+measure and must not assume. Text-bearing cards need generous fractions.
+Nothing on Home is below `columns: 2` any more, no text card is below
+`columns: 3`, and the two cards that carry the wordmark and the clock also
+carry `white-space: nowrap` so no future width change can wrap them.
+
+**Also fixed by the same pass:** the three-column body was three vertical
+stacks of very different heights. A CSS grid row is as tall as its tallest
+member, so the difference showed as dead space. Home is now five horizontal
+bands whose members are of comparable height — see `CR-251` in
+`LIVE_VERIFICATION_QUEUE.md`.
+
+**Still assumed, and only Ray can settle it:** that the iPad resolves three
+columns. Ray's own report of "three disconnected vertical stacks" is good
+evidence it does. If it turns out to be two, the `column_span: 2` groups
+(Rooms, Energy) will take a full row and leave their partner alone on the
+next — one line of YAML to change, once someone has looked.
 
 ## DR-011 — the chip strip could not stay a native badge row
 
@@ -98,6 +140,11 @@ gained: the right order, and one templated card per chip instead of a
 bilingual pair (a badge `name` cannot be templated, so each chip needed two
 badges with opposite `visibility`). What was lost: the small leading icon a
 badge draws for free, and tap-for-more-info.
+
+**Superseded in part, same day.** The four pills rendered as circles on the
+iPad (DR-012 above); the strip is now a single full-width markdown card
+carrying all four readings on one line. The badge-ordering reasoning below
+still stands and is why the strip is a card at all.
 
 Each chip now guards its own reading. In particular `Home` no longer prints
 `0 of 3` when every device tracker is down — that read as "nobody is home",

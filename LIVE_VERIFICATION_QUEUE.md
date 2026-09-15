@@ -306,9 +306,9 @@ rendering fault, not a data one.
 | ID | What changed | What to check live | Expected result | Commit | P | Result |
 |---|---|---|---|---|---|---|
 | CR-236 | **Home is a three-column page.** `max_columns` 2 -> 3; page-level bands are `column_span: 3` | Open Home on the wall panel and on the iPad in landscape | Three body columns side by side — Right now, Who's home, Rooms — not two columns with a stray third | `262d59d` | **P1** | PENDING |
-| CR-237 | **Top bar.** Wordmark(3) + six icon nav buttons(1 each) + clock(3), filling 12 columns | Look at the first row | `CasaRay` hard left, six icons centre-right with **Home tinted amber**, time hard right. No wrapping, no icon squashed | `262d59d` | **P1** | PENDING |
+| CR-237 | **Top bar, now two rows.** Wordmark(6) + clock(6), then six nav icons at 2 columns each. Superseded the one-row 3+6×1+3 build, which wrapped live | Look at the first two rows | `CasaRay` on **one line**, hard left, greeting under it; time and date hard right; six evenly spaced icons beneath with **Home tinted amber**. No vertical wrapping anywhere | `PLACEHOLDER2` | **P1** | PENDING |
 | CR-238 | **`kiosk_mode` hides HA's own nav, so the icon rail is the only way off Home.** Six destinations: Home, Rooms, Security, Energy, Climate, Cameras | Tap each of the six icons | Each opens the right board, and the Back control on that board returns | `262d59d` | **P1** | PENDING |
-| CR-239 | **Chip strip rebuilt from badges to markdown pills** so it sits *below* the wordmark, per DR-011 | Look at the second row | Four pills — Outside, Inside, Home, Monitored — **beneath** the CasaRay bar, not above it. Rounded ends | `262d59d` | **P1** | PENDING |
+| CR-239 | **Chip strip is now one full-width card**, not four. Superseded the four-pill build, which rendered as circles | Look at the strip under the top bar | One long low pill reading `Outside 8° · Inside 17.2° · Home 2 of 3 · Monitored 0 W`, text starting at the left. Wider than it is tall | `PLACEHOLDER2` | **P1** | PENDING |
 | CR-240 | **`Home` chip no longer prints `0 of 3` when the trackers are down** [guard] | Disable one person's device tracker, then all three | One down -> `1 of 3 · 1 unknown`; all down -> `No data`. Never a bare `0 of 3` | `262d59d` | P2 | PENDING |
 | CR-241 | **Clock is `#` sized, right-aligned, with lowercase meridiem** — `8:14 pm` over `15/09/26` | Read the top right corner | Time dominant, date beneath, `DD/MM/YY`, **never** `DD/MM/YYYY`. The other 20 clocks on the dashboard still show `PM`; that is expected until those views are rebuilt | `262d59d` | P2 | PENDING |
 | CR-242 | **Needs attention no longer repeats its own cards.** The roll-up counts them, then reports only what has no card because it has no reading | Look at the band with something actually wrong | e.g. `4 things need attention. 3 door sensors are not reporting.` — and the four red/amber cards below it, two across, not a duplicate bullet list | `262d59d` | P2 | PENDING |
@@ -318,8 +318,41 @@ rendering fault, not a data one.
 | CR-246 | **`sensor.casa_monitored_power` is on a board for the first time** — the `Monitored` chip and the amber `Monitored power` card | Compare against Developer Tools | The same figure, and the footnote below it reads "Two circuits are metered…" | `262d59d` | P2 | PENDING |
 | CR-247 | **Security is one composed panel** — interpreted summary and the front-door camera side by side, then Front door / Parents Room / Backyard / All cameras | Look at the Security band | Two half-width cards above four equal tiles. The three door tiles are **dashed and grey** while their sensors are down, not green "Closed" | `262d59d` | **P1** | PENDING |
 | CR-248 | **Dropped from Home:** the Indoor climate tile group (4 tiles), the `sun.sun` tile, and the Outstanding/Unpaid bill tiles | Confirm nothing you rely on daily is gone | Indoor temperature is in the `Inside` chip and on Climate; sunrise/sunset are still in Right now; bills raise themselves via CR-243. Say so if any of these should come back | `262d59d` | P3 | PENDING |
-| CR-249 | **Chip pills fill their cell rather than hugging their text** — the render groups them hard left, this spreads four equal pills across the strip [known difference] | Look at the chip row | Four evenly spaced pills. Tell me if you prefer them grouped left; it needs a different card, not a width tweak | `262d59d` | P4 | PENDING |
+| CR-249 | **RESOLVED, not accepted.** The four pills were nearly circular because a markdown card has a minimum height and a 3/12 cell came out narrower than that height. One full-width card cannot deform that way at any size | Confirm the chip strip is a compact horizontal strip | Short, wide, readable, grouped left. If it still looks wrong the container is narrower than anything assumed here — say so and I will drop it to plain text | `PLACEHOLDER2` | P2 | PENDING |
 | CR-250 | **Bilingual** [中] | Toggle `input_boolean.chinese_dashboard` on Home | Every heading, chip, summary and footnote switches; entity names, room names and board names stay English by the established convention | `262d59d` | P2 | PENDING |
+
+## CasaRay — Home live-render geometry correction, 2026-09-15
+
+The 2026-09-15 rebuild was structurally right and visually wrong on the real
+iPad. Every symptom Ray reported shares one cause: **`grid_options.columns` is
+a fraction of the width the renderer actually gives a section, and that width
+was far smaller than the grid arithmetic predicted.** A 1/12 cell broke
+`CasaRay` vertically; a 3/12 markdown card came out narrower than its own
+minimum height and drew a circle; a 2/12 button could not hold
+`Entertainment`.
+
+So this pass widened everything and rebuilt the page as explicit horizontal
+bands instead of three vertical stacks of unequal height. No entity, service
+call, navigation target, template or bilingual rule changed — entity
+references stayed at 434, navigation at 124 links across the same 28 targets,
+and the five service calls are byte-identical.
+
+| ID | What changed | What to check live | Expected result | Commit | P | Result |
+|---|---|---|---|---|---|---|
+| CR-251 | **The page is horizontal bands now.** A: Right now / Who's home / One tap. B: Rooms (2 of 3) / Shopping list (1 of 3). C: Security, full width. D: Energy now (2 of 3) / Recent activity (1 of 3). E: More boards, full width | Look at the page as a whole on the wall iPad | Five readable bands, each filled across. **No tall blank gaps** below a short group | `PLACEHOLDER2` | **P1** | PENDING |
+| CR-252 | **Rooms went from 1 column of 3 to 2 of 3** | Look at the room rows | Room name and its state line comfortable on one row each, not fighting for space. All seven rooms present, each still opening its own board | `PLACEHOLDER2` | **P1** | PENDING |
+| CR-253 | **More boards rebuilt 6-across → 4-across**, `rows: 2`, in the order Rooms/Lighting/Climate/Energy · Bills/Entertainment/Security/Cameras · Network/People/Automations/Alerts, then House health and English / 中文 at half width each | Read every board label | **Every label fully readable, none running into its neighbour.** Large targets. All 14 still navigate | `PLACEHOLDER2` | **P1** | PENDING |
+| CR-254 | **Shopping list sized `rows: 6`** so it fills the band beside Rooms instead of leaving a hole | Look right of Rooms | A full-height list card, still editable, still `todo.shopping_list` | `PLACEHOLDER2` | P2 | PENDING |
+| CR-255 | **Recent activity moved beside Energy** at 1 of 3, logbook `rows: 2` | Look at the lower band | Energy figures left, logbook right, roughly level. No near-empty strip across the page | `PLACEHOLDER2` | P2 | PENDING |
+| CR-256 | **One tap and Who's home cards are taller** — scene buttons `rows: 3`, person cards `rows: 3` | Tap a scene button | Big elder-friendly targets; same four presets, same brightness values, unchanged behaviour | `PLACEHOLDER2` | P2 | PENDING |
+| CR-257 | **`white-space: nowrap` on the wordmark and clock** — a hard guarantee, not a width bet | Look at the top corners | Neither can wrap, whatever the container. If either is ever *clipped* instead, that is the container being narrower than expected — worth telling me | `PLACEHOLDER2` | P3 | PENDING |
+| CR-258 | **Chip separator disambiguated.** The strip joins its four readings with ` · `, so the Home chip's own separator became `,` in English and `、` in Chinese | With one tracker down, read the Home chip | `Home 1 of 3, 1 unknown` — not a fifth reading | `PLACEHOLDER2` | P3 | PENDING |
+| CR-259 | **Monitored power prints `0 W`, not `0.0 W`**, while `147.9 W` keeps its decimal | Read the Monitored chip at a moment of zero draw | `Monitored 0 W` | `PLACEHOLDER2` | P4 | PENDING |
+
+**If three columns are not what the iPad renders**, say so — the whole band
+plan assumes three, and at two the `column_span: 2` groups (Rooms, Energy)
+take a full row and leave their partner half a row to itself. That is one
+line of YAML to change, but only Ray can see which it is.
 
 ## CasaRay — defects found live on 2026-09-06 and fixed
 

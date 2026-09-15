@@ -29,10 +29,14 @@ Home's clock. Bilingual on `input_boolean.chinese_dashboard`; see *Bilingual
 conventions* below.
 
 **Home carries the design system.** It was rebuilt against the 14/09 wall
-render on 2026-09-15 and is the reference every other view follows as it is
-rebuilt in turn: a top bar (wordmark · icon nav rail · clock over date), a
-chip strip, a full-width Needs attention band, three equal body columns, then
-full-width bands. Navigation lives **in the page**, not in Home Assistant's
+render on 2026-09-15, then corrected against the live iPad the same day, and
+is the reference every other view follows as it is rebuilt in turn. Eight
+bands, top to bottom: **top bar** (wordmark and clock over a row of six nav
+icons) · **chip strip** (one full-width card) · **Needs attention** ·
+**Right now / Who's home / One tap** · **Rooms (2 of 3) / Shopping list** ·
+**Security** · **Energy now (2 of 3) / Recent activity** · **More boards**.
+Horizontal bands, not vertical stacks — see the geometry rules below for why.
+Navigation lives **in the page**, not in Home Assistant's
 chrome — `kiosk_mode` hides the sidebar and header, so Home's icon rail and
 its named More boards index are the only way around the dashboard. Do not
 remove either.
@@ -221,6 +225,31 @@ rebuilding its composition at the same time, or its bands span a column that
 is not there.
 
 Whatever `max_columns` says, never cram four narrow columns onto the iPad.
+
+**`columns` is a fraction of the RENDERED width, and this environment cannot
+measure it.** The 2026-09-15 Home rebuild assumed a full-width band on an iPad
+in landscape is about 1150px, so `columns: 3` would be ~280px. Live it was far
+less — enough that a 3/12 markdown card came out narrower than a markdown
+card's own minimum height and drew a circle instead of a pill, and `columns: 1`
+broke the word `CasaRay` vertically. See `DR-012`. The floors that came out of
+that, for `casaray_v2.yaml`:
+
+- **Nothing below `columns: 2`**, ever — a 1/12 cell is not a usable card.
+- **No text-bearing card below `columns: 3`.** A button whose label is longer
+  than `Bills` wants 3; `Entertainment` proved 2 is not enough.
+- **A single wide card beats several narrow ones** for a row of readings. The
+  chip strip is one full-width markdown card, not four pills, because one card
+  is always wider than it is tall whatever the container does.
+- **`white-space: nowrap`** on any card whose text must not break — the
+  wordmark and the clock carry it. It is a guarantee; a `columns` value is a bet.
+
+**Rows are as tall as their tallest member.** Sections placed side by side are
+CSS grid items: the short one does not shrink the row, it leaves a hole under
+itself. Pair groups of comparable height across a band, and give an
+under-filled card an explicit `rows:` rather than leaving it `auto` beside a
+tall neighbour. Home's five bands (top bar · chips · Needs attention ·
+Right now/Who's home/One tap · Rooms/Shopping · Security · Energy/Recent ·
+More boards) are arranged on exactly that principle.
 
 Still true from the previous direction: calm, minimal, Apple-like.
 Sections layout with `grid_options`, not nested `grid` cards. One `heading`

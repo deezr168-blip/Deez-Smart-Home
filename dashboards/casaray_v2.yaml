@@ -65,17 +65,27 @@ views:
   sections:
 
   # -------------------------------------------------------------------------
-  # BAND 1 -- top bar. Wordmark (3) + six icon buttons (1 each) + clock (3)
-  # fills the 12-column grid exactly, which is the mockup's proportion: brand
-  # hard left, rail right of centre, time hard right. The rail is the ONLY
-  # navigation on this dashboard -- kiosk_mode hides Home Assistant's own
-  # header and sidebar -- so every icon here is load-bearing.
+  # BAND 1 -- top bar, in two rows: wordmark (6) and clock (6), then the six
+  # nav icons at 2 columns each.
+  #
+  # It was one row -- brand(3) + six buttons(1 each) + clock(3) -- because that
+  # is the render's proportion. Live on the iPad it was not survivable: a
+  # 1/12 cell is narrow enough that `CasaRay` broke vertically and the rail
+  # ate the row. `columns` is a fraction of whatever width the renderer
+  # actually gives the section, and that turned out to be far less than the
+  # grid arithmetic suggested, so every cell here is now at least double.
+  # Two rows, nothing under 2/12, and `white-space: nowrap` on the two text
+  # cards so neither can ever wrap again whatever the container does.
+  #
+  # The rail is still the ONLY navigation on this dashboard -- kiosk_mode
+  # hides Home Assistant's own header and sidebar -- so every icon is
+  # load-bearing.
   # -------------------------------------------------------------------------
   - type: grid
     column_span: 3
     cards:
     - type: markdown
-      grid_options: {columns: 3, rows: auto}
+      grid_options: {columns: 6, rows: auto}
       content: |
         {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
         {%- set h = now().hour -%}
@@ -84,11 +94,28 @@ views:
         {%- else %}{% set g = '晚安' if cn else 'Good evening' %}{% endif -%}
         # CasaRay
         {{ g }}{{ '，Ray' if cn else ', Ray' }}
+      card_mod:
+        style: |
+          ha-card { white-space: nowrap; }
+    # Time dominant, date beneath in DD/MM/YY -- never %Y. Right-aligned to the
+    # page edge the way the render places it; text-align is the one thing a
+    # markdown card cannot reach natively.
+    - type: markdown
+      grid_options: {columns: 6, rows: auto}
+      content: |
+        {#- Lowercase meridiem -- `8:14 pm`, as the render draws it. The other
+            20 clocks on this dashboard still print `PM`; they follow when
+            their own views are rebuilt. DD/MM/YY is mandatory, never %Y. -#}
+        # {{ now().strftime('%I:%M %p').lstrip('0').lower() }}
+        {{ now().strftime('%d/%m/%y') }}
+      card_mod:
+        style: |
+          ha-card { text-align: right; white-space: nowrap; }
     # Icon-only, per the mockup. The named equivalents live in the More boards
     # index at the foot of the page, which is what an older reader looking for
     # a word rather than a glyph will use.
     - type: button
-      grid_options: {columns: 1, rows: 1}
+      grid_options: {columns: 2, rows: 1}
       name: Home
       icon: mdi:home
       show_name: false
@@ -103,112 +130,99 @@ views:
             border-color: rgba(232, 163, 61, 0.45);
           }
     - type: button
-      grid_options: {columns: 1, rows: 1}
+      grid_options: {columns: 2, rows: 1}
       name: Rooms
       icon: mdi:floor-plan
       show_name: false
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
     - type: button
-      grid_options: {columns: 1, rows: 1}
+      grid_options: {columns: 2, rows: 1}
       name: Security
       icon: mdi:shield-home
       show_name: false
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/security}
     - type: button
-      grid_options: {columns: 1, rows: 1}
+      grid_options: {columns: 2, rows: 1}
       name: Energy
       icon: mdi:lightning-bolt
       show_name: false
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
     - type: button
-      grid_options: {columns: 1, rows: 1}
+      grid_options: {columns: 2, rows: 1}
       name: Climate
       icon: mdi:thermometer
       show_name: false
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/climate}
     - type: button
-      grid_options: {columns: 1, rows: 1}
+      grid_options: {columns: 2, rows: 1}
       name: Cameras
       icon: mdi:cctv
       show_name: false
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
-    # Time dominant, date beneath in DD/MM/YY -- never %Y. Right-aligned to the
-    # page edge the way the render places it; text-align is the one thing a
-    # markdown card cannot reach natively.
-    - type: markdown
-      grid_options: {columns: 3, rows: auto}
-      content: |
-        {#- Lowercase meridiem -- `8:14 pm`, as the render draws it. The other
-            20 clocks on this dashboard still print `PM`; they follow when
-            their own views are rebuilt. DD/MM/YY is mandatory, never %Y. -#}
-        # {{ now().strftime('%I:%M %p').lstrip('0').lower() }}
-        {{ now().strftime('%d/%m/%y') }}
-      card_mod:
-        style: |
-          ha-card { text-align: right; }
 
   # -------------------------------------------------------------------------
-  # BAND 2 -- the chip strip. Pill, dim label, bright value, exactly as the
-  # render draws it: `Outside 10deg`, `Inside 19.7deg`, `Home 2 of 3`,
-  # `Monitored 147.9 W`.
+  # BAND 2 -- the chip strip: one compact line, `Outside 8° · Inside 17° ·
+  # Home 2 of 3 · Monitored 0 W`.
   #
-  # These were native `badges` until this rebuild. Home Assistant renders a
-  # view's badges ABOVE its sections, which put the pill row on top of the
-  # CasaRay wordmark -- the one ordering the mockup is unambiguous about. A
-  # markdown card in a section can sit where the render puts it, so the strip
-  # is four of them with the pill shape restored by card_mod. The cost is the
-  # small leading icon a badge draws for free; the gain is the right order and
-  # one templated card per chip instead of a bilingual pair.
+  # It was four separate markdown cards at 3 columns each. Live on the iPad
+  # that produced four nearly circular cards -- a markdown card has a minimum
+  # height, and a 3/12 cell turned out to be narrower than its own height, so
+  # each pill came out taller than it was wide (CR-249, now resolved rather
+  # than accepted). One full-width card cannot do that at any container size:
+  # it is always wider than it is tall, always grouped from the left, and it
+  # wraps to a second line instead of deforming if the page ever gets narrow.
   #
-  # Each chip guards its own reading: an unavailable sensor says so rather
-  # than printing a zero or an empty pill.
+  # These were native `badges` before the 2026-09-15 rebuild. Home Assistant
+  # renders a view's badges ABOVE its sections, which put the pill row on top
+  # of the CasaRay wordmark -- the one ordering the mockup is unambiguous
+  # about. A markdown card in a section can sit where the render puts it.
+  # The cost is the small leading icon a badge draws for free; markdown has no
+  # verified way to render one, and `<ha-icon>` on the primary page is not a
+  # thing to guess at.
+  #
+  # Every reading is still guarded independently: a sensor that is not
+  # reporting says so rather than printing a zero. `Home` in particular never
+  # prints `0 of 3` while the trackers are down -- that would read as "nobody
+  # is home", a reassuring claim it cannot see.
   # -------------------------------------------------------------------------
   - type: grid
     column_span: 3
     cards:
     - type: markdown
-      grid_options: {columns: 3, rows: auto}
+      grid_options: {columns: 12, rows: auto}
       content: |
         {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
-        {%- set t = state_attr('weather.forecast_home','temperature') -%}
-        {{ '室外' if cn else 'Outside' }} **{{ ((t | round(0) | int) ~ '°') if t is not none else ('无数据' if cn else 'No data') }}**
-      card_mod: &casaray_chip
-        style: |
-          ha-card {
-            border-radius: 999px;
-          }
-    - type: markdown
-      grid_options: {columns: 3, rows: auto}
-      content: |
-        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
-        {%- set t = states('sensor.living_room_living_hue_hue_sensor_temperature') | float(none) -%}
-        {{ '室内' if cn else 'Inside' }} **{{ ((t | round(1)) ~ '°') if t is not none else ('无数据' if cn else 'No data') }}**
-      card_mod: *casaray_chip
-    - type: markdown
-      grid_options: {columns: 3, rows: auto}
-      content: |
-        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set nd = '无数据' if cn else 'No data' -%}
+        {#- Outside: the forecast entity's temperature attribute, whole degrees
+            as the render shows it. -#}
+        {%- set ot = state_attr('weather.forecast_home','temperature') -%}
+        {%- set outside = ((ot | round(0) | int) ~ '°') if ot is not none else nd -%}
+        {#- Inside: the Living Room Hue sensor. The render labels this same
+            reading `Inside`; no whole-house average sensor exists. -#}
+        {%- set it = states('sensor.living_room_living_hue_hue_sensor_temperature') | float(none) -%}
+        {%- set inside = ((it | round(1)) ~ '°') if it is not none else nd -%}
         {%- set ppl = ['person.raymond_du','person.vinh_du','person.ai_q_huang'] -%}
         {%- set ns = namespace(h=0, u=0) -%}
         {%- for p in ppl %}{% set st = states(p) %}{% if st == 'home' %}{% set ns.h = ns.h + 1 %}{% elif st in ['unavailable','unknown','none',''] %}{% set ns.u = ns.u + 1 %}{% endif %}{% endfor -%}
         {%- set n = ppl | count -%}
-        {%- if ns.u == n %}{% set val = '无数据' if cn else 'No data' %}
-        {%- elif ns.u %}{% set val = ('%d 人中 %d 人 · %d 人无数据' % (n, ns.h, ns.u)) if cn else ('%d of %d · %d unknown' % (ns.h, n, ns.u)) %}
-        {%- else %}{% set val = ('%d 人中 %d 人' % (n, ns.h)) if cn else ('%d of %d' % (ns.h, n)) %}{% endif -%}
-        {{ '在家' if cn else 'Home' }} **{{ val }}**
-      card_mod: *casaray_chip
-    - type: markdown
-      grid_options: {columns: 3, rows: auto}
-      content: |
-        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- if ns.u == n %}{% set home = nd %}
+        {%- elif ns.u %}{% set home = ('%d 人中 %d 人、%d 人无数据' % (n, ns.h, ns.u)) if cn else ('%d of %d, %d unknown' % (ns.h, n, ns.u)) %}
+        {%- else %}{% set home = ('%d 人中 %d 人' % (n, ns.h)) if cn else ('%d of %d' % (ns.h, n)) %}{% endif -%}
         {%- set w = states('sensor.casa_monitored_power') | float(none) -%}
-        {{ '监测用电' if cn else 'Monitored' }} **{{ ((w | round(1)) ~ ' W') if w is not none else ('无数据' if cn else 'No data') }}**
-      card_mod: *casaray_chip
+        {%- set wr = (w | round(1)) if w is not none else none -%}
+        {#- A flat zero is a real reading and should print `0 W`, not `0.0 W`;
+            147.9 keeps its decimal. -#}
+        {%- set mon = (((wr | int) if wr == (wr | int) else wr) ~ ' W') if wr is not none else nd -%}
+        {{ '室外' if cn else 'Outside' }} **{{ outside }}** · {{ '室内' if cn else 'Inside' }} **{{ inside }}** · {{ '在家' if cn else 'Home' }} **{{ home }}** · {{ '监测用电' if cn else 'Monitored' }} **{{ mon }}**
+      card_mod:
+        style: |
+          ha-card { border-radius: 999px; }
+
   # -------------------------------------------------------------------------
   # BAND 3 -- needs attention. Full width, cards two across, red for a fault
   # and amber for a door simply left open, per CR-232. The roll-up line no
@@ -602,17 +616,17 @@ views:
     # the name and Home/Away, so this is the mockup's card with no additions.
     - type: tile
       entity: person.raymond_du
-      grid_options: {columns: 4, rows: 2}
+      grid_options: {columns: 4, rows: 3}
       vertical: true
       tap_action: {action: navigate, navigation_path: /casaray-v2/people}
     - type: tile
       entity: person.vinh_du
-      grid_options: {columns: 4, rows: 2}
+      grid_options: {columns: 4, rows: 3}
       vertical: true
       tap_action: {action: navigate, navigation_path: /casaray-v2/people}
     - type: tile
       entity: person.ai_q_huang
-      grid_options: {columns: 4, rows: 2}
+      grid_options: {columns: 4, rows: 3}
       vertical: true
       tap_action: {action: navigate, navigation_path: /casaray-v2/people}
     # "Parents' room — Occupied · 4 minutes ago" in the render. The AC's own
@@ -621,7 +635,7 @@ views:
       entity: binary_sensor.bedroom_parents_room_ac_room_occupied
       name: Parents Room
       icon: mdi:motion-sensor
-      grid_options: {columns: 12, rows: auto}
+      grid_options: {columns: 12, rows: 2}
       state_content: [state, last_changed]
       tap_action: {action: navigate, navigation_path: /casaray-v2/parents-room}
       card_mod:
@@ -633,6 +647,17 @@ views:
             background: rgba(58, 62, 70, 0.22);
             {% endif %}
           }
+
+  # -------------------------------------------------------------------------
+  # BAND A, COLUMN 3 -- "One tap". Split out of the Who's home section: paired
+  # in one column they made that column far taller than Right now beside it,
+  # and a grid row is only as short as its tallest member, so the difference
+  # came out as dead space. Three similar-height groups across one band is the
+  # composition the live render needed.
+  # -------------------------------------------------------------------------
+  - type: grid
+    column_span: 1
+    cards:
     - type: heading
       heading: One tap
       heading_style: title
@@ -656,7 +681,7 @@ views:
     # scenes: CR-233 stays open, because a real Goodnight that also handles
     # TVs and the blind still needs scenes this instance does not have.
     - type: button
-      grid_options: {columns: 6, rows: 2}
+      grid_options: {columns: 6, rows: 3}
       name: Evening
       icon: mdi:weather-sunset
       show_state: false
@@ -666,7 +691,7 @@ views:
         target: {entity_id: light.living_room}
         data: {brightness_pct: 55}
     - type: button
-      grid_options: {columns: 6, rows: 2}
+      grid_options: {columns: 6, rows: 3}
       name: Night
       icon: mdi:weather-night
       show_state: false
@@ -677,7 +702,7 @@ views:
           entity_id: [light.living_room, light.bedroom_bedroom, light.dining]
         data: {brightness_pct: 10}
     - type: button
-      grid_options: {columns: 6, rows: 2}
+      grid_options: {columns: 6, rows: 3}
       name: Bright
       icon: mdi:white-balance-sunny
       show_state: false
@@ -688,7 +713,7 @@ views:
           entity_id: [light.living_room, light.bedroom_bedroom, light.dining]
         data: {brightness_pct: 100}
     - type: button
-      grid_options: {columns: 6, rows: 2}
+      grid_options: {columns: 6, rows: 3}
       name: All lights off
       icon: mdi:lightbulb-group-off
       show_state: false
@@ -703,13 +728,17 @@ views:
           - switch.mainroomlight_switch_1
 
   # -------------------------------------------------------------------------
-  # BAND 4, COLUMN 3 -- "Rooms" over "Shopping list". Rooms are full-width
+  # BAND B, LEFT -- "Rooms", two thirds of the band. Rooms are full-width
   # rows, never a button grid: icon, name, a live secondary line, the whole
   # row navigating. A tile bound to the room's own entity turns amber by
   # itself when that entity is on, which is the render's active state.
+  #
+  # At one column of three these rows were a narrow strip with the room name
+  # and its state fighting for the same few hundred pixels. Two columns gives
+  # them roughly the width the render draws.
   # -------------------------------------------------------------------------
   - type: grid
-    column_span: 1
+    column_span: 2
     cards:
     - type: heading
       heading: Rooms
@@ -790,6 +819,14 @@ views:
       vertical: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/guest-room}
       icon_tap_action: {action: none}
+
+  # -------------------------------------------------------------------------
+  # BAND B, RIGHT -- "Shopping list", one third of the band beside Rooms, so
+  # it fills the space Rooms does not rather than hanging underneath it.
+  # -------------------------------------------------------------------------
+  - type: grid
+    column_span: 1
+    cards:
     - type: heading
       heading: Shopping list
       heading_style: title
@@ -807,10 +844,15 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     # todo.shopping_list is a real list this instance already keeps; the
-    # render shows it in exactly this position, under Rooms.
+    # render shows it in exactly this position, beside Rooms.
+    #
+    # `rows: 6` rather than `auto`: at its natural height it is a short card
+    # next to seven room rows, and a grid row is as tall as its tallest
+    # member, so the difference showed as a hole. Six rows is close to the
+    # Rooms group and gives the list room to show what is on it.
     - type: todo-list
       entity: todo.shopping_list
-      grid_options: {columns: 12, rows: auto}
+      grid_options: {columns: 12, rows: 6}
 
   # -------------------------------------------------------------------------
   # BAND 5 -- security, as one composed panel rather than scattered rows:
@@ -917,12 +959,13 @@ views:
       tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
 
   # -------------------------------------------------------------------------
-  # BAND 6 -- energy. Four figures across the full width, the same shape the
-  # alternate render gives its ENERGY panel. Every read is guarded; the
-  # inverter is frequently unreachable and must never show as a zero.
+  # BAND D, LEFT -- energy. Four figures across two thirds of the band, with
+  # Recent activity filling the third. Every read is guarded; the inverter is
+  # frequently unreachable and must never show as a zero, and nothing here
+  # substitutes a number for a reading that is not there.
   # -------------------------------------------------------------------------
   - type: grid
-    column_span: 3
+    column_span: 2
     cards:
     - type: heading
       heading: Energy now
@@ -999,15 +1042,16 @@ views:
           }
 
   # -------------------------------------------------------------------------
-  # BAND 7 -- recent activity. Not in the wall render, kept because a wall
-  # panel's "what just happened" has no other home on this dashboard. Quiet,
-  # low, and short: a subtitle heading and three rows.
+  # BAND D, RIGHT -- recent activity. Not in the wall render, kept because a
+  # wall panel's "what just happened" has no other home on this dashboard.
+  # One third of the band, two rows deep, which lands it close to the Energy
+  # group beside it instead of running a near-empty strip across the page.
   #
   # The three door contacts stay in the target list even while unavailable, so
   # a door that starts reporting again appears here without an edit.
   # -------------------------------------------------------------------------
   - type: grid
-    column_span: 3
+    column_span: 1
     cards:
     - type: heading
       heading: Recent activity
@@ -1027,7 +1071,7 @@ views:
         state: 'on'
     - type: logbook
       hours_to_show: 24
-      grid_options: {columns: 12, rows: 3}
+      grid_options: {columns: 12, rows: 2}
       target:
         entity_id:
         - person.raymond_du
@@ -1041,11 +1085,21 @@ views:
         - light.dining
 
   # -------------------------------------------------------------------------
-  # BAND 8 -- the named index. The top rail is six glyphs; this is every board
+  # BAND E -- the named index. The top rail is six glyphs; this is every board
   # spelled out, for anyone who would rather read a word than decode an icon.
-  # Twelve at two columns fills two rows exactly, then the language toggle
-  # takes a full row of its own -- it is the control an older reader is most
-  # likely to need and the hardest to find if it is small.
+  #
+  # Twelve at TWO columns -- six across -- is what shipped, and live on the
+  # iPad the labels ran into each other: `Entertainment` and `Automations` do
+  # not fit a 2/12 cell at any sane font size. Four across at three columns
+  # each is 50% more width per label, in three clean rows:
+  #
+  #   Rooms | Lighting | Climate | Energy
+  #   Bills | Entertainment | Security | Cameras
+  #   Network | People | Automations | Alerts
+  #
+  # then House health and the language toggle at six columns each. `rows: 2`
+  # throughout, because these are the controls an older reader reaches for and
+  # a one-row button is a thin strip to hit.
   # -------------------------------------------------------------------------
   - type: grid
     column_span: 3
@@ -1067,85 +1121,85 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: button
-      grid_options: {columns: 2, rows: auto}
+      grid_options: {columns: 3, rows: 2}
       name: Rooms
       icon: mdi:floor-plan
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
     - type: button
-      grid_options: {columns: 2, rows: auto}
+      grid_options: {columns: 3, rows: 2}
       name: Lighting
       icon: mdi:lightbulb-group
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/lighting}
     - type: button
-      grid_options: {columns: 2, rows: auto}
+      grid_options: {columns: 3, rows: 2}
       name: Climate
       icon: mdi:thermometer
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/climate}
     - type: button
-      grid_options: {columns: 2, rows: auto}
+      grid_options: {columns: 3, rows: 2}
       name: Energy
       icon: mdi:lightning-bolt
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
     - type: button
-      grid_options: {columns: 2, rows: auto}
+      grid_options: {columns: 3, rows: 2}
       name: Bills
       icon: mdi:file-document-outline
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/bills}
     - type: button
-      grid_options: {columns: 2, rows: auto}
+      grid_options: {columns: 3, rows: 2}
       name: Entertainment
       icon: mdi:television-play
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/entertainment}
     - type: button
-      grid_options: {columns: 2, rows: auto}
+      grid_options: {columns: 3, rows: 2}
       name: Security
       icon: mdi:shield-home
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/security}
     - type: button
-      grid_options: {columns: 2, rows: auto}
+      grid_options: {columns: 3, rows: 2}
       name: Cameras
       icon: mdi:cctv
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
     - type: button
-      grid_options: {columns: 2, rows: auto}
+      grid_options: {columns: 3, rows: 2}
       name: Network
       icon: mdi:wifi
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/network}
     - type: button
-      grid_options: {columns: 2, rows: auto}
+      grid_options: {columns: 3, rows: 2}
       name: People
       icon: mdi:account-group
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/people}
     - type: button
-      grid_options: {columns: 2, rows: auto}
+      grid_options: {columns: 3, rows: 2}
       name: Automations
       icon: mdi:robot
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/automations}
     - type: button
-      grid_options: {columns: 2, rows: auto}
+      grid_options: {columns: 3, rows: 2}
       name: Alerts
       icon: mdi:bell-alert
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/alerts}
     - type: button
-      grid_options: {columns: 6, rows: auto}
+      grid_options: {columns: 6, rows: 2}
       name: House health
       icon: mdi:heart-pulse
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/house-health}
     - type: button
-      grid_options: {columns: 6, rows: auto}
+      grid_options: {columns: 6, rows: 2}
       name: English / 中文
       icon: mdi:translate
       entity: input_boolean.chinese_dashboard
