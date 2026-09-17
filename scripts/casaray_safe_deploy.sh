@@ -1,27 +1,35 @@
 #!/bin/sh
-# CasaRay safe deploy — back up, deploy, validate, roll back on failure.
+# CasaRay safe deploy — refresh, validate, back up, deploy, validate, roll back.
 #
 # WHAT IT DOES, IN ORDER
-#   1. pre-flight   source exists and parses
-#   2. backup       timestamped copy of the live dashboard into backups/
-#   3. deploy       runs the EXISTING deploy process, unmodified
-#   4. post-flight  live exists, live parses, `ha core check` passes
-#   5. rollback     restores the backup if any of step 4 failed
-#   6. prune        keeps the newest 30 of OUR backups, nothing else
+#   1. refresh      strictly fetch/reset to origin/ha-deploy (default)
+#   2. pre-flight   source exists, parses, and dashboard_check.py passes
+#   3. backup       timestamped copy of the live dashboard into backups/
+#   4. deploy       runs the EXISTING deploy process, unmodified
+#   5. post-flight  live exists, live parses, `ha core check` passes
+#   6. rollback     restores the backup if post-flight validation fails
+#   7. prune        keeps the newest 30 of OUR backups, nothing else
 #
 # It never restarts Home Assistant. A dashboard update needs a browser
-# refresh, not a restart, and an unattended 03:30 restart is not something
-# this should ever decide to do on its own.
+# refresh, not a restart, and an unattended restart is not something this
+# script should decide to do on its own.
+#
+# IMPORTANT
+#   - Git refresh is ON by default so unattended deployments cannot silently
+#     deploy a stale local clone.
+#   - A failed fetch/reset aborts BEFORE the live dashboard is touched.
+#   - dashboard_check.py is a mandatory pre-deployment gate when Python is
+#     available; failure aborts BEFORE backup/deploy.
 #
 # USAGE (on the Home Assistant host)
 #   sh /config/casaray/casaray_safe_deploy.sh
-#   sh /config/casaray/casaray_safe_deploy.sh --pull     # fetch ha-deploy first
-#   sh /config/casaray/casaray_safe_deploy.sh --dry-run  # check, change nothing
+#   sh /config/casaray/casaray_safe_deploy.sh --dry-run
+#   sh /config/casaray/casaray_safe_deploy.sh --no-pull   # manual/offline only
 #
 # EXIT CODES
 #   0  deployed and validated, or already identical
 #   1  deployment failed and the previous dashboard was restored
-#   2  refused before touching anything (bad source, missing paths)
+#   2  refused before touching anything (fetch/check/source/path failure)
 
 set -eu
 
@@ -29,11 +37,12 @@ DIR="$(dirname "$0")"
 # shellcheck source=casaray_common.sh
 . "$DIR/casaray_common.sh"
 
-PULL=0
+PULL=1
 DRY=0
 for arg in "$@"; do
   case "$arg" in
-    --pull)    PULL=1 ;;
+    --pull)    PULL=1 ;;  # retained for backward compatibility
+    --no-pull) PULL=0 ;;
     --dry-run) DRY=1 ;;
     *) echo "unknown option: $arg" >&2; exit 2 ;;
   esac
@@ -45,16 +54,29 @@ log INFO "=== safe deploy starting (pull=$PULL dry_run=$DRY) ==="
 [ -d "$REPO" ] || { log ERROR "repo not found: $REPO"; exit 2; }
 [ -d "$LIVE_DIR" ] || { log ERROR "live dashboard dir not found: $LIVE_DIR"; exit 2; }
 
+# Strict by default: an unattended deployment must either prove it has the
+# current ha-deploy branch or do nothing. Never fall back to stale local code.
 if [ "$PULL" -eq 1 ]; then
-  if command -v git >/dev/null 2>&1; then
-    log INFO "fetching origin/ha-deploy"
-    if ! git -C "$REPO" fetch --quiet origin ha-deploy 2>/dev/null \
-       || ! git -C "$REPO" reset --quiet --hard origin/ha-deploy 2>/dev/null; then
-      log ERROR "git pull failed; deploying whatever the clone already has"
-    fi
-  else
-    log ERROR "--pull asked for but git is not on PATH; skipping the pull"
+  if ! command -v git >/dev/null 2>&1; then
+    log ERROR "git is not on PATH; refusing deployment because strict refresh is enabled"
+    exit 2
   fi
+
+  log INFO "refresh: fetching origin/ha-deploy"
+  if ! git -C "$REPO" fetch --quiet origin ha-deploy 2>>"$LOG"; then
+    log ERROR "refresh: git fetch failed; refusing to deploy stale local code"
+    exit 2
+  fi
+
+  log INFO "refresh: resetting clone to origin/ha-deploy"
+  if ! git -C "$REPO" reset --quiet --hard origin/ha-deploy 2>>"$LOG"; then
+    log ERROR "refresh: git reset failed; refusing deployment"
+    exit 2
+  fi
+
+  log INFO "refresh: repository is current"
+else
+  log WARN "refresh: skipped by --no-pull (manual/offline override)"
 fi
 
 [ -f "$SRC" ] || { log ERROR "source dashboard missing: $SRC"; exit 2; }
@@ -67,7 +89,26 @@ if have_python; then
     exit 2
   fi
 else
-  log WARN "pre-flight: no python3 on this host, YAML parsing not checked"
+  log ERROR "pre-flight: python3 unavailable; refusing deployment because dashboard validation is mandatory"
+  exit 2
+fi
+
+# Mandatory structural dashboard validation. This catches failures that
+# `ha core check` does not: broken internal navigation, Jinja syntax errors,
+# missing grid geometry, inert card properties and accidental mass damage.
+DASH_CHECK="$REPO/scripts/dashboard_check.py"
+[ -f "$DASH_CHECK" ] || {
+  log ERROR "pre-flight: mandatory dashboard checker missing: $DASH_CHECK"
+  exit 2
+}
+
+log INFO "pre-flight: running dashboard_check.py"
+if python3 "$DASH_CHECK" "$SRC" >>"$LOG" 2>&1; then
+  log INFO "pre-flight: dashboard structural check passed"
+else
+  log ERROR "pre-flight: dashboard structural check FAILED; refusing deployment"
+  log ERROR "details: $LOG"
+  exit 2
 fi
 
 if [ "$(sync_status)" = "synced" ]; then
@@ -135,7 +176,7 @@ if [ -z "$FAIL" ]; then
   case "$rc" in
     0) log INFO "post-flight: ha core check passed" ;;
     1) FAIL="ha core check failed" ;;
-    2) log WARN "post-flight: no supervisor CLI on this host, ha core check skipped" ;;
+    2) FAIL="ha core check unavailable; refusing an unverified deployment" ;;
   esac
 fi
 
