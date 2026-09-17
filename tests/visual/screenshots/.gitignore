@@ -1,0 +1,12 @@
+# Screenshots here are generated OUTPUT, regenerated on every run and never
+# byte-stable across Chromium builds or font stacks. ha_validate.sh section 7
+# fails the build on any tracked binary outside docs/mockups/*.png — by design,
+# "to stop a stray screenshot, export or backup being committed". So the
+# directory is tracked and its contents are not.
+#
+# If visual-regression BASELINES are added later they must be un-ignored
+# explicitly (e.g. !baseline-*.png) AND section 7's exception list widened to
+# match, or the push will fail the gate.
+*
+!.gitignore
+!.gitkeep
