@@ -170,3 +170,151 @@ stays green either way; these are accuracy findings, not build breaks.
 The 20 recovered entities need no dashboard change — those cards should simply
 be showing real values now. Worth confirming on the wall iPad, which this
 environment cannot see.
+
+---
+
+# Addendum — classifier rebuild, same day
+
+`reconcile_entities.py` now classifies every reference into six buckets rather
+than three, and the counts above are reproducible from the repository instead
+of living only in this document. No dashboard file was changed.
+
+## New counts
+
+```
+entity references        : 434  (+4 service names)
+counts: live 363 / recovered 20 / benign-unknown 17 / unavailable 6
+        / ambiguous 15 / unresolved 13
+accounted for            : 434 of 434
+```
+
+Against the old `ok 375 / unknown 30 / unavail 29`:
+
+| Bucket | Count | Was |
+|---|---:|---|
+| live | 363 | part of `ok` 375 |
+| recovered | 20 | counted as `unavail` |
+| benign-unknown | 17 | counted as `unknown` — never a fault |
+| unavailable | 6 | the real remainder of `unavail` 29 |
+| ambiguous | 15 | **invisible** — 12 were inside `ok` |
+| unresolved | 13 | the real remainder of `unknown` 30 |
+
+The legacy dashboard, reconciled with the same tool:
+`live 121 / recovered 8 / benign-unknown 1 / unavailable 7 / ambiguous 14 /
+unresolved 13`.
+
+## The significant new finding: 15 ambiguous, not 3
+
+§3 above found three door sensors sharing a friendly name with a stale twin.
+That search only covered the 59 `unknown`/`unavailable` references. Running the
+duplicate check across **all 434** finds **15**, and twelve of them were sitting
+in the `ok` bucket being reported as perfectly healthy.
+
+Every one follows the same shape — `X` beside `<area>_X`, the signature of an
+integration re-added without the old entities being removed:
+
+| Referenced | Twin |
+|---|---|
+| `binary_sensor.b_contact_sensor_door` | `binary_sensor.backyard_b_contact_sensor_door` |
+| `binary_sensor.f_contact_sensor_door` | `binary_sensor.front_door_f_contact_sensor_door` |
+| `binary_sensor.m_contact_sensor_door` | `binary_sensor.master_bedroom_m_contact_sensor_door` |
+| `binary_sensor.k_motion_sensor_motion` | `binary_sensor.kitchen_k_motion_sensor_motion` |
+| `light.bedroom_nightlight` | `light.master_bedroom_nightlight` |
+| `light.dining` | `light.dining_dining` |
+| `light.living_room` | `light.living_room_living_room` |
+| `switch.g_printer_p100` | `switch.guest_room_g_printer_p100` |
+| `switch.k_bot_p100` | `switch.kitchen_k_bot_p100` |
+| `switch.k_coffee_p100` | `switch.kitchen_k_coffee_p100` |
+| `switch.k_top_p100` | `switch.kitchen_k_top_p100` |
+| `sensor.tapo_c420_south_wall_battery` | `sensor.tapo_c420_south_wall_battery_2` |
+| `media_player.living_room_tv_samsung_q9_series_65` | `media_player.tv_samsung_q9_series_65` |
+| `media_player.q70f8036` | `media_player.55_qled_4k_ai`, `media_player.master_bedroom_55_qled_4k_ai` |
+| `zone.home` | `zone.home_2` |
+
+The four `switch.k_*` and `switch.g_printer_p100` entries matter most: those are
+**appliance switches** — kettle, coffee, printer. A card bound to the dead twin
+of a kettle switch reports the wrong power state, and per CLAUDE.md appliances
+are the place to be conservative.
+
+`media_player.q70f8036` is worth a note: its twin `media_player.55_qled_4k_ai`
+is `unavailable` **in the same area**, so the referenced ID appears to be the
+surviving one. That is a reasonable inference, not a verification, and it is
+recorded as ambiguous regardless.
+
+**Ambiguity is a WARN, not a build failure.** The IDs are exact and present, so
+the gate stays green; failing on them would block all work to report a risk
+that needs a human with Developer Tools to resolve.
+
+**Cross-domain name sharing is not ambiguity.** The first implementation keyed
+on friendly name alone and returned 20 hits, five of which were one appliance
+appearing under two domains — a TV is a `media_player` and a `remote`, an air
+purifier is a `fan` and a `switch`. Keying on `(domain, name)` drops those five
+and keeps every real collision.
+
+## Benign-unknown is narrowly scoped, and now tested
+
+`BENIGN_UNKNOWN_DOMAINS = {"scene", "button"}`, and only in combination with
+`unknown` — a `scene` that is `unavailable` is still a fault.
+
+`scripts/test_reconcile_classify.py` gates this, and runs inside
+`ha_validate.sh` before the counts are printed. It asserts that 21 state-bearing
+domains still fault on `unknown`, that `unavailable` never becomes benign, that
+the benign set has not drifted, that cross-domain names are not ambiguous, and
+that the overlay cannot recount an already-`ok` entity. Verified by mutation:
+adding `sensor` to the benign set fails the gate with both the domain-level and
+set-level assertions.
+
+## Evidence overlay
+
+`docs/live/observations_2026-09-17.txt` — 26 dated observations, the
+machine-readable form of §1 and §2. It is **not** a states export: it adds no
+entity ID of its own, every ID in it came from `states_export_2026-09-05.txt`,
+and that file remains the sole ID authority. It is optional; without it the
+tool still runs and `recovered` is simply 0.
+
+## Card honesty check — `light.kogan_tv` and `media_player.pogo`
+
+Requested verification. Read-only; nothing was changed.
+
+**`light.kogan_tv` — honest in all four places.**
+
+| Line | Card | Treatment |
+|---|---|---|
+| 4348 | markdown | three-branch; falls to "No reading · TV backlight not reporting" / "无数据" |
+| 4372 | tile | `card_mod` dashed border + grey on `unavailable/unknown/none` |
+| 8949 | tile | same dashed-grey treatment |
+| 9330 | conditional tile | "Kogan TV offline", shown only when `unavailable` |
+
+**`media_player.pogo` — honest in three places, with one gap.**
+
+| Line | Card | Treatment |
+|---|---|---|
+| 8911 | media-control | bare, but 8915 markdown immediately follows: "Pogo is not reporting, so the controls above will not work" / "Pogo 目前未上报状态" |
+| 9319 | conditional tile | "Pogo offline" when `unavailable` |
+| 8800 | `dead` list | listed as a known-dead device |
+| **4385** | **media-control** | **bare — no caveat, no `card_mod`, no dashed treatment** |
+
+The Entertainment block at 4385 carries the same `media-control` card as 8911
+but without the explanatory markdown its twin has. Live, Pogo is `unavailable`,
+so that card renders transport controls for a device that cannot answer — the
+one place either entity currently asserts more health than it has.
+
+Not fixed, per instruction. The fix is small and has an in-repo precedent: the
+markdown caveat at 8915, copied beneath 4385.
+
+## Observation, not acted on
+
+The offline conditional tiles at 9310, 9319 and 9330 use `color: orange`.
+CLAUDE.md's semantic colour system assigns **grey** to "unavailable, offline,
+unknown, no data" and reserves amber for "active, running, currently on", with
+the worked example that "an inverter that is not answering is grey". These
+tiles are internally consistent with each other but not with that rule. Flagged
+for a decision rather than changed, since it is a visual call across several
+cards and the mockups are the authority.
+
+## Next, still blocked on the owner
+
+1. **Disambiguate the 15** — needs entity IDs from Developer Tools → States.
+   The five appliance switches are the ones to do first.
+2. **Four Living Room Hue spots** — still `unavailable`, physical check.
+3. **Pogo card at 4385** — one markdown card, ready when approved.

@@ -1,0 +1,51 @@
+# Reconciliation observations — NOT a states export.
+#
+# A dated record of entities whose LIVE state was verified individually against
+# the instance, via the Home_Assistant MCP server, on 2026-09-17. It exists so
+# reconcile_entities.py can distinguish "unavailable on 05/09 and still down"
+# from "unavailable on 05/09 and since recovered" without re-running the sweep,
+# and so the finding survives in machine-readable form.
+#
+# It does NOT replace docs/live/states_export_2026-09-05.txt, which remains the
+# sole authority for canonical entity IDs. This file adds no IDs of its own;
+# every line's ID was taken FROM that export. It covers 26 entities, not 970.
+#
+# Evidence quality: collected with domain+area queries only. The MCP name
+# filter returned false negatives for four device families that are in fact
+# exposed, so name-filtered results were discarded. See
+# docs/ENTITY_RECONCILIATION_2026-09-17.md.
+#
+# Observations age. A `recovered` line is evidence that the entity was live on
+# the observation date, not a promise it is live now.
+#
+# Format: entity_id|observed_state|verdict
+# observed: 2026-09-17
+
+binary_sensor.b_contact_sensor_cloud_connection|on|recovered
+binary_sensor.f_contact_sensor_cloud_connection|on|recovered
+binary_sensor.m_contact_sensor_cloud_connection|on|recovered
+binary_sensor.network_tp_linkhub_h100_cloud_connection|on|recovered
+binary_sensor.lph_se_dcd9_pump|on|recovered
+camera.tapo_c420_east_wall_hd_stream_direct|idle|recovered
+camera.tapo_c420_south_wall_hd_stream_direct|idle|recovered
+light.tapo_c420_east_wall_floodlight_timed|off|recovered
+light.tapo_c420_south_wall_floodlight_timed|off|recovered
+number.lph_se_dcd9_plants_age|76|recovered
+select.lph_se_dcd9_light_brightness|high|recovered
+select.lph_se_dcd9_light_mode|vegetable|recovered
+sensor.b_contact_sensor_signal_level|1|recovered
+sensor.f_contact_sensor_signal_level|3|recovered
+sensor.m_contact_sensor_signal_level|3|recovered
+sensor.network_tp_linkhub_h100_signal_level|3|recovered
+switch.lph_se_dcd9_power|on|recovered
+switch.lph_se_dcd9_pump_cycling|on|recovered
+switch.tapo_c420_east_wall_privacy|off|recovered
+switch.tapo_c420_south_wall_privacy|off|recovered
+
+# Confirmed still down on 2026-09-17 — the export was right about these.
+light.kogan_tv|unavailable|confirmed_unavailable
+light.living_room_hue_ambiance_spot_1|unavailable|confirmed_unavailable
+light.living_room_hue_ambiance_spot_2|unavailable|confirmed_unavailable
+light.living_room_hue_ambiance_spot_3|unavailable|confirmed_unavailable
+light.living_room_hue_ambiance_spot_4|unavailable|confirmed_unavailable
+media_player.pogo|unavailable|confirmed_unavailable
