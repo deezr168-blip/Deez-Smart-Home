@@ -1229,42 +1229,12 @@ views:
   path: rooms
   icon: mdi:floor-plan
   max_columns: 2
-  # The chip strip, per the 14/09 mockups: a pill row under the page header,
-  # dim label then bright value -- `Outside 10°`, `Room 19.7°`, `Movement
-  # Quiet`. A native badge is exactly that pill, so this needs no custom card
-  # and no card_mod. Page-specific, three or four at most, every one a real
-  # entity: nothing here is a computed figure a badge cannot honestly show.
-  # Bilingual the way headings are -- two badges with opposite `visibility`,
-  # because a badge name cannot be templated either.
-  badges:
-  - type: entity
-    entity: zone.home
-    name: Home
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state_not: 'on'
-  - type: entity
-    entity: zone.home
-    name: 在家
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state: 'on'
-  - type: entity
-    entity: binary_sensor.eero_wan_status
-    name: Internet
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state_not: 'on'
-  - type: entity
-    entity: binary_sensor.eero_wan_status
-    name: 网络
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state: 'on'
+  # No `badges:` here. Home Assistant renders badges ABOVE the sections, so a
+  # badge row lands on top of the CasaRay wordmark rather than under the page
+  # title where the 14/09 room render puts its pill row (DR-011). The chip
+  # strip in section 2 is that pill row, and unlike a badge it can carry a
+  # computed value -- the render's own "Quiet, 22 min" is elapsed time since
+  # last_changed, which no badge can show.
   sections:
 
   - type: grid
@@ -1341,6 +1311,33 @@ views:
       tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
 
 
+  # The chip strip, per the 14/09 room render: a pill row under the page
+  # title, dim label then bright value.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: markdown
+      grid_options: {columns: 12, rows: auto}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set nd = '无数据' if cn else 'No data' -%}
+        {%- set n = states('zone.home') | float(none) -%}
+        {%- if n is none %}{% set V = nd %}
+        {%- elif n == 0 %}{% set V = '无人在家' if cn else 'Nobody' %}
+        {%- else %}{% set V = ('%d 人' % (n | int)) if cn else ('%d person' % (n | int) if (n | int) == 1 else '%d people' % (n | int)) %}{% endif -%}
+        {%- set v0 = V -%}
+        {%- set s = states('binary_sensor.eero_wan_status') -%}
+        {%- set V = ('在线' if cn else 'Online') if s == 'on' else (('离线' if cn else 'Offline') if s == 'off' else nd) -%}
+        {%- set v1 = V -%}
+        {{ '在家' if cn else 'Home' }} **{{ v0 }}** · {{ '网络' if cn else 'Internet' }} **{{ v1 }}**
+      card_mod:
+        style: |
+          ha-card {
+            border-radius: 999px;
+            background: var(--casaray-surface-3);
+            border-color: var(--casaray-border-strong);
+          }
+
   - type: grid
     column_span: 2
     cards:
@@ -1411,56 +1408,12 @@ views:
   path: living-room
   icon: mdi:sofa
   max_columns: 2
-  # The chip strip, per the 14/09 mockups: a pill row under the page header,
-  # dim label then bright value -- `Outside 10°`, `Room 19.7°`, `Movement
-  # Quiet`. A native badge is exactly that pill, so this needs no custom card
-  # and no card_mod. Page-specific, three or four at most, every one a real
-  # entity: nothing here is a computed figure a badge cannot honestly show.
-  # Bilingual the way headings are -- two badges with opposite `visibility`,
-  # because a badge name cannot be templated either.
-  badges:
-  - type: entity
-    entity: sensor.living_room_living_hue_hue_sensor_temperature
-    name: Room
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state_not: 'on'
-  - type: entity
-    entity: sensor.living_room_living_hue_hue_sensor_temperature
-    name: 室温
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state: 'on'
-  - type: entity
-    entity: binary_sensor.living_room_living_hue_hue_sensor_motion
-    name: Movement
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state_not: 'on'
-  - type: entity
-    entity: binary_sensor.living_room_living_hue_hue_sensor_motion
-    name: 动作
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state: 'on'
-  - type: entity
-    entity: sensor.living_room_living_hue_hue_sensor_illuminance
-    name: Light level
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state_not: 'on'
-  - type: entity
-    entity: sensor.living_room_living_hue_hue_sensor_illuminance
-    name: 光照
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state: 'on'
+  # No `badges:` here. Home Assistant renders badges ABOVE the sections, so a
+  # badge row lands on top of the CasaRay wordmark rather than under the page
+  # title where the 14/09 room render puts its pill row (DR-011). The chip
+  # strip in section 2 is that pill row, and unlike a badge it can carry a
+  # computed value -- the render's own "Quiet, 22 min" is elapsed time since
+  # last_changed, which no badge can show.
   sections:
 
   - type: grid
@@ -1543,6 +1496,42 @@ views:
       tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
 
 
+
+  # The chip strip, per the 14/09 room render: a pill row under the page
+  # title, dim label then bright value.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: markdown
+      grid_options: {columns: 12, rows: auto}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set nd = '无数据' if cn else 'No data' -%}
+        {%- set v = states('sensor.living_room_living_hue_hue_sensor_temperature') | float(none) -%}
+        {%- set V = ((v | round(1)) ~ '°') if v is not none else nd -%}
+        {%- set v0 = V -%}
+        {%- set o = states.binary_sensor['living_room_living_hue_hue_sensor_motion'] -%}
+        {%- set s = states('binary_sensor.living_room_living_hue_hue_sensor_motion') -%}
+        {%- if s == 'on' %}{% set V = '有动作' if cn else 'Active' %}
+        {%- elif s != 'off' %}{% set V = nd %}
+        {%- else %}{% set mins = ((as_timestamp(now()) - as_timestamp(o.last_changed)) / 60) | round(0) | int %}
+        {%- if mins < 1 %}{% set ago = '刚刚' if cn else 'just now' %}
+        {%- elif mins < 60 %}{% set ago = ('%d 分钟' % mins) if cn else ('%d min' % mins) %}
+        {%- elif mins < 1440 %}{% set ago = ('%d 小时' % ((mins / 60) | round(0) | int)) if cn else ('%d h' % ((mins / 60) | round(0) | int)) %}
+        {%- else %}{% set ago = ('%d 天' % ((mins / 1440) | round(0) | int)) if cn else ('%d d' % ((mins / 1440) | round(0) | int)) %}{% endif %}
+        {%- set V = ('安静，' ~ ago) if cn else ('Quiet, ' ~ ago) %}{% endif -%}
+        {%- set v1 = V -%}
+        {%- set v = states('sensor.living_room_living_hue_hue_sensor_illuminance') | float(none) -%}
+        {%- set V = ((v | round(0) | int) ~ ' lx') if v is not none else nd -%}
+        {%- set v2 = V -%}
+        {{ '室温' if cn else 'Room' }} **{{ v0 }}** · {{ '动作' if cn else 'Movement' }} **{{ v1 }}** · {{ '光照' if cn else 'Light level' }} **{{ v2 }}**
+      card_mod:
+        style: |
+          ha-card {
+            border-radius: 999px;
+            background: var(--casaray-surface-3);
+            border-color: var(--casaray-border-strong);
+          }
 
   - type: grid
     column_span: 2
@@ -2127,42 +2116,12 @@ views:
   path: kitchen
   icon: mdi:silverware-fork-knife
   max_columns: 2
-  # The chip strip, per the 14/09 mockups: a pill row under the page header,
-  # dim label then bright value -- `Outside 10°`, `Room 19.7°`, `Movement
-  # Quiet`. A native badge is exactly that pill, so this needs no custom card
-  # and no card_mod. Page-specific, three or four at most, every one a real
-  # entity: nothing here is a computed figure a badge cannot honestly show.
-  # Bilingual the way headings are -- two badges with opposite `visibility`,
-  # because a badge name cannot be templated either.
-  badges:
-  - type: entity
-    entity: binary_sensor.k_motion_sensor_motion
-    name: Movement
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state_not: 'on'
-  - type: entity
-    entity: binary_sensor.k_motion_sensor_motion
-    name: 动作
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state: 'on'
-  - type: entity
-    entity: sensor.kitchen_electrolux_fridge_temperature
-    name: Fridge
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state_not: 'on'
-  - type: entity
-    entity: sensor.kitchen_electrolux_fridge_temperature
-    name: 冰箱
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state: 'on'
+  # No `badges:` here. Home Assistant renders badges ABOVE the sections, so a
+  # badge row lands on top of the CasaRay wordmark rather than under the page
+  # title where the 14/09 room render puts its pill row (DR-011). The chip
+  # strip in section 2 is that pill row, and unlike a badge it can carry a
+  # computed value -- the render's own "Quiet, 22 min" is elapsed time since
+  # last_changed, which no badge can show.
   sections:
 
   - type: grid
@@ -2241,6 +2200,42 @@ views:
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
 
+
+  # The chip strip, per the 14/09 room render: a pill row under the page
+  # title, dim label then bright value.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: markdown
+      grid_options: {columns: 12, rows: auto}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set nd = '无数据' if cn else 'No data' -%}
+        {%- set o = states.binary_sensor['k_motion_sensor_motion'] -%}
+        {%- set s = states('binary_sensor.k_motion_sensor_motion') -%}
+        {%- if s == 'on' %}{% set V = '有动作' if cn else 'Active' %}
+        {%- elif s != 'off' %}{% set V = nd %}
+        {%- else %}{% set mins = ((as_timestamp(now()) - as_timestamp(o.last_changed)) / 60) | round(0) | int %}
+        {%- if mins < 1 %}{% set ago = '刚刚' if cn else 'just now' %}
+        {%- elif mins < 60 %}{% set ago = ('%d 分钟' % mins) if cn else ('%d min' % mins) %}
+        {%- elif mins < 1440 %}{% set ago = ('%d 小时' % ((mins / 60) | round(0) | int)) if cn else ('%d h' % ((mins / 60) | round(0) | int)) %}
+        {%- else %}{% set ago = ('%d 天' % ((mins / 1440) | round(0) | int)) if cn else ('%d d' % ((mins / 1440) | round(0) | int)) %}{% endif %}
+        {%- set V = ('安静，' ~ ago) if cn else ('Quiet, ' ~ ago) %}{% endif -%}
+        {%- set v0 = V -%}
+        {%- set v = states('sensor.kitchen_electrolux_fridge_temperature') | float(none) -%}
+        {%- set V = ((v | round(1)) ~ '°') if v is not none else nd -%}
+        {%- set v1 = V -%}
+        {%- set s = states('binary_sensor.lg_fridge_door') -%}
+        {%- set V = ('打开' if cn else 'Open') if s == 'on' else (('关闭' if cn else 'Closed') if s == 'off' else nd) -%}
+        {%- set v2 = V -%}
+        {{ '动作' if cn else 'Movement' }} **{{ v0 }}** · {{ '冰箱' if cn else 'Fridge' }} **{{ v1 }}** · {{ '冰箱门' if cn else 'Fridge door' }} **{{ v2 }}**
+      card_mod:
+        style: |
+          ha-card {
+            border-radius: 999px;
+            background: var(--casaray-surface-3);
+            border-color: var(--casaray-border-strong);
+          }
 
   - type: grid
     column_span: 2
@@ -2546,56 +2541,12 @@ views:
   path: dining
   icon: mdi:table-chair
   max_columns: 2
-  # The chip strip, per the 14/09 mockups: a pill row under the page header,
-  # dim label then bright value -- `Outside 10°`, `Room 19.7°`, `Movement
-  # Quiet`. A native badge is exactly that pill, so this needs no custom card
-  # and no card_mod. Page-specific, three or four at most, every one a real
-  # entity: nothing here is a computed figure a badge cannot honestly show.
-  # Bilingual the way headings are -- two badges with opposite `visibility`,
-  # because a badge name cannot be templated either.
-  badges:
-  - type: entity
-    entity: sensor.living_room_living_room_temperature
-    name: Room
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state_not: 'on'
-  - type: entity
-    entity: sensor.living_room_living_room_temperature
-    name: 室温
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state: 'on'
-  - type: entity
-    entity: binary_sensor.sensor_group_motion
-    name: Movement
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state_not: 'on'
-  - type: entity
-    entity: binary_sensor.sensor_group_motion
-    name: 动作
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state: 'on'
-  - type: entity
-    entity: sensor.sensor_group_illuminance
-    name: Light level
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state_not: 'on'
-  - type: entity
-    entity: sensor.sensor_group_illuminance
-    name: 光照
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state: 'on'
+  # No `badges:` here. Home Assistant renders badges ABOVE the sections, so a
+  # badge row lands on top of the CasaRay wordmark rather than under the page
+  # title where the 14/09 room render puts its pill row (DR-011). The chip
+  # strip in section 2 is that pill row, and unlike a badge it can carry a
+  # computed value -- the render's own "Quiet, 22 min" is elapsed time since
+  # last_changed, which no badge can show.
   sections:
 
   - type: grid
@@ -2678,6 +2629,42 @@ views:
       tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
 
 
+
+  # The chip strip, per the 14/09 room render: a pill row under the page
+  # title, dim label then bright value.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: markdown
+      grid_options: {columns: 12, rows: auto}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set nd = '无数据' if cn else 'No data' -%}
+        {%- set v = states('sensor.living_room_living_room_temperature') | float(none) -%}
+        {%- set V = ((v | round(1)) ~ '°') if v is not none else nd -%}
+        {%- set v0 = V -%}
+        {%- set o = states.binary_sensor['sensor_group_motion'] -%}
+        {%- set s = states('binary_sensor.sensor_group_motion') -%}
+        {%- if s == 'on' %}{% set V = '有动作' if cn else 'Active' %}
+        {%- elif s != 'off' %}{% set V = nd %}
+        {%- else %}{% set mins = ((as_timestamp(now()) - as_timestamp(o.last_changed)) / 60) | round(0) | int %}
+        {%- if mins < 1 %}{% set ago = '刚刚' if cn else 'just now' %}
+        {%- elif mins < 60 %}{% set ago = ('%d 分钟' % mins) if cn else ('%d min' % mins) %}
+        {%- elif mins < 1440 %}{% set ago = ('%d 小时' % ((mins / 60) | round(0) | int)) if cn else ('%d h' % ((mins / 60) | round(0) | int)) %}
+        {%- else %}{% set ago = ('%d 天' % ((mins / 1440) | round(0) | int)) if cn else ('%d d' % ((mins / 1440) | round(0) | int)) %}{% endif %}
+        {%- set V = ('安静，' ~ ago) if cn else ('Quiet, ' ~ ago) %}{% endif -%}
+        {%- set v1 = V -%}
+        {%- set v = states('sensor.sensor_group_illuminance') | float(none) -%}
+        {%- set V = ((v | round(0) | int) ~ ' lx') if v is not none else nd -%}
+        {%- set v2 = V -%}
+        {{ '室温' if cn else 'Room' }} **{{ v0 }}** · {{ '动作' if cn else 'Movement' }} **{{ v1 }}** · {{ '光照' if cn else 'Light level' }} **{{ v2 }}**
+      card_mod:
+        style: |
+          ha-card {
+            border-radius: 999px;
+            background: var(--casaray-surface-3);
+            border-color: var(--casaray-border-strong);
+          }
 
   - type: grid
     column_span: 2
@@ -3033,56 +3020,12 @@ views:
   path: parents-room
   icon: mdi:bed-king
   max_columns: 2
-  # The chip strip, per the 14/09 mockups: a pill row under the page header,
-  # dim label then bright value -- `Outside 10°`, `Room 19.7°`, `Movement
-  # Quiet`. A native badge is exactly that pill, so this needs no custom card
-  # and no card_mod. Page-specific, three or four at most, every one a real
-  # entity: nothing here is a computed figure a badge cannot honestly show.
-  # Bilingual the way headings are -- two badges with opposite `visibility`,
-  # because a badge name cannot be templated either.
-  badges:
-  - type: entity
-    entity: sensor.bedroom_motion_sensor_temperature
-    name: Room
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state_not: 'on'
-  - type: entity
-    entity: sensor.bedroom_motion_sensor_temperature
-    name: 室温
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state: 'on'
-  - type: entity
-    entity: sensor.bedroom_motion_sensor_humidity
-    name: Humidity
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state_not: 'on'
-  - type: entity
-    entity: sensor.bedroom_motion_sensor_humidity
-    name: 湿度
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state: 'on'
-  - type: entity
-    entity: climate.bedroom_parents_room_ac
-    name: Air conditioner
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state_not: 'on'
-  - type: entity
-    entity: climate.bedroom_parents_room_ac
-    name: 空调
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state: 'on'
+  # No `badges:` here. Home Assistant renders badges ABOVE the sections, so a
+  # badge row lands on top of the CasaRay wordmark rather than under the page
+  # title where the 14/09 room render puts its pill row (DR-011). The chip
+  # strip in section 2 is that pill row, and unlike a badge it can carry a
+  # computed value -- the render's own "Quiet, 22 min" is elapsed time since
+  # last_changed, which no badge can show.
   sections:
 
   - type: grid
@@ -3163,6 +3106,39 @@ views:
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
 
+
+  # The chip strip, per the 14/09 room render: a pill row under the page
+  # title, dim label then bright value.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: markdown
+      grid_options: {columns: 12, rows: auto}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set nd = '无数据' if cn else 'No data' -%}
+        {%- set v = states('sensor.bedroom_motion_sensor_temperature') | float(none) -%}
+        {%- set V = ((v | round(1)) ~ '°') if v is not none else nd -%}
+        {%- set v0 = V -%}
+        {%- set v = states('sensor.bedroom_motion_sensor_humidity') | float(none) -%}
+        {%- set V = ((v | round(0) | int) ~ '%') if v is not none else nd -%}
+        {%- set v1 = V -%}
+        {%- set s = states('climate.bedroom_parents_room_ac') -%}
+        {%- set t = state_attr('climate.bedroom_parents_room_ac','temperature') | float(none) -%}
+        {%- if s in ['unavailable','unknown','none',''] %}{% set V = nd %}
+        {%- elif s == 'off' %}{% set V = '关闭' if cn else 'Off' %}
+        {%- else %}{% set mode = {'cool': '制冷', 'heat': '制热', 'dry': '除湿', 'fan_only': '送风', 'auto': '自动', 'heat_cool': '自动'} %}
+        {%- set label = (mode.get(s, s) if cn else (s | replace('_',' ') | capitalize)) %}
+        {%- set V = (label ~ ' ' ~ (t | round(0) | int) ~ '°') if t is not none else label %}{% endif -%}
+        {%- set v2 = V -%}
+        {{ '室温' if cn else 'Room' }} **{{ v0 }}** · {{ '湿度' if cn else 'Humidity' }} **{{ v1 }}** · {{ '空调' if cn else 'Air conditioner' }} **{{ v2 }}**
+      card_mod:
+        style: |
+          ha-card {
+            border-radius: 999px;
+            background: var(--casaray-surface-3);
+            border-color: var(--casaray-border-strong);
+          }
 
   - type: grid
     column_span: 2
@@ -3637,42 +3613,12 @@ views:
   path: ray-bedroom
   icon: mdi:bed
   max_columns: 2
-  # The chip strip, per the 14/09 mockups: a pill row under the page header,
-  # dim label then bright value -- `Outside 10°`, `Room 19.7°`, `Movement
-  # Quiet`. A native badge is exactly that pill, so this needs no custom card
-  # and no card_mod. Page-specific, three or four at most, every one a real
-  # entity: nothing here is a computed figure a badge cannot honestly show.
-  # Bilingual the way headings are -- two badges with opposite `visibility`,
-  # because a badge name cannot be templated either.
-  badges:
-  - type: entity
-    entity: sensor.r_energy_monitor_p110m_current_consumption
-    name: Desk power
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state_not: 'on'
-  - type: entity
-    entity: sensor.r_energy_monitor_p110m_current_consumption
-    name: 书桌用电
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state: 'on'
-  - type: entity
-    entity: cover.aqara_roller_shade_driver_e1
-    name: Blind
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state_not: 'on'
-  - type: entity
-    entity: cover.aqara_roller_shade_driver_e1
-    name: 窗帘
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state: 'on'
+  # No `badges:` here. Home Assistant renders badges ABOVE the sections, so a
+  # badge row lands on top of the CasaRay wordmark rather than under the page
+  # title where the 14/09 room render puts its pill row (DR-011). The chip
+  # strip in section 2 is that pill row, and unlike a badge it can carry a
+  # computed value -- the render's own "Quiet, 22 min" is elapsed time since
+  # last_changed, which no badge can show.
   sections:
 
   - type: grid
@@ -3754,6 +3700,37 @@ views:
       tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
 
 
+
+  # The chip strip, per the 14/09 room render: a pill row under the page
+  # title, dim label then bright value.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: markdown
+      grid_options: {columns: 12, rows: auto}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set nd = '无数据' if cn else 'No data' -%}
+        {%- set v = states('sensor.r_energy_monitor_p110m_current_consumption') | float(none) -%}
+        {%- set r = (v | round(1)) if v is not none else none -%}
+        {%- set V = ((((r | int) if r == (r | int) else r) ~ ' W')) if r is not none else nd -%}
+        {%- set v0 = V -%}
+        {%- set s = states('cover.aqara_roller_shade_driver_e1') -%}
+        {%- if s in ['open','opening'] %}{% set V = '打开' if cn else 'Open' %}
+        {%- elif s in ['closed','closing'] %}{% set V = '关闭' if cn else 'Closed' %}
+        {%- else %}{% set V = nd %}{% endif -%}
+        {%- set v1 = V -%}
+        {%- set s = states('binary_sensor.r_energy_monitor_p110m_overloaded') -%}
+        {%- set V = ('过载' if cn else 'Overloaded') if s == 'on' else (('正常' if cn else 'Normal') if s == 'off' else nd) -%}
+        {%- set v2 = V -%}
+        {{ '书桌用电' if cn else 'Desk power' }} **{{ v0 }}** · {{ '窗帘' if cn else 'Blind' }} **{{ v1 }}** · {{ '过载' if cn else 'Overload' }} **{{ v2 }}**
+      card_mod:
+        style: |
+          ha-card {
+            border-radius: 999px;
+            background: var(--casaray-surface-3);
+            border-color: var(--casaray-border-strong);
+          }
 
   - type: grid
     column_span: 2
@@ -4206,42 +4183,12 @@ views:
   path: garage
   icon: mdi:garage
   max_columns: 2
-  # The chip strip, per the 14/09 mockups: a pill row under the page header,
-  # dim label then bright value -- `Outside 10°`, `Room 19.7°`, `Movement
-  # Quiet`. A native badge is exactly that pill, so this needs no custom card
-  # and no card_mod. Page-specific, three or four at most, every one a real
-  # entity: nothing here is a computed figure a badge cannot honestly show.
-  # Bilingual the way headings are -- two badges with opposite `visibility`,
-  # because a badge name cannot be templated either.
-  badges:
-  - type: entity
-    entity: sensor.g_monitor_freezer_p110m_current_consumption
-    name: Freezer power
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state_not: 'on'
-  - type: entity
-    entity: sensor.g_monitor_freezer_p110m_current_consumption
-    name: 冰柜用电
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state: 'on'
-  - type: entity
-    entity: binary_sensor.g_monitor_freezer_p110m_overloaded
-    name: Overload
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state_not: 'on'
-  - type: entity
-    entity: binary_sensor.g_monitor_freezer_p110m_overloaded
-    name: 过载
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state: 'on'
+  # No `badges:` here. Home Assistant renders badges ABOVE the sections, so a
+  # badge row lands on top of the CasaRay wordmark rather than under the page
+  # title where the 14/09 room render puts its pill row (DR-011). The chip
+  # strip in section 2 is that pill row, and unlike a badge it can carry a
+  # computed value -- the render's own "Quiet, 22 min" is elapsed time since
+  # last_changed, which no badge can show.
   sections:
 
   - type: grid
@@ -4321,6 +4268,32 @@ views:
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
 
+
+  # The chip strip, per the 14/09 room render: a pill row under the page
+  # title, dim label then bright value.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: markdown
+      grid_options: {columns: 12, rows: auto}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set nd = '无数据' if cn else 'No data' -%}
+        {%- set v = states('sensor.g_monitor_freezer_p110m_current_consumption') | float(none) -%}
+        {%- set r = (v | round(1)) if v is not none else none -%}
+        {%- set V = ((((r | int) if r == (r | int) else r) ~ ' W')) if r is not none else nd -%}
+        {%- set v0 = V -%}
+        {%- set s = states('binary_sensor.g_monitor_freezer_p110m_overloaded') -%}
+        {%- set V = ('过载' if cn else 'Overloaded') if s == 'on' else (('正常' if cn else 'Normal') if s == 'off' else nd) -%}
+        {%- set v1 = V -%}
+        {{ '冰柜用电' if cn else 'Freezer power' }} **{{ v0 }}** · {{ '过载' if cn else 'Overload' }} **{{ v1 }}**
+      card_mod:
+        style: |
+          ha-card {
+            border-radius: 999px;
+            background: var(--casaray-surface-3);
+            border-color: var(--casaray-border-strong);
+          }
 
   - type: grid
     column_span: 2
@@ -4520,42 +4493,12 @@ views:
   path: guest-room
   icon: mdi:bed-empty
   max_columns: 2
-  # The chip strip, per the 14/09 mockups: a pill row under the page header,
-  # dim label then bright value -- `Outside 10°`, `Room 19.7°`, `Movement
-  # Quiet`. A native badge is exactly that pill, so this needs no custom card
-  # and no card_mod. Page-specific, three or four at most, every one a real
-  # entity: nothing here is a computed figure a badge cannot honestly show.
-  # Bilingual the way headings are -- two badges with opposite `visibility`,
-  # because a badge name cannot be templated either.
-  badges:
-  - type: entity
-    entity: switch.g_printer_p100
-    name: Printer
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state_not: 'on'
-  - type: entity
-    entity: switch.g_printer_p100
-    name: 打印机
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state: 'on'
-  - type: entity
-    entity: binary_sensor.eero_wan_status
-    name: Internet
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state_not: 'on'
-  - type: entity
-    entity: binary_sensor.eero_wan_status
-    name: 网络
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state: 'on'
+  # No `badges:` here. Home Assistant renders badges ABOVE the sections, so a
+  # badge row lands on top of the CasaRay wordmark rather than under the page
+  # title where the 14/09 room render puts its pill row (DR-011). The chip
+  # strip in section 2 is that pill row, and unlike a badge it can carry a
+  # computed value -- the render's own "Quiet, 22 min" is elapsed time since
+  # last_changed, which no badge can show.
   sections:
 
   - type: grid
@@ -4633,6 +4576,31 @@ views:
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
 
+
+  # The chip strip, per the 14/09 room render: a pill row under the page
+  # title, dim label then bright value.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: markdown
+      grid_options: {columns: 12, rows: auto}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set nd = '无数据' if cn else 'No data' -%}
+        {%- set s = states('switch.g_printer_p100') -%}
+        {%- set V = ('开启' if cn else 'On') if s == 'on' else (('关闭' if cn else 'Off') if s == 'off' else nd) -%}
+        {%- set v0 = V -%}
+        {%- set s = states('binary_sensor.eero_wan_status') -%}
+        {%- set V = ('在线' if cn else 'Online') if s == 'on' else (('离线' if cn else 'Offline') if s == 'off' else nd) -%}
+        {%- set v1 = V -%}
+        {{ '打印机' if cn else 'Printer' }} **{{ v0 }}** · {{ '网络' if cn else 'Internet' }} **{{ v1 }}**
+      card_mod:
+        style: |
+          ha-card {
+            border-radius: 999px;
+            background: var(--casaray-surface-3);
+            border-color: var(--casaray-border-strong);
+          }
 
   - type: grid
     column_span: 2
