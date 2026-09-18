@@ -224,6 +224,34 @@ Each chip now guards its own reading. In particular `Home` no longer prints
 a reassuring claim the chip could not see. It says `No data` when all three
 are unreadable and `1 of 3 · 1 unknown` when some are.
 
+**Generalised to the whole dashboard, 2026-09-18.** The reasoning above was
+written about Home. It applies to all twenty-eight views, and until this date
+eighteen of them were still drawing a badge row on top of the wordmark —
+every room page, every board, both Bills pages. All eighteen now carry the
+markdown chip strip instead, and `dashboard_check.py` **check 15b** fails the
+build on any `badges:` block in `casaray_v2.yaml` so they cannot return one
+view at a time. The legacy dashboard is deliberately out of scope: its views
+do not begin with a top bar, so badges sit where they should there.
+
+The rollout confirmed a second reason the badge was the wrong container, one
+DR-011 only half-stated. A badge shows an entity's state. Half the readings
+the mockups ask for are not any entity's state:
+
+- `Movement Quiet, 22 min` — elapsed time since `last_changed`
+- `Unpaid 3 of 6` — a count across six helper pairs
+- `Warnings 3 (+2 unknown)` — the same conditions the alert cards fire on,
+  with the silent ones counted separately
+- `Devices 9/9` — a denominator that excludes what did not answer
+
+Every one of those is a computation, and every one of them needed the third
+branch that a badge has nowhere to put. Four cards were caught asserting a
+state they could not see while the strips were being rendered across a dark
+instance, and each is a row in `LIVE_VERIFICATION_QUEUE.md`: Energy's solar
+gate saying `Offline` when the gate sensor itself was dark (`CR-287`), Bills
+reporting `Overdue 0` across six undated bills (`CR-291`), Bills saying
+`None dated` when nothing was owed at all (`CR-292`), and Lighting saying
+`None on` about three groups that were unavailable (`CR-301`).
+
 ## BILLS-001 — what the Bills page still cannot show, and why
 
 Moved off the dashboard on 2026-09-14. This was a "Still missing" card at the

@@ -24,8 +24,8 @@ one custom card type (`custom:webrtc-camera`), no Mushroom, surface treatment fr
 theme, and `card_mod` only where a native card provably cannot reach the
 mockup: the tinted surface on alert cards (since `color:` paints a tile's icon
 and the renders tint the whole card), the state-driven dashed treatment on
-offline tiles, the pill radius on Home's chip strip, and right-aligning
-Home's clock. Bilingual on `input_boolean.chinese_dashboard`; see *Bilingual
+offline tiles, the pill radius on every view's chip strip, and right-aligning
+the clock. Bilingual on `input_boolean.chinese_dashboard`; see *Bilingual
 conventions* below.
 
 **Home carries the design system.** It was rebuilt against the 14/09 wall
@@ -72,6 +72,42 @@ reaches `/config/dashboards/` when the owner runs
 `scripts/sync_casaray_to_config.sh`. So "committed in Git" and "live in Home
 Assistant" remain different things and must never be reported as the same one
 — the reason is now a manual step, not a broken bridge.
+
+## The chip strip — every view has one, and no view has badges
+
+As of 2026-09-18 all 28 CasaRay views carry the mockups' pill row: **one
+full-width `markdown` card**, section 2, directly under the top bar, with the
+pill radius from `card_mod`. Three to five readings, ` · ` between them, the
+label dim and the value bold.
+
+**Never add a `badges:` block to `casaray_v2.yaml`.** Home Assistant renders
+badges above the sections and CasaRay's first section IS the top bar, so a
+badge row lands on top of the wordmark (`DR-011`). `dashboard_check.py`
+check 15b fails the build on one. The legacy dashboard is out of scope — its
+views have no top bar, so badges sit correctly there.
+
+The strip is a card rather than badges for a second reason worth keeping in
+mind when writing one: **most of what the mockups put in a pill is not any
+entity's state.** `Movement Quiet, 22 min` is elapsed time from
+`last_changed`; `Unpaid 3 of 6` is a count across six helper pairs;
+`Warnings 3 (+2 unknown)` re-evaluates the conditions the alert cards fire
+on. A badge can show a state. It cannot show a computation, and it has
+nowhere to put the third branch every one of those computations needs.
+
+Three rules for a new chip, all of them learned by getting one wrong:
+
+1. **A denominator is what ANSWERED, not the length of the list.** Five of
+   the fourteen cloud sensors are unavailable on this instance; `9/14` would
+   read as five dead devices rather than five that are not reporting.
+2. **A count of zero is only claimed when something was measured.** `Overdue
+   0` across six unpaid bills that all lack a due date is a reassurance built
+   on nothing — it says `No data`. So does `Lights on` when no light is in a
+   known state, and `Offline` when the gate sensor that would say so is
+   itself dark.
+3. **Render it before committing it**, across a live-shaped state set and a
+   fully dark one, in both languages. That is what caught all three of the
+   above. A passing validation run proves the Jinja compiles and the entities
+   exist; it cannot read what the card says.
 
 ## Bilingual conventions — mandatory
 

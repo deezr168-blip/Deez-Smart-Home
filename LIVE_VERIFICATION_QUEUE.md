@@ -345,6 +345,50 @@ target changed. Entity references 434, navigation 124 across 28 targets.
 | CR-284 | Security | **Deliberately NOT changed.** Sirens stay half-width — they are controls that must not be mis-tapped, and full-page-width makes that worse | Confirm the sirens are unchanged and still hard to hit by accident | `7fb4a71` | P2 | PENDING |
 | CR-285 | all | `check 15` gates this from here | — (repository check, nothing to look at) | `7fb4a71` | P4 | PENDING |
 
+## CasaRay — mockup convergence, 2026-09-18
+
+Eight batches. The chip strip -- the pill row the mockups put under every page
+header -- reached every one of the 28 views, and with it every `badges:` block
+came off the dashboard. That was not cosmetic: Home Assistant renders badges
+ABOVE the sections (DR-011) and CasaRay's first section IS the top bar, so
+eighteen views were drawing a row of native pills **on top of the wordmark**.
+
+Every strip was rendered against a live-shaped state set and a fully dark one,
+in both languages, before it was committed. Four branches were caught that
+way and are listed below as their own rows, because each one is a card
+claiming something it could not see -- the class of fault CLAUDE.md singles
+out, and the class a validation run cannot find.
+
+| ID | Page | What changed | What to check live | Expected result | Commit | P | Result |
+|---|---|---|---|---|---|---|---|
+| CR-286 | Energy | Four tall KPI cards → one chip strip; four sections → two paired bands | The pill row under the header, then Solar beside Metered circuits | `House power 1.24 kW · Today 8.4 kWh · Solar now … · Solar today …`, two columns below it | `0548483` | P2 | PENDING |
+| CR-287 | Energy | Solar gate is three-state: `on` shows the reading, `off` says Offline, anything else says No data | With the inverter unreachable, read both solar chips and the dashed note | Both chips agree; the note says "offline" only when the gate says `off`, otherwise "status unknown" | `0548483` | P1 | PENDING |
+| CR-288 | Energy, Security | Duplicate badge rows removed — both pages had a badge row AND a chip strip | Above the wordmark | Nothing above the wordmark; one pill row, under the header | `09135ce` | P1 | PENDING |
+| CR-289 | Bills | Bill history (selector + ~50 tiles) moved to `bills-details` | The Bills page ends at This year; the subview carries six history sections | Bills is six sections, not twelve; nothing lost — every helper is on the subview | `f253f85` | P2 | PENDING |
+| CR-290 | Bills | The six bill cards take semantic colour | With one bill overdue and one due this week | Red overdue, amber inside a week, green paid, grey dashed for an empty helper, no tint beyond a week | `f253f85` | P2 | PENDING |
+| CR-291 | Bills | `Overdue 0` across unpaid bills that have no due date now reads No data | Clear every due date, leave amounts | Overdue chip says No data, not 0 | `f253f85` | P1 | PENDING |
+| CR-292 | Bills | `Next due` distinguishes nothing-owed from nothing-dated | Mark all six paid | "Nothing due", not "None dated" | `f253f85` | P3 | PENDING |
+| CR-293 | Bills | Upcoming and Record a payment pair into a band; payment buttons 3-across → 2-across | Look for label truncation on `Council rates` and `Car insurance` | Both labels fit on one line | `f253f85` | P2 | PENDING |
+| CR-294 | Network | Chip strip from the 15/09 board render | The pill row | `Internet · Remote access · Hub · Devices · Weakest` | `2726deb` | P2 | PENDING |
+| CR-295 | Network | Hub chip polarity — `matter_zigbee_hub_problem` is device_class problem, so `on` IS the fault | Compare the Hub chip against the Zigbee hub tile below | They agree; `on` reads Problem, not Healthy | `2726deb` | P1 | PENDING |
+| CR-296 | Network | Device count's denominator is what ANSWERED, not the list length | Count the cloud chips against the live export's five unavailable | Reads `9/9`, not `9/14` | `2726deb` | P2 | PENDING |
+| CR-297 | 7 rooms + Rooms | Chip strip replaces the badge row on all eight | Each room's pill row, under the title | Living Room reads `Room 19.7° · Movement Quiet, 22 min · Light level 33 lx`, matching the render | `2c4ec5e` | P1 | PENDING |
+| CR-298 | rooms | Movement chip shows elapsed time from `last_changed` | Leave a room still for an hour | `Quiet, 1 h`, and `just now` right after movement stops | `2c4ec5e` | P3 | PENDING |
+| CR-299 | 10 boards | Chip strip added ABOVE each board's existing summary cards, not replacing them | Every board | The explanatory cards ("the group being on does not mean the spots are online") are all still there | `8f5b851` | P1 | PENDING |
+| CR-300 | alerts | Strip counts the SAME conditions the conditional cards fire on | Count the visible alert cards against the three chip numbers | They match; a silent entity counts as `(+N unknown)`, never as no alert | `8f5b851` | P1 | PENDING |
+| CR-301 | lighting | Brightness chip said "None on" when all three dimmable groups were unavailable | Pull the Hue bridge | Reads No data, not None on | `8f5b851` | P2 | PENDING |
+| CR-302 | bills, bills-details | `sensor.bills_outstanding_total` is no longer referenced anywhere on the dashboard | — | The entity still exists in Home Assistant; nothing on a board reads it, because it reports $0.00 when its helpers are blank | `8f5b851` | P3 | PENDING |
+| CR-303 | all | `check 15b` fails the build on any `badges:` block in casaray_v2 | — (repository check, negative-tested) | Adding one badge back to Network produces VALIDATION FAILED naming that view | `6dc3f88` | P4 | PENDING |
+| CR-304 | rooms | Room index buttons → tiles matching Home's Rooms section | Tap through to each room | Each tile shows state AND how long it has been that way; destinations unchanged | `f013e35` | P2 | PENDING |
+| CR-305 | rooms | New Room conditions card | The list of seven | Three rooms say "no temperature or movement sensor" in those words; none borrows a neighbour's reading | `f013e35` | P2 | PENDING |
+
+**What a passing validation run still cannot tell us about this batch.** Every
+chip strip is a `markdown` card with a `card_mod` pill radius. The repository
+checks prove the Jinja compiles, the entities exist and the geometry is
+declared; they cannot prove the pill renders as a pill rather than a circle at
+the width the iPad actually resolves. `DR-012` is exactly that failure, and it
+is why every strip is ONE full-width card rather than several narrow ones.
+
 ## CasaRay — theme, background and glass rebuild, 2026-09-15
 
 The dashboard did not look like the renders because of what was underneath it:
