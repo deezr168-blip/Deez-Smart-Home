@@ -5926,68 +5926,52 @@ views:
       tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
 
 
+  # -------------------------------------------------------------------------
+  # The chip strip. Four tall KPI cards became one pill row, as on Home and
+  # Security. Every binding is kept, including the `casa_solar_online` gate:
+  # SolarNet keeps publishing 0 W while the inverter is unreachable, so the
+  # solar chips read "no data" rather than a zero that looks like a real
+  # measurement. The conditional note below says so in words when it happens.
+  # -------------------------------------------------------------------------
   - type: grid
     column_span: 2
     cards:
-    - type: heading
-      heading: Current
-      heading_style: title
-      icon: mdi:flash
-      visibility:
-      - condition: state
-        entity: input_boolean.chinese_dashboard
-        state_not: 'on'
-    - type: heading
-      heading: 此刻
-      heading_style: title
-      icon: mdi:flash
-      visibility:
-      - condition: state
-        entity: input_boolean.chinese_dashboard
-        state: 'on'
     - type: markdown
-      grid_options: {columns: 6, rows: auto}
+      grid_options: {columns: 12, rows: auto}
       content: |
         {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set nd = '无数据' if cn else 'No data' -%}
         {%- set p = states('sensor.powerpal_gateway_powerpal_power') | float(none) -%}
-        **{{ '家庭用电' if cn else 'House power' }}**
-        {% if p is not none %}## {{ (p / 1000) | round(2) }} kW
-        {{ '当前' if cn else 'now' }}{% else %}## —
-        {{ '用电表无数据' if cn else 'Meter not reporting' }}{% endif %}
-    - type: markdown
-      grid_options: {columns: 6, rows: auto}
-      content: |
-        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
         {%- set hd = states('sensor.powerpal_gateway_powerpal_daily_energy') | float(none) -%}
-        **{{ '今日用电' if cn else 'House today' }}**
-        {% if hd is not none %}## {{ hd | round(1) }} kWh
-        {{ '自午夜起' if cn else 'since midnight' }}{% else %}## —
-        {{ '用电表无数据' if cn else 'Meter not reporting' }}{% endif %}
-    - type: markdown
-      grid_options: {columns: 6, rows: auto}
-      content: |
-        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {#- Three states, not two. `on` means generating figures are real; `off`
+            means the inverter is genuinely unreachable and we can say so; but
+            when the gate sensor itself is unavailable we know nothing, and
+            printing "Offline" would be asserting a state we cannot see. -#}
+        {%- set gate = states('binary_sensor.casa_solar_online') -%}
+        {%- set up = gate == 'on' -%}
         {%- set s = states('sensor.primo_5_0_1_1_ac_power') | float(none) -%}
-        {%- set up = is_state('binary_sensor.casa_solar_online','on') -%}
-        **{{ '当前发电' if cn else 'Solar now' }}**
-        {% if not up %}## —
-        {{ '逆变器离线' if cn else 'Inverter offline' }}{% elif s is not none %}## {{ s | round(0) | int }} W
-        {{ '正在发电' if cn else 'generating' }}{% else %}## —
-        {{ '无发电数据' if cn else 'No generation data' }}{% endif %}
-    - type: markdown
-      grid_options: {columns: 6, rows: auto}
-      content: |
-        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
         {#- energy_day is Wh. Convert at the binding so nothing downstream can
             mix it with the kWh figures beside it. -#}
         {%- set sdw = states('sensor.primo_5_0_1_1_energy_day') | float(none) -%}
         {%- set sd = (sdw / 1000) if sdw is not none else none -%}
-        {%- set up = is_state('binary_sensor.casa_solar_online','on') -%}
-        **{{ '今日发电' if cn else 'Solar today' }}**
-        {% if not up %}## —
-        {{ '逆变器离线' if cn else 'Inverter offline' }}{% elif sd is not none %}## {{ sd | round(1) }} kWh
-        {{ '自午夜起' if cn else 'since midnight' }}{% else %}## —
-        {{ '无发电数据' if cn else 'No generation data' }}{% endif %}
+        {%- set pv = ((p / 1000) | round(2) ~ ' kW') if p is not none else nd -%}
+        {%- set hv = (hd | round(1) ~ ' kWh') if hd is not none else nd -%}
+        {#- Offline is its own word, not `No data`: the difference between "the
+            inverter is not answering" and "the reading is missing" is the whole
+            point of the gate. Both solar chips say the same thing so the row
+            cannot read as one working chip beside one broken one; the dashed
+            note directly below spells it out in full. -#}
+        {%- set off = ('离线' if cn else 'Offline') if gate == 'off' else nd -%}
+        {%- set sv = (((s | round(0) | int) ~ ' W') if s is not none else nd) if up else off -%}
+        {%- set dv = (((sd | round(1)) ~ ' kWh') if sd is not none else nd) if up else off -%}
+        {{ '家庭用电' if cn else 'House power' }} **{{ pv }}** · {{ '今日用电' if cn else 'Today' }} **{{ hv }}** · {{ '当前发电' if cn else 'Solar now' }} **{{ sv }}** · {{ '今日发电' if cn else 'Solar today' }} **{{ dv }}**
+      card_mod:
+        style: |
+          ha-card {
+            border-radius: 999px;
+            background: var(--casaray-surface-3);
+            border-color: var(--casaray-border-strong);
+          }
     - type: conditional
       grid_options: {columns: 12, rows: auto}
       conditions:
@@ -5998,8 +5982,17 @@ views:
         type: markdown
         content: |
           {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+          {#- The conditional fires on `state_not: on`, which is both "the
+              inverter said no" and "the gate sensor itself is dark". Those are
+              different facts and the card says which one it has. -#}
+          {%- set gate = states('binary_sensor.casa_solar_online') -%}
+          {%- if gate == 'off' -%}
           **{{ '太阳能逆变器离线' if cn else 'Solar inverter offline' }}**
           {{ '发电数据不可用。' if cn else 'Solar generation data unavailable.' }}
+          {%- else -%}
+          **{{ '太阳能状态未知' if cn else 'Solar status unknown' }}**
+          {{ '逆变器监测本身无数据，发电量无法确认。' if cn else 'The inverter monitor is not reporting, so generation cannot be confirmed.' }}
+          {%- endif -%}
         card_mod:
           style: |
             ha-card {
@@ -6011,7 +6004,7 @@ views:
   # 2. Solar. Forecast first, because it is what the day gets planned
   # around; the inverter's own registers are one section down under details.
   - type: grid
-    column_span: 2
+    column_span: 1
     cards:
     - type: heading
       heading: Solar
@@ -6055,7 +6048,7 @@ views:
       name: Tomorrow
 
   - type: grid
-    column_span: 2
+    column_span: 1
     cards:
     - type: heading
       heading: Metered circuits
@@ -6076,19 +6069,19 @@ views:
     - type: tile
       entity: sensor.r_energy_monitor_p110m_current_consumption
       name: Ray Bedroom now
-      grid_options: {columns: 3, rows: 1}
+      grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: sensor.r_energy_monitor_p110m_today_s_consumption
       name: Desk today
-      grid_options: {columns: 3, rows: 1}
+      grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: sensor.g_monitor_freezer_p110m_current_consumption
       name: Freezer now
-      grid_options: {columns: 3, rows: 1}
+      grid_options: {columns: 6, rows: 1}
     - type: tile
       entity: sensor.g_monitor_freezer_p110m_today_s_consumption
       name: Freezer today
-      grid_options: {columns: 3, rows: 1}
+      grid_options: {columns: 6, rows: 1}
 
   - type: grid
     column_span: 2
@@ -6123,7 +6116,7 @@ views:
   # 5. Grid and meter. The Powerpal's own health and what the grid is
   # burning, kept together and kept last.
   - type: grid
-    column_span: 2
+    column_span: 1
     cards:
     - type: heading
       heading: Grid and meter
@@ -6142,24 +6135,24 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: tile
-      grid_options: {columns: 3, rows: 1}
+      grid_options: {columns: 6, rows: 1}
       entity: sensor.powerpal_gateway_powerpal_total_energy
       name: Meter total
     - type: tile
-      grid_options: {columns: 3, rows: 1}
+      grid_options: {columns: 6, rows: 1}
       entity: sensor.powerpal_gateway_powerpal_battery
       name: Meter battery
     - type: tile
-      grid_options: {columns: 3, rows: 1}
+      grid_options: {columns: 6, rows: 1}
       entity: sensor.electricity_maps_co2_intensity
       name: Grid carbon
     - type: tile
-      grid_options: {columns: 3, rows: 1}
+      grid_options: {columns: 6, rows: 1}
       entity: sensor.electricity_maps_grid_fossil_fuel_percentage
       name: Fossil share
 
   - type: grid
-    column_span: 2
+    column_span: 1
     cards:
     - type: heading
       heading: Solar details
@@ -6178,35 +6171,35 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: tile
-      grid_options: {columns: 4, rows: 1}
+      grid_options: {columns: 6, rows: 1}
       entity: binary_sensor.casa_solar_online
       name: Inverter
     - type: tile
-      grid_options: {columns: 4, rows: 1}
+      grid_options: {columns: 6, rows: 1}
       entity: sensor.primo_5_0_1_1_status_message
       name: Status
     - type: tile
-      grid_options: {columns: 4, rows: 1}
+      grid_options: {columns: 6, rows: 1}
       entity: sensor.primo_5_0_1_1_error_message
       name: Error
     - type: tile
-      grid_options: {columns: 4, rows: 1}
+      grid_options: {columns: 6, rows: 1}
       entity: sensor.primo_5_0_1_1_energy_year
       name: This year
     - type: tile
-      grid_options: {columns: 4, rows: 1}
+      grid_options: {columns: 6, rows: 1}
       entity: sensor.primo_5_0_1_1_total_energy
       name: Lifetime
     - type: tile
-      grid_options: {columns: 4, rows: 1}
+      grid_options: {columns: 6, rows: 1}
       entity: sensor.power_production_now
       name: Forecast now
     - type: tile
-      grid_options: {columns: 4, rows: 1}
+      grid_options: {columns: 6, rows: 1}
       entity: sensor.power_highest_peak_time_tomorrow
       name: Peak tomorrow
     - type: tile
-      grid_options: {columns: 4, rows: 1}
+      grid_options: {columns: 6, rows: 1}
       entity: sensor.casa_solar_expected_today
       name: Expected today
     - type: markdown
