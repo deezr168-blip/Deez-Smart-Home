@@ -25,6 +25,7 @@
 #   sh /config/casaray/casaray_safe_deploy.sh
 #   sh /config/casaray/casaray_safe_deploy.sh --dry-run
 #   sh /config/casaray/casaray_safe_deploy.sh --no-pull   # manual/offline only
+#   sh /config/casaray/casaray_safe_deploy.sh --no-core-check  # no supervisor CLI
 #
 # EXIT CODES
 #   0  deployed and validated, or already identical
@@ -39,11 +40,13 @@ DIR="$(dirname "$0")"
 
 PULL=1
 DRY=0
+CORE_CHECK=1
 for arg in "$@"; do
   case "$arg" in
     --pull)    PULL=1 ;;  # retained for backward compatibility
     --no-pull) PULL=0 ;;
     --dry-run) DRY=1 ;;
+    --no-core-check) CORE_CHECK=0 ;;
     *) echo "unknown option: $arg" >&2; exit 2 ;;
   esac
 done
@@ -80,6 +83,19 @@ else
 fi
 
 [ -f "$SRC" ] || { log ERROR "source dashboard missing: $SRC"; exit 2; }
+
+# The strict `ha core check` requirement belongs HERE, not in post-flight.
+# Deciding it after the deploy means a host without the supervisor CLI writes
+# the new dashboard and immediately reverts it -- every night, forever, with a
+# failure notification each time and the dashboard never actually updating.
+# Refusing up front costs nothing and changes nothing.
+if [ "$CORE_CHECK" -eq 1 ] && ! command -v ha >/dev/null 2>&1; then
+  log ERROR "pre-flight: no supervisor CLI, so 'ha core check' cannot verify this"
+  log ERROR "            deployment. Refusing BEFORE touching the live dashboard."
+  log ERROR "            On a host that genuinely has no 'ha' command, re-run with"
+  log ERROR "            --no-core-check (the YAML and structural gates still run)."
+  exit 2
+fi
 
 if have_python; then
   if yaml_parses "$SRC"; then
@@ -176,7 +192,7 @@ if [ -z "$FAIL" ]; then
   case "$rc" in
     0) log INFO "post-flight: ha core check passed" ;;
     1) FAIL="ha core check failed" ;;
-    2) FAIL="ha core check unavailable; refusing an unverified deployment" ;;
+    2) log WARN "post-flight: no supervisor CLI; ha core check skipped by --no-core-check" ;;
   esac
 fi
 

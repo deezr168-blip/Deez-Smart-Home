@@ -73,19 +73,37 @@ Nothing is written anywhere else.
 `/config/deploy_casaray.sh` if that exists, otherwise the repo's
 `sync_casaray_to_config.sh`. **Neither is modified.** The wrapper adds:
 
-1. **pre-flight** — source exists and parses. Fails here and nothing is touched.
-2. **backup** — timestamped copy of the live dashboard.
-3. **deploy** — the existing process, unchanged.
-4. **post-flight** — live exists, live parses, `ha core check` passes.
-5. **rollback** — any post-flight failure restores the backup and verifies the
+1. **refresh** — fetch and reset to `origin/ha-deploy`, so an unattended run
+   cannot silently deploy a stale clone.
+2. **pre-flight** — source exists, parses, passes `dashboard_check.py`, and the
+   supervisor CLI is present. Fails here and nothing is touched.
+3. **backup** — timestamped copy of the live dashboard.
+4. **deploy** — the existing process, unchanged.
+5. **post-flight** — live exists, live parses, `ha core check` passes.
+6. **rollback** — any post-flight failure restores the backup and verifies the
    restored file parses.
-6. **prune** — keeps the newest 30 pre-deploy backups.
+7. **prune** — keeps the newest 30 pre-deploy backups.
 
 ```sh
-sh /config/casaray/casaray_safe_deploy.sh            # deploy what the clone has
-sh /config/casaray/casaray_safe_deploy.sh --pull     # git pull ha-deploy first
-sh /config/casaray/casaray_safe_deploy.sh --dry-run  # check only
+sh /config/casaray/casaray_safe_deploy.sh                 # fetch, check, deploy
+sh /config/casaray/casaray_safe_deploy.sh --dry-run       # check only
+sh /config/casaray/casaray_safe_deploy.sh --no-pull       # manual / offline
+sh /config/casaray/casaray_safe_deploy.sh --no-core-check # host has no `ha` CLI
 ```
+
+**Refresh is ON by default.** An unattended deploy either proves it has the
+current `ha-deploy` or does nothing — a fetch or reset failure aborts before
+the live dashboard is touched. `--no-pull` overrides it for manual use, and
+note that the refresh is a `git reset --hard`: `/config/deez_repo` is a
+deployment mirror, not a working tree, so do not keep local edits there.
+
+**`ha core check` is required, and that is decided in pre-flight.** A host
+without the supervisor CLI is refused *before* anything is backed up or
+written — exit 2, nothing changed. Deciding it after the deploy would mean
+such a host writes the dashboard and reverts it every night forever, with a
+failure notification each time and the dashboard never actually updating.
+`--no-core-check` is the explicit opt-out for a host that genuinely has no
+`ha` command; the YAML parse and `dashboard_check.py` gates still run.
 
 Exit codes: `0` deployed or already identical · `1` failed and rolled back ·
 `2` refused before changing anything.
@@ -244,8 +262,9 @@ cp /config/dashboards/backups/casaray_v2.yaml.predeploy.<newest> \
   that needs a number only the live instance can supply.
 - **`ha core check` is skipped where there is no supervisor CLI.** The scripts
   say so rather than pretending it passed.
-- **`--pull` does a hard reset** to `origin/ha-deploy`. Local edits in
-  `/config/deez_repo` would be lost, so it is off by default.
+- **The refresh is a hard reset** to `origin/ha-deploy`, and it is on by
+  default. Local edits in `/config/deez_repo` would be lost — it is a
+  deployment mirror, not somewhere to work.
 - **If the earlier implementation is already installed live**, its scripts sit
   flat in `/config` (`casaray_safe_deploy.sh`, `casaray_health_check.sh`) and
   its package pointed `shell_command` at them. Onboarding installs to
@@ -256,9 +275,7 @@ cp /config/dashboards/backups/casaray_v2.yaml.predeploy.<newest> \
   `persistent_notification`, which is visible in the Home Assistant UI. Mobile
   push would need the companion app's notify service, which is a separate
   decision.
-- **The nightly deploy does not `git pull` by default.** It deploys whatever
-  the clone already has. Add `--pull` to the `shell_command` in the package if
-  you want it to fetch first.
+
 
 ---
 
