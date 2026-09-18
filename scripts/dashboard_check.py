@@ -672,14 +672,29 @@ def check(path):
             r"\s+else\s+'([^']+)'")
         for m in pair_re.finditer(raw):
             senses.setdefault(m.group(2).strip(), set()).add(m.group(1).strip())
+        # Bilingual pairs also appear as two cards with opposite `visibility`:
+        # heading cards, and button cards in the footers and the More boards
+        # index. Reading only the headings is how the first version of this
+        # check missed `Security`, which was 安防 on one footer button and
+        # 安全 on a page title.
+        def visible_when(card):
+            v = (card.get("visibility") or [{}])[0]
+            return "cn" if v.get("state") == "on" else (
+                   "en" if v.get("state_not") == "on" else None)
+
         for view in views:
             for section in view.get("sections") or []:
-                heads = [c for c in section.get("cards") or []
-                         if c.get("type") == "heading"]
-                for i in range(0, len(heads) - 1, 2):
-                    a, b = heads[i].get("heading"), heads[i + 1].get("heading")
-                    if a and b and re.search(r"[\u4e00-\u9fff]", str(b)):
-                        senses.setdefault(str(a).strip(), set()).add(str(b).strip())
+                for key, kind in (("heading", "heading"), ("name", "button")):
+                    items = [c for c in section.get("cards") or []
+                             if c.get("type") == kind and c.get(key)]
+                    for i in range(0, len(items) - 1, 2):
+                        a, b = items[i], items[i + 1]
+                        if visible_when(a) != "en" and kind == "button":
+                            continue
+                        x, y = str(a[key]).strip(), str(b[key]).strip()
+                        if re.search(r"[\u4e00-\u9fff]", y) and \
+                           not re.search(r"[\u4e00-\u9fff]", x):
+                            senses.setdefault(x, set()).add(y)
         split = {k: v for k, v in senses.items()
                  if len(v) > 1 and k not in ALLOWED_SENSES}
         for k, v in sorted(split.items()):

@@ -222,7 +222,7 @@ views:
         {#- A flat zero is a real reading and should print `0 W`, not `0.0 W`;
             147.9 keeps its decimal. -#}
         {%- set mon = (((wr | int) if wr == (wr | int) else wr) ~ ' W') if wr is not none else nd -%}
-        {{ '室外' if cn else 'Outside' }} **{{ outside }}** · {{ '室内' if cn else 'Inside' }} **{{ inside }}** · {{ '在家' if cn else 'Home' }} **{{ home }}** · {{ '监测用电' if cn else 'Monitored' }} **{{ mon }}**
+        {{ '室外' if cn else 'Outside' }} **{{ outside }}** · {{ '室内' if cn else 'Inside' }} **{{ inside }}** · {{ '在家' if cn else 'At home' }} **{{ home }}** · {{ '监测用电' if cn else 'Monitored' }} **{{ mon }}**
       card_mod:
         style: |
           ha-card {
@@ -891,7 +891,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
     - type: heading
-      heading: 安全
+      heading: 安防
       heading_style: title
       icon: mdi:shield-home
       visibility:
@@ -1148,78 +1148,260 @@ views:
       icon: mdi:floor-plan
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 3, rows: 2}
+      name: 房间
+      icon: mdi:floor-plan
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: button
       grid_options: {columns: 3, rows: 2}
       name: Lighting
       icon: mdi:lightbulb-group
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/lighting}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 3, rows: 2}
+      name: 灯光
+      icon: mdi:lightbulb-group
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/lighting}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: button
       grid_options: {columns: 3, rows: 2}
       name: Climate
       icon: mdi:thermometer
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/climate}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 3, rows: 2}
+      name: 气候
+      icon: mdi:thermometer
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/climate}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: button
       grid_options: {columns: 3, rows: 2}
       name: Energy
       icon: mdi:lightning-bolt
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 3, rows: 2}
+      name: 能源
+      icon: mdi:lightning-bolt
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: button
       grid_options: {columns: 3, rows: 2}
       name: Bills
       icon: mdi:file-document-outline
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/bills}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 3, rows: 2}
+      name: 账单
+      icon: mdi:file-document-outline
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/bills}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: button
       grid_options: {columns: 3, rows: 2}
       name: Entertainment
       icon: mdi:television-play
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/entertainment}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 3, rows: 2}
+      name: 娱乐
+      icon: mdi:television-play
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/entertainment}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: button
       grid_options: {columns: 3, rows: 2}
       name: Security
       icon: mdi:shield-home
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/security}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 3, rows: 2}
+      name: 安防
+      icon: mdi:shield-home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/security}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: button
       grid_options: {columns: 3, rows: 2}
       name: Cameras
       icon: mdi:cctv
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 3, rows: 2}
+      name: 摄像头
+      icon: mdi:cctv
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: button
       grid_options: {columns: 3, rows: 2}
       name: Network
       icon: mdi:wifi
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/network}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 3, rows: 2}
+      name: 网络
+      icon: mdi:wifi
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/network}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: button
       grid_options: {columns: 3, rows: 2}
       name: People
       icon: mdi:account-group
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/people}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 3, rows: 2}
+      name: 家人
+      icon: mdi:account-group
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/people}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: button
       grid_options: {columns: 3, rows: 2}
       name: Automations
       icon: mdi:robot
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/automations}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 3, rows: 2}
+      name: 自动化
+      icon: mdi:robot
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/automations}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: button
       grid_options: {columns: 3, rows: 2}
       name: Alerts
       icon: mdi:bell-alert
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/alerts}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 3, rows: 2}
+      name: 通知
+      icon: mdi:bell-alert
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/alerts}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: button
       grid_options: {columns: 6, rows: 2}
       name: House health
       icon: mdi:heart-pulse
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/house-health}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 2}
+      name: 房屋健康
+      icon: mdi:heart-pulse
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/house-health}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: button
       grid_options: {columns: 6, rows: 2}
       name: English / 中文
@@ -1334,7 +1516,7 @@ views:
         {%- set s = states('binary_sensor.eero_wan_status') -%}
         {%- set V = ('在线' if cn else 'Online') if s == 'on' else (('离线' if cn else 'Offline') if s == 'off' else nd) -%}
         {%- set v1 = V -%}
-        {{ '在家' if cn else 'Home' }} **{{ v0 }}** · {{ '网络' if cn else 'Internet' }} **{{ v1 }}**
+        {{ '在家' if cn else 'At home' }} **{{ v0 }}** · {{ '网络' if cn else 'Internet' }} **{{ v1 }}**
       card_mod:
         style: |
           ha-card {
@@ -6274,7 +6456,7 @@ views:
         state_not: 'on'
     - type: button
       grid_options: {columns: 6, rows: 1}
-      name: 房屋状态
+      name: 房屋健康
       icon: mdi:heart-pulse
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/house-health}
@@ -8239,7 +8421,7 @@ views:
     - type: markdown
       grid_options: {columns: 6, rows: auto}
       content: >-
-        ## {{ '安全' if is_state('input_boolean.chinese_dashboard','on') else
+        ## {{ '安防' if is_state('input_boolean.chinese_dashboard','on') else
         'Security' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}{% set doors = ['binary_sensor.f_contact_sensor_door',
@@ -10007,7 +10189,7 @@ views:
         state_not: 'on'
     - type: button
       grid_options: {columns: 6, rows: 1}
-      name: 房屋状态
+      name: 房屋健康
       icon: mdi:heart-pulse
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/house-health}
@@ -10428,7 +10610,7 @@ views:
     - type: markdown
       grid_options: {columns: 6, rows: auto}
       content: >-
-        ## {{ '系统健康' if is_state('input_boolean.chinese_dashboard','on') else
+        ## {{ '房屋健康' if is_state('input_boolean.chinese_dashboard','on') else
         'House Health' }}
 
         {{ '系统状态与维护' if is_state('input_boolean.chinese_dashboard','on')
@@ -11401,7 +11583,7 @@ views:
         state_not: 'on'
     - type: button
       grid_options: {columns: 6, rows: 1}
-      name: 房屋状态
+      name: 房屋健康
       icon: mdi:heart-pulse
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/house-health}
@@ -11901,7 +12083,7 @@ views:
         state_not: 'on'
     - type: button
       grid_options: {columns: 6, rows: 1}
-      name: 房屋状态
+      name: 房屋健康
       icon: mdi:heart-pulse
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/house-health}
