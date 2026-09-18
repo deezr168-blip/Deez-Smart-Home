@@ -1772,9 +1772,11 @@ views:
       content: |
         {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
         {%- set nd = '无数据' if cn else 'no data' -%}
-        {#- (name_en, name_zh, temperature sensor or none, motion sensor or none).
-            A room with no sensor of a given kind gets `none`, and the row omits that
-            reading instead of substituting the nearest one. -#}
+        {#- Only the rooms that HAVE instrumentation get a reading. The three
+            that do not are counted into one closing line rather than taking a
+            row each to say nothing: this is the main Rooms view, and "Ray
+            Bedroom has no sensor" is not a reading. The inventory, and why,
+            is on House health under Instrumentation notes. -#}
         {%- set rooms = [('Living Room','客厅','sensor.living_room_living_hue_hue_sensor_temperature','binary_sensor.living_room_living_hue_hue_sensor_motion'),
                          ('Kitchen','厨房',none,'binary_sensor.k_motion_sensor_motion'),
                          ('Dining','餐厅','sensor.living_room_living_room_temperature','binary_sensor.sensor_group_motion'),
@@ -1782,23 +1784,32 @@ views:
                          ('Ray Bedroom','Ray 卧室',none,none),
                          ('Garage','车库',none,none),
                          ('Guest Room','客房',none,none)] -%}
+        {%- set ns = namespace(rows=[], bare=0) -%}
         {%- for en, zh, t, m in rooms -%}
+        {%- if not t and not m -%}{% set ns.bare = ns.bare + 1 %}
+        {%- else -%}
         {%- set parts = [] -%}
         {%- if t -%}
         {%- set v = states(t) | float(none) -%}
-        {%- set parts = parts + [((v | round(1)) ~ '°') if v is not none else (('温度' ~ nd) if cn else ('temperature ' ~ nd))] -%}
+        {%- set parts = parts + [((v | round(1)) ~ '°') if v is not none else (('温度' ~ nd) if cn else ('temp ' ~ nd))] -%}
         {%- endif -%}
         {%- if m -%}
-        {%- set s = states(m) -%}
-        {%- if s == 'on' -%}{% set parts = parts + ['有动作' if cn else 'movement'] %}
-        {%- elif s == 'off' -%}{% set parts = parts + ['安静' if cn else 'quiet'] %}
-        {%- else -%}{% set parts = parts + [('动作' ~ nd) if cn else ('movement ' ~ nd)] %}{% endif -%}
+        {%- set st = states(m) -%}
+        {%- if st == 'on' -%}{% set parts = parts + ['有动作' if cn else 'movement'] %}
+        {%- elif st == 'off' -%}{% set parts = parts + ['安静' if cn else 'quiet'] %}
+        {%- else -%}{% set parts = parts + [('动作' ~ nd) if cn else ('motion ' ~ nd)] %}{% endif -%}
         {%- endif -%}
-        {%- if not parts -%}
-        {%- set parts = ['本房间没有温度或动作传感器' if cn else 'no temperature or movement sensor'] -%}
+        {%- set ns.rows = ns.rows + ['**' ~ (zh if cn else en) ~ '** ' ~ (parts | join('、') if cn else parts | join(' · '))] -%}
         {%- endif -%}
-        - **{{ zh if cn else en }}** — {{ parts | join('、') if cn else parts | join(' · ') }}
-        {% endfor -%}
+        {%- endfor -%}
+        {#- `、` separates the readings WITHIN a room, so it cannot also
+            separate the rooms -- `安静、**厨房**` would read as one list. The
+            same ambiguity the Home chip strip hit. Rooms are split by ` · `
+            in both languages; only the inner list is an enumeration. -#}
+        {{ ns.rows | join('  ·  ') }}
+        {%- if ns.bare %}
+
+        {{ ('另有 %d 个房间没有温度或动作传感器，详见房屋健康。' % ns.bare) if cn else ('%d more rooms have no temperature or movement sensor — see House health.' % ns.bare) }}{% endif -%}
 
   # The footer. Every room page has carried one since the first build;
   # the boards did not, so on a kiosk iPad the only way back from the
@@ -1817,6 +1828,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 首页
@@ -1827,6 +1856,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: Lighting
@@ -1837,6 +1884,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 灯光
@@ -1847,6 +1912,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
 
 
 
@@ -2580,6 +2663,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 首页
@@ -2590,6 +2691,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: All rooms
@@ -2600,6 +2719,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 所有房间
@@ -2610,6 +2747,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
 
 # ===========================================================================
 # KITCHEN. Appliances and cooking-oriented controls (briefing section 5).
@@ -3056,6 +3211,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 首页
@@ -3066,6 +3239,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: All rooms
@@ -3076,6 +3267,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 所有房间
@@ -3086,6 +3295,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
 
 # ===========================================================================
 # DINING. Dining light, the motion group, and the pet feeder.
@@ -3580,6 +3807,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 首页
@@ -3590,6 +3835,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: All rooms
@@ -3600,6 +3863,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 所有房间
@@ -3610,6 +3891,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
 
 # ===========================================================================
 # PARENTS ROOM. The only climate entity in the house, so the native
@@ -4229,6 +4528,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 首页
@@ -4239,6 +4556,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: All rooms
@@ -4249,6 +4584,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 所有房间
@@ -4259,6 +4612,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
 
 # ===========================================================================
 # RAY BEDROOM. Bed, blind, and the LetPot hydroponic grow unit, which is
@@ -4849,6 +5220,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 首页
@@ -4859,6 +5248,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: All rooms
@@ -4869,6 +5276,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 所有房间
@@ -4879,6 +5304,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
 
 # ===========================================================================
 # GARAGE. Freezer monitoring and workshop power. There is no cover entity
@@ -5211,6 +5654,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 首页
@@ -5221,6 +5682,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: All rooms
@@ -5231,6 +5710,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 所有房间
@@ -5241,6 +5738,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
 
 # ===========================================================================
 # GUEST ROOM. Printer plug and the Kogan TV. Both TV entities read
@@ -5522,6 +6037,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 首页
@@ -5532,6 +6065,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: All rooms
@@ -5542,6 +6093,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 所有房间
@@ -5552,6 +6121,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
 
 # ===========================================================================
 # LIGHTING. Whole-house light control plus the verified Hue scene catalogue.
@@ -5723,10 +6310,8 @@ views:
         {%- for l, en, zh in ls %}{% set s = states(l) %}{% if s == 'on' %}{% set ns.on = ns.on + [zh if cn else en] %}{% elif s == 'off' %}{% set ns.off = ns.off + 1 %}{% else %}{% set ns.quiet = ns.quiet + 1 %}{% endif %}{% endfor -%}
         **{{ '开启的灯' if cn else 'Lights on' }}**
         {% if ns.quiet == ls | count %}## —
-        {{ '没有灯具报告状态' if cn else 'No light is reporting a state' }}{% else %}## {{ ns.on | count }}/{{ (ns.on | count) + ns.off }}
-        {% if ns.on %}{{ ns.on | join('、') if cn else ns.on | join(', ') }}{% else %}{{ '全部已关闭' if cn else 'Everything is off' }}{% endif %}{% endif %}
-
-        {% if ns.quiet %}{{ ('另有 %d 个灯具无数据，未计入。' % ns.quiet) if cn else (('1 more is not reporting and is left out of the count.' if ns.quiet == 1 else '%d more are not reporting and are left out of the count.' % ns.quiet)) }}{% else %}{{ '七个灯具全部有数据。' if cn else 'All 7 are reporting.' }}{% endif %}
+        {{ '没有灯具报告状态' if cn else 'No light is reporting' }}{% else %}## {{ ns.on | count }}/{{ (ns.on | count) + ns.off }}
+        {% if ns.on %}{{ ns.on | join('、') if cn else ns.on | join(', ') }}{% else %}{{ '全部已关闭' if cn else 'All off' }}{% endif %}{%- if ns.quiet %} · {{ ('%d 无数据' % ns.quiet) if cn else ('%d not reporting' % ns.quiet) }}{% endif %}{% endif %}
     - type: markdown
       grid_options: {columns: 6, rows: 3}
       content: |
@@ -5746,11 +6331,9 @@ views:
         {%- for l, en, zh in dim %}{% if states(l) in ['on','off'] %}{% set ns.known = ns.known + 1 %}{% endif %}{% if is_state(l,'on') %}{% set b = state_attr(l,'brightness') | float(none) %}{% if b is not none %}{% set ns.sum = ns.sum + b %}{% set ns.n = ns.n + 1 %}{% endif %}{% endif %}{% endfor -%}
         **{{ '亮度' if cn else 'Brightness' }}**
         {% if ns.n %}## {{ ((ns.sum / ns.n) / 255 * 100) | round(0) | int }}%
-        {{ ('%d 组已开启的灯的平均亮度' % ns.n) if cn else ('averaged over %d group%s that are on' % (ns.n, '' if ns.n == 1 else 's')) }}{% elif ns.known %}## —
-        {{ ('%d 组可调光的灯有数据，均未开启' % ns.known) if cn else ('No dimmable group is on (%d of %d reporting)' % (ns.known, dim | count)) }}{% else %}## —
-        {{ '三组可调光的灯都没有数据' if cn else 'None of the 3 dimmable groups is reporting' }}{% endif %}
-
-        {{ '墙壁开关只有开与关，不计入平均亮度。' if cn else 'The wall switches are on/off only and are not averaged in.' }}
+        {{ ('%d 组平均' % ns.n) if cn else ('across %d group%s' % (ns.n, '' if ns.n == 1 else 's')) }}{% elif ns.known %}## —
+        {{ ('%d/%d 组有数据，均未开启' % (ns.known, dim | count)) if cn else ('None on (%d/%d reporting)' % (ns.known, dim | count)) }}{% else %}## —
+        {{ '无数据' if cn else 'No data' }}{% endif %}
     - type: markdown
       grid_options: {columns: 6, rows: 3}
       content: |
@@ -5762,11 +6345,8 @@ views:
         {%- set ns = namespace(down=[], up=0) -%}
         {%- for s, en, zh in spots %}{% if states(s) in ['unavailable','unknown'] %}{% set ns.down = ns.down + [zh if cn else en] %}{% else %}{% set ns.up = ns.up + 1 %}{% endif %}{% endfor -%}
         **{{ '客厅射灯' if cn else 'Living Room spots' }}**
-        {% if ns.down %}## {{ ns.up }}/{{ spots | count }}
-        {{ ('无数据：' ~ ns.down | join('、')) if cn else ('Not reporting: ' ~ ns.down | join(', ')) }}{% else %}## {{ spots | count }}/{{ spots | count }}
-        {{ '四个射灯全部有数据' if cn else 'All 4 spots are reporting' }}{% endif %}
-
-        {{ '这四个是独立的 Hue 射灯，与上方的“客厅”灯组是不同的实体；灯组开启并不代表射灯在线。' if cn else 'These are the individual Hue spots, separate entities from the Living Room group above; the group being on does not mean the spots are online.' }}
+        ## {{ ns.up }}/{{ spots | count }}
+        {% if ns.down %}{{ ('无数据：' ~ ns.down | join('、')) if cn else ('Down: ' ~ ns.down | join(', ')) }}{% else %}{{ '全部有数据' if cn else 'All reporting' }}{% endif %}
     - type: markdown
       grid_options: {columns: 6, rows: 3}
       content: |
@@ -5780,10 +6360,8 @@ views:
         **{{ '泛光灯' if cn else 'Floodlights' }}**
         {% if ns.on %}## {{ ns.on | count }} {{ '开启' if cn else 'on' }}
         {{ ns.on | join('、') if cn else ns.on | join(', ') }}{% elif ns.off %}## {{ '关闭' if cn else 'Off' }}
-        {{ ('%d 个泛光灯有数据且已关闭' % ns.off) if cn else ('%d reporting floodlights are off' % ns.off) }}{% else %}## —
-        {{ '没有泛光灯报告状态' if cn else 'No floodlight is reporting' }}{% endif %}
-
-        {% if ns.quiet %}{{ ('无数据：' ~ ns.quiet | join('、') ~ '，随其摄像头一同离线。') if cn else ('Not reporting: ' ~ ns.quiet | join(', ') ~ ' — offline with their cameras.') }}{% else %}{{ '四个摄像头泛光灯全部有数据。' if cn else 'All 4 camera floodlights are reporting.' }}{% endif %}
+        {{ ('%d 个有数据' % ns.off) if cn else ('%d reporting' % ns.off) }}{% else %}## —
+        {{ '无数据' if cn else 'No data' }}{% endif %}{%- if ns.quiet %} · {{ ('%d 无数据' % (ns.quiet | count)) if cn else ('%d down' % (ns.quiet | count)) }}{% endif %}
 
   - type: grid
     column_span: 1
@@ -6263,6 +6841,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 首页
@@ -6273,6 +6869,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: All rooms
@@ -6283,6 +6897,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 所有房间
@@ -6293,6 +6925,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
 
 
 # ===========================================================================
@@ -6681,6 +7331,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 首页
@@ -6691,6 +7359,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: House health
@@ -6701,6 +7387,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 房屋健康
@@ -6711,6 +7415,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
 
 
 - type: sections
@@ -7122,6 +7844,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 首页
@@ -7132,6 +7872,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: Bills
@@ -7142,6 +7900,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 账单
@@ -7152,6 +7928,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
 
 
 - type: sections
@@ -7717,6 +8511,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 首页
@@ -7727,6 +8539,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 12, rows: 1}
       name: Bill setup & details
@@ -7737,6 +8567,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 12, rows: 1}
       name: 账单设置与详情
@@ -7747,6 +8595,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
 
 - type: sections
   title: Bill setup & details
@@ -9270,6 +10136,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 首页
@@ -9280,6 +10164,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: Cameras
@@ -9290,6 +10192,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 摄像头
@@ -9300,6 +10220,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
 
 
 - type: sections
@@ -9669,6 +10607,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 首页
@@ -9679,6 +10635,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: Security
@@ -9689,6 +10663,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 安防
@@ -9699,6 +10691,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
 
 
 - type: sections
@@ -10270,6 +11280,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 首页
@@ -10280,6 +11308,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: All rooms
@@ -10290,6 +11336,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 所有房间
@@ -10300,6 +11364,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
 
 
 
@@ -10556,6 +11638,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 首页
@@ -10566,6 +11666,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: House health
@@ -10576,6 +11694,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 房屋健康
@@ -10586,6 +11722,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
 
 
 # ===========================================================================
@@ -10965,6 +12119,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 首页
@@ -10975,6 +12147,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: All rooms
@@ -10985,6 +12175,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 所有房间
@@ -10995,6 +12203,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
 
 
 # ===========================================================================
@@ -11518,6 +12744,56 @@ views:
         {% endif %}{% if not np and not nq %}{% if cn %}{{ ups | count }}
         个更新实体全部为最新。{% else %}All {{ ups | count }} update entities are up to
         date.{% endif %}{% endif %}
+  # -------------------------------------------------------------------------
+  # INSTRUMENTATION NOTES, moved here from the Lighting and Rooms boards on
+  # 2026-09-19.
+  #
+  # Each of these paragraphs was sitting under a KPI card on an operational
+  # page, where it competed with the number it was explaining. They are all
+  # true and all worth keeping — they are the reason a count reads the way it
+  # does — but they are maintenance detail, and this is the maintenance board.
+  # -------------------------------------------------------------------------
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Instrumentation notes
+      heading_style: title
+      icon: mdi:information-outline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 监测说明
+      heading_style: title
+      icon: mdi:information-outline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: markdown
+      grid_options: {columns: 12, rows: auto}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {#- Static explanation, deliberately. These are facts about how the
+            instrumentation is wired, not readings, so nothing here should
+            change with state and nothing here may imply a state. -#}
+        {% if cn %}
+        - **亮度平均值**：只有三组 Hue 灯组可调光。墙壁开关只有开与关，计入平均值会把结果拉向无意义的数字，因此不计入。
+        - **客厅射灯**：四盏射灯是独立实体，与“客厅”灯组不同。灯组开启并不代表射灯在线。
+        - **室外泛光灯**：泛光灯属于各自的摄像头。摄像头离线时，其泛光灯也会一同无数据。
+        - **房间传感器**：Ray 卧室、车库与客房没有温度或动作传感器，因此“各房间状况”不会显示这三个房间的读数。这是布线现状，不是故障。
+        {% else %}
+        {#- One line per bullet. A wrapped continuation is indented, and two
+            leading spaces is what `dashboard_check.py` check 13 exists to
+            catch -- four of them turn the whole card into a code block. -#}
+        - **Brightness average**: only the three Hue groups dim. The wall switches are on/off alone and would drag an average towards a number that means nothing, so they are left out of it.
+        - **Living Room spots**: the four spots are separate entities from the Living Room group. The group being on does not mean the spots are online.
+        - **Floodlights**: each floodlight belongs to a camera. When a camera goes offline its floodlight stops reporting with it.
+        - **Room sensors**: Ray Bedroom, Garage and Guest Room have no temperature or movement sensor, which is why Room conditions shows no reading for them. That is how the house is wired, not a fault.
+        {% endif %}
+
 
   # The footer. Every room page has carried one since the first build;
   # the boards did not, so on a kiosk iPad the only way back from the
@@ -11536,6 +12812,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 首页
@@ -11546,6 +12840,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: Network
@@ -11556,6 +12868,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 网络
@@ -11566,6 +12896,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
 
 
 # ===========================================================================
@@ -12010,6 +13358,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 首页
@@ -12020,6 +13386,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: House health
@@ -12030,6 +13414,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 房屋健康
@@ -12040,6 +13442,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
 
 # ===========================================================================
 # ALERTS. The unified alert centre from briefing section 16, built from the
@@ -12530,6 +13950,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 首页
@@ -12540,6 +13978,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: House health
@@ -12550,6 +14006,24 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: 房屋健康
@@ -12560,3 +14034,21 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
+      card_mod:
+        style: |
+          /* A compact horizontal band, not a near-square card. The button
+             card stacks icon over label by default, which on the wall iPad
+             made the two footer buttons the tallest thing on several pages
+             (19/09 photographs). Turning its flex axis puts the icon beside
+             the label and lets the card collapse to one row. */
+          ha-card {
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 12px !important;
+            min-height: 0 !important;
+            --mdc-icon-size: 20px;
+          }
+          ha-card ha-icon { margin: 0 !important; }
+          ha-card span { font-size: 0.9em; }
