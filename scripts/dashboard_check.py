@@ -536,6 +536,31 @@ def check(path):
         print(f"  half-empty section rows  : {len(holes)}"
               f" ({len(ALLOWED_HALF_ROWS)} allowed)")
 
+    # 15b. no `badges:` on the canonical dashboard
+    #
+    # Home Assistant renders a view's badges ABOVE its sections, with nothing
+    # able to go above them (DR-011). On CasaRay the first section IS the top
+    # bar -- wordmark, clock and nav rail -- so any badge row lands on top of
+    # the wordmark rather than under the page title, which is where every
+    # mockup puts its pill row.
+    #
+    # That pill row is a full-width markdown chip strip instead, and it can do
+    # things a badge cannot: carry a computed value ("Quiet, 22 min", "3 of 6
+    # unpaid", "Warnings 3 (+2 unknown)"), and say No data on a denominator
+    # that did not answer. Every CasaRay view had its badges converted on
+    # 2026-09-18; this keeps them from coming back one view at a time.
+    #
+    # The legacy dashboard is deliberately out of scope: its views do not
+    # begin with a top bar, so badges sit where they should there.
+    if path.endswith("casaray_v2.yaml"):
+        badged = [v.get("path") for v in views if v.get("badges")]
+        for p in badged:
+            fails.append(f"{path}: view {p!r} declares `badges:` — Home "
+                         f"Assistant renders those above the top bar, on top "
+                         f"of the wordmark. Put the readings in the view's "
+                         f"markdown chip strip instead (DR-011)")
+        print(f"  views declaring badges   : {len(badged)}")
+
     # 16. mass-damage detection against HEAD
     old = committed(path)
     if old is None:
