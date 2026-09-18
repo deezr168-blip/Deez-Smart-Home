@@ -335,15 +335,15 @@ target changed. Entity references 434, navigation 124 across 28 targets.
 
 | ID | View | What changed | What to check live | Commit | P | Result |
 |---|---|---|---|---|---|---|
-| CR-277 | Kitchen | Shopping list → full width | The list fills the page rather than leaving a gap beside it | `PH5` | P2 | PENDING |
-| CR-278 | Dining | Motion sensors → full width, six tiles 2-across → **3-across**, two even rows | Six sensor tiles in two rows of three, no stragglers | `PH5` | P2 | PENDING |
-| CR-279 | Ray Bedroom | Power detail → full width, three tiles → **3-across**, one row | Three power tiles on a single row | `PH5` | P2 | PENDING |
-| CR-280 | Energy | Metered circuits → full width, four tiles → **4-across**, one row | Four circuit tiles on a single row. This is the one I negative-tested the gate against | `PH5` | P2 | PENDING |
-| CR-281 | Bills | Water history → full width | Three tiles then two, both rows full | `PH5` | P2 | PENDING |
-| CR-282 | Automations | System maintenance → full width, tile → full-width | Tile and note stacked full width, no gap | `PH5` | P3 | PENDING |
-| CR-283 | Entertainment | Room lighting → full width, two tiles side by side | Two lighting tiles filling one row | `PH5` | P3 | PENDING |
-| CR-284 | Security | **Deliberately NOT changed.** Sirens stay half-width — they are controls that must not be mis-tapped, and full-page-width makes that worse | Confirm the sirens are unchanged and still hard to hit by accident | `PH5` | P2 | PENDING |
-| CR-285 | all | `check 15` gates this from here | — (repository check, nothing to look at) | `PH5` | P4 | PENDING |
+| CR-277 | Kitchen | Shopping list → full width | The list fills the page rather than leaving a gap beside it | `7fb4a71` | P2 | PENDING |
+| CR-278 | Dining | Motion sensors → full width, six tiles 2-across → **3-across**, two even rows | Six sensor tiles in two rows of three, no stragglers | `7fb4a71` | P2 | PENDING |
+| CR-279 | Ray Bedroom | Power detail → full width, three tiles → **3-across**, one row | Three power tiles on a single row | `7fb4a71` | P2 | PENDING |
+| CR-280 | Energy | Metered circuits → full width, four tiles → **4-across**, one row | Four circuit tiles on a single row. This is the one I negative-tested the gate against | `7fb4a71` | P2 | PENDING |
+| CR-281 | Bills | Water history → full width | Three tiles then two, both rows full | `7fb4a71` | P2 | PENDING |
+| CR-282 | Automations | System maintenance → full width, tile → full-width | Tile and note stacked full width, no gap | `7fb4a71` | P3 | PENDING |
+| CR-283 | Entertainment | Room lighting → full width, two tiles side by side | Two lighting tiles filling one row | `7fb4a71` | P3 | PENDING |
+| CR-284 | Security | **Deliberately NOT changed.** Sirens stay half-width — they are controls that must not be mis-tapped, and full-page-width makes that worse | Confirm the sirens are unchanged and still hard to hit by accident | `7fb4a71` | P2 | PENDING |
+| CR-285 | all | `check 15` gates this from here | — (repository check, nothing to look at) | `7fb4a71` | P4 | PENDING |
 
 ## CasaRay — theme, background and glass rebuild, 2026-09-15
 
