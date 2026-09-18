@@ -10149,49 +10149,10 @@ views:
   path: network
   icon: mdi:wifi
   max_columns: 2
-  badges:
-  - type: entity
-    entity: binary_sensor.eero_wan_status
-    name: Internet
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state_not: 'on'
-  - type: entity
-    entity: binary_sensor.eero_wan_status
-    name: 网络
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state: 'on'
-  - type: entity
-    entity: sensor.eero_external_ip
-    name: WAN IP
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state_not: 'on'
-  - type: entity
-    entity: sensor.eero_external_ip
-    name: 外网 IP
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state: 'on'
-  - type: entity
-    entity: binary_sensor.remote_ui
-    name: Remote access
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state_not: 'on'
-  - type: entity
-    entity: binary_sensor.remote_ui
-    name: 远程访问
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state: 'on'
+  # No `badges:` here. Home Assistant renders badges ABOVE the sections, so a
+  # badge row lands on top of the CasaRay wordmark rather than under the page
+  # header where the 15/09 board render puts its pill row (DR-011). The chip
+  # strip in section 2 is that pill row.
   sections:
 
   - type: grid
@@ -10262,6 +10223,59 @@ views:
       tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
 
 
+  # -------------------------------------------------------------------------
+  # The chip strip. The 15/09 board render puts `Internet Online · Gateway
+  # Connected · Latency No sensor · Devices online 96 of 108` under the header,
+  # and this is that row built from what this instance actually has. Latency
+  # and live speed are genuinely not measured here, so they are not in the
+  # strip at all -- the render's own "No sensor" treatment for them lives in
+  # the "Not measured yet" section further down, where there is room to name
+  # the integration each one needs.
+  # -------------------------------------------------------------------------
+  - type: grid
+    column_span: 2
+    cards:
+    - type: markdown
+      grid_options: {columns: 12, rows: auto}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set nd = '无数据' if cn else 'No data' -%}
+        {%- set wan = states('binary_sensor.eero_wan_status') -%}
+        {%- set wv = ('在线' if cn else 'Online') if wan == 'on' else (('离线' if cn else 'Offline') if wan == 'off' else nd) -%}
+        {%- set ru = states('binary_sensor.remote_ui') -%}
+        {%- set rv = ('正常' if cn else 'Healthy') if ru == 'on' else (('不可用' if cn else 'Down') if ru == 'off' else nd) -%}
+        {#- device_class problem: `on` IS the fault, so the polarity is
+            inverted against the two above it. -#}
+        {%- set hb = states('binary_sensor.matter_zigbee_hub_problem') -%}
+        {%- set hv = ('故障' if cn else 'Problem') if hb == 'on' else (('正常' if cn else 'Healthy') if hb == 'off' else nd) -%}
+        {%- set cloud = ['binary_sensor.k_coffee_p100_cloud_connection','binary_sensor.k_top_p100_cloud_connection','binary_sensor.k_bot_p100_cloud_connection','binary_sensor.g_printer_p100_cloud_connection',
+                        'binary_sensor.g_monitor_freezer_p110m_cloud_connection','binary_sensor.r_energy_monitor_p110m_cloud_connection','binary_sensor.k_smart_button_cloud_connection','binary_sensor.k_motion_sensor_cloud_connection',
+                        'binary_sensor.emergency_button_dad_cloud_connection','binary_sensor.emergency_button_mum_cloud_connection','binary_sensor.f_contact_sensor_cloud_connection','binary_sensor.m_contact_sensor_cloud_connection',
+                        'binary_sensor.b_contact_sensor_cloud_connection','binary_sensor.network_tp_linkhub_h100_cloud_connection'] -%}
+        {%- set ns = namespace(up=0, known=0) -%}
+        {%- for c in cloud %}{% set s = states(c) %}{% if s == 'on' %}{% set ns.up = ns.up + 1 %}{% set ns.known = ns.known + 1 %}{% elif s == 'off' %}{% set ns.known = ns.known + 1 %}{% endif %}{% endfor -%}
+        {#- Denominator is what ANSWERED, not the list length. `9 of 14` while
+            five are unavailable would read as five dead devices; the five are
+            simply not reporting, which is a different fact. -#}
+        {%- set dv = ('%d/%d' % (ns.up, ns.known)) if ns.known else nd -%}
+        {#- Weakest Wi-Fi link: the Tapo bar count, same source and same
+            reasoning as the "Weakest link" card below. -#}
+        {%- set links = ['sensor.k_coffee_p100_signal_level','sensor.k_top_p100_signal_level','sensor.k_bot_p100_signal_level','sensor.g_printer_p100_signal_level',
+                      'sensor.g_monitor_freezer_p110m_signal_level','sensor.r_energy_monitor_p110m_signal_level','sensor.k_smart_button_signal_level','sensor.k_motion_sensor_signal_level',
+                      'sensor.emergency_button_dad_signal_level','sensor.emergency_button_mum_signal_level','sensor.f_contact_sensor_signal_level','sensor.m_contact_sensor_signal_level',
+                      'sensor.b_contact_sensor_signal_level','sensor.network_tp_linkhub_h100_signal_level'] -%}
+        {%- set w = namespace(low=none) -%}
+        {%- for e in links %}{% set v = states(e) | float(none) %}{% if v is not none and (w.low is none or v < w.low) %}{% set w.low = v %}{% endif %}{% endfor -%}
+        {%- set lv = (('%d 格' % (w.low | int)) if cn else ('%d bar%s' % (w.low | int, '' if (w.low | int) == 1 else 's'))) if w.low is not none else nd -%}
+        {{ '网络' if cn else 'Internet' }} **{{ wv }}** · {{ '远程访问' if cn else 'Remote access' }} **{{ rv }}** · {{ '中枢' if cn else 'Hub' }} **{{ hv }}** · {{ '云端设备' if cn else 'Devices' }} **{{ dv }}** · {{ '最弱信号' if cn else 'Weakest' }} **{{ lv }}**
+      card_mod:
+        style: |
+          ha-card {
+            border-radius: 999px;
+            background: var(--casaray-surface-3);
+            border-color: var(--casaray-border-strong);
+          }
+
   - type: grid
     column_span: 2
     cards:
@@ -10272,7 +10286,11 @@ views:
         {%- set w = states('binary_sensor.eero_wan_status') -%}
         {%- set ip = states('sensor.eero_external_ip') -%}
         {% if w == 'on' %}## {{ '网络已连接' if cn else 'Internet online' }}
-        {{ 'More NBN · 500 / 45 Mbps' if not cn else 'More NBN · 500 / 45 Mbps' }}{% elif w == 'off' %}## {{ '网络已断开' if cn else 'Internet offline' }}
+        {#- The plan is a proper noun and two numbers, so it is the same string
+            in both languages; the `if cn` branch it used to carry compared two
+            identical literals. It is static owner-supplied detail, not a
+            reading -- no sensor on this instance reports the NBN plan. -#}
+        More NBN · 500 / 45 Mbps{% elif w == 'off' %}## {{ '网络已断开' if cn else 'Internet offline' }}
         {{ 'eero 网关报告 WAN 已断开。' if cn else 'The eero gateway reports the WAN is down.' }}{% else %}## {{ '网络状态未知' if cn else 'Internet state unknown' }}
         {{ 'WAN 传感器无数据，此处不作判断。' if cn else 'The WAN sensor is not reporting, so nothing is assumed.' }}{% endif %}
 
