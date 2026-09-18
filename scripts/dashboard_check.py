@@ -603,6 +603,44 @@ def check(path):
                          f"asserts it. Add an elif for the unreadable case")
         print(f"  on/else with no third branch: {len(swallowed)}")
 
+    # 15d. every board and room page ends with a footer
+    #
+    # `kiosk_mode` hides the sidebar and the header, so the only navigation on
+    # CasaRay is what the page itself draws. The six-icon rail is at the TOP of
+    # the page, which on a long board means scrolling back up to leave -- and
+    # the rail covers six destinations, so a page that is not one of them has
+    # no lit icon either. Ten boards had no footer at all until 2026-09-18.
+    #
+    # The shape is fixed: the LAST section is a full-width grid of `button`
+    # cards, two destinations, each as a bilingual pair with opposite
+    # `visibility`. Home is always one of them.
+    #
+    # Home itself is exempt: its footer is the More boards index, thirteen
+    # destinations plus the language toggle. Subviews are exempt too -- the
+    # camera pages and bills-details put their navigation at the top, where the
+    # thumb already is, because they are `max_columns: 1` detail pages.
+    if path.endswith("casaray_v2.yaml"):
+        bad = []
+        for view in views:
+            p = view.get("path")
+            if view.get("subview") or p == "home":
+                continue
+            sections = view.get("sections") or []
+            cards = (sections[-1].get("cards") or []) if sections else []
+            buttons = [c for c in cards if c.get("type") == "button"]
+            if not buttons:
+                bad.append((p, "has no footer — the only way back is the top rail"))
+                continue
+            if not all(c.get("visibility") for c in buttons):
+                bad.append((p, "footer has buttons with no `visibility`, so a "
+                               "label shows in both languages"))
+            dests = {(c.get("tap_action") or {}).get("navigation_path") for c in buttons}
+            if "/casaray-v2/home" not in dests:
+                bad.append((p, "footer has no way Home"))
+        for p, why in bad:
+            fails.append(f"{path}: view {p!r} {why}")
+        print(f"  footer problems          : {len(bad)}")
+
     # 16. mass-damage detection against HEAD
     old = committed(path)
     if old is None:

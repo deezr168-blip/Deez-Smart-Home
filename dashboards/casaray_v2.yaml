@@ -1565,6 +1565,55 @@ views:
         - **{{ zh if cn else en }}** — {{ parts | join('、') if cn else parts | join(' · ') }}
         {% endfor -%}
 
+  # The footer. Every room page has carried one since the first build;
+  # the boards did not, so on a kiosk iPad the only way back from the
+  # bottom of a long page was to scroll to the top rail. Home plus the
+  # one board a person most often wants next from here.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 首页
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: Lighting
+      icon: mdi:lightbulb-group-outline
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/lighting}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 灯光
+      icon: mdi:lightbulb-group-outline
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/lighting}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+
+
 
 # ===========================================================================
 # LIVING ROOM. Media, lighting and the front door live here.
@@ -2260,6 +2309,9 @@ views:
   # the point -- a room page is long enough that leaving it should not mean
   # scrolling back to the top. Back is omitted: Lovelace has no browser-back
   # action, so it would be a second button to the same place as All rooms.
+  # The footer, bilingual like every other label: two cards per
+  # destination with opposite `visibility`, because a button `name`
+  # cannot be templated any more than a heading can.
   - type: grid
     column_span: 2
     cards:
@@ -2269,12 +2321,40 @@ views:
       icon: mdi:home
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 首页
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: All rooms
       icon: mdi:view-grid-outline
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 所有房间
+      icon: mdi:view-grid-outline
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
 
 # ===========================================================================
 # KITCHEN. Appliances and cooking-oriented controls (briefing section 5).
@@ -2685,6 +2765,9 @@ views:
   # the point -- a room page is long enough that leaving it should not mean
   # scrolling back to the top. Back is omitted: Lovelace has no browser-back
   # action, so it would be a second button to the same place as All rooms.
+  # The footer, bilingual like every other label: two cards per
+  # destination with opposite `visibility`, because a button `name`
+  # cannot be templated any more than a heading can.
   - type: grid
     column_span: 2
     cards:
@@ -2694,12 +2777,40 @@ views:
       icon: mdi:home
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 首页
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: All rooms
       icon: mdi:view-grid-outline
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 所有房间
+      icon: mdi:view-grid-outline
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
 
 # ===========================================================================
 # DINING. Dining light, the motion group, and the pet feeder.
@@ -3158,6 +3269,9 @@ views:
   # the point -- a room page is long enough that leaving it should not mean
   # scrolling back to the top. Back is omitted: Lovelace has no browser-back
   # action, so it would be a second button to the same place as All rooms.
+  # The footer, bilingual like every other label: two cards per
+  # destination with opposite `visibility`, because a button `name`
+  # cannot be templated any more than a heading can.
   - type: grid
     column_span: 2
     cards:
@@ -3167,12 +3281,40 @@ views:
       icon: mdi:home
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 首页
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: All rooms
       icon: mdi:view-grid-outline
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 所有房间
+      icon: mdi:view-grid-outline
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
 
 # ===========================================================================
 # PARENTS ROOM. The only climate entity in the house, so the native
@@ -3756,6 +3898,9 @@ views:
   # the point -- a room page is long enough that leaving it should not mean
   # scrolling back to the top. Back is omitted: Lovelace has no browser-back
   # action, so it would be a second button to the same place as All rooms.
+  # The footer, bilingual like every other label: two cards per
+  # destination with opposite `visibility`, because a button `name`
+  # cannot be templated any more than a heading can.
   - type: grid
     column_span: 2
     cards:
@@ -3765,12 +3910,40 @@ views:
       icon: mdi:home
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 首页
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: All rooms
       icon: mdi:view-grid-outline
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 所有房间
+      icon: mdi:view-grid-outline
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
 
 # ===========================================================================
 # RAY BEDROOM. Bed, blind, and the LetPot hydroponic grow unit, which is
@@ -4325,6 +4498,9 @@ views:
   # the point -- a room page is long enough that leaving it should not mean
   # scrolling back to the top. Back is omitted: Lovelace has no browser-back
   # action, so it would be a second button to the same place as All rooms.
+  # The footer, bilingual like every other label: two cards per
+  # destination with opposite `visibility`, because a button `name`
+  # cannot be templated any more than a heading can.
   - type: grid
     column_span: 2
     cards:
@@ -4334,12 +4510,40 @@ views:
       icon: mdi:home
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 首页
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: All rooms
       icon: mdi:view-grid-outline
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 所有房间
+      icon: mdi:view-grid-outline
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
 
 # ===========================================================================
 # GARAGE. Freezer monitoring and workshop power. There is no cover entity
@@ -4636,6 +4840,9 @@ views:
   # the point -- a room page is long enough that leaving it should not mean
   # scrolling back to the top. Back is omitted: Lovelace has no browser-back
   # action, so it would be a second button to the same place as All rooms.
+  # The footer, bilingual like every other label: two cards per
+  # destination with opposite `visibility`, because a button `name`
+  # cannot be templated any more than a heading can.
   - type: grid
     column_span: 2
     cards:
@@ -4645,12 +4852,40 @@ views:
       icon: mdi:home
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 首页
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: All rooms
       icon: mdi:view-grid-outline
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 所有房间
+      icon: mdi:view-grid-outline
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
 
 # ===========================================================================
 # GUEST ROOM. Printer plug and the Kogan TV. Both TV entities read
@@ -4896,6 +5131,9 @@ views:
       name: Auto update
       grid_options: {columns: 6, rows: 1}
 
+  # The footer, bilingual like every other label: two cards per
+  # destination with opposite `visibility`, because a button `name`
+  # cannot be templated any more than a heading can.
   - type: grid
     column_span: 2
     cards:
@@ -4905,12 +5143,40 @@ views:
       icon: mdi:home
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 首页
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: All rooms
       icon: mdi:view-grid-outline
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 所有房间
+      icon: mdi:view-grid-outline
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
 
 # ===========================================================================
 # LIGHTING. Whole-house light control plus the verified Hue scene catalogue.
@@ -5585,6 +5851,55 @@ views:
         perform_action: scene.turn_on
         target: {entity_id: scene.bedroom_bedroom_nature_s_colors}
 
+  # The footer. Every room page has carried one since the first build;
+  # the boards did not, so on a kiosk iPad the only way back from the
+  # bottom of a long page was to scroll to the top rail. Home plus the
+  # one board a person most often wants next from here.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 首页
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: All rooms
+      icon: mdi:view-grid-outline
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 所有房间
+      icon: mdi:view-grid-outline
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+
+
 # ===========================================================================
 # CLIMATE. One climate entity and four temperature/humidity readings.
 # No whole-house HVAC exists, so this interprets rather than pretends.
@@ -5919,6 +6234,55 @@ views:
         {% set hv = states('climate.bedroom_parents_room_ac') -%}
         {% if raw in ['unavailable','unknown','none',''] %}{{ '空调模式无数据。' if cn else 'The air conditioner mode is not reporting.' }}{% else %}{% set nice = (zh.get(raw, raw) if cn else en.get(raw, raw)) -%}
         {% if hv == 'off' %}{{ ('空调已关闭。上方的“' ~ nice ~ '”是下次开启时使用的模式。') if cn else ('The air conditioner is off. "' ~ nice ~ '" is the mode it will use when next turned on.') }}{% elif hv in ['unavailable','unknown','none',''] %}{{ ('空调实体无数据，无法确认它是否在运行。上方的“' ~ nice ~ '”来自 Sensibo 的模式传感器，该传感器仍有数据。') if cn else ('The air conditioner entity is not reporting, so whether it is running cannot be confirmed. "' ~ nice ~ '" comes from the Sensibo mode sensor, which is still answering.') }}{% else %}{{ ('空调正在以 ' ~ nice ~ ' 模式运行。') if cn else ('Running in ' ~ nice ~ '.') }}{% endif %}{% endif %}
+
+  # The footer. Every room page has carried one since the first build;
+  # the boards did not, so on a kiosk iPad the only way back from the
+  # bottom of a long page was to scroll to the top rail. Home plus the
+  # one board a person most often wants next from here.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 首页
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: House health
+      icon: mdi:heart-pulse
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/house-health}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 房屋状态
+      icon: mdi:heart-pulse
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/house-health}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+
 
 - type: sections
   title: Energy
@@ -6291,6 +6655,55 @@ views:
       content: >-
         {% set cn = is_state('input_boolean.chinese_dashboard','on') -%}
         {{ 'Forecast.Solar 的预测与逆变器无关，逆变器离线时预测依然可用。逆变器离线期间 SolarNet 仍会发布 0 W，因此本页显示“无数据”而不是 0。' if cn else 'The Forecast.Solar figures come from a forecast service, not the inverter, so they keep working while it is offline. SolarNet publishes 0 W while the inverter is unreachable, which is why this page shows no data rather than a zero.' }}
+
+  # The footer. Every room page has carried one since the first build;
+  # the boards did not, so on a kiosk iPad the only way back from the
+  # bottom of a long page was to scroll to the top rail. Home plus the
+  # one board a person most often wants next from here.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 首页
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: Bills
+      icon: mdi:file-document-outline
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/bills}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 账单
+      icon: mdi:file-document-outline
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/bills}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+
 
 - type: sections
   title: Bills
@@ -6823,6 +7236,26 @@ views:
   - type: grid
     column_span: 2
     cards:
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 首页
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: button
       grid_options: {columns: 12, rows: 1}
       name: Bill setup & details
@@ -8309,6 +8742,55 @@ views:
         details rather than sounding anything. The H200's own siren entity and
         the South and East Wall sirens are currently not reporting.{% endif %}
 
+  # The footer. Every room page has carried one since the first build;
+  # the boards did not, so on a kiosk iPad the only way back from the
+  # bottom of a long page was to scroll to the top rail. Home plus the
+  # one board a person most often wants next from here.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 首页
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: Cameras
+      icon: mdi:cctv
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 摄像头
+      icon: mdi:cctv
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+
+
 - type: sections
   title: Cameras
   path: cameras
@@ -8638,6 +9120,55 @@ views:
       grid_options: {columns: 6, rows: 1}
       features:
       - type: light-brightness
+
+  # The footer. Every room page has carried one since the first build;
+  # the boards did not, so on a kiosk iPad the only way back from the
+  # bottom of a long page was to scroll to the top rail. Home plus the
+  # one board a person most often wants next from here.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 首页
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: Security
+      icon: mdi:shield-home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/security}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 安防
+      icon: mdi:shield-home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/security}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+
 
 - type: sections
   title: Front Door
@@ -9171,6 +9702,55 @@ views:
       - entity: person.ai_q_huang
         name: Ai Q
 
+  # The footer. Every room page has carried one since the first build;
+  # the boards did not, so on a kiosk iPad the only way back from the
+  # bottom of a long page was to scroll to the top rail. Home plus the
+  # one board a person most often wants next from here.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 首页
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: All rooms
+      icon: mdi:view-grid-outline
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 所有房间
+      icon: mdi:view-grid-outline
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+
+
 
 # ===========================================================================
 # AUTOMATIONS. Only entities verified in the B1 export are shown. The frozen
@@ -9387,6 +9967,55 @@ views:
       grid_options: {columns: 12, rows: 2}
       content: >-
         {{ '设计简报中的 Door → Dining、Work Prep、Good Morning、Away Mode 和 Good Night 是目标示例；B1 导出没有这些 automation.* 实体，所以此处不会虚构它们。' if is_state('input_boolean.chinese_dashboard','on') else 'Door → Dining, Work Prep, Good Morning, Away Mode and Good Night are design targets only. The B1 export contains no matching automation.* entities, so CasaRay does not fabricate them.' }}
+
+  # The footer. Every room page has carried one since the first build;
+  # the boards did not, so on a kiosk iPad the only way back from the
+  # bottom of a long page was to scroll to the top rail. Home plus the
+  # one board a person most often wants next from here.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 首页
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: House health
+      icon: mdi:heart-pulse
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/house-health}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 房屋状态
+      icon: mdi:heart-pulse
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/house-health}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+
 
 # ===========================================================================
 # ENTERTAINMENT. Native media-control over the three real media players.
@@ -9727,6 +10356,55 @@ views:
             background: var(--casaray-grey-bg);
             {% endif %}
           }
+
+  # The footer. Every room page has carried one since the first build;
+  # the boards did not, so on a kiosk iPad the only way back from the
+  # bottom of a long page was to scroll to the top rail. Home plus the
+  # one board a person most often wants next from here.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 首页
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: All rooms
+      icon: mdi:view-grid-outline
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 所有房间
+      icon: mdi:view-grid-outline
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+
 
 # ===========================================================================
 # HOUSE HEALTH. Also absorbs Network -- an eero WAN binary sensor and a
@@ -10230,6 +10908,55 @@ views:
         个更新实体全部为最新。{% else %}All {{ ups | count }} update entities are up to
         date.{% endif %}{% endif %}
 
+  # The footer. Every room page has carried one since the first build;
+  # the boards did not, so on a kiosk iPad the only way back from the
+  # bottom of a long page was to scroll to the top rail. Home plus the
+  # one board a person most often wants next from here.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 首页
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: Network
+      icon: mdi:wifi
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/network}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 网络
+      icon: mdi:wifi
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/network}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+
+
 # ===========================================================================
 # NETWORK -- Step 1. Built only from entities this instance already has.
 # The eero integration exposes exactly two: `binary_sensor.eero_wan_status`
@@ -10636,6 +11363,9 @@ views:
             background: var(--casaray-grey-bg);
           }
 
+  # The footer, bilingual like every other label: two cards per
+  # destination with opposite `visibility`, because a button `name`
+  # cannot be templated any more than a heading can.
   - type: grid
     column_span: 2
     cards:
@@ -10645,12 +11375,40 @@ views:
       icon: mdi:home
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 首页
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
     - type: button
       grid_options: {columns: 6, rows: 1}
       name: House health
       icon: mdi:heart-pulse
       show_state: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/house-health}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 房屋状态
+      icon: mdi:heart-pulse
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/house-health}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
 
 # ===========================================================================
 # ALERTS. The unified alert centre from briefing section 16, built from the
@@ -11103,3 +11861,51 @@ views:
         history and quiet hours are **not implemented**: no notification or
         persistent-alert entity exists in this instance to store that state, and a read
         flag that forgets itself on every refresh would be worse than none.{% endif %}
+
+  # The footer. Every room page has carried one since the first build;
+  # the boards did not, so on a kiosk iPad the only way back from the
+  # bottom of a long page was to scroll to the top rail. Home plus the
+  # one board a person most often wants next from here.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 首页
+      icon: mdi:home
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: House health
+      icon: mdi:heart-pulse
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/house-health}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: button
+      grid_options: {columns: 6, rows: 1}
+      name: 房屋状态
+      icon: mdi:heart-pulse
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/house-health}
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
