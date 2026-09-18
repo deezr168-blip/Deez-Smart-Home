@@ -641,6 +641,54 @@ def check(path):
             fails.append(f"{path}: view {p!r} {why}")
         print(f"  footer problems          : {len(bad)}")
 
+    # 15e. one English term, one Chinese word
+    #
+    # CLAUDE.md says to grep for an existing term before inventing one. Over
+    # 400 bilingual pairs that is not something anyone does reliably, and an
+    # audit on 2026-09-18 found sixteen English terms rendered two or three
+    # different ways: Security as both 安全 and 安防 (the legacy dashboard
+    # settles that one — 安防 is security, 安全 is safety), the Aqara ROLLER
+    # SHADE as both 卷帘 and 窗帘 (a curtain), Ray Bedroom as both Ray 卧室
+    # and Ray 房间.
+    #
+    # Pairs are read from `'<zh>' if <cond> else '<en>'` and from the
+    # bilingual heading pairs. A term rendered more than one way fails unless
+    # it is in ALLOWED_SENSES below.
+    if path.endswith("casaray_v2.yaml"):
+        # Four terms legitimately take more than one word, and each is correct
+        # Chinese rather than drift:
+        #   Lights on   开启的灯 is a COUNT label ("lights that are on");
+        #               灯光已开 is a STATE sentence ("the lights are on").
+        #   On / Off    a media player that is On is 播放中 (playing); an air
+        #               conditioner that is On is 运行中 (running). 已关闭 is
+        #               "has been turned off", 关闭 is the state "off".
+        #   not reporting  个 and 台 are measure words for different noun
+        #               classes — 台 for appliances, 个 for generic things.
+        ALLOWED_SENSES = {"Lights on", "On", "Off", "not reporting"}
+        raw = open(path, encoding="utf-8").read()
+        senses = {}
+        pair_re = re.compile(
+            r"'([^']*[\u4e00-\u9fff][^']*)'\s+if\s+(?:cn|is_state\([^)]*\))"
+            r"\s+else\s+'([^']+)'")
+        for m in pair_re.finditer(raw):
+            senses.setdefault(m.group(2).strip(), set()).add(m.group(1).strip())
+        for view in views:
+            for section in view.get("sections") or []:
+                heads = [c for c in section.get("cards") or []
+                         if c.get("type") == "heading"]
+                for i in range(0, len(heads) - 1, 2):
+                    a, b = heads[i].get("heading"), heads[i + 1].get("heading")
+                    if a and b and re.search(r"[\u4e00-\u9fff]", str(b)):
+                        senses.setdefault(str(a).strip(), set()).add(str(b).strip())
+        split = {k: v for k, v in senses.items()
+                 if len(v) > 1 and k not in ALLOWED_SENSES}
+        for k, v in sorted(split.items()):
+            fails.append(f"{path}: {k!r} is rendered {len(v)} different ways in "
+                         f"Chinese ({', '.join(sorted(v))}) — pick one, or add "
+                         f"it to ALLOWED_SENSES with a reason")
+        print(f"  bilingual terms / split  : {len(senses)} / {len(split)}"
+              f" ({len(ALLOWED_SENSES)} allowed)")
+
     # 16. mass-damage detection against HEAD
     old = committed(path)
     if old is None:

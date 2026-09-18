@@ -1758,7 +1758,7 @@ views:
       content: |
         {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
         {%- set m = states('binary_sensor.living_room_living_hue_hue_sensor_motion') -%}
-        {% if m == 'on' %}**{{ '有人' if cn else 'Occupied' }}** · {{ '刚检测到动作' if cn else 'motion just now' }}{% elif m == 'off' %}**{{ '无人' if cn else 'No motion' }}** · {{ '客厅' if cn else 'Living Room' }}{% else %}**{{ '无数据' if cn else 'No reading' }}** · {{ '动作传感器离线' if cn else 'motion sensor offline' }}{% endif %}
+        {% if m == 'on' %}**{{ '有人' if cn else 'Occupied' }}** · {{ '刚检测到动作' if cn else 'motion just now' }}{% elif m == 'off' %}**{{ '无人活动' if cn else 'No motion' }}** · {{ '客厅' if cn else 'Living Room' }}{% else %}**{{ '无数据' if cn else 'No reading' }}** · {{ '动作传感器离线' if cn else 'motion sensor offline' }}{% endif %}
     - type: markdown
       grid_options: {columns: 6, rows: 1}
       content: |
@@ -2840,7 +2840,7 @@ views:
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set m =
         states('binary_sensor.sensor_group_motion') %}{% set l =
         states('light.dining') %}{% if m == 'on' %}{{ '有人' if cn else 'Occupied' }}{%
-        elif m == 'off' %}{{ '无人' if cn else 'No motion' }}{% else %}{{
+        elif m == 'off' %}{{ '无人活动' if cn else 'No motion' }}{% else %}{{
         '动作传感器离线' if cn else 'Motion sensor not reporting' }}{% endif %} · {% if
         l == 'on' %}{{ '灯开启' if cn else 'light on' }}{% elif l == 'off' %}{{ '灯关闭'
         if cn else 'light off' }}{% else %}{{ '灯无数据' if cn else 'light not
@@ -2953,7 +2953,7 @@ views:
       content: |
         {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
         {%- set s = states('binary_sensor.sensor_group_motion') -%}
-        {% if s == 'on' %}**{{ '有人' if cn else 'Occupied' }}** · {{ '餐厅' if cn else 'dining' }}{% elif s == 'off' %}**{{ '无人' if cn else 'No motion' }}** · {{ '餐厅' if cn else 'dining' }}{% else %}**{{ '无数据' if cn else 'No reading' }}** · {{ '餐厅无数据' if cn else 'dining not reporting' }}{% endif %}
+        {% if s == 'on' %}**{{ '有人' if cn else 'Occupied' }}** · {{ '餐厅' if cn else 'dining' }}{% elif s == 'off' %}**{{ '无人活动' if cn else 'No motion' }}** · {{ '餐厅' if cn else 'dining' }}{% else %}**{{ '无数据' if cn else 'No reading' }}** · {{ '餐厅无数据' if cn else 'dining not reporting' }}{% endif %}
     - type: markdown
       grid_options: {columns: 6, rows: 1}
       content: |
@@ -3968,15 +3968,15 @@ views:
     - type: markdown
       grid_options: {columns: 6, rows: auto}
       content: >-
-        ## {{ 'Ray 房间' if is_state('input_boolean.chinese_dashboard','on') else
+        ## {{ 'Ray 卧室' if is_state('input_boolean.chinese_dashboard','on') else
         'Ray Bedroom' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set l = states('light.bedroom_bedroom') %}{% set c =
         states('cover.aqara_roller_shade_driver_e1') %}{% if l == 'on' %}{{ '灯开启' if
         cn else 'Light on' }}{% elif l == 'off' %}{{ '灯关闭' if cn else 'Light off'
         }}{% else %}{{ '灯无数据' if cn else 'Light not reporting' }}{% endif %} · {% if
-        c == 'open' %}{{ '窗帘已打开' if cn else 'blind open' }}{% elif c == 'closed'
-        %}{{ '窗帘已关闭' if cn else 'blind closed' }}{% else %}{{ '窗帘无数据' if cn
+        c == 'open' %}{{ '卷帘已打开' if cn else 'blind open' }}{% elif c == 'closed'
+        %}{{ '卷帘已关闭' if cn else 'blind closed' }}{% else %}{{ '卷帘无数据' if cn
         else 'blind not reporting' }}{% endif %}
     # Time over date, right-aligned, DD/MM/YY -- never %Y. `nowrap` is a
     # guarantee where a `columns` value is only a bet (DR-012).
@@ -4064,7 +4064,7 @@ views:
         {%- set s = states('binary_sensor.r_energy_monitor_p110m_overloaded') -%}
         {%- set V = ('过载' if cn else 'Overloaded') if s == 'on' else (('正常' if cn else 'Normal') if s == 'off' else nd) -%}
         {%- set v2 = V -%}
-        {{ '书桌用电' if cn else 'Desk power' }} **{{ v0 }}** · {{ '窗帘' if cn else 'Blind' }} **{{ v1 }}** · {{ '过载' if cn else 'Overload' }} **{{ v2 }}**
+        {{ '书桌用电' if cn else 'Desk power' }} **{{ v0 }}** · {{ '卷帘' if cn else 'Blind' }} **{{ v1 }}** · {{ '过载' if cn else 'Overload' }} **{{ v2 }}**
       card_mod:
         style: |
           ha-card {
@@ -4230,7 +4230,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
     - type: heading
-      heading: 窗帘
+      heading: 卷帘
       heading_style: title
       icon: mdi:roller-shade
       visibility:
@@ -4914,7 +4914,7 @@ views:
         'Guest Room' }}
 
         {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set p = states('switch.g_printer_p100') %}{% if p == 'on' %}{{
-        '打印机开启' if cn else 'Printer on' }}{% elif p == 'off' %}{{ '打印机关闭' if
+        '打印机已开' if cn else 'Printer on' }}{% elif p == 'off' %}{{ '打印机已关' if
         cn else 'Printer off' }}{% else %}{{ '打印机插座无数据' if cn else 'Printer plug
         not reporting' }}{% endif %}
     # Time over date, right-aligned, DD/MM/YY -- never %Y. `nowrap` is a
@@ -5382,7 +5382,7 @@ views:
                       ('light.tapo_c420_east_wall_floodlight_timed','East Wall','东墙')] -%}
         {%- set ns = namespace(on=[], off=0, quiet=[]) -%}
         {%- for f, en, zh in fl %}{% set s = states(f) %}{% if s == 'on' %}{% set ns.on = ns.on + [zh if cn else en] %}{% elif s == 'off' %}{% set ns.off = ns.off + 1 %}{% else %}{% set ns.quiet = ns.quiet + [zh if cn else en] %}{% endif %}{% endfor -%}
-        **{{ '室外泛光灯' if cn else 'Floodlights' }}**
+        **{{ '泛光灯' if cn else 'Floodlights' }}**
         {% if ns.on %}## {{ ns.on | count }} {{ '开启' if cn else 'on' }}
         {{ ns.on | join('、') if cn else ns.on | join(', ') }}{% elif ns.off %}## {{ '关闭' if cn else 'Off' }}
         {{ ('%d 个泛光灯有数据且已关闭' % ns.off) if cn else ('%d reporting floodlights are off' % ns.off) }}{% else %}## —
@@ -6081,7 +6081,7 @@ views:
         {%- set f = states('binary_sensor.bedroom_parents_room_ac_filter_clean_required') -%}
         {%- set lrt = as_timestamp(states('sensor.bedroom_parents_room_ac_filter_last_reset'), default=none) -%}
         **{{ '空调滤网' if cn else 'Filter' }}**
-        {% if f == 'on' %}## {{ '需要清洁' if cn else 'Needs attention' }}
+        {% if f == 'on' %}## {{ '需要清洁' if cn else 'Needs cleaning' }}
         {% elif f == 'off' %}## {{ '正常' if cn else 'Clean' }}
         {% else %}## —
         {% endif %}{% if lrt is not none %}{% set days = ((as_timestamp(now()) - lrt) / 86400) | round(0, 'floor') | int %}{{ ('%d 天前重置' % days) if cn else ('Reset %d days ago' % days) }}{% else %}{{ '未记录重置时间' if cn else 'No reset recorded' }}{% endif %}
@@ -8904,7 +8904,7 @@ views:
         {%- elif mins < 60 %}{% set v2 = ('%d 分钟前' % mins) if cn else ('%d min ago' % mins) %}
         {%- elif mins < 1440 %}{% set v2 = ('%d 小时前' % ((mins / 60) | round(0) | int)) if cn else ('%d h ago' % ((mins / 60) | round(0) | int)) %}
         {%- else %}{% set v2 = ('%d 天前' % ((mins / 1440) | round(0) | int)) if cn else ('%d d ago' % ((mins / 1440) | round(0) | int)) %}{% endif %}{% endif -%}
-        {{ '在线' if cn else 'Online' }} **{{ ns.up }}/{{ cams | count }}** · {{ '最低电量' if cn else 'Lowest battery' }} **{{ v1 }}** · {{ '门铃活动' if cn else 'Doorbell' }} **{{ v2 }}**
+        {{ '在线' if cn else 'Online' }} **{{ ns.up }}/{{ cams | count }}** · {{ '最低电量' if cn else 'Lowest battery' }} **{{ v1 }}** · {{ '门铃活动' if cn else 'Doorbell activity' }} **{{ v2 }}**
       card_mod:
         style: |
           ha-card {
@@ -8987,7 +8987,7 @@ views:
         {%- set ns = namespace(on=[], off=0, unk=[]) -%}
         {%- for p, en, zh in privs %}{% set s = states(p) %}{% if s == 'on' %}{% set ns.on = ns.on + [zh if cn else en] %}{% elif s == 'off' %}{% set ns.off = ns.off + 1 %}{% else %}{% set ns.unk = ns.unk + [zh if cn else en] %}{% endif %}{% endfor -%}
         **{{ '隐私模式' if cn else 'Privacy mode' }}**
-        {% if ns.on %}## {{ '已开启' if cn else 'On' }}
+        {% if ns.on %}## {{ '开启' if cn else 'On' }}
         {{ ('以下摄像头已被遮蔽：' ~ ns.on | join('、')) if cn else ('Blinded: ' ~ ns.on | join(', ')) }}{% elif (ns.unk | count) == (privs | count) %}## —
         {{ '没有摄像头报告隐私模式状态' if cn else 'No camera is reporting its privacy setting' }}{% else %}## {{ '关闭' if cn else 'Off' }}
         {{ ('%d/%d 个摄像头有数据' % (ns.off, privs | count)) if cn else ('%d of %d reporting' % (ns.off, privs | count)) }}{% endif %}{% if ns.unk %}
@@ -9463,7 +9463,7 @@ views:
         {%- set b = namespace(low=none) -%}
         {%- for e in devs %}{% set x = states(e) | float(none) %}{% if x is not none and (b.low is none or x < b.low) %}{% set b.low = x %}{% endif %}{% endfor -%}
         {%- set v2 = ((b.low | round(0) | int) ~ '%') if b.low is not none else nd -%}
-        {{ '在家' if cn else 'At home' }} **{{ v0 }}** · {{ '外出' if cn else 'Away' }} **{{ v1 }}**{% if ns.u %} · {{ '位置无数据' if cn else 'Unknown' }} **{{ ns.u }}**{% endif %} · {{ '最低设备电量' if cn else 'Lowest device' }} **{{ v2 }}**
+        {{ '在家' if cn else 'At home' }} **{{ v0 }}** · {{ '外出' if cn else 'Away' }} **{{ v1 }}**{% if ns.u %} · {{ '位置无数据' if cn else 'Location unknown' }} **{{ ns.u }}**{% endif %} · {{ '最低设备电量' if cn else 'Lowest device' }} **{{ v2 }}**
       card_mod:
         style: |
           ha-card {
@@ -10516,7 +10516,7 @@ views:
         {%- set v2 = ((b.low | round(0) | int) ~ '%') if b.low is not none else nd -%}
         {%- set w = states('binary_sensor.eero_wan_status') -%}
         {%- set v3 = ('在线' if cn else 'Online') if w == 'on' else (('离线' if cn else 'Offline') if w == 'off' else nd) -%}
-        {{ '房屋状态' if cn else 'House' }} **{{ v0 }}** · {{ '离线设备' if cn else 'Offline' }} **{{ v1 }}** · {{ '最低电量' if cn else 'Lowest battery' }} **{{ v2 }}** · {{ '网络' if cn else 'Internet' }} **{{ v3 }}**
+        {{ '房屋状态' if cn else 'House' }} **{{ v0 }}** · {{ '离线设备' if cn else 'Offline devices' }} **{{ v1 }}** · {{ '最低电量' if cn else 'Lowest battery' }} **{{ v2 }}** · {{ '网络' if cn else 'Internet' }} **{{ v3 }}**
       card_mod:
         style: |
           ha-card {
@@ -11221,7 +11221,7 @@ views:
         {{ ('信号强度 %d 格' % (ns.low | int)) if cn else ('%d bar%s' % (ns.low | int, '' if (ns.low | int) == 1 else 's')) }}{% else %}## —
         {{ '没有设备报告信号强度' if cn else 'No device is reporting a signal level' }}{% endif %}
 
-        {{ ns.n }}/{{ links | count }} {{ '个设备有信号数据' if cn else 'devices reporting' }}{% if ns.quiet %} · {{ ns.quiet }} {{ '个无数据' if cn else 'silent' }}{% endif %}
+        {{ ns.n }}/{{ links | count }} {{ '个设备有信号数据' if cn else 'devices reporting a signal level' }}{% if ns.quiet %} · {{ ns.quiet }} {{ '个无数据' if cn else 'silent' }}{% endif %}
     - type: tile
       grid_options: {columns: 6, rows: 1}
       entity: sensor.tapo_c200_stockroom_rssi
@@ -11528,7 +11528,7 @@ views:
         {%- set v0 = ('%d' % c.n) ~ ((('，%d 项无数据' % c.u) if cn else (' (+%d unknown)' % c.u)) if c.u else '') -%}
         {%- set v1 = ('%d' % w.n) ~ ((('，%d 项无数据' % w.u) if cn else (' (+%d unknown)' % w.u)) if w.u else '') -%}
         {%- set v2 = ('%d' % i.n) ~ ((('，%d 项无数据' % i.u) if cn else (' (+%d unknown)' % i.u)) if i.u else '') -%}
-        {{ '紧急' if cn else 'Critical' }} **{{ v0 }}** · {{ '警告' if cn else 'Warnings' }} **{{ v1 }}** · {{ '提示' if cn else 'Information' }} **{{ v2 }}**
+        {{ '严重' if cn else 'Critical' }} **{{ v0 }}** · {{ '警告' if cn else 'Warnings' }} **{{ v1 }}** · {{ '提示' if cn else 'Information' }} **{{ v2 }}**
       card_mod:
         style: |
           ha-card {
