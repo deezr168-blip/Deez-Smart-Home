@@ -5797,56 +5797,12 @@ views:
   path: energy
   icon: mdi:lightning-bolt
   max_columns: 2
-  # The chip strip, per the 14/09 mockups: a pill row under the page header,
-  # dim label then bright value -- `Outside 10°`, `Room 19.7°`, `Movement
-  # Quiet`. A native badge is exactly that pill, so this needs no custom card
-  # and no card_mod. Page-specific, three or four at most, every one a real
-  # entity: nothing here is a computed figure a badge cannot honestly show.
-  # Bilingual the way headings are -- two badges with opposite `visibility`,
-  # because a badge name cannot be templated either.
-  badges:
-  - type: entity
-    entity: sensor.powerpal_gateway_powerpal_power
-    name: Now
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state_not: 'on'
-  - type: entity
-    entity: sensor.powerpal_gateway_powerpal_power
-    name: 当前
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state: 'on'
-  - type: entity
-    entity: sensor.energy_production_today
-    name: Solar forecast
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state_not: 'on'
-  - type: entity
-    entity: sensor.energy_production_today
-    name: 太阳能预测
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state: 'on'
-  - type: entity
-    entity: sensor.electricity_maps_co2_intensity
-    name: Grid carbon
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state_not: 'on'
-  - type: entity
-    entity: sensor.electricity_maps_co2_intensity
-    name: 电网碳强度
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state: 'on'
+  # No `badges:` here. Home Assistant renders badges ABOVE the sections, so a
+  # badge row lands on top of the CasaRay wordmark rather than under the page
+  # header where the 14/09 render puts its pill row (DR-011). This page's pill
+  # row is the full-width markdown chip strip in section 2 instead, which also
+  # lets a chip carry a computed figure -- "3 of 6 unpaid", "2/4 alerting" --
+  # that no badge could honestly show.
   sections:
 
   - type: grid
@@ -7627,56 +7583,12 @@ views:
   path: security
   icon: mdi:shield-home
   max_columns: 2
-  # The chip strip, per the 14/09 mockups: a pill row under the page header,
-  # dim label then bright value -- `Outside 10°`, `Room 19.7°`, `Movement
-  # Quiet`. A native badge is exactly that pill, so this needs no custom card
-  # and no card_mod. Page-specific, three or four at most, every one a real
-  # entity: nothing here is a computed figure a badge cannot honestly show.
-  # Bilingual the way headings are -- two badges with opposite `visibility`,
-  # because a badge name cannot be templated either.
-  badges:
-  - type: entity
-    entity: binary_sensor.f_contact_sensor_door
-    name: Front door
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state_not: 'on'
-  - type: entity
-    entity: binary_sensor.f_contact_sensor_door
-    name: 前门
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state: 'on'
-  - type: entity
-    entity: sensor.front_door_last_activity
-    name: Last doorbell
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state_not: 'on'
-  - type: entity
-    entity: sensor.front_door_last_activity
-    name: 门铃最近活动
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state: 'on'
-  - type: entity
-    entity: binary_sensor.eero_wan_status
-    name: Internet
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state_not: 'on'
-  - type: entity
-    entity: binary_sensor.eero_wan_status
-    name: 网络
-    visibility:
-    - condition: state
-      entity: input_boolean.chinese_dashboard
-      state: 'on'
+  # No `badges:` here. Home Assistant renders badges ABOVE the sections, so a
+  # badge row lands on top of the CasaRay wordmark rather than under the page
+  # header where the 14/09 render puts its pill row (DR-011). This page's pill
+  # row is the full-width markdown chip strip in section 2 instead, which also
+  # lets a chip carry a computed figure -- "3 of 6 unpaid", "2/4 alerting" --
+  # that no badge could honestly show.
   sections:
 
   - type: grid
