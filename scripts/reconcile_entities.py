@@ -72,6 +72,38 @@ def references(path):
             if e.split(".")[0] in DOMAINS}
 
 
+# Entities the export lists as `ok` that the LIVE instance does not have.
+#
+# The export is a snapshot, and a snapshot of an entity REGISTRY keeps rows for
+# devices that have been renamed: both identities are listed, both marked `ok`,
+# and only one of them answers. CLAUDE.md already warns that "name similarity
+# is not proof" (CR-190); this is the same trap from the other direction, where
+# the dead ID is the one that looks authoritative because the export vouches
+# for it.
+#
+# The Sensibo Sky Plus was renamed to "Parents Room AC" at some point before
+# 2026-09-05. The export carries all ten `*_parents_room_ac_*` entities AND
+# three `master_bedroom_sensibo_sky_plus*` rows. The dashboard used the latter,
+# this check passed them, and the wall iPad rendered three orange "Entity not
+# found" cards on Climate plus a fourth on Parents Room (19/09 photographs).
+#
+# Add an ID here when live evidence — a photograph, a Developer Tools lookup,
+# a GetLiveContext query — shows the instance does not have it, with the reason
+# and the replacement. Removing an entry needs the same kind of evidence.
+STALE = {
+    "sensor.master_bedroom_sensibo_sky_plus_air_conditioner_mode":
+        "renamed device; no live mode sensor exists — read climate."
+        "bedroom_parents_room_ac instead (19/09 wall photographs)",
+    "sensor.master_bedroom_sensibo_sky_plus_cooling_setpoint":
+        "renamed device; the setpoint is the `temperature` attribute of "
+        "climate.bedroom_parents_room_ac (19/09 wall photographs)",
+    "switch.master_bedroom_sensibo_sky_plus":
+        "renamed device; no live bridge switch — the AC's own controls are "
+        "switch.bedroom_parents_room_ac_climate_react / _timer "
+        "(19/09 wall photographs)",
+}
+
+
 def main():
     if not os.path.exists(EXPORT):
         sys.exit(f"missing {EXPORT} — the export is the authority here, and "
@@ -86,6 +118,7 @@ def main():
         services = {e for e in refs if SERVICE_CALLS.match(e)}
         entities = refs - services
         missing = sorted(entities - live.keys())
+        stale = sorted(entities & STALE.keys())
         avail = collections.Counter(live[e][2] for e in entities if e in live)
 
         print(f"\n  --- {path} ---")
@@ -99,6 +132,12 @@ def main():
                 name, area, _ = live[e]
                 print(f"    offline  {e}  ({name}, {area or 'no area'})")
 
+        if stale:
+            failed = True
+            print(f"  IN THE EXPORT BUT DEAD   : {len(stale)}")
+            for e in stale:
+                print(f"    STALE    {e}\n             {STALE[e]}")
+
         if missing:
             failed = True
             print(f"  NOT IN THE EXPORT        : {len(missing)}")
@@ -108,7 +147,9 @@ def main():
     if failed:
         print("\n  FAIL  a dashboard references an entity the instance does "
               "not have.\n        Either the ID is wrong or the export is "
-              "stale — check before\n        assuming which.")
+              "stale — check before\n        assuming which. An ID flagged "
+              "STALE is in the export and still dead:\n        the export "
+              "vouches for a registry row, not for a live entity.")
         return 1
     print("\n  ok    every entity reference resolves against the export")
     return 0

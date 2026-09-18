@@ -83,6 +83,66 @@ grid and every `grid_options` width on the page. Both are larger decisions
 than a visual batch, so neither was taken unilaterally. Say the word and
 either can be costed.
 
+## DR-015 — `kiosk_mode:` has never done anything on this instance
+
+**Status:** `CAUSE NARROWED — OWNER ACTION REQUIRED` · **Severity:** S2 ·
+2026-09-19, from the wall iPad photographs.
+
+Home Assistant's own header renders on **every** CasaRay page, beside
+CasaRay's six-icon nav rail. Two navigations, one of them the one the whole
+kiosk design exists to remove.
+
+**What the evidence establishes.**
+
+`kiosk_mode:` in a dashboard YAML is not a Home Assistant feature. It is
+configuration read by *kiosk-mode*, a custom frontend module that has to be
+loaded as a Lovelace **resource**. With no resource the block is inert and the
+header renders normally — which is what the photographs show.
+
+The dashboard's block is not the cause. `hide_sidebar` and `hide_header` are
+both valid options per the module's README and both are set. The key that sat
+beside them, `ignore_per_user`, is **not a kiosk-mode option at all** — it
+appears nowhere in the documented list (`kiosk`, `hide_header`,
+`hide_sidebar`, `hide_menubutton`, `hide_overflow`, `ignore_entity_settings`,
+`ignore_mobile_settings`, `admin_settings`, `non_admin_settings`,
+`user_settings`, `mobile_settings`, `entity_settings`). An unknown key is
+ignored, so it was inert rather than harmful, but it had to go: it read as
+deliberate configuration and it was not. It is replaced by
+`ignore_entity_settings: true`, which is the real option in that space.
+
+**Resource loading itself is fine on this instance.** card-mod paints every
+glass surface and the chip strip's pill radius, and `custom:webrtc-camera`
+renders the six camera subviews — both are HACS frontend resources registered
+the same way. That is what narrows this to kiosk-mode specifically rather than
+to resources in general, and it is why "no custom module loads" is not the
+explanation.
+
+**What is NOT established from here.** Whether kiosk-mode is absent, present
+but unregistered, or registered and failing against this Home Assistant
+version. The build environment has no `/config`, and no repository file has
+ever recorded installing or verifying the module — every mention of
+`kiosk_mode` in this repo, going back to the first build, is an assumption
+that it works.
+
+**The likeliest reading**, stated as a reading and not a finding: it was never
+installed. Both dashboards have carried the block since day one, nothing
+recorded adding the resource, and the two resources that *were* added are both
+demonstrably working.
+
+**How to settle it:** `scripts/casaray_kiosk_diagnose.sh`, run on the host. It
+is read-only, it prints the registered resource URLs and whether the module is
+on disk, and it names the fix for each of the three outcomes. It deliberately
+does not dump `configuration.yaml`, which can hold tokens and internal
+hostnames.
+
+**Why no workaround is shipped.** A CSS fallback through card-mod's
+`card-mod-root` theme key could plausibly hide the header, and card-mod is
+known to work here. It is not shipped because it depends on the exact shadow
+DOM of `hui-root` in this Home Assistant version, which cannot be checked from
+the build environment — it would be a guess dressed as a fix, and a wrong one
+would hide something other than the header. Installing the module the
+dashboard already asks for is the smaller, reversible change.
+
 ## DR-014 — the theme was a photograph behind a scrim; the mockups are not
 
 **Status:** `FIXED — AWAITING LIVE VERIFICATION` · **Severity:** S3 ·
