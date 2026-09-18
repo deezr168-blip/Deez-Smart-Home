@@ -220,14 +220,16 @@ views:
         {#- Inside: the Living Room Hue sensor. The render labels this same
             reading `Inside`; no whole-house average sensor exists. -#}
         {%- set it = states('sensor.living_room_living_hue_hue_sensor_temperature') | float(none) -%}
-        {%- set inside = ((it | round(1)) ~ '°') if it is not none else nd -%}
+        {#- Whole degrees. Outside is already whole, the two read as a pair, and
+            the tenth of a degree is on the Climate page where it is useful. -#}
+        {%- set inside = ((it | round(0) | int) ~ '°') if it is not none else nd -%}
         {%- set ppl = ['person.raymond_du','person.vinh_du','person.ai_q_huang'] -%}
         {%- set ns = namespace(h=0, u=0) -%}
         {%- for p in ppl %}{% set st = states(p) %}{% if st == 'home' %}{% set ns.h = ns.h + 1 %}{% elif st in ['unavailable','unknown','none',''] %}{% set ns.u = ns.u + 1 %}{% endif %}{% endfor -%}
         {%- set n = ppl | count -%}
         {%- if ns.u == n %}{% set home = nd %}
-        {%- elif ns.u %}{% set home = ('%d 人中 %d 人、%d 人无数据' % (n, ns.h, ns.u)) if cn else ('%d of %d, %d unknown' % (ns.h, n, ns.u)) %}
-        {%- else %}{% set home = ('%d 人中 %d 人' % (n, ns.h)) if cn else ('%d of %d' % (ns.h, n)) %}{% endif -%}
+        {%- elif ns.u %}{% set home = ('%d/%d、%d 无数据' % (ns.h, n, ns.u)) if cn else ('%d/%d, %d unknown' % (ns.h, n, ns.u)) %}
+        {%- else %}{% set home = ('%d/%d' % (ns.h, n)) if cn else ('%d/%d' % (ns.h, n)) %}{% endif -%}
         {%- set w = states('sensor.casa_monitored_power') | float(none) -%}
         {%- set wr = (w | round(1)) if w is not none else none -%}
         {#- A flat zero is a real reading and should print `0 W`, not `0.0 W`;
@@ -240,6 +242,26 @@ views:
             border-radius: 999px;
             background: var(--casaray-surface-3);
             border-color: var(--casaray-border-strong);
+          }
+          /* The 19/09 wall photograph shows the Home strip wrapping after
+             "At home 2 of 3 ·" -- about 45 characters at the default size.
+             Every reading is kept; the line is made to fit instead.
+             ha-markdown's own padding is the biggest single win here (32px
+             of it, side to side), and it buys back roughly two characters
+             on top of what the smaller type gives. */
+          ha-markdown {
+            font-size: 0.78em;
+            line-height: 1.35;
+            letter-spacing: -0.003em;
+            padding: 6px 14px !important;
+          }
+          ha-markdown p {
+            margin: 0 !important;
+            text-align: center;
+            /* Balanced rather than ragged: a strip that must take two lines
+               should look composed, not broken. Ignored by engines that do
+               not support it, which simply leaves the old ragged wrap. */
+            text-wrap: balance;
           }
 
   # -------------------------------------------------------------------------
@@ -1535,6 +1557,26 @@ views:
             background: var(--casaray-surface-3);
             border-color: var(--casaray-border-strong);
           }
+          /* The 19/09 wall photograph shows the Home strip wrapping after
+             "At home 2 of 3 ·" -- about 45 characters at the default size.
+             Every reading is kept; the line is made to fit instead.
+             ha-markdown's own padding is the biggest single win here (32px
+             of it, side to side), and it buys back roughly two characters
+             on top of what the smaller type gives. */
+          ha-markdown {
+            font-size: 0.78em;
+            line-height: 1.35;
+            letter-spacing: -0.003em;
+            padding: 6px 14px !important;
+          }
+          ha-markdown p {
+            margin: 0 !important;
+            text-align: center;
+            /* Balanced rather than ragged: a strip that must take two lines
+               should look composed, not broken. Ignored by engines that do
+               not support it, which simply leaves the old ragged wrap. */
+            text-wrap: balance;
+          }
 
   # -----------------------------------------------------------------------
   # The room index. These were `button` cards with `show_state: true`, which
@@ -1941,6 +1983,26 @@ views:
             border-radius: 999px;
             background: var(--casaray-surface-3);
             border-color: var(--casaray-border-strong);
+          }
+          /* The 19/09 wall photograph shows the Home strip wrapping after
+             "At home 2 of 3 ·" -- about 45 characters at the default size.
+             Every reading is kept; the line is made to fit instead.
+             ha-markdown's own padding is the biggest single win here (32px
+             of it, side to side), and it buys back roughly two characters
+             on top of what the smaller type gives. */
+          ha-markdown {
+            font-size: 0.78em;
+            line-height: 1.35;
+            letter-spacing: -0.003em;
+            padding: 6px 14px !important;
+          }
+          ha-markdown p {
+            margin: 0 !important;
+            text-align: center;
+            /* Balanced rather than ragged: a strip that must take two lines
+               should look composed, not broken. Ignored by engines that do
+               not support it, which simply leaves the old ragged wrap. */
+            text-wrap: balance;
           }
 
   - type: grid
@@ -2677,6 +2739,26 @@ views:
             background: var(--casaray-surface-3);
             border-color: var(--casaray-border-strong);
           }
+          /* The 19/09 wall photograph shows the Home strip wrapping after
+             "At home 2 of 3 ·" -- about 45 characters at the default size.
+             Every reading is kept; the line is made to fit instead.
+             ha-markdown's own padding is the biggest single win here (32px
+             of it, side to side), and it buys back roughly two characters
+             on top of what the smaller type gives. */
+          ha-markdown {
+            font-size: 0.78em;
+            line-height: 1.35;
+            letter-spacing: -0.003em;
+            padding: 6px 14px !important;
+          }
+          ha-markdown p {
+            margin: 0 !important;
+            text-align: center;
+            /* Balanced rather than ragged: a strip that must take two lines
+               should look composed, not broken. Ignored by engines that do
+               not support it, which simply leaves the old ragged wrap. */
+            text-wrap: balance;
+          }
 
   - type: grid
     column_span: 2
@@ -3136,6 +3218,26 @@ views:
             border-radius: 999px;
             background: var(--casaray-surface-3);
             border-color: var(--casaray-border-strong);
+          }
+          /* The 19/09 wall photograph shows the Home strip wrapping after
+             "At home 2 of 3 ·" -- about 45 characters at the default size.
+             Every reading is kept; the line is made to fit instead.
+             ha-markdown's own padding is the biggest single win here (32px
+             of it, side to side), and it buys back roughly two characters
+             on top of what the smaller type gives. */
+          ha-markdown {
+            font-size: 0.78em;
+            line-height: 1.35;
+            letter-spacing: -0.003em;
+            padding: 6px 14px !important;
+          }
+          ha-markdown p {
+            margin: 0 !important;
+            text-align: center;
+            /* Balanced rather than ragged: a strip that must take two lines
+               should look composed, not broken. Ignored by engines that do
+               not support it, which simply leaves the old ragged wrap. */
+            text-wrap: balance;
           }
 
   - type: grid
@@ -3641,6 +3743,26 @@ views:
             border-radius: 999px;
             background: var(--casaray-surface-3);
             border-color: var(--casaray-border-strong);
+          }
+          /* The 19/09 wall photograph shows the Home strip wrapping after
+             "At home 2 of 3 ·" -- about 45 characters at the default size.
+             Every reading is kept; the line is made to fit instead.
+             ha-markdown's own padding is the biggest single win here (32px
+             of it, side to side), and it buys back roughly two characters
+             on top of what the smaller type gives. */
+          ha-markdown {
+            font-size: 0.78em;
+            line-height: 1.35;
+            letter-spacing: -0.003em;
+            padding: 6px 14px !important;
+          }
+          ha-markdown p {
+            margin: 0 !important;
+            text-align: center;
+            /* Balanced rather than ragged: a strip that must take two lines
+               should look composed, not broken. Ignored by engines that do
+               not support it, which simply leaves the old ragged wrap. */
+            text-wrap: balance;
           }
 
   - type: grid
@@ -4265,6 +4387,26 @@ views:
             background: var(--casaray-surface-3);
             border-color: var(--casaray-border-strong);
           }
+          /* The 19/09 wall photograph shows the Home strip wrapping after
+             "At home 2 of 3 ·" -- about 45 characters at the default size.
+             Every reading is kept; the line is made to fit instead.
+             ha-markdown's own padding is the biggest single win here (32px
+             of it, side to side), and it buys back roughly two characters
+             on top of what the smaller type gives. */
+          ha-markdown {
+            font-size: 0.78em;
+            line-height: 1.35;
+            letter-spacing: -0.003em;
+            padding: 6px 14px !important;
+          }
+          ha-markdown p {
+            margin: 0 !important;
+            text-align: center;
+            /* Balanced rather than ragged: a strip that must take two lines
+               should look composed, not broken. Ignored by engines that do
+               not support it, which simply leaves the old ragged wrap. */
+            text-wrap: balance;
+          }
 
   - type: grid
     column_span: 2
@@ -4859,6 +5001,26 @@ views:
             background: var(--casaray-surface-3);
             border-color: var(--casaray-border-strong);
           }
+          /* The 19/09 wall photograph shows the Home strip wrapping after
+             "At home 2 of 3 ·" -- about 45 characters at the default size.
+             Every reading is kept; the line is made to fit instead.
+             ha-markdown's own padding is the biggest single win here (32px
+             of it, side to side), and it buys back roughly two characters
+             on top of what the smaller type gives. */
+          ha-markdown {
+            font-size: 0.78em;
+            line-height: 1.35;
+            letter-spacing: -0.003em;
+            padding: 6px 14px !important;
+          }
+          ha-markdown p {
+            margin: 0 !important;
+            text-align: center;
+            /* Balanced rather than ragged: a strip that must take two lines
+               should look composed, not broken. Ignored by engines that do
+               not support it, which simply leaves the old ragged wrap. */
+            text-wrap: balance;
+          }
 
   - type: grid
     column_span: 2
@@ -5197,6 +5359,26 @@ views:
             background: var(--casaray-surface-3);
             border-color: var(--casaray-border-strong);
           }
+          /* The 19/09 wall photograph shows the Home strip wrapping after
+             "At home 2 of 3 ·" -- about 45 characters at the default size.
+             Every reading is kept; the line is made to fit instead.
+             ha-markdown's own padding is the biggest single win here (32px
+             of it, side to side), and it buys back roughly two characters
+             on top of what the smaller type gives. */
+          ha-markdown {
+            font-size: 0.78em;
+            line-height: 1.35;
+            letter-spacing: -0.003em;
+            padding: 6px 14px !important;
+          }
+          ha-markdown p {
+            margin: 0 !important;
+            text-align: center;
+            /* Balanced rather than ragged: a strip that must take two lines
+               should look composed, not broken. Ignored by engines that do
+               not support it, which simply leaves the old ragged wrap. */
+            text-wrap: balance;
+          }
 
   - type: grid
     column_span: 2
@@ -5501,6 +5683,26 @@ views:
             border-radius: 999px;
             background: var(--casaray-surface-3);
             border-color: var(--casaray-border-strong);
+          }
+          /* The 19/09 wall photograph shows the Home strip wrapping after
+             "At home 2 of 3 ·" -- about 45 characters at the default size.
+             Every reading is kept; the line is made to fit instead.
+             ha-markdown's own padding is the biggest single win here (32px
+             of it, side to side), and it buys back roughly two characters
+             on top of what the smaller type gives. */
+          ha-markdown {
+            font-size: 0.78em;
+            line-height: 1.35;
+            letter-spacing: -0.003em;
+            padding: 6px 14px !important;
+          }
+          ha-markdown p {
+            margin: 0 !important;
+            text-align: center;
+            /* Balanced rather than ragged: a strip that must take two lines
+               should look composed, not broken. Ignored by engines that do
+               not support it, which simply leaves the old ragged wrap. */
+            text-wrap: balance;
           }
 
   - type: grid
@@ -6211,7 +6413,11 @@ views:
         {%- for t in ts %}{% set f = states(t) | float(none) %}{% if f is not none %}{% set ns.sum = ns.sum + f %}{% set ns.n = ns.n + 1 %}{% endif %}{% endfor -%}
         {#- The denominator is what answered, so a two-of-three average says so
             rather than passing itself off as the whole house. -#}
-        {%- set v0 = (((ns.sum / ns.n) | round(1)) ~ '° (' ~ ns.n ~ '/' ~ (ts | count) ~ ')') if ns.n else nd -%}
+        {#- The denominator appears only when the average is PARTIAL. Printing
+            `(3/3)` on a complete reading costs five characters to say nothing;
+            printing `(2/3)` on an incomplete one is the whole point. An
+            unexplained marker would be worse than either. -#}
+        {%- set v0 = (((ns.sum / ns.n) | round(1)) ~ '°' ~ ((' (%d/%d)' % (ns.n, ts | count)) if ns.n < (ts | count) else '')) if ns.n else nd -%}
         {%- set h = states('sensor.bedroom_motion_sensor_humidity') | float(none) -%}
         {%- set v1 = ((h | round(0) | int) ~ '%') if h is not none else nd -%}
         {%- set s = states('climate.bedroom_parents_room_ac') -%}
@@ -6221,13 +6427,33 @@ views:
         {%- else %}{% set mode = {'cool': '制冷', 'heat': '制热', 'dry': '除湿', 'fan_only': '送风', 'auto': '自动', 'heat_cool': '自动'} %}
         {%- set label = mode.get(s, s) if cn else (s | replace('_',' ') | capitalize) %}
         {%- set v2 = (label ~ ' ' ~ (sp | round(0) | int) ~ '°') if sp is not none else label %}{% endif -%}
-        {{ '室内平均' if cn else 'Indoor' }} **{{ v0 }}** · {{ '湿度' if cn else 'Humidity' }} **{{ v1 }}** · {{ '空调' if cn else 'Air conditioner' }} **{{ v2 }}**
+        {{ '室内平均' if cn else 'Indoor' }} **{{ v0 }}** · {{ '湿度' if cn else 'Humidity' }} **{{ v1 }}** · {{ '空调' if cn else 'AC' }} **{{ v2 }}**
       card_mod:
         style: |
           ha-card {
             border-radius: 999px;
             background: var(--casaray-surface-3);
             border-color: var(--casaray-border-strong);
+          }
+          /* The 19/09 wall photograph shows the Home strip wrapping after
+             "At home 2 of 3 ·" -- about 45 characters at the default size.
+             Every reading is kept; the line is made to fit instead.
+             ha-markdown's own padding is the biggest single win here (32px
+             of it, side to side), and it buys back roughly two characters
+             on top of what the smaller type gives. */
+          ha-markdown {
+            font-size: 0.78em;
+            line-height: 1.35;
+            letter-spacing: -0.003em;
+            padding: 6px 14px !important;
+          }
+          ha-markdown p {
+            margin: 0 !important;
+            text-align: center;
+            /* Balanced rather than ragged: a strip that must take two lines
+               should look composed, not broken. Ignored by engines that do
+               not support it, which simply leaves the old ragged wrap. */
+            text-wrap: balance;
           }
 
   - type: grid
@@ -6615,13 +6841,33 @@ views:
         {%- set off = ('离线' if cn else 'Offline') if gate == 'off' else nd -%}
         {%- set sv = (((s | round(0) | int) ~ ' W') if s is not none else nd) if up else off -%}
         {%- set dv = (((sd | round(1)) ~ ' kWh') if sd is not none else nd) if up else off -%}
-        {{ '家庭用电' if cn else 'House power' }} **{{ pv }}** · {{ '今日用电' if cn else 'Today' }} **{{ hv }}** · {{ '当前发电' if cn else 'Solar now' }} **{{ sv }}** · {{ '今日发电' if cn else 'Solar today' }} **{{ dv }}**
+        {{ '家庭用电' if cn else 'Power' }} **{{ pv }}** · {{ '今日用电' if cn else 'Today' }} **{{ hv }}** · {{ '当前发电' if cn else 'Solar now' }} **{{ sv }}** · {{ '今日发电' if cn else 'Solar today' }} **{{ dv }}**
       card_mod:
         style: |
           ha-card {
             border-radius: 999px;
             background: var(--casaray-surface-3);
             border-color: var(--casaray-border-strong);
+          }
+          /* The 19/09 wall photograph shows the Home strip wrapping after
+             "At home 2 of 3 ·" -- about 45 characters at the default size.
+             Every reading is kept; the line is made to fit instead.
+             ha-markdown's own padding is the biggest single win here (32px
+             of it, side to side), and it buys back roughly two characters
+             on top of what the smaller type gives. */
+          ha-markdown {
+            font-size: 0.78em;
+            line-height: 1.35;
+            letter-spacing: -0.003em;
+            padding: 6px 14px !important;
+          }
+          ha-markdown p {
+            margin: 0 !important;
+            text-align: center;
+            /* Balanced rather than ragged: a strip that must take two lines
+               should look composed, not broken. Ignored by engines that do
+               not support it, which simply leaves the old ragged wrap. */
+            text-wrap: balance;
           }
     - type: conditional
       grid_options: {columns: 12, rows: auto}
@@ -7013,13 +7259,15 @@ views:
         {%- set ov = nd -%}{% set uv = nd %}{% set nx = nd %}{% set lv = nd %}
         {%- else -%}
         {%- set ov = '$%.2f' | format(ns.owed) -%}
-        {%- set uv = ('%d 张' % ns.n) if cn else ('%d of 6' % ns.n) -%}
+        {%- set uv = ('%d 张' % ns.n) if cn else ('%d/6' % ns.n) -%}
         {#- Three different facts, and the chip must not merge them: nothing is
             owed, something is owed but nothing carries a date, or here is the
             next one. -#}
         {%- if ns.n == 0 %}{% set nx = '无待付' if cn else 'Nothing due' %}
         {%- elif ns.soon is none %}{% set nx = '无到期日' if cn else 'None dated' %}
-        {%- else %}{% set nx = ns.soon | timestamp_custom('%d/%m') ~ ' ' ~ ns.who %}{% endif -%}
+        {#- Date only. Which bill it is was another twelve characters, and the
+            six cards below this strip already say. -#}
+        {%- else %}{% set nx = ns.soon | timestamp_custom('%d/%m') %}{% endif -%}
         {#- `0 overdue` across six unpaid bills that all lack a due date is a
             reassurance nothing measured. Only claim a count once at least one
             unpaid bill has a date to be late against. -#}
@@ -7033,6 +7281,26 @@ views:
             border-radius: 999px;
             background: var(--casaray-surface-3);
             border-color: var(--casaray-border-strong);
+          }
+          /* The 19/09 wall photograph shows the Home strip wrapping after
+             "At home 2 of 3 ·" -- about 45 characters at the default size.
+             Every reading is kept; the line is made to fit instead.
+             ha-markdown's own padding is the biggest single win here (32px
+             of it, side to side), and it buys back roughly two characters
+             on top of what the smaller type gives. */
+          ha-markdown {
+            font-size: 0.78em;
+            line-height: 1.35;
+            letter-spacing: -0.003em;
+            padding: 6px 14px !important;
+          }
+          ha-markdown p {
+            margin: 0 !important;
+            text-align: center;
+            /* Balanced rather than ragged: a strip that must take two lines
+               should look composed, not broken. Ignored by engines that do
+               not support it, which simply leaves the old ragged wrap. */
+            text-wrap: balance;
           }
 
 
@@ -7541,14 +7809,34 @@ views:
         {%- set ns = namespace(owed=0.0, n=0, unset=0) -%}
         {%- for amt, paid in bills %}{% set a = states(amt) | float(none) %}{% if a is none or a <= 0 %}{% set ns.unset = ns.unset + 1 %}{% elif not is_state(paid,'on') %}{% set ns.owed = ns.owed + a %}{% set ns.n = ns.n + 1 %}{% endif %}{% endfor -%}
         {%- if ns.unset == 6 %}{% set v0 = nd %}{% set v1 = nd %}
-        {%- else %}{% set v0 = '$%.2f' | format(ns.owed) %}{% set v1 = ('%d 张' % ns.n) if cn else ('%d of 6' % ns.n) %}{% endif -%}
-        {{ '未付总额' if cn else 'Outstanding' }} **{{ v0 }}** · {{ '待付' if cn else 'Unpaid' }} **{{ v1 }}** · {{ '本页为' if cn else 'This page is' }} **{{ '设置与记录' if cn else 'setup and history' }}**
+        {%- else %}{% set v0 = '$%.2f' | format(ns.owed) %}{% set v1 = ('%d 张' % ns.n) if cn else ('%d/6' % ns.n) %}{% endif -%}
+        {{ '未付总额' if cn else 'Outstanding' }} **{{ v0 }}** · {{ '待付' if cn else 'Unpaid' }} **{{ v1 }}**
       card_mod:
         style: |
           ha-card {
             border-radius: 999px;
             background: var(--casaray-surface-3);
             border-color: var(--casaray-border-strong);
+          }
+          /* The 19/09 wall photograph shows the Home strip wrapping after
+             "At home 2 of 3 ·" -- about 45 characters at the default size.
+             Every reading is kept; the line is made to fit instead.
+             ha-markdown's own padding is the biggest single win here (32px
+             of it, side to side), and it buys back roughly two characters
+             on top of what the smaller type gives. */
+          ha-markdown {
+            font-size: 0.78em;
+            line-height: 1.35;
+            letter-spacing: -0.003em;
+            padding: 6px 14px !important;
+          }
+          ha-markdown p {
+            margin: 0 !important;
+            text-align: center;
+            /* Balanced rather than ragged: a strip that must take two lines
+               should look composed, not broken. Ignored by engines that do
+               not support it, which simply leaves the old ragged wrap. */
+            text-wrap: balance;
           }
 
   - type: grid
@@ -8554,7 +8842,7 @@ views:
                        'binary_sensor.bedroom_motion_sensor_motion',
                        'binary_sensor.sensor_group_motion'] -%}
         {%- for e in mot %}{% set s = states(e) %}{% if s == 'on' %}{% set ns.mact = ns.mact + 1 %}{% elif s != 'off' %}{% set ns.mquiet = ns.mquiet + 1 %}{% endif %}{% endfor -%}
-        {%- if ns.mact %}{% set mv = ('%d 处有动作' % ns.mact) if cn else ('%d room active' % ns.mact if ns.mact == 1 else '%d rooms active' % ns.mact) %}
+        {%- if ns.mact %}{% set mv = ('%d 处' % ns.mact) if cn else ('%d room' % ns.mact if ns.mact == 1 else '%d rooms' % ns.mact) %}
         {%- elif ns.mquiet == mot | count %}{% set mv = nd %}
         {%- else %}{% set mv = '安静' if cn else 'Quiet' %}{% endif -%}
         {%- set cams = ['camera.front_door_live_view',
@@ -8576,13 +8864,33 @@ views:
         {%- set av = ('%d/%d' % (ns.aon, ns.aknown)) if ns.aknown else nd -%}
         {%- set wan = states('binary_sensor.eero_wan_status') -%}
         {%- set wv = ('在线' if cn else 'Online') if wan == 'on' else (('离线' if cn else 'Offline') if wan == 'off' else nd) -%}
-        {{ '门' if cn else 'Doors' }} **{{ dv }}** · {{ '动作' if cn else 'Movement' }} **{{ mv }}** · {{ '摄像头' if cn else 'Cameras' }} **{{ ns.cup }}/{{ cams | count }}** · {{ '警报' if cn else 'Alerting' }} **{{ av }}** · {{ '网络' if cn else 'Internet' }} **{{ wv }}**
+        {{ '门' if cn else 'Doors' }} **{{ dv }}** · {{ '动作' if cn else 'Motion' }} **{{ mv }}** · {{ '摄像头' if cn else 'Cams' }} **{{ ns.cup }}/{{ cams | count }}** · {{ '警报' if cn else 'Alerting' }} **{{ av }}** · {{ '网络' if cn else 'Net' }} **{{ wv }}**
       card_mod:
         style: |
           ha-card {
             border-radius: 999px;
             background: var(--casaray-surface-3);
             border-color: var(--casaray-border-strong);
+          }
+          /* The 19/09 wall photograph shows the Home strip wrapping after
+             "At home 2 of 3 ·" -- about 45 characters at the default size.
+             Every reading is kept; the line is made to fit instead.
+             ha-markdown's own padding is the biggest single win here (32px
+             of it, side to side), and it buys back roughly two characters
+             on top of what the smaller type gives. */
+          ha-markdown {
+            font-size: 0.78em;
+            line-height: 1.35;
+            letter-spacing: -0.003em;
+            padding: 6px 14px !important;
+          }
+          ha-markdown p {
+            margin: 0 !important;
+            text-align: center;
+            /* Balanced rather than ragged: a strip that must take two lines
+               should look composed, not broken. Ignored by engines that do
+               not support it, which simply leaves the old ragged wrap. */
+            text-wrap: balance;
           }
   - type: grid
     column_span: 2
@@ -9107,13 +9415,33 @@ views:
         {%- elif mins < 60 %}{% set v2 = ('%d 分钟前' % mins) if cn else ('%d min ago' % mins) %}
         {%- elif mins < 1440 %}{% set v2 = ('%d 小时前' % ((mins / 60) | round(0) | int)) if cn else ('%d h ago' % ((mins / 60) | round(0) | int)) %}
         {%- else %}{% set v2 = ('%d 天前' % ((mins / 1440) | round(0) | int)) if cn else ('%d d ago' % ((mins / 1440) | round(0) | int)) %}{% endif %}{% endif -%}
-        {{ '在线' if cn else 'Online' }} **{{ ns.up }}/{{ cams | count }}** · {{ '最低电量' if cn else 'Lowest battery' }} **{{ v1 }}** · {{ '门铃活动' if cn else 'Doorbell activity' }} **{{ v2 }}**
+        {{ '在线' if cn else 'Online' }} **{{ ns.up }}/{{ cams | count }}** · {{ '电量' if cn else 'Battery' }} **{{ v1 }}** · {{ '门铃' if cn else 'Doorbell' }} **{{ v2 }}**
       card_mod:
         style: |
           ha-card {
             border-radius: 999px;
             background: var(--casaray-surface-3);
             border-color: var(--casaray-border-strong);
+          }
+          /* The 19/09 wall photograph shows the Home strip wrapping after
+             "At home 2 of 3 ·" -- about 45 characters at the default size.
+             Every reading is kept; the line is made to fit instead.
+             ha-markdown's own padding is the biggest single win here (32px
+             of it, side to side), and it buys back roughly two characters
+             on top of what the smaller type gives. */
+          ha-markdown {
+            font-size: 0.78em;
+            line-height: 1.35;
+            letter-spacing: -0.003em;
+            padding: 6px 14px !important;
+          }
+          ha-markdown p {
+            margin: 0 !important;
+            text-align: center;
+            /* Balanced rather than ragged: a strip that must take two lines
+               should look composed, not broken. Ignored by engines that do
+               not support it, which simply leaves the old ragged wrap. */
+            text-wrap: balance;
           }
 
   - type: grid
@@ -9659,20 +9987,40 @@ views:
         {%- for p in ppl %}{% set s = states(p) %}{% if s == 'home' %}{% set ns.h = ns.h + 1 %}{% elif s in ['unavailable','unknown','none',''] %}{% set ns.u = ns.u + 1 %}{% else %}{% set ns.a = ns.a + 1 %}{% endif %}{% endfor -%}
         {%- set n = ppl | count -%}
         {%- if ns.u == n %}{% set v0 = nd %}{% set v1 = nd %}
-        {%- else %}{% set v0 = ('%d 人中 %d 人' % (n, ns.h)) if cn else ('%d of %d' % (ns.h, n)) %}
+        {%- else %}{% set v0 = '%d/%d' % (ns.h, n) %}
         {%- set v1 = ('%d 人' % ns.a) if cn else ('%d' % ns.a) %}{% endif -%}
         {%- set devs = ['sensor.raymonds_iphone_battery_level','sensor.raymonds_ipad_battery_level',
                         'sensor.ais_iphone_battery_level','sensor.vine_s_phone_battery_level'] -%}
         {%- set b = namespace(low=none) -%}
         {%- for e in devs %}{% set x = states(e) | float(none) %}{% if x is not none and (b.low is none or x < b.low) %}{% set b.low = x %}{% endif %}{% endfor -%}
         {%- set v2 = ((b.low | round(0) | int) ~ '%') if b.low is not none else nd -%}
-        {{ '在家' if cn else 'At home' }} **{{ v0 }}** · {{ '外出' if cn else 'Away' }} **{{ v1 }}**{% if ns.u %} · {{ '位置无数据' if cn else 'Location unknown' }} **{{ ns.u }}**{% endif %} · {{ '最低设备电量' if cn else 'Lowest device' }} **{{ v2 }}**
+        {{ '在家' if cn else 'At home' }} **{{ v0 }}** · {{ '外出' if cn else 'Away' }} **{{ v1 }}**{% if ns.u %} · {{ '位置无数据' if cn else 'No location' }} **{{ ns.u }}**{% endif %} · {{ '设备电量' if cn else 'Device' }} **{{ v2 }}**
       card_mod:
         style: |
           ha-card {
             border-radius: 999px;
             background: var(--casaray-surface-3);
             border-color: var(--casaray-border-strong);
+          }
+          /* The 19/09 wall photograph shows the Home strip wrapping after
+             "At home 2 of 3 ·" -- about 45 characters at the default size.
+             Every reading is kept; the line is made to fit instead.
+             ha-markdown's own padding is the biggest single win here (32px
+             of it, side to side), and it buys back roughly two characters
+             on top of what the smaller type gives. */
+          ha-markdown {
+            font-size: 0.78em;
+            line-height: 1.35;
+            letter-spacing: -0.003em;
+            padding: 6px 14px !important;
+          }
+          ha-markdown p {
+            margin: 0 !important;
+            text-align: center;
+            /* Balanced rather than ragged: a strip that must take two lines
+               should look composed, not broken. Ignored by engines that do
+               not support it, which simply leaves the old ragged wrap. */
+            text-wrap: balance;
           }
 
   - type: grid
@@ -10067,6 +10415,26 @@ views:
             background: var(--casaray-surface-3);
             border-color: var(--casaray-border-strong);
           }
+          /* The 19/09 wall photograph shows the Home strip wrapping after
+             "At home 2 of 3 ·" -- about 45 characters at the default size.
+             Every reading is kept; the line is made to fit instead.
+             ha-markdown's own padding is the biggest single win here (32px
+             of it, side to side), and it buys back roughly two characters
+             on top of what the smaller type gives. */
+          ha-markdown {
+            font-size: 0.78em;
+            line-height: 1.35;
+            letter-spacing: -0.003em;
+            padding: 6px 14px !important;
+          }
+          ha-markdown p {
+            margin: 0 !important;
+            text-align: center;
+            /* Balanced rather than ragged: a strip that must take two lines
+               should look composed, not broken. Ignored by engines that do
+               not support it, which simply leaves the old ragged wrap. */
+            text-wrap: balance;
+          }
 
   - type: grid
     column_span: 1
@@ -10341,6 +10709,26 @@ views:
             border-radius: 999px;
             background: var(--casaray-surface-3);
             border-color: var(--casaray-border-strong);
+          }
+          /* The 19/09 wall photograph shows the Home strip wrapping after
+             "At home 2 of 3 ·" -- about 45 characters at the default size.
+             Every reading is kept; the line is made to fit instead.
+             ha-markdown's own padding is the biggest single win here (32px
+             of it, side to side), and it buys back roughly two characters
+             on top of what the smaller type gives. */
+          ha-markdown {
+            font-size: 0.78em;
+            line-height: 1.35;
+            letter-spacing: -0.003em;
+            padding: 6px 14px !important;
+          }
+          ha-markdown p {
+            margin: 0 !important;
+            text-align: center;
+            /* Balanced rather than ragged: a strip that must take two lines
+               should look composed, not broken. Ignored by engines that do
+               not support it, which simply leaves the old ragged wrap. */
+            text-wrap: balance;
           }
 
   - type: grid
@@ -10719,13 +11107,33 @@ views:
         {%- set v2 = ((b.low | round(0) | int) ~ '%') if b.low is not none else nd -%}
         {%- set w = states('binary_sensor.eero_wan_status') -%}
         {%- set v3 = ('在线' if cn else 'Online') if w == 'on' else (('离线' if cn else 'Offline') if w == 'off' else nd) -%}
-        {{ '房屋状态' if cn else 'House' }} **{{ v0 }}** · {{ '离线设备' if cn else 'Offline devices' }} **{{ v1 }}** · {{ '最低电量' if cn else 'Lowest battery' }} **{{ v2 }}** · {{ '网络' if cn else 'Internet' }} **{{ v3 }}**
+        {{ '房屋状态' if cn else 'House' }} **{{ v0 }}** · {{ '离线' if cn else 'Offline' }} **{{ v1 }}** · {{ '电量' if cn else 'Battery' }} **{{ v2 }}** · {{ '网络' if cn else 'Net' }} **{{ v3 }}**
       card_mod:
         style: |
           ha-card {
             border-radius: 999px;
             background: var(--casaray-surface-3);
             border-color: var(--casaray-border-strong);
+          }
+          /* The 19/09 wall photograph shows the Home strip wrapping after
+             "At home 2 of 3 ·" -- about 45 characters at the default size.
+             Every reading is kept; the line is made to fit instead.
+             ha-markdown's own padding is the biggest single win here (32px
+             of it, side to side), and it buys back roughly two characters
+             on top of what the smaller type gives. */
+          ha-markdown {
+            font-size: 0.78em;
+            line-height: 1.35;
+            letter-spacing: -0.003em;
+            padding: 6px 14px !important;
+          }
+          ha-markdown p {
+            margin: 0 !important;
+            text-align: center;
+            /* Balanced rather than ragged: a strip that must take two lines
+               should look composed, not broken. Ignored by engines that do
+               not support it, which simply leaves the old ragged wrap. */
+            text-wrap: balance;
           }
 
   - type: grid
@@ -11291,14 +11699,34 @@ views:
                       'sensor.b_contact_sensor_signal_level','sensor.network_tp_linkhub_h100_signal_level'] -%}
         {%- set w = namespace(low=none) -%}
         {%- for e in links %}{% set v = states(e) | float(none) %}{% if v is not none and (w.low is none or v < w.low) %}{% set w.low = v %}{% endif %}{% endfor -%}
-        {%- set lv = (('%d 格' % (w.low | int)) if cn else ('%d bar%s' % (w.low | int, '' if (w.low | int) == 1 else 's'))) if w.low is not none else nd -%}
-        {{ '网络' if cn else 'Internet' }} **{{ wv }}** · {{ '远程访问' if cn else 'Remote access' }} **{{ rv }}** · {{ '中枢' if cn else 'Hub' }} **{{ hv }}** · {{ '云端设备' if cn else 'Devices' }} **{{ dv }}** · {{ '最弱信号' if cn else 'Weakest' }} **{{ lv }}**
+        {%- set lv = (('%d 格' % (w.low | int)) if cn else ('%d bar' % (w.low | int))) if w.low is not none else nd -%}
+        {{ '网络' if cn else 'Net' }} **{{ wv }}** · {{ '远程访问' if cn else 'Remote' }} **{{ rv }}** · {{ '中枢' if cn else 'Hub' }} **{{ hv }}** · {{ '云端设备' if cn else 'Devices' }} **{{ dv }}** · {{ '最弱信号' if cn else 'Weakest' }} **{{ lv }}**
       card_mod:
         style: |
           ha-card {
             border-radius: 999px;
             background: var(--casaray-surface-3);
             border-color: var(--casaray-border-strong);
+          }
+          /* The 19/09 wall photograph shows the Home strip wrapping after
+             "At home 2 of 3 ·" -- about 45 characters at the default size.
+             Every reading is kept; the line is made to fit instead.
+             ha-markdown's own padding is the biggest single win here (32px
+             of it, side to side), and it buys back roughly two characters
+             on top of what the smaller type gives. */
+          ha-markdown {
+            font-size: 0.78em;
+            line-height: 1.35;
+            letter-spacing: -0.003em;
+            padding: 6px 14px !important;
+          }
+          ha-markdown p {
+            margin: 0 !important;
+            text-align: center;
+            /* Balanced rather than ragged: a strip that must take two lines
+               should look composed, not broken. Ignored by engines that do
+               not support it, which simply leaves the old ragged wrap. */
+            text-wrap: balance;
           }
 
   - type: grid
@@ -11738,6 +12166,26 @@ views:
             border-radius: 999px;
             background: var(--casaray-surface-3);
             border-color: var(--casaray-border-strong);
+          }
+          /* The 19/09 wall photograph shows the Home strip wrapping after
+             "At home 2 of 3 ·" -- about 45 characters at the default size.
+             Every reading is kept; the line is made to fit instead.
+             ha-markdown's own padding is the biggest single win here (32px
+             of it, side to side), and it buys back roughly two characters
+             on top of what the smaller type gives. */
+          ha-markdown {
+            font-size: 0.78em;
+            line-height: 1.35;
+            letter-spacing: -0.003em;
+            padding: 6px 14px !important;
+          }
+          ha-markdown p {
+            margin: 0 !important;
+            text-align: center;
+            /* Balanced rather than ragged: a strip that must take two lines
+               should look composed, not broken. Ignored by engines that do
+               not support it, which simply leaves the old ragged wrap. */
+            text-wrap: balance;
           }
 
   - type: grid
