@@ -2304,7 +2304,7 @@ views:
         name: Fridge door
 
   - type: grid
-    column_span: 1
+    column_span: 2
     cards:
     - type: heading
       heading: Shopping list
@@ -2699,7 +2699,7 @@ views:
   # `light.dining_dining` is left out: it duplicates `light.dining`, which
   # this page already drives.
   - type: grid
-    column_span: 1
+    column_span: 2
     cards:
     - type: heading
       heading: Motion sensors
@@ -2720,27 +2720,27 @@ views:
     - type: tile
       entity: binary_sensor.master_bedroom_bedroom_hue_sensor_motion
       name: Bedroom motion
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: sensor.master_bedroom_bedroom_hue_sensor_temperature
       name: Bedroom temp
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: sensor.master_bedroom_bedroom_hue_sensor_illuminance
       name: Bedroom lux
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: sensor.master_bedroom_bedroom_hue_sensor_battery
       name: Bedroom battery
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: binary_sensor.living_room_living_room_motion
       name: Dining motion
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: sensor.living_room_living_room_illuminance
       name: Dining lux
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
 
   # Level-3: pet feeder tuning and the motion sensor's enable switches.
   - type: grid
@@ -3865,7 +3865,7 @@ views:
   # beside the now/today figures the room already shows. All assigned to this
   # area and previously unused.
   - type: grid
-    column_span: 1
+    column_span: 2
     cards:
     - type: heading
       heading: Power detail
@@ -3886,13 +3886,13 @@ views:
     - type: tile
       entity: sensor.r_energy_monitor_p110m_this_month_s_consumption
       name: This month
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
     - type: tile
       entity: sensor.r_energy_monitor_p110m_voltage
       name: Voltage
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
     - type: tile
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
       entity: sensor.r_energy_monitor_p110m_current
       name: Current
 
@@ -5625,7 +5625,7 @@ views:
       name: Tomorrow
 
   - type: grid
-    column_span: 1
+    column_span: 2
     cards:
     - type: heading
       heading: Metered circuits
@@ -5646,19 +5646,19 @@ views:
     - type: tile
       entity: sensor.r_energy_monitor_p110m_current_consumption
       name: Ray Bedroom now
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 3, rows: 1}
     - type: tile
       entity: sensor.r_energy_monitor_p110m_today_s_consumption
       name: Desk today
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 3, rows: 1}
     - type: tile
       entity: sensor.g_monitor_freezer_p110m_current_consumption
       name: Freezer now
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 3, rows: 1}
     - type: tile
       entity: sensor.g_monitor_freezer_p110m_today_s_consumption
       name: Freezer today
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 3, rows: 1}
 
   - type: grid
     column_span: 2
@@ -6313,7 +6313,7 @@ views:
       grid_options: {columns: 6, rows: 1}
 
   - type: grid
-    column_span: 1
+    column_span: 2
     cards:
     - type: heading
       heading: Water history
@@ -8630,7 +8630,7 @@ views:
         fired and what they did is not visible to Home Assistant.{% endif %}
 
   - type: grid
-    column_span: 1
+    column_span: 2
     cards:
     - type: heading
       heading: System maintenance
@@ -8649,7 +8649,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: tile
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 12, rows: 1}
       entity: automation.deploy_deez_dashboard_updates
       name: Deploy updates
       icon: mdi:source-branch-sync
@@ -8920,7 +8920,7 @@ views:
         controls above will not work.{% endif %}{% endif %}
 
   - type: grid
-    column_span: 1
+    column_span: 2
     cards:
     - type: heading
       heading: Room lighting

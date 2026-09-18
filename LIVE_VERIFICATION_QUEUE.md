@@ -321,6 +321,30 @@ rendering fault, not a data one.
 | CR-249 | **RESOLVED, not accepted.** The four pills were nearly circular because a markdown card has a minimum height and a 3/12 cell came out narrower than that height. One full-width card cannot deform that way at any size | Confirm the chip strip is a compact horizontal strip | Short, wide, readable, grouped left. If it still looks wrong the container is narrower than anything assumed here — say so and I will drop it to plain text | `b5e8522` | P2 | PENDING |
 | CR-250 | **Bilingual** [中] | Toggle `input_boolean.chinese_dashboard` on Home | Every heading, chip, summary and footnote switches; entity names, room names and board names stay English by the established convention | `262d59d` | P2 | PENDING |
 
+## CasaRay — half-empty rows removed from seven views, 2026-09-18
+
+The hole Ray reported on Home was not unique to Home. Simulating the
+two-column packing across all 28 views found the same shape on seven more: a
+lone `column_span: 1` section that does not stretch, so it sits in half a row
+and leaves the rest empty.
+
+**Geometry only.** Parsing before and after with `grid_options` and
+`column_span` stripped returns identical — no card moved between sections, no
+card was added or removed, no entity, template, service call or navigation
+target changed. Entity references 434, navigation 124 across 28 targets.
+
+| ID | View | What changed | What to check live | Commit | P | Result |
+|---|---|---|---|---|---|---|
+| CR-277 | Kitchen | Shopping list → full width | The list fills the page rather than leaving a gap beside it | `PH5` | P2 | PENDING |
+| CR-278 | Dining | Motion sensors → full width, six tiles 2-across → **3-across**, two even rows | Six sensor tiles in two rows of three, no stragglers | `PH5` | P2 | PENDING |
+| CR-279 | Ray Bedroom | Power detail → full width, three tiles → **3-across**, one row | Three power tiles on a single row | `PH5` | P2 | PENDING |
+| CR-280 | Energy | Metered circuits → full width, four tiles → **4-across**, one row | Four circuit tiles on a single row. This is the one I negative-tested the gate against | `PH5` | P2 | PENDING |
+| CR-281 | Bills | Water history → full width | Three tiles then two, both rows full | `PH5` | P2 | PENDING |
+| CR-282 | Automations | System maintenance → full width, tile → full-width | Tile and note stacked full width, no gap | `PH5` | P3 | PENDING |
+| CR-283 | Entertainment | Room lighting → full width, two tiles side by side | Two lighting tiles filling one row | `PH5` | P3 | PENDING |
+| CR-284 | Security | **Deliberately NOT changed.** Sirens stay half-width — they are controls that must not be mis-tapped, and full-page-width makes that worse | Confirm the sirens are unchanged and still hard to hit by accident | `PH5` | P2 | PENDING |
+| CR-285 | all | `check 15` gates this from here | — (repository check, nothing to look at) | `PH5` | P4 | PENDING |
+
 ## CasaRay — theme, background and glass rebuild, 2026-09-15
 
 The dashboard did not look like the renders because of what was underneath it:

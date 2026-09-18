@@ -488,7 +488,55 @@ def check(path):
                          f"width is whatever the renderer picks — {ident!r}")
         print(f"  cards without geometry   : {len(bare)}")
 
-    # 15. mass-damage detection against HEAD
+    # 15. sections must not leave a half-empty row
+    #
+    # A section is a CSS grid item. Sections in a row top-align and the row is
+    # as tall as its tallest member, so a lone `column_span: 1` section in a
+    # two-column view does not stretch -- it sits in half the row and leaves
+    # the other half empty. That is the hole Ray reported on Home (DR-013),
+    # and an audit on 2026-09-18 found the same shape on seven other views.
+    #
+    # The fix is always one of two things: promote the orphan to full width,
+    # or pair it with a neighbour. Both are a `column_span` edit; neither
+    # moves a card between sections.
+    #
+    # Scoped to casaray_v2, like the other geometry checks.
+    if path.endswith("casaray_v2.yaml"):
+        # Security's sirens are a deliberate exception, recorded in CLAUDE.md:
+        # they are controls that must not be mis-tapped, and a full-page-width
+        # siren button is a BIGGER accidental-tap surface, not a smaller one.
+        ALLOWED_HALF_ROWS = {("security", "Sirens")}
+        holes = []
+        for view in views:
+            mx = view.get("max_columns", 2)
+            sections = view.get("sections") or []
+            cur, row = 0, []
+            rows = []
+            for section in sections:
+                span = min(section.get("column_span", 1), mx)
+                if cur + span > mx:
+                    rows.append(row); row = []; cur = 0
+                heads = [c.get("heading") for c in section.get("cards") or []
+                         if c.get("type") == "heading"]
+                row.append((heads[0] if heads else "(no heading)", span))
+                cur += span
+                if cur == mx:
+                    rows.append(row); row = []; cur = 0
+            if row:
+                rows.append(row)
+            for r in rows:
+                if sum(x[1] for x in r) < mx:
+                    name = r[0][0]
+                    if (view.get("path"), name) not in ALLOWED_HALF_ROWS:
+                        holes.append((view.get("path"), name))
+        for p, name in holes:
+            fails.append(f"{path}: view {p!r} leaves a half-empty row at "
+                         f"section {name!r} — give it column_span 2 or pair "
+                         f"it with a neighbour (DR-013)")
+        print(f"  half-empty section rows  : {len(holes)}"
+              f" ({len(ALLOWED_HALF_ROWS)} allowed)")
+
+    # 16. mass-damage detection against HEAD
     old = committed(path)
     if old is None:
         print("  mass-damage check        : new file, no baseline")

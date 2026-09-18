@@ -294,6 +294,19 @@ tall neighbour. Home's five bands (top bar · chips · Needs attention ·
 Right now/Who's home/One tap · Rooms/Shopping · Security · Energy/Recent ·
 More boards) are arranged on exactly that principle.
 
+**A lone `column_span: 1` section leaves half a row empty, and this is now
+gated.** A section does not stretch to fill its row; it sits in half of it.
+The 2026-09-18 audit found that shape on seven views besides Home — Kitchen,
+Dining, Ray Bedroom, Energy, Bills, Automations, Entertainment. `check 15` in
+`dashboard_check.py` fails the build on any new one. The fix is always a
+`column_span` edit, never moving a card between sections.
+
+**One exception is allowed, and it is in the gate's own list:** Security's
+sirens stay half-width. They are controls that must not be mis-tapped, and a
+full-page-width siren button is a *bigger* accidental-tap surface, not a
+smaller one. Adding another exception means editing `ALLOWED_HALF_ROWS` and
+saying why.
+
 Still true from the previous direction: calm, minimal, Apple-like.
 Sections layout with `grid_options`, not nested `grid` cards. One `heading`
 card per section; the single `mushroom-title-card` is the page title and
