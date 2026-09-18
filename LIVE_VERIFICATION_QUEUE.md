@@ -389,6 +389,57 @@ declared; they cannot prove the pill renders as a pill rather than a circle at
 the width the iPad actually resolves. `DR-012` is exactly that failure, and it
 is why every strip is ONE full-width card rather than several narrow ones.
 
+## CasaRay — live render correction, 2026-09-19
+
+The first pass driven by photographs of the actual wall iPad rather than by
+arithmetic. Seven defects, three of them things no repository check could have
+found: two dashboards' worth of kiosk configuration that has never done
+anything, three dead entities the export vouches for, and a pill that does not
+fit the width it is given.
+
+| ID | Page | What changed | What to check live | Expected result | Commit | P | Result |
+|---|---|---|---|---|---|---|---|
+| CR-306 | all | `kiosk_mode` investigated; `ignore_per_user` (not a real option) replaced by `ignore_entity_settings: true` | Run `scripts/casaray_kiosk_diagnose.sh` on the host and report its three sections | Tells us whether kiosk-mode is absent, unregistered, or registered and failing — see DR-015 | `d22ce8e` | P1 | **BLOCKED — needs the host** |
+| CR-307 | climate | Three dead Sensibo tiles under Advanced → Climate React, Timer, Room occupied | The Advanced section | Three working tiles, no orange "Entity not found" | `d22ce8e` | P1 | PENDING |
+| CR-308 | parents-room | The SAME dead switch under Device settings — not in the photographs, found by grep | Device settings | "Climate React", not a broken card | `d22ce8e` | P1 | PENDING |
+| CR-309 | climate | The Advanced note read the dead mode sensor; now reads the live climate entity and its `temperature` attribute | Turn the AC off, then on | Off → "The air conditioner is off. Target 22°"; on → "Running in Cool, target 22°" | `d22ce8e` | P1 | PENDING |
+| CR-310 | — | `reconcile_entities.py` STALE blocklist: an ID in the export but known dead now fails the build | — (repository check, negative-tested) | Re-adding one gives "IN THE EXPORT BUT DEAD: 1" | `d22ce8e` | P2 | PENDING |
+| CR-311 | home | Chip strip fits one line: 0.78em, tighter padding, "2/3", whole-degree Inside | The pill under the header | `Outside 14° · Inside 20° · At home 2/3 · Monitored 0 W` on ONE line | `0d95183` | P1 | PENDING |
+| CR-312 | energy, bills, security, network | These four CANNOT fit one line — 72–74 chars worst case. They now wrap into two balanced centred lines instead of an orphan | Each page's pill | Two even lines inside the pill, not a two-word second row | `0d95183` | P2 | **DECISION NEEDED — see below** |
+| CR-313 | all | Footer buttons made a compact horizontal band: icon beside label, one row, smaller type | Any page's footer | A slim bar, not two near-square cards | — | P2 | PENDING |
+| CR-314 | lighting | Four summary cards reduced to figure + short qualifier | The four cards | `2/6 · Living Room, Dining · 1 not reporting`, and no explanatory paragraph | — | P2 | PENDING |
+| CR-315 | rooms | Room conditions shows only rooms WITH instrumentation; the other three become one closing line | The card under the tiles | Four rooms with readings, then "3 more rooms have no temperature or movement sensor — see House health" | — | P2 | PENDING |
+| CR-316 | house-health | New "Instrumentation notes" section carrying the prose moved off Lighting and Rooms | Bottom of House health | Four bullets: brightness average, Living Room spots, floodlights, room sensors | — | P3 | PENDING |
+| CR-317 | rooms | CN separator fixed — `、` separated both within and between rooms, so `安静、**厨房**` read as one list | Rooms with 中文 on | Rooms split by ` · `, readings within a room by `、` | — | P2 | PENDING |
+
+### CR-312 — the four strips that cannot fit, and what you can do about it
+
+Measured with `scratchpad/chipwidth.py`, worst case, both languages, against a
+budget of 59 characters (the photograph's ~45 at full size, divided by the new
+0.78 scale, plus two characters bought back from padding):
+
+| Page | Worst case | Over by |
+|---|---|---|
+| network | 74 | 15 |
+| security | 73 | 14 |
+| energy | 72 | 13 |
+| bills | 72 | 13 |
+
+Eighteen of the twenty-two strips fit. These four carry four or five labelled
+readings, and at a size that stays legible across a room there is no
+arrangement of five of them that fits one line. Three ways out, none of which
+I took without asking:
+
+1. **Leave them wrapping** onto two balanced lines. Nothing is lost and the
+   pill looks deliberate. This is what is shipped.
+2. **Drop one reading** from each of the four. Security's `Motion` and
+   Network's `Hub` are the weakest — both are also tiles further down the same
+   page.
+3. **Split into two pills** per page, a row of two. Keeps every reading, costs
+   a card and some vertical space.
+
+Say which and it is a small change either way.
+
 ## CasaRay — theme, background and glass rebuild, 2026-09-15
 
 The dashboard did not look like the renders because of what was underneath it:
