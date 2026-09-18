@@ -561,6 +561,48 @@ def check(path):
                          f"markdown chip strip instead (DR-011)")
         print(f"  views declaring badges   : {len(badged)}")
 
+    # 15c. a two-way branch on `on` swallows `unavailable`
+    #
+    # `{% if is_state(x,'on') %}A{% else %}B{% endif %}` has two outcomes for
+    # three states. An entity that is `unavailable`, `unknown` or `none` falls
+    # into the else, so B is asserted about a sensor that said nothing -- and B
+    # is almost always the reassuring branch: "No dimmable group is on", "All
+    # closed", "Everything is off".
+    #
+    # This is the fault CLAUDE.md states as "never let a card assert a
+    # reassuring state it cannot see", and it is invisible to every other check
+    # here: the YAML is valid, the Jinja compiles, the entity exists, and the
+    # card renders a confident sentence that happens to be untrue.
+    #
+    # An `{% elif %}` between the two satisfies this -- that is the third
+    # branch. So does testing the state against a list rather than one value.
+    #
+    # Scoped to casaray_v2. The legacy dashboard predates the rule and is the
+    # rollback baseline, not the build target.
+    if path.endswith("casaray_v2.yaml"):
+        two_way = re.compile(
+            r"\{%-?\s*if\s+(?:[^%]*?==\s*'on'|is_state\([^)]*'on'\))\s*-?%\}"
+            r"(?:(?!\{%-?\s*el(?:if|se))[\s\S])*?"
+            r"\{%-?\s*else\s*-?%\}")
+        def bodies(view):
+            for section in view.get("sections") or []:
+                for card in section.get("cards") or []:
+                    for c in (card, card.get("card")):
+                        if isinstance(c, dict) and isinstance(c.get("content"), str):
+                            yield c["content"]
+        swallowed = []
+        for view in views:
+            for text in bodies(view):
+                if two_way.search(text):
+                    swallowed.append(view.get("path"))
+                    break
+        for p in swallowed:
+            fails.append(f"{path}: view {p!r} has a markdown card branching "
+                         f"`if ... 'on'` straight to `{{% else %}}` — an "
+                         f"unavailable entity falls into the else and the card "
+                         f"asserts it. Add an elif for the unreadable case")
+        print(f"  on/else with no third branch: {len(swallowed)}")
+
     # 16. mass-damage detection against HEAD
     old = committed(path)
     if old is None:

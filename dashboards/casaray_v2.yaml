@@ -5071,12 +5071,18 @@ views:
         {%- set dim = [('light.living_room','Living Room','客厅'),
                        ('light.dining','Dining','餐厅'),
                        ('light.bedroom_bedroom','Ray Bedroom','Ray 卧室')] -%}
-        {%- set ns = namespace(sum=0.0, n=0) -%}
-        {%- for l, en, zh in dim %}{% if is_state(l,'on') %}{% set b = state_attr(l,'brightness') | float(none) %}{% if b is not none %}{% set ns.sum = ns.sum + b %}{% set ns.n = ns.n + 1 %}{% endif %}{% endif %}{% endfor -%}
+        {#- `known` is separate from `n` on purpose. "No dimmable group is on" is
+            a statement about three lights, and it can only be made about lights
+            that answered; when the Hue bridge is down all three read
+            `unavailable` and the card has measured nothing at all. The chip
+            strip above draws the same distinction. -#}
+        {%- set ns = namespace(sum=0.0, n=0, known=0) -%}
+        {%- for l, en, zh in dim %}{% if states(l) in ['on','off'] %}{% set ns.known = ns.known + 1 %}{% endif %}{% if is_state(l,'on') %}{% set b = state_attr(l,'brightness') | float(none) %}{% if b is not none %}{% set ns.sum = ns.sum + b %}{% set ns.n = ns.n + 1 %}{% endif %}{% endif %}{% endfor -%}
         **{{ '亮度' if cn else 'Brightness' }}**
         {% if ns.n %}## {{ ((ns.sum / ns.n) / 255 * 100) | round(0) | int }}%
-        {{ ('%d 组已开启的灯的平均亮度' % ns.n) if cn else ('averaged over %d group%s that are on' % (ns.n, '' if ns.n == 1 else 's')) }}{% else %}## —
-        {{ '没有可调光的灯组处于开启状态' if cn else 'No dimmable group is on' }}{% endif %}
+        {{ ('%d 组已开启的灯的平均亮度' % ns.n) if cn else ('averaged over %d group%s that are on' % (ns.n, '' if ns.n == 1 else 's')) }}{% elif ns.known %}## —
+        {{ ('%d 组可调光的灯有数据，均未开启' % ns.known) if cn else ('No dimmable group is on (%d of %d reporting)' % (ns.known, dim | count)) }}{% else %}## —
+        {{ '三组可调光的灯都没有数据' if cn else 'None of the 3 dimmable groups is reporting' }}{% endif %}
 
         {{ '墙壁开关只有开与关，不计入平均亮度。' if cn else 'The wall switches are on/off only and are not averaged in.' }}
     - type: markdown
