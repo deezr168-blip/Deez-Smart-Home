@@ -1270,26 +1270,76 @@ views:
   - type: grid
     column_span: 2
     cards:
-    - type: button
-      grid_options: {columns: 2, rows: auto}
-      name: Home
-      icon: mdi:home
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 7, rows: auto}
+      grid_options: {columns: 6, rows: auto}
       content: >-
         ## {{ '房间' if is_state('input_boolean.chinese_dashboard','on') else
         'Rooms' }}
 
         {{ '选择一个房间' if is_state('input_boolean.chinese_dashboard','on')
         else 'Choose a room' }}
+    # Time over date, right-aligned, DD/MM/YY -- never %Y. `nowrap` is a
+    # guarantee where a `columns` value is only a bet (DR-012).
     - type: markdown
-      grid_options: {columns: 3, rows: auto}
-      content: >-
-        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
-
+      grid_options: {columns: 6, rows: auto}
+      content: |
+        ## {{ now().strftime('%I:%M %p').lstrip('0').lower() }}
         {{ now().strftime('%d/%m/%y') }}
+      card_mod:
+        style: |
+          ha-card { text-align: right; white-space: nowrap; }
+    # The shared nav rail. Identical on every board and room page so the
+    # dashboard reads as one application; the current page's icon is tinted
+    # amber, which is the render's selected state.
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Rooms
+      icon: mdi:floor-plan
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+      card_mod:
+        style: |
+          ha-card {
+            background: var(--casaray-amber-bg);
+            border-color: var(--casaray-amber-border);
+          }
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Security
+      icon: mdi:shield-home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/security}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Energy
+      icon: mdi:lightning-bolt
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Climate
+      icon: mdi:thermometer
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/climate}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Cameras
+      icon: mdi:cctv
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
+
 
   - type: grid
     column_span: 2
@@ -1416,18 +1466,6 @@ views:
   - type: grid
     column_span: 2
     cards:
-    - type: button
-      grid_options: {columns: 2, rows: auto}
-      name: Back
-      icon: mdi:arrow-left
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
-    - type: button
-      grid_options: {columns: 2, rows: auto}
-      name: Home
-      icon: mdi:home
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
       grid_options: {columns: 6, rows: auto}
       content: >-
@@ -1442,22 +1480,70 @@ views:
         cn else 'Temperature not reporting' }}{% endif %}{% if m == 'on' %}{{ ' · 有人'
         if cn else ' · occupied' }}{% elif m == 'off' %}{{ ' · 无人' if cn else ' · no
         motion' }}{% endif %}
+    # Time over date, right-aligned, DD/MM/YY -- never %Y. `nowrap` is a
+    # guarantee where a `columns` value is only a bet (DR-012).
     - type: markdown
-      grid_options: {columns: 4, rows: auto}
-      content: >-
-        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
-
+      grid_options: {columns: 6, rows: auto}
+      content: |
+        ## {{ now().strftime('%I:%M %p').lstrip('0').lower() }}
         {{ now().strftime('%d/%m/%y') }}
+      card_mod:
+        style: |
+          ha-card { text-align: right; white-space: nowrap; }
+    # The shared nav rail. Identical on every board and room page so the
+    # dashboard reads as one application; the current page's icon is tinted
+    # amber, which is the render's selected state.
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Rooms
+      icon: mdi:floor-plan
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+      card_mod:
+        style: |
+          ha-card {
+            background: var(--casaray-amber-bg);
+            border-color: var(--casaray-amber-border);
+          }
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Security
+      icon: mdi:shield-home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/security}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Energy
+      icon: mdi:lightning-bolt
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Climate
+      icon: mdi:thermometer
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/climate}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Cameras
+      icon: mdi:cctv
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
 
 
-  # Status chips, per the Living Room mockup's row under the header: a bold
-  # value and a muted caption, one per thing you would glance at on the way
-  # past. Two across rather than the render's five, for the same iPad reason
-  # the Home KPI strip is 2x2. Every chip has an offline branch.
-  # Status chips, per the Living Room mockup's row under the header: a bold
-  # value and a muted caption, one per thing you would glance at on the way
-  # past. Two across rather than the render's five, for the same iPad reason
-  # the Home KPI strip is 2x2. Every chip has an offline branch.
+
   - type: grid
     column_span: 2
     cards:
@@ -2082,18 +2168,6 @@ views:
   - type: grid
     column_span: 2
     cards:
-    - type: button
-      grid_options: {columns: 2, rows: auto}
-      name: Back
-      icon: mdi:arrow-left
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
-    - type: button
-      grid_options: {columns: 2, rows: auto}
-      name: Home
-      icon: mdi:home
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
       grid_options: {columns: 6, rows: auto}
       content: >-
@@ -2105,21 +2179,69 @@ views:
         if cn else 'Someone is in the kitchen' }}{% elif m == 'off' %}{{ '无人活动' if
         cn else 'No motion' }}{% else %}{{ '动作传感器离线' if cn else 'Motion sensor
         not reporting' }}{% endif %}
+    # Time over date, right-aligned, DD/MM/YY -- never %Y. `nowrap` is a
+    # guarantee where a `columns` value is only a bet (DR-012).
     - type: markdown
-      grid_options: {columns: 4, rows: auto}
-      content: >-
-        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
-
+      grid_options: {columns: 6, rows: auto}
+      content: |
+        ## {{ now().strftime('%I:%M %p').lstrip('0').lower() }}
         {{ now().strftime('%d/%m/%y') }}
+      card_mod:
+        style: |
+          ha-card { text-align: right; white-space: nowrap; }
+    # The shared nav rail. Identical on every board and room page so the
+    # dashboard reads as one application; the current page's icon is tinted
+    # amber, which is the render's selected state.
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Rooms
+      icon: mdi:floor-plan
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+      card_mod:
+        style: |
+          ha-card {
+            background: var(--casaray-amber-bg);
+            border-color: var(--casaray-amber-border);
+          }
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Security
+      icon: mdi:shield-home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/security}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Energy
+      icon: mdi:lightning-bolt
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Climate
+      icon: mdi:thermometer
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/climate}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Cameras
+      icon: mdi:cctv
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
 
-  # Status chips, per the room mockups' row under the header: a bold value and
-  # a muted caption for the things you glance at on the way past. Two across
-  # rather than the render's five, for the iPad reason the Home KPI strip is
-  # 2x2. Every chip names its subject when the entity stops reporting.
-  # Status chips, per the room mockups' row under the header: a bold value and
-  # a muted caption for the things you glance at on the way past. Two across
-  # rather than the render's five, for the iPad reason the Home KPI strip is
-  # 2x2. Every chip names its subject when the entity stops reporting.
+
   - type: grid
     column_span: 2
     cards:
@@ -2479,18 +2601,6 @@ views:
   - type: grid
     column_span: 2
     cards:
-    - type: button
-      grid_options: {columns: 2, rows: auto}
-      name: Back
-      icon: mdi:arrow-left
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
-    - type: button
-      grid_options: {columns: 2, rows: auto}
-      name: Home
-      icon: mdi:home
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
       grid_options: {columns: 6, rows: auto}
       content: >-
@@ -2505,22 +2615,70 @@ views:
         l == 'on' %}{{ '灯开启' if cn else 'light on' }}{% elif l == 'off' %}{{ '灯关闭'
         if cn else 'light off' }}{% else %}{{ '灯无数据' if cn else 'light not
         reporting' }}{% endif %}
+    # Time over date, right-aligned, DD/MM/YY -- never %Y. `nowrap` is a
+    # guarantee where a `columns` value is only a bet (DR-012).
     - type: markdown
-      grid_options: {columns: 4, rows: auto}
-      content: >-
-        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
-
+      grid_options: {columns: 6, rows: auto}
+      content: |
+        ## {{ now().strftime('%I:%M %p').lstrip('0').lower() }}
         {{ now().strftime('%d/%m/%y') }}
+      card_mod:
+        style: |
+          ha-card { text-align: right; white-space: nowrap; }
+    # The shared nav rail. Identical on every board and room page so the
+    # dashboard reads as one application; the current page's icon is tinted
+    # amber, which is the render's selected state.
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Rooms
+      icon: mdi:floor-plan
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+      card_mod:
+        style: |
+          ha-card {
+            background: var(--casaray-amber-bg);
+            border-color: var(--casaray-amber-border);
+          }
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Security
+      icon: mdi:shield-home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/security}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Energy
+      icon: mdi:lightning-bolt
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Climate
+      icon: mdi:thermometer
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/climate}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Cameras
+      icon: mdi:cctv
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
 
 
-  # Status chips, per the room mockups' row under the header: a bold value and
-  # a muted caption for the things you glance at on the way past. Two across
-  # rather than the render's five, for the iPad reason the Home KPI strip is
-  # 2x2. Every chip names its subject when the entity stops reporting.
-  # Status chips, per the room mockups' row under the header: a bold value and
-  # a muted caption for the things you glance at on the way past. Two across
-  # rather than the render's five, for the iPad reason the Home KPI strip is
-  # 2x2. Every chip names its subject when the entity stops reporting.
+
   - type: grid
     column_span: 2
     cards:
@@ -2930,18 +3088,6 @@ views:
   - type: grid
     column_span: 2
     cards:
-    - type: button
-      grid_options: {columns: 2, rows: auto}
-      name: Back
-      icon: mdi:arrow-left
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
-    - type: button
-      grid_options: {columns: 2, rows: auto}
-      name: Home
-      icon: mdi:home
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
       grid_options: {columns: 6, rows: auto}
       content: >-
@@ -2955,21 +3101,69 @@ views:
         else 'Temperature not reporting' }}{% endif %}{% if o == 'on' %}{{ ' · 有人' if
         cn else ' · occupied' }}{% elif o == 'off' %}{{ ' · 无人' if cn else ' · empty'
         }}{% endif %}
+    # Time over date, right-aligned, DD/MM/YY -- never %Y. `nowrap` is a
+    # guarantee where a `columns` value is only a bet (DR-012).
     - type: markdown
-      grid_options: {columns: 4, rows: auto}
-      content: >-
-        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
-
+      grid_options: {columns: 6, rows: auto}
+      content: |
+        ## {{ now().strftime('%I:%M %p').lstrip('0').lower() }}
         {{ now().strftime('%d/%m/%y') }}
+      card_mod:
+        style: |
+          ha-card { text-align: right; white-space: nowrap; }
+    # The shared nav rail. Identical on every board and room page so the
+    # dashboard reads as one application; the current page's icon is tinted
+    # amber, which is the render's selected state.
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Rooms
+      icon: mdi:floor-plan
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+      card_mod:
+        style: |
+          ha-card {
+            background: var(--casaray-amber-bg);
+            border-color: var(--casaray-amber-border);
+          }
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Security
+      icon: mdi:shield-home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/security}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Energy
+      icon: mdi:lightning-bolt
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Climate
+      icon: mdi:thermometer
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/climate}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Cameras
+      icon: mdi:cctv
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
 
-  # Status chips, per the room mockups' row under the header: a bold value and
-  # a muted caption for the things you glance at on the way past. Two across
-  # rather than the render's five, for the iPad reason the Home KPI strip is
-  # 2x2. Every chip names its subject when the entity stops reporting.
-  # Status chips, per the room mockups' row under the header: a bold value and
-  # a muted caption for the things you glance at on the way past. Two across
-  # rather than the render's five, for the iPad reason the Home KPI strip is
-  # 2x2. Every chip names its subject when the entity stops reporting.
+
   - type: grid
     column_span: 2
     cards:
@@ -3484,18 +3678,6 @@ views:
   - type: grid
     column_span: 2
     cards:
-    - type: button
-      grid_options: {columns: 2, rows: auto}
-      name: Back
-      icon: mdi:arrow-left
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
-    - type: button
-      grid_options: {columns: 2, rows: auto}
-      name: Home
-      icon: mdi:home
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
       grid_options: {columns: 6, rows: auto}
       content: >-
@@ -3509,22 +3691,70 @@ views:
         c == 'open' %}{{ '窗帘已打开' if cn else 'blind open' }}{% elif c == 'closed'
         %}{{ '窗帘已关闭' if cn else 'blind closed' }}{% else %}{{ '窗帘无数据' if cn
         else 'blind not reporting' }}{% endif %}
+    # Time over date, right-aligned, DD/MM/YY -- never %Y. `nowrap` is a
+    # guarantee where a `columns` value is only a bet (DR-012).
     - type: markdown
-      grid_options: {columns: 4, rows: auto}
-      content: >-
-        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
-
+      grid_options: {columns: 6, rows: auto}
+      content: |
+        ## {{ now().strftime('%I:%M %p').lstrip('0').lower() }}
         {{ now().strftime('%d/%m/%y') }}
+      card_mod:
+        style: |
+          ha-card { text-align: right; white-space: nowrap; }
+    # The shared nav rail. Identical on every board and room page so the
+    # dashboard reads as one application; the current page's icon is tinted
+    # amber, which is the render's selected state.
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Rooms
+      icon: mdi:floor-plan
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+      card_mod:
+        style: |
+          ha-card {
+            background: var(--casaray-amber-bg);
+            border-color: var(--casaray-amber-border);
+          }
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Security
+      icon: mdi:shield-home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/security}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Energy
+      icon: mdi:lightning-bolt
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Climate
+      icon: mdi:thermometer
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/climate}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Cameras
+      icon: mdi:cctv
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
 
 
-  # Status chips, per the room mockups' row under the header: a bold value and
-  # a muted caption for the things you glance at on the way past. Two across
-  # rather than the render's five, for the iPad reason the Home KPI strip is
-  # 2x2. Every chip names its subject when the entity stops reporting.
-  # Status chips, per the room mockups' row under the header: a bold value and
-  # a muted caption for the things you glance at on the way past. Two across
-  # rather than the render's five, for the iPad reason the Home KPI strip is
-  # 2x2. Every chip names its subject when the entity stops reporting.
+
   - type: grid
     column_span: 2
     cards:
@@ -4017,18 +4247,6 @@ views:
   - type: grid
     column_span: 2
     cards:
-    - type: button
-      grid_options: {columns: 2, rows: auto}
-      name: Back
-      icon: mdi:arrow-left
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
-    - type: button
-      grid_options: {columns: 2, rows: auto}
-      name: Home
-      icon: mdi:home
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
       grid_options: {columns: 6, rows: auto}
       content: >-
@@ -4041,21 +4259,69 @@ views:
         {% if p is not none %}{% if cn %}冰柜功率 {{ p | round(0) | int }} W{% else
         %}Freezer drawing {{ p | round(0) | int }} W{% endif %}{% else %}{{ '冰柜监测无数据'
         if cn else 'Freezer monitor not reporting' }}{% endif %}
+    # Time over date, right-aligned, DD/MM/YY -- never %Y. `nowrap` is a
+    # guarantee where a `columns` value is only a bet (DR-012).
     - type: markdown
-      grid_options: {columns: 4, rows: auto}
-      content: >-
-        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
-
+      grid_options: {columns: 6, rows: auto}
+      content: |
+        ## {{ now().strftime('%I:%M %p').lstrip('0').lower() }}
         {{ now().strftime('%d/%m/%y') }}
+      card_mod:
+        style: |
+          ha-card { text-align: right; white-space: nowrap; }
+    # The shared nav rail. Identical on every board and room page so the
+    # dashboard reads as one application; the current page's icon is tinted
+    # amber, which is the render's selected state.
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Rooms
+      icon: mdi:floor-plan
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+      card_mod:
+        style: |
+          ha-card {
+            background: var(--casaray-amber-bg);
+            border-color: var(--casaray-amber-border);
+          }
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Security
+      icon: mdi:shield-home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/security}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Energy
+      icon: mdi:lightning-bolt
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Climate
+      icon: mdi:thermometer
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/climate}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Cameras
+      icon: mdi:cctv
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
 
-  # Status chips, per the room mockups' row under the header: a bold value and
-  # a muted caption for the things you glance at on the way past. Two across
-  # rather than the render's five, for the iPad reason the Home KPI strip is
-  # 2x2. Every chip names its subject when the entity stops reporting.
-  # Status chips, per the room mockups' row under the header: a bold value and
-  # a muted caption for the things you glance at on the way past. Two across
-  # rather than the render's five, for the iPad reason the Home KPI strip is
-  # 2x2. Every chip names its subject when the entity stops reporting.
+
   - type: grid
     column_span: 2
     cards:
@@ -4295,18 +4561,6 @@ views:
   - type: grid
     column_span: 2
     cards:
-    - type: button
-      grid_options: {columns: 2, rows: auto}
-      name: Back
-      icon: mdi:arrow-left
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
-    - type: button
-      grid_options: {columns: 2, rows: auto}
-      name: Home
-      icon: mdi:home
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
       grid_options: {columns: 6, rows: auto}
       content: >-
@@ -4317,21 +4571,69 @@ views:
         '打印机开启' if cn else 'Printer on' }}{% elif p == 'off' %}{{ '打印机关闭' if
         cn else 'Printer off' }}{% else %}{{ '打印机插座无数据' if cn else 'Printer plug
         not reporting' }}{% endif %}
+    # Time over date, right-aligned, DD/MM/YY -- never %Y. `nowrap` is a
+    # guarantee where a `columns` value is only a bet (DR-012).
     - type: markdown
-      grid_options: {columns: 4, rows: auto}
-      content: >-
-        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
-
+      grid_options: {columns: 6, rows: auto}
+      content: |
+        ## {{ now().strftime('%I:%M %p').lstrip('0').lower() }}
         {{ now().strftime('%d/%m/%y') }}
+      card_mod:
+        style: |
+          ha-card { text-align: right; white-space: nowrap; }
+    # The shared nav rail. Identical on every board and room page so the
+    # dashboard reads as one application; the current page's icon is tinted
+    # amber, which is the render's selected state.
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Rooms
+      icon: mdi:floor-plan
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+      card_mod:
+        style: |
+          ha-card {
+            background: var(--casaray-amber-bg);
+            border-color: var(--casaray-amber-border);
+          }
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Security
+      icon: mdi:shield-home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/security}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Energy
+      icon: mdi:lightning-bolt
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Climate
+      icon: mdi:thermometer
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/climate}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Cameras
+      icon: mdi:cctv
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
 
-  # Status chips, per the room mockups' row under the header: a bold value and
-  # a muted caption for the things you glance at on the way past. Two across
-  # rather than the render's five, for the iPad reason the Home KPI strip is
-  # 2x2. Every chip names its subject when the entity stops reporting.
-  # Status chips, per the room mockups' row under the header: a bold value and
-  # a muted caption for the things you glance at on the way past. Two across
-  # rather than the render's five, for the iPad reason the Home KPI strip is
-  # 2x2. Every chip names its subject when the entity stops reporting.
+
   - type: grid
     column_span: 2
     cards:
@@ -4538,14 +4840,8 @@ views:
   - type: grid
     column_span: 2
     cards:
-    - type: button
-      grid_options: {columns: 2, rows: auto}
-      name: Home
-      icon: mdi:home
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 7, rows: auto}
+      grid_options: {columns: 6, rows: auto}
       content: >-
         ## {{ '灯光' if is_state('input_boolean.chinese_dashboard','on') else
         'Lighting' }}
@@ -4559,17 +4855,63 @@ views:
         }} 盏开启{% if ns.unk %} · {{ ns.unk }} 盏无数据{% endif %}{% else %}{{ ns.on }}
         of {{ ls | count }} lights on{% if ns.unk %} · {{ ns.unk }} not reporting{%
         endif %}{% endif %}
+    # Time over date, right-aligned, DD/MM/YY -- never %Y. `nowrap` is a
+    # guarantee where a `columns` value is only a bet (DR-012).
     - type: markdown
-      grid_options: {columns: 3, rows: auto}
-      content: >-
-        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
-
+      grid_options: {columns: 6, rows: auto}
+      content: |
+        ## {{ now().strftime('%I:%M %p').lstrip('0').lower() }}
         {{ now().strftime('%d/%m/%y') }}
+      card_mod:
+        style: |
+          ha-card { text-align: right; white-space: nowrap; }
+    # The shared nav rail. Identical on every board and room page so the
+    # dashboard reads as one application; the current page's icon is tinted
+    # amber, which is the render's selected state.
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Rooms
+      icon: mdi:floor-plan
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Security
+      icon: mdi:shield-home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/security}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Energy
+      icon: mdi:lightning-bolt
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Climate
+      icon: mdi:thermometer
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/climate}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Cameras
+      icon: mdi:cctv
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
 
-  # KPI strip, per DESIGN_REFERENCE's content-grid rule. The Lighting Studio
-  # mockup opens with an at-a-glance count; this is that count, built from the
-  # seven light and switch entities that actually report, with the dead Hue
-  # spots carried in their own card rather than quietly dropped from the total.
+
   - type: grid
     column_span: 2
     cards:
@@ -5169,14 +5511,8 @@ views:
   - type: grid
     column_span: 2
     cards:
-    - type: button
-      grid_options: {columns: 2, rows: auto}
-      name: Home
-      icon: mdi:home
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 7, rows: auto}
+      grid_options: {columns: 6, rows: auto}
       content: >-
         ## {{ '气候' if is_state('input_boolean.chinese_dashboard','on') else
         'Climate' }}
@@ -5195,22 +5531,69 @@ views:
         | round(1) }} °C across {{ ns.n }} {{ 'room' if ns.n == 1 else 'rooms' }}{% if
         ns.unk %} · {{ ns.unk }} not reporting{% endif %}{% endif %}{% else %}{{
         '没有室内温度数据。' if cn else 'No indoor temperature is reporting.' }}{% endif %}
+    # Time over date, right-aligned, DD/MM/YY -- never %Y. `nowrap` is a
+    # guarantee where a `columns` value is only a bet (DR-012).
     - type: markdown
-      grid_options: {columns: 3, rows: auto}
-      content: >-
-        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
-
+      grid_options: {columns: 6, rows: auto}
+      content: |
+        ## {{ now().strftime('%I:%M %p').lstrip('0').lower() }}
         {{ now().strftime('%d/%m/%y') }}
+      card_mod:
+        style: |
+          ha-card { text-align: right; white-space: nowrap; }
+    # The shared nav rail. Identical on every board and room page so the
+    # dashboard reads as one application; the current page's icon is tinted
+    # amber, which is the render's selected state.
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Rooms
+      icon: mdi:floor-plan
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Security
+      icon: mdi:shield-home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/security}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Energy
+      icon: mdi:lightning-bolt
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Climate
+      icon: mdi:thermometer
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/climate}
+      card_mod:
+        style: |
+          ha-card {
+            background: var(--casaray-amber-bg);
+            border-color: var(--casaray-amber-border);
+          }
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Cameras
+      icon: mdi:cctv
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
 
-  # KPI strip, per DESIGN_REFERENCE's content-grid rule and the Home mockup's
-  # INDOOR CLIMATE card. The average names the rooms it averaged: an earlier
-  # version of this figure read "19.1 across 2 rooms" beside a page showing
-  # three, and the only fix for that is to print the working.
-  # Summary strip. Four readings, each a label, a value and a state word --
-  # nothing else. The previous version explained its own working in a
-  # paragraph under each card, which is right for a queue entry and wrong for
-  # a wall panel you read from across the room. What the cards still will not
-  # do is assert a state they cannot see: no reading means an em dash.
+
   - type: grid
     column_span: 2
     cards:
@@ -5469,14 +5852,8 @@ views:
   - type: grid
     column_span: 2
     cards:
-    - type: button
-      grid_options: {columns: 2, rows: auto}
-      name: Home
-      icon: mdi:home
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 7, rows: auto}
+      grid_options: {columns: 6, rows: auto}
       content: >-
         ## {{ '能源' if is_state('input_boolean.chinese_dashboard','on') else
         'Energy' }}
@@ -5486,16 +5863,69 @@ views:
         {% if p is not none %}{% if cn %}当前 {{ p | round(0) | int }} W{% else %}{{ p |
         round(0) | int }} W now{% endif %}{% else %}{{ '用电量无数据' if cn else 'House
         power not reporting' }}{% endif %}
+    # Time over date, right-aligned, DD/MM/YY -- never %Y. `nowrap` is a
+    # guarantee where a `columns` value is only a bet (DR-012).
     - type: markdown
-      grid_options: {columns: 3, rows: auto}
-      content: >-
-        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
-
+      grid_options: {columns: 6, rows: auto}
+      content: |
+        ## {{ now().strftime('%I:%M %p').lstrip('0').lower() }}
         {{ now().strftime('%d/%m/%y') }}
+      card_mod:
+        style: |
+          ha-card { text-align: right; white-space: nowrap; }
+    # The shared nav rail. Identical on every board and room page so the
+    # dashboard reads as one application; the current page's icon is tinted
+    # amber, which is the render's selected state.
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Rooms
+      icon: mdi:floor-plan
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Security
+      icon: mdi:shield-home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/security}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Energy
+      icon: mdi:lightning-bolt
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
+      card_mod:
+        style: |
+          ha-card {
+            background: var(--casaray-amber-bg);
+            border-color: var(--casaray-amber-border);
+          }
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Climate
+      icon: mdi:thermometer
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/climate}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Cameras
+      icon: mdi:cctv
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
 
-  # 1. Current. Four figures and, when it matters, one alert. The inverter
-  # explanation that used to sit here as a paragraph is now a short line in
-  # the alert and a fuller note under Solar details.
+
   - type: grid
     column_span: 2
     cards:
@@ -5831,30 +6261,71 @@ views:
   - type: grid
     column_span: 2
     cards:
-    - type: button
-      grid_options: {columns: 2, rows: auto}
-      name: Home
-      icon: mdi:home
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 7, rows: auto}
+      grid_options: {columns: 6, rows: auto}
       content: >-
         ## {{ '账单' if is_state('input_boolean.chinese_dashboard','on') else
         'Bills' }}
 
         {{ '家庭开支与到期日' if is_state('input_boolean.chinese_dashboard','on')
         else 'Household expenses and due dates' }}
+    # Time over date, right-aligned, DD/MM/YY -- never %Y. `nowrap` is a
+    # guarantee where a `columns` value is only a bet (DR-012).
     - type: markdown
-      grid_options: {columns: 3, rows: auto}
-      content: >-
-        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
-
+      grid_options: {columns: 6, rows: auto}
+      content: |
+        ## {{ now().strftime('%I:%M %p').lstrip('0').lower() }}
         {{ now().strftime('%d/%m/%y') }}
+      card_mod:
+        style: |
+          ha-card { text-align: right; white-space: nowrap; }
+    # The shared nav rail. Identical on every board and room page so the
+    # dashboard reads as one application; the current page's icon is tinted
+    # amber, which is the render's selected state.
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Rooms
+      icon: mdi:floor-plan
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Security
+      icon: mdi:shield-home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/security}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Energy
+      icon: mdi:lightning-bolt
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Climate
+      icon: mdi:thermometer
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/climate}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Cameras
+      icon: mdi:cctv
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
 
-  # Summary. One headline and four figures -- what the household actually
-  # asks this page. Everything that sets a value lives at the foot of the
-  # page now; this is the part you read.
+
   - type: grid
     column_span: 2
     cards:
@@ -7218,14 +7689,8 @@ views:
   - type: grid
     column_span: 2
     cards:
-    - type: button
-      grid_options: {columns: 2, rows: auto}
-      name: Home
-      icon: mdi:home
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 7, rows: auto}
+      grid_options: {columns: 6, rows: auto}
       content: >-
         ## {{ '安全' if is_state('input_boolean.chinese_dashboard','on') else
         'Security' }}
@@ -7240,98 +7705,137 @@ views:
         ns.open %}{% if cn %}3 扇门中 {{ ns.open }} 扇开启{% else %}{{ ns.open }} of 3
         doors open{% endif %}{% else %}{{ '所有门已关闭' if cn else 'All doors closed'
         }}{% endif %}
+    # Time over date, right-aligned, DD/MM/YY -- never %Y. `nowrap` is a
+    # guarantee where a `columns` value is only a bet (DR-012).
     - type: markdown
-      grid_options: {columns: 3, rows: auto}
-      content: >-
-        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
-
+      grid_options: {columns: 6, rows: auto}
+      content: |
+        ## {{ now().strftime('%I:%M %p').lstrip('0').lower() }}
         {{ now().strftime('%d/%m/%y') }}
+      card_mod:
+        style: |
+          ha-card { text-align: right; white-space: nowrap; }
+    # The shared nav rail. Identical on every board and room page so the
+    # dashboard reads as one application; the current page's icon is tinted
+    # amber, which is the render's selected state.
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Rooms
+      icon: mdi:floor-plan
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Security
+      icon: mdi:shield-home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/security}
+      card_mod:
+        style: |
+          ha-card {
+            background: var(--casaray-amber-bg);
+            border-color: var(--casaray-amber-border);
+          }
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Energy
+      icon: mdi:lightning-bolt
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Climate
+      icon: mdi:thermometer
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/climate}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Cameras
+      icon: mdi:cctv
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
 
-  # KPI strip, per DESIGN_REFERENCE's content-grid rule and the Home mockup's
-  # SECURITY card. Same shape as the Home and Cameras strips. Every count is
-  # taken from entities already on this page, and the doors card leads with
-  # "Unconfirmed" rather than "Secure" because all three contact sensors are
-  # down -- CLAUDE.md forbids a card asserting a reassuring state it cannot
-  # see, and this is the page where that matters most.
+
+  # -------------------------------------------------------------------------
+  # The chip strip, the same single full-width card Home uses.
+  #
+  # This replaced FOUR tall KPI cards. Their logic is kept in full -- the same
+  # three doors, four motion sensors, six cameras and six alerting switches,
+  # with the same three-way branching -- but a 2x2 block of tall cards is not
+  # what the 14/09 Security render shows above the fold. It shows a thin pill
+  # row: `Doors All closed`, `Cameras 4 of 6 online`. The detail those cards
+  # carried (which door is silent, which camera is offline) is on the Doors and
+  # Camera health cards below, where the render puts it, and the footnote
+  # appears only when something is actually silent.
+  # -------------------------------------------------------------------------
   - type: grid
     column_span: 2
     cards:
     - type: markdown
-      grid_options: {columns: 6, rows: 3}
+      grid_options: {columns: 12, rows: auto}
       content: |
         {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
-        {%- set doors = [('binary_sensor.f_contact_sensor_door','Front','前门'),
-                         ('binary_sensor.m_contact_sensor_door','Parents Room','父母房'),
-                         ('binary_sensor.b_contact_sensor_door','Backyard','后院')] -%}
-        {%- set ns = namespace(open=[], shut=0, quiet=[]) -%}
-        {%- for d, en, zh in doors %}{% set s = states(d) %}{% if s == 'on' %}{% set ns.open = ns.open + [zh if cn else en] %}{% elif s == 'off' %}{% set ns.shut = ns.shut + 1 %}{% else %}{% set ns.quiet = ns.quiet + [zh if cn else en] %}{% endif %}{% endfor -%}
-        **{{ '外门' if cn else 'External doors' }}**
-        {% if ns.open %}## {{ '有门开启' if cn else 'Open' }}
-        {{ (ns.open | join('、') ~ '开启') if cn else (ns.open | join(', ') ~ ' open') }}{% elif ns.quiet %}## {{ '无法确认' if cn else 'Unconfirmed' }}
-        {{ ('%d/%d 个门磁没有数据' % (ns.quiet | count, doors | count)) if cn else ('%d of %d door sensors are not reporting' % (ns.quiet | count, doors | count)) }}{% else %}## {{ '已关闭' if cn else 'Closed' }}
-        {{ '三扇外门全部关闭' if cn else 'All 3 external doors are closed' }}{% endif %}
-
-        {% if ns.quiet %}{{ ('无数据：' ~ ns.quiet | join('、') ~ '。门磁离线时，此处不会显示“已关闭”。') if cn else ('Silent: ' ~ ns.quiet | join(', ') ~ '. A door with no sensor is never reported as closed.') }}{% else %}{{ '三个门磁都有数据。' if cn else 'All 3 door sensors are reporting.' }}{% endif %}
-    - type: markdown
-      grid_options: {columns: 6, rows: 3}
-      content: |
-        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
-        {%- set mot = [('binary_sensor.living_room_living_hue_hue_sensor_motion','Living Room','客厅'),
-                       ('binary_sensor.k_motion_sensor_motion','Kitchen','厨房'),
-                       ('binary_sensor.bedroom_motion_sensor_motion','Parents Room','父母房'),
-                       ('binary_sensor.sensor_group_motion','Dining','餐厅')] -%}
-        {%- set ns = namespace(active=[], still=0, quiet=0) -%}
-        {%- for m, en, zh in mot %}{% set s = states(m) %}{% if s == 'on' %}{% set ns.active = ns.active + [zh if cn else en] %}{% elif s == 'off' %}{% set ns.still = ns.still + 1 %}{% else %}{% set ns.quiet = ns.quiet + 1 %}{% endif %}{% endfor -%}
-        **{{ '动作' if cn else 'Motion' }}**
-        {% if ns.active %}## {{ ns.active | count }} {{ '个房间' if cn else ('room' if ns.active | count == 1 else 'rooms') }}
-        {{ (ns.active | join('、') ~ '检测到动作') if cn else ('Movement in ' ~ ns.active | join(', ')) }}{% elif ns.quiet == mot | count %}## —
-        {{ '没有动作传感器有数据' if cn else 'No motion sensor is reporting' }}{% else %}## {{ '安静' if cn else 'Still' }}
-        {{ ('%d 个传感器都没有检测到动作' % ns.still) if cn else ('%d sensors report no movement' % ns.still) }}{% endif %}
-
-        {{ ns.still + (ns.active | count) }}{{ '/' }}{{ mot | count }} {{ '个传感器有数据' if cn else 'sensors reporting' }}{% if ns.quiet %} · {{ ns.quiet }} {{ '个无数据' if cn else 'silent' }}{% endif %}
-    - type: markdown
-      grid_options: {columns: 6, rows: 3}
-      content: |
-        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
-        {%- set cams = [('camera.front_door_live_view','Front Door','前门'),
-                        ('camera.tapo_c425_north_wall_hd_stream_direct','North Wall','北墙'),
-                        ('camera.tapo_c420_east_wall_hd_stream_direct','East Wall','东墙'),
-                        ('camera.tapo_c420_south_wall_hd_stream_direct','South Wall','南墙'),
-                        ('camera.tapo_c200_stockroom_hd_stream_direct','Stockroom','储藏室'),
-                        ('camera.smart_pet_feeder','Pet Feeder','宠物喂食器')] -%}
-        {%- set ns = namespace(up=0, down=[]) -%}
-        {%- for c, en, zh in cams %}{% if states(c) not in ['unavailable','unknown'] %}{% set ns.up = ns.up + 1 %}{% else %}{% set ns.down = ns.down + [zh if cn else en] %}{% endif %}{% endfor -%}
-        **{{ '摄像头' if cn else 'Cameras' }}**
-        ## {{ ns.up }}/{{ cams | count }}
-        {% if ns.down %}{{ ('离线：' ~ ns.down | join('、')) if cn else ('Offline: ' ~ ns.down | join(', ')) }}{% else %}{{ '全部摄像头正在推流' if cn else 'Every camera is streaming' }}{% endif %}
-
-        {{ '网络' if cn else 'Internet' }} **{{ ('在线' if cn else 'Online') if is_state('binary_sensor.eero_wan_status','on') else (('离线' if cn else 'Offline') if is_state('binary_sensor.eero_wan_status','off') else ('无数据' if cn else 'Unknown')) }}**
-    - type: markdown
-      grid_options: {columns: 6, rows: 3}
-      content: |
-        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
-        {# Six switches, one question: will this camera tell anyone? They are
-           not all named the same thing by their integrations -- motion
-           detection, person detection, notifications, motion alarm -- so the
-           card counts cameras that have their alerting switch on rather than
-           claiming they are one setting. #}
-        {%- set al = [('switch.front_door_motion_detection','Front Door','前门'),
-                      ('switch.tapo_c425_north_wall_notifications','North Wall','北墙'),
-                      ('switch.tapo_camera_bcca_motion_detection','East Wall','东墙'),
-                      ('switch.tapo_c420_south_wall_motion_detection','South Wall','南墙'),
-                      ('switch.tapo_c200_stockroom_notifications','Stockroom','储藏室'),
-                      ('switch.smart_pet_feeder_motion_alarm','Pet Feeder','宠物喂食器')] -%}
-        {%- set ns = namespace(on=0, off=[], quiet=0) -%}
-        {%- for a, en, zh in al %}{% set s = states(a) %}{% if s == 'on' %}{% set ns.on = ns.on + 1 %}{% elif s == 'off' %}{% set ns.off = ns.off + [zh if cn else en] %}{% else %}{% set ns.quiet = ns.quiet + 1 %}{% endif %}{% endfor -%}
-        **{{ '警报设置' if cn else 'Alerting' }}**
-        {% if ns.on + (ns.off | count) %}## {{ ns.on }}/{{ ns.on + (ns.off | count) }}
-        {% if ns.off %}{{ ('未开启：' ~ ns.off | join('、')) if cn else ('Not alerting: ' ~ ns.off | join(', ')) }}{% else %}{{ '所有报告中的摄像头都会发出提醒' if cn else 'Every reporting camera will raise an alert' }}{% endif %}{% else %}## —
-        {{ '没有摄像头报告警报设置' if cn else 'No camera is reporting an alerting setting' }}{% endif %}
-
-        {{ '各集成对这项设置的命名不同（动作侦测、人形侦测、通知、动作警报），此处统计的是“会不会通知你”。' if cn else 'The integrations name this differently — motion detection, person detection, notifications, motion alarm — so this counts cameras that will tell you, not one shared setting.' }}
-
+        {%- set nd = '无数据' if cn else 'No data' -%}
+        {#- Doors: open wins over unconfirmed wins over closed. A door whose
+            sensor is silent is never reported as closed. -#}
+        {%- set doors = ['binary_sensor.f_contact_sensor_door',
+                         'binary_sensor.m_contact_sensor_door',
+                         'binary_sensor.b_contact_sensor_door'] -%}
+        {%- set ns = namespace(dopen=0, dquiet=0, mact=0, mquiet=0, cup=0, aon=0, aknown=0) -%}
+        {%- for e in doors %}{% set s = states(e) %}{% if s == 'on' %}{% set ns.dopen = ns.dopen + 1 %}{% elif s != 'off' %}{% set ns.dquiet = ns.dquiet + 1 %}{% endif %}{% endfor -%}
+        {%- if ns.dopen %}{% set dv = ('%d 扇开启' % ns.dopen) if cn else ('%d open' % ns.dopen) %}
+        {%- elif ns.dquiet == doors | count %}{% set dv = nd %}
+        {%- elif ns.dquiet %}{% set dv = ('%d 个无数据' % ns.dquiet) if cn else ('%d not reporting' % ns.dquiet) %}
+        {%- else %}{% set dv = '全部关闭' if cn else 'All closed' %}{% endif -%}
+        {%- set mot = ['binary_sensor.living_room_living_hue_hue_sensor_motion',
+                       'binary_sensor.k_motion_sensor_motion',
+                       'binary_sensor.bedroom_motion_sensor_motion',
+                       'binary_sensor.sensor_group_motion'] -%}
+        {%- for e in mot %}{% set s = states(e) %}{% if s == 'on' %}{% set ns.mact = ns.mact + 1 %}{% elif s != 'off' %}{% set ns.mquiet = ns.mquiet + 1 %}{% endif %}{% endfor -%}
+        {%- if ns.mact %}{% set mv = ('%d 处有动作' % ns.mact) if cn else ('%d room active' % ns.mact if ns.mact == 1 else '%d rooms active' % ns.mact) %}
+        {%- elif ns.mquiet == mot | count %}{% set mv = nd %}
+        {%- else %}{% set mv = '安静' if cn else 'Quiet' %}{% endif -%}
+        {%- set cams = ['camera.front_door_live_view',
+                        'camera.tapo_c425_north_wall_hd_stream_direct',
+                        'camera.tapo_c420_east_wall_hd_stream_direct',
+                        'camera.tapo_c420_south_wall_hd_stream_direct',
+                        'camera.tapo_c200_stockroom_hd_stream_direct',
+                        'camera.smart_pet_feeder'] -%}
+        {%- for e in cams %}{% if states(e) not in ['unavailable','unknown'] %}{% set ns.cup = ns.cup + 1 %}{% endif %}{% endfor -%}
+        {#- Alerting: the integrations name this switch four different ways, so
+            this counts cameras that will TELL someone, not one shared setting. -#}
+        {%- set al = ['switch.front_door_motion_detection',
+                      'switch.tapo_c425_north_wall_notifications',
+                      'switch.tapo_camera_bcca_motion_detection',
+                      'switch.tapo_c420_south_wall_motion_detection',
+                      'switch.tapo_c200_stockroom_notifications',
+                      'switch.smart_pet_feeder_motion_alarm'] -%}
+        {%- for e in al %}{% set s = states(e) %}{% if s == 'on' %}{% set ns.aon = ns.aon + 1 %}{% set ns.aknown = ns.aknown + 1 %}{% elif s == 'off' %}{% set ns.aknown = ns.aknown + 1 %}{% endif %}{% endfor -%}
+        {%- set av = ('%d/%d' % (ns.aon, ns.aknown)) if ns.aknown else nd -%}
+        {%- set wan = states('binary_sensor.eero_wan_status') -%}
+        {%- set wv = ('在线' if cn else 'Online') if wan == 'on' else (('离线' if cn else 'Offline') if wan == 'off' else nd) -%}
+        {{ '门' if cn else 'Doors' }} **{{ dv }}** · {{ '动作' if cn else 'Movement' }} **{{ mv }}** · {{ '摄像头' if cn else 'Cameras' }} **{{ ns.cup }}/{{ cams | count }}** · {{ '警报' if cn else 'Alerting' }} **{{ av }}** · {{ '网络' if cn else 'Internet' }} **{{ wv }}**
+      card_mod:
+        style: |
+          ha-card {
+            border-radius: 999px;
+            background: var(--casaray-surface-3);
+            border-color: var(--casaray-border-strong);
+          }
   - type: grid
-    column_span: 1
+    column_span: 2
     cards:
     - type: heading
       heading: Doors
@@ -7350,7 +7854,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: tile
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
       entity: binary_sensor.f_contact_sensor_door
       color: red
       name: Front door
@@ -7364,7 +7868,7 @@ views:
             {% endif %}
           }
     - type: tile
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
       entity: binary_sensor.m_contact_sensor_door
       color: red
       name: Parents Room door
@@ -7378,7 +7882,7 @@ views:
             {% endif %}
           }
     - type: tile
-      grid_options: {columns: 6, rows: 1}
+      grid_options: {columns: 4, rows: 1}
       entity: binary_sensor.b_contact_sensor_door
       color: red
       name: Backyard door
@@ -7443,6 +7947,96 @@ views:
   # detection switch is what makes it watch, so switching one off from a wall
   # panel should never be one accidental tap. The value of the section is that
   # a protection gap someone left switched off becomes visible.
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Camera health
+      heading_style: title
+      icon: mdi:cctv
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 摄像头状态
+      heading_style: title
+      icon: mdi:cctv
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: markdown
+      grid_options: {columns: 12, rows: 2}
+      content: >-
+        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set cams = [('Front
+        Door','前门','camera.front_door_live_view'), ('North
+        Wall','北墙','camera.tapo_c425_north_wall_hd_stream_direct'), ('East
+        Wall','东墙','camera.tapo_c420_east_wall_hd_stream_direct'), ('South
+        Wall','南墙','camera.tapo_c420_south_wall_hd_stream_direct'),
+        ('Stockroom','储藏室','camera.tapo_c200_stockroom_hd_stream_direct'), ('Pet
+        Feeder','喂食器','camera.smart_pet_feeder')] -%} {% set ns = namespace(down=[]) -%}
+        {% for n, z, c in cams %}{% if states(c) in ['unavailable','unknown'] %}{%
+        set ns.down = ns.down + [z if cn else n] %}{% endif %}{% endfor -%} {% if ns.down
+        | count %}{% if cn %}**{{ cams | count }} 个摄像头中 {{ ns.down | count }}
+        个离线：**{{ ns.down | join('、') }}。{% else %}**{{ ns.down | count }} of {{
+        cams | count }} cameras offline:** {{ ns.down | join(', ') }}.{% endif %}{% else
+        %}{% if cn %}{{ cams | count }} 个摄像头全部在线。{% else %}All {{ cams | count }}
+        cameras online.{% endif %}{% endif %}
+    - type: tile
+      entity: camera.front_door_live_view
+      name: Front Door
+      grid_options: {columns: 6, rows: 1}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/camera-front-door}
+    - type: tile
+      entity: camera.tapo_c425_north_wall_hd_stream_direct
+      name: North Wall
+      grid_options: {columns: 6, rows: 1}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/camera-north-wall}
+    - type: tile
+      entity: camera.tapo_c420_east_wall_hd_stream_direct
+      name: East Wall
+      grid_options: {columns: 6, rows: 1}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/camera-east-wall}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
+            {% endif %}
+          }
+    - type: tile
+      entity: camera.tapo_c420_south_wall_hd_stream_direct
+      name: South Wall
+      grid_options: {columns: 6, rows: 1}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/camera-south-wall}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
+            {% endif %}
+          }
+    - type: tile
+      entity: camera.tapo_c200_stockroom_hd_stream_direct
+      name: Stockroom
+      grid_options: {columns: 6, rows: 1}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/camera-stockroom}
+    - type: tile
+      entity: camera.smart_pet_feeder
+      name: Pet Feeder
+      grid_options: {columns: 6, rows: 1}
+      tap_action: {action: navigate, navigation_path: /casaray-v2/camera-pet-feeder}
+
+# ===========================================================================
+# CAMERAS -- overview grid, then one subview per camera for the live stream.
+# picture-entity for the grid (cheap, native); custom:webrtc-camera only on
+# the detail views, where a low-latency stream has no native equivalent.
+# ===========================================================================
   - type: grid
     column_span: 2
     cards:
@@ -7601,96 +8195,6 @@ views:
         details rather than sounding anything. The H200's own siren entity and
         the South and East Wall sirens are currently not reporting.{% endif %}
 
-  - type: grid
-    column_span: 2
-    cards:
-    - type: heading
-      heading: Camera health
-      heading_style: title
-      icon: mdi:cctv
-      visibility:
-      - condition: state
-        entity: input_boolean.chinese_dashboard
-        state_not: 'on'
-    - type: heading
-      heading: 摄像头状态
-      heading_style: title
-      icon: mdi:cctv
-      visibility:
-      - condition: state
-        entity: input_boolean.chinese_dashboard
-        state: 'on'
-    - type: markdown
-      grid_options: {columns: 12, rows: 2}
-      content: >-
-        {% set cn = is_state('input_boolean.chinese_dashboard','on') %}{% set cams = [('Front
-        Door','前门','camera.front_door_live_view'), ('North
-        Wall','北墙','camera.tapo_c425_north_wall_hd_stream_direct'), ('East
-        Wall','东墙','camera.tapo_c420_east_wall_hd_stream_direct'), ('South
-        Wall','南墙','camera.tapo_c420_south_wall_hd_stream_direct'),
-        ('Stockroom','储藏室','camera.tapo_c200_stockroom_hd_stream_direct'), ('Pet
-        Feeder','喂食器','camera.smart_pet_feeder')] -%} {% set ns = namespace(down=[]) -%}
-        {% for n, z, c in cams %}{% if states(c) in ['unavailable','unknown'] %}{%
-        set ns.down = ns.down + [z if cn else n] %}{% endif %}{% endfor -%} {% if ns.down
-        | count %}{% if cn %}**{{ cams | count }} 个摄像头中 {{ ns.down | count }}
-        个离线：**{{ ns.down | join('、') }}。{% else %}**{{ ns.down | count }} of {{
-        cams | count }} cameras offline:** {{ ns.down | join(', ') }}.{% endif %}{% else
-        %}{% if cn %}{{ cams | count }} 个摄像头全部在线。{% else %}All {{ cams | count }}
-        cameras online.{% endif %}{% endif %}
-    - type: tile
-      entity: camera.front_door_live_view
-      name: Front Door
-      grid_options: {columns: 4, rows: 1}
-      tap_action: {action: navigate, navigation_path: /casaray-v2/camera-front-door}
-    - type: tile
-      entity: camera.tapo_c425_north_wall_hd_stream_direct
-      name: North Wall
-      grid_options: {columns: 4, rows: 1}
-      tap_action: {action: navigate, navigation_path: /casaray-v2/camera-north-wall}
-    - type: tile
-      entity: camera.tapo_c420_east_wall_hd_stream_direct
-      name: East Wall
-      grid_options: {columns: 4, rows: 1}
-      tap_action: {action: navigate, navigation_path: /casaray-v2/camera-east-wall}
-      card_mod:
-        style: |
-          ha-card {
-            {% if states(config.entity) in ['unavailable','unknown','none'] %}
-            border-style: dashed;
-            border-color: var(--casaray-grey-border);
-            background: var(--casaray-grey-bg);
-            {% endif %}
-          }
-    - type: tile
-      entity: camera.tapo_c420_south_wall_hd_stream_direct
-      name: South Wall
-      grid_options: {columns: 4, rows: 1}
-      tap_action: {action: navigate, navigation_path: /casaray-v2/camera-south-wall}
-      card_mod:
-        style: |
-          ha-card {
-            {% if states(config.entity) in ['unavailable','unknown','none'] %}
-            border-style: dashed;
-            border-color: var(--casaray-grey-border);
-            background: var(--casaray-grey-bg);
-            {% endif %}
-          }
-    - type: tile
-      entity: camera.tapo_c200_stockroom_hd_stream_direct
-      name: Stockroom
-      grid_options: {columns: 4, rows: 1}
-      tap_action: {action: navigate, navigation_path: /casaray-v2/camera-stockroom}
-    - type: tile
-      entity: camera.smart_pet_feeder
-      name: Pet Feeder
-      grid_options: {columns: 4, rows: 1}
-      tap_action: {action: navigate, navigation_path: /casaray-v2/camera-pet-feeder}
-
-# ===========================================================================
-# CAMERAS -- overview grid, then one subview per camera for the live stream.
-# picture-entity for the grid (cheap, native); custom:webrtc-camera only on
-# the detail views, where a low-latency stream has no native equivalent.
-# ===========================================================================
 - type: sections
   title: Cameras
   path: cameras
@@ -7751,40 +8255,77 @@ views:
   - type: grid
     column_span: 2
     cards:
-    # `rows: auto` on all three, so the band is as tall as its tallest card
-    # and no taller. At rows: 2 the Home button was a mostly empty column the
-    # height of the title, and the subtitle was cut off mid-phrase.
-    - type: button
-      grid_options: {columns: 2, rows: auto}
-      name: Home
-      icon: mdi:home
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
-    # The page title is `##`, not `#`. At `#` it renders around 40px, and
-    # "CAMERAS" needs ~217px of the 162px this card gets on a phone -- so it
-    # broke as "CAMER / AS". `##` fits with room to spare and is still the
-    # largest type on the page.
     - type: markdown
-      grid_options: {columns: 7, rows: auto}
+      grid_options: {columns: 6, rows: auto}
       content: >-
         ## {{ '摄像头' if is_state('input_boolean.chinese_dashboard','on') else
         'Cameras' }}
 
         {{ '点击放大实时画面' if is_state('input_boolean.chinese_dashboard','on')
         else 'Tap a camera for the live view' }}
+    # Time over date, right-aligned, DD/MM/YY -- never %Y. `nowrap` is a
+    # guarantee where a `columns` value is only a bet (DR-012).
     - type: markdown
-      grid_options: {columns: 3, rows: auto}
-      content: >-
-        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
-
+      grid_options: {columns: 6, rows: auto}
+      content: |
+        ## {{ now().strftime('%I:%M %p').lstrip('0').lower() }}
         {{ now().strftime('%d/%m/%y') }}
+      card_mod:
+        style: |
+          ha-card { text-align: right; white-space: nowrap; }
+    # The shared nav rail. Identical on every board and room page so the
+    # dashboard reads as one application; the current page's icon is tinted
+    # amber, which is the render's selected state.
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Rooms
+      icon: mdi:floor-plan
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Security
+      icon: mdi:shield-home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/security}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Energy
+      icon: mdi:lightning-bolt
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Climate
+      icon: mdi:thermometer
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/climate}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Cameras
+      icon: mdi:cctv
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
+      card_mod:
+        style: |
+          ha-card {
+            background: var(--casaray-amber-bg);
+            border-color: var(--casaray-amber-border);
+          }
 
-  # KPI strip, per DESIGN_REFERENCE section 3 ("Cameras") and the content-grid
-  # rule that an overview page opens with 4-5 equal status cards. Same shape as
-  # the Home strip: uppercase micro-label, one large value, a caption, then a
-  # detail row. Every figure is counted from entities this page already reads,
-  # and each card keeps its own "not reporting" branch -- two of the six
-  # cameras are down today and the strip must say so rather than round up.
+
   - type: grid
     column_span: 2
     cards:
@@ -8224,14 +8765,8 @@ views:
   - type: grid
     column_span: 2
     cards:
-    - type: button
-      grid_options: {columns: 2, rows: auto}
-      name: Home
-      icon: mdi:home
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 7, rows: auto}
+      grid_options: {columns: 6, rows: auto}
       content: >-
         ## {{ '家人' if is_state('input_boolean.chinese_dashboard','on') else
         'People' }}
@@ -8244,17 +8779,63 @@ views:
         -%}{% endif %}{% endfor -%} {% if cn %}{{ ns.home }} 人在家 · {{ ns.away }} 人外出{%
         if ns.unk %} · {{ ns.unk }} 人未知{% endif %}{% else %}{{ ns.home }} home · {{
         ns.away }} out{% if ns.unk %} · {{ ns.unk }} unknown{% endif %}{% endif %}
+    # Time over date, right-aligned, DD/MM/YY -- never %Y. `nowrap` is a
+    # guarantee where a `columns` value is only a bet (DR-012).
     - type: markdown
-      grid_options: {columns: 3, rows: auto}
-      content: >-
-        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
-
+      grid_options: {columns: 6, rows: auto}
+      content: |
+        ## {{ now().strftime('%I:%M %p').lstrip('0').lower() }}
         {{ now().strftime('%d/%m/%y') }}
+      card_mod:
+        style: |
+          ha-card { text-align: right; white-space: nowrap; }
+    # The shared nav rail. Identical on every board and room page so the
+    # dashboard reads as one application; the current page's icon is tinted
+    # amber, which is the render's selected state.
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Rooms
+      icon: mdi:floor-plan
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Security
+      icon: mdi:shield-home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/security}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Energy
+      icon: mdi:lightning-bolt
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Climate
+      icon: mdi:thermometer
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/climate}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Cameras
+      icon: mdi:cctv
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
 
-  # KPI strip, per DESIGN_REFERENCE section 2 ("People Mapping"), reduced to
-  # what this instance can actually answer. The mockup's Total People Tracked,
-  # At Home and Away are real; Active Zones and the map are not, because the
-  # only zone entity here is zone.home. Same card shape as the Home strip.
+
   - type: grid
     column_span: 2
     cards:
@@ -8536,24 +9117,68 @@ views:
   - type: grid
     column_span: 2
     cards:
-    - type: button
-      grid_options: {columns: 2, rows: auto}
-      name: Home
-      icon: mdi:home
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 7, rows: auto}
+      grid_options: {columns: 6, rows: auto}
       content: >-
         ## {{ '自动化' if is_state('input_boolean.chinese_dashboard','on') else 'Automations' }}
 
         {{ '家中现有的自动化' if is_state('input_boolean.chinese_dashboard','on') else 'The automations this house has' }}
+    # Time over date, right-aligned, DD/MM/YY -- never %Y. `nowrap` is a
+    # guarantee where a `columns` value is only a bet (DR-012).
     - type: markdown
-      grid_options: {columns: 3, rows: auto}
-      content: >-
-        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
-
+      grid_options: {columns: 6, rows: auto}
+      content: |
+        ## {{ now().strftime('%I:%M %p').lstrip('0').lower() }}
         {{ now().strftime('%d/%m/%y') }}
+      card_mod:
+        style: |
+          ha-card { text-align: right; white-space: nowrap; }
+    # The shared nav rail. Identical on every board and room page so the
+    # dashboard reads as one application; the current page's icon is tinted
+    # amber, which is the render's selected state.
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Rooms
+      icon: mdi:floor-plan
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Security
+      icon: mdi:shield-home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/security}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Energy
+      icon: mdi:lightning-bolt
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Climate
+      icon: mdi:thermometer
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/climate}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Cameras
+      icon: mdi:cctv
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
+
 
   - type: grid
     column_span: 1
@@ -8709,14 +9334,8 @@ views:
   - type: grid
     column_span: 2
     cards:
-    - type: button
-      grid_options: {columns: 2, rows: auto}
-      name: Home
-      icon: mdi:home
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 7, rows: auto}
+      grid_options: {columns: 6, rows: auto}
       content: >-
         ## {{ '娱乐' if is_state('input_boolean.chinese_dashboard','on') else
         'Entertainment' }}
@@ -8730,17 +9349,63 @@ views:
         count }} 台设备中 {{ ns.on }} 台使用中{% if ns.unk %} · {{ ns.unk }} 台无数据{%
         endif %}{% else %}{{ ns.on }} of {{ ms | count }} players active{% if ns.unk %}
         · {{ ns.unk }} not reporting{% endif %}{% endif %}
+    # Time over date, right-aligned, DD/MM/YY -- never %Y. `nowrap` is a
+    # guarantee where a `columns` value is only a bet (DR-012).
     - type: markdown
-      grid_options: {columns: 3, rows: auto}
-      content: >-
-        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
-
+      grid_options: {columns: 6, rows: auto}
+      content: |
+        ## {{ now().strftime('%I:%M %p').lstrip('0').lower() }}
         {{ now().strftime('%d/%m/%y') }}
+      card_mod:
+        style: |
+          ha-card { text-align: right; white-space: nowrap; }
+    # The shared nav rail. Identical on every board and room page so the
+    # dashboard reads as one application; the current page's icon is tinted
+    # amber, which is the render's selected state.
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Rooms
+      icon: mdi:floor-plan
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Security
+      icon: mdi:shield-home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/security}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Energy
+      icon: mdi:lightning-bolt
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Climate
+      icon: mdi:thermometer
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/climate}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Cameras
+      icon: mdi:cctv
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
 
-  # KPI strip, per DESIGN_REFERENCE's content-grid rule. Four screens and one
-  # speaker are integrated; two of those five do not report at all, and the
-  # last card names them rather than letting a "3 playing" headline imply the
-  # house has three sources and nothing more to say.
+
   - type: grid
     column_span: 2
     cards:
@@ -9009,26 +9674,70 @@ views:
   - type: grid
     column_span: 2
     cards:
-    - type: button
-      grid_options: {columns: 2, rows: auto}
-      name: Home
-      icon: mdi:home
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 7, rows: auto}
+      grid_options: {columns: 6, rows: auto}
       content: >-
         ## {{ '系统健康' if is_state('input_boolean.chinese_dashboard','on') else
         'House Health' }}
 
         {{ '系统状态与维护' if is_state('input_boolean.chinese_dashboard','on')
         else 'System status and maintenance' }}
+    # Time over date, right-aligned, DD/MM/YY -- never %Y. `nowrap` is a
+    # guarantee where a `columns` value is only a bet (DR-012).
     - type: markdown
-      grid_options: {columns: 3, rows: auto}
-      content: >-
-        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
-
+      grid_options: {columns: 6, rows: auto}
+      content: |
+        ## {{ now().strftime('%I:%M %p').lstrip('0').lower() }}
         {{ now().strftime('%d/%m/%y') }}
+      card_mod:
+        style: |
+          ha-card { text-align: right; white-space: nowrap; }
+    # The shared nav rail. Identical on every board and room page so the
+    # dashboard reads as one application; the current page's icon is tinted
+    # amber, which is the render's selected state.
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Rooms
+      icon: mdi:floor-plan
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Security
+      icon: mdi:shield-home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/security}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Energy
+      icon: mdi:lightning-bolt
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Climate
+      icon: mdi:thermometer
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/climate}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Cameras
+      icon: mdi:cctv
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
+
 
   - type: grid
     column_span: 2
@@ -9475,30 +10184,71 @@ views:
   - type: grid
     column_span: 2
     cards:
-    - type: button
-      grid_options: {columns: 2, rows: auto}
-      name: Home
-      icon: mdi:home
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 7, rows: auto}
+      grid_options: {columns: 6, rows: auto}
       content: >-
         ## {{ '网络' if is_state('input_boolean.chinese_dashboard','on') else
         'Network' }}
 
         {{ '家庭宽带与 Wi-Fi' if is_state('input_boolean.chinese_dashboard','on')
         else 'Home internet and Wi-Fi' }}
+    # Time over date, right-aligned, DD/MM/YY -- never %Y. `nowrap` is a
+    # guarantee where a `columns` value is only a bet (DR-012).
     - type: markdown
-      grid_options: {columns: 3, rows: auto}
-      content: >-
-        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
-
+      grid_options: {columns: 6, rows: auto}
+      content: |
+        ## {{ now().strftime('%I:%M %p').lstrip('0').lower() }}
         {{ now().strftime('%d/%m/%y') }}
+      card_mod:
+        style: |
+          ha-card { text-align: right; white-space: nowrap; }
+    # The shared nav rail. Identical on every board and room page so the
+    # dashboard reads as one application; the current page's icon is tinted
+    # amber, which is the render's selected state.
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Rooms
+      icon: mdi:floor-plan
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Security
+      icon: mdi:shield-home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/security}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Energy
+      icon: mdi:lightning-bolt
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Climate
+      icon: mdi:thermometer
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/climate}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Cameras
+      icon: mdi:cctv
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
 
-  # Hero. The only tinted card on the page, so internet state reads from
-  # across the room. Green on, red off, grey when the WAN sensor itself is
-  # not reporting -- it never claims online from a state it cannot see.
+
   - type: grid
     column_span: 2
     cards:
@@ -9829,26 +10579,70 @@ views:
   - type: grid
     column_span: 2
     cards:
-    - type: button
-      grid_options: {columns: 2, rows: auto}
-      name: Home
-      icon: mdi:home
-      show_state: false
-      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
     - type: markdown
-      grid_options: {columns: 7, rows: auto}
+      grid_options: {columns: 6, rows: auto}
       content: >-
         ## {{ '通知' if is_state('input_boolean.chinese_dashboard','on') else
         'Alerts' }}
 
         {{ '目前需要注意的事项' if is_state('input_boolean.chinese_dashboard','on')
         else 'What needs attention right now' }}
+    # Time over date, right-aligned, DD/MM/YY -- never %Y. `nowrap` is a
+    # guarantee where a `columns` value is only a bet (DR-012).
     - type: markdown
-      grid_options: {columns: 3, rows: auto}
-      content: >-
-        ## {{ now().strftime('%I:%M %p').lstrip('0') }}
-
+      grid_options: {columns: 6, rows: auto}
+      content: |
+        ## {{ now().strftime('%I:%M %p').lstrip('0').lower() }}
         {{ now().strftime('%d/%m/%y') }}
+      card_mod:
+        style: |
+          ha-card { text-align: right; white-space: nowrap; }
+    # The shared nav rail. Identical on every board and room page so the
+    # dashboard reads as one application; the current page's icon is tinted
+    # amber, which is the render's selected state.
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Home
+      icon: mdi:home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/home}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Rooms
+      icon: mdi:floor-plan
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/rooms}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Security
+      icon: mdi:shield-home
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/security}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Energy
+      icon: mdi:lightning-bolt
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Climate
+      icon: mdi:thermometer
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/climate}
+    - type: button
+      grid_options: {columns: 2, rows: 1}
+      name: Cameras
+      icon: mdi:cctv
+      show_name: false
+      show_state: false
+      tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
+
 
   - type: grid
     column_span: 2
