@@ -1338,65 +1338,228 @@ views:
             border-color: var(--casaray-border-strong);
           }
 
+  # -----------------------------------------------------------------------
+  # The room index. These were `button` cards with `show_state: true`, which
+  # renders a large square carrying the state and nothing else. Home's own
+  # Rooms section uses `tile` with `state_content: [state, last_changed]`,
+  # and this is the same pattern -- same entities, same icons, same
+  # destinations -- so the two ways into a room agree with each other and
+  # both say how long the room has been that way.
+  #
+  # Backyard is the one entry whose destination is not its own page: no
+  # Backyard view exists, and the door sensor that represents it belongs to
+  # Security. Showing that sensor's own state on the tile is what makes the
+  # jump make sense when it happens.
+  # -----------------------------------------------------------------------
   - type: grid
     column_span: 2
     cards:
-    - type: button
-      grid_options: {columns: 6, rows: 2}
+    - type: tile
+      grid_options: {columns: 6, rows: auto}
+      entity: light.living_room
       name: Living Room
       icon: mdi:sofa
-      entity: light.living_room
-      show_state: true
+      state_content: [state, last_changed]
+      vertical: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/living-room}
-    - type: button
-      grid_options: {columns: 6, rows: 2}
+      icon_tap_action: {action: none}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states('light.living_room') in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
+            {% endif %}
+          }
+    - type: tile
+      grid_options: {columns: 6, rows: auto}
+      entity: binary_sensor.k_motion_sensor_motion
       name: Kitchen
       icon: mdi:silverware-fork-knife
-      entity: binary_sensor.k_motion_sensor_motion
-      show_state: true
+      state_content: [state, last_changed]
+      vertical: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/kitchen}
-    - type: button
-      grid_options: {columns: 6, rows: 2}
+      icon_tap_action: {action: none}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states('binary_sensor.k_motion_sensor_motion') in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
+            {% endif %}
+          }
+    - type: tile
+      grid_options: {columns: 6, rows: auto}
+      entity: light.dining
       name: Dining
       icon: mdi:table-chair
-      entity: light.dining
-      show_state: true
+      state_content: [state, last_changed]
+      vertical: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/dining}
-    - type: button
-      grid_options: {columns: 6, rows: 2}
+      icon_tap_action: {action: none}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states('light.dining') in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
+            {% endif %}
+          }
+    - type: tile
+      grid_options: {columns: 6, rows: auto}
+      entity: climate.bedroom_parents_room_ac
       name: Parents Room
       icon: mdi:bed-king
-      entity: climate.bedroom_parents_room_ac
-      show_state: true
+      state_content: [state, last_changed]
+      vertical: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/parents-room}
-    - type: button
-      grid_options: {columns: 6, rows: 2}
+      icon_tap_action: {action: none}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states('climate.bedroom_parents_room_ac') in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
+            {% endif %}
+          }
+    - type: tile
+      grid_options: {columns: 6, rows: auto}
+      entity: light.bedroom_bedroom
       name: Ray Bedroom
       icon: mdi:bed
-      entity: light.bedroom_bedroom
-      show_state: true
+      state_content: [state, last_changed]
+      vertical: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/ray-bedroom}
-    - type: button
-      grid_options: {columns: 6, rows: 2}
+      icon_tap_action: {action: none}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states('light.bedroom_bedroom') in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
+            {% endif %}
+          }
+    - type: tile
+      grid_options: {columns: 6, rows: auto}
+      entity: switch.g_monitor_freezer_p110m
       name: Garage
       icon: mdi:garage
-      entity: switch.g_monitor_freezer_p110m
-      show_state: true
+      state_content: [state, last_changed]
+      vertical: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/garage}
-    - type: button
-      grid_options: {columns: 6, rows: 2}
+      icon_tap_action: {action: none}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states('switch.g_monitor_freezer_p110m') in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
+            {% endif %}
+          }
+    - type: tile
+      grid_options: {columns: 6, rows: auto}
+      entity: switch.g_printer_p100
       name: Guest Room
       icon: mdi:bed-empty
-      entity: switch.g_printer_p100
-      show_state: true
+      state_content: [state, last_changed]
+      vertical: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/guest-room}
-    - type: button
-      grid_options: {columns: 6, rows: 2}
+      icon_tap_action: {action: none}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states('switch.g_printer_p100') in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
+            {% endif %}
+          }
+    - type: tile
+      grid_options: {columns: 6, rows: auto}
+      entity: binary_sensor.b_contact_sensor_door
       name: Backyard
       icon: mdi:tree
-      entity: binary_sensor.b_contact_sensor_door
-      show_state: true
+      state_content: [state, last_changed]
+      vertical: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/security}
+      icon_tap_action: {action: none}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states('binary_sensor.b_contact_sensor_door') in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
+            {% endif %}
+          }
+
+  # -----------------------------------------------------------------------
+  # Room conditions. The tiles above each show ONE representative entity --
+  # whether the light is on, whether the plug is drawing. This says what the
+  # rooms are actually like, which is a different question, and it is the
+  # only place on the dashboard that answers it for every room at once.
+  #
+  # Three of the seven rooms have no temperature sensor at all. Those say so
+  # rather than borrowing a neighbour's reading.
+  # -----------------------------------------------------------------------
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Room conditions
+      heading_style: title
+      icon: mdi:home-thermometer-outline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 各房间状况
+      heading_style: title
+      icon: mdi:home-thermometer-outline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: markdown
+      grid_options: {columns: 12, rows: auto}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set nd = '无数据' if cn else 'no data' -%}
+        {#- (name_en, name_zh, temperature sensor or none, motion sensor or none).
+            A room with no sensor of a given kind gets `none`, and the row omits that
+            reading instead of substituting the nearest one. -#}
+        {%- set rooms = [('Living Room','客厅','sensor.living_room_living_hue_hue_sensor_temperature','binary_sensor.living_room_living_hue_hue_sensor_motion'),
+                         ('Kitchen','厨房',none,'binary_sensor.k_motion_sensor_motion'),
+                         ('Dining','餐厅','sensor.living_room_living_room_temperature','binary_sensor.sensor_group_motion'),
+                         ('Parents Room','父母房','sensor.bedroom_motion_sensor_temperature','binary_sensor.bedroom_motion_sensor_motion'),
+                         ('Ray Bedroom','Ray 卧室',none,none),
+                         ('Garage','车库',none,none),
+                         ('Guest Room','客房',none,none)] -%}
+        {%- for en, zh, t, m in rooms -%}
+        {%- set parts = [] -%}
+        {%- if t -%}
+        {%- set v = states(t) | float(none) -%}
+        {%- set parts = parts + [((v | round(1)) ~ '°') if v is not none else (('温度' ~ nd) if cn else ('temperature ' ~ nd))] -%}
+        {%- endif -%}
+        {%- if m -%}
+        {%- set s = states(m) -%}
+        {%- if s == 'on' -%}{% set parts = parts + ['有动作' if cn else 'movement'] %}
+        {%- elif s == 'off' -%}{% set parts = parts + ['安静' if cn else 'quiet'] %}
+        {%- else -%}{% set parts = parts + [('动作' ~ nd) if cn else ('movement ' ~ nd)] %}{% endif -%}
+        {%- endif -%}
+        {%- if not parts -%}
+        {%- set parts = ['本房间没有温度或动作传感器' if cn else 'no temperature or movement sensor'] -%}
+        {%- endif -%}
+        - **{{ zh if cn else en }}** — {{ parts | join('、') if cn else parts | join(' · ') }}
+        {% endfor -%}
+
 
 # ===========================================================================
 # LIVING ROOM. Media, lighting and the front door live here.
