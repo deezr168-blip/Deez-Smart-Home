@@ -194,6 +194,28 @@
       "automated_by": "scripts/build_render_fixture.py",
       "notes": "every such set was different, so measurements were not comparable",
       "automated_on": "2026-09-19"
+    },
+    {
+      "name": "pick the next free tracking id by eye",
+      "signature": "grep one document for the prefix ; guess the highest number ; write the row",
+      "steps": [
+        "grep one document for the prefix",
+        "guess the highest number",
+        "write the row"
+      ],
+      "files": [],
+      "occurrences": 1,
+      "first_seen": "2026-09-19",
+      "last_seen": "2026-09-19",
+      "minutes": 2,
+      "failures": 1,
+      "deterministic": true,
+      "data_processing": false,
+      "schedule": null,
+      "gate_on": null,
+      "automated_by": "scripts/next_id.py",
+      "notes": "collided twice on 2026-09-19",
+      "automated_on": "2026-09-19"
     }
   ]
 }

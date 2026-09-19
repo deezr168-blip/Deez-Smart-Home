@@ -186,6 +186,10 @@ was *not* verified — for this repository that always includes anything visual.
   dark pass calling itself live, and every width taken that way described an
   instance where nothing was answering. `ha_validate.sh` fails the build if
   the fixture has drifted from the export.
+- `scripts/next_id.py` — the next free `CR-`/`UI-`/`DR-` number, scanned
+  across every tracking document. Use it before writing a queue or issue row;
+  numbering by eye put two unrelated rows under `CR-318` and `CR-319` on
+  2026-09-19, and one of a colliding pair silently never gets checked.
 - `scripts/preserve_check.py` — structural diff against any git ref: views,
   cards, entities, navigation targets, service calls, with the added and
   removed items named.

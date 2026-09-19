@@ -86,8 +86,10 @@ Scored HIGH and deliberately not built. See `scoring.md`.
 ## 8. Reporting and tracking
 
 Rows in `LIVE_VERIFICATION_QUEUE.md`, `DR-` entries in
-`DASHBOARD_ISSUES.md`, rules in `CLAUDE.md`. Consistently repeated, and
-deliberately **not** automated: the value is in the judgement about what is
+`DASHBOARD_ISSUES.md`, rules in `CLAUDE.md`. One mechanical part is covered:
+`scripts/next_id.py` hands out the next free number, because choosing one by
+eye means reading every document at once and on 2026-09-19 it did not. The
+rest is deliberately **not** automated: the value is in the judgement about what is
 worth recording and how to say it, and a generated row would be filler. If
 this ever becomes mechanical, that is a sign the entries have stopped being
 worth writing.
