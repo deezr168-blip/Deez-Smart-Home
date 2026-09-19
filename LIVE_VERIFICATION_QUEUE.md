@@ -529,12 +529,12 @@ out to be a defect in the renderer rather than in a card.
 
 | ID | Page | What changed | What to check live | Expected result | Commit | P | Result |
 |---|---|---|---|---|---|---|---|
-| CR-318 | network | Cloud-linked devices printed `0/0` when no device answered. The denominator was already "what answered", which is right; nothing being 0 of is not | Network → the Cloud-linked devices card, with the Tapo cloud sensors healthy, then with the integration reloading | Healthy: `9/10 · 4 not reporting` (a real fraction). Nothing answering: `No data · 14 not reporting`, never `0/0` | `2d42e1a` | P2 | PENDING |
-| CR-319 | house-health | The update card said how many devices were silent but not how many were fine, so `7 not reporting` carried no scale. The healthy count is appended, and only when it is non-zero | House health → the update status card | `7 devices are not reporting an update state; 67 are up to date.` With a pending update: `2 updates available: <names>.` first. With everything dark: the count of silent devices ALONE, never "0 are up to date" | `2d42e1a` | P2 | PENDING |
+| CR-322 | network | Cloud-linked devices printed `0/0` when no device answered. The denominator was already "what answered", which is right; nothing being 0 of is not | Network → the Cloud-linked devices card, with the Tapo cloud sensors healthy, then with the integration reloading | Healthy: `9/10 · 4 not reporting` (a real fraction). Nothing answering: `No data · 14 not reporting`, never `0/0` | `2d42e1a` | P2 | PENDING |
+| CR-323 | house-health | The update card said how many devices were silent but not how many were fine, so `7 not reporting` carried no scale. The healthy count is appended, and only when it is non-zero | House health → the update status card | `7 devices are not reporting an update state; 67 are up to date.` With a pending update: `2 updates available: <names>.` first. With everything dark: the count of silent devices ALONE, never "0 are up to date" | `2d42e1a` | P2 | PENDING |
 
 Neither is visible on a healthy instance in the way that matters — both
 concern what the card says when a sensor drops out — so both are **[guard]**
-checks. To see CR-318's, reload the Tapo integration and look before it
+checks. To see CR-322's, reload the Tapo integration and look before it
 finishes.
 
 ## Tooling — live screenshot capture, 2026-09-19
