@@ -49,9 +49,13 @@ rendered output to inspected source, a structural diff to a careful read.
    ~12k lines and carries comments that must survive.
 
 5. **Render what you changed.** If the change touches a template, run
-   `scripts/render_cards.py` across a live-shaped state and a fully dark one,
+   `scripts/render_cards.py` across a populated state and a fully dark one,
    in both languages, and *read the output*. This catches the one class of bug
    nothing else here can: a card asserting something it did not measure.
+   The populated pass comes from `docs/live/fixture_states.json` by default
+   and is labelled `fixture`, not `live` — real availability, invented
+   values. If a pass is labelled `empty`, the fixture was missing or
+   `--no-fixture` was passed, and that run measured a dark instance twice.
 
 6. **Run the gates.** `bash scripts/ha_validate.sh`. Exit 0 or do not push. If
    it fails, fix or revert — never weaken a gate to get past it.
@@ -173,9 +177,15 @@ was *not* verified — for this repository that always includes anything visual.
 ## Bundled scripts
 
 - `scripts/render_cards.py` — render a view's markdown cards against a
-  live-shaped state set and a fully dark one, in both languages, with an
+  populated state set and a fully dark one, in both languages, with an
   optional width measurement. Six ad-hoc variants of this were written in one
   session before it was bundled; use it rather than writing a seventh.
+  Its populated pass defaults to `docs/live/fixture_states.json`, built by
+  `scripts/build_render_fixture.py` from the entity export. Before that
+  default existed the pass ran with an empty state map, so it was a second
+  dark pass calling itself live, and every width taken that way described an
+  instance where nothing was answering. `ha_validate.sh` fails the build if
+  the fixture has drifted from the export.
 - `scripts/preserve_check.py` — structural diff against any git ref: views,
   cards, entities, navigation targets, service calls, with the added and
   removed items named.

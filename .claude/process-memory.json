@@ -170,6 +170,30 @@
       "automated_by": "scripts/casaray_capture.sh",
       "notes": "blocks every visual check; cannot run without a human",
       "automated_on": "2026-09-19"
+    },
+    {
+      "name": "hand-build a state set to render a card against",
+      "signature": "list the entities a card references ; guess a plausible value for each ; write a throwaway JSON ; render and measure ; throw the JSON away",
+      "steps": [
+        "list the entities a card references",
+        "guess a plausible value for each",
+        "write a throwaway JSON",
+        "render and measure",
+        "throw the JSON away"
+      ],
+      "files": [],
+      "occurrences": 3,
+      "first_seen": "2026-09-19",
+      "last_seen": "2026-09-19",
+      "minutes": 9,
+      "failures": 3,
+      "deterministic": true,
+      "data_processing": false,
+      "schedule": null,
+      "gate_on": null,
+      "automated_by": "scripts/build_render_fixture.py",
+      "notes": "every such set was different, so measurements were not comparable",
+      "automated_on": "2026-09-19"
     }
   ]
 }

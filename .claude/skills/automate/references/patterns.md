@@ -41,6 +41,9 @@ card asserting something it did not measure.
 
 - `.claude/skills/improve-system/scripts/render_cards.py` — including
   `--width` against the observed wrap limit.
+- `scripts/build_render_fixture.py` — the populated half of that, built from
+  the export's availability column. Real availability, invented values; the
+  header says why that distinction matters.
 
 ## 4. Change verification
 

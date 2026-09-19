@@ -52,6 +52,18 @@ else
 fi
 rm -f "$recon"
 
+# The render fixture is derived from that same export, and a fixture that has
+# drifted from it is worse than none: it reports an entity as answering that
+# the export says is dark, and every width and truthfulness measurement taken
+# against it inherits the lie.
+if [ -f scripts/build_render_fixture.py ] && [ -f docs/live/states_export_2026-09-05.txt ]; then
+  if python3 scripts/build_render_fixture.py --check >/dev/null 2>&1; then
+    pass "render fixture matches the export"
+  else
+    fail "docs/live/fixture_states.json is stale — run scripts/build_render_fixture.py"
+  fi
+fi
+
 sect "Protected files must not be modified autonomously"
 protected='(^|/)(secrets\.ya?ml|configuration\.yaml|automations\.yaml|scripts\.yaml|scenes\.yaml|known_devices\.yaml|ip_bans\.yaml|auth_provider\..*)$|^\.storage/|(^|/)\.env'
 touched=$(git diff --cached --name-only; git diff --name-only)
