@@ -147,7 +147,8 @@ def value_for(entity_id: str) -> str:
 def build() -> dict:
     if not EXPORT.exists():
         sys.exit(f"export not found: {EXPORT}")
-    out = dict(META)
+    out = {"_meta": dict(META["_meta"])}
+    names: dict = {}
     rows = 0
     for line in EXPORT.read_text(encoding="utf-8").splitlines():
         if not line.strip():
@@ -155,7 +156,9 @@ def build() -> dict:
         parts = line.split("|")
         if len(parts) < 4:
             continue
-        entity_id, availability = parts[0].strip(), parts[3].strip()
+        entity_id, friendly, availability = (
+            parts[0].strip(), parts[1].strip(), parts[3].strip())
+        names[entity_id] = friendly
         # Availability is the one thing here that is real, so it is taken
         # verbatim rather than guessed at.
         if availability in ("unavailable", "unknown"):
@@ -164,6 +167,11 @@ def build() -> dict:
             out[entity_id] = value_for(entity_id)
         rows += 1
     out["_meta"]["entities"] = rows
+    # Friendly names, so a template that iterates a whole domain
+    # (`states.update | map(attribute='name')`) renders the way it will on the
+    # instance instead of against an empty domain. These come from the
+    # export's second column and are as real as the availability column.
+    out["_meta"]["names"] = names
     return out
 
 

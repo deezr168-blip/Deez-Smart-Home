@@ -105,18 +105,33 @@ def entities_in(template: str) -> set[str]:
     }
 
 
-def build_context(states: dict, cn: bool, now: _dt.datetime, attrs: dict):
+def build_context(states: dict, cn: bool, now: _dt.datetime, attrs: dict,
+                  names: dict | None = None):
     """A Home Assistant-shaped template context.
 
     `states` is callable AND carries domain attributes, because templates use
     both `states('sensor.x')` and `states.sensor['x'].last_changed`.
+
+    A domain is also ITERABLE, over its state objects, the way it is in Home
+    Assistant. That matters more than it looks: `states.update | list` is how
+    the House health update card counts, and against an empty domain it
+    rendered "All 0 update entities are up to date" -- a reassurance built on
+    nothing, in a tool whose job is to catch exactly that.
     """
     st = dict(states)
     st[TOGGLE] = "on" if cn else "off"
+    nm = dict(names or {})
 
     class _Obj:
-        def __init__(self, value):
+        def __init__(self, entity_id, value):
+            self.entity_id = entity_id
+            self.object_id = entity_id.split(".", 1)[-1]
+            self.domain = entity_id.split(".", 1)[0]
             self.state = value
+            self.name = nm.get(entity_id, self.object_id.replace("_", " ").title())
+            self.attributes = {
+                k.split(".", 2)[-1]: v for k, v in attrs.items()
+                if k.startswith(entity_id + ".")}
             # Far enough back to exercise the "N minutes ago" branches.
             self.last_changed = now - _dt.timedelta(minutes=22)
             self.last_updated = self.last_changed
@@ -126,12 +141,24 @@ def build_context(states: dict, cn: bool, now: _dt.datetime, attrs: dict):
         def __init__(self, name):
             super().__init__()
             self.name = name
+            prefix = name + "."
+            for eid in st:
+                if eid.startswith(prefix):
+                    dict.__setitem__(self, eid[len(prefix):], eid)
 
         def __getitem__(self, key):
-            return _Obj(st.get(f"{self.name}.{key}", "unknown"))
+            return _Obj(f"{self.name}.{key}",
+                        st.get(f"{self.name}.{key}", "unknown"))
 
         def __getattr__(self, key):
             return self[key]
+
+        def __iter__(self):
+            # Home Assistant iterates a domain over its STATE OBJECTS, not its
+            # keys. A dict would yield object ids and every `selectattr` on the
+            # result would silently match nothing.
+            for key in list(dict.keys(self)):
+                yield self[key]
 
     def states_fn(entity=None):
         return st.get(entity, "unknown")
@@ -225,7 +252,10 @@ def main() -> int:
         live = json.load(open(FIXTURE, encoding="utf-8"))
         case_label = "fixture"
     # `_meta` and anything else underscored documents the file; it is not an
-    # entity and must not be darkened or looked up as one.
+    # entity and must not be darkened or looked up as one. Its `names` map is
+    # kept, because a domain-iterating template asks each state object for its
+    # friendly name.
+    names = (live.get("_meta") or {}).get("names") or {}
     live = {k: v for k, v in live.items() if not k.startswith("_")}
     attrs = json.load(open(args.attrs)) if args.attrs else {}
     env = make_env()
@@ -268,7 +298,8 @@ def main() -> int:
                     tag = f"{case_name}/{'CN' if cn else 'EN'}"
                     try:
                         out = env.from_string(card["content"]).render(
-                            **build_context(states, cn, now, case_attrs)).strip()
+                            **build_context(states, cn, now, case_attrs,
+                                            names)).strip()
                     except Exception as exc:
                         print(f"  {tag:10s} RENDER FAILED: {exc}")
                         failed = True
