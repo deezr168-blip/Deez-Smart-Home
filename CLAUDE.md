@@ -167,8 +167,20 @@ goes unavailable and a section never loses its label.
 - Never let a card assert a reassuring state it cannot see. "Closed",
   "Clear", "Normal", "Up to date" all need a third branch. This also rules
   out a *summary sensor* whose inputs are down: `sensor.open_doors_count`
-  reads `0` while all three contact sensors are `unavailable`, so it is a
-  sentinel wearing a number's clothes and is deliberately on no board.
+  reads `0` when the contact sensors are `unavailable`, so it is a sentinel
+  wearing a number's clothes and is deliberately on no board. (The three
+  contact sensors were all dark when the 05/09 export was taken and were
+  reporting again on 19/09 — the sensor is no less dangerous for that. It
+  still cannot tell you the difference between "no doors open" and "no doors
+  answering", which is the whole objection.)
+- **The export's availability column is a snapshot, and it goes stale.**
+  `docs/live/states_export_2026-09-05.txt` is authoritative for which entity
+  IDs *exist* and what they are called. It is NOT authoritative for what is
+  answering today: by 19/09 the three contact sensors, both Tapo C420 camera
+  streams and the South Wall privacy switch had all come back while the
+  export still called them `unavailable`. Check the live instance before
+  writing a card around a device being dead — and before concluding from
+  `unavailable` that an ID is the wrong one of a pair.
 - A `markdown` card must not start with four or more spaces of output. A
   `{% set %}` preamble emits the spaces between its tags, and four of them
   make CommonMark render the whole card as a grey code block. End preamble
