@@ -495,6 +495,24 @@ I took without asking:
 
 Say which and it is a small change either way.
 
+## Tooling — live screenshot capture, 2026-09-19
+
+`scripts/casaray_capture.sh` writes a deterministic PNG of a rendered CasaRay
+view into `artifacts/screenshots/`, where it is committed and read back here.
+It is the first thing in this project that lets a visual check run without Ray
+photographing the wall iPad.
+
+Every path is exercised against a local stand-in — see
+`CASARAY_VISUAL_WORKFLOW.md`. What a stand-in cannot prove is that it works
+against a real Home Assistant, because this environment has no route to one.
+These three rows are that proof, and they are one command each.
+
+| ID | What changed | What to check live | Expected result | Commit | P | Result |
+|---|---|---|---|---|---|---|
+| CAP-001 | Capture script added | On any LAN machine with Chromium: `sh scripts/casaray_capture.sh --url http://<ha-host>:8123 --check` | Prints `reachable : yes` and `dom probe : dashboard`. If it says `login`, that is the expected answer on a secured instance and CAP-002 covers it | — | P1 | PENDING |
+| CAP-002 | Token path via Playwright | Only if CAP-001 printed `login`: create a long-lived token (profile → Security), `export CASARAY_HA_TOKEN=...`, `pip install playwright && playwright install chromium`, re-run `--check` | `playwright : python`, `dom probe : login`, then `method : playwright-python` — the script proceeds instead of refusing. **Do not pass the token as an argument**; it would land in `ps` and shell history | — | P1 | PENDING |
+| CAP-003 | First real capture | `sh scripts/casaray_capture.sh --url http://<ha-host>:8123 --label first home`, then commit `artifacts/screenshots/` | A PNG of the CasaRay **Home** view, not the login form and not a blank page. If the page is half-drawn, the settle time is too short — re-run with `--wait 8000` and say so | — | P1 | PENDING |
+
 ## CasaRay — theme, background and glass rebuild, 2026-09-15
 
 The dashboard did not look like the renders because of what was underneath it:

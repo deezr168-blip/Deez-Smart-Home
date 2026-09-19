@@ -146,6 +146,30 @@
       "gate_on": null,
       "automated_by": "scripts/audit_duplicate_entities.py + scripts/reconcile_entities.py",
       "notes": ""
+    },
+    {
+      "name": "obtain a screenshot of a live CasaRay view",
+      "signature": "ask the owner to photograph the wall iPad ; wait for the image to be pasted into the conversation ; read the image ; guess the viewport the photo was taken at ; compare against docs/mockups by eye",
+      "steps": [
+        "ask the owner to photograph the wall iPad",
+        "wait for the image to be pasted into the conversation",
+        "read the image",
+        "guess the viewport the photo was taken at",
+        "compare against docs/mockups by eye"
+      ],
+      "files": [],
+      "occurrences": 2,
+      "first_seen": "2026-09-19",
+      "last_seen": "2026-09-19",
+      "minutes": 12,
+      "failures": 0,
+      "deterministic": true,
+      "data_processing": false,
+      "schedule": null,
+      "gate_on": null,
+      "automated_by": "scripts/casaray_capture.sh",
+      "notes": "blocks every visual check; cannot run without a human",
+      "automated_on": "2026-09-19"
     }
   ]
 }

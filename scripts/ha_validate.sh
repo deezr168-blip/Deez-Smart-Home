@@ -103,14 +103,22 @@ bins=""
 for f in "${files[@]:-}"; do
   [ -f "$f" ] || continue
   [ -s "$f" ] || continue          # empty files (.gitkeep) are not binary
-  # docs/mockups/ holds the owner-supplied design renders. They are images by
-  # nature and are the reference the dashboard is built against, so they are
-  # the one place a binary is expected. Everything else still fails: the check
-  # exists to stop a stray screenshot, export or backup being committed.
-  case "$f" in docs/mockups/*.png|./docs/mockups/*.png) continue ;; esac
+  # Two places are allowed to hold a binary, and both are images that exist to
+  # be looked at:
+  #   docs/mockups/        owner-supplied design renders — the reference the
+  #                        dashboard is built against.
+  #   artifacts/screenshots/  captures of the LIVE dashboard from
+  #                        scripts/casaray_capture.sh, which are how a rendered
+  #                        page is compared against those renders at all.
+  # Everything else still fails: the check exists to stop a stray export,
+  # backup or database being committed.
+  case "$f" in
+    docs/mockups/*.png|./docs/mockups/*.png) continue ;;
+    artifacts/screenshots/*.png|./artifacts/screenshots/*.png) continue ;;
+  esac
   grep -qI . "$f" 2>/dev/null || bins="$bins $f"
 done
-[ -n "$bins" ] && fail "unexpected binary file(s):$bins" || pass "no unexpected binaries (docs/mockups/*.png excepted)"
+[ -n "$bins" ] && fail "unexpected binary file(s):$bins" || pass "no unexpected binaries (docs/mockups, artifacts/screenshots excepted)"
 
 sect "Home Assistant configuration validation"
 if command -v hass >/dev/null 2>&1; then
