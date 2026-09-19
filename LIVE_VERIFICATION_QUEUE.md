@@ -389,6 +389,61 @@ declared; they cannot prove the pill renders as a pill rather than a circle at
 the width the iPad actually resolves. `DR-012` is exactly that failure, and it
 is why every strip is ONE full-width card rather than several narrow ones.
 
+## Entity audit against the live instance, 2026-09-19
+
+The first audit run with a live Home Assistant connection rather than the
+export alone. It found no defect on CasaRay, which is itself the result worth
+recording — and it found that the premise several decisions rested on has
+expired.
+
+**The export's availability column is two weeks stale.** Confirmed live today:
+
+| Entity | 05/09 export | 19/09 live |
+|---|---|---|
+| `binary_sensor.f_contact_sensor_door` | unavailable | **on** (front door open) |
+| `binary_sensor.m_contact_sensor_door` | unavailable | **on** |
+| `binary_sensor.b_contact_sensor_door` | unavailable | **off** |
+| `sensor.b_contact_sensor_signal_level` | unavailable | **1** |
+| `camera.tapo_c420_south_wall_hd_stream_direct` | unavailable | **idle** |
+| `camera.tapo_c420_east_wall_hd_stream_direct` | unavailable | **idle** |
+| `switch.tapo_c420_south_wall_privacy` | unavailable | **off** |
+
+The door sensors matter most: CasaRay's Security and Home boards were written
+defensively around them being dark, and the defensive branches mean the cards
+now simply show real door states with no change needed. That is the three-branch
+guard rule earning its keep rather than a fix being required.
+
+| ID | Page | What to check live | Expected result | Commit | P | Result |
+|---|---|---|---|---|---|---|
+| CR-318 | security, home | The Doors chip and Home's door summary now that the contact sensors report | Real states, not "No data" — and an open door should read amber, not grey | — | P1 | PENDING |
+| CR-319 | — | `scripts/audit_duplicate_entities.py` — 27 friendly names carry two entity IDs on this instance | Re-run it whenever a fresh export lands; it exits non-zero if a dashboard wires up the wrong twin | — | P2 | PENDING |
+| CR-320 | — | **Needs Developer Tools.** Seven duplicate pairs where the export says one twin is live and one is dead. CasaRay uses the live one in every case, but nobody has confirmed which is which from the instance itself | For each pair below, look up both IDs and confirm the one CasaRay uses is the one that answers | — | P2 | **NEEDS THE OWNER** |
+| CR-321 | legacy | `dashboards/deez_smart_home.yaml` references `media_player.55_qled_4k_ai`, which the export marks unavailable; CasaRay uses `media_player.q70f8036` for the same television | Not fixed — the legacy dashboard is the rollback baseline and off-limits without an instruction. Recorded so it is a known difference, not a surprise | — | P3 | **OWNER DECISION** |
+
+### CR-320 — the seven pairs
+
+`switch.g_printer_p100` / `…guest_room_g_printer_p100` ·
+`switch.k_bot_p100` / `…kitchen_k_bot_p100` ·
+`switch.k_coffee_p100` / `…kitchen_k_coffee_p100` ·
+`switch.k_top_p100` / `…kitchen_k_top_p100` ·
+`binary_sensor.k_motion_sensor_motion` / `…kitchen_k_motion_sensor_motion` ·
+`light.bedroom_nightlight` / `light.master_bedroom_nightlight` ·
+`sensor.tapo_c420_south_wall_battery` / `…_battery_2`
+
+CasaRay uses the first of each pair. The export agrees in every case, and for
+the Backyard contact sensor there is independent live evidence — its signal
+level and cloud-connection entities both use the non-prefixed family and both
+answer. The area-prefixed and `_2` forms look like re-added orphans. That is
+a pattern, not a proof, which is why it is a row here rather than an entry in
+`reconcile_entities.py`'s STALE map: a wrong entry there fails the build on a
+working entity.
+
+**Four more pairs are genuinely inconclusive** — both twins were dark when the
+export was taken, so it says nothing about which is real: the three contact
+sensor doors, and the two Deez Camera entities. The contact sensors have since
+come back, which is exactly why "both unavailable" must not be read as "one of
+these is stale".
+
 ## CasaRay — live render correction, 2026-09-19
 
 The first pass driven by photographs of the actual wall iPad rather than by
