@@ -12735,12 +12735,18 @@ views:
         {% set pending = ups | selectattr('state','eq','on') | list -%}
         {% set quiet = ups | rejectattr('state','in',['on','off']) | list -%}
         {% set np = pending | count %}{% set nq = quiet | count -%}
+        {#- The healthy count, so "7 not reporting" carries its scale. It
+        is only ever printed when it is non-zero: "0 are up to date" would be
+        a reassurance about nothing. -#}
+        {% set okc = (ups | count) - np - nq -%}
         {% if np %}{% if cn %}**{{ np }} 项更新待安装：**{{ pending |
         map(attribute='name') | join('、') }}。{% else %}**{{ np }} update{{ ''
         if np == 1 else 's' }} available:** {{ pending | map(attribute='name') |
         join(', ') }}.{% endif %} {% endif %}{% if nq %}{% if cn %}{{ nq }}
-        个设备的更新状态无数据。{% else %}{{ nq }} device{{ '' if nq == 1 else 's' }} {{
-        'is' if nq == 1 else 'are' }} not reporting an update state.{% endif %}
+        个设备的更新状态无数据{% if okc %}；{{ okc }} 个为最新{% endif %}。{% else %}{{ nq }}
+        device{{ '' if nq == 1 else 's' }} {{ 'is' if nq == 1 else 'are' }} not
+        reporting an update state{% if okc %}; {{ okc }} {{ 'is' if okc == 1
+        else 'are' }} up to date{% endif %}.{% endif %}
         {% endif %}{% if not np and not nq %}{% if cn %}{{ ups | count }}
         个更新实体全部为最新。{% else %}All {{ ups | count }} update entities are up to
         date.{% endif %}{% endif %}
@@ -13157,7 +13163,10 @@ views:
                         'binary_sensor.b_contact_sensor_cloud_connection','binary_sensor.network_tp_linkhub_h100_cloud_connection'] -%}
         {%- set ns = namespace(up=0, down=0, quiet=0) -%}
         {%- for c in cloud %}{% set s = states(c) %}{% if s == 'on' %}{% set ns.up = ns.up + 1 %}{% elif s == 'off' %}{% set ns.down = ns.down + 1 %}{% else %}{% set ns.quiet = ns.quiet + 1 %}{% endif %}{% endfor -%}
-        {{ '云端连接' if cn else 'Cloud-linked devices' }} **{{ ns.up }}/{{ ns.up + ns.down }}**{% if ns.quiet %} · {{ ns.quiet }} {{ '个无数据' if cn else 'not reporting' }}{% endif %}
+        {#- A denominator of what ANSWERED is right, but `0/0` is not a
+            reading -- when nothing answered there is nothing to be 0 of. -#}
+        {%- set known = ns.up + ns.down -%}
+        {{ '云端连接' if cn else 'Cloud-linked devices' }} **{{ ('无数据' if cn else 'No data') if not known else ('%d/%d' % (ns.up, known)) }}**{% if ns.quiet %} · {{ ns.quiet }} {{ '个无数据' if cn else 'not reporting' }}{% endif %}
 
   - type: grid
     column_span: 1
