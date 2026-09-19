@@ -416,7 +416,7 @@ guard rule earning its keep rather than a fix being required.
 | ID | Page | What to check live | Expected result | Commit | P | Result |
 |---|---|---|---|---|---|---|
 | CR-318 | security, home | The Doors chip and Home's door summary now that the contact sensors report | Real states, not "No data" — and an open door should read amber, not grey | — | P1 | PENDING |
-| CR-319 | — | `scripts/audit_duplicate_entities.py` — 27 friendly names carry two entity IDs on this instance | Re-run it whenever a fresh export lands; it exits non-zero if a dashboard wires up the wrong twin | — | P2 | PENDING |
+| CR-319 | — | `scripts/audit_duplicate_entities.py` — 27 friendly names carry two entity IDs on this instance | Re-run it whenever a fresh export lands; it exits non-zero if a dashboard wires up the wrong twin | `2d42e1a` | P2 | PENDING |
 | CR-320 | — | **Needs Developer Tools.** Seven duplicate pairs where the export says one twin is live and one is dead. CasaRay uses the live one in every case, but nobody has confirmed which is which from the instance itself | For each pair below, look up both IDs and confirm the one CasaRay uses is the one that answers | — | P2 | **NEEDS THE OWNER** |
 | CR-321 | legacy | `dashboards/deez_smart_home.yaml` references `media_player.55_qled_4k_ai`, which the export marks unavailable; CasaRay uses `media_player.q70f8036` for the same television | Not fixed — the legacy dashboard is the rollback baseline and off-limits without an instruction. Recorded so it is a known difference, not a surprise | — | P3 | **OWNER DECISION** |
 
@@ -529,8 +529,8 @@ out to be a defect in the renderer rather than in a card.
 
 | ID | Page | What changed | What to check live | Expected result | Commit | P | Result |
 |---|---|---|---|---|---|---|---|
-| CR-318 | network | Cloud-linked devices printed `0/0` when no device answered. The denominator was already "what answered", which is right; nothing being 0 of is not | Network → the Cloud-linked devices card, with the Tapo cloud sensors healthy, then with the integration reloading | Healthy: `9/10 · 4 not reporting` (a real fraction). Nothing answering: `No data · 14 not reporting`, never `0/0` | — | P2 | PENDING |
-| CR-319 | house-health | The update card said how many devices were silent but not how many were fine, so `7 not reporting` carried no scale. The healthy count is appended, and only when it is non-zero | House health → the update status card | `7 devices are not reporting an update state; 67 are up to date.` With a pending update: `2 updates available: <names>.` first. With everything dark: the count of silent devices ALONE, never "0 are up to date" | — | P2 | PENDING |
+| CR-318 | network | Cloud-linked devices printed `0/0` when no device answered. The denominator was already "what answered", which is right; nothing being 0 of is not | Network → the Cloud-linked devices card, with the Tapo cloud sensors healthy, then with the integration reloading | Healthy: `9/10 · 4 not reporting` (a real fraction). Nothing answering: `No data · 14 not reporting`, never `0/0` | `2d42e1a` | P2 | PENDING |
+| CR-319 | house-health | The update card said how many devices were silent but not how many were fine, so `7 not reporting` carried no scale. The healthy count is appended, and only when it is non-zero | House health → the update status card | `7 devices are not reporting an update state; 67 are up to date.` With a pending update: `2 updates available: <names>.` first. With everything dark: the count of silent devices ALONE, never "0 are up to date" | `2d42e1a` | P2 | PENDING |
 
 Neither is visible on a healthy instance in the way that matters — both
 concern what the card says when a sensor drops out — so both are **[guard]**
