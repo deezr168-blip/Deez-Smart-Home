@@ -467,29 +467,54 @@ fit the width it is given.
 | CR-316 | house-health | New "Instrumentation notes" section carrying the prose moved off Lighting and Rooms | Bottom of House health | Four bullets: brightness average, Living Room spots, floodlights, room sensors | — | P3 | PENDING |
 | CR-317 | rooms | CN separator fixed — `、` separated both within and between rooms, so `安静、**厨房**` read as one list | Rooms with 中文 on | Rooms split by ` · `, readings within a room by `、` | — | P2 | PENDING |
 
-### CR-312 — the four strips that cannot fit, and what you can do about it
+### CR-312 — the strips that cannot fit, and what you can do about it
 
-Measured with `scratchpad/chipwidth.py`, worst case, both languages, against a
-budget of 59 characters (the photograph's ~45 at full size, divided by the new
-0.78 scale, plus two characters bought back from padding):
+**Corrected 2026-09-19 — six pages overflow with data, nine counting dark
+states, not four.** The original figures came from a throwaway script and a
+hand-written state set. They have been re-measured against
+`docs/live/fixture_states.json`, which takes each entity's availability from
+the export and gives the answering ones a value of plausible length. Two
+pages that fit under the old measurement do not, and three more overflow only
+once their sensors go quiet:
 
-| Page | Worst case | Over by |
-|---|---|---|
-| network | 74 | 15 |
-| security | 73 | 14 |
-| energy | 72 | 13 |
-| bills | 72 | 13 |
+| Page | With data (EN/CN) | Everything dark (EN/CN) | Over by, with data |
+|---|---|---|---|
+| energy | 71 / 73 | 71 / 69 | 12–14 |
+| network | 70 / 72 | 78 / 79 | 11–13 |
+| security | 67 / 57 | 74 / 64 | 8 |
+| alerts | 65 / 46 | 78 / 57 | 6 |
+| home | 61 / 51 | 70 / 57 | 2 |
+| bills | 61 / — | 73 / — | 2 |
+| lighting, people, house-health | fits | 60–63 EN | — |
 
-Eighteen of the twenty-two strips fit. These four carry four or five labelled
-readings, and at a size that stays legible across a room there is no
-arrangement of five of them that fits one line. Three ways out, none of which
-I took without asking:
+Budget is 59 characters: the photograph's ~45 at full size, divided by the
+0.78 scale, plus two bought back from padding. CJK glyphs count double.
+
+Three things this changes:
+
+- **`CR-311` is right in practice and wrong at the margin.** Home measures 61
+  with data, two over, and the two characters are `Outside No data` — the
+  outdoor sensor was dark when the export was taken. With a real outdoor
+  reading Home comes in around 53 and the photograph agrees. It is not a
+  defect; it is two characters of margin that do not exist.
+- **`alerts` was never on the list and should have been.** 65 with data, 78
+  when dark.
+- **English is consistently the long language here.** Every dark-state
+  overflow is English, because four repetitions of `No data` cost 32
+  characters where 无数据 costs 12. That is the single biggest lever if these
+  ever need to fit.
+
+Sixteen of the twenty-two strips fit with data; three more (lighting, people,
+house health) fit until their sensors go quiet and then run 1–4 over in
+English. The six that are over with data carry four or five labelled readings,
+and at a size that stays legible across a room there is no arrangement of five
+of them that fits one line. Three ways out, none of which I took without
+asking:
 
 1. **Leave them wrapping** onto two balanced lines. Nothing is lost and the
    pill looks deliberate. This is what is shipped.
-2. **Drop one reading** from each of the four. Security's `Motion` and
-   Network's `Hub` are the weakest — both are also tiles further down the same
-   page.
+2. **Drop one reading** from each of them. Security's `Motion` and Network's
+   `Hub` are the weakest — both are also tiles further down the same page.
 3. **Split into two pills** per page, a row of two. Keeps every reading, costs
    a card and some vertical space.
 

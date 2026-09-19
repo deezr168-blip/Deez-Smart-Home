@@ -60,6 +60,10 @@ except ImportError as exc:  # pragma: no cover
 
 REPO = pathlib.Path(__file__).resolve().parents[4]
 DEFAULT_DASH = REPO / "dashboards" / "casaray_v2.yaml"
+# Built by scripts/build_render_fixture.py from the entity export. Real
+# availability, invented values -- see that script's header before quoting
+# anything that comes out of a render.
+FIXTURE = REPO / "docs" / "live" / "fixture_states.json"
 TOGGLE = "input_boolean.chinese_dashboard"
 
 # The only width measurement that exists for this dashboard: a photograph of
@@ -183,7 +187,13 @@ def main() -> int:
     ap.add_argument("--all", action="store_true", help="every view")
     ap.add_argument("--chips-only", action="store_true",
                     help="only the pill-radius chip strips")
-    ap.add_argument("--states", help="JSON {entity_id: state} for the live case")
+    ap.add_argument("--states",
+                    help="JSON {entity_id: state} for the populated case. "
+                         "Defaults to docs/live/fixture_states.json.")
+    ap.add_argument("--no-fixture", action="store_true",
+                    help="do not fall back to the committed fixture — every "
+                         "entity then reads `unknown`, which is a second dark "
+                         "pass, not a live one")
     ap.add_argument("--attrs", help="JSON {'entity.attribute': value}")
     ap.add_argument("--no-dark", action="store_true",
                     help="skip the all-unavailable pass (you usually want it)")
@@ -200,7 +210,23 @@ def main() -> int:
         return int(bool(sys.stderr.write(
             "no views matched — pass --view <path> or --all\n")))
 
-    live = json.load(open(args.states)) if args.states else {}
+    # Without a state map every states() call returns `unknown`, so the
+    # "live" pass becomes a second dark pass wearing a different label -- and
+    # a width measured that way describes an instance where nothing is
+    # answering. The committed fixture is the default so that stops happening
+    # by accident; `--no-fixture` restores the old behaviour deliberately.
+    if args.states:
+        live = json.load(open(args.states, encoding="utf-8"))
+        case_label = "live"
+    elif args.no_fixture or not FIXTURE.exists():
+        live = {}
+        case_label = "empty"
+    else:
+        live = json.load(open(FIXTURE, encoding="utf-8"))
+        case_label = "fixture"
+    # `_meta` and anything else underscored documents the file; it is not an
+    # entity and must not be darkened or looked up as one.
+    live = {k: v for k, v in live.items() if not k.startswith("_")}
     attrs = json.load(open(args.attrs)) if args.attrs else {}
     env = make_env()
     now = _dt.datetime(2026, 9, 19, 20, 14, 0)
@@ -209,7 +235,7 @@ def main() -> int:
     # quiet AND every attribute goes with it -- a device that is not answering
     # does not keep reporting its `temperature` attribute, and leaving those in
     # makes a dark render look healthier than the real thing.
-    cases = [("live", live, attrs)]
+    cases = [(case_label, live, attrs)]
     if not args.no_dark:
         # With no live set there is nothing to darken, so darken whatever each
         # card references instead; that is resolved per card below.
@@ -244,18 +270,18 @@ def main() -> int:
                         out = env.from_string(card["content"]).render(
                             **build_context(states, cn, now, case_attrs)).strip()
                     except Exception as exc:
-                        print(f"  {tag:9s} RENDER FAILED: {exc}")
+                        print(f"  {tag:10s} RENDER FAILED: {exc}")
                         failed = True
                         continue
                     plain = out.replace("**", "")
                     if args.width:
                         w = display_width(plain)
                         flag = "OVER" if w > budget else "    "
-                        print(f"  {tag:9s} {flag} {w:3d}/{budget}  {plain}")
+                        print(f"  {tag:10s} {flag} {w:3d}/{budget}  {plain}")
                         if w > budget:
                             over_budget.append((label, tag, w, budget))
                     else:
-                        print(f"  {tag:9s} " + plain.replace("\n", "\n            "))
+                        print(f"  {tag:10s} " + plain.replace("\n", "\n            "))
 
     if args.width and over_budget:
         print(f"\n{len(over_budget)} rendering(s) over budget "
