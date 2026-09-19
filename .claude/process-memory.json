@@ -1,0 +1,151 @@
+{
+  "version": 1,
+  "workflows": [
+    {
+      "name": "validate, commit, push both branches",
+      "signature": "bash scripts/*.sh ; git add -A ; git commit -q -F - ; git push -q -u origin ha-deploy ; git push -q origin ha-deploy:claude/ha-dashboard-upgrades-wui7ig",
+      "steps": [
+        "bash scripts/ha_validate.sh",
+        "git add -A",
+        "git commit -q -F -",
+        "git push -q -u origin ha-deploy",
+        "git push -q origin ha-deploy:claude/ha-dashboard-upgrades-wui7ig"
+      ],
+      "files": [
+        "dashboards/casaray_v2.yaml"
+      ],
+      "occurrences": 16,
+      "first_seen": "2026-09-19",
+      "last_seen": "2026-09-19",
+      "minutes": 3,
+      "failures": 0,
+      "deterministic": true,
+      "data_processing": false,
+      "schedule": null,
+      "gate_on": null,
+      "automated_by": null,
+      "notes": "the push-to-both-branches step is the one that gets forgotten"
+    },
+    {
+      "name": "parse views, locate a section, splice YAML",
+      "signature": "yaml.safe_load(dashboard) ; find <str> line offsets ; find <str> section starts within a view ; walk back over the leading comment block ; splice new lines into the list ; re-parse and assert the shape",
+      "steps": [
+        "yaml.safe_load(dashboard)",
+        "find '- type: sections' line offsets",
+        "find '  - type: grid' section starts within a view",
+        "walk back over the leading comment block",
+        "splice new lines into the list",
+        "re-parse and assert the shape"
+      ],
+      "files": [
+        "dashboards/casaray_v2.yaml"
+      ],
+      "occurrences": 8,
+      "first_seen": "2026-09-19",
+      "last_seen": "2026-09-19",
+      "minutes": 8,
+      "failures": 0,
+      "deterministic": true,
+      "data_processing": true,
+      "schedule": null,
+      "gate_on": null,
+      "automated_by": "scripts/dashboard_edit.py",
+      "notes": "written from scratch in topbar/splice/roomchips/boardchips/bills3/footers/rooms/moreboards",
+      "automated_on": "2026-09-19"
+    },
+    {
+      "name": "render a card across live and dark states",
+      "signature": "yaml.safe_load(dashboard) ; build a HA-shaped jinja context ; render EN and CN ; render again with everything unavailable ; read the output for false reassurance",
+      "steps": [
+        "yaml.safe_load(dashboard)",
+        "build a HA-shaped jinja context",
+        "render EN and CN",
+        "render again with everything unavailable",
+        "read the output for false reassurance"
+      ],
+      "files": [],
+      "occurrences": 6,
+      "first_seen": "2026-09-19",
+      "last_seen": "2026-09-19",
+      "minutes": 10,
+      "failures": 0,
+      "deterministic": true,
+      "data_processing": true,
+      "schedule": null,
+      "gate_on": null,
+      "automated_by": ".claude/skills/improve-system/scripts/render_cards.py",
+      "notes": ""
+    },
+    {
+      "name": "structural diff of the dashboard against a git ref",
+      "signature": "git show <rev>:dashboards/*.yaml ; parse both trees ; collect entities, navs, services, cards ; diff the sets",
+      "steps": [
+        "git show <rev>:dashboards/casaray_v2.yaml",
+        "parse both trees",
+        "collect entities, navs, services, cards",
+        "diff the sets"
+      ],
+      "files": [],
+      "occurrences": 2,
+      "first_seen": "2026-09-19",
+      "last_seen": "2026-09-19",
+      "minutes": 6,
+      "failures": 0,
+      "deterministic": true,
+      "data_processing": true,
+      "schedule": null,
+      "gate_on": null,
+      "automated_by": ".claude/skills/improve-system/scripts/preserve_check.py",
+      "notes": ""
+    },
+    {
+      "name": "add a gate to dashboard_check and negative-test it",
+      "signature": "write the check with a why-comment ; run ha_validate.sh ; cp dashboard to scratch ; reintroduce the defect ; confirm VALIDATION FAILED names the view ; restore and re-run",
+      "steps": [
+        "write the check with a why-comment",
+        "run ha_validate.sh",
+        "cp dashboard to scratch",
+        "reintroduce the defect",
+        "confirm VALIDATION FAILED names the view",
+        "restore and re-run"
+      ],
+      "files": [
+        "scripts/dashboard_check.py"
+      ],
+      "occurrences": 4,
+      "first_seen": "2026-09-19",
+      "last_seen": "2026-09-19",
+      "minutes": 12,
+      "failures": 0,
+      "deterministic": false,
+      "data_processing": false,
+      "schedule": null,
+      "gate_on": null,
+      "automated_by": ".claude/skills/improve-system/SKILL.md",
+      "notes": "",
+      "automated_on": "2026-09-19"
+    },
+    {
+      "name": "verify an entity against live before using it",
+      "signature": "grep the export for the id ; GetLiveContext by domain or area ; reconcile friendly name to entity_id ; check for a duplicate twin",
+      "steps": [
+        "grep the export for the id",
+        "GetLiveContext by domain or area",
+        "reconcile friendly name to entity_id",
+        "check for a duplicate twin"
+      ],
+      "files": [],
+      "occurrences": 5,
+      "first_seen": "2026-09-19",
+      "last_seen": "2026-09-19",
+      "minutes": 5,
+      "failures": 0,
+      "deterministic": false,
+      "data_processing": false,
+      "schedule": null,
+      "gate_on": null,
+      "automated_by": "scripts/audit_duplicate_entities.py + scripts/reconcile_entities.py",
+      "notes": ""
+    }
+  ]
+}
