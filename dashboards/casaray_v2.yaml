@@ -311,7 +311,17 @@ views:
             the line starting with a space, and one to three leading spaces is
             a silent CommonMark indent. -#}
         {%- set p = namespace(txt=[]) -%}
-        {%- if total %}{% set p.txt = p.txt + [('有 %d 项需要处理。' % total) if cn else (('%d thing needs attention.' % total) if total == 1 else ('%d things need attention.' % total))] %}{% endif -%}
+        {#- The count on its own read as if the NEXT sentence explained it: with
+            one unpaid bill and one silent battery this card said "1 thing needs
+            attention. 1 battery is not reporting.", and the only card on screen
+            was Bills unpaid. Naming what the count is made of removes the
+            inference, and the conditional cards below say the same words. -#}
+        {%- set q = namespace(bits=[]) -%}
+        {%- if ns.dopen %}{% set q.bits = q.bits + [('%d 扇门开着' % ns.dopen) if cn else (('%d door open' % ns.dopen) if ns.dopen == 1 else ('%d doors open' % ns.dopen))] %}{% endif -%}
+        {%- if ns.blow %}{% set q.bits = q.bits + [('%d 个电池电量低' % ns.blow) if cn else (('%d battery low' % ns.blow) if ns.blow == 1 else ('%d batteries low' % ns.blow))] %}{% endif -%}
+        {%- if ns.coff %}{% set q.bits = q.bits + [('%d 个摄像头离线' % ns.coff) if cn else (('%d camera offline' % ns.coff) if ns.coff == 1 else ('%d cameras offline' % ns.coff))] %}{% endif -%}
+        {%- if bn > 0 %}{% set q.bits = q.bits + [('%d 张账单未付' % bn) if cn else (('%d unpaid bill' % bn) if bn == 1 else ('%d unpaid bills' % bn))] %}{% endif -%}
+        {%- if total %}{% set p.txt = p.txt + [((('有 %d 项需要处理：' % total) ~ (q.bits | join('、')) ~ '。') if cn else ((('%d thing needs attention: ' % total) if total == 1 else ('%d things need attention: ' % total)) ~ (q.bits | join(', ')) ~ '.'))] %}{% endif -%}
         {%- if ns.dunk %}{% set p.txt = p.txt + [('%d 个门窗传感器无数据。' % ns.dunk) if cn else (('%d door sensor is not reporting.' % ns.dunk) if ns.dunk == 1 else ('%d door sensors are not reporting.' % ns.dunk))] %}{% endif -%}
         {%- if ns.bunk %}{% set p.txt = p.txt + [('%d 个电池无数据。' % ns.bunk) if cn else (('%d battery is not reporting.' % ns.bunk) if ns.bunk == 1 else ('%d batteries are not reporting.' % ns.bunk))] %}{% endif -%}
         {#- An unreadable bills count is kept OUT of `total` above, which is right --
@@ -958,7 +968,7 @@ views:
     - type: tile
       entity: binary_sensor.f_contact_sensor_door
       color: green
-      name: Front door
+      name: Front
       grid_options: {columns: 3, rows: auto}
       state_content: [state, last_changed]
       tap_action: {action: navigate, navigation_path: /casaray-v2/security}
@@ -974,7 +984,7 @@ views:
     - type: tile
       entity: binary_sensor.m_contact_sensor_door
       color: green
-      name: Parents Room
+      name: Parents
       grid_options: {columns: 3, rows: auto}
       state_content: [state, last_changed]
       tap_action: {action: navigate, navigation_path: /casaray-v2/security}
@@ -1050,7 +1060,7 @@ views:
     - type: tile
       entity: sensor.powerpal_gateway_powerpal_power
       color: amber
-      name: House power
+      name: House now
       icon: mdi:transmission-tower
       grid_options: {columns: 6, rows: auto}
       tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
