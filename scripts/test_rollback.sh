@@ -140,7 +140,26 @@ grep -q 'predeploy' <<<"$out" && ok "lists the backups" || { no "listed nothing"
 grep -q 'bak\.' <<<"$out" && no "LISTED a sync .bak file it must not restore" \
                           || ok "does not list files it would refuse"
 
-printf '\n\033[1m[7] Restores a named backup, not just the newest\033[0m\n'
+printf '\n\033[1m[7] Picks the newest across BOTH naming schemes\033[0m\n'
+# `.` sorts before `_`, so every casaray_v2.yaml.predeploy.* name sorts below
+# every casaray_v2_predeploy_* name whatever the dates are. A host carrying
+# both schemes -- and the ALT prefix exists because one really did -- would
+# get a months-old dashboard back from a bare rollback. This is the
+# regression test for that.
+rm -f "$BACKUP_DIR"/*
+printf 'views:\n- title: AUGUST\n  path: home\n  cards: []\n'    > "$BACKUP_DIR/casaray_v2_predeploy_20260815.yaml"
+printf 'views:\n- title: SEPTEMBER\n  path: home\n  cards: []\n' > "$BK.20260924-050505"
+cp "$T/bad.yaml" "$LIVE"
+out=$(roll); rc=$?
+if [ "$rc" -eq 0 ] && grep -q 'SEPTEMBER' "$LIVE"; then
+  ok "restored the September backup, not the August one"
+elif grep -q 'AUGUST' "$LIVE"; then
+  no "restored the AUGUST backup — filename sort beat the date"
+else
+  no "did not restore either backup (exit $rc)"; note "$out"
+fi
+
+printf '\n\033[1m[8] Restores a named backup, not just the newest\033[0m\n'
 cp "$T/bad.yaml" "$LIVE"
 cp "$T/good.yaml" "$BK.20260924-100000"
 printf 'views:\n- title: OLDEST\n  path: home\n  cards: []\n' > "$BK.20260924-090000"

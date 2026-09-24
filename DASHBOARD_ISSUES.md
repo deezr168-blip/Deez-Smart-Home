@@ -44,6 +44,47 @@ close goes through the same gate as everything else.
 
 ## Open
 
+## REG-016 — a bare rollback restored a months-old dashboard
+
+**Status:** `FIXED — AWAITING LIVE VERIFICATION` · **Severity:** S1 ·
+found 2026-09-24 by `scripts/casaray_disk_report.sh` on its first run.
+
+`latest_backup()` in `casaray_common.sh` found both backup naming schemes
+with one `find` and picked the newest with `sort | tail -1`. `.` sorts before
+`_`, so **every** `casaray_v2.yaml.predeploy.*` file sorts below **every**
+`casaray_v2_predeploy_*` file regardless of date. On a host carrying both —
+and `BACKUP_PREFIX_ALT` exists because one really did — a bare
+`sh casaray_rollback.sh` restored the newest file of the *old* scheme even
+when a far newer one existed under the new name.
+
+Demonstrated against a fixture with five September backups and one from
+August: it chose August.
+
+This is S1 rather than S3 because of where it sits. `casaray_safe_deploy.sh`
+calls rollback when post-flight validation fails, so the failure mode is a
+bad deploy being "recovered" into a months-old dashboard, logged as success.
+It would have been silent.
+
+`prune_backups()` in the same file already handled the two schemes
+separately and says why in a comment — the same reasoning was never applied
+to `latest_backup()`, which is how it survived.
+
+**Fix:** sort on the timestamp instead of the filename. Every digit in both
+names is part of the timestamp; the new scheme gives 14 (`YYYYMMDD-HHMMSS`),
+the old gives 8 (`YYYYMMDD`), so short ones are right-padded to 14 before
+comparing. `20260815` reads as `20260815000000` — a backup dated only to the
+day is treated as its earliest moment, which is the conservative reading.
+
+The same defect was present in two more places and is fixed in all three:
+`casaray_rollback.sh --list`, which claimed "newest last", and the
+`NEWEST backup` line of the new disk report.
+
+**Regression test:** `scripts/test_rollback.sh` block 7. Negative-tested —
+it reports `restored the AUGUST backup — filename sort beat the date`
+against the unfixed code and passes against the fix.
+
+---
+
 ## Visual audit against the approved mockups — 2026-09-20 (iPhone)
 
 Six photographs of the live dashboard on the iPhone, compared against

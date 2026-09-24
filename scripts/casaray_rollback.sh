@@ -20,12 +20,22 @@ DIR="$(dirname "$0")"
 . "$DIR/casaray_common.sh"
 
 if [ "${1:-}" = "--list" ]; then
+  # Ordered by timestamp, not filename: sorting the two naming schemes
+  # together puts every `.predeploy.` file below every `_predeploy_` one
+  # whatever the dates are, so "newest last" would be a lie on a host that
+  # carries both. See latest_backup() in casaray_common.sh.
   echo "backups in $BACKUP_DIR (newest last):"
   if [ "$(backup_count)" -eq 0 ]; then
     echo "  (none)"
   else
     find "$BACKUP_DIR" -maxdepth 1 -type f \
-         \( -name "$BACKUP_PREFIX*" -o -name "$BACKUP_PREFIX_ALT*" \) | sort \
+         \( -name "$BACKUP_PREFIX*" -o -name "$BACKUP_PREFIX_ALT*" \) \
+      | while read -r f; do
+          _d=$(basename "$f" | tr -cd '0-9')
+          [ -n "$_d" ] || continue
+          while [ "${#_d}" -lt 14 ]; do _d="${_d}0"; done
+          printf '%s\t%s\n' "$(echo "$_d" | cut -c1-14)" "$f"
+        done | sort | cut -f2- \
       | while read -r f; do printf '  %s  %s\n' "$(basename "$f")" "$(wc -c <"$f" | tr -d ' ') bytes"; done
   fi
   exit 0
