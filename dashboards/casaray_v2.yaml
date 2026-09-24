@@ -592,7 +592,7 @@ views:
     # scenes: CR-233 stays open, because a real Goodnight that also handles
     # TVs and the blind still needs scenes this instance does not have.
     - type: button
-      grid_options: {columns: 3, rows: 3}
+      grid_options: {columns: 3, rows: 2}
       name: Evening
       icon: mdi:weather-sunset
       show_state: false
@@ -602,7 +602,7 @@ views:
         target: {entity_id: light.living_room}
         data: {brightness_pct: 55}
     - type: button
-      grid_options: {columns: 3, rows: 3}
+      grid_options: {columns: 3, rows: 2}
       name: Night
       icon: mdi:weather-night
       show_state: false
@@ -613,7 +613,7 @@ views:
           entity_id: [light.living_room, light.bedroom_bedroom, light.dining]
         data: {brightness_pct: 10}
     - type: button
-      grid_options: {columns: 3, rows: 3}
+      grid_options: {columns: 3, rows: 2}
       name: Bright
       icon: mdi:white-balance-sunny
       show_state: false
@@ -624,7 +624,7 @@ views:
           entity_id: [light.living_room, light.bedroom_bedroom, light.dining]
         data: {brightness_pct: 100}
     - type: button
-      grid_options: {columns: 3, rows: 3}
+      grid_options: {columns: 3, rows: 2}
       name: All lights off
       icon: mdi:lightbulb-group-off
       show_state: false
