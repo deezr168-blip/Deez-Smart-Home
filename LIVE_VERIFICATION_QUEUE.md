@@ -520,6 +520,19 @@ asking:
 
 Say which and it is a small change either way.
 
+## Host — disk space, and a rollback bug the report found, 2026-09-24
+
+| ID | What to check live | Expected result | Commit | P | Result |
+|---|---|---|---|---|---|
+| CFG-004 | Run `sh /config/casaray/casaray_disk_report.sh` on the host and paste the output back | A categorised read-only report: filesystem free space, the largest consumers under `/config`, and the database, logs, backups, media, cache, CasaRay backups and git clone each measured separately. It deletes nothing | — | P1 | PENDING |
+| REG-016 | `sh /config/casaray/casaray_rollback.sh --list` on a host that has BOTH backup naming schemes | The list is ordered by date, and the last line is genuinely the most recent — not the newest `casaray_v2_predeploy_*` file sitting below five newer `casaray_v2.yaml.predeploy.*` ones | — | P1 | PENDING |
+
+`REG-016` is the more important of the two. See `DASHBOARD_ISSUES.md`: a bare
+rollback on a mixed-scheme host restored the newest backup of the OLD naming
+scheme whatever the dates were, and `casaray_safe_deploy.sh` calls rollback
+on post-flight failure — so a bad deploy would have been "recovered" into a
+months-old dashboard and logged as a success.
+
 ## Tooling — the rollback drill, 2026-09-24
 
 `casaray_rollback.sh` is the last line of defence for every deployment —
