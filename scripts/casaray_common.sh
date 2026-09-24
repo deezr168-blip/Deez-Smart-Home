@@ -85,11 +85,36 @@ backup_count() {
 }
 
 # latest_backup -- newest pre-deploy backup path, or empty.
+#
+# The two naming schemes CANNOT be compared by sorting their filenames
+# together, for the same reason prune_backups() handles them separately: `.`
+# sorts before `_`, so every casaray_v2.yaml.predeploy.* file sorts below
+# every casaray_v2_predeploy_* file regardless of date. A plain
+# `sort | tail -1` across both therefore returns the newest file of the OLD
+# scheme even when a far newer one exists under the new name -- which on a
+# host carrying both means a bare `casaray_rollback.sh` silently restores a
+# months-old dashboard. Found 2026-09-24 by casaray_disk_report.sh, against a
+# fixture holding five September backups and one from August; it picked the
+# August one.
+#
+# So: sort on the TIMESTAMP, not the filename. Every digit in the name is
+# part of the timestamp in both schemes; the new scheme gives 14 of them
+# (YYYYMMDD-HHMMSS) and the old gives 8 (YYYYMMDD), so the short ones are
+# padded to 14 before comparing. That makes 20260815 read as 20260815000000,
+# which is right: a backup dated only to the day is treated as its earliest
+# moment.
 latest_backup() {
   [ -d "$BACKUP_DIR" ] || return 0
   find "$BACKUP_DIR" -maxdepth 1 -type f \
        \( -name "$BACKUP_PREFIX*" -o -name "$BACKUP_PREFIX_ALT*" \) 2>/dev/null \
-    | sort | tail -1
+    | while read -r _f; do
+        _digits=$(basename "$_f" | tr -cd '0-9')
+        [ -n "$_digits" ] || continue
+        # Pad right to 14 so schemes of different precision compare correctly.
+        while [ "${#_digits}" -lt 14 ]; do _digits="${_digits}0"; done
+        printf '%s\t%s\n' "$(echo "$_digits" | cut -c1-14)" "$_f"
+      done \
+    | sort | tail -1 | cut -f2-
 }
 
 # prune_backups -- keep the newest $BACKUP_KEEP of each naming scheme.
