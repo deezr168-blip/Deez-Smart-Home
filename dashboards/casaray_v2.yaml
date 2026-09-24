@@ -1187,7 +1187,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: button
-      grid_options: {columns: 3, rows: 2}
+      grid_options: {columns: 6, rows: 1}
       name: Rooms
       icon: mdi:floor-plan
       show_state: false
@@ -1197,7 +1197,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
     - type: button
-      grid_options: {columns: 3, rows: 2}
+      grid_options: {columns: 6, rows: 1}
       name: 房间
       icon: mdi:floor-plan
       show_state: false
@@ -1207,7 +1207,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: button
-      grid_options: {columns: 3, rows: 2}
+      grid_options: {columns: 6, rows: 1}
       name: Lighting
       icon: mdi:lightbulb-group
       show_state: false
@@ -1217,7 +1217,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
     - type: button
-      grid_options: {columns: 3, rows: 2}
+      grid_options: {columns: 6, rows: 1}
       name: 灯光
       icon: mdi:lightbulb-group
       show_state: false
@@ -1227,7 +1227,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: button
-      grid_options: {columns: 3, rows: 2}
+      grid_options: {columns: 6, rows: 1}
       name: Climate
       icon: mdi:thermometer
       show_state: false
@@ -1237,7 +1237,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
     - type: button
-      grid_options: {columns: 3, rows: 2}
+      grid_options: {columns: 6, rows: 1}
       name: 气候
       icon: mdi:thermometer
       show_state: false
@@ -1247,7 +1247,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: button
-      grid_options: {columns: 3, rows: 2}
+      grid_options: {columns: 6, rows: 1}
       name: Energy
       icon: mdi:lightning-bolt
       show_state: false
@@ -1257,7 +1257,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
     - type: button
-      grid_options: {columns: 3, rows: 2}
+      grid_options: {columns: 6, rows: 1}
       name: 能源
       icon: mdi:lightning-bolt
       show_state: false
@@ -1267,7 +1267,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: button
-      grid_options: {columns: 3, rows: 2}
+      grid_options: {columns: 6, rows: 1}
       name: Bills
       icon: mdi:file-document-outline
       show_state: false
@@ -1277,7 +1277,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
     - type: button
-      grid_options: {columns: 3, rows: 2}
+      grid_options: {columns: 6, rows: 1}
       name: 账单
       icon: mdi:file-document-outline
       show_state: false
@@ -1287,7 +1287,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: button
-      grid_options: {columns: 3, rows: 2}
+      grid_options: {columns: 6, rows: 1}
       name: Entertainment
       icon: mdi:television-play
       show_state: false
@@ -1297,7 +1297,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
     - type: button
-      grid_options: {columns: 3, rows: 2}
+      grid_options: {columns: 6, rows: 1}
       name: 娱乐
       icon: mdi:television-play
       show_state: false
@@ -1307,7 +1307,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: button
-      grid_options: {columns: 3, rows: 2}
+      grid_options: {columns: 6, rows: 1}
       name: Security
       icon: mdi:shield-home
       show_state: false
@@ -1317,7 +1317,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
     - type: button
-      grid_options: {columns: 3, rows: 2}
+      grid_options: {columns: 6, rows: 1}
       name: 安防
       icon: mdi:shield-home
       show_state: false
@@ -1327,7 +1327,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: button
-      grid_options: {columns: 3, rows: 2}
+      grid_options: {columns: 6, rows: 1}
       name: Cameras
       icon: mdi:cctv
       show_state: false
@@ -1337,7 +1337,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
     - type: button
-      grid_options: {columns: 3, rows: 2}
+      grid_options: {columns: 6, rows: 1}
       name: 摄像头
       icon: mdi:cctv
       show_state: false
@@ -1347,7 +1347,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: button
-      grid_options: {columns: 3, rows: 2}
+      grid_options: {columns: 6, rows: 1}
       name: Network
       icon: mdi:wifi
       show_state: false
@@ -1357,7 +1357,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
     - type: button
-      grid_options: {columns: 3, rows: 2}
+      grid_options: {columns: 6, rows: 1}
       name: 网络
       icon: mdi:wifi
       show_state: false
@@ -1367,7 +1367,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: button
-      grid_options: {columns: 3, rows: 2}
+      grid_options: {columns: 6, rows: 1}
       name: People
       icon: mdi:account-group
       show_state: false
@@ -1377,7 +1377,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
     - type: button
-      grid_options: {columns: 3, rows: 2}
+      grid_options: {columns: 6, rows: 1}
       name: 家人
       icon: mdi:account-group
       show_state: false
@@ -1387,7 +1387,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: button
-      grid_options: {columns: 3, rows: 2}
+      grid_options: {columns: 6, rows: 1}
       name: Automations
       icon: mdi:robot
       show_state: false
@@ -1397,7 +1397,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
     - type: button
-      grid_options: {columns: 3, rows: 2}
+      grid_options: {columns: 6, rows: 1}
       name: 自动化
       icon: mdi:robot
       show_state: false
@@ -1407,7 +1407,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: button
-      grid_options: {columns: 3, rows: 2}
+      grid_options: {columns: 6, rows: 1}
       name: Alerts
       icon: mdi:bell-alert
       show_state: false
@@ -1417,7 +1417,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
     - type: button
-      grid_options: {columns: 3, rows: 2}
+      grid_options: {columns: 6, rows: 1}
       name: 通知
       icon: mdi:bell-alert
       show_state: false
@@ -1427,7 +1427,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: button
-      grid_options: {columns: 6, rows: 2}
+      grid_options: {columns: 6, rows: 1}
       name: House health
       icon: mdi:heart-pulse
       show_state: false
@@ -1437,7 +1437,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state_not: 'on'
     - type: button
-      grid_options: {columns: 6, rows: 2}
+      grid_options: {columns: 6, rows: 1}
       name: 房屋健康
       icon: mdi:heart-pulse
       show_state: false
@@ -1447,7 +1447,7 @@ views:
         entity: input_boolean.chinese_dashboard
         state: 'on'
     - type: button
-      grid_options: {columns: 6, rows: 2}
+      grid_options: {columns: 6, rows: 1}
       name: English / 中文
       icon: mdi:translate
       entity: input_boolean.chinese_dashboard
