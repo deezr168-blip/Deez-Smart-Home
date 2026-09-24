@@ -520,6 +520,28 @@ asking:
 
 Say which and it is a small change either way.
 
+## Tooling — the rollback drill, 2026-09-24
+
+`casaray_rollback.sh` is the last line of defence for every deployment —
+`casaray_safe_deploy.sh` calls it on post-flight failure — and it had never
+been executed. A rollback that silently does nothing is worse than no
+rollback, because the deploy script would then report success.
+
+`scripts/test_rollback.sh` now proves the LOGIC: 17 assertions against a
+throwaway `/config` tree, all passing. What it cannot prove is that the paths
+on the host are right, that the suite is installed, or that Home Assistant
+picks up a changed file at all. That is `docs/ROLLBACK_DRILL.md`, and it is
+ten minutes.
+
+| ID | What to check live | Expected result | Commit | P | Result |
+|---|---|---|---|---|---|
+| CAP-004 | Run `docs/ROLLBACK_DRILL.md` end to end on the host | Marker appears at step 3, rollback restores at step 4, `cmp` says IDENTICAL at step 5, page normal afterwards | — | P1 | PENDING |
+| CAP-005 | **Step 3 specifically:** does the edited file reach the screen after a refresh, and does it need a HARD refresh? | The marker appears. If it does NOT appear even after a hard refresh, that is a bigger finding than the drill — it would mean a deployed file does not reach the screen without a reload step nobody has written down, and every "deployed" claim in this project needs revisiting | — | P1 | PENDING |
+
+The drill is safe by construction: step 1 takes a copy outside the suite's
+reach, the only change is one cosmetic word, and a single `cp` ends it at any
+point. Worst case if interrupted is `CasaRay ROLLBACK TEST` on the wall.
+
 ## CasaRay — bilingual collisions from the CVA-013 room summaries, 2026-09-24
 
 `2016214` (room-centric Home summaries) left `ha-deploy` **failing its own
