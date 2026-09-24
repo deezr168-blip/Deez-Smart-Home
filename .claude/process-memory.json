@@ -216,6 +216,79 @@
       "automated_by": "scripts/next_id.py",
       "notes": "collided twice on 2026-09-19",
       "automated_on": "2026-09-19"
+    },
+    {
+      "name": "stamp a commit SHA into tracking rows",
+      "signature": "git commit with the SHA left as a placeholder ; git rev-parse --short HEAD ; regex the new rows in LIVE_VERIFICATION_QUEUE.md ; git add -A ; bash scripts/*.sh ; git commit -m <str>",
+      "steps": [
+        "git commit with the SHA left as a placeholder",
+        "git rev-parse --short HEAD",
+        "regex the new rows in LIVE_VERIFICATION_QUEUE.md",
+        "git add -A",
+        "bash scripts/ha_validate.sh",
+        "git commit -m 'docs: stamp <sha>'"
+      ],
+      "files": [
+        "LIVE_VERIFICATION_QUEUE.md"
+      ],
+      "occurrences": 5,
+      "first_seen": "2026-09-24",
+      "last_seen": "2026-09-24",
+      "minutes": 4,
+      "failures": 1,
+      "deterministic": true,
+      "data_processing": false,
+      "schedule": null,
+      "gate_on": null,
+      "automated_by": null,
+      "notes": ""
+    },
+    {
+      "name": "verify a dashboard change before pushing",
+      "signature": "bash scripts/*.sh ; preserve_check.py --ref HEAD ; render_cards.py --all > new.txt ; diff old.txt new.txt ; read the diff and decide",
+      "steps": [
+        "bash scripts/ha_validate.sh",
+        "preserve_check.py --ref HEAD",
+        "render_cards.py --all > new.txt",
+        "diff old.txt new.txt",
+        "read the diff and decide"
+      ],
+      "files": [],
+      "occurrences": 5,
+      "first_seen": "2026-09-24",
+      "last_seen": "2026-09-24",
+      "minutes": 6,
+      "failures": 0,
+      "deterministic": true,
+      "data_processing": false,
+      "schedule": null,
+      "gate_on": null,
+      "automated_by": "scripts/verify_change.sh",
+      "notes": "",
+      "automated_on": "2026-09-24"
+    },
+    {
+      "name": "compare a live render against the approved mockup",
+      "signature": "identify which mockup is the right baseline for the device ; read both images ; correlate each difference to a YAML cause ; decide severity and whether it is already fixed at HEAD ; assign an ID and write it up",
+      "steps": [
+        "identify which mockup is the right baseline for the device",
+        "read both images",
+        "correlate each difference to a YAML cause",
+        "decide severity and whether it is already fixed at HEAD",
+        "assign an ID and write it up"
+      ],
+      "files": [],
+      "occurrences": 3,
+      "first_seen": "2026-09-24",
+      "last_seen": "2026-09-24",
+      "minutes": 40,
+      "failures": 0,
+      "deterministic": false,
+      "data_processing": false,
+      "schedule": null,
+      "gate_on": null,
+      "automated_by": null,
+      "notes": ""
     }
   ]
 }

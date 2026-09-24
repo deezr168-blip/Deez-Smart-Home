@@ -47,11 +47,20 @@ card asserting something it did not measure.
 
 ## 4. Change verification
 
-Proving a structural edit lost nothing.
+Proving a structural edit lost nothing, and that the cards say what they said.
 
+- `scripts/verify_change.sh` — all three passes in one command: the gate,
+  `preserve_check`, and a render diff against any git ref. Start here.
 - `.claude/skills/improve-system/scripts/preserve_check.py` — views, cards,
   entities, navigation targets, service calls, and one view card-for-card
-  filtered by language.
+  filtered by language. Called by the above.
+
+**The bookkeeping was the problem, not the checks.** The render pass needs a
+BEFORE, and producing one by hand meant remembering to render the old tree
+first — which over one session produced five numbered baseline files in a
+scratch directory and one comparison made against the wrong one.
+`verify_change.sh` takes its BEFORE from `git show <ref>:<path>`, so there is
+no baseline file to name or lose.
 
 ## 5. Validation gates
 

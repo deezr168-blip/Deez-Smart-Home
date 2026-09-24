@@ -57,8 +57,15 @@ rendered output to inspected source, a structural diff to a careful read.
    values. If a pass is labelled `empty`, the fixture was missing or
    `--no-fixture` was passed, and that run measured a dark instance twice.
 
-6. **Run the gates.** `bash scripts/ha_validate.sh`. Exit 0 or do not push. If
-   it fails, fix or revert — never weaken a gate to get past it.
+6. **Run the gates.** `bash scripts/verify_change.sh` runs all three in one
+   pass — the validation gate, `preserve_check` against HEAD, and a render
+   diff whose BEFORE comes from git rather than from a baseline file you had
+   to remember to make. Exit 0 or do not push. If it fails, fix or revert —
+   never weaken a gate to get past it.
+
+   A render diff is not a failure; it is for you to read. A pure reorder
+   shows section indexes and no card text. A template change shows only the
+   cards you touched. Anything else is the bug that pass exists to catch.
 
 7. **Prove nothing was lost.** `scripts/preserve_check.py` against the commit
    you started from. Entity, navigation, service and view counts should be
@@ -192,7 +199,8 @@ was *not* verified — for this repository that always includes anything visual.
   2026-09-19, and one of a colliding pair silently never gets checked.
 - `scripts/preserve_check.py` — structural diff against any git ref: views,
   cards, entities, navigation targets, service calls, with the added and
-  removed items named.
+  removed items named. `scripts/verify_change.sh` calls this; run it directly
+  only when you want the structural half alone.
 
 Both are standalone (`python3`, `PyYAML`, `Jinja2`) and print human-readable
 output. Run either with `--help`.
