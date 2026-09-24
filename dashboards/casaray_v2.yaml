@@ -333,7 +333,7 @@ views:
             only the English list takes a space. -#}
         {% if p.txt %}{{ p.txt | join('' if cn else ' ') }}{% else %}{{ '一切正常，无需处理。' if cn else 'All clear. Nothing needs attention.' }}{% endif %}
     - type: conditional
-      grid_options: {columns: 6, rows: auto}
+      grid_options: {columns: 12, rows: auto}
       conditions:
       - condition: state
         entity: binary_sensor.f_contact_sensor_door
@@ -353,7 +353,7 @@ views:
               border-color: var(--casaray-amber-border);
             }
     - type: conditional
-      grid_options: {columns: 6, rows: auto}
+      grid_options: {columns: 12, rows: auto}
       conditions:
       - condition: state
         entity: binary_sensor.b_contact_sensor_door
@@ -373,7 +373,7 @@ views:
               border-color: var(--casaray-amber-border);
             }
     - type: conditional
-      grid_options: {columns: 6, rows: auto}
+      grid_options: {columns: 12, rows: auto}
       conditions:
       - condition: state
         entity: binary_sensor.m_contact_sensor_door
@@ -393,7 +393,7 @@ views:
               border-color: var(--casaray-amber-border);
             }
     - type: conditional
-      grid_options: {columns: 6, rows: auto}
+      grid_options: {columns: 12, rows: auto}
       conditions:
       - condition: numeric_state
         entity: sensor.front_door_battery
@@ -413,7 +413,7 @@ views:
               border-color: var(--casaray-red-border);
             }
     - type: conditional
-      grid_options: {columns: 6, rows: auto}
+      grid_options: {columns: 12, rows: auto}
       conditions:
       - condition: numeric_state
         entity: sensor.living_room_ringring_battery
@@ -433,7 +433,7 @@ views:
               border-color: var(--casaray-red-border);
             }
     - type: conditional
-      grid_options: {columns: 6, rows: auto}
+      grid_options: {columns: 12, rows: auto}
       conditions:
       - condition: numeric_state
         entity: sensor.tapo_c425_north_wall_battery
@@ -453,7 +453,7 @@ views:
               border-color: var(--casaray-red-border);
             }
     - type: conditional
-      grid_options: {columns: 6, rows: auto}
+      grid_options: {columns: 12, rows: auto}
       conditions:
       - condition: state
         entity: binary_sensor.eero_wan_status
@@ -473,7 +473,7 @@ views:
               border-color: var(--casaray-red-border);
             }
     - type: conditional
-      grid_options: {columns: 6, rows: auto}
+      grid_options: {columns: 12, rows: auto}
       conditions:
       - condition: state
         entity: binary_sensor.g_monitor_freezer_p110m_overloaded
@@ -492,7 +492,7 @@ views:
               border-color: var(--casaray-red-border);
             }
     - type: conditional
-      grid_options: {columns: 6, rows: auto}
+      grid_options: {columns: 12, rows: auto}
       conditions:
       - condition: state
         entity: binary_sensor.bedroom_parents_room_ac_filter_clean_required
@@ -511,7 +511,7 @@ views:
               border-color: var(--casaray-red-border);
             }
     - type: conditional
-      grid_options: {columns: 6, rows: auto}
+      grid_options: {columns: 12, rows: auto}
       conditions:
       - condition: state
         entity: binary_sensor.lg_fridge_door
@@ -533,7 +533,7 @@ views:
     # overview should raise it -- which is why the two bill tiles that used to
     # sit in Home's footer are no longer needed there.
     - type: conditional
-      grid_options: {columns: 6, rows: auto}
+      grid_options: {columns: 12, rows: auto}
       conditions:
       - condition: numeric_state
         entity: sensor.bills_unpaid_count
