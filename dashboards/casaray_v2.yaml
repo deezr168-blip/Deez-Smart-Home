@@ -29,10 +29,6 @@
 # STILL rendering on every page, beside CasaRay's nav rail. This block is not
 # the reason -- see DR-015. Run scripts/casaray_kiosk_diagnose.sh on the host
 # to find out whether the kiosk-mode resource is registered at all.
-kiosk_mode:
-  hide_sidebar: true
-  hide_header: true
-  ignore_entity_settings: true
 # The CasaRay theme adds the frozen design's card-title typography -- small,
 # uppercase, letter-spaced -- on top of the shared surface treatment. It is a
 # separate theme so the legacy dashboard, which shares the same base anchor,
