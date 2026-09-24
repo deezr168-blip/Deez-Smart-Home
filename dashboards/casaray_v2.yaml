@@ -674,7 +674,7 @@ views:
         {%- set t = states('sensor.living_room_living_hue_hue_sensor_temperature') | float(none) -%}
         {%- if t is not none %}{% set parts = parts + [((t | round(1)) ~ '°')] %}{% endif -%}
         {%- set m = states('binary_sensor.living_room_living_hue_hue_sensor_motion') -%}
-        {%- if m == 'on' %}{% set parts = parts + [('有动作' if cn else 'Motion')] %}{% elif m == 'off' %}{% set parts = parts + [('安静' if cn else 'Quiet')] %}{% endif -%}
+        {%- if m == 'on' %}{% set parts = parts + [('有动作' if cn else 'Movement')] %}{% elif m == 'off' %}{% set parts = parts + [('安静' if cn else 'Quiet')] %}{% endif -%}
         ### 🛋️ {{ '客厅' if cn else 'Living Room' }}
         {{ parts | join(' · ') if parts else ('无数据' if cn else 'No data') }}
       tap_action: {action: navigate, navigation_path: /casaray-v2/living-room}
@@ -689,7 +689,7 @@ views:
         {%- set t = states('sensor.living_room_living_room_temperature') | float(none) -%}
         {%- if t is not none %}{% set parts = parts + [((t | round(1)) ~ '°')] %}{% endif -%}
         {%- set m = states('binary_sensor.sensor_group_motion') -%}
-        {%- if m == 'on' %}{% set parts = parts + [('有动作' if cn else 'Motion')] %}{% elif m == 'off' %}{% set parts = parts + [('安静' if cn else 'Quiet')] %}{% endif -%}
+        {%- if m == 'on' %}{% set parts = parts + [('有动作' if cn else 'Movement')] %}{% elif m == 'off' %}{% set parts = parts + [('安静' if cn else 'Quiet')] %}{% endif -%}
         ### 🍽️ {{ '餐厅' if cn else 'Dining' }}
         {{ parts | join(' · ') if parts else ('无数据' if cn else 'No data') }}
       tap_action: {action: navigate, navigation_path: /casaray-v2/dining}
@@ -700,9 +700,9 @@ views:
         {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
         {%- set parts = [] -%}
         {%- set m = states('binary_sensor.k_motion_sensor_motion') -%}
-        {%- if m == 'on' %}{% set parts = parts + [('有动作' if cn else 'Motion')] %}{% elif m == 'off' %}{% set parts = parts + [('安静' if cn else 'Quiet')] %}{% endif -%}
+        {%- if m == 'on' %}{% set parts = parts + [('有动作' if cn else 'Movement')] %}{% elif m == 'off' %}{% set parts = parts + [('安静' if cn else 'Quiet')] %}{% endif -%}
         {%- set d = states('binary_sensor.lg_fridge_door') -%}
-        {%- if d == 'on' %}{% set parts = parts + [('冰箱门打开' if cn else 'Fridge open')] %}{% elif d == 'off' %}{% set parts = parts + [('冰箱门关闭' if cn else 'Fridge closed')] %}{% endif -%}
+        {%- if d == 'on' %}{% set parts = parts + [('冰箱门打开' if cn else 'Fridge open')] %}{% elif d == 'off' %}{% set parts = parts + [('冰箱已关闭' if cn else 'Fridge closed')] %}{% endif -%}
         ### 🍴 {{ '厨房' if cn else 'Kitchen' }}
         {{ parts | join(' · ') if parts else ('无数据' if cn else 'No data') }}
       tap_action: {action: navigate, navigation_path: /casaray-v2/kitchen}
@@ -732,7 +732,7 @@ views:
         {%- set p = states('sensor.r_energy_monitor_p110m_current_consumption') | float(none) -%}
         {%- if p is not none %}{% set parts = parts + [((p | round(0) | int) ~ ' W')] %}{% endif -%}
         {%- set bl = states('cover.aqara_roller_shade_driver_e1') -%}
-        {%- if bl in ['open','opening'] %}{% set parts = parts + [('卷帘打开' if cn else 'Blind open')] %}{% elif bl in ['closed','closing'] %}{% set parts = parts + [('卷帘关闭' if cn else 'Blind closed')] %}{% endif -%}
+        {%- if bl in ['open','opening'] %}{% set parts = parts + [('卷帘已开' if cn else 'Blind open')] %}{% elif bl in ['closed','closing'] %}{% set parts = parts + [('卷帘已关' if cn else 'Blind closed')] %}{% endif -%}
         ### 🛏️ {{ 'Ray 卧室' if cn else 'Ray Bedroom' }}
         {{ parts | join(' · ') if parts else ('无数据' if cn else 'No data') }}
       tap_action: {action: navigate, navigation_path: /casaray-v2/ray-bedroom}
@@ -2101,7 +2101,7 @@ views:
         {%- set v = states('sensor.living_room_living_hue_hue_sensor_illuminance') | float(none) -%}
         {%- set V = ((v | round(0) | int) ~ ' lx') if v is not none else nd -%}
         {%- set v2 = V -%}
-        {{ '室温' if cn else 'Room' }} **{{ v0 }}** · {{ '动作' if cn else 'Movement' }} **{{ v1 }}** · {{ '光照' if cn else 'Light level' }} **{{ v2 }}**
+        {{ '室温' if cn else 'Room' }} **{{ v0 }}** · {{ '动作' if cn else 'Motion' }} **{{ v1 }}** · {{ '光照' if cn else 'Light level' }} **{{ v2 }}**
       card_mod:
         style: |
           ha-card {
@@ -2928,7 +2928,7 @@ views:
         {%- set s = states('binary_sensor.lg_fridge_door') -%}
         {%- set V = ('打开' if cn else 'Open') if s == 'on' else (('关闭' if cn else 'Closed') if s == 'off' else nd) -%}
         {%- set v2 = V -%}
-        {{ '动作' if cn else 'Movement' }} **{{ v0 }}** · {{ '冰箱' if cn else 'Fridge' }} **{{ v1 }}** · {{ '冰箱门' if cn else 'Fridge door' }} **{{ v2 }}**
+        {{ '动作' if cn else 'Motion' }} **{{ v0 }}** · {{ '冰箱' if cn else 'Fridge' }} **{{ v1 }}** · {{ '冰箱门' if cn else 'Fridge door' }} **{{ v2 }}**
       card_mod:
         style: |
           ha-card {
@@ -3480,7 +3480,7 @@ views:
         {%- set v = states('sensor.sensor_group_illuminance') | float(none) -%}
         {%- set V = ((v | round(0) | int) ~ ' lx') if v is not none else nd -%}
         {%- set v2 = V -%}
-        {{ '室温' if cn else 'Room' }} **{{ v0 }}** · {{ '动作' if cn else 'Movement' }} **{{ v1 }}** · {{ '光照' if cn else 'Light level' }} **{{ v2 }}**
+        {{ '室温' if cn else 'Room' }} **{{ v0 }}** · {{ '动作' if cn else 'Motion' }} **{{ v1 }}** · {{ '光照' if cn else 'Light level' }} **{{ v2 }}**
       card_mod:
         style: |
           ha-card {

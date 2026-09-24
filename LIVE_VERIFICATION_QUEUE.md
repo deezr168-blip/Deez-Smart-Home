@@ -520,6 +520,19 @@ asking:
 
 Say which and it is a small change either way.
 
+## CasaRay — bilingual collisions from the CVA-013 room summaries, 2026-09-24
+
+`2016214` (room-centric Home summaries) left `ha-deploy` **failing its own
+validation gate** with four check-15e collisions. It was on the branch, and
+`scripts/sync_casaray_to_config.sh` would have put it on the wall.
+
+| ID | What changed | What to check live | Expected result | Commit | P | Result |
+|---|---|---|---|---|---|---|
+| REG-015 | Three new Chinese phrasings replaced by the terms already established elsewhere in the file: 卷帘关闭→卷帘已关, 卷帘打开→卷帘已开, 冰箱门关闭→冰箱已关闭. Separately, `Movement` was doing two jobs — a chip-strip LABEL and a room-summary STATE — so the senses are split: labels are `Motion`/动作 on all four chip strips, the state stays `Movement`/有动作 as the wall mockup calls it | With 中文 on: a room summary with the blind closed, and the Kitchen/Living Room/Ray Bedroom chip strips. Then in English | CN: 卷帘已关, 冰箱已关闭, 有动作 — one term per meaning, matching the rest of the page. EN: chip strips read `Motion  Quiet`, room summaries read `Movement` | — | P1 | PENDING |
+
+Found by `scripts/verify_change.sh` on the first run after rebasing onto the
+new commits — which is the whole reason it exists.
+
 ## CasaRay — band reorder against the mobile mockup, 2026-09-20
 
 | ID | What changed | What to check live | Expected result | Commit | P | Result |
