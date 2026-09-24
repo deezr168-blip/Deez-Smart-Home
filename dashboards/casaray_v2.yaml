@@ -716,8 +716,8 @@ views:
     - type: tile
       grid_options: {columns: 12, rows: auto}
       entity: switch.g_monitor_freezer_p110m
-      name: Garage
-      icon: mdi:garage
+      name: Garage freezer
+      icon: mdi:fridge-outline
       state_content: [state, last_changed]
       vertical: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/garage}
@@ -725,8 +725,8 @@ views:
     - type: tile
       grid_options: {columns: 12, rows: auto}
       entity: switch.g_printer_p100
-      name: Guest Room
-      icon: mdi:bed-empty
+      name: Guest Room printer
+      icon: mdi:printer
       state_content: [state, last_changed]
       vertical: false
       tap_action: {action: navigate, navigation_path: /casaray-v2/guest-room}
