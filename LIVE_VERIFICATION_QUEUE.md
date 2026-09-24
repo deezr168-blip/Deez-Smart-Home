@@ -520,6 +520,16 @@ asking:
 
 Say which and it is a small change either way.
 
+## CasaRay — band reorder against the mobile mockup, 2026-09-20
+
+| ID | What changed | What to check live | Expected result | Commit | P | Result |
+|---|---|---|---|---|---|---|
+| CVA-004 | Home's bands reordered: One tap, then Rooms and Shopping list, now sit directly under Needs attention. Right now and Who's home moved below them. Nothing else changed — no card, no entity, no geometry | **iPhone:** scroll Home from the top. **Wall iPad, landscape:** look at the whole page | Phone: the scene bar is reachable without scrolling past the weather. iPad: One tap is still four across and full width; Rooms sits beside Shopping list and Right now beside Who's home, with **no half-empty row anywhere**. If any band has a hole in it, mark FAIL — that is the failure mode DR-013 describes and it is invisible from here | — | P2 | PENDING |
+
+Rooms and Shopping list moved with One tap rather than after it: both are
+`column_span: 1` and moving either alone would strand the other as a lone
+half-row, which `dashboard_check.py` check 15 fails the build on.
+
 ## CasaRay — iPhone live render, 2026-09-19
 
 Six photographs of the live dashboard on the iPhone. The first thing they

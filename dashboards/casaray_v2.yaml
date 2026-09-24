@@ -552,162 +552,12 @@ views:
               background: var(--casaray-amber-bg);
               border-color: var(--casaray-amber-border);
             }
-  # -------------------------------------------------------------------------
-  # BAND 4, COLUMN 1 -- "Right now". The render's left column: one large
-  # weather panel, then two composed status cards, then a grey footnote that
-  # qualifies the section above it.
-  # -------------------------------------------------------------------------
-  - type: grid
-    column_span: 1
-    cards:
-    - type: heading
-      heading: Right now
-      heading_style: title
-      icon: mdi:weather-partly-cloudy
-      visibility:
-      - condition: state
-        entity: input_boolean.chinese_dashboard
-        state_not: 'on'
-    - type: heading
-      heading: 此刻
-      heading_style: title
-      icon: mdi:weather-partly-cloudy
-      visibility:
-      - condition: state
-        entity: input_boolean.chinese_dashboard
-        state: 'on'
-    # The mockup's hero: big temperature, condition and humidity, then a row
-    # of days beneath. That is precisely what the native weather card draws
-    # with both flags on, so no custom card and no template is involved.
-    - type: weather-forecast
-      entity: weather.forecast_home
-      forecast_type: daily
-      show_current: true
-      show_forecast: true
-      grid_options: {columns: 12, rows: auto}
-    # Amber border: this is live load, and amber is CR-232's "active". The
-    # figure is the metered-circuit total, which the footnote below explains.
-    - type: tile
-      entity: sensor.casa_monitored_power
-      name: Monitored power
-      icon: mdi:flash
-      color: amber
-      grid_options: {columns: 12, rows: auto}
-      state_content: [state, last_changed]
-      tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
-      card_mod:
-        style: |
-          ha-card {
-            {% if states(config.entity) in ['unavailable','unknown','none'] %}
-            border-style: dashed;
-            border-color: var(--casaray-grey-border);
-            background: var(--casaray-grey-bg);
-            {% else %}
-            background: var(--casaray-amber-bg);
-            border-color: var(--casaray-amber-border);
-            {% endif %}
-          }
-    - type: tile
-      entity: sensor.casa_solar_expected_today
-      name: Solar expected today
-      icon: mdi:solar-power-variant
-      grid_options: {columns: 12, rows: auto}
-      state_content: state
-      tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
-      card_mod:
-        style: |
-          ha-card {
-            {% if states(config.entity) in ['unavailable','unknown','none'] %}
-            border-style: dashed;
-            border-color: var(--casaray-grey-border);
-            background: var(--casaray-grey-bg);
-            {% endif %}
-          }
-    # Daylight, kept from the previous Home footer. Two across, because they
-    # are a pair and because the left column would otherwise sit noticeably
-    # shorter than the two beside it.
-    - type: tile
-      entity: sensor.sun_next_rising
-      name: Sunrise
-      icon: mdi:weather-sunset-up
-      grid_options: {columns: 6, rows: auto}
-    - type: tile
-      entity: sensor.sun_next_setting
-      name: Sunset
-      icon: mdi:weather-sunset-down
-      grid_options: {columns: 6, rows: auto}
-    # "Footnotes explain, in grey, below the section they qualify" -- the
-    # 14/09 transcription, and this is the render's own wording.
-    - type: markdown
-      grid_options: {columns: 12, rows: auto}
-      content: |
-        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
-        *{{ '只有两个回路装了计量插座，因此这是被监测的用电量，并非全屋。' if cn else 'Two circuits are metered, so this is monitored load — not the whole house.' }}*
 
   # -------------------------------------------------------------------------
-  # BAND 4, COLUMN 2 -- "Who's home" over "One tap". Two headings in one
-  # section so the pair always stays in the same column, which separate
-  # sections could not guarantee.
-  # -------------------------------------------------------------------------
-  - type: grid
-    column_span: 1
-    cards:
-    - type: heading
-      heading: Who's home
-      heading_style: title
-      icon: mdi:account-group
-      visibility:
-      - condition: state
-        entity: input_boolean.chinese_dashboard
-        state_not: 'on'
-    - type: heading
-      heading: 谁在家
-      heading_style: title
-      icon: mdi:account-group
-      visibility:
-      - condition: state
-        entity: input_boolean.chinese_dashboard
-        state: 'on'
-    # Three across, as drawn. A person tile already renders the round avatar,
-    # the name and Home/Away, so this is the mockup's card with no additions.
-    - type: tile
-      entity: person.raymond_du
-      grid_options: {columns: 4, rows: 3}
-      vertical: true
-      tap_action: {action: navigate, navigation_path: /casaray-v2/people}
-    - type: tile
-      entity: person.vinh_du
-      grid_options: {columns: 4, rows: 3}
-      vertical: true
-      tap_action: {action: navigate, navigation_path: /casaray-v2/people}
-    - type: tile
-      entity: person.ai_q_huang
-      grid_options: {columns: 4, rows: 3}
-      vertical: true
-      tap_action: {action: navigate, navigation_path: /casaray-v2/people}
-    # "Parents' room — Occupied · 4 minutes ago" in the render. The AC's own
-    # occupancy sensor is the reading behind it; state_content adds the age.
-    - type: tile
-      entity: binary_sensor.bedroom_parents_room_ac_room_occupied
-      name: Parents Room
-      icon: mdi:motion-sensor
-      grid_options: {columns: 12, rows: 2}
-      state_content: [state, last_changed]
-      tap_action: {action: navigate, navigation_path: /casaray-v2/parents-room}
-      card_mod:
-        style: |
-          ha-card {
-            {% if states(config.entity) in ['unavailable','unknown','none'] %}
-            border-style: dashed;
-            border-color: var(--casaray-grey-border);
-            background: var(--casaray-grey-bg);
-            {% endif %}
-          }
-
-  # -------------------------------------------------------------------------
-  # BAND B -- "One tap", the full width of both columns, four scene cards
-  # across. Split out of the Who's home section earlier because the pair made
-  # that column much taller than Right now beside it.
+  # BAND 4 -- "One tap", the full width of both columns, four scene cards
+  # across. It sits directly under Needs attention because the mobile mockup
+  # puts the controls you actually touch there (CVA-004), and because split
+  # out of Who's home it made that column much taller than Right now.
   #
   # At two resolved columns there is no third group to pair it with: every
   # other section on this page is already spoken for, and inventing content to
@@ -789,7 +639,7 @@ views:
           - switch.mainroomlight_switch_1
 
   # -------------------------------------------------------------------------
-  # BAND C, LEFT -- "Rooms", one of the two columns. Rooms are full-width
+  # BAND 5, LEFT -- "Rooms", one of the two columns. Rooms are full-width
   # rows of that column, never a button grid: icon, name, a live secondary
   # line, the whole row navigating. A tile bound to the room's own entity
   # turns amber by itself when that entity is on, which is the render's
@@ -883,7 +733,7 @@ views:
       icon_tap_action: {action: none}
 
   # -------------------------------------------------------------------------
-  # BAND C, RIGHT -- "Shopping list", the other column, so it fills the space
+  # BAND 5, RIGHT -- "Shopping list", the other column, so it fills the space
   # beside Rooms rather than hanging underneath it.
   # -------------------------------------------------------------------------
   - type: grid
@@ -915,9 +765,160 @@ views:
     - type: todo-list
       entity: todo.shopping_list
       grid_options: {columns: 12, rows: 6}
+  # -------------------------------------------------------------------------
+  # BAND 6, LEFT -- "Right now". The render's left column: one large
+  # weather panel, then two composed status cards, then a grey footnote that
+  # qualifies the section above it.
+  # -------------------------------------------------------------------------
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Right now
+      heading_style: title
+      icon: mdi:weather-partly-cloudy
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 此刻
+      heading_style: title
+      icon: mdi:weather-partly-cloudy
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    # The mockup's hero: big temperature, condition and humidity, then a row
+    # of days beneath. That is precisely what the native weather card draws
+    # with both flags on, so no custom card and no template is involved.
+    - type: weather-forecast
+      entity: weather.forecast_home
+      forecast_type: daily
+      show_current: true
+      show_forecast: true
+      grid_options: {columns: 12, rows: auto}
+    # Amber border: this is live load, and amber is CR-232's "active". The
+    # figure is the metered-circuit total, which the footnote below explains.
+    - type: tile
+      entity: sensor.casa_monitored_power
+      name: Monitored power
+      icon: mdi:flash
+      color: amber
+      grid_options: {columns: 12, rows: auto}
+      state_content: [state, last_changed]
+      tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
+            {% else %}
+            background: var(--casaray-amber-bg);
+            border-color: var(--casaray-amber-border);
+            {% endif %}
+          }
+    - type: tile
+      entity: sensor.casa_solar_expected_today
+      name: Solar expected today
+      icon: mdi:solar-power-variant
+      grid_options: {columns: 12, rows: auto}
+      state_content: state
+      tap_action: {action: navigate, navigation_path: /casaray-v2/energy}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
+            {% endif %}
+          }
+    # Daylight, kept from the previous Home footer. Two across, because they
+    # are a pair and because the left column would otherwise sit noticeably
+    # shorter than the two beside it.
+    - type: tile
+      entity: sensor.sun_next_rising
+      name: Sunrise
+      icon: mdi:weather-sunset-up
+      grid_options: {columns: 6, rows: auto}
+    - type: tile
+      entity: sensor.sun_next_setting
+      name: Sunset
+      icon: mdi:weather-sunset-down
+      grid_options: {columns: 6, rows: auto}
+    # "Footnotes explain, in grey, below the section they qualify" -- the
+    # 14/09 transcription, and this is the render's own wording.
+    - type: markdown
+      grid_options: {columns: 12, rows: auto}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        *{{ '只有两个回路装了计量插座，因此这是被监测的用电量，并非全屋。' if cn else 'Two circuits are metered, so this is monitored load — not the whole house.' }}*
 
   # -------------------------------------------------------------------------
-  # BAND 5 -- security, as one composed panel rather than scattered rows:
+  # BAND 6, RIGHT -- "Who's home", paired with Right now beside it. One tap
+  # used to live in this section; it is BAND 4 now and the two are no longer
+  # related.
+  # -------------------------------------------------------------------------
+  - type: grid
+    column_span: 1
+    cards:
+    - type: heading
+      heading: Who's home
+      heading_style: title
+      icon: mdi:account-group
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 谁在家
+      heading_style: title
+      icon: mdi:account-group
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    # Three across, as drawn. A person tile already renders the round avatar,
+    # the name and Home/Away, so this is the mockup's card with no additions.
+    - type: tile
+      entity: person.raymond_du
+      grid_options: {columns: 4, rows: 3}
+      vertical: true
+      tap_action: {action: navigate, navigation_path: /casaray-v2/people}
+    - type: tile
+      entity: person.vinh_du
+      grid_options: {columns: 4, rows: 3}
+      vertical: true
+      tap_action: {action: navigate, navigation_path: /casaray-v2/people}
+    - type: tile
+      entity: person.ai_q_huang
+      grid_options: {columns: 4, rows: 3}
+      vertical: true
+      tap_action: {action: navigate, navigation_path: /casaray-v2/people}
+    # "Parents' room — Occupied · 4 minutes ago" in the render. The AC's own
+    # occupancy sensor is the reading behind it; state_content adds the age.
+    - type: tile
+      entity: binary_sensor.bedroom_parents_room_ac_room_occupied
+      name: Parents Room
+      icon: mdi:motion-sensor
+      grid_options: {columns: 12, rows: 2}
+      state_content: [state, last_changed]
+      tap_action: {action: navigate, navigation_path: /casaray-v2/parents-room}
+      card_mod:
+        style: |
+          ha-card {
+            {% if states(config.entity) in ['unavailable','unknown','none'] %}
+            border-style: dashed;
+            border-color: var(--casaray-grey-border);
+            background: var(--casaray-grey-bg);
+            {% endif %}
+          }
+
+  # -------------------------------------------------------------------------
+  # BAND 7 -- security, as one composed panel rather than scattered rows:
   # the interpreted summary and the front-door image side by side above, the
   # four things you might tap below. Quiet when everything is closed; a red
   # tile and a red alert card above the moment it is not.
@@ -1021,7 +1022,7 @@ views:
       tap_action: {action: navigate, navigation_path: /casaray-v2/cameras}
 
   # -------------------------------------------------------------------------
-  # BAND E, LEFT -- energy, one column, with Recent activity in the other.
+  # BAND 8, LEFT -- energy, one column, with Recent activity in the other.
   # Four figures two across rather than four: at half the page width, four in
   # a row is about 140px each and `House power` breaks. Every read is guarded;
   # the inverter is frequently unreachable and must never show as a zero, and
@@ -1105,7 +1106,7 @@ views:
           }
 
   # -------------------------------------------------------------------------
-  # BAND E, RIGHT -- recent activity. Not in the wall render, kept because a
+  # BAND 8, RIGHT -- recent activity. Not in the wall render, kept because a
   # wall panel's "what just happened" has no other home on this dashboard.
   # Four rows deep, which lands it level with the Energy group beside it now
   # that Energy carries two rows of tiles.
@@ -1148,7 +1149,7 @@ views:
         - light.dining
 
   # -------------------------------------------------------------------------
-  # BAND F -- the named index. The top rail is six glyphs; this is every board
+  # BAND 9 -- the named index. The top rail is six glyphs; this is every board
   # spelled out, for anyone who would rather read a word than decode an icon.
   #
   # Twelve at TWO columns -- six across -- is what shipped, and live on the

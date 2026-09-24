@@ -24,6 +24,8 @@ navigation · **S3** layout or readability · **S4** polish.
 
 ID series: `UI-` dashboard cards and views · `REG-` regressions and tracking
 integrity · `BILL-` billing views and store · `DR-` design review ·
+`CVA-` visual audit — a mismatch between the live render and an approved
+mockup in `docs/mockups/`, found by comparing the two side by side ·
 **`CFG-` Home Assistant configuration outside this repository** — a defect
 seen on the live instance whose cause and fix live in HA's own config
 (`.storage/`, an integration), not in any tracked file here. A `CFG-` item is
@@ -41,6 +43,57 @@ close goes through the same gate as everything else.
 ---
 
 ## Open
+
+## Visual audit against the approved mockups — 2026-09-20 (iPhone)
+
+Six photographs of the live dashboard on the iPhone, compared against
+`docs/mockups/2026-09-14_mobile_home.png` (the approved **mobile** Home
+render) and `2026-09-14_wall_home.png`. The mockups remain the baseline.
+
+**Read every row with this caveat.** The photographs are of `d22ce8e`, not of
+`HEAD` — the live chip strip reads `Inside 24.0°` and `At home 1 of 3`, which
+is that commit's wording exactly. Nothing from `0d95183` onward was live when
+they were taken. Each row below was re-checked against `HEAD`; none of them is
+fixed there, but a re-audit must be taken from a synced build or it will
+re-find things already closed.
+
+`CVA-001` is the parent of `CVA-002`, `003`, `006` and `009`: there is no
+mobile layout, and **no responsive mechanism exists anywhere in this
+repository** — zero `@media`, `min-width` or `max-width` in
+`dashboards/casaray_v2.yaml` or in `themes/deez_your_name.yaml`. Home
+Assistant has no per-breakpoint card visibility, so one view cannot express
+two layouts. Everything that follows is downstream of that.
+
+| ID | Sev | View / component | Summary | Likely cause | Confidence | Status |
+|---|---|---|---|---|---|---|
+| CVA-001 | S3 | `home`, whole view | The phone renders the full desktop page — twelve bands, ~6 screens of scroll. The mobile mockup specifies five: top bar, two chips, Needs attention, One tap, Rooms. No weather block, no Who's home, no Security or Energy band | One `home` view, no responsive mechanism | High | OPEN — needs an architecture decision (a second `home-mobile` view, or accept one layout and reorder) |
+| CVA-002 | S3 | `home` section 0 | Wordmark card + greeting, clock card, and six nav icons in a third row consume roughly 45% of the first screen before one reading. Mockup: wordmark left, four icons right, one ~80px row, ~13% | Two `markdown` at `columns: 6` and six `button` at `columns: 2`; at one column `columns: 6` is half the **phone** | High (percentages ±5, read off a scaled photo) | OPEN |
+| CVA-003 | S3 | `home`, all sections | Effective column count is 1. Every `column_span: 2` clamps, and cards written for half a two-column band become half a phone — `Bills unpaid` renders as a small tile with dead space beside it | `max_columns: 2` on 22 views; `grid_options.columns` is a fraction of the resolved column, not the band | High | OPEN — needs a wall screenshot before any global `columns: 12` |
+| CVA-004 | S3 | `home` sections 3–7 | Band order is Needs attention → Right now → Who's home → One tap → Rooms. `One tap` is ~2.5 screens down. Mockup puts One tap and Rooms directly under the alerts | Section order | High on the mobile mismatch, Medium on the wall consequence | IN PROGRESS |
+| CVA-005 | S3 | `home` section 2 | Needs attention is a prose sentence in an untinted card plus a half-width `Bills unpaid` tile showing a bare `1`. Mockup: full-width red-brown alert cards, icon in a filled circle, title **and** a detail line (`Front doorbell 20% · Ring chime 20% · …`) | Eleven `conditional` → `tile` at `columns: 6`; a tile gives one `state_content` line and cannot carry a two-line body. The tint is applied but reads as amber, not the mockup's red-brown | High | OPEN — `columns: 12` is deterministic; the icon circle and detail line need markdown per alert. `--casaray-red-bg` / `--casaray-red-border` already exist |
+| CVA-006 | S4 | `home`, several | Dead space to the right of every half-width card in a one-column layout | Same as CVA-003 | High | OPEN |
+| CVA-007 | S4 | `home` section 0 | Wordmark left-aligned, clock right-aligned in its own card, six icons centred in six cards — nothing shares a baseline | Same as CVA-002 | High | OPEN |
+| CVA-008 | S4 | `home` section 0 card 0; section 6 | `CasaRay` is ~44px against a flat hierarchy below it. Mockup gives the wordmark ~22px and puts the contrast into headings vs secondaries, with amber on the **active clause only** (`1 light on` amber, `19.7°` grey) | Wordmark `card_mod` font size; `state_content` gives no per-clause colour | Medium | OPEN |
+| CVA-009 | S4 | `home` sections 4, 8, 9; `weather-forecast` | `House pow…`, `Parents Ro…`, `Raymond …`, `Closed · 1 h…`, `Forecast Ho…`, and the fifth forecast day clipped mid-column | `columns: 6` and `columns: 3` at phone width; `forecast_slots` too high for the width | High | PARTIAL — `b96067e` renamed the three we control (CR-325). The person card and door secondaries are HA-supplied and need `columns: 12` |
+| CVA-010 | S3 | `home` section 1 | One full-width pill with four readings, wrapping to two lines. Mockup mobile: **two discrete pills** side by side with leading icons, one line | Deliberate — `DR-012` chose one wide card because a 3/12 pill drew a circle. That was measured on the **iPad** | High | OPEN — the mockup wins per CLAUDE.md, but `DR-012` was wrong twice in the other direction. Test two pills at `columns: 6` against a screenshot before changing |
+| CVA-011 | S3 | `home` section 0 cards 2–7 | Six nav icons in their own full-width row, plus Home Assistant's five tabs above. Two competing navigations | `columns: 2` buttons; and `DR-015` | High | OPEN — dropping to four icons is deterministic; putting them on the wordmark's row is not |
+| CVA-012 | S1 | `home` section 6 cards 7, 8 | `Garage — On · 5 hours ago` and `Guest Room — Off · 5 hours ago`. Those tiles are wired to `switch.g_monitor_freezer_p110m` (the freezer plug) and `switch.g_printer_p100` (the printer). A tile named for a room, reporting one appliance's switch, asserts something about the room it cannot see | Entity choice, not layout | High | OPEN — rename to the appliance, or template a real room summary. Owner's call |
+| CVA-013 | S4 | `home` section 6 | Room secondaries read `Off · 5 minutes ago`. Mockup reads `1 light on  19.7°`, `Movement  3 plugs on` | `state_content: [state, last_changed]` on all seven tiles | High | OPEN — needs templated markdown rows; same change as CVA-008's amber clause |
+| CVA-014 | S4 | `home` section 5 | One tap is `Evening · Night · Bright · All lights off`, no secondary line, no selected state. Mockup: `Evening · Night · Movie · Off` with a secondary each (`Lamps and dining`, `Dim and turn on TV`) and the active scene tinted amber | `button` carries `name` only and has no secondary slot | High | OPEN — `Bright` vs `Movie` is a scope question; `Movie` implies a media action the scene set does not have |
+
+**Passing, and worth recording as such.** Theme and background consistency:
+the flat near-black page, the lighter translucent cards, the ~16–18px radius
+and the absence of any photographic background all match the approved
+renders across all six photographs. No hardcoded colour was visible anywhere.
+The `--casaray-*` token system is doing its job.
+
+**Also confirmed, previously recorded.** `kiosk_mode` still does not hide
+Home Assistant's header or tab bar (`DR-015`/`CR-306`, waiting on
+`scripts/casaray_kiosk_diagnose.sh` from the host). All six cameras are
+answering (`Cameras 6/6`), so the export's `unavailable` rows for them are
+stale, as `CLAUDE.md` already warns.
+
+---
 
 ## DR-010 — the approved mockup has no left sidebar, and a sections view cannot hold one
 

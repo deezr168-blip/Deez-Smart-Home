@@ -29,13 +29,21 @@ the clock. Bilingual on `input_boolean.chinese_dashboard`; see *Bilingual
 conventions* below.
 
 **Home carries the design system.** It was rebuilt against the 14/09 wall
-render on 2026-09-15 and corrected twice against the live iPad, and is the
-reference every other view follows as it is rebuilt in turn. Nine bands, top
-to bottom: **top bar** (wordmark and clock over a row of six nav icons) ·
+render on 2026-09-15, corrected twice against the live iPad, and reordered on
+2026-09-20 against the approved MOBILE render, and is the reference every
+other view follows as it is rebuilt in turn. Nine bands, top to bottom:
+**top bar** (wordmark and clock over a row of six nav icons) ·
 **chip strip** (one full-width card) · **Needs attention** ·
-**Right now | Who's home** · **One tap** (full width) ·
-**Rooms | Shopping list** · **Security** (full width) ·
+**One tap** (full width) · **Rooms | Shopping list** ·
+**Right now | Who's home** · **Security** (full width) ·
 **Energy now | Recent activity** · **More boards** (full width).
+
+**One tap and Rooms sit directly under Needs attention, and that is
+deliberate** — `docs/mockups/2026-09-14_mobile_home.png` puts the controls
+you actually touch there, and before the reorder One tap was about two and a
+half screens down on a phone. `CVA-004`. Moving Rooms without Shopping list
+would strand both as lone `column_span: 1` sections, so the three move
+together; the YAML's `BAND n` comments are numbered in this order.
 Two columns, horizontal bands, not vertical stacks — see the geometry rules
 below for why, and do not raise `max_columns` without a live screenshot.
 Navigation lives **in the page**, not in Home Assistant's
@@ -304,9 +312,9 @@ a pair of comparable height or one full-width group:
 | top bar | full width — wordmark(6) + clock(6), then six nav icons at 2 each |
 | chip strip | full width — one card |
 | Needs attention | full width — alert cards at `columns: 6`, two across |
-| Right now \| Who's home | one column each |
 | One tap | full width — four scene cards at `columns: 3`, four across |
 | Rooms \| Shopping list | one column each |
+| Right now \| Who's home | one column each |
 | Security | full width |
 | Energy now \| Recent activity | one column each |
 | More boards | full width |
@@ -338,8 +346,8 @@ that, for `casaray_v2.yaml`:
 CSS grid items: the short one does not shrink the row, it leaves a hole under
 itself. Pair groups of comparable height across a band, and give an
 under-filled card an explicit `rows:` rather than leaving it `auto` beside a
-tall neighbour. Home's five bands (top bar · chips · Needs attention ·
-Right now/Who's home/One tap · Rooms/Shopping · Security · Energy/Recent ·
+tall neighbour. Home's bands (top bar · chips · Needs attention · One tap ·
+Rooms/Shopping · Right now/Who's home · Security · Energy/Recent ·
 More boards) are arranged on exactly that principle.
 
 **A lone `column_span: 1` section leaves half a row empty, and this is now
