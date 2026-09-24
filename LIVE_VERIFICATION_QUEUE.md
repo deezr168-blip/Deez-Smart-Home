@@ -524,8 +524,8 @@ Say which and it is a small change either way.
 
 | ID | What to check live | Expected result | Commit | P | Result |
 |---|---|---|---|---|---|
-| CFG-004 | Run `sh /config/casaray/casaray_disk_report.sh` on the host and paste the output back | A categorised read-only report: filesystem free space, the largest consumers under `/config`, and the database, logs, backups, media, cache, CasaRay backups and git clone each measured separately. It deletes nothing | — | P1 | PENDING |
-| REG-016 | `sh /config/casaray/casaray_rollback.sh --list` on a host that has BOTH backup naming schemes | The list is ordered by date, and the last line is genuinely the most recent — not the newest `casaray_v2_predeploy_*` file sitting below five newer `casaray_v2.yaml.predeploy.*` ones | — | P1 | PENDING |
+| CFG-004 | Run `sh /config/casaray/casaray_disk_report.sh` on the host and paste the output back | A categorised read-only report: filesystem free space, the largest consumers under `/config`, and the database, logs, backups, media, cache, CasaRay backups and git clone each measured separately. It deletes nothing | `ef27115` | P1 | PENDING |
+| REG-016 | `sh /config/casaray/casaray_rollback.sh --list` on a host that has BOTH backup naming schemes | The list is ordered by date, and the last line is genuinely the most recent — not the newest `casaray_v2_predeploy_*` file sitting below five newer `casaray_v2.yaml.predeploy.*` ones | `ef27115` | P1 | PENDING |
 
 `REG-016` is the more important of the two. See `DASHBOARD_ISSUES.md`: a bare
 rollback on a mixed-scheme host restored the newest backup of the OLD naming
