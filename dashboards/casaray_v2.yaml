@@ -639,15 +639,10 @@ views:
           - switch.mainroomlight_switch_1
 
   # -------------------------------------------------------------------------
-  # BAND 5, LEFT -- "Rooms", one of the two columns. Rooms are full-width
-  # rows of that column, never a button grid: icon, name, a live secondary
-  # line, the whole row navigating. A tile bound to the room's own entity
-  # turns amber by itself when that entity is on, which is the render's
-  # active state.
-  #
-  # Half of a two-column page is close to the width the 14/09 render draws
-  # these rows at. Across the whole page they would be a name and a state at
-  # opposite ends of a very long, mostly empty row.
+  # BAND 5, LEFT -- "Rooms". Compact room-centric rows: each row reports
+  # only instrumentation that actually exists for that room. The whole row
+  # remains a navigation target; unavailable data is never presented as a
+  # healthy/off/quiet state.
   # -------------------------------------------------------------------------
   - type: grid
     column_span: 1
@@ -668,69 +663,105 @@ views:
       - condition: state
         entity: input_boolean.chinese_dashboard
         state: 'on'
-    - type: tile
+
+    - type: markdown
       grid_options: {columns: 12, rows: auto}
-      entity: light.living_room
-      name: Living Room
-      icon: mdi:sofa
-      state_content: [state, last_changed]
-      vertical: false
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set parts = [] -%}
+        {%- set l = states('light.living_room') -%}
+        {%- if l == 'on' %}{% set parts = parts + [('灯光已开' if cn else 'Lights on')] %}{% elif l == 'off' %}{% set parts = parts + [('灯光已关' if cn else 'Lights off')] %}{% endif -%}
+        {%- set t = states('sensor.living_room_living_hue_hue_sensor_temperature') | float(none) -%}
+        {%- if t is not none %}{% set parts = parts + [((t | round(1)) ~ '°')] %}{% endif -%}
+        {%- set m = states('binary_sensor.living_room_living_hue_hue_sensor_motion') -%}
+        {%- if m == 'on' %}{% set parts = parts + [('有动作' if cn else 'Motion')] %}{% elif m == 'off' %}{% set parts = parts + [('安静' if cn else 'Quiet')] %}{% endif -%}
+        ### 🛋️ {{ '客厅' if cn else 'Living Room' }}
+        {{ parts | join(' · ') if parts else ('无数据' if cn else 'No data') }}
       tap_action: {action: navigate, navigation_path: /casaray-v2/living-room}
-      icon_tap_action: {action: none}
-    - type: tile
+
+    - type: markdown
       grid_options: {columns: 12, rows: auto}
-      entity: light.dining
-      name: Dining
-      icon: mdi:table-chair
-      state_content: [state, last_changed]
-      vertical: false
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set parts = [] -%}
+        {%- set l = states('light.dining') -%}
+        {%- if l == 'on' %}{% set parts = parts + [('灯光已开' if cn else 'Lights on')] %}{% elif l == 'off' %}{% set parts = parts + [('灯光已关' if cn else 'Lights off')] %}{% endif -%}
+        {%- set t = states('sensor.living_room_living_room_temperature') | float(none) -%}
+        {%- if t is not none %}{% set parts = parts + [((t | round(1)) ~ '°')] %}{% endif -%}
+        {%- set m = states('binary_sensor.sensor_group_motion') -%}
+        {%- if m == 'on' %}{% set parts = parts + [('有动作' if cn else 'Motion')] %}{% elif m == 'off' %}{% set parts = parts + [('安静' if cn else 'Quiet')] %}{% endif -%}
+        ### 🍽️ {{ '餐厅' if cn else 'Dining' }}
+        {{ parts | join(' · ') if parts else ('无数据' if cn else 'No data') }}
       tap_action: {action: navigate, navigation_path: /casaray-v2/dining}
-      icon_tap_action: {action: none}
-    - type: tile
+
+    - type: markdown
       grid_options: {columns: 12, rows: auto}
-      entity: binary_sensor.k_motion_sensor_motion
-      name: Kitchen
-      icon: mdi:silverware-fork-knife
-      state_content: [state, last_changed]
-      vertical: false
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set parts = [] -%}
+        {%- set m = states('binary_sensor.k_motion_sensor_motion') -%}
+        {%- if m == 'on' %}{% set parts = parts + [('有动作' if cn else 'Motion')] %}{% elif m == 'off' %}{% set parts = parts + [('安静' if cn else 'Quiet')] %}{% endif -%}
+        {%- set d = states('binary_sensor.lg_fridge_door') -%}
+        {%- if d == 'on' %}{% set parts = parts + [('冰箱门打开' if cn else 'Fridge open')] %}{% elif d == 'off' %}{% set parts = parts + [('冰箱门关闭' if cn else 'Fridge closed')] %}{% endif -%}
+        ### 🍴 {{ '厨房' if cn else 'Kitchen' }}
+        {{ parts | join(' · ') if parts else ('无数据' if cn else 'No data') }}
       tap_action: {action: navigate, navigation_path: /casaray-v2/kitchen}
-      icon_tap_action: {action: none}
-    - type: tile
+
+    - type: markdown
       grid_options: {columns: 12, rows: auto}
-      entity: climate.bedroom_parents_room_ac
-      name: Parents Room
-      icon: mdi:bed-king
-      state_content: [state, last_changed]
-      vertical: false
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set parts = [] -%}
+        {%- set t = states('sensor.bedroom_motion_sensor_temperature') | float(none) -%}
+        {%- if t is not none %}{% set parts = parts + [((t | round(1)) ~ '°')] %}{% endif -%}
+        {%- set o = states('binary_sensor.bedroom_parents_room_ac_room_occupied') -%}
+        {%- if o == 'on' %}{% set parts = parts + [('有人' if cn else 'Occupied')] %}{% elif o == 'off' %}{% set parts = parts + [('无人' if cn else 'Empty')] %}{% endif -%}
+        {%- set ac = states('climate.bedroom_parents_room_ac') -%}
+        {%- if ac == 'off' %}{% set parts = parts + [('空调关闭' if cn else 'AC off')] %}{% elif ac not in ['unavailable','unknown','none',''] %}{% set parts = parts + [(('空调 ' if cn else 'AC ') ~ ac)] %}{% endif -%}
+        ### 🛏️ {{ '父母房' if cn else 'Parents Room' }}
+        {{ parts | join(' · ') if parts else ('无数据' if cn else 'No data') }}
       tap_action: {action: navigate, navigation_path: /casaray-v2/parents-room}
-      icon_tap_action: {action: none}
-    - type: tile
+
+    - type: markdown
       grid_options: {columns: 12, rows: auto}
-      entity: light.bedroom_bedroom
-      name: Ray Bedroom
-      icon: mdi:bed
-      state_content: [state, last_changed]
-      vertical: false
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set parts = [] -%}
+        {%- set l = states('light.bedroom_bedroom') -%}
+        {%- if l == 'on' %}{% set parts = parts + [('灯光已开' if cn else 'Lights on')] %}{% elif l == 'off' %}{% set parts = parts + [('灯光已关' if cn else 'Lights off')] %}{% endif -%}
+        {%- set p = states('sensor.r_energy_monitor_p110m_current_consumption') | float(none) -%}
+        {%- if p is not none %}{% set parts = parts + [((p | round(0) | int) ~ ' W')] %}{% endif -%}
+        {%- set bl = states('cover.aqara_roller_shade_driver_e1') -%}
+        {%- if bl in ['open','opening'] %}{% set parts = parts + [('卷帘打开' if cn else 'Blind open')] %}{% elif bl in ['closed','closing'] %}{% set parts = parts + [('卷帘关闭' if cn else 'Blind closed')] %}{% endif -%}
+        ### 🛏️ {{ 'Ray 卧室' if cn else 'Ray Bedroom' }}
+        {{ parts | join(' · ') if parts else ('无数据' if cn else 'No data') }}
       tap_action: {action: navigate, navigation_path: /casaray-v2/ray-bedroom}
-      icon_tap_action: {action: none}
-    - type: tile
+
+    - type: markdown
       grid_options: {columns: 12, rows: auto}
-      entity: switch.g_monitor_freezer_p110m
-      name: Garage freezer
-      icon: mdi:fridge-outline
-      state_content: [state, last_changed]
-      vertical: false
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set parts = [] -%}
+        {%- set p = states('sensor.g_monitor_freezer_p110m_current_consumption') | float(none) -%}
+        {%- if p is not none %}{% set parts = parts + [(('冰柜 ' if cn else 'Freezer ') ~ (p | round(0) | int) ~ ' W')] %}{% endif -%}
+        {%- set ov = states('binary_sensor.g_monitor_freezer_p110m_overloaded') -%}
+        {%- if ov == 'on' %}{% set parts = parts + [('过载' if cn else 'OVERLOAD')] %}{% elif ov == 'off' %}{% set parts = parts + [('正常' if cn else 'Normal')] %}{% endif -%}
+        ### 🧊 {{ '车库' if cn else 'Garage' }}
+        {{ parts | join(' · ') if parts else ('无数据' if cn else 'No data') }}
       tap_action: {action: navigate, navigation_path: /casaray-v2/garage}
-      icon_tap_action: {action: none}
-    - type: tile
+
+    - type: markdown
       grid_options: {columns: 12, rows: auto}
-      entity: switch.g_printer_p100
-      name: Guest Room printer
-      icon: mdi:printer
-      state_content: [state, last_changed]
-      vertical: false
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set parts = [] -%}
+        {%- set p = states('switch.g_printer_p100') -%}
+        {%- if p == 'on' %}{% set parts = parts + [('打印机已开' if cn else 'Printer on')] %}{% elif p == 'off' %}{% set parts = parts + [('打印机已关' if cn else 'Printer off')] %}{% endif -%}
+        {%- set c = states('binary_sensor.g_printer_p100_cloud_connection') -%}
+        {%- if c == 'off' %}{% set parts = parts + [('插座离线' if cn else 'Plug offline')] %}{% endif -%}
+        ### 🖨️ {{ '客房' if cn else 'Guest Room' }}
+        {{ parts | join(' · ') if parts else ('无数据' if cn else 'No data') }}
       tap_action: {action: navigate, navigation_path: /casaray-v2/guest-room}
-      icon_tap_action: {action: none}
 
   # -------------------------------------------------------------------------
   # BAND 5, RIGHT -- "Shopping list", the other column, so it fills the space
