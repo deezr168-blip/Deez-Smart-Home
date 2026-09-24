@@ -24,7 +24,19 @@ sect() { n=$((n+1)); printf '\n\033[1m[%d] %s\033[0m\n' "$n" "$1"; }
 
 mapfile -t files < <(git ls-files --cached --others --exclude-standard 2>/dev/null)
 mapfile -t yamls < <(printf '%s\n' "${files[@]:-}" | grep -E '\.ya?ml$' || true)
-mapfile -t dashes < <(printf '%s\n' "${files[@]:-}" | grep -E '^dashboards/.*\.ya?ml
+mapfile -t dashes < <(printf '%s\n' "${files[@]:-}" | grep -E '^dashboards/.*\.ya?ml$' || true)
+
+# Python powers the deep repository validators. Home Assistant OS add-on
+# shells such as Terminal & SSH may intentionally omit Python; treat that as
+# an unavailable validation capability rather than a dashboard defect.
+if command -v python3 >/dev/null 2>&1; then
+  PYTHON=python3
+elif command -v python >/dev/null 2>&1; then
+  PYTHON=python
+else
+  PYTHON=""
+fi
+
 sect "YAML syntax and duplicate keys"
 if [ "${#yamls[@]}" -eq 0 ]; then
   pass "no YAML tracked"
