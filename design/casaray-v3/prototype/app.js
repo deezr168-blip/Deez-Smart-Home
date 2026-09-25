@@ -959,7 +959,9 @@
     if (!VALID.has(route)) route = 'home';
     UI.route = route;
     UI.overlay = null;
-    if (push && location.hash !== '#' + route) history.pushState(null, '', '#' + route);
+    if (push && location.hash !== '#' + route) {
+      try { history.pushState(null, '', '#' + route); } catch (e) { /* sandboxed frame: navigation still works, only the URL does not change */ }
+    }
     render();
     window.scrollTo({ top: 0 });
   }
