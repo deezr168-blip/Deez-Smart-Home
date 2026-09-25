@@ -6,6 +6,50 @@ and `ha-deploy` are unaffected by everything here.
 
 ---
 
+## V3-006 · 25/09/26 · A second session built a full prototype — not reconciled with V3-004
+
+**Status:** open, awaiting the owner. **This entry does not choose a concept
+and does not close V3-004.** V3-005 stays reserved for the concept selection.
+
+A second Claude session, working from a direct owner request made before this
+workspace's `CLAUDE.md` existed, built a complete interactive prototype in
+parallel:
+
+- `prototype/`: vanilla HTML/CSS/JS, 10 boards and 8 room pages, mock data on
+  132 real entity IDs (all present in the 05/09 export and all already on V2),
+  three scenarios (normal · everyone away · device outage), dark/light, EN/中文
+  via `input_boolean.chinese_dashboard`.
+- `FEATURE_INVENTORY.md`, `DESIGN_SPEC.md`, `ENTITY_MAPPING.md`, `README.md`,
+  and `tools/` (entity verifier, a 68-check Playwright harness).
+
+It conflicts with the review gate in `CLAUDE.md` ("do not complete the
+prototype … before" a concept is chosen), and it departs from several rules
+added in V3-001:
+
+- **Navigation.** It has Media and People as destinations. It has no separate
+  Network, Alerts or Lighting studio.
+- **Home and Back.** Back appears only on room pages, not on every screen.
+- **Language.** The switch has two states and is not Khmer-ready.
+- **Home length.** Home scrolls on the wall iPad.
+- **Sirens.** They use a three-across tile, not the large, hard-to-mis-tap
+  treatment.
+- **Fonts.** It uses three families, not two.
+- **Icons.** It uses filled MDI icons, not a stroke set.
+- **Names.** Tokens and file names differ from `--v3-*`, `SPEC.md` and
+  `FEATURE_PARITY.md`.
+
+It was pushed only so the work is not lost when its container is reclaimed.
+The owner was offered three ways forward:
+
+1. Treat it as a fourth concept, **D**, alongside A–C in V3-004.
+2. Adopt it as the prototype and update `CLAUDE.md` to match.
+3. Set it aside, choose from A–C, and build the prototype under these rules.
+
+**Until the owner answers, do not delete, restructure or build on
+`prototype/`, and do not treat it as the chosen direction.** It also found an
+error that applies to all V3 work: V2 calls Powerpal "whole-house", but it is
+grid import (V3-003 agrees).
+
 ## V3-004 · 25/09/26 · Home concept review — awaiting owner selection
 
 **Status:** open, blocking the interactive prototype.

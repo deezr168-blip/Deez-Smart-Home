@@ -7,6 +7,10 @@ package or any deployment script.
 
 Branch: `casaray-v3-design`, cut from `ha-deploy` at `18a4e5d`.
 
+> **Status:** this prototype was built in parallel with the Home concept
+> review in `concepts/` and has not been reconciled with it. See
+> `DECISIONS.md` **V3-006**. The workspace rules are in `CLAUDE.md`.
+
 | File | What it is |
 |---|---|
 | `prototype/` | The prototype: `index.html`, `styles.css`, `app.js`, `data.js` (demo data), `i18n.js` (EN / 中文), `icons.js` (Material Design Icons, the set HA uses) |
