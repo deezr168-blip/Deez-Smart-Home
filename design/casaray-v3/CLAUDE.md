@@ -105,6 +105,26 @@ wall iPad.
 A feature may be **moved, merged or restyled**. It may not be **dropped**
 without an explicit owner decision recorded in the parity file.
 
+## Visual identity
+
+A premium, modern smart-home interface: **sophisticated dark surfaces,
+restrained accent colours, refined typography, consistent icons and carefully
+balanced spacing.** Clarity, elegance and usability outrank decoration, in
+that order.
+
+- **Surfaces:** layered dark neutrals (page → card → elevated), separated by
+  tone and a hairline border rather than heavy shadows.
+- **Accent:** one restrained accent plus the semantic state colours below.
+  Colour is spent on meaning; if everything is tinted, nothing is.
+- **Typography:** at most two families — a display face for the clock and
+  headline numbers, a highly legible text face for everything else, with CJK
+  fallbacks that sit on the same baseline. Tabular figures for every reading.
+  A fixed type scale; no ad-hoc sizes.
+- **Icons:** one stroke-icon family, one stroke weight, one size grid. No
+  emoji, no mixed icon sets.
+- **Spacing:** a 4 px base grid; card padding, gaps and radii come from
+  tokens. Equal things get equal space.
+
 ## Design direction
 
 **Modern, premium smart-home dashboard.** Calm, cinematic, uncluttered —
@@ -125,6 +145,97 @@ Carry forward from V2 (all measured or owner-approved):
   *answered* (`9 of 9 reporting`), not the list length.
 - **All colour through tokens.** No literal colours in component styles.
 
+## Information architecture and navigation
+
+Top-level destinations, in this order:
+
+| # | Destination | EN | 中文 |
+|---|---|---|---|
+| 1 | Home | Home | 首页 |
+| 2 | Rooms | Rooms | 房间 |
+| 3 | Energy | Energy | 能源 |
+| 4 | Cameras and Security | Cameras & security | 摄像头与安防 |
+| 5 | Lighting Studio | Lighting studio | 灯光工作室 |
+| 6 | Climate | Climate | 气候 |
+| 7 | Network | Network | 网络 |
+| 8 | House Health | House health | 房屋健康 |
+| 9 | Alerts | Alerts | 警报 |
+| 10 | Bills | Bills | 账单 |
+
+Chinese labels reuse V2 terms (首页、房间、能源、摄像头、安防、灯光、气候、网络、
+房屋健康、警报、账单); "灯光工作室" is new and provisional. Confirm against the legacy
+vocabulary before the prototype is finalised.
+
+- **Home and Back are on every screen except Home itself**, in the same place,
+  at ≥ 44 px. *Back* returns to the previous page (history), not to a fixed
+  parent; *Home* always goes to Home. Kiosk mode hides the browser and Home
+  Assistant chrome, so without these a screen is a dead end.
+- Every destination is reachable from Home in **one tap**.
+- The current destination is always marked in the navigation.
+
+## Home dashboard
+
+Home answers "is the house all right, and what do I usually do next?" at a
+glance, **with minimal or no scrolling on the wall iPad** (1180 × 820).
+Content, in priority order:
+
+1. time and date (`DD/MM/YY`), weather
+2. presence — who is home
+3. consumption (grid import) and solar production
+4. security — cameras online / offline / unknown, anything in alert
+5. lighting — what is on, one-tap scenes
+6. climate — current temperature and AC state
+7. notifications — what needs attention
+8. frequent household controls
+
+Anything that does not fit the first screen on the iPad is a link to its
+destination, not a scroll.
+
+## Rooms
+
+- **Every room uses the same layout**, so a room learned is every room
+  learned. Fixed order of groups: **lighting · climate · sensors ·
+  automations**. A group with nothing in it is omitted with a one-line note,
+  not left as an empty card.
+- **Parents' controls must be simple and immediately understandable:** large
+  targets, plain words ("Lights on", "Air-con off, 23°"), one action per
+  control, no jargon or entity names, no gestures that are not obvious, and
+  the current state stated in words as well as colour. The Parents Room and
+  any control a parent is expected to use are designed to this bar first.
+
+## Energy
+
+- Use **verified Fronius and Powerpal entities only** (see
+  `ENTITY_MAPPING.md`). Surfaces: **grid import, solar production, export,
+  consumption, historical charts**.
+- A figure that has no verified source is drawn as "no source entity", not
+  computed from a guess. As of 25/09/26 there is **no verified grid-export
+  power entity** (no Fronius smart-meter power sensor exists in the export),
+  so export and true whole-house consumption are open items — see
+  `DECISIONS.md`.
+- **A separate, clearly labelled future battery section** reserves the place
+  for a home battery. It shows "not installed" until a battery entity exists,
+  and never a placeholder number.
+
+## Cameras and security
+
+- Use **verified camera and security entities only**.
+- Four states, each distinct in colour, icon **and** words, never colour
+  alone: **online** (streaming / idle), **offline** (unavailable),
+  **unknown** (unknown / no data) and **alert** (motion, siren, door open,
+  fault).
+- Sirens keep their deliberate large, hard-to-mis-tap treatment and any
+  action that sounds one is confirmed. No control that disables a camera,
+  turns on privacy mode or unlocks anything is added without owner approval.
+
+## House health
+
+One place that consolidates **unavailable devices, integration failures,
+battery warnings and maintenance requirements** (updates, filters, device
+service). Each item says what it is, where it is, since when, and what to do
+about it. Counts follow the "what answered" rule. Home shows a one-line
+summary that links here.
+
 ## Displays and layout
 
 **Landscape iPad is the primary display** (the wall-mounted kiosk). Design it
@@ -136,7 +247,8 @@ first and judge every decision there.
 - Touch targets **≥ 44 × 44 px**; no hover-only affordances.
 - Legible at arm's length: nothing essential below 13 px.
 
-**Responsive desktop and mobile layouts** follow from the iPad design:
+**Responsive desktop and mobile layouts** are redesigned for their device,
+not the iPad layout scaled — the information hierarchy is re-decided for each:
 
 - **Mobile (≤ 600 px, iPhone portrait 390 × 844):** single column; the
   controls you actually touch come first (the V2 mobile render's order — needs
@@ -164,7 +276,7 @@ before implementation.
 - The prototype exposes a theme switch, and respects `prefers-color-scheme`
   until one is chosen.
 
-## Language: English and Chinese
+## Language: English and Chinese (Khmer later)
 
 The root `CLAUDE.md` bilingual conventions apply to V3 **unchanged**:
 
@@ -183,6 +295,32 @@ toggle switches instantly without reload. In Home Assistant the toggle is
 `input_boolean.chinese_dashboard`; the prototype mirrors it as mock state
 under that same ID. Layouts must survive both languages — check that no label
 truncates in either.
+
+**Prepare for future Khmer (`km`) support** without building it yet:
+
+- String keys, never inline copy; the dictionary is `{en, zh, km?}` and a
+  missing `km` string falls back to English.
+- The language switch is a list of languages, not a two-state toggle, so a
+  third entry needs no redesign. (Home Assistant's binary
+  `input_boolean.chinese_dashboard` would need a successor helper — an
+  implementation question recorded in `DECISIONS.md`, not solved here.)
+- Khmer script needs more line height and horizontal room than Latin or Han
+  and has no spaces between words: no fixed-width text containers, generous
+  line height, and a Khmer-capable font in the fallback stack.
+
+## Design review gate
+
+Before the interactive prototype is completed, present **three distinct
+visual concepts** of the **Home** screen, rendered at the same iPad
+landscape size with the same data, so they compare like for like:
+
+- **A — Minimal architectural**
+- **B — Modern dark control centre**
+- **C — Balanced premium family dashboard**
+
+**Wait for the owner's selection.** Do not complete the prototype, and do not
+build other destinations in a chosen style, before it. Record the selection
+(and any mixing of concepts the owner asks for) in `DECISIONS.md`.
 
 ## The interactive prototype
 
@@ -208,6 +346,7 @@ design/casaray-v3/
   FEATURE_PARITY.md       current capability → V3 location
   ENTITY_MAPPING.md       V3 surface → real entity IDs
   DECISIONS.md            dated V3 design decisions and departures from V2
+  concepts/               the three Home concepts for the design review
   prototype/
     index.html
     styles/  scripts/  mock-data/  i18n/

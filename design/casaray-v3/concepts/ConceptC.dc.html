@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>CasaRay Home — concept C</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Noto+Sans+SC:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+:root{--page:#111315;--card:#1a1d21;--card2:#22262b;--border:rgba(255,244,230,0.07);--border2:rgba(255,244,230,0.14);--ink:#f3efe8;--ink2:#c3bdb3;--muted:#958f86;--accent:#e9b872;--ok:#6fcf97;--active:#e9b872;--alert:#f0806e;--off:#7a7d82}
+body{margin:0;background:#111315;font-family:"Plus Jakarta Sans","Noto Sans SC",system-ui,sans-serif;color:#f3efe8}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:#e9b872}a:hover{color:#f3cf98}
+</style>
+</helmet>
+<div style="width: 1180px; height: 820px; box-sizing: border-box; display: flex; flex-direction: column; gap: 18px; padding: 28px 32px 18px 32px; background: var(--page); color: var(--ink); font-variant-numeric: tabular-nums; overflow: hidden">
+
+<header style="display: flex; justify-content: space-between; align-items: center; gap: 24px; min-height: 104px">
+<div style="display: flex; flex-direction: column; gap: 8px; max-width: 700px">
+<div style="font-size: 15px; font-weight: 600; color: var(--accent)">CasaRay</div>
+<h1 style="margin: 0; font-size: 34px; font-weight: 700; letter-spacing: -0.02em">{{t.greeting}}</h1>
+<p style="margin: 0; font-size: 18px; line-height: 1.4; color: var(--ink2)">{{t.sentence}}</p>
+</div>
+<div style="display: flex; align-items: center; gap: 22px">
+<div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 18px; background: var(--card)">
+<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v2M4.9 4.9l1.4 1.4M2 12h2M19.1 4.9l-1.4 1.4M15.9 10.3A4 4 0 0 0 8.1 11M17.5 20H8a5 5 0 1 1 4.3-7.5h.2a3.8 3.8 0 0 1 5 7.5z"></path></svg>
+<div style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 22px; font-weight: 600">17°</span><span style="font-size: 13px; color: var(--muted)">{{t.weather}}</span></div>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px">
+<span style="font-size: 56px; font-weight: 600; line-height: 1; letter-spacing: -0.03em">16:20</span>
+<span style="font-size: 15px; color: var(--ink2)">{{t.day}} 25/09/26</span>
+</div>
+<button type="button" onClick="{{toggleLang}}" aria-label="{{t.langAria}}" style="min-width: 60px; height: 48px; border-radius: 24px; border: 1px solid var(--border2); background: var(--card); font-size: 15px; font-weight: 600">{{t.langBtn}}</button>
+</div>
+</header>
+
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; height: 222px">
+
+<section aria-label="{{t.people}}" style="display: flex; flex-direction: column; gap: 14px; padding: 20px 22px; border-radius: 24px; background: var(--card); border: 1px solid var(--border)">
+<h2 style="margin: 0; font-size: 15px; font-weight: 600; color: var(--ink2)">{{t.people}}</h2>
+<div style="display: flex; gap: 14px; justify-content: space-between; flex-grow: 1; align-items: center">
+<sc-for list="{{people}}" as="p" hint-placeholder-count="3">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 8px; flex-grow: 1">
+<span style="{{p.avatar}}">{{p.initial}}</span>
+<span style="font-size: 16px; font-weight: 600">{{p.name}}</span>
+<span style="{{p.stateStyle}}">{{p.state}}</span>
+</div>
+</sc-for>
+</div>
+</section>
+
+<section aria-label="{{t.energy}}" style="display: flex; flex-direction: column; gap: 10px; padding: 20px 22px; border-radius: 24px; background: var(--card); border: 1px solid var(--border)">
+<div style="display: flex; justify-content: space-between; align-items: center">
+<h2 style="margin: 0; font-size: 15px; font-weight: 600; color: var(--ink2)">{{t.energy}}</h2>
+<span style="font-size: 13px; color: var(--muted)">{{t.mock}}</span>
+</div>
+<div style="display: flex; align-items: baseline; gap: 8px"><span style="font-size: 44px; font-weight: 700; letter-spacing: -0.02em">1.62</span><span style="font-size: 17px; color: var(--ink2)">kW</span><span style="font-size: 15px; color: var(--accent); padding-left: 6px">{{t.solarNow}}</span></div>
+<div style="display: flex; gap: 10px; margin-top: auto">
+<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: 14px; background: var(--card2)"><span style="font-size: 13px; color: var(--muted)">{{t.gridImport}}</span><span style="font-size: 17px; font-weight: 600">0.38 kW</span></div>
+<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: 14px; border: 1px dashed var(--border2)"><span style="font-size: 13px; color: var(--muted)">{{t.export}}</span><span style="font-size: 15px; color: var(--off)">{{t.noSource}}</span></div>
+</div>
+</section>
+
+<section aria-label="{{t.climate}}" style="display: flex; flex-direction: column; gap: 10px; padding: 20px 22px; border-radius: 24px; background: var(--card); border: 1px solid var(--border)">
+<h2 style="margin: 0; font-size: 15px; font-weight: 600; color: var(--ink2)">{{t.parentsAc}}</h2>
+<div style="display: flex; align-items: baseline; gap: 10px"><span style="font-size: 44px; font-weight: 700; letter-spacing: -0.02em">23°</span><span style="font-size: 16px; color: var(--ink2)">{{acWords}}</span></div>
+<button type="button" onClick="{{toggleAc}}" aria-pressed="{{acPressed}}" style="{{acStyle}}">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v10M18.4 6.6a9 9 0 1 1-12.8 0"></path></svg>
+<span>{{acAction}}</span>
+</button>
+</section>
+</div>
+
+<div style="display: grid; grid-template-columns: 7fr 5fr; gap: 18px; flex-grow: 1; min-height: 0">
+
+<section aria-label="{{t.quick}}" style="display: flex; flex-direction: column; gap: 14px; padding: 20px 22px; border-radius: 24px; background: var(--card); border: 1px solid var(--border)">
+<div style="display: flex; justify-content: space-between; align-items: center">
+<h2 style="margin: 0; font-size: 15px; font-weight: 600; color: var(--ink2)">{{t.quick}}</h2>
+<span style="font-size: 13px; color: var(--muted)">{{t.lightsSum}}</span>
+</div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; flex-grow: 1">
+<sc-for list="{{scenes}}" as="s" hint-placeholder-count="4">
+<button type="button" onClick="{{s.tap}}" aria-pressed="{{s.pressed}}" style="{{s.style}}">
+<span style="{{s.iconWrap}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{s.icon}}"></path></svg></span>
+<span style="display: flex; flex-direction: column; gap: 3px; align-items: flex-start; text-align: left"><span style="font-size: 17px; font-weight: 600; line-height: 1.2">{{s.label}}</span><span style="font-size: 14px; color: var(--muted)">{{s.state}}</span></span>
+</button>
+</sc-for>
+</div>
+</section>
+
+<section aria-label="{{t.attention}}" style="display: flex; flex-direction: column; gap: 10px; padding: 20px 22px; border-radius: 24px; background: var(--card); border: 1px solid var(--border)">
+<div style="display: flex; justify-content: space-between; align-items: center">
+<h2 style="margin: 0; font-size: 15px; font-weight: 600; color: var(--ink2)">{{t.attention}}</h2>
+<span style="font-size: 13px; color: var(--muted)">3</span>
+</div>
+<sc-for list="{{attention}}" as="row" hint-placeholder-count="3">
+<button type="button" style="display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 6px 12px; border-radius: 16px; border: none; background: var(--card2); text-align: left">
+<span style="{{row.dot}}"></span>
+<span style="display: flex; flex-direction: column; gap: 1px; flex-grow: 1"><span style="font-size: 15px; font-weight: 500">{{row.title}}</span><span style="font-size: 13px; color: var(--muted)">{{row.meta}}</span></span>
+</button>
+</sc-for>
+<div style="display: flex; align-items: center; gap: 10px; margin-top: auto; padding: 10px 12px; border-radius: 16px; border: 1px solid var(--border)">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+<span style="font-size: 14px; color: var(--ink2)">{{t.securitySum}}</span>
+</div>
+</section>
+</div>
+
+<nav aria-label="{{t.navLabel}}" style="display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 4px; padding: 6px; border-radius: 24px; background: var(--card); border: 1px solid var(--border)">
+<sc-for list="{{nav}}" as="item" hint-placeholder-count="10">
+<button type="button" aria-current="{{item.aria}}" style="{{item.style}}">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{item.icon}}"></path></svg>
+<span style="font-size: 13px; line-height: 1.15; text-align: center">{{item.label}}</span>
+</button>
+</sc-for>
+</nav>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1180,"height":820}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { lang: 'en', on: { purifier: true, ac: false } };
+  }
+  icons() {
+    return {
+      home: 'M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z',
+      rooms: 'M5 21V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v17M3 21h18M15 12h.01',
+      energy: 'M13 2 4 14h7l-1 8 9-12h-7z',
+      security: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',
+      lighting: 'M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z',
+      climate: 'M14 14.8V5a2 2 0 0 0-4 0v9.8a4 4 0 1 0 4 0z',
+      network: 'M2 8.8a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M12 20h.01',
+      health: 'M3 12h4l3-8 4 16 3-8h4',
+      alerts: 'M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0',
+      bills: 'M5 3v18l2-1.5L9 21l2-1.5L13 21l2-1.5L17 21l2-1.5V3l-2 1.5L15 3l-2 1.5L11 3 9 4.5 7 3zM9 9h6M9 13h6',
+      fan: 'M12 10c0-4 1-7 4-7s3 4-2 7M14 12c4 0 7 1 7 4s-4 3-7-2M12 14c0 4-1 7-4 7s-3-4 2-7M10 12c-4 0-7-1-7-4s4-3 7 2',
+      moon: 'M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z',
+      sun: 'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4'
+    };
+  }
+  strings() {
+    return {
+      en: { navLabel: 'Main navigation', langAria: 'Switch language', langBtn: '中文', mock: 'Mock data',
+        home: 'Home', rooms: 'Rooms', energy: 'Energy', security: 'Cameras & security', lighting: 'Lighting studio', climate: 'Climate', network: 'Network', health: 'House health', alerts: 'Alerts', bills: 'Bills',
+        greeting: 'Good afternoon', sentence: 'Ray and Ai are home, Vinh is out. 3 things need a look.',
+        day: 'Thu', weather: 'Partly cloudy',
+        people: "Who's home", atHome: 'Home', away: 'Out',
+        solarNow: 'from the sun', gridImport: 'From the grid', export: 'Sent to grid', noSource: 'No source entity',
+        parentsAc: "Parents' room air-con", acIsOff: 'Off · room 23.2°', acIsOn: 'On · room 23.2°', turnOn: 'Turn on', turnOff: 'Turn off',
+        quick: 'Quick controls', lightsSum: '3 lights on',
+        s1: 'Living room bright', s2: 'Dining relax', s3: "Ray's nightlight", s4: 'Air purifier', scene: 'Tap to set the scene', on: 'On — tap to turn off', off: 'Off — tap to turn on',
+        attention: 'Needs a look', a1: 'Front door battery is low', a1m: '12% · living room', a2: 'Electricity bill not paid', a2m: 'Bills', a3: '2 cameras offline', a3m: 'East wall, Stockroom',
+        securitySum: 'Cameras: 3 online, 2 offline, 1 unknown · doors: no data' },
+      zh: { navLabel: '主导航', langAria: '切换语言', langBtn: 'EN', mock: '模拟数据',
+        home: '首页', rooms: '房间', energy: '能源', security: '摄像头与安防', lighting: '灯光工作室', climate: '气候', network: '网络', health: '房屋健康', alerts: '警报', bills: '账单',
+        greeting: '下午好', sentence: 'Ray 和 Ai 在家，Vinh 外出。有 3 件事需要注意。',
+        day: '周四', weather: '多云',
+        people: '谁在家', atHome: '在家', away: '外出',
+        solarNow: '太阳能发电', gridImport: '电网用电', export: '送电上网', noSource: '无数据源',
+        parentsAc: '父母房空调', acIsOff: '已关 · 室温 23.2°', acIsOn: '已开 · 室温 23.2°', turnOn: '开启', turnOff: '关闭',
+        quick: '快捷控制', lightsSum: '3 盏灯已开',
+        s1: '客厅明亮', s2: '餐厅放松', s3: 'Ray 卧室夜灯', s4: '空气净化器', scene: '轻触启用场景', on: '已开 — 轻触关闭', off: '已关 — 轻触开启',
+        attention: '需要注意', a1: '前门电池电量低', a1m: '12% · 客厅', a2: '电费未付', a2m: '账单', a3: '2 个摄像头离线', a3m: '东墙、储藏室',
+        securitySum: '摄像头：3 个在线、2 个离线、1 个未知 · 门：无数据' }
+    };
+  }
+  renderVals() {
+    const lang = this.state.lang;
+    const t = this.strings()[lang];
+    const I = this.icons();
+    const on = this.state.on;
+    const keys = ['home', 'rooms', 'energy', 'security', 'lighting', 'climate', 'network', 'health', 'alerts', 'bills'];
+    const nav = keys.map((k) => {
+      const cur = k === 'home';
+      return { label: t[k], icon: I[k], aria: cur ? 'page' : 'false',
+        style: 'display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; min-height: 64px; padding: 6px 4px; border: none; border-radius: 18px; background: ' + (cur ? 'rgba(233,184,114,0.14)' : 'transparent') + '; color: ' + (cur ? '#f0c688' : '#c3bdb3') + '; font-weight: ' + (cur ? '600' : '500') };
+    });
+    const person = (name, home) => ({ name, initial: name[0], state: home ? t.atHome : t.away,
+      avatar: 'width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; box-sizing: border-box; background: ' + (home ? 'rgba(111,207,151,0.14)' : 'var(--card2)') + '; color: ' + (home ? '#8fe0b0' : '#958f86') + '; border: 2px solid ' + (home ? 'rgba(111,207,151,0.55)' : 'rgba(255,244,230,0.10)'),
+      stateStyle: 'font-size: 14px; font-weight: 500; color: ' + (home ? '#8fe0b0' : '#958f86') });
+    const people = [person('Ray', true), person('Ai', true), person('Vinh', false)];
+    const mk = (id, label, icon, toggle, isOn) => ({ label, icon,
+      state: toggle ? (isOn ? t.on : t.off) : t.scene,
+      pressed: isOn ? 'true' : 'false',
+      tap: () => { if (toggle) this.setState({ on: Object.assign({}, on, { [id]: !isOn }) }); },
+      style: 'display: flex; align-items: center; gap: 14px; min-height: 88px; padding: 14px 16px; border-radius: 20px; border: 1px solid ' + (isOn ? 'rgba(233,184,114,0.45)' : 'transparent') + '; background: ' + (isOn ? 'rgba(233,184,114,0.12)' : 'var(--card2)'),
+      iconWrap: 'width: 48px; height: 48px; flex-shrink: 0; border-radius: 16px; display: flex; align-items: center; justify-content: center; background: ' + (isOn ? 'rgba(233,184,114,0.22)' : 'rgba(255,244,230,0.06)') + '; color: ' + (isOn ? '#f0c688' : '#f3efe8') });
+    const scenes = [mk('bright', t.s1, I.sun, false, false), mk('relax', t.s2, I.lighting, false, false), mk('night', t.s3, I.moon, false, false), mk('purifier', t.s4, I.fan, true, !!on.purifier)];
+    const dot = (c) => 'width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; background: ' + c;
+    const attention = [
+      { title: t.a1, meta: t.a1m, dot: dot('#f0806e') },
+      { title: t.a2, meta: t.a2m, dot: dot('#e9b872') },
+      { title: t.a3, meta: t.a3m, dot: dot('#7a7d82') }
+    ];
+    const ac = !!on.ac;
+    return { t, nav, people, scenes, attention,
+      acWords: ac ? t.acIsOn : t.acIsOff, acAction: ac ? t.turnOff : t.turnOn, acPressed: ac ? 'true' : 'false',
+      acStyle: 'margin-top: auto; display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 56px; border-radius: 18px; font-size: 17px; font-weight: 600; border: none; background: ' + (ac ? 'rgba(233,184,114,0.9)' : 'var(--card2)') + '; color: ' + (ac ? '#1a1d21' : '#f3efe8'),
+      toggleAc: () => this.setState({ on: Object.assign({}, on, { ac: !ac }) }),
+      toggleLang: () => this.setState({ lang: lang === 'en' ? 'zh' : 'en' }) };
+  }
+}
+</script>
+</body>
+</html>
