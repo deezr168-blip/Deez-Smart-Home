@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>CasaRay Home — concept B</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;family=Noto+Sans+SC:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+:root{--page:#07090c;--panel:#0f1318;--panel2:#141a21;--border:#1d252f;--border2:#2a3441;--ink:#e6edf3;--ink2:#aab5c0;--muted:#7f8b97;--accent:#4fc4bd;--ok:#4cc38a;--active:#e7a93b;--alert:#ef6a5a;--off:#6a7480}
+body{margin:0;background:#07090c;font-family:"Space Grotesk","Noto Sans SC",system-ui,sans-serif;color:#e6edf3}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:#4fc4bd}a:hover{color:#7fdcd6}
+</style>
+</helmet>
+<div style="width: 1180px; height: 820px; box-sizing: border-box; display: grid; grid-template-columns: 84px minmax(0, 1fr); background: var(--page); color: var(--ink); overflow: hidden">
+
+<nav aria-label="{{t.navLabel}}" style="display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 20px 0; background: var(--panel); border-right: 1px solid var(--border)">
+<div aria-hidden="true" style="width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: rgba(79,196,189,0.12); color: var(--accent); font-weight: 600; font-size: 17px; margin-bottom: 12px">CR</div>
+<sc-for list="{{nav}}" as="item" hint-placeholder-count="10">
+<button type="button" aria-label="{{item.label}}" aria-current="{{item.aria}}" style="{{item.style}}">
+<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{item.icon}}"></path></svg>
+</button>
+</sc-for>
+<div style="flex-grow: 1"></div>
+<button type="button" onClick="{{toggleLang}}" aria-label="{{t.langAria}}" style="width: 52px; height: 44px; border-radius: 12px; border: 1px solid var(--border2); background: var(--panel2); font-size: 14px; font-weight: 600">{{t.langBtn}}</button>
+</nav>
+
+<main style="display: flex; flex-direction: column; gap: 14px; padding: 18px 20px 20px 20px; min-width: 0">
+
+<header style="display: flex; align-items: center; gap: 16px; height: 60px">
+<div style="display: flex; align-items: baseline; gap: 10px; min-width: 190px">
+<span style="font-size: 22px; font-weight: 600">CasaRay</span>
+<span style="font-size: 15px; color: var(--muted)">/ {{t.home}}</span>
+</div>
+<div style="display: flex; gap: 8px; flex-grow: 1">
+<span style="display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 14px; border-radius: 17px; background: var(--panel2); border: 1px solid var(--border); font-size: 13px"><span style="width: 7px; height: 7px; border-radius: 50%; background: var(--ok)"></span>{{t.chipHome}}</span>
+<span style="display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 14px; border-radius: 17px; background: var(--panel2); border: 1px solid var(--border); font-size: 13px"><span style="width: 7px; height: 7px; border-radius: 50%; background: var(--alert)"></span>{{t.chipAttention}}</span>
+<span style="display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 14px; border-radius: 17px; background: var(--panel2); border: 1px solid var(--border); font-size: 13px"><span style="width: 7px; height: 7px; border-radius: 50%; background: var(--active)"></span>{{t.chipLights}}</span>
+<span style="display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 14px; border-radius: 17px; border: 1px dashed var(--border2); font-size: 13px; color: var(--muted)">{{t.mock}}</span>
+</div>
+<div style="display: flex; align-items: center; gap: 18px">
+<div style="display: flex; flex-direction: column; align-items: flex-end; gap: 2px">
+<span style="font-size: 13px; color: var(--ink2)">{{t.day}} 25/09/26</span>
+<span style="font-size: 13px; color: var(--muted)">{{t.weather}} · 17°</span>
+</div>
+<span style="font-family: 'JetBrains Mono', monospace; font-size: 38px; font-weight: 500; letter-spacing: -0.02em">16:20</span>
+</div>
+</header>
+
+<div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); grid-template-rows: 336px 236px minmax(0, 1fr); gap: 14px; flex-grow: 1; min-height: 0">
+
+<section aria-label="{{t.powerNow}}" style="grid-column: span 7; display: flex; flex-direction: column; gap: 14px; padding: 18px 20px; background: var(--panel); border: 1px solid var(--border); border-radius: 16px">
+<div style="display: flex; justify-content: space-between; align-items: center">
+<h2 style="margin: 0; font-size: 15px; font-weight: 600">{{t.powerNow}}</h2>
+<span style="font-size: 13px; color: var(--muted)">Fronius Primo · Powerpal</span>
+</div>
+<div style="display: flex; align-items: center; gap: 10px">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 6px; width: 140px">
+<span style="width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(231,169,59,0.14); color: var(--active)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg></span>
+<span style="font-family: 'JetBrains Mono', monospace; font-size: 22px">1.62 kW</span>
+<span style="font-size: 13px; color: var(--ink2)">{{t.solar}}</span>
+</div>
+<div aria-hidden="true" style="flex-grow: 1; height: 0; border-top: 2px dashed rgba(231,169,59,0.6); margin-bottom: 44px"></div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 6px; width: 150px">
+<span style="width: 60px; height: 60px; border-radius: 18px; display: flex; align-items: center; justify-content: center; background: var(--panel2); border: 1px solid var(--border2); color: var(--ink)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"></path></svg></span>
+<span style="font-size: 15px; color: var(--off)">{{t.notMeasured}}</span>
+<span style="font-size: 13px; color: var(--ink2)">{{t.consumption}}</span>
+</div>
+<div aria-hidden="true" style="flex-grow: 1; height: 0; border-top: 2px solid rgba(79,196,189,0.6); margin-bottom: 44px"></div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 6px; width: 140px">
+<span style="width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(79,196,189,0.12); color: var(--accent)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 2v6M17 2v6M5 8h14v4a7 7 0 0 1-14 0zM12 19v3"></path></svg></span>
+<span style="font-family: 'JetBrains Mono', monospace; font-size: 22px">0.38 kW</span>
+<span style="font-size: 13px; color: var(--ink2)">{{t.gridImport}}</span>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)) 1.3fr; gap: 10px; align-items: stretch">
+<div style="display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; border: 1px dashed var(--border2); border-radius: 10px">
+<span style="font-size: 13px; color: var(--ink2)">{{t.export}}</span>
+<span style="font-size: 13px; color: var(--off)">{{t.noSource}}</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; border: 1px dashed var(--border2); border-radius: 10px">
+<span style="font-size: 13px; color: var(--ink2)">{{t.battery}}</span>
+<span style="font-size: 13px; color: var(--off)">{{t.notInstalled}}</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; background: var(--panel2); border-radius: 10px">
+<div style="display: flex; justify-content: space-between"><span style="font-size: 13px; color: var(--ink2)">{{t.solarToday}}</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px">14.2 kWh</span></div>
+<div aria-hidden="true" style="display: flex; align-items: flex-end; gap: 4px; height: 38px">
+<sc-for list="{{bars}}" as="b" hint-placeholder-count="11"><span style="{{b.style}}"></span></sc-for>
+</div>
+</div>
+</div>
+</section>
+
+<section aria-label="{{t.attention}}" style="grid-column: span 5; display: flex; flex-direction: column; gap: 10px; padding: 18px 20px; background: var(--panel); border: 1px solid var(--border); border-radius: 16px">
+<div style="display: flex; justify-content: space-between; align-items: center">
+<h2 style="margin: 0; font-size: 15px; font-weight: 600">{{t.attention}}</h2>
+<span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--ink2)">3</span>
+</div>
+<sc-for list="{{attention}}" as="row" hint-placeholder-count="3">
+<button type="button" style="{{row.style}}">
+<span style="{{row.iconWrap}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{row.icon}}"></path></svg></span>
+<span style="display: flex; flex-direction: column; gap: 2px; flex-grow: 1; text-align: left"><span style="font-size: 15px">{{row.title}}</span><span style="font-size: 13px; color: var(--muted)">{{row.meta}}</span></span>
+</button>
+</sc-for>
+<button type="button" style="display: flex; align-items: center; justify-content: space-between; min-height: 44px; padding: 0 14px; margin-top: auto; border-radius: 10px; border: 1px solid var(--border); background: transparent; font-size: 13px; color: var(--ink2)"><span>{{t.health}} · {{t.healthSum}}</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></button>
+</section>
+
+<section aria-label="{{t.cameras}}" style="grid-column: span 5; display: flex; flex-direction: column; gap: 10px; padding: 16px 20px; background: var(--panel); border: 1px solid var(--border); border-radius: 16px">
+<div style="display: flex; justify-content: space-between; align-items: center">
+<h2 style="margin: 0; font-size: 15px; font-weight: 600">{{t.cameras}}</h2>
+<span style="font-size: 13px; color: var(--muted)">{{t.camCount}}</span>
+</div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; flex-grow: 1">
+<sc-for list="{{cams}}" as="c" hint-placeholder-count="6">
+<button type="button" style="{{c.style}}">
+<span style="font-size: 13px; color: var(--ink)">{{c.name}}</span>
+<span style="display: flex; align-items: center; gap: 6px; font-size: 13px"><span style="{{c.dot}}"></span><span style="{{c.labelStyle}}">{{c.state}}</span></span>
+</button>
+</sc-for>
+</div>
+</section>
+
+<section aria-label="{{t.climate}}" style="grid-column: span 3; display: flex; flex-direction: column; gap: 8px; padding: 16px 18px; background: var(--panel); border: 1px solid var(--border); border-radius: 16px">
+<h2 style="margin: 0; font-size: 15px; font-weight: 600">{{t.climate}}</h2>
+<div style="display: flex; justify-content: space-between; align-items: baseline"><span style="font-size: 13px; color: var(--ink2)">{{t.parentsRoom}}</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 22px">23.2°</span></div>
+<div style="display: flex; justify-content: space-between; align-items: baseline"><span style="font-size: 13px; color: var(--ink2)">{{t.livingRoom}}</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 15px">21.4°</span></div>
+<div style="display: flex; justify-content: space-between; align-items: baseline"><span style="font-size: 13px; color: var(--ink2)">{{t.dining}}</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 15px">20.8°</span></div>
+<button type="button" onClick="{{toggleAc}}" aria-pressed="{{acPressed}}" style="{{acStyle}}">{{acLabel}}</button>
+</section>
+
+<section aria-label="{{t.people}}" style="grid-column: span 4; display: flex; flex-direction: column; gap: 8px; padding: 16px 20px; background: var(--panel); border: 1px solid var(--border); border-radius: 16px">
+<h2 style="margin: 0; font-size: 15px; font-weight: 600">{{t.people}}</h2>
+<sc-for list="{{people}}" as="p" hint-placeholder-count="3">
+<div style="display: flex; align-items: center; gap: 12px; min-height: 44px">
+<span style="{{p.avatar}}">{{p.initial}}</span>
+<span style="flex-grow: 1; font-size: 15px">{{p.name}}</span>
+<span style="{{p.pill}}">{{p.state}}</span>
+</div>
+</sc-for>
+</section>
+
+<section aria-label="{{t.oneTap}}" style="grid-column: span 12; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px">
+<sc-for list="{{scenes}}" as="s" hint-placeholder-count="6">
+<button type="button" onClick="{{s.tap}}" aria-pressed="{{s.pressed}}" style="{{s.style}}">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{s.icon}}"></path></svg>
+<span style="display: flex; flex-direction: column; gap: 2px; align-items: flex-start; text-align: left"><span style="font-size: 14px; line-height: 1.2">{{s.label}}</span><span style="font-size: 13px; opacity: 0.75">{{s.state}}</span></span>
+</button>
+</sc-for>
+</section>
+
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1180,"height":820}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { lang: 'en', on: { purifier: true, ac: false } };
+  }
+  icons() {
+    return {
+      home: 'M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z',
+      rooms: 'M5 21V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v17M3 21h18M15 12h.01',
+      energy: 'M13 2 4 14h7l-1 8 9-12h-7z',
+      security: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',
+      lighting: 'M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z',
+      climate: 'M14 14.8V5a2 2 0 0 0-4 0v9.8a4 4 0 1 0 4 0z',
+      network: 'M2 8.8a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M12 20h.01',
+      health: 'M3 12h4l3-8 4 16 3-8h4',
+      alerts: 'M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0',
+      bills: 'M5 3v18l2-1.5L9 21l2-1.5L13 21l2-1.5L17 21l2-1.5V3l-2 1.5L15 3l-2 1.5L11 3 9 4.5 7 3zM9 9h6M9 13h6',
+      battery: 'M3 7h15a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1zM22 11v2M6 10v4',
+      camera: 'M3 7h11a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1zM15 11l6-3v8l-6-3',
+      fan: 'M12 10c0-4 1-7 4-7s3 4-2 7M14 12c4 0 7 1 7 4s-4 3-7-2M12 14c0 4-1 7-4 7s-3-4 2-7M10 12c-4 0-7-1-7-4s4-3 7 2',
+      moon: 'M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z',
+      sun: 'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4'
+    };
+  }
+  strings() {
+    return {
+      en: { navLabel: 'Main navigation', langAria: 'Switch language', langBtn: '中文', mock: 'Mock data',
+        home: 'Home', rooms: 'Rooms', energy: 'Energy', security: 'Cameras & security', lighting: 'Lighting studio', climate: 'Climate', network: 'Network', health: 'House health', alerts: 'Alerts', bills: 'Bills',
+        chipHome: '2 of 3 home', chipAttention: '3 need attention', chipLights: '3 lights on',
+        day: 'Thu', weather: 'Partly cloudy', powerNow: 'Power now', solar: 'Solar', gridImport: 'Grid import', consumption: 'Consumption', notMeasured: 'Not measured',
+        export: 'Export', noSource: 'No source entity', battery: 'Future battery', notInstalled: 'Not installed', solarToday: 'Solar today',
+        attention: 'Needs attention', a1: 'Front door battery 12%', a1m: 'Living room · replace soon', a2: 'Electricity bill unpaid', a2m: 'Bills', a3: '2 cameras offline', a3m: 'East wall, Stockroom',
+        healthSum: '9 devices not reporting',
+        cameras: 'Cameras', camCount: '3 online · 2 offline · 1 unknown', online: 'Online', offline: 'Offline', unknown: 'Unknown',
+        cFront: 'Front door', cPet: 'Pet feeder', cSouth: 'South wall', cNorth: 'North wall', cEast: 'East wall', cStock: 'Stockroom',
+        parentsRoom: "Parents' room", livingRoom: 'Living room', dining: 'Dining', acOff: "Parents' air-con · Off", acOn: "Parents' air-con · On",
+        people: "Who's home", atHome: 'Home', away: 'Away',
+        oneTap: 'One tap', s1: 'Living room bright', s2: 'Dining relax', s3: "Ray's nightlight", s4: 'Air purifier', s5: 'Lighting studio', s6: 'All cameras', scene: 'Scene', on: 'On', off: 'Off', open: 'Open', lightsOn: '3 on' },
+      zh: { navLabel: '主导航', langAria: '切换语言', langBtn: 'EN', mock: '模拟数据',
+        home: '首页', rooms: '房间', energy: '能源', security: '摄像头与安防', lighting: '灯光工作室', climate: '气候', network: '网络', health: '房屋健康', alerts: '警报', bills: '账单',
+        chipHome: '3 人中 2 人在家', chipAttention: '3 项需要注意', chipLights: '3 盏灯已开',
+        day: '周四', weather: '多云', powerNow: '实时电力', solar: '太阳能', gridImport: '电网用电', consumption: '家庭用电', notMeasured: '未测量',
+        export: '送电上网', noSource: '无数据源', battery: '未来电池', notInstalled: '未安装', solarToday: '今日太阳能',
+        attention: '需要注意', a1: '前门电池 12%', a1m: '客厅 · 请尽快更换', a2: '电费未付', a2m: '账单', a3: '2 个摄像头离线', a3m: '东墙、储藏室',
+        healthSum: '9 个设备无数据',
+        cameras: '摄像头', camCount: '3 个在线 · 2 个离线 · 1 个未知', online: '在线', offline: '离线', unknown: '未知',
+        cFront: '前门', cPet: '宠物喂食器', cSouth: '南墙', cNorth: '北墙', cEast: '东墙', cStock: '储藏室',
+        parentsRoom: '父母房', livingRoom: '客厅', dining: '餐厅', acOff: '父母房空调 · 关', acOn: '父母房空调 · 开',
+        people: '谁在家', atHome: '在家', away: '外出',
+        oneTap: '一键操作', s1: '客厅明亮', s2: '餐厅放松', s3: 'Ray 卧室夜灯', s4: '空气净化器', s5: '灯光工作室', s6: '全部摄像头', scene: '场景', on: '开', off: '关', open: '打开', lightsOn: '3 盏已开' }
+    };
+  }
+  renderVals() {
+    const lang = this.state.lang;
+    const t = this.strings()[lang];
+    const I = this.icons();
+    const on = this.state.on;
+    const keys = ['home', 'rooms', 'energy', 'security', 'lighting', 'climate', 'network', 'health', 'alerts', 'bills'];
+    const nav = keys.map((k) => {
+      const cur = k === 'home';
+      return { label: t[k], icon: I[k], aria: cur ? 'page' : 'false',
+        style: 'width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: ' + (cur ? '1px solid rgba(79,196,189,0.45)' : '1px solid transparent') + '; background: ' + (cur ? 'rgba(79,196,189,0.12)' : 'transparent') + '; color: ' + (cur ? '#4fc4bd' : '#aab5c0') };
+    });
+    const bars = [0.02, 0.2, 0.6, 1.1, 1.6, 2.0, 2.2, 2.1, 1.8, 1.4, 1.0].map((v, i, a) => ({
+      style: 'flex-grow: 1; border-radius: 2px; height: ' + Math.max(2, Math.round(v / 2.2 * 38)) + 'px; background: ' + (i === a.length - 1 ? '#e7a93b' : 'rgba(231,169,59,0.45)')
+    }));
+    const tone = { alert: ['#ef6a5a', 'rgba(239,106,90,0.12)'], active: ['#e7a93b', 'rgba(231,169,59,0.12)'], off: ['#8a95a1', 'rgba(106,116,128,0.14)'] };
+    const att = (title, meta, icon, k) => ({ title, meta, icon,
+      style: 'display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 8px 12px; border-radius: 12px; border: 1px solid var(--border); background: ' + tone[k][1],
+      iconWrap: 'width: 34px; height: 34px; flex-shrink: 0; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: ' + tone[k][0] + '; background: rgba(0,0,0,0.25)' });
+    const attention = [
+      att(t.a1, t.a1m, I.battery, 'alert'),
+      att(t.a2, t.a2m, I.bills, 'active'),
+      att(t.a3, t.a3m, I.camera, 'off')
+    ];
+    const camState = { online: [t.online, '#4cc38a', 'solid', '#e6edf3'], offline: [t.offline, '#6a7480', 'solid', '#8a95a1'], unknown: [t.unknown, 'transparent', 'dashed', '#8a95a1'] };
+    const cam = (name, s) => ({ name, state: camState[s][0],
+      style: 'display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; min-height: 54px; padding: 10px 12px; border-radius: 10px; text-align: left; background: ' + (s === 'online' ? 'var(--panel2)' : 'transparent') + '; border: 1px ' + camState[s][2] + ' ' + (s === 'online' ? 'var(--border)' : 'var(--border2)'),
+      dot: 'width: 8px; height: 8px; border-radius: 50%; box-sizing: border-box; background: ' + camState[s][1] + (s === 'unknown' ? '; border: 1.5px solid #8a95a1' : ''),
+      labelStyle: 'color: ' + camState[s][3] });
+    const cams = [cam(t.cFront, 'online'), cam(t.cPet, 'online'), cam(t.cSouth, 'online'), cam(t.cNorth, 'unknown'), cam(t.cEast, 'offline'), cam(t.cStock, 'offline')];
+    const person = (name, home) => ({ name, initial: name[0], state: home ? t.atHome : t.away,
+      avatar: 'width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; background: ' + (home ? 'rgba(76,195,138,0.16)' : 'var(--panel2)') + '; color: ' + (home ? '#4cc38a' : '#8a95a1'),
+      pill: 'font-size: 13px; padding: 3px 10px; border-radius: 12px; color: ' + (home ? '#4cc38a' : '#aab5c0') + '; background: ' + (home ? 'rgba(76,195,138,0.10)' : 'var(--panel2)') });
+    const people = [person('Ray', true), person('Ai', true), person('Vinh', false)];
+    const mk = (id, label, icon, kind, isOn) => ({ label, icon,
+      state: kind === 'toggle' ? (isOn ? t.on : t.off) : (kind === 'link' ? (id === 'studio' ? t.lightsOn : t.open) : t.scene),
+      pressed: isOn ? 'true' : 'false',
+      tap: () => { if (kind === 'toggle') this.setState({ on: Object.assign({}, on, { [id]: !isOn }) }); },
+      style: 'display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 10px 14px; border-radius: 14px; border: 1px solid ' + (isOn ? 'rgba(231,169,59,0.5)' : 'var(--border)') + '; background: ' + (isOn ? 'rgba(231,169,59,0.12)' : 'var(--panel)') + '; color: ' + (isOn ? '#f0bd5e' : '#e6edf3') });
+    const scenes = [
+      mk('bright', t.s1, I.sun, 'scene', false), mk('relax', t.s2, I.lighting, 'scene', false), mk('night', t.s3, I.moon, 'scene', false),
+      mk('purifier', t.s4, I.fan, 'toggle', !!on.purifier), mk('studio', t.s5, I.lighting, 'link', false), mk('cams', t.s6, I.camera, 'link', false)
+    ];
+    const ac = !!on.ac;
+    return { t, nav, bars, attention, cams, people, scenes,
+      acLabel: ac ? t.acOn : t.acOff, acPressed: ac ? 'true' : 'false',
+      acStyle: 'margin-top: auto; min-height: 44px; border-radius: 10px; font-size: 13px; border: 1px solid ' + (ac ? 'rgba(231,169,59,0.5)' : 'var(--border2)') + '; background: ' + (ac ? 'rgba(231,169,59,0.12)' : 'var(--panel2)') + '; color: ' + (ac ? '#f0bd5e' : '#e6edf3'),
+      toggleAc: () => this.setState({ on: Object.assign({}, on, { ac: !ac }) }),
+      toggleLang: () => this.setState({ lang: lang === 'en' ? 'zh' : 'en' }) };
+  }
+}
+</script>
+</body>
+</html>
