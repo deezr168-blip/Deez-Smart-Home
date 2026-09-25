@@ -76,7 +76,7 @@ window.I18N = {
 
     'u.language': 'Language', 'u.theme': 'Theme', 'u.auto': 'Auto', 'u.light': 'Light', 'u.dark': 'Dark',
     'u.demo_panel': 'Demo controls', 'u.scenario': 'Scenario', 'u.sc_evening': 'Evening, two home',
-    'u.sc_away': 'Everyone away', 'u.sc_outage': 'Device outage', 'u.show_ids': 'Show entity IDs',
+    'u.sc_away': 'Everyone away', 'u.sc_outage': 'Device outage', 'u.sc_review': 'Concept review', 'u.show_ids': 'Show entity IDs',
     'u.reset': 'Reset demo', 'u.close': 'Close', 'u.back': 'Back', 'u.all_rooms': 'All rooms',
     'u.brightness': 'Brightness', 'u.position': 'Position', 'u.speed': 'Speed', 'u.volume': 'Volume',
     'u.target': 'Target', 'u.mark_paid': 'Mark paid', 'u.mark_unpaid': 'Mark unpaid',
@@ -158,7 +158,7 @@ window.I18N = {
 
     'u.language': '语言', 'u.theme': '主题', 'u.auto': '自动', 'u.light': '浅色', 'u.dark': '深色',
     'u.demo_panel': '演示控制', 'u.scenario': '情景', 'u.sc_evening': '傍晚，两人在家',
-    'u.sc_away': '全员外出', 'u.sc_outage': '设备断线', 'u.show_ids': '显示实体 ID',
+    'u.sc_away': '全员外出', 'u.sc_outage': '设备断线', 'u.sc_review': '方案评审', 'u.show_ids': '显示实体 ID',
     'u.reset': '重置演示', 'u.close': '关闭', 'u.back': '返回', 'u.all_rooms': '所有房间',
     'u.brightness': '亮度', 'u.position': '位置', 'u.speed': '风速', 'u.volume': '音量',
     'u.target': '目标', 'u.mark_paid': '标记已付', 'u.mark_unpaid': '标记未付',

@@ -10,6 +10,9 @@ These copies are the source record.
 | `ConceptA.dc.html` | A — Minimal architectural |
 | `ConceptB.dc.html` | B — Modern dark control centre |
 | `ConceptC.dc.html` | C — Balanced premium family dashboard |
+| `../prototype/index.html` | D — V2 continuation. Registered 25/09/26 (`DECISIONS.md` V3-006). A full prototype rather than an artboard: open it and pick **Demo controls → Concept review** to see this same snapshot. |
+
+**Side-by-side comparison of A–D:** `COMPARISON.md`.
 
 Each concept has a working EN / 中文 switch, and its toggles change mock
 state only. No concept calls Home Assistant.

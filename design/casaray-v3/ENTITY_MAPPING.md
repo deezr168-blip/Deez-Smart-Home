@@ -8,8 +8,9 @@ has no entity for.
 - **The existence authority is `docs/live/states_export_2026-09-05.txt`**
   (970 entities). `tools/verify_entities.py` scans the prototype source and
   this document, and fails if any ID is missing from the export. Current
-  result: **132 IDs, all present.**
-- **No new dependencies.** All 132 are already on the V2 dashboard, which has
+  result: **133 IDs, all present.** The 133rd, `sensor.primo_5_0_1_1_energy_day`,
+  came with the Concept review scenario (V3-006). The original 132 are unchanged.
+- **No new dependencies.** All 133 are already on the V2 dashboard, which has
   rendered live. V3 changes how they are presented. It does not change which
   devices CasaRay depends on.
 - **Where the house has no entity, the design says so.** Such a card carries
@@ -262,9 +263,10 @@ Area and availability come from the 05/09 export.
 | `sensor.powerpal_gateway_powerpal_daily_energy` | Powerpal Gateway Powerpal Daily Energy | ok | yes |
 | `sensor.powerpal_gateway_powerpal_power` | Powerpal Gateway Powerpal Power | ok | yes |
 | `sensor.primo_5_0_1_1_ac_power` | Primo 5.0-1 (1) AC power | ok | yes |
+| `sensor.primo_5_0_1_1_energy_day` | Primo 5.0-1 (1) Energy day | ok | yes |
 | `weather.forecast_home` | Forecast Home | ok | yes |
 
-_132 entity IDs; 132 already on V2, 0 new to CasaRay._
+_133 entity IDs; 133 already on V2, 0 new to CasaRay._
 
 ## 3. Gaps: things the design shows that no entity provides
 

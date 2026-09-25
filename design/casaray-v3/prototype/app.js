@@ -594,10 +594,14 @@
     const wx = st(wxId);
     const dayName = (d) => (lang() === 'zh' ? { sun: '周日', mon: '周一', tue: '周二', wed: '周三' } : { sun: 'Sun', mon: 'Mon', tue: 'Tue', wed: 'Wed' })[d];
     const cIc = { partly: 'weather-partly-cloudy', rainy: 'weather-rainy', cloudy: 'weather-cloudy', sunny: 'weather-sunny' };
+    // Condition text and icon follow the weather entity's state (HA condition names).
+    const COND = { cloudy: ['Cloudy', '多云', 'weather-cloudy'], partlycloudy: ['Partly cloudy', '局部多云', 'weather-partly-cloudy'],
+      sunny: ['Sunny', '晴', 'weather-sunny'], rainy: ['Rainy', '雨', 'weather-rainy'], 'clear-night': ['Clear', '晴朗', 'weather-night'] };
+    const cond = COND[wx.s] || [wx.s, wx.s, 'weather-cloudy'];
     const weather = na(wxId)
       ? tile({ ids: wxId, ic: 'weather-cloudy', name: lang() === 'zh' ? '天气' : 'Weather', sub: t('s.no_data'), state: 'na', pill: naPill() })
-      : `<div class="card"><div class="wx-top">${icon('weather-cloudy')}<div><div class="big">${wx.a.temperature}°</div>
-          <div class="sub">${lang() === 'zh' ? '多云' : 'Cloudy'} · ${lang() === 'zh' ? '湿度' : 'humidity'} ${wx.a.humidity}%</div></div></div>
+      : `<div class="card"><div class="wx-top">${icon(cond[2])}<div><div class="big">${wx.a.temperature}°</div>
+          <div class="sub">${lang() === 'zh' ? cond[1] : cond[0]} · ${lang() === 'zh' ? '湿度' : 'humidity'} ${wx.a.humidity}%</div></div></div>
           <div class="wx-days">${wx.a.forecast.map((f) => `<div>${dayName(f.d)}${icon(cIc[f.c])}<b>${f.hi}°</b> ${f.lo}°</div>`).join('')}</div>${eid(wxId)}</div>`;
     const w = num('sensor.casa_monitored_power');
     const rem = num('sensor.energy_production_today_remaining');
@@ -902,11 +906,11 @@
     const slot = $('#overlay');
     if (!UI.overlay) { slot.innerHTML = ''; return; }
     if (UI.overlay === 'demo') {
-      const sc = [['evening', 'u.sc_evening'], ['away', 'u.sc_away'], ['outage', 'u.sc_outage']];
+      const sc = [['evening', 'u.sc_evening'], ['away', 'u.sc_away'], ['outage', 'u.sc_outage'], ['review', 'u.sc_review']];
       slot.innerHTML = `<div class="scrim" data-close><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="demo-h">
         <h3 id="demo-h">${t('u.demo_panel')}<button type="button" class="back-btn" data-close aria-label="${t('u.close')}">${icon('close')}</button></h3>
         <p>${t('app.demo_long')}</p>
-        <div><div class="lbl">${t('u.scenario')}</div><div class="seg" role="group">${sc.map(([k, l]) => `<button type="button" data-scenario="${k}" aria-pressed="${UI.scenario === k}">${t(l)}</button>`).join('')}</div></div>
+        <div><div class="lbl">${t('u.scenario')}</div><div class="seg seg-2" role="group">${sc.map(([k, l]) => `<button type="button" data-scenario="${k}" aria-pressed="${UI.scenario === k}">${t(l)}</button>`).join('')}</div></div>
         <div class="switch-row"><span>${t('u.show_ids')}</span><button type="button" class="toggle" role="switch" id="ids-toggle" aria-checked="${UI.ids}" data-ids aria-label="${t('u.show_ids')}"></button></div>
         <div class="switch-row"><span>${t('u.language')}</span><div class="seg" role="group" style="width:160px"><button type="button" data-setlang="en" aria-pressed="${lang() === 'en'}">EN</button><button type="button" data-setlang="zh" aria-pressed="${lang() === 'zh'}">中文</button></div></div>
         <div class="switch-row"><span>${t('u.theme')}</span><div class="seg" role="group" style="width:240px">${['auto', 'light', 'dark'].map((k) => `<button type="button" data-settheme="${k}" aria-pressed="${UI.theme === k}">${t('u.' + k)}</button>`).join('')}</div></div>

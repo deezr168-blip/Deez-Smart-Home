@@ -310,13 +310,20 @@ truncates in either.
 
 ## Design review gate
 
-Before the interactive prototype is completed, present **three distinct
+Before the interactive prototype is completed, present **distinct
 visual concepts** of the **Home** screen, rendered at the same iPad
 landscape size with the same data, so they compare like for like:
 
-- **A — Minimal architectural**
-- **B — Modern dark control centre**
-- **C — Balanced premium family dashboard**
+- **A — Minimal architectural** (`concepts/ConceptA.dc.html`)
+- **B — Modern dark control centre** (`concepts/ConceptB.dc.html`)
+- **C — Balanced premium family dashboard** (`concepts/ConceptC.dc.html`)
+- **D — V2 continuation** (`prototype/`, "Concept review" scenario). Added
+  25/09/26 by owner instruction (`DECISIONS.md` V3-006). It is a candidate,
+  not an approved implementation. Its existence does not satisfy or bypass
+  this gate.
+
+The like-for-like comparison is `concepts/COMPARISON.md`, regenerated with
+`tools/capture_comparison.cjs`.
 
 **Wait for the owner's selection.** Do not complete the prototype, and do not
 build other destinations in a chosen style, before it. Record the selection
@@ -346,7 +353,7 @@ design/casaray-v3/
   FEATURE_PARITY.md       current capability → V3 location
   ENTITY_MAPPING.md       V3 surface → real entity IDs
   DECISIONS.md            dated V3 design decisions and departures from V2
-  concepts/               the three Home concepts for the design review
+  concepts/               Home concepts A–C, the index and COMPARISON.md (D lives in prototype/)
   prototype/
     index.html
     styles/  scripts/  mock-data/  i18n/

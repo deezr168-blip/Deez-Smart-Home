@@ -6,49 +6,55 @@ and `ha-deploy` are unaffected by everything here.
 
 ---
 
-## V3-006 · 25/09/26 · A second session built a full prototype — not reconciled with V3-004
+## V3-006 · 25/09/26 · Parallel prototype registered as Concept D (reconciled)
 
-**Status:** open, awaiting the owner. **This entry does not choose a concept
-and does not close V3-004.** V3-005 stays reserved for the concept selection.
+**Status:** reconciled by owner instruction on 25/09/26. **This does not
+choose a concept.** V3-005 stays reserved for the owner's selection among
+A, B, C and D, or a mix of them.
 
 A second Claude session, working from a direct owner request made before this
 workspace's `CLAUDE.md` existed, built a complete interactive prototype in
-parallel:
+parallel (`prototype/`, `FEATURE_INVENTORY.md`, `DESIGN_SPEC.md`,
+`ENTITY_MAPPING.md`, `tools/`). It was first logged here as unreconciled.
 
-- `prototype/`: vanilla HTML/CSS/JS, 10 boards and 8 room pages, mock data on
-  132 real entity IDs (all present in the 05/09 export and all already on V2),
-  three scenarios (normal · everyone away · device outage), dark/light, EN/中文
-  via `input_boolean.chinese_dashboard`.
-- `FEATURE_INVENTORY.md`, `DESIGN_SPEC.md`, `ENTITY_MAPPING.md`, `README.md`,
-  and `tools/` (entity verifier, a 68-check Playwright harness).
+**Owner decision (25/09/26):** the prototype is registered as **Concept D —
+V2 continuation**, a fourth design candidate beside A, B and C. It is **not**
+an approved production implementation, and it is not the chosen direction.
 
-It conflicts with the review gate in `CLAUDE.md` ("do not complete the
-prototype … before" a concept is chosen), and it departs from several rules
-added in V3-001:
+What changed to reconcile it:
 
-- **Navigation.** It has Media and People as destinations. It has no separate
-  Network, Alerts or Lighting studio.
-- **Home and Back.** Back appears only on room pages, not on every screen.
-- **Language.** The switch has two states and is not Khmer-ready.
-- **Home length.** Home scrolls on the wall iPad.
-- **Sirens.** They use a three-across tile, not the large, hard-to-mis-tap
-  treatment.
-- **Fonts.** It uses three families, not two.
-- **Icons.** It uses filled MDI icons, not a stroke set.
-- **Names.** Tokens and file names differ from `--v3-*`, `SPEC.md` and
+- `CLAUDE.md` design review gate lists four concepts. D's location is
+  recorded, and the gate still blocks building other destinations in a
+  chosen style until V3-005.
+- `concepts/README.md` indexes D. `concepts/COMPARISON.md` compares A–D on
+  one snapshot at 1180 × 820: navigation, Home layout, room access, energy,
+  security, usability, and features that combine whatever is chosen.
+- D gained a **Concept review** scenario carrying A–C's exact snapshot, so
+  all four compare on the same data. It also got one fix: its weather card
+  now follows the entity's condition instead of always saying "Cloudy". The
+  prototype was not rebuilt, and its 68 checks still pass.
+- Concepts A, B and C are byte-identical. SHA-256 was checked before and
+  after.
+
+Where D departs from the V3-001 rules still stands, and is set out in
+`concepts/COMPARISON.md`:
+
+- **Navigation:** a different set of destinations, and Back appears only on
+  room pages.
+- **Home length:** Home scrolls (2.6 screens) rather than fitting the wall
+  iPad.
+- **Cameras:** no separate *unknown* state.
+- **Language:** a two-state switch, not Khmer-ready.
+- **Type and icons:** three type families, and filled rather than stroke
+  icons.
+- **Sirens:** a three-across tile rather than the large treatment.
+- **Names:** tokens and file names differ from `--v3-*`, `SPEC.md` and
   `FEATURE_PARITY.md`.
 
-It was pushed only so the work is not lost when its container is reclaimed.
-The owner was offered three ways forward:
+These matter only if D, or part of it, is chosen.
 
-1. Treat it as a fourth concept, **D**, alongside A–C in V3-004.
-2. Adopt it as the prototype and update `CLAUDE.md` to match.
-3. Set it aside, choose from A–C, and build the prototype under these rules.
-
-**Until the owner answers, do not delete, restructure or build on
-`prototype/`, and do not treat it as the chosen direction.** It also found an
-error that applies to all V3 work: V2 calls Powerpal "whole-house", but it is
-grid import (V3-003 agrees).
+It also found an error that applies whichever concept is chosen: V2 calls
+Powerpal "whole-house", but it is grid import (V3-003 agrees).
 
 ## V3-004 · 25/09/26 · Home concept review — awaiting owner selection
 
