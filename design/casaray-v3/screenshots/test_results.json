@@ -1,0 +1,346 @@
+{
+  "passed": 68,
+  "failed": 0,
+  "results": [
+    {
+      "name": "nav: rail opens home",
+      "ok": true,
+      "detail": "CasaRay"
+    },
+    {
+      "name": "nav: rail opens rooms",
+      "ok": true,
+      "detail": "Rooms"
+    },
+    {
+      "name": "nav: rail opens security",
+      "ok": true,
+      "detail": "Security"
+    },
+    {
+      "name": "nav: rail opens energy",
+      "ok": true,
+      "detail": "Energy"
+    },
+    {
+      "name": "nav: rail opens climate",
+      "ok": true,
+      "detail": "Climate"
+    },
+    {
+      "name": "nav: rail opens lighting",
+      "ok": true,
+      "detail": "Lighting"
+    },
+    {
+      "name": "nav: rail opens media",
+      "ok": true,
+      "detail": "Media"
+    },
+    {
+      "name": "nav: rail opens people",
+      "ok": true,
+      "detail": "People"
+    },
+    {
+      "name": "nav: rail opens bills",
+      "ok": true,
+      "detail": "Bills"
+    },
+    {
+      "name": "nav: rail opens health",
+      "ok": true,
+      "detail": "House health"
+    },
+    {
+      "name": "nav: room drill-in living",
+      "ok": true,
+      "detail": "Living room"
+    },
+    {
+      "name": "nav: room drill-in dining",
+      "ok": true,
+      "detail": "Dining"
+    },
+    {
+      "name": "nav: room drill-in kitchen",
+      "ok": true,
+      "detail": "Kitchen"
+    },
+    {
+      "name": "nav: room drill-in parents",
+      "ok": true,
+      "detail": "Parents' room"
+    },
+    {
+      "name": "nav: room drill-in ray",
+      "ok": true,
+      "detail": "Ray's room"
+    },
+    {
+      "name": "nav: room drill-in garage",
+      "ok": true,
+      "detail": "Garage"
+    },
+    {
+      "name": "nav: room drill-in guest",
+      "ok": true,
+      "detail": "Guest room"
+    },
+    {
+      "name": "nav: room drill-in backyard",
+      "ok": true,
+      "detail": "Backyard"
+    },
+    {
+      "name": "nav: back returns to Rooms",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "nav: browser back works",
+      "ok": true,
+      "detail": "file:///home/user/Deez-Smart-Home/design/casaray-v3/prototype/index.html#room-backyard"
+    },
+    {
+      "name": "nav: More boards card opens a board",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "nav: deep link #room-kitchen",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "nav: unknown hash falls back to Home",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "console: no errors on wall iPad",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "nav: rail hidden on phone",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "nav: tab bar shown on phone",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "nav: More sheet opens",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "nav: More sheet opens Bills",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "nav: More tab marked current on a More board",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "responsive: no horizontal scroll at wall 1180×820",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "responsive: no card name squeezed below 64px at wall",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "responsive: no horizontal scroll at wallPro 1366×1024",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "responsive: no card name squeezed below 64px at wallPro",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "responsive: no horizontal scroll at portrait 820×1180",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "responsive: no card name squeezed below 64px at portrait",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "responsive: no horizontal scroll at phone 390×844",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "responsive: no card name squeezed below 64px at phone",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "responsive: no horizontal scroll at desktop 1600×1000",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "responsive: no card name squeezed below 64px at desktop",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "layout: wall iPad resolves two body columns",
+      "ok": true,
+      "detail": "2 columns"
+    },
+    {
+      "name": "layout: desktop Home resolves three columns",
+      "ok": true,
+      "detail": "3 columns"
+    },
+    {
+      "name": "layout: phone resolves one column",
+      "ok": true,
+      "detail": "1 column"
+    },
+    {
+      "name": "interact: tapping a light changes the lights-on chip",
+      "ok": true,
+      "detail": "Lights on 2 of 5 → Lights on 3 of 5"
+    },
+    {
+      "name": "interact: toast confirms demo-only action",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "interact: brightness bar sets brightness",
+      "ok": true,
+      "detail": "brightness 35"
+    },
+    {
+      "name": "interact: language toggle switches to Simplified Chinese",
+      "ok": true,
+      "detail": "安防"
+    },
+    {
+      "name": "interact: language is driven by input_boolean.chinese_dashboard",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "bilingual: clock date is DD/MM/YY",
+      "ok": true,
+      "detail": "25/09/26"
+    },
+    {
+      "name": "bilingual: Home headings in Chinese",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "bilingual: Chinese enumerations use 、",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "interact: theme cycles to light",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "interact: theme cycles to dark with a different page colour",
+      "ok": true,
+      "detail": "rgb(238, 241, 244) / rgb(13, 17, 20)"
+    },
+    {
+      "name": "interact: theme cycles back to auto",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "interact: marking a bill paid updates Unpaid and Overdue",
+      "ok": true,
+      "detail": "Unpaid 4 of 6 Overdue 1 Next due Electricity 02/10/26 → Unpaid 3 of 6 Overdue 0 Next due Electricity 02/10/26"
+    },
+    {
+      "name": "interact: AC target steps by 0.5°",
+      "ok": true,
+      "detail": "22 → 22.5"
+    },
+    {
+      "name": "interact: AC mode segment selects Cool",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "interact: purifier speed segment",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "interact: shopping item ticks",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "interact: One tap \"All lights off\" acts on demo state",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "interact: \"Show entity IDs\" reveals entity captions",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "mapping: gaps are labelled, not invented",
+      "ok": true,
+      "detail": "4 gap captions on Home"
+    },
+    {
+      "name": "interact: Escape closes the demo panel",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "console: no errors during interaction",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "honesty: outage chips say No data",
+      "ok": true,
+      "detail": "Outside No data Inside No data Home 2 of 3 Monitored No data"
+    },
+    {
+      "name": "honesty: outage never claims 0 W or 0 lights",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "honesty: unanswered checks are counted",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "honesty: bill with no due date is not overdue",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "honesty: doors with no answers do not read \"All closed\"",
+      "ok": true,
+      "detail": "Doors No data Cameras 0 of 6 online Last doorbell No data"
+    }
+  ]
+}

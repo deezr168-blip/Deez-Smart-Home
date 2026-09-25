@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CasaRay V3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght%40300;400;500;600;700;800&family=Noto+Sans+SC:wght%40400;500;700&family=JetBrains+Mono:wght%40400;500&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<!-- CasaRay V3 design prototype. Demonstration data only: this page does not
+     connect to Home Assistant and no control reaches a device. -->
+<div class="app" id="app">
+  <nav class="rail" id="rail" aria-label="Boards"></nav>
+  <main id="main">
+    <header class="topbar" id="topbar"></header>
+    <div class="chips" id="chips" role="list"></div>
+    <div id="view"></div>
+  </main>
+</div>
+<nav class="tabbar" id="tabbar" aria-label="Boards"></nav>
+<div id="overlay"></div>
+<div id="toast-slot" aria-live="polite"></div>
+<script src="icons.js"></script>
+<script src="i18n.js"></script>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
