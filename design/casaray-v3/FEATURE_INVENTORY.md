@@ -25,7 +25,7 @@ went or why it waits.
 
 | V2 view | V2 content (section headings) | V3 |
 |---|---|---|
-| `home` | Needs attention · One tap · Rooms · Shopping list · Right now · Who's home · Security · Energy now · Recent activity · More boards | **Home.** Same nine bands, same order. Adds a whole-house Powerpal tile under Energy now, which balances the band against Recent activity. |
+| `home` | Needs attention · One tap · Rooms · Shopping list · Right now · Who's home · Security · Energy now · Recent activity · More boards | **Home.** Same nine bands, same order. Adds a Powerpal grid-import tile under Energy now, which balances the band against Recent activity. |
 | `rooms` | Room conditions | **Rooms.** Two-column list of all eight rooms, each opening a room page. |
 | `living-room` | Quick actions · Lights · Power board · Entertainment · Air quality · Sensors · Front door camera · Doorbell · Other motion sensors · Device settings | **Room page.** Lights, air (purifier with a speed segment), sensors, TV, power board, scenes. Doorbell and camera move to **Security**. *Deferred:* device settings, other motion sensors. |
 | `kitchen` | Bench plugs · Fridge · Electrolux fridge · Sensors · Shopping list · Plug settings | **Room page.** Bench plugs, fridge (Electrolux probe and LG door), motion. States plainly that no kitchen light is integrated. *Deferred:* plug settings. |
@@ -36,7 +36,7 @@ went or why it waits.
 | `guest-room` | Entertainment · Printer · Printer settings | **Room page.** Printer plug, Pogo speaker (offline). |
 | `lighting` | Main lights · Wall switches · Living Room Hue · Other lights · Scene studio | **Lighting.** Every light by room, with brightness bars. "All lights off" is included as a *proposed* action. *Deferred:* scene studio, wall-switch list. |
 | `climate` | Parents Room AC · Room readings · Last 24 hours · Advanced | **Climate.** Room temperatures, AC control, purifier, LG set points. *Deferred:* 24-hour history graphs, Advanced. |
-| `energy` | Solar · Metered circuits · Trend · Grid and meter · Solar details | **Energy.** Solar (a no-data state while the inverter is dark), forecast today and tomorrow, best time for appliances, whole house, metered circuits, this month, grid carbon, gas on last bill. *Deferred:* trend graph, solar details. |
+| `energy` | Solar · Metered circuits · Trend · Grid and meter · Solar details | **Energy.** Solar (a no-data state while the inverter is dark), forecast today and tomorrow, best time for appliances, grid import (Powerpal), metered circuits, this month, grid carbon, gas on last bill. *Deferred:* trend graph, solar details. |
 | `bills` | Bills · Upcoming · Record a payment · This year | **Bills.** Unpaid and paid lists with a *Mark paid* action, this year's totals, and the rule that a bill with no due date is never called overdue. *Deferred:* record-a-payment scripts (they write history helpers, so they wait for approval). |
 | `bills-details` *(subview)* | Six bill details, six histories | *Deferred* to a Bills subview in the build. |
 | `security` | Doors · Motion · Camera health · Detection settings · Sirens | **Security.** Doors, cameras (live or offline), movement, emergency buttons, sirens shown **display-only**. *Deliberately not carried:* detection settings and camera privacy switches, because turning off camera detection or recording needs the owner's approval. |
@@ -107,7 +107,7 @@ cannot see.
 | Fronius SolarNet | `sensor.primo_5_0_1_1_*` | Solar (unreachable) |
 | Forecast.Solar *(inferred)* | `sensor.energy_production_today`, `sensor.power_highest_peak_time_today` | Solar forecast |
 | Electricity Maps | `sensor.electricity_maps_co2_intensity` | Grid carbon |
-| Powerpal | `sensor.powerpal_gateway_powerpal_*` | Whole-house load |
+| Powerpal | `sensor.powerpal_gateway_powerpal_*` | Grid import (reads the meter, so it is not consumption while solar produces) |
 | eero | `binary_sensor.eero_wan_status`, `sensor.eero_external_ip` | Internet status |
 | Met / weather | `weather.forecast_home` | Weather |
 | Mobile app | `sensor.*_battery_level`, `device_tracker.*` | People |

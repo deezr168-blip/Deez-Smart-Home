@@ -100,7 +100,7 @@ so the rail, the tab bar and Home's More boards grid are the only way around.
 | Right now \| Who's home | Weather + solar \| three people + Parents' room occupancy |
 | One tap | Full width, four across |
 | Rooms \| Shopping list + Security | Six room rows \| list + security summary |
-| Energy now \| Recent activity | Monitored load + sparkline + whole house \| last six changes |
+| Energy now \| Recent activity | Monitored load + sparkline + grid import \| last six changes |
 | More boards | Full width, three across |
 
 On desktop the board flows three across with `grid-auto-flow: dense`, so

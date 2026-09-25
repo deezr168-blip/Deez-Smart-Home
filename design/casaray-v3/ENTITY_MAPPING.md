@@ -63,6 +63,10 @@ The six bills do not share one naming pattern, and each was checked against the 
   is the one V2 uses. `media_player.tv_samsung_q9_series_65` and
   `media_player.samsung_q9_series_65` were unavailable in the export. V3 uses
   the same player as V2.
+- **Powerpal is grid import, not whole-house consumption.** It reads the
+  meter, so while solar produces it sees less than the house uses. V2's
+  comment calls it "whole-house". That is only true while the inverter is dark.
+  V3 labels it *Grid import*.
 - **Wall switches that feed a Hue group** (`switch.dinning_light_switch_1`,
   `switch.bedroomlight_switch_1`) are left out of the "lights on" count, so
   one lamp is never counted twice. The Parents' room has no Hue group, so its

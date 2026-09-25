@@ -657,7 +657,7 @@
   function wholeHouseTile() {
     const house = 'sensor.powerpal_gateway_powerpal_power', day = 'sensor.powerpal_gateway_powerpal_daily_energy';
     const hw = num(house), hd = num(day);
-    return tile({ ids: [house, day], ic: 'home', name: lang() === 'zh' ? '全屋（Powerpal）' : 'Whole house (Powerpal)', state: hw == null ? 'na' : 'on',
+    return tile({ ids: [house, day], ic: 'home', name: lang() === 'zh' ? '电网取电（Powerpal）' : 'Grid import (Powerpal)', state: hw == null ? 'na' : 'on',
       sub: hw == null ? t('s.no_data') : `${fmt(hw, 0)} W${hd == null ? '' : ` · ${lang() === 'zh' ? '今天' : 'today'} ${fmt(hd)} kWh`}`, pill: hw == null ? naPill() : '' });
   }
 
