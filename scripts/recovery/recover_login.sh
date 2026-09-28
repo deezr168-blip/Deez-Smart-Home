@@ -1,6 +1,8 @@
 #!/bin/sh
 # CasaRay — Home Assistant login recovery (targeted, from an unencrypted backup)
 #
+#   sh /tmp/recover_login.sh run        ONE COMMAND: check -> stage -> fresh verified backup -> asks APPLY
+#                                       -> dashboard+theme from ha-deploy -> repair -> restart -> verify
 #   sh /tmp/recover_login.sh check      read-only: verify the backup and plan the repair (default)
 #   sh /tmp/recover_login.sh prepare    NON-DISRUPTIVE: fresh full backup of the current install,
 #                                       then stage the needed files under /config/_recovery/stage
@@ -9,6 +11,7 @@
 #                                       rolls itself back if Core does not come up
 #   sh /tmp/recover_login.sh verify     read-only: post-repair state
 #   sh /tmp/recover_login.sh rollback   DISRUPTIVE (asks you to type ROLLBACK): back to pre-apply
+#   sh /tmp/recover_login.sh dashboard  re-sync CasaRay dashboard + theme from ha-deploy (backs up first)
 #   sh /tmp/recover_login.sh finish     after you have logged in: delete the staged secret copies
 #
 # Optional 2nd argument: backup tar (default e6cc88bd.tar).
@@ -132,11 +135,40 @@ EOF
 )
 pyrun() { docker exec -i -e MODE="$1" homeassistant python3 -c "$PY"; }
 web() { curl -s -o /dev/null -w "$1" --max-time 5 -L --max-redirs 5 http://127.0.0.1:8123/ 2>/dev/null; }
+# Core itself answers /api/ with 401 when it is really up; anything else is not proof.
+api() { curl -s -o /dev/null -w '%{http_code}' --max-time 5 http://127.0.0.1:8123/api/ 2>/dev/null; }
+running() { [ "$(docker inspect -f '{{.State.Running}}' homeassistant 2>/dev/null)" = true ]; }
 cfgcheck() {
   ha core check && return 0
   say "ha core check failed or unavailable while Core is stopped; trying the Core image directly"
   IMG=$(docker inspect -f '{{.Config.Image}}' homeassistant 2>/dev/null) || return 1
   docker run --rm -v "$C:/config" --entrypoint python3 "$IMG" -m homeassistant --script check_config -c /config
+}
+# Latest CasaRay dashboard + theme from ha-deploy via the repo's own sync script, exported
+# to a temp dir so the clone's working tree is never touched. Pre-copies feed rollback.
+DASH="dashboards/casaray_v2.yaml themes/deez_your_name.yaml"
+dash_sync() {
+  mkdir -p "$R/pre"; touch "$R/placed.txt"
+  for f in $DASH; do [ -e "$C/$f" ] && [ ! -e "$R/pre/$f" ] && mkdir -p "$(dirname "$R/pre/$f")" && cp -p "$C/$f" "$R/pre/$f"; done
+  docker exec homeassistant sh -c 'set -e; X=/config/_recovery/export; rm -rf $X; mkdir -p $X/dashboards $X/themes; cd /config/deez_repo; [ -r /config/.deez_deploy.env ] && . /config/.deez_deploy.env; export DEEZ_GH_TOKEN GIT_ASKPASS=/config/deploy_askpass.sh GIT_TERMINAL_PROMPT=0; g() { git -c safe.directory="*" "$@"; }; g fetch -q origin ha-deploy; echo "[recover] ha-deploy is at $(g rev-parse --short FETCH_HEAD)"; g show FETCH_HEAD:dashboards/casaray_v2.yaml > $X/dashboards/casaray_v2.yaml; g show FETCH_HEAD:themes/deez_your_name.yaml > $X/themes/deez_your_name.yaml; g show FETCH_HEAD:scripts/sync_casaray_to_config.sh > $X/sync.sh; REPO=$X DEST=/config/dashboards THEME_DEST=/config/themes sh $X/sync.sh; rm -rf $X' || return 1
+  for f in $DASH; do
+    [ -e "$C/$f" ] || continue
+    cmp -s "$C/$f" "$R/pre/$f" 2>/dev/null && continue
+    grep -qx "$f" "$R/placed.txt" || echo "$f" >> "$R/placed.txt"
+  done
+}
+do_prepare() {   # $1 = 1 when the python check already ran in prepare mode
+  FREE=$(df -k /mnt/data | awk 'NR==2{print $4}'); [ "${FREE:-0}" -gt 2000000 ] || die "less than 2 GB free"
+  say "checking the backup against the live install and staging the files (about 1 minute)"
+  pyrun prepare < "$B" || die "check failed: NOTHING has changed. Photograph the lines above and send them."
+  NAME="pre-login-repair-$(date +%Y%m%d-%H%M)"
+  say "full backup of the CURRENT install: $NAME (unencrypted, a few minutes)"
+  OUT=$(ha backups new --name "$NAME" 2>&1) || { echo "$OUT"; die "backup failed: nothing live has changed"; }
+  SLUG=$(echo "$OUT" | sed -n 's/.*slug:[[:space:]]*\([0-9a-f]*\).*/\1/p')
+  if [ -n "$SLUG" ] && ha backups info "$SLUG" >/dev/null 2>&1; then :
+  elif ha backups list 2>/dev/null | grep -q "$NAME"; then SLUG="$NAME"
+  else echo "$OUT"; die "backup not found after creation: nothing live has changed"; fi
+  echo "$SLUG" > "$R/pre_backup_slug"; say "backup verified: $SLUG"
 }
 do_rollback() {
   [ -f "$R/placed.txt" ] || die "nothing recorded as placed"
@@ -151,27 +183,14 @@ do_rollback() {
   ha core start; say "rollback done: files are as they were before apply"
 }
 
-case "$MODE" in
-check)
-  [ -f "$B" ] || die "backup not found: $B"; df -h /mnt/data | tail -1
-  pyrun check < "$B" ;;
-prepare)
-  [ -f "$B" ] || die "backup not found: $B"
-  [ -e "$R/APPLIED" ] && die "a repair is already applied; use verify or rollback"
-  FREE=$(df -k /mnt/data | awk 'NR==2{print $4}'); [ "${FREE:-0}" -gt 2000000 ] || die "less than 2 GB free"
-  pyrun check < "$B" > /dev/null || die "backup check failed; run: sh /tmp/recover_login.sh check"
-  say "1/2 full backup of the CURRENT install (unencrypted, a few minutes)"
-  OUT=$(ha backups new --name "pre-login-repair-$(date +%Y%m%d-%H%M)" 2>&1) || { echo "$OUT"; die "backup failed"; }
-  echo "$OUT" | grep -i slug; mkdir -p "$R"; echo "$OUT" | sed -n 's/.*slug:[[:space:]]*\([0-9a-f]*\).*/\1/p' > "$R/pre_backup_slug"
-  say "2/2 staging files from $(basename "$B")"
-  pyrun prepare < "$B" || die "staging failed"
-  say "prepared. Nothing live has changed. Next, with approval: sh /tmp/recover_login.sh apply" ;;
-apply)
+do_apply() {
   [ -f "$R/PREPARED" ] && [ -f "$R/plan.txt" ] || die "run prepare first"
   [ -e "$R/APPLIED" ] && die "already applied; use verify or rollback"
   say "will stop Core, then add/replace:"; sed 's/^/    /' "$R/plan.txt"
+  say "and sync the CasaRay dashboard + theme from ha-deploy (live copies saved first)"
   printf '[recover] type APPLY to continue: '; read -r ANS; [ "$ANS" = APPLY ] || die "not confirmed; nothing changed"
   mkdir -p "$R/pre"; : > "$R/placed.txt"
+  dash_sync || say "WARN: dashboard sync failed; login recovery continues (retry later: sh /tmp/recover_login.sh dashboard)"
   while read -r p; do [ -n "$p" ] && [ -e "$C/$p" ] && mkdir -p "$(dirname "$R/pre/$p")" && cp -p "$C/$p" "$R/pre/$p"; done < "$R/plan.txt"
   ha core stop || die "could not stop Core; nothing changed"
   touch "$R/APPLIED"
@@ -188,17 +207,43 @@ apply)
     done
   fi
   ha core start
-  say "waiting for Core (up to 10 minutes)"; i=0
-  while [ "$(web '%{http_code}')" = 000 ] || [ -z "$(web '%{http_code}')" ]; do
-    i=$((i+1)); [ $i -gt 60 ] && { say "Core did not come up: rolling back automatically"; do_rollback; die "rolled back; send me: ha core logs | tail -50"; }
-    sleep 10
+  say "waiting for Core (up to 15 minutes)"; i=0
+  while [ "$(api)" != 401 ]; do
+    i=$((i+1))
+    if [ $i -gt 90 ]; then
+      if running; then die "Core is running but its API is not answering yet. NOT rolling back. Wait 5 minutes, then: sh /tmp/recover_login.sh verify"; fi
+      say "Core container is not running: rolling back automatically"; do_rollback; die "rolled back; send me a photo of: ha core logs | tail -40"
+    fi
+    sleep "${RC_POLL:-10}"
   done
   pyrun verify < /dev/null
   case "$(web '%{url_effective}')" in *onboarding*) say "WARNING: still redirecting to onboarding" ;; *) say "front page no longer redirects to onboarding" ;; esac
   say "DONE. Log in on the iPad with your usual owner username and password."
-  say "If anything is wrong: sh /tmp/recover_login.sh rollback" ;;
+  say "If anything is wrong: sh /tmp/recover_login.sh rollback"
+}
+
+case "$MODE" in
+run)
+  [ -f "$B" ] || die "backup not found: $B"
+  [ -e "$R/APPLIED" ] && die "a repair is already applied; use verify or rollback"
+  do_prepare
+  do_apply ;;
+check)
+  [ -f "$B" ] || die "backup not found: $B"; df -h /mnt/data | tail -1
+  pyrun check < "$B" ;;
+prepare)
+  [ -f "$B" ] || die "backup not found: $B"
+  [ -e "$R/APPLIED" ] && die "a repair is already applied; use verify or rollback"
+  do_prepare
+  say "prepared. Nothing live has changed. Next, with approval: sh /tmp/recover_login.sh apply" ;;
+apply)
+  do_apply ;;
 verify)
-  pyrun verify < /dev/null; say "front page -> $(web '%{url_effective}') ($(web '%{http_code}'))" ;;
+  pyrun verify < /dev/null; say "Core API: $(api) (401 = up) | front page -> $(web '%{url_effective}')" ;;
+dashboard)
+  running || die "Core is not running"
+  dash_sync || die "dashboard sync failed"
+  say "done: refresh the CasaRay page on the iPad (a changed theme needs Developer Tools -> YAML -> Reload themes)" ;;
 rollback)
   [ -e "$R/APPLIED" ] || die "nothing applied"
   printf '[recover] type ROLLBACK to stop Core and undo the repair: '; read -r ANS
