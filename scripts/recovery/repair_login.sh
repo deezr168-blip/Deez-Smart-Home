@@ -1,4 +1,9 @@
 #!/bin/sh
+#
+# WITHDRAWN 2026-09-29 -- DO NOT RUN. Two defects: (1) calls runner.HassEventLoopPolicy,
+# removed in 2026.9; (2) its reconstructed configuration.yaml registers the legacy dashboard
+# as YAML at url_path deez-smart-home, which is a UI (storage) dashboard -- a conflict.
+# Superseded by fix_owner_login.sh (login) and casaray_config_block.yaml (CasaRay).
 # CasaRay — rebuild the missing Home Assistant password store, keeping every user ID.
 #
 # The 25 Sep backup has no .storage/auth_provider.homeassistant, and `ha auth reset` fails
@@ -18,6 +23,7 @@
 # Never edits users, login records, tokens, integrations, registries, Zigbee, Matter or
 # databases. Never prints a password, hash, token or key.
 set -u
+echo "[repair] WITHDRAWN: use fix_owner_login.sh and scripts/recovery/casaray_config_block.yaml"; exit 2
 MODE="${1:-check}"
 B="${2:-/mnt/data/supervisor/backup/e6cc88bd.tar}"   # optional: source of other missing files
 SAFETY="${SAFETY:-b0206554}"

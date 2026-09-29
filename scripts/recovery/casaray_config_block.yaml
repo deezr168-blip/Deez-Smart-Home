@@ -1,0 +1,17 @@
+
+# --- CasaRay recovery (2026-09-29) ---------------------------------------
+# Restores the two things the lost configuration.yaml provided for CasaRay.
+# The legacy "Deez Smart Home" dashboard is a UI (storage) dashboard and is
+# deliberately NOT listed here.
+homeassistant:
+  packages: !include_dir_named packages
+
+lovelace:
+  dashboards:
+    casaray-v2:
+      mode: yaml
+      title: CasaRay
+      icon: mdi:home-heart
+      show_in_sidebar: true
+      filename: dashboards/casaray_v2.yaml
+# --- end CasaRay recovery -------------------------------------------------
