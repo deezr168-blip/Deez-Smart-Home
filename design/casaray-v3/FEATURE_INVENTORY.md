@@ -77,7 +77,7 @@ native Home Assistant control named in the right-hand column.
 | TV power, volume | Room pages, Media | `tile` + `media-player-volume-slider` feature |
 | Plug on/off | Room pages | `tile` toggle. Freezer excluded. |
 | Scene | Room pages | `tile` on `scene.*`, action `scene.turn_on` |
-| One tap (Evening, Goodnight, Movie, All lights off) | Home, Lighting | **Needs four new scripts (`CR-233`)**. Shown as *Proposed*. |
+| Whole-house scenes (Evening, Goodnight, Movie, All lights off) | Lighting (moved off Home, V3-007) | **Needs four new scripts (`CR-233`)**. Shown as *Proposed*. |
 | Mark bill paid | Bills | `tile` toggle on `input_boolean.*_paid` |
 | Shopping list tick | Home | `todo-list` card |
 | Guest mode | People | `tile` toggle on `input_boolean.guest_mode` |

@@ -272,11 +272,11 @@ _133 entity IDs; 133 already on V2, 0 new to CasaRay._
 
 | Where | What is missing | What the prototype does | To close it |
 |---|---|---|---|
-| Home › One tap, Lighting | Whole-home Evening, Goodnight, Movie and All lights off (`CR-233`) | *Proposed* pill; acts on demo state only | Four new scripts. **Needs owner approval**, because they switch real devices, and Goodnight closes the blind. |
+| Lighting › Whole-house scenes (proposed) | Whole-home Evening, Goodnight, Movie and All lights off (`CR-233`) | *Proposed* pill; acts on demo state only | Four new scripts. **Needs owner approval**, because they switch real devices, and Goodnight closes the blind. |
 | Kitchen › Lights | No kitchen light is integrated | Grey card saying so | Integrate a light, if one exists |
 | Ray's room › Temperature | No temperature sensor in the room | Grey card saying so | Add a sensor, or accept the gap |
 | Energy › cost | No trustworthy electricity cost | No dollar figure; footnote cites `CFG-001` | Owner fixes the Energy dashboard cost source |
-| Home › Energy now sparkline | Twelve hours of monitored load | Demo shape (fixed values) | Native `statistics-graph` on `sensor.casa_monitored_power` in the build |
+| Energy › Monitored power (12-hour bars) | Twelve hours of monitored load | Demo shape (fixed values) | Native `statistics-graph` on `sensor.casa_monitored_power` in the build |
 | Light colour ("warm white") | Colour-temperature *name* | Demo attribute | Derive from `color_temp_kelvin` in a template |
 
 ## 4. Live check, 25/09/2026

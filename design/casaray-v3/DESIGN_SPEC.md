@@ -95,13 +95,17 @@ so the rail, the tab bar and Home's More boards grid are the only way around.
 | Band | Layout |
 |---|---|
 | Top bar | Title · Demo data pill · Language · Theme · Demo controls · Clock |
-| Chip strip | Outside · Inside · Home · Monitored |
-| Needs attention | Full width, alert cards two across |
-| Right now \| Who's home | Weather + solar \| three people + Parents' room occupancy |
-| One tap | Full width, four across |
-| Rooms \| Shopping list + Security | Six room rows \| list + security summary |
-| Energy now \| Recent activity | Monitored load + sparkline + grid import \| last six changes |
-| More boards | Full width, three across |
+| Hero | Greeting, status sentence, Outside · Inside (V3-005; replaces the chip strip) |
+| Needs attention | Full width, alert cards two across (three across from five alerts) |
+| Who's home \| Energy now | Three people \| Solar · Grid import · Export truth strip |
+| One tap | Full width, four across (two across below 1,024 px) |
+| Rooms | Full width, six room rows two across |
+| Right now \| Shopping list + Security | Current weather, solar forecast, Parents' room occupancy, monitored power \| list + security summary |
+| More boards | Full width, every destination except Home |
+
+Recent activity, the four-day forecast, the 12-hour monitored-power chart
+and the proposed whole-house scenes are no longer on Home (V3-007); they sit
+on House health, Climate, Energy and Lighting.
 
 On desktop the board flows three across with `grid-auto-flow: dense`, so
 Rooms fills the space beside Right now and Who's home.
@@ -109,8 +113,9 @@ Rooms fills the space beside Right now and Who's home.
 
 ### 4a. Home first screen (V3-005)
 
-The first 1180 × 820 viewport carries four things without scrolling, even on
-a bad day (four alerts in English, five in Chinese).
+The first 1180 × 820 viewport carries four things without scrolling, in both
+languages, with up to five alerts (four alerts two across; five or more three
+across with one line of detail).
 
 | Band | Content | Level |
 |---|---|---|
@@ -150,7 +155,9 @@ first (target, fan, swing), which is not approved.
 
 **Home = current state plus immediate action.** Forecast, history, proposed
 scenes and the monitored-load chart live on Climate, House health, Lighting
-and Energy. A full Home is about two screens (1,612–1,723 px measured).
+and Energy. A full Home is about two screens (1,582–1,722 px in English,
+1,563–1,683 px in Chinese, measured at 1180 × 820; the preferred target is
+1,640 px, and the over-target days are the ones with four or five alerts).
 
 ### Room pages
 

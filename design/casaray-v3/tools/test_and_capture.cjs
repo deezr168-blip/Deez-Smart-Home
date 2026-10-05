@@ -367,6 +367,27 @@ async function shot(page, name, full = false) {
       check('relocated: Energy carries monitored power with its 12-hour bars', (await p.locator('.spark').count()) === 1);
       await p.context().close();
     }
+
+    // QA pass on PR #4 (05/10/26): Chinese Home length, and a guarantee that the
+    // detail the dense (five-alert) layout cuts to one line is still one tap
+    // away. Every Needs-attention card must be a button with a real destination.
+    {
+      const zhHeights = {}, badCards = [];
+      for (const [label, scenario] of [['evening', null], ['review', 'review'], ['away', 'away'], ['outage', 'outage']]) {
+        for (const zh of [false, true]) {
+          const p = await newPage(browser, VIEWPORTS.wall);
+          if (scenario) { await p.locator('[data-overlay="demo"]').click(); await p.locator(`[data-scenario="${scenario}"]`).click(); await p.keyboard.press('Escape'); }
+          if (zh) await p.locator('[data-lang]').click();
+          await p.waitForTimeout(100);
+          if (zh) zhHeights[label] = await p.evaluate(() => document.documentElement.scrollHeight);
+          const cards = await p.evaluate(() => [...document.querySelectorAll('.attn .alerts .card.alert')].map((c) => ({ tag: c.tagName, go: c.dataset.go || null, title: c.querySelector('.name').textContent.trim() })));
+          for (const c of cards) if (c.tag !== 'BUTTON' || !BOARDS.includes(c.go)) badCards.push(`${label}${zh ? ' 中文' : ''}: ${c.title} → ${c.tag}/${c.go}`);
+          await p.context().close();
+        }
+      }
+      check('home length (中文): every scenario stays under 1800 px', Math.max(...Object.values(zhHeights)) <= 1800, JSON.stringify(zhHeights));
+      check('home alerts: every Needs-attention card is a button that opens a real board', badCards.length === 0, badCards.join(' | '));
+    }
   }
 
   // ----------------------------------------------------- screenshots --

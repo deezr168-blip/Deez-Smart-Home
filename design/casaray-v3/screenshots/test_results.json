@@ -1,5 +1,5 @@
 {
-  "passed": 106,
+  "passed": 108,
   "failed": 0,
   "results": [
     {
@@ -100,7 +100,7 @@
     {
       "name": "nav: browser back works",
       "ok": true,
-      "detail": "file:///home/user/Deez-Smart-Home/design/casaray-v3/prototype/index.html#room-backyard"
+      "detail": "file:///home/user/casaray-wt/agent-2-visual-ux/design/casaray-v3/prototype/index.html#room-backyard"
     },
     {
       "name": "nav: More boards card opens a board",
@@ -480,7 +480,7 @@
     {
       "name": "one tap: air-con card opens the Parents' room climate controls",
       "ok": true,
-      "detail": "file:///home/user/Deez-Smart-Home/design/casaray-v3/prototype/index.html#room-parents"
+      "detail": "file:///home/user/casaray-wt/agent-2-visual-ux/design/casaray-v3/prototype/index.html#room-parents"
     },
     {
       "name": "one tap: opening the air-con card leaves the HVAC mode unchanged",
@@ -529,6 +529,16 @@
     },
     {
       "name": "relocated: Energy carries monitored power with its 12-hour bars",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "home length (中文): every scenario stays under 1800 px",
+      "ok": true,
+      "detail": "{\"evening\":1683,\"review\":1599,\"away\":1672,\"outage\":1563}"
+    },
+    {
+      "name": "home alerts: every Needs-attention card is a button that opens a real board",
       "ok": true,
       "detail": ""
     }

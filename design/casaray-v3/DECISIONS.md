@@ -40,14 +40,15 @@ glanceable first screen, and a full page of about 1.5–2 wall-iPad screens
 Nothing was deleted. The proposal, its strings and its gap captions are
 intact. Home's first-screen hierarchy is unchanged.
 
-**Measured at 1180 × 820** (full-page height, English):
+**Measured at 1180 × 820** (full-page `scrollHeight`; QA re-measured the
+After columns on 05/10/26 and corrected the outage figure, which read 1,612 px):
 
-| Scenario | Before | After |
-|---|---|---|
-| Evening (4 alerts) | 2,353 px | 1,723 px |
-| Concept review snapshot | 2,250 px | 1,620 px |
-| Everyone away (5 alerts) | 2,326 px | 1,696 px |
-| Device outage | 2,024 px | 1,612 px |
+| Scenario | Before (English) | After (English) | After (中文) |
+|---|---|---|---|
+| Evening (4 alerts) | 2,353 px | 1,722 px | 1,683 px |
+| Concept review snapshot | 2,250 px | 1,619 px | 1,599 px |
+| Everyone away (5 alerts) | 2,326 px | 1,695 px | 1,672 px |
+| Device outage | 2,024 px | 1,582 px | 1,563 px |
 
 The two worst days sit slightly above the preferred 1,640 px because the
 alert cards grow with the number of alerts, not because Home grew. Rooms stay
