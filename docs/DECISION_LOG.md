@@ -25,8 +25,10 @@ live_check, working, stateless, obsolete from the 05/09 export, the `STALE`
 map, twin detection and `packages/`. *Why not use the live MCP:* it returns
 friendly names without entity IDs and includes stale registry twins, so a
 name-keyed match would mislabel entities. `working` is deliberately weak
-("nothing contradicts it"). *Result:* 0 confirmed broken, 0 likely broken, 148
-live_check — of which 111 are helpers and 34 more feed the Bills board.
+("nothing contradicts it"). *Result:* 0 confirmed broken, 0 likely broken, 154
+live_check: 106 helpers/scripts/automations that were `ok` on 05/09 but have no
+definition in Git, 13 never-set text helpers, 29 offline devices, 6 defined by
+`packages/` (they exist only once packages load).
 
 ## D-004 — `ha-deploy` is production if auto-deploy is on (2026-10-05)
 
@@ -62,7 +64,7 @@ reads state only and acts on nothing. *Not verified:* wrapping on the iPad.
 
 ## D-007 — Did not rebuild the bills helpers (2026-10-05)
 
-~110 helpers have no definition in Git on any branch (`git log -S` and
+106 helpers/scripts/automations have no definition in Git on any branch (`git log -S` and
 `git grep` across all refs). Writing YAML for them would mean inventing ranges
 and could collide with surviving UI helpers (duplicate IDs become `_2`). Parked
 behind OWNER_ACTION_QUEUE A1/A2.
@@ -76,7 +78,7 @@ and recorded as OWNER_ACTION_QUEUE B1 with a test that tracks it.
 
 ## D-009 — Booleans proposed, everything else parked (2026-10-05)
 
-Of the ~110 helpers with no definition in Git, only the seven `input_boolean`s
+Of the 106 helpers with no definition in Git, only the seven `input_boolean`s
 (language toggle, six paid flags) have no settings, so only they can be
 written without inventing anything. They are in `proposals/`, outside the
 path `package_defined()` reads, so they neither load nor legitimise any card.
