@@ -490,5 +490,84 @@ class DarkInstance(unittest.TestCase):
         self.assertIn("没有完全响应", self.out)
 
 
+@unittest.skipUnless(os.path.exists(RENDER), "render_cards.py not present")
+class PartialInstance(unittest.TestCase):
+    """The real situation after 25/09: the house answers, the helpers do not.
+
+    The dark pass is everything silent; the fixture pass is everything
+    answering. Neither is what the wall shows. This one keeps every fixture
+    reading and forces only the helper and person entities unavailable.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        import tempfile
+        with open(os.path.join(ROOT, "docs", "live", "fixture_states.json"),
+                  encoding="utf-8") as fh:
+            fixture = json.load(fh)
+        fixture.pop("_meta", None)
+        for eid in list(fixture):
+            if eid.split(".")[0] in ("input_boolean", "input_number",
+                                     "input_datetime", "input_text",
+                                     "input_select", "counter", "person"):
+                fixture[eid] = "unavailable"
+        cls.tmp = tempfile.NamedTemporaryFile("w", suffix=".json", delete=False)
+        json.dump(fixture, cls.tmp)
+        cls.tmp.close()
+        r = run(sys.executable, RENDER, "--all", "--no-fixture", "--no-dark",
+                "--states", cls.tmp.name)
+        cls.rc, cls.out = r.returncode, r.stdout + r.stderr
+
+    @classmethod
+    def tearDownClass(cls):
+        os.unlink(cls.tmp.name)
+
+    def blocks(self, view):
+        return [b for b in re.split(r"\n(?==== )", self.out)
+                if b.startswith(f"=== {view} ")]
+
+    def english(self, view):
+        """Only the lines rendered for the English pass of a view."""
+        keep, cur = [], None
+        for line in "\n".join(self.blocks(view)).split("\n"):
+            m = re.match(r"\s+\w+/(EN|CN)\b", line)
+            if line.startswith("==="):
+                cur = None
+            elif m:
+                cur = m.group(1)
+            if cur == "EN":
+                keep.append(line)
+        return "\n".join(keep)
+
+    def test_renders(self):
+        self.assertEqual(self.rc, 0, self.out[-1500:])
+        self.assertNotRegex(self.out, r"Traceback|TemplateError|UndefinedError")
+
+    def test_bills_do_not_claim_nothing_is_owed(self):
+        text = "\n".join(self.blocks("bills"))
+        self.assertNotRegex(text, r"(?i)nothing is waiting to be paid|not set up")
+        self.assertIn("are not reporting, so what is waiting cannot be told", text)
+
+    def test_people_chips_say_no_data_not_zero(self):
+        for view in ("home", "people"):
+            self.assertNotRegex(
+                self.english(view),
+                r"(?i)at home 0\b|away 0\b|\b0 home\b|\b0 out\b|## 0/3|"
+                r"counted by person above", view)
+
+    def test_setup_status_reports_the_cause(self):
+        text = "\n".join(self.blocks("house-health"))
+        self.assertRegex(text, r"helper groups are not fully answering")
+        self.assertRegex(text, r"People: Not answering 0/3")
+        self.assertRegex(text, r"Bill amounts: Not answering 0/6")
+
+    def test_english_pass_has_no_chinese_when_the_toggle_is_dead(self):
+        # The toggle is `unavailable` here; English must still be what shows.
+        for view in ("home", "people", "bills", "house-health"):
+            en = self.english(view)
+            self.assertTrue(en, view)
+            self.assertNotRegex(en, r"[\u4e00-\u9fff]", view)
+
+
 if __name__ == "__main__":
     unittest.main()

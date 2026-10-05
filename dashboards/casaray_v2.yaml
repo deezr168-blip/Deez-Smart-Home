@@ -10979,7 +10979,7 @@ views:
         {% for p in ps -%}{% set s = states(p) -%}{% if s == 'home' %}{% set
         ns.home = ns.home + 1 -%}{% elif s in ['unavailable','unknown','none','']
         %}{% set ns.unk = ns.unk + 1 -%}{% else %}{% set ns.away = ns.away + 1
-        -%}{% endif %}{% endfor -%} {% if cn %}{{ ns.home }} 人在家 · {{ ns.away }} 人外出{%
+        -%}{% endif %}{% endfor -%} {% if ns.unk == ps | count %}{{ '位置无数据' if cn else 'No location data' }}{% elif cn %}{{ ns.home }} 人在家 · {{ ns.away }} 人外出{%
         if ns.unk %} · {{ ns.unk }} 人未知{% endif %}{% else %}{{ ns.home }} home · {{
         ns.away }} out{% if ns.unk %} · {{ ns.unk }} unknown{% endif %}{% endif %}
     # Time over date, right-aligned, DD/MM/YY -- never %Y. `nowrap` is a
@@ -11101,11 +11101,12 @@ views:
         {%- set people = ['person.raymond_du','person.vinh_du','person.ai_q_huang'] -%}
         {%- set ns = namespace(home=[], away=[], unk=0) -%}
         {%- for p in people %}{% set s = states(p) %}{% set n = state_attr(p,'friendly_name') or p %}{% if s == 'home' %}{% set ns.home = ns.home + [n] %}{% elif s in ['unavailable','unknown','none'] %}{% set ns.unk = ns.unk + 1 %}{% else %}{% set ns.away = ns.away + [n] %}{% endif %}{% endfor -%}
+        {%- set answered = (people | count) - ns.unk -%}
         **{{ '在家' if cn else 'At home' }}**
-        ## {{ ns.home | count }}/{{ people | count }}
+        ## {% if answered > 0 %}{{ ns.home | count }}/{{ answered }}{% else %}—{% endif %}
         {% if ns.home %}{{ ns.home | join('、') if cn else ns.home | join(', ') }}{% elif ns.unk == people | count %}{{ '没有成员报告位置' if cn else 'Nobody is reporting a location' }}{% else %}{{ '家中无人' if cn else 'Nobody is home' }}{% endif %}
 
-        {{ '外出' if cn else 'Away' }} **{{ ns.away | count }}**{% if ns.unk %} · {{ '位置无数据' if cn else 'Location unknown' }} **{{ ns.unk }}**{% endif %}
+        {% if answered > 0 %}{{ '外出' if cn else 'Away' }} **{{ ns.away | count }}**{% endif %}{% if ns.unk %}{% if answered > 0 %} · {% endif %}{{ '位置无数据' if cn else 'Location unknown' }} **{{ ns.unk }}**{% endif %}
     - type: markdown
       grid_options: {columns: 6, rows: 3}
       content: |
@@ -11116,14 +11117,14 @@ views:
             and that disagreement is the point of showing both. -#}
         {%- set z = states('zone.home') | int(none) -%}
         {%- set people = ['person.raymond_du','person.vinh_du','person.ai_q_huang'] -%}
-        {%- set ns = namespace(home=0) -%}
-        {%- for p in people %}{% if is_state(p,'home') %}{% set ns.home = ns.home + 1 %}{% endif %}{% endfor -%}
+        {%- set ns = namespace(home=0, unk=0) -%}
+        {%- for p in people %}{% if is_state(p,'home') %}{% set ns.home = ns.home + 1 %}{% elif states(p) in ['unavailable','unknown','none',''] %}{% set ns.unk = ns.unk + 1 %}{% endif %}{% endfor -%}
         **{{ '住宅区域' if cn else 'Home zone' }}**
         {% if z is not none %}## {{ z }}
         {{ '个被追踪对象在住宅范围内' if cn else ('tracker in the home zone' if z == 1 else 'trackers in the home zone') }}{% else %}## —
         {{ '住宅区域没有报告数量' if cn else 'The home zone is not reporting a count' }}{% endif %}
 
-        {% if z is not none and z != ns.home %}{{ '与上方按成员统计的 %d 不一致：住宅区域也会统计未绑定成员的设备。' % ns.home if cn else 'Differs from the %d counted by person above: the zone also counts trackers not tied to a person.' % ns.home }}{% else %}{{ '与按成员统计的结果一致。' if cn else 'Agrees with the count by person.' }}{% endif %}
+        {% if ns.unk > 0 %}{{ ('有 %d 位成员无位置数据，无法与成员统计比较。' % ns.unk) if cn else ('Not compared: %d of %d people are not reporting a location.' % (ns.unk, people | count)) }}{% elif z is not none and z != ns.home %}{{ '与上方按成员统计的 %d 不一致：住宅区域也会统计未绑定成员的设备。' % ns.home if cn else 'Differs from the %d counted by person above: the zone also counts trackers not tied to a person.' % ns.home }}{% else %}{{ '与按成员统计的结果一致。' if cn else 'Agrees with the count by person.' }}{% endif %}
     - type: markdown
       grid_options: {columns: 6, rows: 3}
       content: |
