@@ -548,6 +548,42 @@ class PartialInstance(unittest.TestCase):
         self.assertNotRegex(text, r"(?i)nothing is waiting to be paid|not set up")
         self.assertIn("are not reporting, so what is waiting cannot be told", text)
 
+    def test_one_silent_bill_blocks_the_all_clear(self):
+        # Review finding: with five bills settled and the sixth's paid flag
+        # silent, the card printed "Nothing is waiting" and, a line later,
+        # "1 of 6 bills are not reporting". Run a one-off render for that case.
+        import tempfile
+        with open(self.tmp.name, encoding="utf-8") as fh:
+            states = json.load(fh)
+        for p in ("elec_bill", "gas_bill", "water_bill", "council_rate",
+                  "car_insurance"):
+            states[f"input_number.{p}_amount"] = "50"
+            states[f"input_boolean.{p.replace('_bill', '_bill')}_paid"] = "on"
+        states["input_number.rego_amount"] = "50"
+        states["input_boolean.rego_paid"] = "unavailable"
+        states["input_boolean.chinese_dashboard"] = "off"
+        with tempfile.NamedTemporaryFile("w", suffix=".json",
+                                         delete=False) as f2:
+            json.dump(states, f2)
+        try:
+            r = run(sys.executable, RENDER, "--view", "bills", "--no-fixture",
+                    "--no-dark", "--states", f2.name)
+        finally:
+            os.unlink(f2.name)
+        en = []
+        cur = None
+        for line in r.stdout.split("\n"):
+            m = re.match(r"\s+\w+/(EN|CN)\b", line)
+            if line.startswith("==="):
+                cur = None
+            elif m:
+                cur = m.group(1)
+            if cur == "EN":
+                en.append(line)
+        text = "\n".join(en)
+        self.assertIn("1 of 6 bills are not reporting", text)
+        self.assertNotRegex(text, r"(?i)nothing is waiting to be paid")
+
     def test_people_chips_say_no_data_not_zero(self):
         for view in ("home", "people"):
             self.assertNotRegex(
