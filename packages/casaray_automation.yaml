@@ -38,8 +38,12 @@ input_boolean:
   casaray_auto_deploy:
     name: CasaRay auto deploy
     icon: mdi:rocket-launch-outline
-    # Default ON, per the brief. Turning it off stops the 03:30 deploy without
-    # removing anything; the manual Deploy Now script still works.
+    # No `initial:`, so a helper with no restored state starts OFF. (An earlier
+    # comment here said "default ON"; Home Assistant does not do that without
+    # `initial: true`.) That is the safe direction: while it is off the 03:30
+    # automation does nothing, and the deploy it would run resets the host
+    # clone to origin/ha-deploy -- so turning it on makes ha-deploy production.
+    # The manual Deploy Now script works either way.
 
 input_number:
   casaray_battery_threshold:
