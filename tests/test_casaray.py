@@ -40,6 +40,17 @@ def run(*cmd, **kw):
     return subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True, **kw)
 
 
+def read(path, **kw):
+    with open(path, encoding="utf-8", **kw) as fh:
+        return fh.read()
+
+
+def code_lines(path):
+    """Lines of a file that are not whole-line comments."""
+    return "\n".join(l for l in read(path).split("\n")
+                     if not l.lstrip().startswith("#"))
+
+
 def load():
     with open(DASH, encoding="utf-8") as fh:
         return yaml.safe_load(fh)
@@ -141,11 +152,38 @@ class DashboardStructure(unittest.TestCase):
         self.assertIn("input_boolean.casaray_auto_deploy", text)
 
     def test_no_sentinel_float_fallbacks(self):
-        raw = open(DASH, encoding="utf-8").read()
-        body = "\n".join(l for l in raw.split("\n")
-                         if not l.lstrip().startswith("#"))
+        body = code_lines(DASH)
         self.assertIsNone(re.search(r"float\((0|100|9999)\)", body),
                           "a sentinel renders as a real measurement")
+
+
+class SecurityControls(unittest.TestCase):
+    """A wall tile is one mis-tap from a siren or a blinded camera."""
+    SENSITIVE = re.compile(
+        r"^(siren|lock|alarm_control_panel)\.|^switch\.tapo_.*privacy$")
+
+    def test_sensitive_entities_never_actuate_on_a_bare_tap(self):
+        offenders = []
+
+        def scan(n):
+            ent = n.get("entity")
+            if not isinstance(ent, str) or not self.SENSITIVE.match(ent):
+                return
+            if n.get("type") not in ("tile", "button", "entity"):
+                return
+            tap = n.get("tap_action") or {}
+            ok = tap.get("action") in ("more-info", "navigate", "none") or \
+                "confirmation" in tap
+            if not ok:
+                offenders.append((ent, tap or "default (toggle)"))
+        walk(load()["views"], scan)
+        self.assertEqual(offenders, [])
+
+    def test_no_card_calls_a_lock_cover_or_alarm_service(self):
+        body = code_lines(DASH)
+        self.assertIsNone(re.search(
+            r"(lock\.(un)?lock|lock\.open|alarm_control_panel\.alarm_\w+|"
+            r"cover\.(open|close)_cover)", body))
 
 
 class Gates(unittest.TestCase):
@@ -265,13 +303,12 @@ class Packages(unittest.TestCase):
 
     def test_no_automation_takes_a_physical_or_security_action(self):
         for f in self.files:
-            body = "\n".join(l for l in open(f, encoding="utf-8")
-                             if not l.lstrip().startswith("#"))
+            body = code_lines(f)
             self.assertIsNone(self.FORBIDDEN.search(body), f)
 
     def test_nothing_restarts_home_assistant(self):
         for f in self.files:
-            body = open(f, encoding="utf-8").read()
+            body = read(f)
             self.assertNotRegex(body, r"(?m)^\s*-?\s*action:\s*homeassistant\.restart")
 
 
@@ -324,8 +361,7 @@ class Scripts(unittest.TestCase):
     def test_known_syntax_issues_are_still_tracked(self):
         # If a known issue is fixed, delete it from KNOWN_SYNTAX_ISSUES. If it
         # is still broken it must stay on the owner's queue, not be forgotten.
-        queue = open(os.path.join(ROOT, "docs", "OWNER_ACTION_QUEUE.md"),
-                     encoding="utf-8").read()
+        queue = read(os.path.join(ROOT, "docs", "OWNER_ACTION_QUEUE.md"))
         for name in self.KNOWN_SYNTAX_ISSUES:
             f = os.path.join(ROOT, "scripts", name)
             if self._parses(f).returncode != 0:
@@ -350,7 +386,7 @@ class Scripts(unittest.TestCase):
             if not f or not os.path.isfile(p) or f.endswith((".png", ".jpg")):
                 continue
             try:
-                text = open(p, encoding="utf-8").read()
+                text = read(p)
             except UnicodeDecodeError:
                 continue
             self.assertIsNone(pat.search(text), f)
@@ -372,8 +408,8 @@ class ReviewPacket(unittest.TestCase):
 
 class Ci(unittest.TestCase):
     def test_workflow_parses_and_runs_the_gates(self):
-        wf = yaml.safe_load(open(os.path.join(
-            ROOT, ".github", "workflows", "ci.yml"), encoding="utf-8"))
+        wf = yaml.safe_load(read(os.path.join(
+            ROOT, ".github", "workflows", "ci.yml")))
         text = yaml.safe_dump(wf)
         for needle in ("ha_validate.sh", "unittest discover",
                        "audit_casaray.py --check --strict", "render_cards.py"):
@@ -381,7 +417,7 @@ class Ci(unittest.TestCase):
         self.assertEqual(wf["permissions"], {"contents": "read"})
 
     def test_ci_requirements_pinned_to_what_the_tools_import(self):
-        reqs = open(os.path.join(ROOT, "requirements-ci.txt")).read().lower()
+        reqs = read(os.path.join(ROOT, "requirements-ci.txt")).lower()
         self.assertIn("pyyaml", reqs)
         self.assertIn("jinja2", reqs)
 
