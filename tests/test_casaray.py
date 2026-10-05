@@ -1,0 +1,609 @@
+"""Regression tests for the CasaRay repository.
+
+Offline, stdlib `unittest` plus PyYAML and Jinja2 (what the gates already
+need). Run with:
+
+    python3 -m unittest discover -s tests -v
+
+These are not a second copy of `scripts/ha_validate.sh`. The gates answer "is
+this change safe to push"; these pin the behaviour of the tooling and the
+properties the project decided it must never lose -- so a change to a gate, to
+the audit, or to the dashboard cannot quietly weaken one of them.
+
+Nothing here can see the running Home Assistant. A green run means the
+repository is internally consistent, not that a card renders.
+"""
+
+import ast
+import glob
+import json
+import os
+import re
+import subprocess
+import sys
+import unittest
+
+import yaml
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(ROOT, "scripts"))
+
+import audit_casaray as audit  # noqa: E402
+import reconcile_entities as rec  # noqa: E402
+
+DASH = os.path.join(ROOT, "dashboards", "casaray_v2.yaml")
+RENDER = os.path.join(ROOT, ".claude", "skills", "improve-system", "scripts",
+                      "render_cards.py")
+
+
+def run(*cmd, **kw):
+    return subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True, **kw)
+
+
+def read(path, **kw):
+    with open(path, encoding="utf-8", **kw) as fh:
+        return fh.read()
+
+
+def code_lines(path):
+    """Lines of a file that are not whole-line comments."""
+    return "\n".join(l for l in read(path).split("\n")
+                     if not l.lstrip().startswith("#"))
+
+
+def load():
+    with open(DASH, encoding="utf-8") as fh:
+        return yaml.safe_load(fh)
+
+
+def walk(node, fn):
+    if isinstance(node, dict):
+        fn(node)
+        for v in node.values():
+            walk(v, fn)
+    elif isinstance(node, list):
+        for v in node:
+            walk(v, fn)
+
+
+class DashboardStructure(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.dash = load()
+        cls.views = cls.dash["views"]
+
+    def test_view_paths_unique_and_present(self):
+        paths = [v.get("path") for v in self.views]
+        self.assertTrue(all(paths), "every view needs a path")
+        self.assertEqual(len(paths), len(set(paths)), "duplicate view path")
+        for must in ("home", "rooms", "security", "energy", "bills",
+                     "cameras", "network", "house-health", "alerts"):
+            self.assertIn(must, paths)
+
+    def test_no_badges_block(self):
+        # DR-011: badges render above the top bar. check 15b gates it too.
+        for v in self.views:
+            self.assertNotIn("badges", v, f"{v['path']} has a badges block")
+
+    def test_every_view_is_two_columns_or_fewer(self):
+        # DR-013: the wall iPad resolves two. Do not raise without a photo.
+        for v in self.views:
+            self.assertLessEqual(v.get("max_columns", 1), 2, v["path"])
+
+    def test_navigation_targets_exist(self):
+        ids = {v["path"] for v in self.views}
+        bad = []
+
+        def scan(n):
+            for k in ("navigation_path", "path"):
+                val = n.get(k)
+                if isinstance(val, str):
+                    m = re.match(r"/casaray-v2/([a-z0-9-]+)", val)
+                    if m and m.group(1) not in ids:
+                        bad.append(val)
+        walk(self.views, scan)
+        self.assertEqual(bad, [])
+
+    def test_only_one_custom_card_type(self):
+        custom = set()
+
+        def scan(n):
+            t = n.get("type")
+            if isinstance(t, str) and t.startswith("custom:"):
+                custom.add(t)
+        walk(self.views, scan)
+        self.assertEqual(custom, {"custom:webrtc-camera"})
+
+    def test_language_toggle_is_the_only_bilingual_switch(self):
+        # Every visibility condition on the dashboard keys off one helper or
+        # another entity -- but the *language* conditions must use this one.
+        conds = []
+
+        def scan(n):
+            for c in n.get("visibility") or []:
+                if isinstance(c, dict) and c.get("condition") == "state":
+                    conds.append(c.get("entity"))
+        walk(self.views, scan)
+        self.assertGreater(len(conds), 100)
+        self.assertIn("input_boolean.chinese_dashboard", set(conds))
+
+    def test_english_headings_survive_a_dead_toggle(self):
+        # The English card uses state_not 'on', so it still shows when the
+        # helper is unavailable (as it is after the 25/09 loss).
+        for v in self.views:
+            def scan(n, v=v):
+                if n.get("type") != "heading":
+                    return
+                for c in n.get("visibility") or []:
+                    if c.get("entity") != "input_boolean.chinese_dashboard":
+                        continue
+                    text = str(n.get("heading", ""))
+                    if re.search(r"[一-鿿]", text):
+                        self.assertEqual(c.get("state"), "on", (v["path"], text))
+                    else:
+                        self.assertEqual(c.get("state_not"), "on", (v["path"], text))
+            walk(v, scan)
+
+    def test_house_health_reports_setup_status(self):
+        hh = next(v for v in self.views if v["path"] == "house-health")
+        text = yaml.safe_dump(hh, allow_unicode=True)
+        self.assertIn("Setup status", text)
+        self.assertIn("设置状态", text)
+        self.assertIn("input_boolean.casaray_auto_deploy", text)
+
+    def test_no_sentinel_float_fallbacks(self):
+        body = code_lines(DASH)
+        self.assertIsNone(re.search(r"float\((0|100|9999)\)", body),
+                          "a sentinel renders as a real measurement")
+
+
+class SecurityControls(unittest.TestCase):
+    """A wall tile is one mis-tap from a siren or a blinded camera."""
+    SENSITIVE = re.compile(
+        r"^(siren|lock|alarm_control_panel)\.|^switch\.tapo_.*privacy$")
+
+    def test_sensitive_entities_never_actuate_on_a_bare_tap(self):
+        offenders = []
+
+        def scan(n):
+            ent = n.get("entity")
+            if not isinstance(ent, str) or not self.SENSITIVE.match(ent):
+                return
+            if n.get("type") not in ("tile", "button", "entity"):
+                return
+            tap = n.get("tap_action") or {}
+            ok = tap.get("action") in ("more-info", "navigate", "none") or \
+                "confirmation" in tap
+            if not ok:
+                offenders.append((ent, tap or "default (toggle)"))
+        walk(load()["views"], scan)
+        self.assertEqual(offenders, [])
+
+    def test_no_card_calls_a_lock_cover_or_alarm_service(self):
+        body = code_lines(DASH)
+        self.assertIsNone(re.search(
+            r"(lock\.(un)?lock|lock\.open|alarm_control_panel\.alarm_\w+|"
+            r"cover\.(open|close)_cover)", body))
+
+
+class Gates(unittest.TestCase):
+    def test_dashboard_check_passes(self):
+        r = run(sys.executable, "scripts/dashboard_check.py",
+                "dashboards/casaray_v2.yaml")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+
+    def test_entity_reconciliation_passes(self):
+        r = run(sys.executable, "scripts/reconcile_entities.py")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+
+    def test_fixture_matches_export(self):
+        r = run(sys.executable, "scripts/build_render_fixture.py", "--check")
+        self.assertIn(r.returncode, (0, 2), r.stdout + r.stderr)
+
+
+class Audit(unittest.TestCase):
+    def setUp(self):
+        self.live = {
+            "switch.a": ("Plug", "Kitchen", "ok"),
+            "switch.a_2": ("Plug", "Kitchen", "unavailable"),
+            "switch.b": ("Heater", "", "unavailable"),
+            "scene.s": ("Scene", "", "unknown"),
+            "sensor.u": ("Thing", "", "unknown"),
+            "input_boolean.h": ("Helper", "", "ok"),
+            "input_boolean.h_unk": ("Helper2", "", "unknown"),
+        }
+        self.groups = audit.twins(self.live)
+
+    def c(self, eid, defined=()):
+        return audit.classify(eid, self.live, self.groups, set(defined))[0]
+
+    def test_missing_entity_is_confirmed_broken(self):
+        self.assertEqual(self.c("switch.nope"), "confirmed_broken")
+
+    def test_stale_map_is_confirmed_broken(self):
+        stale = next(iter(rec.STALE))
+        live = dict(self.live)
+        live[stale] = ("X", "", "ok")
+        self.assertEqual(audit.classify(stale, live, audit.twins(live), set())[0],
+                         "confirmed_broken")
+
+    def test_dead_twin_is_likely_broken(self):
+        self.assertEqual(self.c("switch.a_2"), "likely_broken")
+
+    def test_live_twin_is_working(self):
+        self.assertEqual(self.c("switch.a"), "working")
+
+    def test_unavailable_without_twin_needs_a_live_check(self):
+        self.assertEqual(self.c("switch.b"), "live_check")
+
+    def test_unknown_scene_is_stateless_not_a_problem(self):
+        self.assertEqual(self.c("scene.s"), "stateless")
+
+    def test_unknown_sensor_needs_a_live_check(self):
+        self.assertEqual(self.c("sensor.u"), "live_check")
+
+    def test_helper_not_defined_in_git_needs_a_live_check(self):
+        self.assertEqual(self.c("input_boolean.h"), "live_check")
+
+    def test_helper_defined_in_git_is_working(self):
+        self.assertEqual(self.c("input_boolean.h", {"input_boolean.h"}),
+                         "working")
+
+    def test_git_defined_entity_missing_from_export_is_not_broken(self):
+        self.assertEqual(
+            self.c("input_boolean.new", {"input_boolean.new"}), "live_check")
+
+    def test_repository_has_no_confirmed_broken_references(self):
+        a = audit.audit()
+        broken = [e for e, i in a["entities"].items()
+                  if i["class"] == "confirmed_broken"]
+        self.assertEqual(broken, [])
+        self.assertEqual(a["bad_nav"], [])
+        self.assertEqual(a["unreachable_views"], [])
+        self.assertIs(a["theme_declared"], True)
+
+    def test_committed_report_is_current(self):
+        r = run(sys.executable, "scripts/audit_casaray.py", "--check")
+        self.assertEqual(r.returncode, 0,
+                         "run python3 scripts/audit_casaray.py\n" + r.stderr)
+
+
+class Packages(unittest.TestCase):
+    # Actions an unattended automation in this repository must never take.
+    FORBIDDEN = re.compile(
+        r"\b(lock\.(unlock|open)|cover\.(open|close)_cover|"
+        r"alarm_control_panel\.alarm_(disarm|arm)\w*|"
+        r"homeassistant\.(restart|stop)|hassio\.(host|addon)_\w+|"
+        r"camera\.(turn_off|disable_motion_detection)|"
+        r"switch\.turn_off)\b")
+
+    @classmethod
+    def setUpClass(cls):
+        cls.files = sorted(glob.glob(os.path.join(ROOT, "packages", "*.yaml")))
+
+    def load(self, path):
+        with open(path, encoding="utf-8") as fh:
+            return yaml.load(fh, Loader=rec._Loose)
+
+    def test_packages_parse(self):
+        self.assertTrue(self.files)
+        for f in self.files:
+            self.assertIsInstance(self.load(f), dict, f)
+
+    def test_package_defined_entities(self):
+        d = rec.package_defined()
+        self.assertIn("input_boolean.casaray_auto_deploy", d)
+        self.assertIn("sensor.casaray_low_batteries", d)
+        # command_line sensors hold one mapping, not a list
+        for eid in ("sensor.casaray_sync_status", "sensor.casaray_backup_count",
+                    "binary_sensor.casaray_live_file_present"):
+            self.assertIn(eid, d)
+
+    def test_every_automation_has_alias_and_mode(self):
+        for f in self.files:
+            for a in self.load(f).get("automation") or []:
+                self.assertIn("alias", a, f)
+                self.assertIn("mode", a, a.get("alias"))
+
+    def test_no_automation_takes_a_physical_or_security_action(self):
+        for f in self.files:
+            body = code_lines(f)
+            self.assertIsNone(self.FORBIDDEN.search(body), f)
+
+    def test_every_package_template_parses(self):
+        # dashboard_check compiles dashboard templates; nothing compiled these.
+        # Syntax only (Environment.parse): Home Assistant's own filters are not
+        # registered here, so a name lookup would be a false failure.
+        import jinja2
+        env = jinja2.Environment()
+        seen = [0]
+
+        def scan(node, f):
+            if isinstance(node, dict):
+                for v in node.values():
+                    scan(v, f)
+            elif isinstance(node, list):
+                for v in node:
+                    scan(v, f)
+            elif isinstance(node, str) and ("{{" in node or "{%" in node):
+                seen[0] += 1
+                try:
+                    env.parse(node)
+                except jinja2.TemplateSyntaxError as e:
+                    self.fail(f"{os.path.basename(f)}: {e}: {node[:80]!r}")
+        for f in self.files:
+            scan(self.load(f), f)
+        self.assertGreater(seen[0], 20)
+
+    def test_nothing_restarts_home_assistant(self):
+        for f in self.files:
+            body = read(f)
+            self.assertNotRegex(body, r"(?m)^\s*-?\s*action:\s*homeassistant\.restart")
+
+
+class Proposals(unittest.TestCase):
+    """proposals/ holds changes that are written but deliberately inert."""
+    PATH = os.path.join(ROOT, "proposals", "casaray_helper_booleans.proposed.yaml")
+
+    def test_boolean_proposal_matches_the_export_and_packages(self):
+        with open(self.PATH, encoding="utf-8") as fh:
+            doc = yaml.safe_load(fh)
+        live = rec.load_export(rec.EXPORT)
+        defined = rec.package_defined()
+        self.assertEqual(set(doc), {"input_boolean"}, "booleans only: no "
+                         "other helper type has settings we can know")
+        for key, cfg in doc["input_boolean"].items():
+            eid = f"input_boolean.{key}"
+            self.assertIn(eid, live, eid)
+            self.assertNotIn(eid, defined, f"{eid} already defined in packages/")
+            self.assertEqual(set(cfg), {"name"}, f"{key}: no invented settings")
+
+    def test_proposals_are_not_on_the_gates_path(self):
+        # package_defined reads packages/ only; a proposal there would be
+        # counted as defined and silently legitimise cards that read it.
+        self.assertNotIn("input_boolean.chinese_dashboard",
+                         rec.package_defined())
+        self.assertFalse(os.path.exists(os.path.join(
+            ROOT, "packages", os.path.basename(self.PATH))))
+
+
+class Scripts(unittest.TestCase):
+    # Scripts known to fail `sh -n`, each tracked in docs/OWNER_ACTION_QUEUE.md.
+    # ha_validate.sh carries a dead, duplicated copy of its own body after its
+    # final `exit 1` (lines 182-316 on 18a4e5d). It runs correctly because bash
+    # parses lazily and exits first, but `bash -n` rejects it.
+    KNOWN_SYNTAX_ISSUES = {"ha_validate.sh"}
+
+    def _parses(self, f):
+        with open(f, encoding="utf-8") as fh:
+            first = fh.readline()
+        sh = "bash" if "bash" in first else "sh"
+        return subprocess.run([sh, "-n", f], capture_output=True, text=True)
+
+    def test_shell_scripts_parse(self):
+        for f in sorted(glob.glob(os.path.join(ROOT, "scripts", "*.sh"))):
+            if os.path.basename(f) in self.KNOWN_SYNTAX_ISSUES:
+                continue
+            r = self._parses(f)
+            self.assertEqual(r.returncode, 0, f"{f}: {r.stderr}")
+
+    def test_known_syntax_issues_are_still_tracked(self):
+        # If a known issue is fixed, delete it from KNOWN_SYNTAX_ISSUES. If it
+        # is still broken it must stay on the owner's queue, not be forgotten.
+        queue = read(os.path.join(ROOT, "docs", "OWNER_ACTION_QUEUE.md"))
+        for name in self.KNOWN_SYNTAX_ISSUES:
+            f = os.path.join(ROOT, "scripts", name)
+            if self._parses(f).returncode != 0:
+                self.assertIn(name, queue, f"{name} is broken and untracked")
+            else:
+                self.fail(f"{name} now parses -- remove it from "
+                          "KNOWN_SYNTAX_ISSUES")
+
+    def test_python_scripts_compile(self):
+        files = glob.glob(os.path.join(ROOT, "scripts", "*.py")) + glob.glob(
+            os.path.join(ROOT, "tests", "*.py"))
+        for f in sorted(files):
+            with open(f, encoding="utf-8") as fh:
+                ast.parse(fh.read(), f)
+
+    def test_no_secret_shaped_literals_in_tracked_text(self):
+        pat = re.compile(r"(ghp_[A-Za-z0-9]{20,}|eyJ[A-Za-z0-9_-]{30,}\.|"
+                         r"-----BEGIN [A-Z ]*PRIVATE KEY-----)")
+        tracked = run("git", "ls-files").stdout.split("\n")
+        for f in tracked:
+            p = os.path.join(ROOT, f)
+            if not f or not os.path.isfile(p) or f.endswith((".png", ".jpg")):
+                continue
+            try:
+                text = read(p)
+            except UnicodeDecodeError:
+                continue
+            self.assertIsNone(pat.search(text), f)
+
+
+class ReviewPacket(unittest.TestCase):
+    def test_packet_builds_and_asks_the_six_questions(self):
+        r = run(sys.executable, "scripts/review_packet.py", "--no-gates",
+                "--base", "HEAD")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn("evidence, not argument", r.stdout)
+        self.assertIn("Was any gate, test or check weakened", r.stdout)
+        self.assertIn("NOT RUN", r.stdout)
+
+    def test_unknown_base_is_refused(self):
+        r = run(sys.executable, "scripts/review_packet.py", "--base", "no/such")
+        self.assertEqual(r.returncode, 2)
+
+
+class Ci(unittest.TestCase):
+    def test_workflow_parses_and_runs_the_gates(self):
+        wf = yaml.safe_load(read(os.path.join(
+            ROOT, ".github", "workflows", "ci.yml")))
+        text = yaml.safe_dump(wf)
+        for needle in ("ha_validate.sh", "unittest discover",
+                       "audit_casaray.py --check --strict", "render_cards.py"):
+            self.assertIn(needle, text)
+        self.assertEqual(wf["permissions"], {"contents": "read"})
+
+    def test_ci_requirements_pinned_to_what_the_tools_import(self):
+        reqs = read(os.path.join(ROOT, "requirements-ci.txt")).lower()
+        self.assertIn("pyyaml", reqs)
+        self.assertIn("jinja2", reqs)
+
+
+@unittest.skipUnless(os.path.exists(RENDER), "render_cards.py not present")
+class DarkInstance(unittest.TestCase):
+    """What the markdown cards say when nothing is answering."""
+
+    @classmethod
+    def setUpClass(cls):
+        r = run(sys.executable, RENDER, "--all")
+        cls.rc, cls.out = r.returncode, r.stdout + r.stderr
+
+    def test_every_card_renders(self):
+        self.assertEqual(self.rc, 0, self.out[-2000:])
+        self.assertNotRegex(self.out, r"Traceback|TemplateError|UndefinedError")
+
+    def test_dark_pass_never_reassures(self):
+        # CLAUDE.md: never let a card assert a state it cannot see. These are
+        # whole-card phrases a dark instance must not produce.
+        # "Nothing is waiting to be paid" and "Not set up" were both rendered
+        # for six unavailable bill helpers (found 2026-10-05): the first
+        # claims a measurement nobody made, the second blames the owner for
+        # a helper that is simply not answering.
+        bad = re.compile(r"\b(all clear|all closed|all secure|everything is "
+                         r"(fine|normal|ok)|no problems|up to date|"
+                         r"nothing is waiting to be paid|not set up|"
+                         r"no amount entered)\b", re.I)
+        offenders = []
+        block = ""
+        for line in self.out.split("\n"):
+            if line.startswith("=== "):
+                block = line
+            if "dark/EN" in line and bad.search(line):
+                offenders.append((block, line.strip()[:120]))
+        self.assertEqual(offenders, [])
+
+    def test_setup_status_names_the_cause_when_helpers_are_dark(self):
+        self.assertRegex(self.out, r"dark/EN\s+\d of \d helper groups are not "
+                                   r"fully answering")
+        self.assertIn("没有完全响应", self.out)
+
+
+@unittest.skipUnless(os.path.exists(RENDER), "render_cards.py not present")
+class PartialInstance(unittest.TestCase):
+    """The real situation after 25/09: the house answers, the helpers do not.
+
+    The dark pass is everything silent; the fixture pass is everything
+    answering. Neither is what the wall shows. This one keeps every fixture
+    reading and forces only the helper and person entities unavailable.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        import tempfile
+        with open(os.path.join(ROOT, "docs", "live", "fixture_states.json"),
+                  encoding="utf-8") as fh:
+            fixture = json.load(fh)
+        fixture.pop("_meta", None)
+        for eid in list(fixture):
+            if eid.split(".")[0] in ("input_boolean", "input_number",
+                                     "input_datetime", "input_text",
+                                     "input_select", "counter", "person"):
+                fixture[eid] = "unavailable"
+        cls.tmp = tempfile.NamedTemporaryFile("w", suffix=".json", delete=False)
+        json.dump(fixture, cls.tmp)
+        cls.tmp.close()
+        r = run(sys.executable, RENDER, "--all", "--no-fixture", "--no-dark",
+                "--states", cls.tmp.name)
+        cls.rc, cls.out = r.returncode, r.stdout + r.stderr
+
+    @classmethod
+    def tearDownClass(cls):
+        os.unlink(cls.tmp.name)
+
+    def blocks(self, view):
+        return [b for b in re.split(r"\n(?==== )", self.out)
+                if b.startswith(f"=== {view} ")]
+
+    def english(self, view):
+        """Only the lines rendered for the English pass of a view."""
+        keep, cur = [], None
+        for line in "\n".join(self.blocks(view)).split("\n"):
+            m = re.match(r"\s+\w+/(EN|CN)\b", line)
+            if line.startswith("==="):
+                cur = None
+            elif m:
+                cur = m.group(1)
+            if cur == "EN":
+                keep.append(line)
+        return "\n".join(keep)
+
+    def test_renders(self):
+        self.assertEqual(self.rc, 0, self.out[-1500:])
+        self.assertNotRegex(self.out, r"Traceback|TemplateError|UndefinedError")
+
+    def test_bills_do_not_claim_nothing_is_owed(self):
+        text = "\n".join(self.blocks("bills"))
+        self.assertNotRegex(text, r"(?i)nothing is waiting to be paid|not set up")
+        self.assertIn("are not reporting, so what is waiting cannot be told", text)
+
+    def test_one_silent_bill_blocks_the_all_clear(self):
+        # Review finding: with five bills settled and the sixth's paid flag
+        # silent, the card printed "Nothing is waiting" and, a line later,
+        # "1 of 6 bills are not reporting". Run a one-off render for that case.
+        import tempfile
+        with open(self.tmp.name, encoding="utf-8") as fh:
+            states = json.load(fh)
+        for p in ("elec_bill", "gas_bill", "water_bill", "council_rate",
+                  "car_insurance"):
+            states[f"input_number.{p}_amount"] = "50"
+            states[f"input_boolean.{p.replace('_bill', '_bill')}_paid"] = "on"
+        states["input_number.rego_amount"] = "50"
+        states["input_boolean.rego_paid"] = "unavailable"
+        states["input_boolean.chinese_dashboard"] = "off"
+        with tempfile.NamedTemporaryFile("w", suffix=".json",
+                                         delete=False) as f2:
+            json.dump(states, f2)
+        try:
+            r = run(sys.executable, RENDER, "--view", "bills", "--no-fixture",
+                    "--no-dark", "--states", f2.name)
+        finally:
+            os.unlink(f2.name)
+        en = []
+        cur = None
+        for line in r.stdout.split("\n"):
+            m = re.match(r"\s+\w+/(EN|CN)\b", line)
+            if line.startswith("==="):
+                cur = None
+            elif m:
+                cur = m.group(1)
+            if cur == "EN":
+                en.append(line)
+        text = "\n".join(en)
+        self.assertIn("1 of 6 bills are not reporting", text)
+        self.assertNotRegex(text, r"(?i)nothing is waiting to be paid")
+
+    def test_people_chips_say_no_data_not_zero(self):
+        for view in ("home", "people"):
+            self.assertNotRegex(
+                self.english(view),
+                r"(?i)at home 0\b|away 0\b|\b0 home\b|\b0 out\b|## 0/3|"
+                r"counted by person above", view)
+
+    def test_setup_status_reports_the_cause(self):
+        text = "\n".join(self.blocks("house-health"))
+        self.assertRegex(text, r"helper groups are not fully answering")
+        self.assertRegex(text, r"People: Not answering 0/3")
+        self.assertRegex(text, r"Bill amounts: Not answering 0/6")
+
+    def test_english_pass_has_no_chinese_when_the_toggle_is_dead(self):
+        # The toggle is `unavailable` here; English must still be what shows.
+        for view in ("home", "people", "bills", "house-health"):
+            en = self.english(view)
+            self.assertTrue(en, view)
+            self.assertNotRegex(en, r"[\u4e00-\u9fff]", view)
+
+
+if __name__ == "__main__":
+    unittest.main()

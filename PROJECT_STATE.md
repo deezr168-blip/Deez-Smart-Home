@@ -6,6 +6,27 @@ on purpose so every routine can load it cheaply at the start of each run.
 
 ---
 
+## Post-recovery note (2026-10-05) — read before the rest of this file
+
+This file's state was last maintained on 18/09 and **predates the 25/09
+`configuration.yaml` loss and recovery**. Where it disagrees with the
+following, the following wins:
+
+- Owner login is restored; CasaRay is registered, renders and navigates.
+  Some helpers and people still read `unavailable` (`docs/live/live_observations_2026-10-05.md`).
+- `ha-deploy` is **protected**. Autonomous work happens on `autonomous/**`
+  branches and reaches `ha-deploy` only through a reviewed PR (`docs/CODEX_REVIEW.md`).
+  CLAUDE.md's "push both `ha-deploy` and `claude/ha-dashboard-upgrades-wui7ig`"
+  is suspended; that branch has diverged.
+- If `input_boolean.casaray_auto_deploy` is on, `ha-deploy` is production at
+  03:30 (`docs/DECISION_LOG.md` D-004) — contrary to "pushed is not live".
+- Current work queues: `docs/AUTONOMOUS_BACKLOG.md` (agent),
+  `docs/OWNER_ACTION_QUEUE.md` (owner), `docs/DECISION_LOG.md`, and the
+  generated `docs/CASARAY_AUDIT.md`. Run `python3 -m unittest discover -s tests`
+  as well as `scripts/ha_validate.sh`.
+
+---
+
 ## Project
 
 - **Repository:** `deezr168-blip/Deez-Smart-Home`
