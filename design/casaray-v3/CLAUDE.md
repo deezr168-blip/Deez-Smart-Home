@@ -52,9 +52,28 @@ this file.
 - **No changes to `ha-deploy`.** Do not commit to, merge into, rebase onto,
   push to or open a pull request against `ha-deploy`. That branch is the live
   deployment path.
-- **Branch: `casaray-v3-design` only.** Develop, commit and push V3 work
-  exclusively to `casaray-v3-design`. Confirm the active branch before the
-  first write of every session (`git branch --show-current`).
+- **Branches: the integration branch and isolated specialist branches only.**
+  V3 work lives on exactly two kinds of branch (owner decision, 2026-10-05).
+  Confirm the active branch before the first write of every session
+  (`git branch --show-current`).
+  - **Integration branch: `casaray-v3-design`.** Controlled by Agent 1 / QA
+    Integrator. Only the integrator commits to it, merges into it and pushes
+    it.
+  - **Specialist branches: `casaray-v3/agent-*`.** One branch per specialist
+    agent, each in its own worktree. (The prefix is `casaray-v3/`, not
+    `casaray-v3-design/`: git cannot hold a branch and a branch "directory"
+    of the same name.)
+  - All specialist branches originate from `casaray-v3-design`.
+  - Specialist agents never merge into `casaray-v3-design`. They push only
+    their own `casaray-v3/agent-*` branch, and the integrator merges after
+    review.
+  - **No V3 branch may merge into, deploy to or push to `ha-deploy`.**
+  - Production dashboards and configuration stay read-only for all V3 design
+    work. A change outside `design/casaray-v3/` needs explicit approval from
+    Ray first.
+  - **V3-005 (the owner's concept selection) remains a blocking design
+    decision.** Until it is resolved, agents may evaluate and prototype
+    concepts but must not roll a chosen style across the wider dashboard.
 - **No authentication or backup changes.** Do not touch Home Assistant users,
   tokens, auth providers, `secrets.yaml`, the deployment bridge
   (`/config/deploy_deez_dashboard.sh`, `scripts/deploy_env.sh`,
@@ -363,14 +382,16 @@ design/casaray-v3/
 
 1. At session start: read the root `CLAUDE.md`, this file, and
    `design/casaray-v3/DECISIONS.md` if it exists. Confirm the branch is
-   `casaray-v3-design` and the tree is clean.
+   `casaray-v3-design` (integrator) or your own `casaray-v3/agent-*`
+   (specialist) and the tree is clean.
 2. Work in small, reviewable steps; one coherent change per commit.
 3. Before each commit: grep every newly referenced entity ID against the
    states export; check both themes, both languages, and the iPad, desktop
    and mobile widths; confirm no file outside `design/casaray-v3/` changed
    unless the owner asked for it; confirm no secrets.
-4. Commit with a clear message and push to `casaray-v3-design`
-   (`git push -u origin casaray-v3-design`).
+4. Commit with a clear message and push to your own branch: the integrator
+   to `casaray-v3-design` (`git push -u origin casaray-v3-design`), a
+   specialist to its `casaray-v3/agent-*` branch only.
 5. Show the owner the result — a render or screenshot of the prototype, not
    only a description — and get approval at each design milestone before
    building on it.
@@ -379,7 +400,8 @@ design/casaray-v3/
 
 - **Push targets.** The root rule "push to `ha-deploy` and
   `claude/ha-dashboard-upgrades-wui7ig`" governs V2 dashboard batches. It
-  does **not** apply to V3: V3 pushes only to `casaray-v3-design`.
+  does **not** apply to V3: V3 pushes only to `casaray-v3-design` (integrator)
+  or a `casaray-v3/agent-*` branch (specialist), never to `ha-deploy`.
 - **Validation gate.** `scripts/ha_validate.sh` validates the deployed
   dashboards. V3 does not change them, so the gate should keep passing
   unchanged; run it if anything outside `design/casaray-v3/` is touched.
