@@ -8432,7 +8432,7 @@ views:
         {%- if ns.rows | count -%}
         {% for days, label, shown, av in ns.rows | sort %}- **{{ label }}** · A${{ '%.2f' | format(av) }} · {{ shown }} — {% if days < 0 %}{% if cn %}已逾期 {{ days | abs }} 天{% else %}**{{ days | abs }} day{{ '' if days == -1 else 's' }} overdue**{% endif %}{% elif days == 0 %}{{ '今天到期' if cn else '**due today**' }}{% else %}{{ ('%d 天后到期' % days) if cn else ('due in %d day%s' % (days, '' if days == 1 else 's')) }}{% endif %}
         {% endfor %}
-        {%- elif not ns.nodate and ns.measured > 0 -%}
+        {%- elif not ns.nodate and ns.measured > 0 and not ns.silent -%}
         {{ '没有待付账单。' if cn else 'Nothing is waiting to be paid.' }}
         {%- endif -%}
         {%- if ns.nodate %}
