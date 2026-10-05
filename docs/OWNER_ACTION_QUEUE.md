@@ -16,7 +16,7 @@ Open **Settings → Devices & services → Helpers**, or look at the new
 **House health → Setup status** card once the dashboard is synced (A6). It
 reports answered/total for seven helper groups.
 
-- *Why:* about 110 helper entities (the language toggle, the bills board's
+- *Why:* 106 helper, script and automation entities (plus 13 text helpers that were never set) (the language toggle, the bills board's
   paid flags, amounts, due dates and year totals) have **no definition in Git**.
   `docs/CASARAY_AUDIT.md` lists them. If they were YAML-defined in the lost
   `configuration.yaml`, they are gone; if they were UI helpers they survive.

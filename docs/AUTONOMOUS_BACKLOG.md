@@ -19,7 +19,9 @@ be checked rather than argued.
 | 6 | `4c83642` | Helper-boolean proposal (inert), live observations, bills tests |
 | 7 | `8d16497` | Security-control test: sirens, locks, camera privacy never actuate on a bare tap |
 | 8 | `a9456a3` | House health **Dashboard delivery** status from the maintenance package |
-| 9 | this batch | Package-template parse test, PROJECT_STATE pointer, backlog |
+| 9 | `a414bec` | Package-template parse test, PROJECT_STATE pointer, backlog |
+| 10 | `9f73e33` | **People fix**: no `0 home · 0 out` / `0/3` / `counted by person above` when nobody reports; partial-instance render tests |
+| 11 | `5ffbe74` | Code-review finding: one silent bill blocks the bills all-clear |
 
 ## Findings from the audit (all classes)
 
@@ -27,7 +29,7 @@ be checked rather than argued.
 |---|---|---|
 | confirmed broken | 0 | no card references an entity that cannot exist |
 | likely broken | 0 | no card uses the dead half of a stale twin pair |
-| live check | see `CASARAY_AUDIT.md` | needs the running instance: ~110 helpers lost with `configuration.yaml`, ~30 offline devices |
+| live check | see `CASARAY_AUDIT.md` | needs the running instance: 106 helpers/scripts/automations with no definition in Git, 13 never-set text helpers, 29 offline devices, 6 package-defined |
 | obsolete | 15 | dead twins and `STALE` IDs, listed so nobody adopts one by name |
 | unknown | 0 | every reference has a class |
 
@@ -37,12 +39,10 @@ be checked rather than argued.
 
 ### P1 — reliability
 
-- **AB-01 Mixed-state render tests.** The dark pass tests "nothing answers"; the
-  real instance is *partly* answering. Add fixtures with the helpers dark and
-  everything else live (the actual state today), and with one sensor of each
-  fleet dark, and assert the chip strips never print a zero they did not
-  measure. *Done when:* `DarkInstance` has a `Partial` sibling that fails against
-  a deliberately broken strip.
+- **AB-01 Mixed-state render tests — helpers-dark case DONE** (`PartialInstance`,
+  batch 10; it found the people defect). *Still open:* one sensor of each
+  fleet dark with everything else live (doors, cameras, batteries, plugs),
+  asserting the chip strips never print a zero they did not measure.
 - **AB-02 Promote the reassurance phrases into `dashboard_check.py` (check 17).**
   Today they live only in `tests/test_casaray.py`, so `ha_validate.sh` cannot
   see them. Editing the gate is permitted but is the sort of change the
@@ -86,7 +86,7 @@ be checked rather than argued.
 
 ## Not here, and why
 
-- Rebuilding the ~110 lost helpers — settings are not in Git (A1/A2).
+- Rebuilding the 106 helpers with no definition in Git — settings are not in Git (A1/A2).
 - Any change to authentication, secrets, `.storage`, `configuration.yaml`,
   `scripts/recovery/*`, the deploy bridge, or router/network gear.
 - Deleting the dead block in `ha_validate.sh` — owner approval (B1).
