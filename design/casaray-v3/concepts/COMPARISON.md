@@ -1,7 +1,9 @@
 # Home concepts A–D — side-by-side comparison
 
 For the owner's review (`DECISIONS.md` V3-004, V3-006). **This document does
-not choose a concept.** V3-005 stays open for the owner's selection.
+not choose a concept.** V3-005 stayed open for the owner's selection when
+this was written; the owner has since confirmed it (05/10/26, `DECISIONS.md`
+V3-005).
 
 ## How the comparison was made
 
@@ -138,7 +140,8 @@ None of these depends on a visual style:
 
 ## Decisions this comparison leaves to the owner
 
-- Which concept, or which mix, becomes V3's visual language (**V3-005**).
+- Which concept, or which mix, becomes V3's visual language (**V3-005**,
+  since confirmed by the owner: D the base, C shaping Home).
 - Whether Home must fit one screen (A–C) or may scroll (D).
 - Whether the accent stays V2 amber (C, D), moves to gold (A) or adds teal (B).
 - Whether navigation labels are required (A, C, D) or icons alone are

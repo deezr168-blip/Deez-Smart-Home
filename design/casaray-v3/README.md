@@ -7,11 +7,14 @@ package or any deployment script.
 
 Branch: `casaray-v3-design`, cut from `ha-deploy` at `18a4e5d`.
 
-> **Status:** **V3-005 is resolved** (`DECISIONS.md`). Concept D is the
-> architectural base, Concept C shapes Home, Concept A's energy truth strip
-> and Concept B's four-state camera treatment are approved supporting
-> patterns. Only Home's first screen has been evolved so far; every other
-> board is still D as registered. The workspace rules are in `CLAUDE.md`.
+> **Status:** **V3-005 is owner-confirmed** (05/10/26, `DECISIONS.md`).
+> Concept D is the primary design base and Concept C shapes the Home-page
+> information hierarchy and presentation. Concepts A and B may be used as
+> supporting patterns where they improve usability without conflicting with
+> D and C. This is not a wholesale merge of all four concepts, and the V3-007
+> decisions remain authoritative. Only Home's first screen has been evolved
+> so far; every other board is still D as registered. The workspace rules are
+> in `CLAUDE.md`.
 
 | File | What it is |
 |---|---|

@@ -55,25 +55,63 @@ alert cards grow with the number of alerts, not because Home grew. Rooms stay
 (two across, three rows). If Home must get shorter still, the next candidates
 are the Security summary row and More boards, which duplicates the rail.
 
+**Addendum · 05/10/26 · owner decision after QA of PR #4.** The QA verdict
+was *pass with non-blocking recommendations* (commit `1aef726`). The owner
+decided:
+
+- **Keep the current Home as built in `1aef726`.** No further Home
+  compression in PR #4. **Keep the Security summary. Keep More boards for
+  now. Keep the dense-alert truncation** (from five alerts: three across, one
+  line of detail, still one tap to the board).
+- **≤ 1,640 px is a preferred target, not a blocking requirement.** Evening
+  and Everyone away sit slightly over it because of genuine alert growth, and
+  that is accepted. First-viewport hierarchy is not traded for page height.
+- Hiding More boards where the persistent rail is visible stays a **future
+  design candidate only**.
+
+**Post-merge hardening.** Recorded as follow-ups. **None is done in PR #4.**
+
+1. Review whether the Parents' room and Climate HVAC mode controls need the
+   same safeguards as Home.
+2. Review the green "Nothing needs attention" heading when one or more checks
+   are unanswered.
+3. Fix overdue-bill alerts so a missing amount does not become A$0.00.
+4. Define the Parents' room occupancy no-data behaviour.
+5. Raise the shopping-list checkbox and touch targets toward 44 px.
+6. Review the slight layout inconsistency of Lighting's "All lights off" card.
+7. Reconcile the documented 133 entity count with the verifier's 136.
+8. Consider conditional More boards visibility: desktop and kiosk versus phone.
+
 ---
 
-## V3-005 · 05/10/26 · Home direction — SELECTED
+## V3-005 · 05/10/26 · Home direction — OWNER-CONFIRMED
 
-**Status:** resolved by the owner on 05/10/26. This is a deliberate
-hybridisation of approved elements, **not a new independent concept**.
+**Status:** selected, then **explicitly confirmed by the owner on 05/10/26**
+after QA of PR #4. The confirmation settles the provenance question QA raised;
+V3-005 is neither open nor inferred. This is a deliberate hybridisation of
+approved elements, **not a new independent concept** and **not a wholesale
+merge of all four concepts**. The V3-007 decisions remain authoritative.
 
-**Decision.**
+**Owner confirmation (05/10/26).**
 
-- **Concept D is the CasaRay V3 architectural base:** system shell, design
-  tokens, responsive architecture, room templates, component architecture,
-  test harness.
-- **Concept C is the approved Home / family UX influence:** Home-screen
-  hierarchy, plain-language household status, large controls, people first,
-  wall-iPad usability.
-- **Concept A's energy truth strip** is an approved supporting pattern:
+- **Concept D is the primary CasaRay V3 design base.**
+- **Concept C shapes the Home-page information hierarchy and presentation.**
+- **Concepts A and B may be used as supporting design patterns where they
+  improve usability without conflicting with D and C.**
+- This does **not** mean wholesale merging of all four concepts.
+- Existing V3-007 decisions remain authoritative.
+
+**What that covers.**
+
+- **Concept D is the architectural base:** system shell, design tokens,
+  responsive architecture, room templates, component architecture, test
+  harness.
+- **Concept C shapes Home:** Home-screen hierarchy, plain-language household
+  status, large controls, people first, wall-iPad usability.
+- **Concept A's energy truth strip** is used as a supporting pattern:
   measured, unavailable, unknown and no-source readings never share a look.
-- **Concept B's four-state camera presentation** is an approved supporting
-  pattern for later. It is **not** built in this sprint.
+- **Concept B's four-state camera presentation** is a supporting pattern for
+  later. It is **not** built in this sprint.
 
 **Rationale.** D has the strongest scalability and maintainability: the only
 candidate that covers all boards, rooms, themes and breakpoints, on V2's
@@ -114,7 +152,7 @@ Recent activity moved off it.
 
 **Status:** reconciled by owner instruction on 25/09/26. **This does not
 choose a concept.** V3-005 stays reserved for the owner's selection among
-A, B, C and D, or a mix of them.
+A, B, C and D, or a mix of them. *(Resolved 05/10/26: see V3-005.)*
 
 A second Claude session, working from a direct owner request made before this
 workspace's `CLAUDE.md` existed, built a complete interactive prototype in
@@ -160,9 +198,10 @@ These matter only if D, or part of it, is chosen.
 It also found an error that applies whichever concept is chosen: V2 calls
 Powerpal "whole-house", but it is grid import (V3-003 agrees).
 
-## V3-004 · 25/09/26 · Home concept review — awaiting owner selection
+## V3-004 · 25/09/26 · Home concept review — awaiting owner selection (closed by V3-005)
 
-**Status:** open, blocking the interactive prototype.
+**Status:** closed 05/10/26 by V3-005 (owner-confirmed). Kept as the record of
+the review; it was open and blocking when written.
 
 Three Home concepts are drawn at iPad landscape (1180 × 820), using the same
 mock data built on the same real entity IDs:

@@ -117,6 +117,12 @@ The first 1180 × 820 viewport carries four things without scrolling, in both
 languages, with up to five alerts (four alerts two across; five or more three
 across with one line of detail).
 
+Owner-accepted (05/10/26, `DECISIONS.md` V3-005 and the V3-007 addendum):
+this is the Home as built. The five-alert layout keeps its one-line detail,
+and a full-page height of 1,640 px is a preferred target, not a requirement:
+the Evening and Everyone-away days run slightly over because of alert growth,
+and first-viewport hierarchy is not traded for height.
+
 | Band | Content | Level |
 |---|---|---|
 | Hero | Greeting, one status sentence, Outside / Inside | 1: 36 / 21 px |
