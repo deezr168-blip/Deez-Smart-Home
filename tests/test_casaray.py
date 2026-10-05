@@ -310,6 +310,31 @@ class Packages(unittest.TestCase):
             body = code_lines(f)
             self.assertIsNone(self.FORBIDDEN.search(body), f)
 
+    def test_every_package_template_parses(self):
+        # dashboard_check compiles dashboard templates; nothing compiled these.
+        # Syntax only (Environment.parse): Home Assistant's own filters are not
+        # registered here, so a name lookup would be a false failure.
+        import jinja2
+        env = jinja2.Environment()
+        seen = [0]
+
+        def scan(node, f):
+            if isinstance(node, dict):
+                for v in node.values():
+                    scan(v, f)
+            elif isinstance(node, list):
+                for v in node:
+                    scan(v, f)
+            elif isinstance(node, str) and ("{{" in node or "{%" in node):
+                seen[0] += 1
+                try:
+                    env.parse(node)
+                except jinja2.TemplateSyntaxError as e:
+                    self.fail(f"{os.path.basename(f)}: {e}: {node[:80]!r}")
+        for f in self.files:
+            scan(self.load(f), f)
+        self.assertGreater(seen[0], 20)
+
     def test_nothing_restarts_home_assistant(self):
         for f in self.files:
             body = read(f)
