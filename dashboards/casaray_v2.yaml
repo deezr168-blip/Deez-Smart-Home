@@ -12797,6 +12797,78 @@ views:
   # true and all worth keeping — they are the reason a count reads the way it
   # does — but they are maintenance detail, and this is the maintenance board.
   # -------------------------------------------------------------------------
+  # Setup status -- added after the 25/09 configuration.yaml loss. A lost
+  # configuration.yaml takes the YAML-defined helpers (the language toggle, the
+  # bills board's flags, amounts and due dates) and the `packages:` include with
+  # it, and every card that reads them then says "No data" without saying why.
+  # This card names the cause. It reads each group of helpers CasaRay depends
+  # on and reports answered / total, with three outcomes rather than two: every
+  # one answering, none answering, or some. The denominator here IS the list,
+  # on purpose -- unlike a sensor fleet, every helper in these groups is
+  # required to exist, so one that does not answer is exactly the finding.
+  # People are judged on `unavailable` alone: a person with no tracker is
+  # legitimately `unknown`.
+  - type: grid
+    column_span: 2
+    cards:
+    - type: heading
+      heading: Setup status
+      heading_style: title
+      icon: mdi:clipboard-check-outline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state_not: 'on'
+    - type: heading
+      heading: 设置状态
+      heading_style: title
+      icon: mdi:clipboard-check-outline
+      visibility:
+      - condition: state
+        entity: input_boolean.chinese_dashboard
+        state: 'on'
+    - type: markdown
+      grid_options: {columns: 12, rows: auto}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set groups = [
+          {'en': 'Language toggle', 'zh': '语言切换', 'bad': ['unavailable','unknown','none',''],
+           'ids': ['input_boolean.chinese_dashboard']},
+          {'en': 'People', 'zh': '人员', 'bad': ['unavailable'],
+           'ids': ['person.raymond_du','person.vinh_du','person.ai_q_huang']},
+          {'en': 'Bill paid flags', 'zh': '账单已付标记', 'bad': ['unavailable','unknown','none',''],
+           'ids': ['input_boolean.elec_bill_paid','input_boolean.gas_bill_paid','input_boolean.water_bill_paid',
+                   'input_boolean.council_rate_paid','input_boolean.rego_paid','input_boolean.car_insurance_paid']},
+          {'en': 'Bill amounts', 'zh': '账单金额', 'bad': ['unavailable','unknown','none',''],
+           'ids': ['input_number.elec_bill_amount','input_number.gas_bill_amount','input_number.water_bill_amount',
+                   'input_number.council_rate_amount','input_number.rego_amount','input_number.car_insurance_amount']},
+          {'en': 'Bill due dates', 'zh': '账单到期日', 'bad': ['unavailable','unknown','none',''],
+           'ids': ['input_datetime.elec_bill_due','input_datetime.gas_bill_due','input_datetime.water_bill_due',
+                   'input_datetime.council_rate_due','input_datetime.rego_due','input_datetime.car_insurance_due']},
+          {'en': 'Bill year totals', 'zh': '账单年度合计', 'bad': ['unavailable','unknown','none',''],
+           'ids': ['input_number.bills_paid_ytd','input_number.bills_saved_ytd','input_number.bills_original_ytd']},
+          {'en': 'CasaRay maintenance', 'zh': 'CasaRay 维护', 'bad': ['unavailable','unknown','none',''],
+           'ids': ['input_boolean.casaray_auto_deploy','input_number.casaray_battery_threshold','input_number.casaray_offline_threshold']}
+        ] -%}
+        {%- set t = namespace(missing=0) -%}
+        {%- for g in groups -%}{%- set k = namespace(n=0) -%}{%- for e in g.ids -%}{%- if states(e) not in g.bad -%}{%- set k.n = k.n + 1 -%}{%- endif -%}{%- endfor -%}{%- if k.n < g.ids | length -%}{%- set t.missing = t.missing + 1 -%}{%- endif -%}{%- endfor -%}
+        {% if t.missing == 0 -%}
+        {{ '全部辅助项都在响应。' if cn else 'Every helper CasaRay depends on is answering.' }}
+        {%- else -%}
+        {{ ('有 ' ~ t.missing ~ ' 组辅助项没有完全响应。依赖它们的卡片会显示“无数据”。') if cn else (t.missing ~ ' of ' ~ (groups | length) ~ ' helper groups are not fully answering. Cards that read them show No data.') }}
+        {%- endif %}
+
+        {% for g in groups -%}
+        {%- set k = namespace(n=0) -%}
+        {%- for e in g.ids -%}{%- if states(e) not in g.bad -%}{%- set k.n = k.n + 1 -%}{%- endif -%}{%- endfor -%}
+        {%- set tot = g.ids | length -%}
+        {%- set st = (('正常' if cn else 'Answering') if k.n == tot else (('无响应' if cn else 'Not answering') if k.n == 0 else ('部分响应' if cn else 'Partly answering'))) -%}
+        - {{ g.zh if cn else g.en }}: **{{ st }}** {{ k.n }}/{{ tot }}
+        {% endfor %}
+        {% if t.missing > 0 -%}
+        {{ '请在 设置 → 设备与服务 → 辅助元素 中查看。若某项显示为不可用，说明它的定义已随 configuration.yaml 丢失，需要重新创建；此页面无法重建它。' if cn else 'Check Settings → Devices & services → Helpers. A helper listed as unavailable has lost its definition with configuration.yaml and must be recreated; this page cannot rebuild it.' }}
+        {%- endif %}
+
   - type: grid
     column_span: 2
     cards:
