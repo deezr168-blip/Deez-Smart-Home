@@ -25,7 +25,7 @@ went or why it waits.
 
 | V2 view | V2 content (section headings) | V3 |
 |---|---|---|
-| `home` | Needs attention · One tap · Rooms · Shopping list · Right now · Who's home · Security · Energy now · Recent activity · More boards | **Home.** Reordered by V3-005 (`DESIGN_SPEC.md` §4a): status sentence, Needs attention, Who's home beside an Energy truth strip, One tap, then the rest. Every V2 band is still present; the chip strip's readings moved into the hero, the people cards and Monitored circuits. |
+| `home` | Needs attention · One tap · Rooms · Shopping list · Right now · Who's home · Security · Energy now · Recent activity · More boards | **Home.** Reordered by V3-005 (`DESIGN_SPEC.md` §4a): status sentence, Needs attention, Who's home beside an Energy truth strip, One tap, then the rest. Nothing is dropped (V3-007): Recent activity → House health; four-day forecast → Climate; monitored chart and the four proposed whole-house scenes → Energy and Lighting. The chip strip's readings moved into the hero and the people cards. |
 | `rooms` | Room conditions | **Rooms.** Two-column list of all eight rooms, each opening a room page. |
 | `living-room` | Quick actions · Lights · Power board · Entertainment · Air quality · Sensors · Front door camera · Doorbell · Other motion sensors · Device settings | **Room page.** Lights, air (purifier with a speed segment), sensors, TV, power board, scenes. Doorbell and camera move to **Security**. *Deferred:* device settings, other motion sensors. |
 | `kitchen` | Bench plugs · Fridge · Electrolux fridge · Sensors · Shopping list · Plug settings | **Room page.** Bench plugs, fridge (Electrolux probe and LG door), motion. States plainly that no kitchen light is integrated. *Deferred:* plug settings. |

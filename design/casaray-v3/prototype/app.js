@@ -650,23 +650,63 @@
 
   // One tap control. Says the state AND the action ("On — tap to turn off"),
   // so a parent never has to infer what the next press does.
-  function tapCard(id, nameKey, ic) {
+  function tapCard(id, nameKey, ic, nav) {
     const name = t(nameKey);
-    const face = (stateHtml, action, cls, extra = '', open = '<div', close = '</div>') =>
+    const face = (stateHtml, action, cls, extra = '', open = '<div', close = '</div>', end = '') =>
       `${open} class="card tap ${cls}"${extra}><div class="trow"><div class="ic">${icon(ic)}</div><div class="tstate">${stateHtml}</div></div>
-      <div class="tname">${name}</div><div class="tact">${action}</div>${eid(id)}${close}`;
+      <div class="tname">${name}</div><div class="tact">${action}${end}</div>${eid(id)}${close}`;
     if (na(id)) return face(`<b>${t('s.no_data')}</b>`, t('k.no_control'), 'na');
     const s = st(id), a = s.a || {};
-    const isAc = id.startsWith('climate.');
-    const isOn = isAc ? s.s !== 'off' : s.s === 'on';
+    // A climate entity is not a switch: restoring "on" needs a target, a fan
+    // and a swing setting. From Home it only SHOWS the state and opens the
+    // room's climate controls (V3-007). Nothing here changes an HVAC mode.
+    if (nav) {
+      const isOn = s.s !== 'off';
+      const detail = Number.isFinite(a.current) ? t('k.room', { v: fmt(a.current) }) : '';
+      const word = t(isOn ? 'k.on' : 'k.off');
+      return face(`<b class="${isOn ? 'hl' : ''}">${word}</b>${detail ? `<span>${detail}</span>` : ''}`, t('k.open_controls'), isOn ? 'on nav' : 'nav',
+        ` type="button" data-go="${nav}" aria-label="${esc(name + '. ' + word + (detail ? ' · ' + detail : '') + ' — ' + t('k.open_controls'))}"`, '<button', '</button>', icon('chevron-right'));
+    }
+    const isOn = s.s === 'on';
     let detail = '';
     if (id.startsWith('light.') && isOn && a.brightness) detail = `${a.brightness}%`;
-    if (isAc && Number.isFinite(a.current)) detail = t('k.room', { v: fmt(a.current) });
     const word = t(isOn ? 'k.on' : 'k.off');
     const action = t(isOn ? 'k.tap_off' : 'k.tap_on');
     const plain = `${word}${detail ? ' · ' + detail : ''} — ${action}`;
     return face(`<b class="${isOn ? 'hl' : ''}">${word}</b>${detail ? `<span>${detail}</span>` : ''}`, action, isOn ? 'on' : '',
-      ` ${isAc ? 'data-acpower="1"' : `data-toggle="${id}"`} type="button" aria-pressed="${isOn}" aria-label="${esc(name + '. ' + plain)}"`, '<button', '</button>');
+      ` data-toggle="${id}" type="button" aria-pressed="${isOn}" aria-label="${esc(name + '. ' + plain)}"`, '<button', '</button>');
+  }
+
+  // Weather card. Home shows the current reading only; the four-day forecast lives on Climate.
+  function weatherCard(full) {
+    const wxId = 'weather.forecast_home';
+    const wx = st(wxId);
+    const dayName = (d) => (lang() === 'zh' ? { sun: '周日', mon: '周一', tue: '周二', wed: '周三' } : { sun: 'Sun', mon: 'Mon', tue: 'Tue', wed: 'Wed' })[d];
+    const cIc = { partly: 'weather-partly-cloudy', rainy: 'weather-rainy', cloudy: 'weather-cloudy', sunny: 'weather-sunny' };
+    // Condition text and icon follow the weather entity's state (HA condition names).
+    const COND = { cloudy: ['Cloudy', '多云', 'weather-cloudy'], partlycloudy: ['Partly cloudy', '局部多云', 'weather-partly-cloudy'],
+      sunny: ['Sunny', '晴', 'weather-sunny'], rainy: ['Rainy', '雨', 'weather-rainy'], 'clear-night': ['Clear', '晴朗', 'weather-night'] };
+    const cond = COND[wx.s] || [wx.s, wx.s, 'weather-cloudy'];
+    return na(wxId)
+      ? tile({ ids: wxId, ic: 'weather-cloudy', name: lang() === 'zh' ? '天气' : 'Weather', sub: t('s.no_data'), state: 'na', pill: naPill() })
+      : `<div class="card"><div class="wx-top">${icon(cond[2])}<div><div class="big">${wx.a.temperature}°</div>
+          <div class="sub">${lang() === 'zh' ? cond[1] : cond[0]} · ${lang() === 'zh' ? '湿度' : 'humidity'} ${wx.a.humidity}%</div></div></div>
+          ${full ? `<div class="wx-days">${wx.a.forecast.map((f) => `<div>${dayName(f.d)}${icon(cIc[f.c])}<b>${f.hi}°</b> ${f.lo}°</div>`).join('')}</div>` : ''}${eid(wxId)}</div>`;
+  }
+
+  // Monitored load: two metered circuits, never the whole house (V3-003).
+  function monitoredCard() {
+    const w = num('sensor.casa_monitored_power');
+    return `<div class="card ${w == null ? 'na' : ''}">
+      <div class="tile"><div class="ic ${w == null ? 'grey' : 'amber'}">${icon('flash')}</div><div><div class="name">${lang() === 'zh' ? '已监控负载' : 'Monitored power'}</div>
+      <div class="sub">${w == null ? t('s.no_data') : `${fmt(w)} W · ${lang() === 'zh' ? '车库冰柜和 Ray 书桌' : "garage freezer and Ray's desk"}`}</div></div><div></div></div>
+      ${w == null ? '' : `<div class="spark" role="img" aria-label="${lang() === 'zh' ? '过去 12 小时的已监控负载（演示）' : 'Monitored load, last 12 hours (demo)'}">${SPARK.map((v) => `<span style="height:${Math.round((v / 180) * 100)}%"></span>`).join('')}</div>
+      <div class="spark-axis"><span>−12 h</span><span>${lang() === 'zh' ? '现在' : 'now'}</span></div>`}${eid('sensor.casa_monitored_power')}</div>`;
+  }
+  function monitoredTile() {
+    const w = num('sensor.casa_monitored_power');
+    return tile({ ids: 'sensor.casa_monitored_power', ic: 'flash', name: lang() === 'zh' ? '已监控负载' : 'Monitored power', state: w == null ? 'na' : 'on',
+      sub: w == null ? t('s.no_data') : `${fmt(w)} W · ${t('m.two_circuits')}` });
   }
 
   const VIEWS = {};
@@ -678,27 +718,15 @@
       : `<div class="card alert green tile"><div class="ic green">${icon('check-circle')}</div><div><div class="name">${t('a.all_clear')}</div><div class="sub">${t('a.all_clear_d')}</div></div><div></div></div>`;
     const unknownNote = att.unknown ? `<span class="count">${t(att.unknown === 1 ? 'a.unknown_check' : 'a.unknown_checks', { n: att.unknown })}</span>` : '';
 
-    const wxId = 'weather.forecast_home';
-    const wx = st(wxId);
-    const dayName = (d) => (lang() === 'zh' ? { sun: '周日', mon: '周一', tue: '周二', wed: '周三' } : { sun: 'Sun', mon: 'Mon', tue: 'Tue', wed: 'Wed' })[d];
-    const cIc = { partly: 'weather-partly-cloudy', rainy: 'weather-rainy', cloudy: 'weather-cloudy', sunny: 'weather-sunny' };
-    // Condition text and icon follow the weather entity's state (HA condition names).
-    const COND = { cloudy: ['Cloudy', '多云', 'weather-cloudy'], partlycloudy: ['Partly cloudy', '局部多云', 'weather-partly-cloudy'],
-      sunny: ['Sunny', '晴', 'weather-sunny'], rainy: ['Rainy', '雨', 'weather-rainy'], 'clear-night': ['Clear', '晴朗', 'weather-night'] };
-    const cond = COND[wx.s] || [wx.s, wx.s, 'weather-cloudy'];
-    const weather = na(wxId)
-      ? tile({ ids: wxId, ic: 'weather-cloudy', name: lang() === 'zh' ? '天气' : 'Weather', sub: t('s.no_data'), state: 'na', pill: naPill() })
-      : `<div class="card"><div class="wx-top">${icon(cond[2])}<div><div class="big">${wx.a.temperature}°</div>
-          <div class="sub">${lang() === 'zh' ? cond[1] : cond[0]} · ${lang() === 'zh' ? '湿度' : 'humidity'} ${wx.a.humidity}%</div></div></div>
-          <div class="wx-days">${wx.a.forecast.map((f) => `<div>${dayName(f.d)}${icon(cIc[f.c])}<b>${f.hi}°</b> ${f.lo}°</div>`).join('')}</div>${eid(wxId)}</div>`;
+    const weather = weatherCard(false);
     const occ = 'binary_sensor.bedroom_parents_room_ac_room_occupied';
     const occTile = na(occ) ? '' : tile({ ids: occ, ic: 'motion-sensor', name: t('room.parents'), state: on(occ) ? 'on' : 'off',
       sub: on(occ) ? `${t('s.occupied')} · ${ago(st(occ).ago)}` : `${t('s.quiet')} · ${dur(st(occ).ago || 0)}` });
-    const w = num('sensor.casa_monitored_power');
     const rem = num('sensor.energy_production_today_remaining');
     const nowSec = sec(h2('h.now', 'weather-partly-cloudy') + `<div class="stack">${weather}
       ${grid1([tile({ ids: 'sensor.energy_production_today_remaining', ic: 'solar-power', name: lang() === 'zh' ? '今日太阳能' : 'Solar expected today',
-        sub: rem == null ? t('s.no_data') : (lang() === 'zh' ? `预计还有 ${fmt(rem)} kWh` : `${fmt(rem)} kWh still forecast`), state: rem == null ? 'na' : 'off' }), occTile].filter(Boolean))}</div>`);
+        sub: rem == null ? t('s.no_data') : (lang() === 'zh' ? `预计还有 ${fmt(rem)} kWh` : `${fmt(rem)} kWh still forecast`), state: rem == null ? 'na' : 'off' }), occTile].filter(Boolean))}
+      ${monitoredTile()}</div>`);
 
     const people = PEOPLE.map((p) => {
       if (na(p.id)) return `<div class="card person na"><div class="avatar">${p.n[0]}</div><div><div class="name">${p.n}</div><div class="sub">${t('s.no_data')}</div></div>${eid(p.id)}</div>`;
@@ -709,15 +737,9 @@
     const whoSec = sec(h2('h.who', 'account-group') + grid(people, 3, 3), 'who');
     const energyNow = sec(h2('h.energy_now', 'flash', `<span class="count">${t('e.src')}</span>`) + energyStrip(), 'energy-now');
     const taps = [['light.living_room', 'k.living_lights', 'sofa'], ['light.dining', 'k.dining_lights', 'lightbulb'],
-      ['fan.living_room_air_purifier', 'k.purifier', 'fan'], ['climate.bedroom_parents_room_ac', 'k.parents_ac', 'snowflake']]
-      .map(([id, k, ic]) => tapCard(id, k, ic));
-    // The four whole-house scripts do not exist yet (CR-233). They stay on the
-    // board as a second, quieter row, labelled as proposals.
-    const proposed = [['evening', 'weather-sunset-down'], ['goodnight', 'weather-night'], ['movie', 'movie-open'], ['alloff', 'lightbulb-off']]
-      .map(([k, ic]) => tile({ tag: 'button', action: `data-onetap="${k}"`, ic, name: t('o.' + k), sub: t('o.' + k + '_d'),
-        gap: 'whole-home script required (CR-233)' }));
-    const oneTapSec = sec(h2('h.onetap', 'gauge') + `<div class="taps">${taps.join('')}</div>` +
-      `<h3 class="sub-h">${t('k.whole_house')}</h3>` + grid(proposed, 4, 2) + foot('o.note'), 'full');
+      ['fan.living_room_air_purifier', 'k.purifier', 'fan'], ['climate.bedroom_parents_room_ac', 'k.parents_ac', 'snowflake', 'room-parents']]
+      .map(([id, k, ic, nav]) => tapCard(id, k, ic, nav));
+    const oneTapSec = sec(h2('h.onetap', 'gauge') + `<div class="taps">${taps.join('')}</div>`, 'full');
 
     const roomsSec = sec(h2('h.rooms', 'home') + grid(ROOMS.filter((r) => r.id !== 'backyard' && r.id !== 'guest').map(roomRow), 2, 1), 'full');
 
@@ -735,15 +757,6 @@
       sub: `${!d.known ? t('s.no_data') : d.open.length ? join(d.open.map((x) => nm(x.n))) + ' ' + t('s.open').toLowerCase() : d.dark ? `${d.known} ${t('s.closed').toLowerCase()} · ${d.dark} ${t('s.no_data').toLowerCase()}` : t('s.all_closed')} · ${t('m.x_of_y', { x: camerasOnline(), y: CAMERAS.length })} ${lang() === 'zh' ? '摄像头在线' : 'cameras online'}` });
     const sideSec = sec(h2('h.shopping', 'cart') + shop + h2('h.security', 'shield-home') + secSummary);
 
-    const monitoredBody = h2('h.monitored', 'flash') + `<div class="card ${w == null ? 'na' : ''}">
-      <div class="tile"><div class="ic ${w == null ? 'grey' : 'amber'}">${icon('flash')}</div><div><div class="name">${lang() === 'zh' ? '已监控负载' : 'Monitored power'}</div>
-      <div class="sub">${w == null ? t('s.no_data') : `${fmt(w)} W · ${lang() === 'zh' ? '车库冰柜和 Ray 书桌' : "garage freezer and Ray's desk"}`}</div></div><div></div></div>
-      ${w == null ? '' : `<div class="spark" role="img" aria-label="${lang() === 'zh' ? '过去 12 小时的已监控负载（演示）' : 'Monitored load, last 12 hours (demo)'}">${SPARK.map((v) => `<span style="height:${Math.round((v / 180) * 100)}%"></span>`).join('')}</div>
-      <div class="spark-axis"><span>−12 h</span><span>${lang() === 'zh' ? '现在' : 'now'}</span></div>`}${eid('sensor.casa_monitored_power')}</div>` +
-      foot('f.monitored');
-
-    const monSec = sec(monitoredBody);
-    const recentSec = sec(h2('h.recent', 'clock-outline') + recentActivity(), 'lg-full');
 
     const boards = NAV.filter(([k]) => k !== 'home').map(([k, ic]) =>
       `<button type="button" class="card" data-go="${k}"><div class="ic">${icon(ic)}</div><div class="name">${t('nav.' + k)}</div></button>`);
@@ -757,7 +770,7 @@
     const attnSec = sec(h2('h.attention', 'alert', unknownNote) + alerts, `full attn ${st_.tone}`);
 
     return `<div class="board b3 home">${hero}${attnSec}<div class="band">${whoSec}${energyNow}</div>${oneTapSec}
-      ${roomsSec}${nowSec}${sideSec}${monSec}${recentSec}${boardsSec}</div>`;
+      ${roomsSec}${nowSec}${sideSec}${boardsSec}</div>`;
   };
 
   function wholeHouseTile() {
@@ -872,7 +885,7 @@
       if (na(p.id) || w == null) return tile({ ids: [p.id, p.w], ic: 'power-socket-au', name: nm(p.n), sub: t('s.no_data'), state: 'na', pill: naPill() });
       return tile({ ids: [p.w, p.w.replace('current_consumption', 'voltage')], ic: p.ic || 'power-socket-au', name: nm(p.n), sub: `${fmt(w)} W${v == null ? '' : ` · ${fmt(v)} V`}`, state: 'on' });
     });
-    const using = sec(h2('h.using', 'flash') + `<div class="stack">${wholeHouseTile()}${plugs.join('')}</div>` + foot('f.monitored'));
+    const using = sec(h2('h.using', 'flash') + `<div class="stack">${monitoredCard()}${wholeHouseTile()}${plugs.join('')}</div>` + foot('f.monitored'));
     const co = num('sensor.electricity_maps_co2_intensity'), ff = num('sensor.electricity_maps_grid_fossil_fuel_percentage');
     const month = sec(h2('h.month', 'calendar') + grid([
       statCard(num('sensor.g_monitor_freezer_p110m_this_month_s_consumption') == null ? null : fmt(num('sensor.g_monitor_freezer_p110m_this_month_s_consumption')), 'kWh', lang() === 'zh' ? '车库冰柜' : 'Garage freezer', 'sensor.g_monitor_freezer_p110m_this_month_s_consumption'),
@@ -890,6 +903,7 @@
       return tile({ tag: 'button', action: `data-go="room-${r.id}"`, ids: r.temp, ic: r.ic, name: t(r.n), sub: v == null ? t('s.no_data') : `${fmt(v)}°`, state: v == null ? 'na' : 'off' });
     });
     return `<div class="board">
+      ${sec(h2('h.now', 'weather-partly-cloudy') + weatherCard(true))}
       ${sec(h2('h.temps', 'thermometer') + grid(temps, 2, 2))}
       ${sec(h2('h.ac', 'snowflake') + acCard('climate.bedroom_parents_room_ac'))}
       ${sec(h2('h.air', 'air-purifier') + purifierTile(room('living').air[0]))}
@@ -901,8 +915,11 @@
   VIEWS.lighting = () => {
     const rooms = ROOMS.filter((r) => r.lights);
     const n = lightsOn();
-    const bar = tile({ tag: 'button', action: 'data-onetap="alloff"', ic: 'lightbulb-off', name: t('o.alloff'), sub: n == null ? t('s.no_data') : t('m.lights_on', { n }),
-      pill: `<span class="pill amber">${t('s.proposed')}</span>`, gap: 'whole-home script required (CR-233)' });
+    // The four whole-house scripts do not exist yet (CR-233); they live here, labelled as proposals, until the owner approves them.
+    const proposed = [['evening', 'weather-sunset-down'], ['goodnight', 'weather-night'], ['movie', 'movie-open'], ['alloff', 'lightbulb-off']]
+      .map(([k, ic]) => tile({ tag: 'button', action: `data-onetap="${k}"`, ic, name: t('o.' + k), sub: k === 'alloff' && n != null ? `${t('o.alloff_d')} · ${t('m.lights_on', { n })}` : t('o.' + k + '_d'),
+        pill: `<span class="pill amber">${t('s.proposed')}</span>`, gap: 'whole-home script required (CR-233)' }));
+    const bar = h2('k.whole_house', 'gauge') + grid(proposed, 4, 1) + foot('o.note');
     return `<div class="board">${sec(bar, 'full')}${rooms.map((r) => sec(`<h2>${icon(r.ic)}<span>${t(r.n)}</span></h2>` + grid(r.lights.map(lightTile), 2, 1))).join('')}</div>`;
   };
 
@@ -965,7 +982,8 @@
     });
     return `<div class="board">${sec(h2('h.updates', 'update') + `<div class="stack">${ups.join('')}</div>`)}
       ${sec(h2('h.network', 'router-wireless') + `<div class="stack">${net.join('')}</div>` + foot('f.offline'))}
-      ${sec(h2('h.batteries', 'battery-50') + grid(bats, 3, 1), 'full')}</div>`;
+      ${sec(h2('h.batteries', 'battery-50') + grid(bats, 3, 1), 'full')}
+      ${sec(h2('h.recent', 'clock-outline') + recentActivity(), 'full')}</div>`;
   };
 
   // ------------------------------------------------------------- render --
@@ -1120,12 +1138,6 @@
     if (d.onetap) { ONETAP[d.onetap](); render(); return toast(t('t.demo', { what: t('t.onetap', { name: t('o.' + d.onetap) }) })); }
     if (d.speed) { const s = st(d.speed); s.a.speed = d.v; s.s = d.v === 'off' ? 'off' : 'on'; return render(); }
     if (d.ac) { const s = st('climate.bedroom_parents_room_ac'); s.a.target = Math.min(30, Math.max(16, s.a.target + parseFloat(d.ac))); return render(); }
-    if (d.acpower) {
-      const s = st('climate.bedroom_parents_room_ac');
-      s.s = s.s === 'off' ? 'cool' : 'off'; s.a.mode = s.s; s.ago = 0;
-      render();
-      return toast(t('t.demo', { what: t('t.toggled', { name: t('k.parents_ac'), state: s.s === 'off' ? t('s.off').toLowerCase() : t('s.on').toLowerCase() }) }));
-    }
     if (d.acmode) { st('climate.bedroom_parents_room_ac').s = d.acmode; return render(); }
     if (d.shop) { UI.done[d.shop] = !UI.done[d.shop]; return render(); }
   });

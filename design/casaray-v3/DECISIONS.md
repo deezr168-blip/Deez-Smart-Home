@@ -6,6 +6,56 @@ and `ha-deploy` are unaffected by everything here.
 
 ---
 
+## V3-007 · 05/10/26 · Owner review of PR #4: air-con is navigation, Home is shorter
+
+**Status:** owner decisions, recorded and applied in the prototype.
+
+**1. Parents' air-con is not approved as an Off ↔ Cool toggle.**
+`climate.bedroom_parents_room_ac` is not a switch. Restoring "on" needs a
+target temperature, a fan mode, a swing mode and a decision about which HVAC
+mode (Cool, Heat, Dry, Auto) was meant. The earlier toggle was acceptable as
+a demo and must not become production behaviour.
+
+- Home's fourth One tap slot stays, and still shows the state in words
+  ("Off · room 23.3°") and the no-data card. It is now **navigation**: a tap
+  opens the Parents' room page, where the climate controls are. Home issues
+  no HVAC change. The demo power handler is deleted, not hidden.
+- A direct power control may return only as a defined preset, for example
+  "Parents Comfort": Cool, 23 °C, Auto fan, a known swing setting. That is
+  **not built and not approved**; it needs the owner to define it.
+
+**2. About three screens is too long for Home.**
+Home is current state plus immediate action. Detail, history and
+configuration belong on other boards. Target: zero scrolling for the
+glanceable first screen, and a full page of about 1.5–2 wall-iPad screens
+(preferred ≤ about 1,640 px).
+
+| Removed from Home | Now lives on |
+|---|---|
+| Whole-house scenes (proposed): Evening, Goodnight, Movie, All lights off | **Lighting**, as "Whole-house scenes (proposed)", each still marked Proposed (CR-233) |
+| Recent activity | **House health** |
+| Four-day forecast | **Climate** (Home keeps the current reading) |
+| Monitored power with its 12-hour bars | **Energy** (Home keeps a one-line tile that says two circuits, not the whole house) |
+
+Nothing was deleted. The proposal, its strings and its gap captions are
+intact. Home's first-screen hierarchy is unchanged.
+
+**Measured at 1180 × 820** (full-page height, English):
+
+| Scenario | Before | After |
+|---|---|---|
+| Evening (4 alerts) | 2,353 px | 1,723 px |
+| Concept review snapshot | 2,250 px | 1,620 px |
+| Everyone away (5 alerts) | 2,326 px | 1,696 px |
+| Device outage | 2,024 px | 1,612 px |
+
+The two worst days sit slightly above the preferred 1,640 px because the
+alert cards grow with the number of alerts, not because Home grew. Rooms stay
+(two across, three rows). If Home must get shorter still, the next candidates
+are the Security summary row and More boards, which duplicates the rail.
+
+---
+
 ## V3-005 · 05/10/26 · Home direction — SELECTED
 
 **Status:** resolved by the owner on 05/10/26. This is a deliberate
@@ -45,16 +95,17 @@ Energy truth strip (Level 2), and four large One tap controls that say state
   clock 22 → 28 px, tool buttons 13 → 14 px.
 - Home's chip strip is gone; Outside and Inside moved into the hero, Home
   count into the people cards, Monitored into its own section below.
-- The four whole-house scripts (CR-233) stay, as a second, quieter row
-  labelled *proposed*. One tap's primary row uses controls that exist today:
+- The four whole-house scripts (CR-233) first stayed on Home as a second,
+  quieter row labelled *proposed*; V3-007 moved them to Lighting. One tap's
+  row uses controls that exist today:
   `light.living_room`, `light.dining`, `fan.living_room_air_purifier`,
   `climate.bedroom_parents_room_ac`.
 - No entity ID was introduced. Export has no source: V3-003 still applies.
 - Other boards, Security and Cameras are untouched.
 
-**Open for the owner:** whether the parents' air-con should be a one-tap
-power control on the wall iPad (the prototype toggles Off ↔ Cool); and
-whether below-the-fold Home may stay at about three screens on a bad day.
+**Both open questions were answered in V3-007.** The air-con is navigation,
+not a toggle; Home is cut to about two screens, and the whole-house row and
+Recent activity moved off it.
 
 ---
 

@@ -191,7 +191,7 @@ async function shot(page, name, full = false) {
     check('bilingual: clock date is DD/MM/YY', /^\d{2}\/\d{2}\/\d{2}$/.test(date), date);
     await p.evaluate(() => window.__casaray.go('home'));
     const home = await p.locator('#view').innerText();
-    check('bilingual: Home headings in Chinese', ['需要注意', '此刻', '谁在家', '一键', '购物清单', '近期活动'].every((w) => home.includes(w)));
+    check('bilingual: Home headings in Chinese', ['需要注意', '此刻', '谁在家', '一键', '购物清单'].every((w) => home.includes(w)));
     check('bilingual: Chinese enumerations use 、', /、/.test(home));
     await p.locator('[data-lang]').click();
 
@@ -223,15 +223,21 @@ async function shot(page, name, full = false) {
     await p.evaluate(() => window.__casaray.go('home'));
     await p.locator('[data-shop="0"]').click();
     check('interact: shopping item ticks', (await p.locator('[data-shop="0"]').getAttribute('aria-checked')) === 'true');
+    await p.evaluate(() => window.__casaray.go('lighting'));
     await p.locator('[data-onetap="alloff"]').click();
-    check('interact: One tap "All lights off" acts on demo state', (await p.evaluate(() => window.__casaray.state()['light.living_room'].s)) === 'off');
+    check('interact: proposed "All lights off" (now on Lighting) acts on demo state', (await p.evaluate(() => window.__casaray.state()['light.living_room'].s)) === 'off');
+    await p.evaluate(() => window.__casaray.go('home'));
 
     await p.locator('[data-overlay="demo"]').click();
     await p.locator('[data-ids]').click();
     const ids = await p.locator('.eid').first().isVisible();
     check('interact: "Show entity IDs" reveals entity captions', ids);
+    const gapsHome = await p.locator('.eid.gap').count();
+    await p.evaluate(() => window.__casaray.go('lighting'));
     const gaps = await p.locator('.eid.gap').count();
-    check('mapping: gaps are labelled, not invented', gaps >= 4, `${gaps} gap captions on Home`);
+    await p.evaluate(() => window.__casaray.go('home'));
+    await p.locator('[data-overlay="demo"]').click();
+    check('mapping: gaps are labelled, not invented', gaps >= 4 && gapsHome >= 1, `${gaps} gap captions on Lighting, ${gapsHome} on Home`);
     await p.locator('[data-ids]').click();
     await p.keyboard.press('Escape');
     check('interact: Escape closes the demo panel', (await p.locator('.sheet').count()) === 0);
@@ -318,8 +324,14 @@ async function shot(page, name, full = false) {
       const t1 = await p.locator('[data-toggle="light.living_room"]').innerText();
       check('one tap: pressing flips state and action', /Off/.test(t1) && /Tap to turn on/i.test(t1), t1.replace(/\n+/g, ' | '));
       check('one tap: aria-pressed follows the state', (await p.locator('[data-toggle="light.living_room"]').getAttribute('aria-pressed')) === 'false');
-      await p.locator('[data-acpower]').click();
-      check('one tap: parents\' air-con powers on in the demo', (await p.evaluate(() => window.__casaray.state()['climate.bedroom_parents_room_ac'].s)) === 'cool');
+      // The air-con card only SHOWS state and navigates; it never changes the HVAC mode (V3-007).
+      const acBefore = await p.evaluate(() => window.__casaray.state()['climate.bedroom_parents_room_ac'].s);
+      const acCard = p.locator('.taps .tap', { hasText: "Parents' air-con" });
+      check('one tap: air-con card has no direct state-changing action', (await acCard.getAttribute('data-toggle')) === null && (await acCard.getAttribute('data-acpower')) === null && (await acCard.getAttribute('aria-pressed')) === null);
+      await acCard.click();
+      check('one tap: air-con card opens the Parents\' room climate controls', p.url().endsWith('#room-parents') && (await p.locator('[data-acmode]').count()) > 0, p.url());
+      check('one tap: opening the air-con card leaves the HVAC mode unchanged', (await p.evaluate(() => window.__casaray.state()['climate.bedroom_parents_room_ac'].s)) === acBefore);
+      await p.evaluate(() => window.__casaray.go('home'));
       const hero = await p.locator('.hero').innerText();
       check('status sentence: names who is home and counts what needs a look', /(are|is) home/.test(hero) && /need a look/.test(hero), hero.replace(/\n+/g, ' | '));
       check('status sentence: never says all clear while a check could not answer', await (async () => {
@@ -327,6 +339,32 @@ async function shot(page, name, full = false) {
         const h = await p.locator('.hero .status').innerText();
         return !/^[^.]*\.\s*Nothing needs attention\.$/.test(h) && !/Nothing needs attention/.test(h);
       })());
+      await p.context().close();
+    }
+
+    // Home length and where the removed sections went (V3 owner decision, V3-007).
+    {
+      const heights = {};
+      for (const [label, scenario] of [['evening', null], ['review', 'review'], ['away', 'away'], ['outage', 'outage']]) {
+        const p = await newPage(browser, VIEWPORTS.wall);
+        if (scenario) { await p.locator('[data-overlay="demo"]').click(); await p.locator(`[data-scenario="${scenario}"]`).click(); await p.keyboard.press('Escape'); }
+        heights[label] = await p.evaluate(() => document.documentElement.scrollHeight);
+        await p.context().close();
+      }
+      check('home length: Concept review snapshot is about 2 screens or less (≤ 1700 px)', heights.review <= 1700, JSON.stringify(heights));
+      check('home length: worst case (4–5 alerts) stays under 1800 px, well under the old 2353', Math.max(...Object.values(heights)) <= 1800, JSON.stringify(heights));
+      const p = await newPage(browser, VIEWPORTS.wall);
+      const home = await p.locator('#view').innerText();
+      check('home: proposed whole-house row and Recent activity are no longer on Home', !/Whole-house scenes/.test(home) && !/Recent activity/.test(home) && (await p.locator('[data-onetap]').count()) === 0);
+      await p.evaluate(() => window.__casaray.go('lighting'));
+      const lit = await p.locator('#view').innerText();
+      check('relocated: Lighting carries the four whole-house scenes, each marked Proposed', /Whole-house scenes \(proposed\)/.test(lit) && (await p.locator('[data-onetap]').count()) === 4 && (lit.match(/proposed/gi) || []).length >= 5, (lit.match(/Proposed/gi) || []).length + ' proposed labels');
+      await p.evaluate(() => window.__casaray.go('health'));
+      check('relocated: House health carries Recent activity', /Recent activity/.test(await p.locator('#view').innerText()));
+      await p.evaluate(() => window.__casaray.go('climate'));
+      check('relocated: Climate carries the four-day forecast', (await p.locator('.wx-days').count()) === 1);
+      await p.evaluate(() => window.__casaray.go('energy'));
+      check('relocated: Energy carries monitored power with its 12-hour bars', (await p.locator('.spark').count()) === 1);
       await p.context().close();
     }
   }

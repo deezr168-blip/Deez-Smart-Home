@@ -1,5 +1,5 @@
 {
-  "passed": 97,
+  "passed": 106,
   "failed": 0,
   "results": [
     {
@@ -293,7 +293,7 @@
       "detail": ""
     },
     {
-      "name": "interact: One tap \"All lights off\" acts on demo state",
+      "name": "interact: proposed \"All lights off\" (now on Lighting) acts on demo state",
       "ok": true,
       "detail": ""
     },
@@ -305,7 +305,7 @@
     {
       "name": "mapping: gaps are labelled, not invented",
       "ok": true,
-      "detail": "5 gap captions on Home"
+      "detail": "4 gap captions on Lighting, 1 on Home"
     },
     {
       "name": "interact: Escape closes the demo panel",
@@ -473,17 +473,62 @@
       "detail": ""
     },
     {
-      "name": "one tap: parents' air-con powers on in the demo",
+      "name": "one tap: air-con card has no direct state-changing action",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "one tap: air-con card opens the Parents' room climate controls",
+      "ok": true,
+      "detail": "file:///home/user/Deez-Smart-Home/design/casaray-v3/prototype/index.html#room-parents"
+    },
+    {
+      "name": "one tap: opening the air-con card leaves the HVAC mode unchanged",
       "ok": true,
       "detail": ""
     },
     {
       "name": "status sentence: names who is home and counts what needs a look",
       "ok": true,
-      "detail": "Good afternoon | Raymond and Vinh are home, Ai is out. 4 things need a look. | Outside | 10° | Inside | 19.7°"
+      "detail": "Good evening | Raymond and Vinh are home, Ai is out. 4 things need a look. | Outside | 10° | Inside | 19.7°"
     },
     {
       "name": "status sentence: never says all clear while a check could not answer",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "home length: Concept review snapshot is about 2 screens or less (≤ 1700 px)",
+      "ok": true,
+      "detail": "{\"evening\":1722,\"review\":1619,\"away\":1695,\"outage\":1582}"
+    },
+    {
+      "name": "home length: worst case (4–5 alerts) stays under 1800 px, well under the old 2353",
+      "ok": true,
+      "detail": "{\"evening\":1722,\"review\":1619,\"away\":1695,\"outage\":1582}"
+    },
+    {
+      "name": "home: proposed whole-house row and Recent activity are no longer on Home",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "relocated: Lighting carries the four whole-house scenes, each marked Proposed",
+      "ok": true,
+      "detail": "5 proposed labels"
+    },
+    {
+      "name": "relocated: House health carries Recent activity",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "relocated: Climate carries the four-day forecast",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "relocated: Energy carries monitored power with its 12-hour bars",
       "ok": true,
       "detail": ""
     }

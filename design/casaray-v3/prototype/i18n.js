@@ -78,7 +78,7 @@ window.I18N = {
     'k.living_lights': 'Living room lights', 'k.dining_lights': 'Dining lights',
     'k.purifier': 'Air purifier', 'k.parents_ac': "Parents' air-con",
     'k.on': 'On', 'k.off': 'Off', 'k.tap_off': 'tap to turn off', 'k.tap_on': 'tap to turn on',
-    'k.room': 'room {v}°', 'k.no_control': 'no control without data',
+    'k.room': 'room {v}°', 'm.two_circuits': 'two circuits, not the whole house', 'k.open_controls': 'open climate controls', 'k.no_control': 'no control without data',
     'k.whole_house': 'Whole-house scenes (proposed)', 'h.monitored': 'Monitored circuits',
 
     'f.monitored': 'Two circuits are metered, so this is monitored load. It is not the whole house.',
@@ -178,7 +178,7 @@ window.I18N = {
     'k.living_lights': '客厅灯', 'k.dining_lights': '餐厅灯',
     'k.purifier': '空气净化器', 'k.parents_ac': '父母房空调',
     'k.on': '开', 'k.off': '关', 'k.tap_off': '点按关闭', 'k.tap_on': '点按打开',
-    'k.room': '室温 {v}°', 'k.no_control': '无数据，无法控制',
+    'k.room': '室温 {v}°', 'm.two_circuits': '仅两个回路，非全屋', 'k.open_controls': '打开空调控制', 'k.no_control': '无数据，无法控制',
     'k.whole_house': '全屋场景（拟议）', 'h.monitored': '已监控回路',
 
     'f.monitored': '只有两个回路有计量，所以这是已监控负载，不是全屋用电。',

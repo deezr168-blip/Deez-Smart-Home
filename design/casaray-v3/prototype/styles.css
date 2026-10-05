@@ -491,6 +491,9 @@ button.card:active { transform: scale(0.985); }
 .card.tap .tname { font-size: 20px; font-weight: 700; line-height: 1.2; overflow-wrap: break-word; }
 .card.tap .tact { margin-top: -4px; font-size: 15.5px; color: var(--text-2); }
 .card.tap .tact::first-letter { text-transform: uppercase; }
+/* The air-con card navigates; it never changes the HVAC mode from Home. */
+.card.tap.nav .tact { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.card.tap.nav .tact svg.i { font-size: 20px; color: var(--text-muted); }
 .card.tap.on { background: var(--amber-bg); }
 .card.tap.na .tname { color: var(--text-2); }
 .sub-h { margin: 10px 0 0; font-size: 14.5px; font-weight: 700; color: var(--text-muted); }

@@ -118,7 +118,7 @@ a bad day (four alerts in English, five in Chinese).
 | Needs attention | Alert cards, two across (three across and one line of detail from five alerts) | 1 for the exception, 18 / 15.5 px cards |
 | Who's home \| Energy now | Three person cards, 5/12 · energy truth strip, 7/12 | 2: 20 px names, 36 px figures |
 | One tap | Four 128 px controls, each with state and action | 2: 20 px names, 24 px state |
-| Below the fold | Whole-house scenes (proposed) · Rooms · Right now \| Shopping list + Security · Monitored circuits \| Recent activity · More boards | 3 |
+| Below the fold | Rooms · Right now (current weather, solar forecast, Parents' room, monitored power) \| Shopping list + Security · More boards | 3 |
 
 **Type levels.** Level 1 is the house status and any major exception.
 Level 2 is people, energy and the state of a primary control. Level 3 is
@@ -142,6 +142,15 @@ honestly without export.
 name, then the action ("Tap to turn off"). Brightness or room temperature
 sits under the state word. A device with no data becomes a dashed card
 saying so. A control is never drawn as off when it simply cannot be read.
+
+**Climate is not a switch (V3-007).** The air-con card shows its state and
+opens the Parents' room page; it has a chevron instead of a press state and
+issues no HVAC change from Home. A direct control needs a defined preset
+first (target, fan, swing), which is not approved.
+
+**Home = current state plus immediate action.** Forecast, history, proposed
+scenes and the monitored-load chart live on Climate, House health, Lighting
+and Energy. A full Home is about two screens (1,612–1,723 px measured).
 
 ### Room pages
 
