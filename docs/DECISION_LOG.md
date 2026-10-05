@@ -44,7 +44,7 @@ claimed the helper defaults ON is corrected (it defaults OFF without
 `reconcile_entities.py` rejected any ID absent from the 05/09 export, so a
 card for a helper that Git itself defines (created after the export) could
 never pass. `package_defined()` unions IDs from `packages/*.yaml` (helper
-blocks, scripts, template sensors by `name`, automations by `alias`). *This
+blocks, scripts, template and command_line sensors by `name`, automations by `alias`). *This
 widens the gate, so it is flagged:* it accepts only IDs a file in the repo
 defines, and a unit test pins that. The audit still marks them `live_check`
 because they exist only once `packages:` is loaded.

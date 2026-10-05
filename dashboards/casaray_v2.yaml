@@ -12889,6 +12889,32 @@ views:
         {{ '请在 设置 → 设备与服务 → 辅助元素 中查看。若某项显示为不可用，说明它的定义已随 configuration.yaml 丢失，需要重新创建；此页面无法重建它。' if cn else 'Check Settings → Devices & services → Helpers. A helper listed as unavailable has lost its definition with configuration.yaml and must be recreated; this page cannot rebuild it.' }}
         {%- endif %}
 
+    # Dashboard delivery, from the three sensors packages/casaray_automation.yaml
+    # creates. `synced` means the host's repository clone and the live file are
+    # identical -- it compares two files on the host and cannot see GitHub, so
+    # the card says that rather than "up to date". Every branch is explicit:
+    # a sensor that is not answering is the package not being loaded, or
+    # /config/casaray not being installed, and neither is "out of sync".
+    - type: markdown
+      grid_options: {columns: 12, rows: auto}
+      content: |
+        {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+        {%- set ss = states('sensor.casaray_sync_status') -%}
+        {%- set lf = states('binary_sensor.casaray_live_file_present') -%}
+        {%- set bc = states('sensor.casaray_backup_count') | float(none) -%}
+        {%- set dead = ['unavailable','unknown','none',''] -%}
+        {%- if ss in dead -%}{%- set v0 = ('无数据' if cn else 'No data') -%}
+        {%- elif ss == 'synced' -%}{%- set v0 = ('与仓库副本一致' if cn else 'Matches the repository clone') -%}
+        {%- elif ss == 'out_of_sync' -%}{%- set v0 = ('与仓库副本不同' if cn else 'Differs from the repository clone') -%}
+        {%- elif ss == 'missing_repo' -%}{%- set v0 = ('仓库副本缺少文件' if cn else 'Repository clone has no dashboard file') -%}
+        {%- elif ss == 'missing_live' -%}{%- set v0 = ('没有线上文件' if cn else 'No live dashboard file') -%}
+        {%- else -%}{%- set v0 = ss -%}{%- endif -%}
+        {%- set v1 = (('有' if cn else 'Present') if lf == 'on' else (('缺失' if cn else 'Missing') if lf == 'off' else ('无数据' if cn else 'No data'))) -%}
+        {%- set v2 = ((bc | round(0) | int) ~ '') if bc is not none else ('无数据' if cn else 'No data') -%}
+        {{ '仪表板' if cn else 'Dashboard' }}: **{{ v0 }}** · {{ '线上文件' if cn else 'Live file' }}: **{{ v1 }}** · {{ '备份' if cn else 'Backups' }}: **{{ v2 }}**
+
+        {{ '此项只比较主机上的两个文件，看不到 GitHub，所以“一致”不代表已是最新版本。无数据通常说明维护包尚未加载。' if cn else 'This compares two files on the host. It cannot see GitHub, so "matches" does not mean up to date. No data usually means the maintenance package is not loaded.' }}
+
   - type: grid
     column_span: 2
     cards:
