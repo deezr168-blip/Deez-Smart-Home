@@ -275,6 +275,32 @@ class Packages(unittest.TestCase):
             self.assertNotRegex(body, r"(?m)^\s*-?\s*action:\s*homeassistant\.restart")
 
 
+class Proposals(unittest.TestCase):
+    """proposals/ holds changes that are written but deliberately inert."""
+    PATH = os.path.join(ROOT, "proposals", "casaray_helper_booleans.proposed.yaml")
+
+    def test_boolean_proposal_matches_the_export_and_packages(self):
+        with open(self.PATH, encoding="utf-8") as fh:
+            doc = yaml.safe_load(fh)
+        live = rec.load_export(rec.EXPORT)
+        defined = rec.package_defined()
+        self.assertEqual(set(doc), {"input_boolean"}, "booleans only: no "
+                         "other helper type has settings we can know")
+        for key, cfg in doc["input_boolean"].items():
+            eid = f"input_boolean.{key}"
+            self.assertIn(eid, live, eid)
+            self.assertNotIn(eid, defined, f"{eid} already defined in packages/")
+            self.assertEqual(set(cfg), {"name"}, f"{key}: no invented settings")
+
+    def test_proposals_are_not_on_the_gates_path(self):
+        # package_defined reads packages/ only; a proposal there would be
+        # counted as defined and silently legitimise cards that read it.
+        self.assertNotIn("input_boolean.chinese_dashboard",
+                         rec.package_defined())
+        self.assertFalse(os.path.exists(os.path.join(
+            ROOT, "packages", os.path.basename(self.PATH))))
+
+
 class Scripts(unittest.TestCase):
     # Scripts known to fail `sh -n`, each tracked in docs/OWNER_ACTION_QUEUE.md.
     # ha_validate.sh carries a dead, duplicated copy of its own body after its
@@ -376,8 +402,14 @@ class DarkInstance(unittest.TestCase):
     def test_dark_pass_never_reassures(self):
         # CLAUDE.md: never let a card assert a state it cannot see. These are
         # whole-card phrases a dark instance must not produce.
+        # "Nothing is waiting to be paid" and "Not set up" were both rendered
+        # for six unavailable bill helpers (found 2026-10-05): the first
+        # claims a measurement nobody made, the second blames the owner for
+        # a helper that is simply not answering.
         bad = re.compile(r"\b(all clear|all closed|all secure|everything is "
-                         r"(fine|normal|ok)|no problems|up to date)\b", re.I)
+                         r"(fine|normal|ok)|no problems|up to date|"
+                         r"nothing is waiting to be paid|not set up|"
+                         r"no amount entered)\b", re.I)
         offenders = []
         block = ""
         for line in self.out.split("\n"):

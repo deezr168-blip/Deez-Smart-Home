@@ -13,7 +13,7 @@ and navigates, some entities and helpers still read unavailable / No data.*
 ### A1. Find out which helpers actually exist — **read-only, 2 minutes**
 
 Open **Settings → Devices & services → Helpers**, or look at the new
-**House health → Setup status** card once the dashboard is synced (A5). It
+**House health → Setup status** card once the dashboard is synced (A6). It
 reports answered/total for seven helper groups.
 
 - *Why:* about 110 helper entities (the language toggle, the bills board's
@@ -45,14 +45,22 @@ Only the owner's password was restored. Native fix needs the console
 alternative is delete-and-recreate in the UI, which gives **new user IDs** and
 means re-linking their `person` entities. Credentials never go through chat.
 
-### A5. Sync this branch's dashboard to the host — only after review and merge
+### A5. Install the helper-boolean proposal — only if A1 says they are YAML orphans
+
+`proposals/casaray_helper_booleans.proposed.yaml` re-creates the language
+toggle and the six bill-paid flags (seven on/off helpers; nothing invented).
+Its header says exactly what to check first, because installing it over
+surviving UI helpers would create `_2` duplicates no card reads. Number, date,
+text and select helpers are **not** proposed: their settings are not in Git.
+
+### A6. Sync this branch's dashboard to the host — only after review and merge
 
 `scripts/sync_casaray_to_config.sh` on the host. Committed is not deployed.
 **Merging to `ha-deploy` is production if `input_boolean.casaray_auto_deploy`
 is on:** `casaray_safe_deploy.sh` runs `git reset --hard origin/ha-deploy` in
 `/config/deez_repo` and deploys at 03:30 (see `DECISION_LOG.md` D-004).
 
-### A6. Re-add the deploy bridge (only if you want automated deploys)
+### A7. Re-add the deploy bridge (only if you want automated deploys)
 
 The `shell_command` bridge went with `configuration.yaml`. `packages/` defines
 `shell_command.casaray_*`, so loading packages brings it back, but it needs
