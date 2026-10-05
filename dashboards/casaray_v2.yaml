@@ -8166,10 +8166,12 @@ views:
         {%- set d = states('input_datetime.elec_bill_due') -%}
         {%- set ts = as_timestamp(d, default=none) -%}
         {%- set p = is_state('input_boolean.elec_bill_paid','on') -%}
+        {%- set pu = states('input_boolean.elec_bill_paid') in ['unavailable','unknown','none',''] -%}
         **{{ '电费' if cn else 'Electricity' }}**
-        {% if a is none or a == 0 %}## —
+        {% if a is none %}## —
+        {{ '无数据' if cn else 'No data' }}{% elif a == 0 %}## —
         {{ '未设置' if cn else 'Not set up' }}{% else %}## ${{ '%.2f' | format(a) }}
-        {% if p %}{{ '已付' if cn else 'Paid' }}{% elif ts is none %}{{ '未付 · 无到期日' if cn else 'Unpaid · no due date' }}{% else %}{% set days = ((ts - as_timestamp(now())) / 86400) | round(0, 'ceil') | int %}{% if days < 0 %}{{ ('逾期 %d 天' % (0 - days)) if cn else ('%d day%s overdue' % (0 - days, '' if days == -1 else 's')) }}{% elif days == 0 %}{{ '今天到期' if cn else 'Due today' }}{% else %}{{ ('%d 天后到期' % days) if cn else ('Due in %d day%s' % (days, '' if days == 1 else 's')) }}{% endif %}{% endif %}{% if ts is not none %} · {{ as_timestamp(d) | timestamp_custom('%d/%m') }}{% endif %}{% if sv is not none and sv > 0 %} · {{ '已省' if cn else 'saved' }} ${{ '%.2f' | format(sv) }}{% endif %}{% endif %}
+        {% if pu %}{{ '付款状态无数据' if cn else 'Paid status: no data' }}{% elif p %}{{ '已付' if cn else 'Paid' }}{% elif ts is none %}{{ '未付 · 无到期日' if cn else 'Unpaid · no due date' }}{% else %}{% set days = ((ts - as_timestamp(now())) / 86400) | round(0, 'ceil') | int %}{% if days < 0 %}{{ ('逾期 %d 天' % (0 - days)) if cn else ('%d day%s overdue' % (0 - days, '' if days == -1 else 's')) }}{% elif days == 0 %}{{ '今天到期' if cn else 'Due today' }}{% else %}{{ ('%d 天后到期' % days) if cn else ('Due in %d day%s' % (days, '' if days == 1 else 's')) }}{% endif %}{% endif %}{% if ts is not none %} · {{ as_timestamp(d) | timestamp_custom('%d/%m') }}{% endif %}{% if sv is not none and sv > 0 %} · {{ '已省' if cn else 'saved' }} ${{ '%.2f' | format(sv) }}{% endif %}{% endif %}
       # Semantic colour, per the 14/09 system: red is a fault, amber is
       # active/needs attention soon, green is settled, grey is no data. The
       # words in the card already say overdue / due today / due in N days /
@@ -8205,10 +8207,12 @@ views:
         {%- set d = states('input_datetime.gas_bill_due') -%}
         {%- set ts = as_timestamp(d, default=none) -%}
         {%- set p = is_state('input_boolean.gas_bill_paid','on') -%}
+        {%- set pu = states('input_boolean.gas_bill_paid') in ['unavailable','unknown','none',''] -%}
         **{{ '燃气费' if cn else 'Gas' }}**
-        {% if a is none or a == 0 %}## —
+        {% if a is none %}## —
+        {{ '无数据' if cn else 'No data' }}{% elif a == 0 %}## —
         {{ '未设置' if cn else 'Not set up' }}{% else %}## ${{ '%.2f' | format(a) }}
-        {% if p %}{{ '已付' if cn else 'Paid' }}{% elif ts is none %}{{ '未付 · 无到期日' if cn else 'Unpaid · no due date' }}{% else %}{% set days = ((ts - as_timestamp(now())) / 86400) | round(0, 'ceil') | int %}{% if days < 0 %}{{ ('逾期 %d 天' % (0 - days)) if cn else ('%d day%s overdue' % (0 - days, '' if days == -1 else 's')) }}{% elif days == 0 %}{{ '今天到期' if cn else 'Due today' }}{% else %}{{ ('%d 天后到期' % days) if cn else ('Due in %d day%s' % (days, '' if days == 1 else 's')) }}{% endif %}{% endif %}{% if ts is not none %} · {{ as_timestamp(d) | timestamp_custom('%d/%m') }}{% endif %}{% if sv is not none and sv > 0 %} · {{ '已省' if cn else 'saved' }} ${{ '%.2f' | format(sv) }}{% endif %}{% endif %}
+        {% if pu %}{{ '付款状态无数据' if cn else 'Paid status: no data' }}{% elif p %}{{ '已付' if cn else 'Paid' }}{% elif ts is none %}{{ '未付 · 无到期日' if cn else 'Unpaid · no due date' }}{% else %}{% set days = ((ts - as_timestamp(now())) / 86400) | round(0, 'ceil') | int %}{% if days < 0 %}{{ ('逾期 %d 天' % (0 - days)) if cn else ('%d day%s overdue' % (0 - days, '' if days == -1 else 's')) }}{% elif days == 0 %}{{ '今天到期' if cn else 'Due today' }}{% else %}{{ ('%d 天后到期' % days) if cn else ('Due in %d day%s' % (days, '' if days == 1 else 's')) }}{% endif %}{% endif %}{% if ts is not none %} · {{ as_timestamp(d) | timestamp_custom('%d/%m') }}{% endif %}{% if sv is not none and sv > 0 %} · {{ '已省' if cn else 'saved' }} ${{ '%.2f' | format(sv) }}{% endif %}{% endif %}
       card_mod:
         style: |
           ha-card {
@@ -8238,10 +8242,12 @@ views:
         {%- set d = states('input_datetime.water_bill_due') -%}
         {%- set ts = as_timestamp(d, default=none) -%}
         {%- set p = is_state('input_boolean.water_bill_paid','on') -%}
+        {%- set pu = states('input_boolean.water_bill_paid') in ['unavailable','unknown','none',''] -%}
         **{{ '水费' if cn else 'Water' }}**
-        {% if a is none or a == 0 %}## —
+        {% if a is none %}## —
+        {{ '无数据' if cn else 'No data' }}{% elif a == 0 %}## —
         {{ '未设置' if cn else 'Not set up' }}{% else %}## ${{ '%.2f' | format(a) }}
-        {% if p %}{{ '已付' if cn else 'Paid' }}{% elif ts is none %}{{ '未付 · 无到期日' if cn else 'Unpaid · no due date' }}{% else %}{% set days = ((ts - as_timestamp(now())) / 86400) | round(0, 'ceil') | int %}{% if days < 0 %}{{ ('逾期 %d 天' % (0 - days)) if cn else ('%d day%s overdue' % (0 - days, '' if days == -1 else 's')) }}{% elif days == 0 %}{{ '今天到期' if cn else 'Due today' }}{% else %}{{ ('%d 天后到期' % days) if cn else ('Due in %d day%s' % (days, '' if days == 1 else 's')) }}{% endif %}{% endif %}{% if ts is not none %} · {{ as_timestamp(d) | timestamp_custom('%d/%m') }}{% endif %}{% if sv is not none and sv > 0 %} · {{ '已省' if cn else 'saved' }} ${{ '%.2f' | format(sv) }}{% endif %}{% endif %}
+        {% if pu %}{{ '付款状态无数据' if cn else 'Paid status: no data' }}{% elif p %}{{ '已付' if cn else 'Paid' }}{% elif ts is none %}{{ '未付 · 无到期日' if cn else 'Unpaid · no due date' }}{% else %}{% set days = ((ts - as_timestamp(now())) / 86400) | round(0, 'ceil') | int %}{% if days < 0 %}{{ ('逾期 %d 天' % (0 - days)) if cn else ('%d day%s overdue' % (0 - days, '' if days == -1 else 's')) }}{% elif days == 0 %}{{ '今天到期' if cn else 'Due today' }}{% else %}{{ ('%d 天后到期' % days) if cn else ('Due in %d day%s' % (days, '' if days == 1 else 's')) }}{% endif %}{% endif %}{% if ts is not none %} · {{ as_timestamp(d) | timestamp_custom('%d/%m') }}{% endif %}{% if sv is not none and sv > 0 %} · {{ '已省' if cn else 'saved' }} ${{ '%.2f' | format(sv) }}{% endif %}{% endif %}
       card_mod:
         style: |
           ha-card {
@@ -8271,10 +8277,12 @@ views:
         {%- set d = states('input_datetime.council_rate_due') -%}
         {%- set ts = as_timestamp(d, default=none) -%}
         {%- set p = is_state('input_boolean.council_rate_paid','on') -%}
+        {%- set pu = states('input_boolean.council_rate_paid') in ['unavailable','unknown','none',''] -%}
         **{{ '市政费' if cn else 'Council rates' }}**
-        {% if a is none or a == 0 %}## —
+        {% if a is none %}## —
+        {{ '无数据' if cn else 'No data' }}{% elif a == 0 %}## —
         {{ '未设置' if cn else 'Not set up' }}{% else %}## ${{ '%.2f' | format(a) }}
-        {% if p %}{{ '已付' if cn else 'Paid' }}{% elif ts is none %}{{ '未付 · 无到期日' if cn else 'Unpaid · no due date' }}{% else %}{% set days = ((ts - as_timestamp(now())) / 86400) | round(0, 'ceil') | int %}{% if days < 0 %}{{ ('逾期 %d 天' % (0 - days)) if cn else ('%d day%s overdue' % (0 - days, '' if days == -1 else 's')) }}{% elif days == 0 %}{{ '今天到期' if cn else 'Due today' }}{% else %}{{ ('%d 天后到期' % days) if cn else ('Due in %d day%s' % (days, '' if days == 1 else 's')) }}{% endif %}{% endif %}{% if ts is not none %} · {{ as_timestamp(d) | timestamp_custom('%d/%m') }}{% endif %}{% if sv is not none and sv > 0 %} · {{ '已省' if cn else 'saved' }} ${{ '%.2f' | format(sv) }}{% endif %}{% endif %}
+        {% if pu %}{{ '付款状态无数据' if cn else 'Paid status: no data' }}{% elif p %}{{ '已付' if cn else 'Paid' }}{% elif ts is none %}{{ '未付 · 无到期日' if cn else 'Unpaid · no due date' }}{% else %}{% set days = ((ts - as_timestamp(now())) / 86400) | round(0, 'ceil') | int %}{% if days < 0 %}{{ ('逾期 %d 天' % (0 - days)) if cn else ('%d day%s overdue' % (0 - days, '' if days == -1 else 's')) }}{% elif days == 0 %}{{ '今天到期' if cn else 'Due today' }}{% else %}{{ ('%d 天后到期' % days) if cn else ('Due in %d day%s' % (days, '' if days == 1 else 's')) }}{% endif %}{% endif %}{% if ts is not none %} · {{ as_timestamp(d) | timestamp_custom('%d/%m') }}{% endif %}{% if sv is not none and sv > 0 %} · {{ '已省' if cn else 'saved' }} ${{ '%.2f' | format(sv) }}{% endif %}{% endif %}
       card_mod:
         style: |
           ha-card {
@@ -8304,10 +8312,12 @@ views:
         {%- set d = states('input_datetime.car_insurance_due') -%}
         {%- set ts = as_timestamp(d, default=none) -%}
         {%- set p = is_state('input_boolean.car_insurance_paid','on') -%}
+        {%- set pu = states('input_boolean.car_insurance_paid') in ['unavailable','unknown','none',''] -%}
         **{{ '车险' if cn else 'Car insurance' }}**
-        {% if a is none or a == 0 %}## —
+        {% if a is none %}## —
+        {{ '无数据' if cn else 'No data' }}{% elif a == 0 %}## —
         {{ '未设置' if cn else 'Not set up' }}{% else %}## ${{ '%.2f' | format(a) }}
-        {% if p %}{{ '已付' if cn else 'Paid' }}{% elif ts is none %}{{ '未付 · 无到期日' if cn else 'Unpaid · no due date' }}{% else %}{% set days = ((ts - as_timestamp(now())) / 86400) | round(0, 'ceil') | int %}{% if days < 0 %}{{ ('逾期 %d 天' % (0 - days)) if cn else ('%d day%s overdue' % (0 - days, '' if days == -1 else 's')) }}{% elif days == 0 %}{{ '今天到期' if cn else 'Due today' }}{% else %}{{ ('%d 天后到期' % days) if cn else ('Due in %d day%s' % (days, '' if days == 1 else 's')) }}{% endif %}{% endif %}{% if ts is not none %} · {{ as_timestamp(d) | timestamp_custom('%d/%m') }}{% endif %}{% if sv is not none and sv > 0 %} · {{ '已省' if cn else 'saved' }} ${{ '%.2f' | format(sv) }}{% endif %}{% endif %}
+        {% if pu %}{{ '付款状态无数据' if cn else 'Paid status: no data' }}{% elif p %}{{ '已付' if cn else 'Paid' }}{% elif ts is none %}{{ '未付 · 无到期日' if cn else 'Unpaid · no due date' }}{% else %}{% set days = ((ts - as_timestamp(now())) / 86400) | round(0, 'ceil') | int %}{% if days < 0 %}{{ ('逾期 %d 天' % (0 - days)) if cn else ('%d day%s overdue' % (0 - days, '' if days == -1 else 's')) }}{% elif days == 0 %}{{ '今天到期' if cn else 'Due today' }}{% else %}{{ ('%d 天后到期' % days) if cn else ('Due in %d day%s' % (days, '' if days == 1 else 's')) }}{% endif %}{% endif %}{% if ts is not none %} · {{ as_timestamp(d) | timestamp_custom('%d/%m') }}{% endif %}{% if sv is not none and sv > 0 %} · {{ '已省' if cn else 'saved' }} ${{ '%.2f' | format(sv) }}{% endif %}{% endif %}
       card_mod:
         style: |
           ha-card {
@@ -8337,10 +8347,12 @@ views:
         {%- set d = states('input_datetime.rego_due') -%}
         {%- set ts = as_timestamp(d, default=none) -%}
         {%- set p = is_state('input_boolean.rego_paid','on') -%}
+        {%- set pu = states('input_boolean.rego_paid') in ['unavailable','unknown','none',''] -%}
         **{{ '车辆登记' if cn else 'Registration' }}**
-        {% if a is none or a == 0 %}## —
+        {% if a is none %}## —
+        {{ '无数据' if cn else 'No data' }}{% elif a == 0 %}## —
         {{ '未设置' if cn else 'Not set up' }}{% else %}## ${{ '%.2f' | format(a) }}
-        {% if p %}{{ '已付' if cn else 'Paid' }}{% elif ts is none %}{{ '未付 · 无到期日' if cn else 'Unpaid · no due date' }}{% else %}{% set days = ((ts - as_timestamp(now())) / 86400) | round(0, 'ceil') | int %}{% if days < 0 %}{{ ('逾期 %d 天' % (0 - days)) if cn else ('%d day%s overdue' % (0 - days, '' if days == -1 else 's')) }}{% elif days == 0 %}{{ '今天到期' if cn else 'Due today' }}{% else %}{{ ('%d 天后到期' % days) if cn else ('Due in %d day%s' % (days, '' if days == 1 else 's')) }}{% endif %}{% endif %}{% if ts is not none %} · {{ as_timestamp(d) | timestamp_custom('%d/%m') }}{% endif %}{% if sv is not none and sv > 0 %} · {{ '已省' if cn else 'saved' }} ${{ '%.2f' | format(sv) }}{% endif %}{% endif %}
+        {% if pu %}{{ '付款状态无数据' if cn else 'Paid status: no data' }}{% elif p %}{{ '已付' if cn else 'Paid' }}{% elif ts is none %}{{ '未付 · 无到期日' if cn else 'Unpaid · no due date' }}{% else %}{% set days = ((ts - as_timestamp(now())) / 86400) | round(0, 'ceil') | int %}{% if days < 0 %}{{ ('逾期 %d 天' % (0 - days)) if cn else ('%d day%s overdue' % (0 - days, '' if days == -1 else 's')) }}{% elif days == 0 %}{{ '今天到期' if cn else 'Due today' }}{% else %}{{ ('%d 天后到期' % days) if cn else ('Due in %d day%s' % (days, '' if days == 1 else 's')) }}{% endif %}{% endif %}{% if ts is not none %} · {{ as_timestamp(d) | timestamp_custom('%d/%m') }}{% endif %}{% if sv is not none and sv > 0 %} · {{ '已省' if cn else 'saved' }} ${{ '%.2f' | format(sv) }}{% endif %}{% endif %}
   # -----------------------------------------------------------------------
   # Band: what is coming, beside what to do about it. Paired rather than
   # stacked because a lone half-width section leaves the other half of its
@@ -8397,25 +8409,30 @@ views:
         ('Council rates','市政费','input_number.council_rate_amount','input_datetime.council_rate_due','input_boolean.council_rate_paid'),
         ('Car insurance','车险','input_number.car_insurance_amount','input_datetime.car_insurance_due','input_boolean.car_insurance_paid'),
         ('Rego','车辆注册','input_number.rego_amount','input_datetime.rego_due','input_boolean.rego_paid')] -%}
-        {%- set ns = namespace(rows=[], unset=0, nodate=0) -%}
+        {%- set ns = namespace(rows=[], unset=0, nodate=0, silent=0, measured=0) -%}
+        {#- A bill is SILENT when the helper holding its amount or its paid flag
+            is not answering. That is a different thing from "no amount entered
+            yet" (the helper answers 0), and from "nothing to pay". Only a bill
+            that answered can support a claim about what is waiting. -#}
         {%- for n, z, a, d, p in bills -%}
         {%- set label = z if cn else n -%}
         {%- set av = states(a) | float(none) -%}
         {%- set ds = states(d) -%}
         {%- set ts = as_timestamp(ds, 0) if ds not in ['unavailable','unknown','none',''] else 0 -%}
-        {%- if is_state(p,'on') -%}
-        {%- elif av is none or av <= 0 -%}{% set ns.unset = ns.unset + 1 -%}
-        {%- elif ts <= 0 -%}{% set ns.nodate = ns.nodate + 1 -%}
+        {%- if av is none or states(p) in ['unavailable','unknown','none',''] -%}{% set ns.silent = ns.silent + 1 -%}
+        {%- elif is_state(p,'on') -%}{% set ns.measured = ns.measured + 1 -%}
+        {%- elif av <= 0 -%}{% set ns.unset = ns.unset + 1 -%}{% set ns.measured = ns.measured + 1 -%}
+        {%- elif ts <= 0 -%}{% set ns.nodate = ns.nodate + 1 -%}{% set ns.measured = ns.measured + 1 -%}
         {%- else -%}
         {%- set days = ((ts - as_timestamp(now())) / 86400) | round(0, 'ceil') | int -%}
         {%- set shown = ds[8:10] ~ '/' ~ ds[5:7] ~ '/' ~ ds[2:4] -%}
-        {%- set ns.rows = ns.rows + [(days, label, shown, av)] -%}
+        {%- set ns.rows = ns.rows + [(days, label, shown, av)] -%}{% set ns.measured = ns.measured + 1 -%}
         {%- endif -%}
         {%- endfor -%}
         {%- if ns.rows | count -%}
         {% for days, label, shown, av in ns.rows | sort %}- **{{ label }}** · A${{ '%.2f' | format(av) }} · {{ shown }} — {% if days < 0 %}{% if cn %}已逾期 {{ days | abs }} 天{% else %}**{{ days | abs }} day{{ '' if days == -1 else 's' }} overdue**{% endif %}{% elif days == 0 %}{{ '今天到期' if cn else '**due today**' }}{% else %}{{ ('%d 天后到期' % days) if cn else ('due in %d day%s' % (days, '' if days == 1 else 's')) }}{% endif %}
         {% endfor %}
-        {%- elif not ns.nodate -%}
+        {%- elif not ns.nodate and ns.measured > 0 -%}
         {{ '没有待付账单。' if cn else 'Nothing is waiting to be paid.' }}
         {%- endif -%}
         {%- if ns.nodate %}
@@ -8423,6 +8440,9 @@ views:
         {%- endif -%}
         {%- if ns.unset %}
         {{ ('6 笔账单中有 %d 笔尚未填写金额。' % ns.unset) if cn else ('%d of 6 bills have no amount entered yet.' % ns.unset) }}
+        {%- endif -%}
+        {%- if ns.silent %}
+        {{ ('6 笔账单中有 %d 笔无数据，因此无法判断是否待付。' % ns.silent) if cn else ('%d of 6 bills are not reporting, so what is waiting cannot be told.' % ns.silent) }}
         {%- endif -%}
 
   # The six payment scripts, together. These were one per bill section,
