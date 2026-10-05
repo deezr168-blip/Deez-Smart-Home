@@ -1,5 +1,5 @@
 {
-  "passed": 68,
+  "passed": 97,
   "failed": 0,
   "results": [
     {
@@ -240,7 +240,7 @@
     {
       "name": "bilingual: clock date is DD/MM/YY",
       "ok": true,
-      "detail": "25/09/26"
+      "detail": "05/10/26"
     },
     {
       "name": "bilingual: Home headings in Chinese",
@@ -270,7 +270,7 @@
     {
       "name": "interact: marking a bill paid updates Unpaid and Overdue",
       "ok": true,
-      "detail": "Unpaid 4 of 6 Overdue 1 Next due Electricity 02/10/26 → Unpaid 3 of 6 Overdue 0 Next due Electricity 02/10/26"
+      "detail": "Unpaid 4 of 6 Overdue 1 Next due Electricity 12/10/26 → Unpaid 3 of 6 Overdue 0 Next due Electricity 12/10/26"
     },
     {
       "name": "interact: AC target steps by 0.5°",
@@ -305,7 +305,7 @@
     {
       "name": "mapping: gaps are labelled, not invented",
       "ok": true,
-      "detail": "4 gap captions on Home"
+      "detail": "5 gap captions on Home"
     },
     {
       "name": "interact: Escape closes the demo panel",
@@ -318,9 +318,9 @@
       "detail": ""
     },
     {
-      "name": "honesty: outage chips say No data",
+      "name": "honesty: outage Home readings say No data",
       "ok": true,
-      "detail": "Outside No data Inside No data Home 2 of 3 Monitored No data"
+      "detail": "Outside No data Inside No data Solar No data Not reporting Grid import No data Not reporting Export No source entity Nothing measures it"
     },
     {
       "name": "honesty: outage never claims 0 W or 0 lights",
@@ -341,6 +341,151 @@
       "name": "honesty: doors with no answers do not read \"All closed\"",
       "ok": true,
       "detail": "Doors No data Cameras 0 of 6 online Last doorbell No data"
+    },
+    {
+      "name": "home first screen: Evening (4 alerts) EN fits status, people, energy and One tap in 1180×820",
+      "ok": true,
+      "detail": "{\"tapsBottom\":809,\"vh\":820}"
+    },
+    {
+      "name": "home first screen: Evening (4 alerts) EN nothing clipped",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "home first screen: standing-distance sizes (L1 ≥ 21, L2 ≥ 17)",
+      "ok": true,
+      "detail": "{\"greet\":36,\"status\":21,\"alert\":18,\"person\":20,\"fig\":20,\"tname\":20}"
+    },
+    {
+      "name": "home first screen: Evening (4 alerts) 中文 fits status, people, energy and One tap in 1180×820",
+      "ok": true,
+      "detail": "{\"tapsBottom\":770,\"vh\":820}"
+    },
+    {
+      "name": "home first screen: Evening (4 alerts) 中文 nothing clipped",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "home first screen: Concept review snapshot EN fits status, people, energy and One tap in 1180×820",
+      "ok": true,
+      "detail": "{\"tapsBottom\":706,\"vh\":820}"
+    },
+    {
+      "name": "home first screen: Concept review snapshot EN nothing clipped",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "home first screen: Concept review snapshot 中文 fits status, people, energy and One tap in 1180×820",
+      "ok": true,
+      "detail": "{\"tapsBottom\":686,\"vh\":820}"
+    },
+    {
+      "name": "home first screen: Concept review snapshot 中文 nothing clipped",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "home first screen: Everyone away (5 alerts) EN fits status, people, energy and One tap in 1180×820",
+      "ok": true,
+      "detail": "{\"tapsBottom\":782,\"vh\":820}"
+    },
+    {
+      "name": "home first screen: Everyone away (5 alerts) EN nothing clipped",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "home first screen: Everyone away (5 alerts) 中文 fits status, people, energy and One tap in 1180×820",
+      "ok": true,
+      "detail": "{\"tapsBottom\":759,\"vh\":820}"
+    },
+    {
+      "name": "home first screen: Everyone away (5 alerts) 中文 nothing clipped",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "home first screen: Device outage EN fits status, people, energy and One tap in 1180×820",
+      "ok": true,
+      "detail": "{\"tapsBottom\":706,\"vh\":820}"
+    },
+    {
+      "name": "home first screen: Device outage EN nothing clipped",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "home first screen: Device outage 中文 fits status, people, energy and One tap in 1180×820",
+      "ok": true,
+      "detail": "{\"tapsBottom\":686,\"vh\":820}"
+    },
+    {
+      "name": "home first screen: Device outage 中文 nothing clipped",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "energy strip: silent inverter reads No data, never 0",
+      "ok": true,
+      "detail": "Solar | No data | Not reporting | Grid import | 0.61 | kW | Today 9.4 kWh | Export | No source entity | Nothing measures it"
+    },
+    {
+      "name": "energy strip: export says No source entity",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "energy strip: grid import is measured",
+      "ok": true,
+      "detail": "Solar | No data | Not reporting | Grid import | 0.61 | kW | Today 9.4 kWh | Export | No source entity | Nothing measures it"
+    },
+    {
+      "name": "energy strip: measured, no data and no source are distinct states",
+      "ok": true,
+      "detail": "unavailable,ok,nosource"
+    },
+    {
+      "name": "energy strip: measured values show with today totals",
+      "ok": true,
+      "detail": "Solar | 1.62 | kW | Today 14.2 kWh | Grid import | 0.38 | kW | Today 6.1 kWh | Export | No source entity | Nothing measures it"
+    },
+    {
+      "name": "energy strip: unknown is not the same as no data",
+      "ok": true,
+      "detail": "Solar | Unknown | Reporting “unknown” | Grid import | 0.38 | kW | Today 6.1 kWh | Export | No source entity | Nothing measures it"
+    },
+    {
+      "name": "one tap: control states its current state and the action",
+      "ok": true,
+      "detail": "On | 89% | Living room lights | Tap to turn off"
+    },
+    {
+      "name": "one tap: pressing flips state and action",
+      "ok": true,
+      "detail": "Off | Living room lights | Tap to turn on"
+    },
+    {
+      "name": "one tap: aria-pressed follows the state",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "one tap: parents' air-con powers on in the demo",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "status sentence: names who is home and counts what needs a look",
+      "ok": true,
+      "detail": "Good afternoon | Raymond and Vinh are home, Ai is out. 4 things need a look. | Outside | 10° | Inside | 19.7°"
+    },
+    {
+      "name": "status sentence: never says all clear while a check could not answer",
+      "ok": true,
+      "detail": ""
     }
   ]
 }

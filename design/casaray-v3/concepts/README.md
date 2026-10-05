@@ -14,6 +14,8 @@ These copies are the source record.
 
 **Side-by-side comparison of A–D:** `COMPARISON.md`.
 
+**Selection (05/10/26, `DECISIONS.md` V3-005):** D is the base, C shapes Home, A's energy strip and B's camera states are approved supporting patterns. The files here stay as the source record of the review.
+
 Each concept has a working EN / 中文 switch, and its toggles change mock
 state only. No concept calls Home Assistant.
 

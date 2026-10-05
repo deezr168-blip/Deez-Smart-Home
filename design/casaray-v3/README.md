@@ -7,11 +7,11 @@ package or any deployment script.
 
 Branch: `casaray-v3-design`, cut from `ha-deploy` at `18a4e5d`.
 
-> **Status:** this prototype is **Concept D (V2 continuation)**, one of
-> four Home candidates in the design review. It is not an approved
-> implementation. See `DECISIONS.md` **V3-006** and the side-by-side
-> comparison in `concepts/COMPARISON.md`. V3-005 (the owner's choice) is
-> open. The workspace rules are in `CLAUDE.md`.
+> **Status:** **V3-005 is resolved** (`DECISIONS.md`). Concept D is the
+> architectural base, Concept C shapes Home, Concept A's energy truth strip
+> and Concept B's four-state camera treatment are approved supporting
+> patterns. Only Home's first screen has been evolved so far; every other
+> board is still D as registered. The workspace rules are in `CLAUDE.md`.
 
 | File | What it is |
 |---|---|
@@ -47,12 +47,13 @@ python3 design/casaray-v3/tools/gen_entity_table.py        # regenerate ENTITY_M
 NODE_PATH="$(npm root -g)" node design/casaray-v3/tools/test_and_capture.cjs
 ```
 
-The harness needs Playwright with Chromium. It runs 68 checks and rewrites
+The harness needs Playwright with Chromium. It runs 97 checks and rewrites
 `screenshots/`:
 
 - **Navigation:** every board, every room, back, browser back, deep links, the phone tab bar and More sheet.
 - **Responsiveness:** no horizontal scroll and no squeezed card names, on every board at 390, 820, 1180, 1366 and 1600px, in both languages. Checks for 2 columns on the wall iPad, 3 on desktop and 1 on the phone.
 - **Interaction:** lights, brightness, language (via `input_boolean.chinese_dashboard`), theme, bills, AC, purifier, shopping list, One tap, entity captions, Escape.
+- **Home first screen (V3-005):** status, people, energy and One tap fit 1180×820 in four scenarios and both languages, nothing clips, standing-distance sizes hold, the energy strip keeps measured / no data / unknown / no source apart, One tap states state and action.
 - **Honesty:** the outage scenario says *No data*, never `0 W` or "All closed", and counts the checks that could not answer.
 - **Console:** no page errors.
 
@@ -72,4 +73,5 @@ widened, which is an owner decision.
 | `11`, `12` | Entity-ID captions on; demo controls open |
 | `13`–`15` | Phone: Home, Ray's room (light), More sheet |
 | `16`, `17` | Desktop Home (3 columns); portrait tablet Rooms |
-| `18` | Wall iPad, first screen exactly as mounted (1180×820) |
+| `18`, `19` | Wall iPad, Home first screen as mounted (1180×820): English, Chinese |
+| `20`, `21` | The same, on the Concept review snapshot (solar and grid both reporting) |

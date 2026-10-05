@@ -22,7 +22,7 @@ const NAMES = [
   'mdiMinus', 'mdiPlay', 'mdiPause', 'mdiVolumeHigh', 'mdiSnowflake', 'mdiFire', 'mdiDotsHorizontal',
   'mdiRobot', 'mdiPalette', 'mdiLamp', 'mdiDatabase', 'mdiEye', 'mdiFlaskOutline', 'mdiMenu',
   'mdiClose', 'mdiArrowUp', 'mdiArrowDown', 'mdiWeatherSunsetDown', 'mdiLightbulbOff', 'mdiGauge',
-  'mdiCircleOffOutline', 'mdiTune', 'mdiCog', 'mdiMapMarker', 'mdiCheck',
+  'mdiCircleOffOutline', 'mdiTransmissionTowerImport', 'mdiTransmissionTowerExport', 'mdiTune', 'mdiCog', 'mdiMapMarker', 'mdiCheck',
 ];
 
 const src = fs.readFileSync(process.argv[2], 'utf8');

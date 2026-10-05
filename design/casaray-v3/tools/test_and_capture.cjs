@@ -245,9 +245,9 @@ async function shot(page, name, full = false) {
     await p.locator('[data-overlay="demo"]').click();
     await p.locator('[data-scenario="outage"]').click();
     await p.keyboard.press('Escape');
-    const c = await chips(p);
-    check('honesty: outage chips say No data', (c.match(/No data/g) || []).length >= 3, c.replace(/\n/g, ' '));
     const v = await p.locator('#view').innerText();
+    const c = await p.locator('.hero-chips, .estrip').allInnerTexts();
+    check('honesty: outage Home readings say No data', (c.join(' ').match(/No data/g) || []).length >= 3, c.join(' ').replace(/\n/g, ' '));
     check('honesty: outage never claims 0 W or 0 lights', !/\b0 W\b/.test(v) && !/0 lights on/.test(v));
     check('honesty: unanswered checks are counted', /checks? could not answer/.test(v));
     check('honesty: bill with no due date is not overdue', await p.evaluate(() => {
@@ -258,6 +258,77 @@ async function shot(page, name, full = false) {
     const sv = await chips(p);
     check('honesty: doors with no answers do not read "All closed"', !/All closed/.test(sv), sv.replace(/\n/g, ' '));
     await p.context().close();
+  }
+
+
+  // ------------------------------------------- 6. Home first screen --
+  // V3-005: the first 1180×820 viewport carries house status, people, the
+  // energy truth strip and One tap, without scrolling, in both languages.
+  {
+    const FIRST = async (p) => p.evaluate(() => {
+      const r = (sel) => { const e = document.querySelector(sel); if (!e) return null; const b = e.getBoundingClientRect(); return { top: Math.round(b.top), bottom: Math.round(b.bottom) }; };
+      const fs = (sel) => { const e = document.querySelector(sel); return e ? parseFloat(getComputedStyle(e).fontSize) : 0; };
+      const clipped = [...document.querySelectorAll('#view .status, #view .tname, #view .tact, #view .alerts .name, #view .ecell, #view .person .name, #view .greet')]
+        .filter((e) => e.scrollWidth > e.clientWidth + 1).map((e) => e.className + ':' + e.textContent.trim().slice(0, 20));
+      return { hero: r('.hero'), attn: r('.attn'), who: r('.who'), energy: r('.energy-now'), taps: r('.taps'), vh: window.innerHeight,
+        sizes: { greet: fs('.greet'), status: fs('.status'), alert: fs('.alerts .name'), person: fs('.person .name'), fig: fs('.eval .n, .eval.word'), tname: fs('.tname') }, clipped };
+    });
+    const fits = (f) => ['hero', 'attn', 'who', 'energy', 'taps'].every((k) => f[k] && f[k].top >= 0) && f.taps.bottom <= f.vh;
+    for (const [label, scenario] of [['Evening (4 alerts)', null], ['Concept review snapshot', 'review'], ['Everyone away (5 alerts)', 'away'], ['Device outage', 'outage']]) {
+      for (const zh of [false, true]) {
+        const p = await newPage(browser, VIEWPORTS.wall);
+        if (scenario) { await p.locator('[data-overlay="demo"]').click(); await p.locator(`[data-scenario="${scenario}"]`).click(); await p.keyboard.press('Escape'); }
+        if (zh) await p.locator('[data-lang]').click();
+        await p.waitForTimeout(100);
+        const f = await FIRST(p);
+        check(`home first screen: ${label} ${zh ? '中文' : 'EN'} fits status, people, energy and One tap in 1180×820`, fits(f), JSON.stringify({ tapsBottom: f.taps && f.taps.bottom, vh: f.vh }));
+        check(`home first screen: ${label} ${zh ? '中文' : 'EN'} nothing clipped`, f.clipped.length === 0, f.clipped.join(' | '));
+        if (!scenario && !zh) {
+          const s = f.sizes;
+          check('home first screen: standing-distance sizes (L1 ≥ 21, L2 ≥ 17)', s.greet >= 34 && s.status >= 21 && s.alert >= 17 && s.person >= 20 && s.fig >= 20 && s.tname >= 20, JSON.stringify(s));
+        }
+        await p.context().close();
+      }
+    }
+
+    {
+      const p = await newPage(browser, VIEWPORTS.wall);
+      // Energy truth strip: Evening has the inverter silent.
+      let strip = await p.locator('.estrip').innerText();
+      check('energy strip: silent inverter reads No data, never 0', /Solar\s+No data/.test(strip) && !/0\.00/.test(strip), strip.replace(/\n+/g, ' | '));
+      check('energy strip: export says No source entity', /Export\s+No source entity/.test(strip));
+      check('energy strip: grid import is measured', /Grid import\s+0\.61\s*kW/.test(strip), strip.replace(/\n+/g, ' | '));
+      const kinds = await p.locator('.ecell').evaluateAll((els) => els.map((e) => e.className.replace('ecell ', '')));
+      check('energy strip: measured, no data and no source are distinct states', kinds.join() === 'unavailable,ok,nosource', kinds.join());
+      await p.locator('[data-overlay="demo"]').click(); await p.locator('[data-scenario="review"]').click(); await p.keyboard.press('Escape');
+      strip = await p.locator('.estrip').innerText();
+      check('energy strip: measured values show with today totals', /1\.62\s*kW/.test(strip) && /0\.38\s*kW/.test(strip) && /14\.2 kWh/.test(strip), strip.replace(/\n+/g, ' | '));
+      await p.evaluate(() => { const s = window.__casaray.state(); s['sensor.primo_5_0_1_1_ac_power'].s = 'unknown'; });
+      await p.locator('[data-lang]').click(); await p.locator('[data-lang]').click();
+      strip = await p.locator('.estrip').innerText();
+      check('energy strip: unknown is not the same as no data', /Solar\s+Unknown/.test(strip), strip.replace(/\n+/g, ' | '));
+      await p.context().close();
+    }
+
+    {
+      const p = await newPage(browser, VIEWPORTS.wall);
+      const t0 = await p.locator('[data-toggle="light.living_room"]').innerText();
+      check('one tap: control states its current state and the action', /On/.test(t0) && /Tap to turn off/i.test(t0), t0.replace(/\n+/g, ' | '));
+      await p.locator('[data-toggle="light.living_room"]').click();
+      const t1 = await p.locator('[data-toggle="light.living_room"]').innerText();
+      check('one tap: pressing flips state and action', /Off/.test(t1) && /Tap to turn on/i.test(t1), t1.replace(/\n+/g, ' | '));
+      check('one tap: aria-pressed follows the state', (await p.locator('[data-toggle="light.living_room"]').getAttribute('aria-pressed')) === 'false');
+      await p.locator('[data-acpower]').click();
+      check('one tap: parents\' air-con powers on in the demo', (await p.evaluate(() => window.__casaray.state()['climate.bedroom_parents_room_ac'].s)) === 'cool');
+      const hero = await p.locator('.hero').innerText();
+      check('status sentence: names who is home and counts what needs a look', /(are|is) home/.test(hero) && /need a look/.test(hero), hero.replace(/\n+/g, ' | '));
+      check('status sentence: never says all clear while a check could not answer', await (async () => {
+        await p.locator('[data-overlay="demo"]').click(); await p.locator('[data-scenario="outage"]').click(); await p.keyboard.press('Escape');
+        const h = await p.locator('.hero .status').innerText();
+        return !/^[^.]*\.\s*Nothing needs attention\.$/.test(h) && !/Nothing needs attention/.test(h);
+      })());
+      await p.context().close();
+    }
   }
 
   // ----------------------------------------------------- screenshots --
@@ -280,6 +351,9 @@ async function shot(page, name, full = false) {
     ['16_desktop_home_dark', VIEWPORTS.desktop, { dpr: 1 }, 'home', true],
     ['17_portrait_rooms_dark', VIEWPORTS.portrait, {}, 'rooms', false],
     ['18_wall_home_first_screen', VIEWPORTS.wall, {}, 'home', false],
+    ['19_wall_home_first_screen_zh', VIEWPORTS.wall, { zh: true }, 'home', false],
+    ['20_wall_home_review_snapshot', VIEWPORTS.wall, { scenario: 'review' }, 'home', false],
+    ['21_wall_home_review_snapshot_zh', VIEWPORTS.wall, { scenario: 'review', zh: true }, 'home', false],
   ];
   for (const [name, vp, o, route, full] of plan) {
     const p = await newPage(browser, vp, o);

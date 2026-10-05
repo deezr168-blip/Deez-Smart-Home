@@ -6,6 +6,58 @@ and `ha-deploy` are unaffected by everything here.
 
 ---
 
+## V3-005 · 05/10/26 · Home direction — SELECTED
+
+**Status:** resolved by the owner on 05/10/26. This is a deliberate
+hybridisation of approved elements, **not a new independent concept**.
+
+**Decision.**
+
+- **Concept D is the CasaRay V3 architectural base:** system shell, design
+  tokens, responsive architecture, room templates, component architecture,
+  test harness.
+- **Concept C is the approved Home / family UX influence:** Home-screen
+  hierarchy, plain-language household status, large controls, people first,
+  wall-iPad usability.
+- **Concept A's energy truth strip** is an approved supporting pattern:
+  measured, unavailable, unknown and no-source readings never share a look.
+- **Concept B's four-state camera presentation** is an approved supporting
+  pattern for later. It is **not** built in this sprint.
+
+**Rationale.** D has the strongest scalability and maintainability: the only
+candidate that covers all boards, rooms, themes and breakpoints, on V2's
+sampled tokens, with a 68-check harness. C has the strongest wall-iPad and
+household usability: a sentence in plain words, 52 px+ controls, people
+first. A makes the energy gaps (no export source, V3-003) visible instead of
+hiding them. B keeps *offline* and *unknown* apart for cameras.
+
+**Not adopted:** B's icon-only navigation; B's dense custom power-flow as
+Home; A's thin type and gold accent; C's ten-label bottom bar; D's old
+2.6-screen Home.
+
+**First visual sprint (Home first screen only).** The first 1180 × 820
+viewport now holds, in this order: greeting and a status sentence built from
+the Needs-attention checks (Level 1), Needs attention, Who's home beside the
+Energy truth strip (Level 2), and four large One tap controls that say state
+*and* action ("On — tap to turn off"). Details are in `DESIGN_SPEC.md` §4a.
+
+- Navigation is unchanged apart from legibility: rail labels 11.5 → 12.5 px,
+  clock 22 → 28 px, tool buttons 13 → 14 px.
+- Home's chip strip is gone; Outside and Inside moved into the hero, Home
+  count into the people cards, Monitored into its own section below.
+- The four whole-house scripts (CR-233) stay, as a second, quieter row
+  labelled *proposed*. One tap's primary row uses controls that exist today:
+  `light.living_room`, `light.dining`, `fan.living_room_air_purifier`,
+  `climate.bedroom_parents_room_ac`.
+- No entity ID was introduced. Export has no source: V3-003 still applies.
+- Other boards, Security and Cameras are untouched.
+
+**Open for the owner:** whether the parents' air-con should be a one-tap
+power control on the wall iPad (the prototype toggles Off ↔ Cool); and
+whether below-the-fold Home may stay at about three screens on a bad day.
+
+---
+
 ## V3-006 · 25/09/26 · Parallel prototype registered as Concept D (reconciled)
 
 **Status:** reconciled by owner instruction on 25/09/26. **This does not

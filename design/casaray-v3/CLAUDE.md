@@ -71,9 +71,10 @@ this file.
   - Production dashboards and configuration stay read-only for all V3 design
     work. A change outside `design/casaray-v3/` needs explicit approval from
     Ray first.
-  - **V3-005 (the owner's concept selection) remains a blocking design
-    decision.** Until it is resolved, agents may evaluate and prototype
-    concepts but must not roll a chosen style across the wider dashboard.
+  - **V3-005 is resolved (05/10/26):** D is the base, C shapes Home, A's
+    energy strip and B's camera states are supporting patterns. Even so, a
+    chosen style is not rolled across other destinations until the owner asks
+    for each one.
 - **No authentication or backup changes.** Do not touch Home Assistant users,
   tokens, auth providers, `secrets.yaml`, the deployment bridge
   (`/config/deploy_deez_dashboard.sh`, `scripts/deploy_env.sh`,
@@ -344,9 +345,11 @@ landscape size with the same data, so they compare like for like:
 The like-for-like comparison is `concepts/COMPARISON.md`, regenerated with
 `tools/capture_comparison.cjs`.
 
-**Wait for the owner's selection.** Do not complete the prototype, and do not
-build other destinations in a chosen style, before it. Record the selection
-(and any mixing of concepts the owner asks for) in `DECISIONS.md`.
+**Selection made (05/10/26, `DECISIONS.md` V3-005):** D is the architectural
+base, C shapes Home, A's energy truth strip and B's four-state cameras are
+approved supporting patterns. Evolve D; do not draw a fifth concept. Home's
+first screen is done as the first sprint. Build other destinations in the
+selected style only when the owner asks, one destination at a time.
 
 ## The interactive prototype
 
