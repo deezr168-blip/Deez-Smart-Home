@@ -6,13 +6,13 @@
 
 ## Summary
 
-- 28 views, 433 distinct entity references, 970 entities in the export
+- 28 views, 436 distinct entity references, 970 entities in the export
 
 | Class | Count |
 |---|---|
 | confirmed_broken | 0 |
 | likely_broken | 0 |
-| live_check | 151 |
+| live_check | 154 |
 | working | 248 |
 | stateless | 34 |
 | obsolete | 15 |
@@ -52,7 +52,7 @@
 | people | 16 | 14 | 0 | 2 | 0 | 0 |
 | automations | 8 | 4 | 0 | 4 | 0 | 0 |
 | entertainment | 10 | 7 | 0 | 3 | 0 | 0 |
-| house-health | 65 | 28 | 4 | 33 | 0 | 0 |
+| house-health | 68 | 28 | 4 | 36 | 0 | 0 |
 | network | 57 | 45 | 0 | 12 | 0 | 0 |
 | alerts | 15 | 11 | 0 | 4 | 0 | 0 |
 
@@ -64,7 +64,7 @@ None.
 
 None.
 
-## Live check required (151)
+## Live check required (154)
 
 | Entity | Name | Why | Views |
 |---|---|---|---|
@@ -73,6 +73,7 @@ None.
 | `automation.gas_meter_pulse_counter` | Gas Meter Pulse Counter | ok on 05/09 but its definition is not in Git; lost with configuration.yaml if it was YAML-defined | automations |
 | `binary_sensor.b_contact_sensor_cloud_connection` | B/Contact Sensor Cloud connection | unavailable in the export, no live twin | network |
 | `binary_sensor.b_contact_sensor_door` | B/Contact Sensor Door | unavailable in the export, no live twin | home, rooms, security, alerts |
+| `binary_sensor.casaray_live_file_present` | — | defined by packages/ in Git; exists only once `packages:` is loaded | house-health |
 | `binary_sensor.f_contact_sensor_cloud_connection` | F/Contact Sensor Cloud connection | unavailable in the export, no live twin | network |
 | `binary_sensor.f_contact_sensor_door` | F/Contact Sensor Door | unavailable in the export, no live twin | home, living-room, security, camera-front-door, alerts |
 | `binary_sensor.lph_se_dcd9_pump` | LPH-SE DCD9 Pump | unavailable in the export, no live twin | ray-bedroom, alerts |
@@ -211,6 +212,8 @@ None.
 | `select.lph_se_dcd9_light_brightness` | LPH-SE DCD9 Light brightness | unavailable in the export, no live twin | ray-bedroom |
 | `select.lph_se_dcd9_light_mode` | LPH-SE DCD9 Light mode | unavailable in the export, no live twin | ray-bedroom |
 | `sensor.b_contact_sensor_signal_level` | B/Contact Sensor Signal level | unavailable in the export, no live twin | network |
+| `sensor.casaray_backup_count` | — | defined by packages/ in Git; exists only once `packages:` is loaded | house-health |
+| `sensor.casaray_sync_status` | — | defined by packages/ in Git; exists only once `packages:` is loaded | house-health |
 | `sensor.f_contact_sensor_signal_level` | F/Contact Sensor Signal level | unavailable in the export, no live twin | network |
 | `sensor.g_printer_p100_auto_off_at` | G/Printer P100 Auto-off at | unknown in the export | guest-room |
 | `sensor.m_contact_sensor_signal_level` | M/Contact Sensor Signal level | unavailable in the export, no live twin | network |

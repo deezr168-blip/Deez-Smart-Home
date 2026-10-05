@@ -294,6 +294,10 @@ class Packages(unittest.TestCase):
         d = rec.package_defined()
         self.assertIn("input_boolean.casaray_auto_deploy", d)
         self.assertIn("sensor.casaray_low_batteries", d)
+        # command_line sensors hold one mapping, not a list
+        for eid in ("sensor.casaray_sync_status", "sensor.casaray_backup_count",
+                    "binary_sensor.casaray_live_file_present"):
+            self.assertIn(eid, d)
 
     def test_every_automation_has_alias_and_mode(self):
         for f in self.files:

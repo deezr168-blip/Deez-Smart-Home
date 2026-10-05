@@ -79,7 +79,7 @@ def package_defined(directory=PACKAGES):
     These are newer than the 05/09 export, so the export can never list them;
     without this the entity gate would reject a dashboard card for a helper
     that Git itself creates. It covers YAML helper blocks, scripts, template
-    sensors (by `name`) and automations (by `alias`) -- the entity ID Home
+    sensors and command_line sensors (by `name`) and automations (by `alias`) -- the entity ID Home
     Assistant derives, not the automation's internal `id`.
     """
     defined = {}
@@ -103,13 +103,19 @@ def package_defined(directory=PACKAGES):
         for item in doc.get("automation") or []:
             if isinstance(item, dict) and item.get("alias"):
                 defined[f"automation.{slug(item['alias'])}"] = fn
-        for group in doc.get("template") or []:
-            if not isinstance(group, dict):
-                continue
-            for dom in ("sensor", "binary_sensor"):
-                for item in group.get(dom) or []:
-                    if isinstance(item, dict) and item.get("name"):
-                        defined[f"{dom}.{slug(item['name'])}"] = fn
+        # `template:` groups hold lists of sensors; `command_line:` groups
+        # hold ONE sensor as a mapping. Both name the entity by `name`.
+        for platform in ("template", "command_line"):
+            for group in doc.get(platform) or []:
+                if not isinstance(group, dict):
+                    continue
+                for dom in ("sensor", "binary_sensor"):
+                    items = group.get(dom) or []
+                    if isinstance(items, dict):
+                        items = [items]
+                    for item in items:
+                        if isinstance(item, dict) and item.get("name"):
+                            defined[f"{dom}.{slug(item['name'])}"] = fn
     return defined
 
 
