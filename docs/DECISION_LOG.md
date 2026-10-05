@@ -37,7 +37,7 @@ calls it at 03:30 when `input_boolean.casaray_auto_deploy` is on. So a merge to
 reverse of what CLAUDE.md's *Deployment* section says for CasaRay. Not changed
 (it is the owner's deploy design). Mitigations done: the package comment that
 claimed the helper defaults ON is corrected (it defaults OFF without
-`initial:`), and OWNER_ACTION_QUEUE A5/A6 warn.
+`initial:`), and OWNER_ACTION_QUEUE A6/A7 warn.
 
 ## D-005 — Entity gate now accepts IDs defined in `packages/` (2026-10-05)
 
@@ -73,3 +73,23 @@ An attempt to delete the dead block in `scripts/ha_validate.sh` was refused by
 the environment as removal of a security test. It was not retried by another
 route. The defect is confirmed (`bash -n` fails; lines 182–316 are unreachable)
 and recorded as OWNER_ACTION_QUEUE B1 with a test that tracks it.
+
+## D-009 — Booleans proposed, everything else parked (2026-10-05)
+
+Of the ~110 helpers with no definition in Git, only the seven `input_boolean`s
+(language toggle, six paid flags) have no settings, so only they can be
+written without inventing anything. They are in `proposals/`, outside the
+path `package_defined()` reads, so they neither load nor legitimise any card.
+Whether they should be installed depends on whether the originals were YAML or
+UI helpers, which the repository cannot tell; the file's header gives the
+owner a two-minute read-only check. A test pins that every key is an
+`input_boolean` in the export, none is already in `packages/`, and no setting
+is added. Number/date/text/select helpers stay parked on A1/A2.
+
+## D-010 — The live connector is evidence, not an input (2026-10-05)
+
+`docs/live/live_observations_2026-10-05.md` records what the MCP showed (the
+language toggle and all three people `unavailable`; four Tapo streams down)
+with its limits: no IDs, no helpers, stale twins. The audit does not consume
+it. It contradicts CLAUDE.md's 19/09 note that the C420 streams recovered, so
+camera availability is treated as unknown until a photograph says otherwise.

@@ -1,0 +1,52 @@
+# PROPOSED -- NOT INSTALLED, NOT LOADED, NOT REFERENCED BY ANYTHING.
+#
+# Seven on/off helpers the dashboard reads: the language toggle and the six
+# bill-paid flags. An input_boolean has no settings beyond a name and icon, so
+# unlike the number/date/text/select helpers (parked, OWNER_ACTION_QUEUE A1/A2)
+# nothing here has to be invented: every key below is the entity ID the
+# 05/09 export lists, every name is the export's friendly name.
+#
+# WHY IT IS ONLY A PROPOSAL
+# If these were YAML helpers in the lost configuration.yaml, defining them
+# again under the same key should bring `input_boolean.<key>` back, restoring
+# its last value from the surviving restore-state store. If instead they were
+# helpers made in the UI (Settings -> Helpers) and still exist, a second
+# definition collides with them and Home Assistant gives the new one a `_2`
+# suffix that no card reads. The two cases look alike from here. Nothing in
+# this repository can tell which it is, and the cost of guessing wrong is a
+# dashboard reading entities that do not exist.
+#
+# BEFORE INSTALLING, CHECK (read-only, owner):
+#   Settings -> Devices & services -> Helpers
+#     * toggle and flags LISTED and editable   -> they are UI helpers. Do NOT
+#       install this file. Look at why they read unavailable instead.
+#     * ABSENT, but Settings -> Entities shows each as "no longer provided"
+#       (status: unavailable/restored) -> they were YAML helpers. This file
+#       is the fix.
+#
+# TO INSTALL (owner; takes effect on `Developer tools -> YAML -> Reload input
+# booleans`, no restart): copy to /config/packages/. It needs `homeassistant:
+# packages: !include_dir_named packages` to be loaded (see
+# scripts/recovery/casaray_config_block.yaml on recovery/phase0-diagnostics).
+#
+# ROLLBACK: delete the file and reload input booleans.
+#
+# Checked by tests/test_casaray.py: every key is an input_boolean in the
+# export, none is already defined in packages/, and this directory is not on
+# the path the entity gate reads.
+
+input_boolean:
+  chinese_dashboard:
+    name: Chinese Dashboard
+  elec_bill_paid:
+    name: Electricity Bill Paid
+  gas_bill_paid:
+    name: Gas Bill Paid
+  water_bill_paid:
+    name: Water Bill Paid
+  council_rate_paid:
+    name: Council Rate Paid
+  rego_paid:
+    name: Rego Paid
+  car_insurance_paid:
+    name: Car Insurance Paid
