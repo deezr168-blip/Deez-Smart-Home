@@ -71,9 +71,12 @@ this file.
   - Production dashboards and configuration stay read-only for all V3 design
     work. A change outside `design/casaray-v3/` needs explicit approval from
     Ray first.
-  - **V3-005 (the owner's concept selection) remains a blocking design
-    decision.** Until it is resolved, agents may evaluate and prototype
-    concepts but must not roll a chosen style across the wider dashboard.
+  - **V3-005 is owner-confirmed (05/10/26):** D is the primary design base,
+    C shapes Home's information hierarchy and presentation, and A and B may
+    be used as supporting patterns where they improve usability without
+    conflicting with D and C. It is not a wholesale merge of all four
+    concepts, and V3-007 stays authoritative. A chosen style is not rolled
+    across other destinations until the owner asks for each one.
 - **No authentication or backup changes.** Do not touch Home Assistant users,
   tokens, auth providers, `secrets.yaml`, the deployment bridge
   (`/config/deploy_deez_dashboard.sh`, `scripts/deploy_env.sh`,
@@ -344,9 +347,14 @@ landscape size with the same data, so they compare like for like:
 The like-for-like comparison is `concepts/COMPARISON.md`, regenerated with
 `tools/capture_comparison.cjs`.
 
-**Wait for the owner's selection.** Do not complete the prototype, and do not
-build other destinations in a chosen style, before it. Record the selection
-(and any mixing of concepts the owner asks for) in `DECISIONS.md`.
+**Selection owner-confirmed (05/10/26, `DECISIONS.md` V3-005):** D is the
+primary design base, C shapes Home's information hierarchy and presentation,
+and A's energy truth strip and B's four-state cameras may be used as
+supporting patterns where they improve usability without conflicting with D
+and C. This is not a wholesale merge of all four concepts. Evolve D; do not
+draw a fifth concept. Home's first screen is done as the first sprint. Build
+other destinations in the selected style only when the owner asks, one
+destination at a time.
 
 ## The interactive prototype
 

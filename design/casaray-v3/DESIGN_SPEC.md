@@ -95,16 +95,75 @@ so the rail, the tab bar and Home's More boards grid are the only way around.
 | Band | Layout |
 |---|---|
 | Top bar | Title · Demo data pill · Language · Theme · Demo controls · Clock |
-| Chip strip | Outside · Inside · Home · Monitored |
-| Needs attention | Full width, alert cards two across |
-| Right now \| Who's home | Weather + solar \| three people + Parents' room occupancy |
-| One tap | Full width, four across |
-| Rooms \| Shopping list + Security | Six room rows \| list + security summary |
-| Energy now \| Recent activity | Monitored load + sparkline + grid import \| last six changes |
-| More boards | Full width, three across |
+| Hero | Greeting, status sentence, Outside · Inside (V3-005; replaces the chip strip) |
+| Needs attention | Full width, alert cards two across (three across from five alerts) |
+| Who's home \| Energy now | Three people \| Solar · Grid import · Export truth strip |
+| One tap | Full width, four across (two across below 1,024 px) |
+| Rooms | Full width, six room rows two across |
+| Right now \| Shopping list + Security | Current weather, solar forecast, Parents' room occupancy, monitored power \| list + security summary |
+| More boards | Full width, every destination except Home |
+
+Recent activity, the four-day forecast, the 12-hour monitored-power chart
+and the proposed whole-house scenes are no longer on Home (V3-007); they sit
+on House health, Climate, Energy and Lighting.
 
 On desktop the board flows three across with `grid-auto-flow: dense`, so
 Rooms fills the space beside Right now and Who's home.
+
+
+### 4a. Home first screen (V3-005)
+
+The first 1180 × 820 viewport carries four things without scrolling, in both
+languages, with up to five alerts (four alerts two across; five or more three
+across with one line of detail).
+
+Owner-accepted (05/10/26, `DECISIONS.md` V3-005 and the V3-007 addendum):
+this is the Home as built. The five-alert layout keeps its one-line detail,
+and a full-page height of 1,640 px is a preferred target, not a requirement:
+the Evening and Everyone-away days run slightly over because of alert growth,
+and first-viewport hierarchy is not traded for height.
+
+| Band | Content | Level |
+|---|---|---|
+| Hero | Greeting, one status sentence, Outside / Inside | 1: 36 / 21 px |
+| Needs attention | Alert cards, two across (three across and one line of detail from five alerts) | 1 for the exception, 18 / 15.5 px cards |
+| Who's home \| Energy now | Three person cards, 5/12 · energy truth strip, 7/12 | 2: 20 px names, 36 px figures |
+| One tap | Four 128 px controls, each with state and action | 2: 20 px names, 24 px state |
+| Below the fold | Rooms · Right now (current weather, solar forecast, Parents' room, monitored power) \| Shopping list + Security · More boards | 3 |
+
+**Type levels.** Level 1 is the house status and any major exception.
+Level 2 is people, energy and the state of a primary control. Level 3 is
+labels and metadata (14.5 px), and never the only place an important fact
+appears. Other boards keep their old sizes until they are redesigned.
+
+**Status sentence.** "Raymond and Vinh are home, Ai is out. 4 things need a
+look." Built from the same checks as Needs attention. If nothing is flagged
+but a check could not answer it says so ("Nothing is flagged, but 1 check
+could not answer.") and never claims a clear house.
+
+**Energy truth strip.** Solar, Grid import, Export. Four kinds of reading
+look different: *measured* is a figure (`0.61 kW`, today's total beneath);
+*no data* is a grey word on a grey tint ("Not reporting"); *unknown* is its
+own word ("Reporting “unknown”"); *no source entity* is a hatched cell
+("Nothing measures it"). Export is always the last, because no export
+entity exists (V3-003). Consumption is not drawn: it cannot be computed
+honestly without export.
+
+**One tap control.** Icon, then the state word (amber when on), then the
+name, then the action ("Tap to turn off"). Brightness or room temperature
+sits under the state word. A device with no data becomes a dashed card
+saying so. A control is never drawn as off when it simply cannot be read.
+
+**Climate is not a switch (V3-007).** The air-con card shows its state and
+opens the Parents' room page; it has a chevron instead of a press state and
+issues no HVAC change from Home. A direct control needs a defined preset
+first (target, fan, swing), which is not approved.
+
+**Home = current state plus immediate action.** Forecast, history, proposed
+scenes and the monitored-load chart live on Climate, House health, Lighting
+and Energy. A full Home is about two screens (1,582–1,722 px in English,
+1,563–1,683 px in Chinese, measured at 1180 × 820; the preferred target is
+1,640 px, and the over-target days are the ones with four or five alerts).
 
 ### Room pages
 
