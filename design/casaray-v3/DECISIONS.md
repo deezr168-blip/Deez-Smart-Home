@@ -79,8 +79,39 @@ decided:
 4. Define the Parents' room occupancy no-data behaviour.
 5. Raise the shopping-list checkbox and touch targets toward 44 px.
 6. Review the slight layout inconsistency of Lighting's "All lights off" card.
-7. Reconcile the documented 133 entity count with the verifier's 136.
+7. ~~Reconcile the documented 133 entity count with the verifier's 136.~~
+   **Resolved in documentation, 10/10/26** (`ENTITY_MAPPING.md` §1): 133 is
+   the prototype's own IDs, 136 adds three IDs the notes name as unused.
 8. Consider conditional More boards visibility: desktop and kiosk versus phone.
+
+**QA note, 10/10/26 (merge-readiness check of PR #4 at `0d2a241`).** No code
+changed. The harness (108/108) and verifier (136/136) were re-run and pass.
+The eight follow-ups above were each reproduced against the prototype, and
+all of them are **inherited from Concept D at `58c7fdb`**; PR #4 did not
+introduce them. Findings, so the deferral can be confirmed with evidence:
+
+1. *HVAC safeguards.* Home has **no** HVAC control. The Parents' room page and
+   Climate board still offer Off / Cool / Heat / Fan and ±0.5° steps. They
+   change mock state only (the prototype makes no network call) and `acCard` is
+   byte-identical to the base. A hard gate before any build.
+2. *Green all-clear.* Reproduced: with no alerts and one unanswered check, the
+   card is still green with a check icon and reads "Nothing needs attention",
+   while the heading says "1 check could not answer" and the hero sentence is
+   correct ("Nothing is flagged, but 1 check could not answer"). The words are
+   qualified; the tone is not.
+3. *A$0.00.* Reproduced: with `input_number.gas_bill_amount` unavailable the
+   overdue alert reads "Gas A$0.00" (`num(b.amt) || 0`). No shipped scenario
+   makes a bill amount unavailable.
+4. *Occupancy.* Reproduced: with the Parents' room occupancy sensor unavailable
+   the tile is omitted from Right now, not drawn as no data. It happens in the
+   Device outage scenario.
+5. *Touch targets.* Measured: shopping-list checkboxes are 24 × 24 px (rows
+   are 44 px tall, but only the box is a button); the top-bar language, theme
+   and demo buttons are 40 px tall.
+6. *Lighting "All lights off".* The tile's detail wraps to two lines, so its
+   icon sits higher than the other three. Size is identical (251 × 177 px).
+7. *133 vs 136.* Resolved above.
+8. *More boards.* A design choice, not a defect.
 
 ---
 
