@@ -191,7 +191,7 @@ async function shot(page, name, full = false) {
     check('bilingual: clock date is DD/MM/YY', /^\d{2}\/\d{2}\/\d{2}$/.test(date), date);
     await p.evaluate(() => window.__casaray.go('home'));
     const home = await p.locator('#view').innerText();
-    check('bilingual: Home headings in Chinese', ['需要注意', '此刻', '谁在家', '一键', '购物清单', '近期活动'].every((w) => home.includes(w)));
+    check('bilingual: Home headings in Chinese', ['需要注意', '此刻', '谁在家', '一键', '购物清单'].every((w) => home.includes(w)));
     check('bilingual: Chinese enumerations use 、', /、/.test(home));
     await p.locator('[data-lang]').click();
 
@@ -223,15 +223,21 @@ async function shot(page, name, full = false) {
     await p.evaluate(() => window.__casaray.go('home'));
     await p.locator('[data-shop="0"]').click();
     check('interact: shopping item ticks', (await p.locator('[data-shop="0"]').getAttribute('aria-checked')) === 'true');
+    await p.evaluate(() => window.__casaray.go('lighting'));
     await p.locator('[data-onetap="alloff"]').click();
-    check('interact: One tap "All lights off" acts on demo state', (await p.evaluate(() => window.__casaray.state()['light.living_room'].s)) === 'off');
+    check('interact: proposed "All lights off" (now on Lighting) acts on demo state', (await p.evaluate(() => window.__casaray.state()['light.living_room'].s)) === 'off');
+    await p.evaluate(() => window.__casaray.go('home'));
 
     await p.locator('[data-overlay="demo"]').click();
     await p.locator('[data-ids]').click();
     const ids = await p.locator('.eid').first().isVisible();
     check('interact: "Show entity IDs" reveals entity captions', ids);
+    const gapsHome = await p.locator('.eid.gap').count();
+    await p.evaluate(() => window.__casaray.go('lighting'));
     const gaps = await p.locator('.eid.gap').count();
-    check('mapping: gaps are labelled, not invented', gaps >= 4, `${gaps} gap captions on Home`);
+    await p.evaluate(() => window.__casaray.go('home'));
+    await p.locator('[data-overlay="demo"]').click();
+    check('mapping: gaps are labelled, not invented', gaps >= 4 && gapsHome >= 1, `${gaps} gap captions on Lighting, ${gapsHome} on Home`);
     await p.locator('[data-ids]').click();
     await p.keyboard.press('Escape');
     check('interact: Escape closes the demo panel', (await p.locator('.sheet').count()) === 0);
@@ -245,9 +251,9 @@ async function shot(page, name, full = false) {
     await p.locator('[data-overlay="demo"]').click();
     await p.locator('[data-scenario="outage"]').click();
     await p.keyboard.press('Escape');
-    const c = await chips(p);
-    check('honesty: outage chips say No data', (c.match(/No data/g) || []).length >= 3, c.replace(/\n/g, ' '));
     const v = await p.locator('#view').innerText();
+    const c = await p.locator('.hero-chips, .estrip').allInnerTexts();
+    check('honesty: outage Home readings say No data', (c.join(' ').match(/No data/g) || []).length >= 3, c.join(' ').replace(/\n/g, ' '));
     check('honesty: outage never claims 0 W or 0 lights', !/\b0 W\b/.test(v) && !/0 lights on/.test(v));
     check('honesty: unanswered checks are counted', /checks? could not answer/.test(v));
     check('honesty: bill with no due date is not overdue', await p.evaluate(() => {
@@ -258,6 +264,245 @@ async function shot(page, name, full = false) {
     const sv = await chips(p);
     check('honesty: doors with no answers do not read "All closed"', !/All closed/.test(sv), sv.replace(/\n/g, ' '));
     await p.context().close();
+  }
+
+
+  // ------------------------------------------- 6. Home first screen --
+  // V3-005: the first 1180×820 viewport carries house status, people, the
+  // energy truth strip and One tap, without scrolling, in both languages.
+  {
+    const FIRST = async (p) => p.evaluate(() => {
+      const r = (sel) => { const e = document.querySelector(sel); if (!e) return null; const b = e.getBoundingClientRect(); return { top: Math.round(b.top), bottom: Math.round(b.bottom) }; };
+      const fs = (sel) => { const e = document.querySelector(sel); return e ? parseFloat(getComputedStyle(e).fontSize) : 0; };
+      const clipped = [...document.querySelectorAll('#view .status, #view .tname, #view .tact, #view .alerts .name, #view .ecell, #view .person .name, #view .greet')]
+        .filter((e) => e.scrollWidth > e.clientWidth + 1).map((e) => e.className + ':' + e.textContent.trim().slice(0, 20));
+      return { hero: r('.hero'), attn: r('.attn'), who: r('.who'), energy: r('.energy-now'), taps: r('.taps'), vh: window.innerHeight,
+        sizes: { greet: fs('.greet'), status: fs('.status'), alert: fs('.alerts .name'), person: fs('.person .name'), fig: fs('.eval .n, .eval.word'), tname: fs('.tname') }, clipped };
+    });
+    const fits = (f) => ['hero', 'attn', 'who', 'energy', 'taps'].every((k) => f[k] && f[k].top >= 0) && f.taps.bottom <= f.vh;
+    for (const [label, scenario] of [['Evening (4 alerts)', null], ['Concept review snapshot', 'review'], ['Everyone away (5 alerts)', 'away'], ['Device outage', 'outage']]) {
+      for (const zh of [false, true]) {
+        const p = await newPage(browser, VIEWPORTS.wall);
+        if (scenario) { await p.locator('[data-overlay="demo"]').click(); await p.locator(`[data-scenario="${scenario}"]`).click(); await p.keyboard.press('Escape'); }
+        if (zh) await p.locator('[data-lang]').click();
+        await p.waitForTimeout(100);
+        const f = await FIRST(p);
+        check(`home first screen: ${label} ${zh ? '中文' : 'EN'} fits status, people, energy and One tap in 1180×820`, fits(f), JSON.stringify({ tapsBottom: f.taps && f.taps.bottom, vh: f.vh }));
+        check(`home first screen: ${label} ${zh ? '中文' : 'EN'} nothing clipped`, f.clipped.length === 0, f.clipped.join(' | '));
+        if (!scenario && !zh) {
+          const s = f.sizes;
+          check('home first screen: standing-distance sizes (L1 ≥ 21, L2 ≥ 17)', s.greet >= 34 && s.status >= 21 && s.alert >= 17 && s.person >= 20 && s.fig >= 20 && s.tname >= 20, JSON.stringify(s));
+        }
+        await p.context().close();
+      }
+    }
+
+    {
+      const p = await newPage(browser, VIEWPORTS.wall);
+      // Energy truth strip: Evening has the inverter silent.
+      let strip = await p.locator('.estrip').innerText();
+      check('energy strip: silent inverter reads No data, never 0', /Solar\s+No data/.test(strip) && !/0\.00/.test(strip), strip.replace(/\n+/g, ' | '));
+      check('energy strip: export says No source entity', /Export\s+No source entity/.test(strip));
+      check('energy strip: grid import is measured', /Grid import\s+0\.61\s*kW/.test(strip), strip.replace(/\n+/g, ' | '));
+      const kinds = await p.locator('.ecell').evaluateAll((els) => els.map((e) => e.className.replace('ecell ', '')));
+      check('energy strip: measured, no data and no source are distinct states', kinds.join() === 'unavailable,ok,nosource', kinds.join());
+      await p.locator('[data-overlay="demo"]').click(); await p.locator('[data-scenario="review"]').click(); await p.keyboard.press('Escape');
+      strip = await p.locator('.estrip').innerText();
+      check('energy strip: measured values show with today totals', /1\.62\s*kW/.test(strip) && /0\.38\s*kW/.test(strip) && /14\.2 kWh/.test(strip), strip.replace(/\n+/g, ' | '));
+      await p.evaluate(() => { const s = window.__casaray.state(); s['sensor.primo_5_0_1_1_ac_power'].s = 'unknown'; });
+      await p.locator('[data-lang]').click(); await p.locator('[data-lang]').click();
+      strip = await p.locator('.estrip').innerText();
+      check('energy strip: unknown is not the same as no data', /Solar\s+Unknown/.test(strip), strip.replace(/\n+/g, ' | '));
+      await p.context().close();
+    }
+
+    {
+      const p = await newPage(browser, VIEWPORTS.wall);
+      const t0 = await p.locator('[data-toggle="light.living_room"]').innerText();
+      check('one tap: control states its current state and the action', /On/.test(t0) && /Tap to turn off/i.test(t0), t0.replace(/\n+/g, ' | '));
+      await p.locator('[data-toggle="light.living_room"]').click();
+      const t1 = await p.locator('[data-toggle="light.living_room"]').innerText();
+      check('one tap: pressing flips state and action', /Off/.test(t1) && /Tap to turn on/i.test(t1), t1.replace(/\n+/g, ' | '));
+      check('one tap: aria-pressed follows the state', (await p.locator('[data-toggle="light.living_room"]').getAttribute('aria-pressed')) === 'false');
+      // The air-con card only SHOWS state and navigates; it never changes the HVAC mode (V3-007).
+      const acBefore = await p.evaluate(() => window.__casaray.state()['climate.bedroom_parents_room_ac'].s);
+      const acCard = p.locator('.taps .tap', { hasText: "Parents' air-con" });
+      check('one tap: air-con card has no direct state-changing action', (await acCard.getAttribute('data-toggle')) === null && (await acCard.getAttribute('data-acpower')) === null && (await acCard.getAttribute('aria-pressed')) === null);
+      await acCard.click();
+      check('one tap: air-con card opens the Parents\' room climate controls', p.url().endsWith('#room-parents') && (await p.locator('[data-acmode]').count()) > 0, p.url());
+      check('one tap: opening the air-con card leaves the HVAC mode unchanged', (await p.evaluate(() => window.__casaray.state()['climate.bedroom_parents_room_ac'].s)) === acBefore);
+      await p.evaluate(() => window.__casaray.go('home'));
+      const hero = await p.locator('.hero').innerText();
+      check('status sentence: names who is home and counts what needs a look', /(are|is) home/.test(hero) && /need a look/.test(hero), hero.replace(/\n+/g, ' | '));
+      check('status sentence: never says all clear while a check could not answer', await (async () => {
+        await p.locator('[data-overlay="demo"]').click(); await p.locator('[data-scenario="outage"]').click(); await p.keyboard.press('Escape');
+        const h = await p.locator('.hero .status').innerText();
+        return !/^[^.]*\.\s*Nothing needs attention\.$/.test(h) && !/Nothing needs attention/.test(h);
+      })());
+      await p.context().close();
+    }
+
+    // Home length and where the removed sections went (V3 owner decision, V3-007).
+    {
+      const heights = {};
+      for (const [label, scenario] of [['evening', null], ['review', 'review'], ['away', 'away'], ['outage', 'outage']]) {
+        const p = await newPage(browser, VIEWPORTS.wall);
+        if (scenario) { await p.locator('[data-overlay="demo"]').click(); await p.locator(`[data-scenario="${scenario}"]`).click(); await p.keyboard.press('Escape'); }
+        heights[label] = await p.evaluate(() => document.documentElement.scrollHeight);
+        await p.context().close();
+      }
+      check('home length: Concept review snapshot is about 2 screens or less (≤ 1700 px)', heights.review <= 1700, JSON.stringify(heights));
+      check('home length: worst case (4–5 alerts) stays under 1800 px, well under the old 2353', Math.max(...Object.values(heights)) <= 1800, JSON.stringify(heights));
+      const p = await newPage(browser, VIEWPORTS.wall);
+      const home = await p.locator('#view').innerText();
+      check('home: proposed whole-house row and Recent activity are no longer on Home', !/Whole-house scenes/.test(home) && !/Recent activity/.test(home) && (await p.locator('[data-onetap]').count()) === 0);
+      await p.evaluate(() => window.__casaray.go('lighting'));
+      const lit = await p.locator('#view').innerText();
+      check('relocated: Lighting carries the four whole-house scenes, each marked Proposed', /Whole-house scenes \(proposed\)/.test(lit) && (await p.locator('[data-onetap]').count()) === 4 && (lit.match(/proposed/gi) || []).length >= 5, (lit.match(/Proposed/gi) || []).length + ' proposed labels');
+      await p.evaluate(() => window.__casaray.go('health'));
+      check('relocated: House health carries Recent activity', /Recent activity/.test(await p.locator('#view').innerText()));
+      await p.evaluate(() => window.__casaray.go('climate'));
+      check('relocated: Climate carries the four-day forecast', (await p.locator('.wx-days').count()) === 1);
+      await p.evaluate(() => window.__casaray.go('energy'));
+      check('relocated: Energy carries monitored power with its 12-hour bars', (await p.locator('.spark').count()) === 1);
+      await p.context().close();
+    }
+
+    // QA pass on PR #4 (05/10/26): Chinese Home length, and a guarantee that the
+    // detail the dense (five-alert) layout cuts to one line is still one tap
+    // away. Every Needs-attention card must be a button with a real destination.
+    {
+      const zhHeights = {}, badCards = [];
+      for (const [label, scenario] of [['evening', null], ['review', 'review'], ['away', 'away'], ['outage', 'outage']]) {
+        for (const zh of [false, true]) {
+          const p = await newPage(browser, VIEWPORTS.wall);
+          if (scenario) { await p.locator('[data-overlay="demo"]').click(); await p.locator(`[data-scenario="${scenario}"]`).click(); await p.keyboard.press('Escape'); }
+          if (zh) await p.locator('[data-lang]').click();
+          await p.waitForTimeout(100);
+          if (zh) zhHeights[label] = await p.evaluate(() => document.documentElement.scrollHeight);
+          const cards = await p.evaluate(() => [...document.querySelectorAll('.attn .alerts .card.alert')].map((c) => ({ tag: c.tagName, go: c.dataset.go || null, title: c.querySelector('.name').textContent.trim() })));
+          for (const c of cards) if (c.tag !== 'BUTTON' || !BOARDS.includes(c.go)) badCards.push(`${label}${zh ? ' 中文' : ''}: ${c.title} → ${c.tag}/${c.go}`);
+          await p.context().close();
+        }
+      }
+      check('home length (中文): every scenario stays under 1800 px', Math.max(...Object.values(zhHeights)) <= 1800, JSON.stringify(zhHeights));
+      check('home alerts: every Needs-attention card is a button that opens a real board', badCards.length === 0, badCards.join(' | '));
+    }
+  }
+
+  // ------------------------- 7. Uncertainty states and touch targets --
+  // Hardening before PR #4 merges: an unanswered check is never drawn as
+  // healthy, an unavailable amount is never drawn as A$0.00, an unavailable
+  // occupancy sensor keeps its tile, and every interactive target is 44 px.
+  {
+    // Everything answers and nothing is wrong, except what a test then darkens.
+    const quietHouse = (p, { dark = false, zh = false } = {}) => p.evaluate(([dark, zh]) => {
+      const s = window.__casaray.state();
+      for (const k of Object.keys(s)) {
+        if (/battery/.test(k) && !/powerpal/.test(k) && s[k].s !== 'unavailable') s[k].s = '80';
+        if (/^input_boolean\..*_paid$/.test(k)) s[k].s = 'on';
+      }
+      for (const k of ['event.master_bedroom_emergency_button_dad_main', 'event.master_bedroom_emergency_button_mum_main']) s[k] = { s: '2026-10-09T10:00:00+00:00' };
+      s['sensor.primo_5_0_1_1_ac_power'] = { s: '1620' };
+      s['binary_sensor.b_contact_sensor_door'] = { s: dark ? 'unavailable' : 'off' };
+      s['input_boolean.chinese_dashboard'].s = zh ? 'on' : 'off';
+      window.__casaray.go('home');
+      const at = window.__casaray.attention();
+      const card = document.querySelector('.attn .card');
+      return { alerts: at.alerts.length, unknown: at.unknown, cls: card.className, ic: card.querySelector('.ic').className, text: document.querySelector('.attn').innerText.replace(/\n+/g, ' | '), hero: document.querySelector('.hero .status').innerText };
+    }, [dark, zh]);
+
+    for (const zh of [false, true]) {
+      const L = zh ? '中文' : 'EN';
+      let p = await newPage(browser, VIEWPORTS.wall);
+      let r = await quietHouse(p, { dark: true, zh });
+      check(`all-clear: 0 alerts + 1 unanswered check is grey, not green ${L}`, r.alerts === 0 && r.unknown === 1 && /\bgrey\b/.test(r.cls) && !/green/.test(r.cls + r.ic), `${r.cls} / ${r.ic}`);
+      check(`all-clear: uncertainty card says nothing is flagged but a check could not answer ${L}`, zh ? /暂未发现问题/.test(r.text) && /无法响应/.test(r.text) : /Nothing is flagged, but 1 check could not answer/.test(r.text), r.text);
+      check(`all-clear: uncertainty card never says "Nothing needs attention" or "normal" ${L}`, !/Nothing needs attention|came back normal|暂无需要注意|都正常/.test(r.text), r.text);
+      check(`all-clear: hero sentence agrees with the card ${L}`, zh ? /暂未发现问题/.test(r.hero) : /Nothing is flagged, but 1 check could not answer/.test(r.hero), r.hero);
+      await p.context().close();
+      p = await newPage(browser, VIEWPORTS.wall);
+      r = await quietHouse(p, { dark: false, zh });
+      check(`all-clear: every check answered and nothing wrong is green ${L}`, r.alerts === 0 && r.unknown === 0 && /\bgreen\b/.test(r.cls) && (zh ? /暂无需要注意/.test(r.text) : /Nothing needs attention/.test(r.text)), `${r.cls} / ${r.text}`);
+      await p.context().close();
+    }
+
+    // Bill amounts: real zero, unavailable, unknown, normal.
+    for (const zh of [false, true]) {
+      const L = zh ? '中文' : 'EN';
+      const p = await newPage(browser, VIEWPORTS.wall);
+      if (zh) await p.locator('[data-lang]').click();
+      const overdue = (amt) => p.evaluate((amt) => {
+        const s = window.__casaray.state();
+        s['input_number.gas_bill_amount'] = { s: amt };
+        window.__casaray.go('home');
+        const card = [...document.querySelectorAll('.alerts .card')].find((c) => /Gas|燃气/.test(c.innerText));
+        window.__casaray.go('bills');
+        const row = [...document.querySelectorAll('#view .card.tile')].find((c) => /Gas|燃气/.test(c.querySelector('.name').innerText));
+        window.__casaray.go('home');
+        return { alert: card ? card.innerText.replace(/\n+/g, ' | ') : null, bills: row ? row.querySelector('.name').innerText : null };
+      }, amt);
+      const zero = await overdue('0');
+      check(`bill amount: a real 0 is A$0.00 ${L}`, /A\$0\.00/.test(zero.alert) && /A\$0\.00/.test(zero.bills), JSON.stringify(zero));
+      for (const bad of ['unavailable', 'unknown']) {
+        const r = await overdue(bad);
+        check(`bill amount: ${bad} reads no data, never A$0.00 ${L}`, r.alert && !/A\$0\.00/.test(r.alert + r.bills) && (zh ? /金额：无数据/.test(r.alert) && /金额：无数据/.test(r.bills) : /amount: no data/.test(r.alert) && /amount: no data/.test(r.bills)) && /03|0[0-9]\/\d\d\/26|\d{2}\/\d{2}\/26/.test(r.alert), JSON.stringify(r));
+      }
+      const pos = await overdue('196.45');
+      check(`bill amount: a normal amount is formatted ${L}`, /A\$196\.45/.test(pos.alert) && /A\$196\.45/.test(pos.bills), JSON.stringify(pos));
+      await p.context().close();
+    }
+
+    // Occupancy: the tile stays, drawn as no data.
+    for (const zh of [false, true]) {
+      const L = zh ? '中文' : 'EN';
+      const p = await newPage(browser, VIEWPORTS.wall);
+      if (zh) await p.locator('[data-lang]').click();
+      const occ = (val) => p.evaluate((val) => {
+        const s = window.__casaray.state();
+        s['binary_sensor.bedroom_parents_room_ac_room_occupied'] = val === 'on' || val === 'off' ? { s: val, ago: 4 } : { s: val };
+        window.__casaray.go('home');
+        const now = [...document.querySelectorAll('.sec')].find((x) => x.querySelector('h2') && /Right now|此刻/.test(x.querySelector('h2').innerText));
+        const tile = [...now.querySelectorAll('.card')].find((c) => /Parents|父母/.test(c.innerText));
+        return tile ? { cls: tile.className, text: tile.innerText.replace(/\n+/g, ' | ') } : null;
+      }, val);
+      for (const bad of ['unavailable', 'unknown']) {
+        const r = await occ(bad);
+        check(`occupancy: ${bad} keeps the tile, drawn as no data ${L}`, r && /\bna\b/.test(r.cls) && (zh ? /无数据/.test(r.text) : /No data/i.test(r.text)) && !/Quiet|Occupied|安静|有人/.test(r.text), JSON.stringify(r));
+      }
+      const o = await occ('on');
+      check(`occupancy: occupied still reads occupied ${L}`, o && !/\bna\b/.test(o.cls) && (zh ? /有人/.test(o.text) : /Occupied/.test(o.text)), JSON.stringify(o));
+      const q = await occ('off');
+      check(`occupancy: unoccupied still reads quiet ${L}`, q && !/\bna\b/.test(q.cls) && (zh ? /安静/.test(q.text) : /Quiet/.test(q.text)), JSON.stringify(q));
+      await p.context().close();
+    }
+
+    // Every interactive target is at least 44 × 44 on every board, in both
+    // themes of overlay, at wall, portrait and phone sizes.
+    const ROUTES = [...BOARDS, ...ROOMS.map((x) => 'room-' + x)];
+    for (const [vpName, vp, touch] of [['wall', VIEWPORTS.wall, false], ['portrait', VIEWPORTS.portrait, false], ['phone', VIEWPORTS.phone, true]]) {
+      const p = await newPage(browser, vp, { touch });
+      const small = new Set();
+      const scan = async (where) => {
+        const r = await p.evaluate(() => [...document.querySelectorAll('button, a[href], input[type=range], [role=switch], [role=checkbox], [role=button]')]
+          .filter((e) => e.offsetParent !== null || getComputedStyle(e).position === 'fixed')
+          .map((e) => { const b = e.getBoundingClientRect(); return { n: (e.className || e.tagName) + ':' + (e.dataset.go || e.dataset.toggle || e.textContent.trim().slice(0, 12)), w: Math.round(b.width), h: Math.round(b.height) }; })
+          .filter((x) => x.w < 44 || x.h < 44));
+        for (const x of r) small.add(`${where} ${x.n} ${x.w}×${x.h}`);
+      };
+      for (const zh of [false, true]) {
+        if (zh) await p.locator('[data-lang]').click();
+        for (const r of ROUTES) { await p.evaluate((x) => window.__casaray.go(x), r); await scan((zh ? 'zh:' : '') + r); }
+      }
+      await p.locator('[data-lang]').click();
+      await p.locator('[data-overlay="demo"]').first().click();
+      await scan('demo panel');
+      await p.keyboard.press('Escape');
+      if (touch) { await p.locator('#tabbar [data-overlay="more"]').click(); await scan('more sheet'); }
+      check(`touch targets: every interactive element is at least 44×44 at ${vpName}`, small.size === 0, [...small].slice(0, 6).join(' | '));
+      check(`touch targets: no horizontal overflow after the change at ${vpName}`, (await overflow(p)) <= 0);
+      await p.context().close();
+    }
   }
 
   // ----------------------------------------------------- screenshots --
@@ -280,6 +525,9 @@ async function shot(page, name, full = false) {
     ['16_desktop_home_dark', VIEWPORTS.desktop, { dpr: 1 }, 'home', true],
     ['17_portrait_rooms_dark', VIEWPORTS.portrait, {}, 'rooms', false],
     ['18_wall_home_first_screen', VIEWPORTS.wall, {}, 'home', false],
+    ['19_wall_home_first_screen_zh', VIEWPORTS.wall, { zh: true }, 'home', false],
+    ['20_wall_home_review_snapshot', VIEWPORTS.wall, { scenario: 'review' }, 'home', false],
+    ['21_wall_home_review_snapshot_zh', VIEWPORTS.wall, { scenario: 'review', zh: true }, 'home', false],
   ];
   for (const [name, vp, o, route, full] of plan) {
     const p = await newPage(browser, vp, o);

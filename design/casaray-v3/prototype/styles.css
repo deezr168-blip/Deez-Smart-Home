@@ -142,11 +142,11 @@ svg.i { width: 1em; height: 1em; fill: currentColor; flex: none; }
 .rail .mark { font-weight: 800; font-size: 13px; letter-spacing: 0.02em; margin-bottom: 14px; color: var(--text); }
 .rail .mark b { color: var(--amber); }
 .nav-btn {
-  width: 76px; min-height: 58px; display: grid; place-items: center; gap: 3px;
-  padding: 7px 4px; border-radius: 14px; color: var(--text-2); font-size: 11.5px; font-weight: 600;
+  width: 78px; min-height: 62px; display: grid; place-items: center; gap: 3px;
+  padding: 7px 4px; border-radius: 14px; color: var(--text-2); font-size: 12.5px; font-weight: 600;
   text-align: center; line-height: 1.15;
 }
-.nav-btn svg.i { font-size: 22px; }
+.nav-btn svg.i { font-size: 24px; }
 .nav-btn:hover { background: var(--surface-2); color: var(--text); }
 .nav-btn[aria-current="page"] { background: var(--amber-bg); color: var(--amber); box-shadow: inset 0 0 0 1px var(--amber-border); }
 
@@ -165,7 +165,7 @@ main { min-width: 0; padding-inline: 24px; padding-block: 0 40px; }
 }
 .title { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .title h1 { margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.back-btn { display: inline-grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--surface-2); border: 1px solid var(--border); font-size: 20px; }
+.back-btn { display: inline-grid; flex: none; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--surface-2); border: 1px solid var(--border); font-size: 20px; }
 .demo-pill {
   display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px;
   font-size: 11.5px; font-weight: 700; letter-spacing: 0.04em; color: var(--amber);
@@ -174,15 +174,15 @@ main { min-width: 0; padding-inline: 24px; padding-block: 0 40px; }
 .spacer { flex: 1; }
 .tools { display: flex; align-items: center; gap: 8px; }
 .tool {
-  display: inline-flex; align-items: center; gap: 6px; height: 38px; padding: 0 12px; border-radius: 999px;
-  background: var(--surface-2); border: 1px solid var(--border); font-size: 13px; font-weight: 700; color: var(--text-2);
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px; min-width: 44px; justify-content: center; padding: 0 14px; border-radius: 999px;
+  background: var(--surface-2); border: 1px solid var(--border); font-size: 14px; font-weight: 700; color: var(--text-2);
 }
 .tool svg.i { font-size: 18px; }
 .tool:hover { color: var(--text); border-color: var(--border-strong); }
 .tool[aria-pressed="true"] { color: var(--amber); border-color: var(--amber-border); }
 .clock { text-align: right; white-space: nowrap; line-height: 1.1; }
-.clock .t { font-size: 22px; font-weight: 600; }
-.clock .d { font-size: 12.5px; color: var(--text-2); }
+.clock .t { font-size: 28px; font-weight: 700; }
+.clock .d { font-size: 14px; color: var(--text-2); }
 
 /* chip strip: one full-width strip of readings */
 .chips {
@@ -245,6 +245,8 @@ button.card:active { transform: scale(0.985); }
   width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; font-size: 21px;
   background: var(--surface-3); color: var(--text-2);
 }
+button.ic { width: 44px; height: 44px; }
+.tile > button { min-height: 44px; }
 .on .ic, .ic.amber { background: var(--amber-bg); color: var(--amber); }
 .ic.green { background: var(--green-bg); color: var(--green); }
 .ic.red { background: var(--red-bg); color: var(--red); }
@@ -271,13 +273,13 @@ button.card:active { transform: scale(0.985); }
 
 /* A tile feature: the filled bar a native HA tile draws for brightness. */
 .feature { grid-column: 1 / -1; display: grid; gap: 6px; }
-.bar { position: relative; height: 38px; border-radius: 12px; overflow: hidden; background: var(--surface-3); }
+.bar { position: relative; height: 44px; border-radius: 12px; overflow: hidden; background: var(--surface-3); }
 .bar .fill { position: absolute; inset: 0 auto 0 0; background: var(--amber-bg); border-right: 2px solid var(--amber); }
 .bar .lbl { position: absolute; inset: 0; display: flex; align-items: center; justify-content: space-between; padding: 0 12px; font-size: 13px; font-weight: 700; color: var(--text-2); pointer-events: none; }
 .bar input[type="range"] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: ew-resize; margin: 0; }
 .bar:focus-within { outline: 2px solid var(--focus); outline-offset: 2px; }
 .seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; padding: 4px; border-radius: 12px; background: var(--surface-3); }
-.seg button { height: 32px; border-radius: 9px; font-size: 13px; font-weight: 700; color: var(--text-2); }
+.seg button { min-height: 44px; border-radius: 9px; font-size: 13px; font-weight: 700; color: var(--text-2); }
 .seg.seg-2 { grid-auto-flow: row; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .seg button[aria-pressed="true"] { background: var(--amber-bg); color: var(--amber); box-shadow: inset 0 0 0 1px var(--amber-border); }
 
@@ -329,8 +331,12 @@ button.card:active { transform: scale(0.985); }
 .list .li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 2px; border-top: 1px solid var(--border); }
 .list .li:first-child { border-top: 0; }
 .list .when { font-size: 12.5px; color: var(--text-muted); white-space: nowrap; }
-.check { width: 24px; height: 24px; border-radius: 7px; border: 1.5px solid var(--border-strong); display: grid; place-items: center; font-size: 16px; color: transparent; }
-.check[aria-checked="true"] { background: var(--green-bg); border-color: var(--green-border); color: var(--green); }
+.check { position: relative; width: 44px; height: 44px; display: grid; place-items: center; font-size: 16px; color: transparent; }
+.check::before { content: ""; position: absolute; left: 10px; top: 10px; width: 24px; height: 24px; border-radius: 7px; border: 1.5px solid var(--border-strong); }
+.check svg.i { position: relative; }
+.check[aria-checked="true"] { color: var(--green); }
+.check[aria-checked="true"]::before { background: var(--green-bg); border-color: var(--green-border); }
+.list .li.li-check { padding-block: 0; }
 .li.done .txt { text-decoration: line-through; color: var(--text-muted); }
 
 /* climate */
@@ -343,6 +349,8 @@ button.card:active { transform: scale(0.985); }
 
 /* more-boards grid */
 .boards .card { display: flex; align-items: center; gap: 12px; }
+/* Home's More boards: as many 170px-plus cards as fit, so nine boards read as 5 + 4 on the wall iPad and never squeeze on a tablet. */
+.home .boards .grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 170px), 1fr)); }
 
 /* ----------------------------------------------------------- overlays -- */
 .scrim { position: fixed; inset: 0; z-index: 20; background: rgba(0, 0, 0, 0.35); display: grid; place-items: end center; padding: 16px; }
@@ -356,11 +364,12 @@ button.card:active { transform: scale(0.985); }
 .sheet .lbl { font-size: 12.5px; font-weight: 700; color: var(--text-2); margin-bottom: 6px; }
 .sheet p { margin: 0; color: var(--text-2); font-size: 13.5px; }
 .switch-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-weight: 600; }
-.toggle { width: 48px; height: 28px; border-radius: 999px; background: var(--surface-3); border: 1px solid var(--border-strong); position: relative; }
-.toggle::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--text-2); transition: left .15s; }
-.toggle[aria-checked="true"] { background: var(--amber-bg); border-color: var(--amber-border); }
-.toggle[aria-checked="true"]::after { left: 23px; background: var(--amber); }
-.btn { height: 40px; padding: 0 16px; border-radius: 12px; font-weight: 700; background: var(--surface-3); border: 1px solid var(--border-strong); }
+.toggle { position: relative; width: 56px; height: 44px; }
+.toggle::before { content: ""; position: absolute; left: 4px; top: 8px; width: 48px; height: 28px; border-radius: 999px; background: var(--surface-3); border: 1px solid var(--border-strong); }
+.toggle::after { content: ""; position: absolute; top: 11px; left: 7px; width: 20px; height: 20px; border-radius: 50%; background: var(--text-2); transition: left .15s; }
+.toggle[aria-checked="true"]::before { background: var(--amber-bg); border-color: var(--amber-border); }
+.toggle[aria-checked="true"]::after { left: 27px; background: var(--amber); }
+.btn { min-height: 44px; padding: 0 16px; border-radius: 12px; font-weight: 700; background: var(--surface-3); border: 1px solid var(--border-strong); }
 
 .toast {
   position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 30;
@@ -407,5 +416,103 @@ button.card:active { transform: scale(0.985); }
   }
   .tabbar .nav-btn { width: auto; font-size: 11px; min-height: 52px; }
   .tabbar .nav-btn span { display: block; }
+}
+
+/* ---------------------------------------------- Home first screen --
+   V3-005. Three levels of type, set for a wall panel read from about 3 m:
+     Level 1  house status and the major exception   36 / 21 px
+     Level 2  people, energy, primary control state  20 px names, 36 px figures
+     Level 3  labels and metadata                    14.5 px, never the only
+              place an important fact appears
+   The 13-14 px of the other boards is untouched in this sprint. */
+.board.home { row-gap: 18px; }
+.home .sec > h2 { font-size: 18px; }
+.home .sec > h2 .count { font-size: 14.5px; }
+
+.hero { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-top: 2px; }
+.hero-text { min-width: 0; }
+.greet { font-size: 36px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
+.status { margin: 6px 0 0; font-size: 21px; font-weight: 500; line-height: 1.35; max-width: 36em; }
+.flag { font-weight: 700; }
+.flag.red { color: var(--red); }
+.flag.amber { color: var(--amber); }
+.flag.green { color: var(--green); }
+.flag.grey { color: var(--text-2); }
+.hero-chips { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; flex: none; }
+.hero-chips .chip { font-size: 16px; padding: 9px 16px; }
+.hero-chips .chip svg.i { font-size: 18px; }
+
+.attn > h2 { font-size: 20px; }
+.attn.red > h2 svg.i { color: var(--red); }
+.attn.amber > h2 svg.i { color: var(--amber); }
+.attn > h2 svg.i { font-size: 21px; }
+.alerts { display: grid; gap: var(--gap); grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr)); }
+.alerts .card.alert { padding: 12px 18px; gap: 14px; }
+.alerts .ic { width: 46px; height: 46px; font-size: 23px; }
+.alerts .name { font-size: 18px; line-height: 1.25; }
+/* Five or more alerts: three across, one line of detail each, so the controls
+   below still land on the first screen. The count stays in the sentence above. */
+.alerts.dense { grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+.alerts.dense .card.alert { padding: 10px 14px; gap: 12px; }
+.alerts.dense .ic { width: 40px; height: 40px; font-size: 20px; }
+.alerts.dense .sub { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.alerts.dense .chev { display: none; }
+.alerts .sub { font-size: 15.5px; line-height: 1.35; }
+
+.band { grid-column: 1 / -1; display: grid; gap: 18px var(--gap); grid-template-columns: minmax(0, 1fr); align-items: stretch; }
+.band .sec { grid-template-rows: auto 1fr; }
+@media (min-width: 1024px) { .band { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); } }
+.band .person { justify-items: center; text-align: center; gap: 8px; padding: 16px 8px 14px; }
+.band .person .avatar { width: 58px; height: 58px; font-size: 24px; }
+.band .person .name { font-size: 20px; }
+.band .person .sub { font-size: 17px; font-weight: 600; }
+
+/* Energy truth strip. Each cell is one reading, and the four kinds of
+   reading look different: measured is a figure; no data (the device is
+   silent) is a grey word on a grey tint; unknown is the same with its own
+   word; no source entity is a hatched cell. None is ever drawn as 0. */
+.estrip { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 0; overflow: hidden; }
+.ecell { display: grid; align-content: start; gap: 6px; min-width: 0; padding: 14px 16px 15px; }
+.ecell + .ecell { border-left: 1px solid var(--border); }
+.elabel { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 600; color: var(--text-2); }
+.elabel svg.i { font-size: 20px; color: var(--amber); }
+.ecell:not(.ok) .elabel svg.i { color: var(--grey); }
+.eval { display: flex; align-items: baseline; gap: 6px; line-height: 1.1; min-height: 40px; }
+.eval .n { font-size: 36px; font-weight: 700; letter-spacing: -0.02em; }
+.eval .u { font-size: 18px; font-weight: 600; color: var(--text-2); }
+.eval.word { align-items: center; font-size: 20px; font-weight: 700; color: var(--text-2); }
+.esub { font-size: 14.5px; color: var(--text-2); line-height: 1.3; }
+.ecell.unavailable, .ecell.unknown { background: var(--grey-bg); }
+.ecell.nosource { background: repeating-linear-gradient(135deg, transparent 0 7px, rgba(var(--glass-rgb), 0.06) 7px 14px); }
+.ecell.nosource .esub, .ecell.unavailable .esub, .ecell.unknown .esub { color: var(--text-muted); }
+
+/* One tap: big, worded controls. Name, then state AND action. */
+.taps { display: grid; gap: var(--gap); grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.card.tap { display: grid; align-content: start; gap: 8px; min-height: 128px; padding: 14px 18px 14px; }
+.card.tap .trow { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.card.tap .ic { width: 48px; height: 48px; font-size: 25px; }
+.card.tap .tstate { display: grid; justify-items: end; text-align: right; line-height: 1.15; }
+.card.tap .tstate b { font-size: 24px; font-weight: 800; color: var(--text-2); }
+.card.tap .tstate b.hl { color: var(--amber); }
+.card.tap .tstate span { font-size: 15px; color: var(--text-2); }
+.card.tap .tname { font-size: 20px; font-weight: 700; line-height: 1.2; overflow-wrap: break-word; }
+.card.tap .tact { margin-top: -4px; font-size: 15.5px; color: var(--text-2); }
+.card.tap .tact::first-letter { text-transform: uppercase; }
+/* The air-con card navigates; it never changes the HVAC mode from Home. */
+.card.tap.nav .tact { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.card.tap.nav .tact svg.i { font-size: 20px; color: var(--text-muted); }
+.card.tap.on { background: var(--amber-bg); }
+.card.tap.na .tname { color: var(--text-2); }
+.sub-h { margin: 10px 0 0; font-size: 14.5px; font-weight: 700; color: var(--text-muted); }
+
+@media (max-width: 1023px) { .taps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1440px) { .lg-full { grid-column: 1 / -1; } }
+@media (max-width: 699px) {
+  .hero { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .greet { font-size: 28px; }
+  .status { font-size: 18px; }
+  .hero-chips { justify-content: flex-start; }
+  .estrip { grid-template-columns: minmax(0, 1fr); }
+  .ecell + .ecell { border-left: 0; border-top: 1px solid var(--border); }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
