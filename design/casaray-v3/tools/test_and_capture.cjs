@@ -390,6 +390,121 @@ async function shot(page, name, full = false) {
     }
   }
 
+  // ------------------------- 7. Uncertainty states and touch targets --
+  // Hardening before PR #4 merges: an unanswered check is never drawn as
+  // healthy, an unavailable amount is never drawn as A$0.00, an unavailable
+  // occupancy sensor keeps its tile, and every interactive target is 44 px.
+  {
+    // Everything answers and nothing is wrong, except what a test then darkens.
+    const quietHouse = (p, { dark = false, zh = false } = {}) => p.evaluate(([dark, zh]) => {
+      const s = window.__casaray.state();
+      for (const k of Object.keys(s)) {
+        if (/battery/.test(k) && !/powerpal/.test(k) && s[k].s !== 'unavailable') s[k].s = '80';
+        if (/^input_boolean\..*_paid$/.test(k)) s[k].s = 'on';
+      }
+      for (const k of ['event.master_bedroom_emergency_button_dad_main', 'event.master_bedroom_emergency_button_mum_main']) s[k] = { s: '2026-10-09T10:00:00+00:00' };
+      s['sensor.primo_5_0_1_1_ac_power'] = { s: '1620' };
+      s['binary_sensor.b_contact_sensor_door'] = { s: dark ? 'unavailable' : 'off' };
+      s['input_boolean.chinese_dashboard'].s = zh ? 'on' : 'off';
+      window.__casaray.go('home');
+      const at = window.__casaray.attention();
+      const card = document.querySelector('.attn .card');
+      return { alerts: at.alerts.length, unknown: at.unknown, cls: card.className, ic: card.querySelector('.ic').className, text: document.querySelector('.attn').innerText.replace(/\n+/g, ' | '), hero: document.querySelector('.hero .status').innerText };
+    }, [dark, zh]);
+
+    for (const zh of [false, true]) {
+      const L = zh ? '中文' : 'EN';
+      let p = await newPage(browser, VIEWPORTS.wall);
+      let r = await quietHouse(p, { dark: true, zh });
+      check(`all-clear: 0 alerts + 1 unanswered check is grey, not green ${L}`, r.alerts === 0 && r.unknown === 1 && /\bgrey\b/.test(r.cls) && !/green/.test(r.cls + r.ic), `${r.cls} / ${r.ic}`);
+      check(`all-clear: uncertainty card says nothing is flagged but a check could not answer ${L}`, zh ? /暂未发现问题/.test(r.text) && /无法响应/.test(r.text) : /Nothing is flagged, but 1 check could not answer/.test(r.text), r.text);
+      check(`all-clear: uncertainty card never says "Nothing needs attention" or "normal" ${L}`, !/Nothing needs attention|came back normal|暂无需要注意|都正常/.test(r.text), r.text);
+      check(`all-clear: hero sentence agrees with the card ${L}`, zh ? /暂未发现问题/.test(r.hero) : /Nothing is flagged, but 1 check could not answer/.test(r.hero), r.hero);
+      await p.context().close();
+      p = await newPage(browser, VIEWPORTS.wall);
+      r = await quietHouse(p, { dark: false, zh });
+      check(`all-clear: every check answered and nothing wrong is green ${L}`, r.alerts === 0 && r.unknown === 0 && /\bgreen\b/.test(r.cls) && (zh ? /暂无需要注意/.test(r.text) : /Nothing needs attention/.test(r.text)), `${r.cls} / ${r.text}`);
+      await p.context().close();
+    }
+
+    // Bill amounts: real zero, unavailable, unknown, normal.
+    for (const zh of [false, true]) {
+      const L = zh ? '中文' : 'EN';
+      const p = await newPage(browser, VIEWPORTS.wall);
+      if (zh) await p.locator('[data-lang]').click();
+      const overdue = (amt) => p.evaluate((amt) => {
+        const s = window.__casaray.state();
+        s['input_number.gas_bill_amount'] = { s: amt };
+        window.__casaray.go('home');
+        const card = [...document.querySelectorAll('.alerts .card')].find((c) => /Gas|燃气/.test(c.innerText));
+        window.__casaray.go('bills');
+        const row = [...document.querySelectorAll('#view .card.tile')].find((c) => /Gas|燃气/.test(c.querySelector('.name').innerText));
+        window.__casaray.go('home');
+        return { alert: card ? card.innerText.replace(/\n+/g, ' | ') : null, bills: row ? row.querySelector('.name').innerText : null };
+      }, amt);
+      const zero = await overdue('0');
+      check(`bill amount: a real 0 is A$0.00 ${L}`, /A\$0\.00/.test(zero.alert) && /A\$0\.00/.test(zero.bills), JSON.stringify(zero));
+      for (const bad of ['unavailable', 'unknown']) {
+        const r = await overdue(bad);
+        check(`bill amount: ${bad} reads no data, never A$0.00 ${L}`, r.alert && !/A\$0\.00/.test(r.alert + r.bills) && (zh ? /金额：无数据/.test(r.alert) && /金额：无数据/.test(r.bills) : /amount: no data/.test(r.alert) && /amount: no data/.test(r.bills)) && /03|0[0-9]\/\d\d\/26|\d{2}\/\d{2}\/26/.test(r.alert), JSON.stringify(r));
+      }
+      const pos = await overdue('196.45');
+      check(`bill amount: a normal amount is formatted ${L}`, /A\$196\.45/.test(pos.alert) && /A\$196\.45/.test(pos.bills), JSON.stringify(pos));
+      await p.context().close();
+    }
+
+    // Occupancy: the tile stays, drawn as no data.
+    for (const zh of [false, true]) {
+      const L = zh ? '中文' : 'EN';
+      const p = await newPage(browser, VIEWPORTS.wall);
+      if (zh) await p.locator('[data-lang]').click();
+      const occ = (val) => p.evaluate((val) => {
+        const s = window.__casaray.state();
+        s['binary_sensor.bedroom_parents_room_ac_room_occupied'] = val === 'on' || val === 'off' ? { s: val, ago: 4 } : { s: val };
+        window.__casaray.go('home');
+        const now = [...document.querySelectorAll('.sec')].find((x) => x.querySelector('h2') && /Right now|此刻/.test(x.querySelector('h2').innerText));
+        const tile = [...now.querySelectorAll('.card')].find((c) => /Parents|父母/.test(c.innerText));
+        return tile ? { cls: tile.className, text: tile.innerText.replace(/\n+/g, ' | ') } : null;
+      }, val);
+      for (const bad of ['unavailable', 'unknown']) {
+        const r = await occ(bad);
+        check(`occupancy: ${bad} keeps the tile, drawn as no data ${L}`, r && /\bna\b/.test(r.cls) && (zh ? /无数据/.test(r.text) : /No data/i.test(r.text)) && !/Quiet|Occupied|安静|有人/.test(r.text), JSON.stringify(r));
+      }
+      const o = await occ('on');
+      check(`occupancy: occupied still reads occupied ${L}`, o && !/\bna\b/.test(o.cls) && (zh ? /有人/.test(o.text) : /Occupied/.test(o.text)), JSON.stringify(o));
+      const q = await occ('off');
+      check(`occupancy: unoccupied still reads quiet ${L}`, q && !/\bna\b/.test(q.cls) && (zh ? /安静/.test(q.text) : /Quiet/.test(q.text)), JSON.stringify(q));
+      await p.context().close();
+    }
+
+    // Every interactive target is at least 44 × 44 on every board, in both
+    // themes of overlay, at wall, portrait and phone sizes.
+    const ROUTES = [...BOARDS, ...ROOMS.map((x) => 'room-' + x)];
+    for (const [vpName, vp, touch] of [['wall', VIEWPORTS.wall, false], ['portrait', VIEWPORTS.portrait, false], ['phone', VIEWPORTS.phone, true]]) {
+      const p = await newPage(browser, vp, { touch });
+      const small = new Set();
+      const scan = async (where) => {
+        const r = await p.evaluate(() => [...document.querySelectorAll('button, a[href], input[type=range], [role=switch], [role=checkbox], [role=button]')]
+          .filter((e) => e.offsetParent !== null || getComputedStyle(e).position === 'fixed')
+          .map((e) => { const b = e.getBoundingClientRect(); return { n: (e.className || e.tagName) + ':' + (e.dataset.go || e.dataset.toggle || e.textContent.trim().slice(0, 12)), w: Math.round(b.width), h: Math.round(b.height) }; })
+          .filter((x) => x.w < 44 || x.h < 44));
+        for (const x of r) small.add(`${where} ${x.n} ${x.w}×${x.h}`);
+      };
+      for (const zh of [false, true]) {
+        if (zh) await p.locator('[data-lang]').click();
+        for (const r of ROUTES) { await p.evaluate((x) => window.__casaray.go(x), r); await scan((zh ? 'zh:' : '') + r); }
+      }
+      await p.locator('[data-lang]').click();
+      await p.locator('[data-overlay="demo"]').first().click();
+      await scan('demo panel');
+      await p.keyboard.press('Escape');
+      if (touch) { await p.locator('#tabbar [data-overlay="more"]').click(); await scan('more sheet'); }
+      check(`touch targets: every interactive element is at least 44×44 at ${vpName}`, small.size === 0, [...small].slice(0, 6).join(' | '));
+      check(`touch targets: no horizontal overflow after the change at ${vpName}`, (await overflow(p)) <= 0);
+      await p.context().close();
+    }
+  }
+
   // ----------------------------------------------------- screenshots --
   const plan = [
     ['01_wall_home_dark_en', VIEWPORTS.wall, {}, 'home', true],

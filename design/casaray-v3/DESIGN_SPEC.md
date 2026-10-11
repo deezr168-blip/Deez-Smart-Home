@@ -141,6 +141,15 @@ look." Built from the same checks as Needs attention. If nothing is flagged
 but a check could not answer it says so ("Nothing is flagged, but 1 check
 could not answer.") and never claims a clear house.
 
+**Needs attention never reads as healthy on a guess.** The green "Nothing needs
+attention" card appears only when every check answered. With no alerts and at
+least one unanswered check it is a grey information card, "Not every check
+answered: nothing is flagged, but 1 check could not answer." A bill amount that
+is unavailable or unknown reads "(amount: no data)", never A$0.00; a real 0 is
+A$0.00. An unavailable occupancy sensor keeps its tile as dashed grey no data.
+Every interactive target is at least 44 × 44 px (the drawn checkbox and switch
+keep their size inside a 44 px button).
+
 **Energy truth strip.** Solar, Grid import, Export. Four kinds of reading
 look different: *measured* is a figure (`0.61 kW`, today's total beneath);
 *no data* is a grey word on a grey tint ("Not reporting"); *unknown* is its
@@ -161,8 +170,8 @@ first (target, fan, swing), which is not approved.
 
 **Home = current state plus immediate action.** Forecast, history, proposed
 scenes and the monitored-load chart live on Climate, House health, Lighting
-and Energy. A full Home is about two screens (1,582–1,722 px in English,
-1,563–1,683 px in Chinese, measured at 1180 × 820; the preferred target is
+and Energy. A full Home is about two screens (1,619–1,723 px in English,
+1,599–1,683 px in Chinese, measured at 1180 × 820; the preferred target is
 1,640 px, and the over-target days are the ones with four or five alerts).
 
 ### Room pages

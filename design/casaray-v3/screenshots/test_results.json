@@ -1,5 +1,5 @@
 {
-  "passed": 108,
+  "passed": 140,
   "failed": 0,
   "results": [
     {
@@ -100,7 +100,7 @@
     {
       "name": "nav: browser back works",
       "ok": true,
-      "detail": "file:///home/user/casaray-wt/agent-2-visual-ux/design/casaray-v3/prototype/index.html#room-backyard"
+      "detail": "file:///home/user/Deez-Smart-Home/design/casaray-v3/prototype/index.html#room-backyard"
     },
     {
       "name": "nav: More boards card opens a board",
@@ -240,7 +240,7 @@
     {
       "name": "bilingual: clock date is DD/MM/YY",
       "ok": true,
-      "detail": "05/10/26"
+      "detail": "11/10/26"
     },
     {
       "name": "bilingual: Home headings in Chinese",
@@ -270,7 +270,7 @@
     {
       "name": "interact: marking a bill paid updates Unpaid and Overdue",
       "ok": true,
-      "detail": "Unpaid 4 of 6 Overdue 1 Next due Electricity 12/10/26 → Unpaid 3 of 6 Overdue 0 Next due Electricity 12/10/26"
+      "detail": "Unpaid 4 of 6 Overdue 1 Next due Electricity 18/10/26 → Unpaid 3 of 6 Overdue 0 Next due Electricity 18/10/26"
     },
     {
       "name": "interact: AC target steps by 0.5°",
@@ -480,7 +480,7 @@
     {
       "name": "one tap: air-con card opens the Parents' room climate controls",
       "ok": true,
-      "detail": "file:///home/user/casaray-wt/agent-2-visual-ux/design/casaray-v3/prototype/index.html#room-parents"
+      "detail": "file:///home/user/Deez-Smart-Home/design/casaray-v3/prototype/index.html#room-parents"
     },
     {
       "name": "one tap: opening the air-con card leaves the HVAC mode unchanged",
@@ -490,7 +490,7 @@
     {
       "name": "status sentence: names who is home and counts what needs a look",
       "ok": true,
-      "detail": "Good evening | Raymond and Vinh are home, Ai is out. 4 things need a look. | Outside | 10° | Inside | 19.7°"
+      "detail": "Good afternoon | Raymond and Vinh are home, Ai is out. 4 things need a look. | Outside | 10° | Inside | 19.7°"
     },
     {
       "name": "status sentence: never says all clear while a check could not answer",
@@ -500,12 +500,12 @@
     {
       "name": "home length: Concept review snapshot is about 2 screens or less (≤ 1700 px)",
       "ok": true,
-      "detail": "{\"evening\":1722,\"review\":1619,\"away\":1695,\"outage\":1582}"
+      "detail": "{\"evening\":1722,\"review\":1619,\"away\":1695,\"outage\":1628}"
     },
     {
       "name": "home length: worst case (4–5 alerts) stays under 1800 px, well under the old 2353",
       "ok": true,
-      "detail": "{\"evening\":1722,\"review\":1619,\"away\":1695,\"outage\":1582}"
+      "detail": "{\"evening\":1722,\"review\":1619,\"away\":1695,\"outage\":1628}"
     },
     {
       "name": "home: proposed whole-house row and Recent activity are no longer on Home",
@@ -535,10 +535,170 @@
     {
       "name": "home length (中文): every scenario stays under 1800 px",
       "ok": true,
-      "detail": "{\"evening\":1683,\"review\":1599,\"away\":1672,\"outage\":1563}"
+      "detail": "{\"evening\":1683,\"review\":1599,\"away\":1672,\"outage\":1608}"
     },
     {
       "name": "home alerts: every Needs-attention card is a button that opens a real board",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "all-clear: 0 alerts + 1 unanswered check is grey, not green EN",
+      "ok": true,
+      "detail": "card alert grey tile / ic grey"
+    },
+    {
+      "name": "all-clear: uncertainty card says nothing is flagged but a check could not answer EN",
+      "ok": true,
+      "detail": "Needs attention | 1 check could not answer | Not every check answered | Nothing is flagged, but 1 check could not answer."
+    },
+    {
+      "name": "all-clear: uncertainty card never says \"Nothing needs attention\" or \"normal\" EN",
+      "ok": true,
+      "detail": "Needs attention | 1 check could not answer | Not every check answered | Nothing is flagged, but 1 check could not answer."
+    },
+    {
+      "name": "all-clear: hero sentence agrees with the card EN",
+      "ok": true,
+      "detail": "Raymond and Vinh are home, Ai is out. Nothing is flagged, but 1 check could not answer."
+    },
+    {
+      "name": "all-clear: every check answered and nothing wrong is green EN",
+      "ok": true,
+      "detail": "card alert green tile / Needs attention | Nothing needs attention | Every check that could answer came back normal."
+    },
+    {
+      "name": "all-clear: 0 alerts + 1 unanswered check is grey, not green 中文",
+      "ok": true,
+      "detail": "card alert grey tile / ic grey"
+    },
+    {
+      "name": "all-clear: uncertainty card says nothing is flagged but a check could not answer 中文",
+      "ok": true,
+      "detail": "需要注意 | 1 项检查无法响应 | 并非所有检查都有响应 | 暂未发现问题，但1 项检查无法响应。"
+    },
+    {
+      "name": "all-clear: uncertainty card never says \"Nothing needs attention\" or \"normal\" 中文",
+      "ok": true,
+      "detail": "需要注意 | 1 项检查无法响应 | 并非所有检查都有响应 | 暂未发现问题，但1 项检查无法响应。"
+    },
+    {
+      "name": "all-clear: hero sentence agrees with the card 中文",
+      "ok": true,
+      "detail": "Raymond、Vinh在家，Ai外出。 暂未发现问题，但1 项检查无法响应。"
+    },
+    {
+      "name": "all-clear: every check answered and nothing wrong is green 中文",
+      "ok": true,
+      "detail": "card alert green tile / 需要注意 | 暂无需要注意的事项 | 所有能响应的检查都正常。"
+    },
+    {
+      "name": "bill amount: a real 0 is A$0.00 EN",
+      "ok": true,
+      "detail": "{\"alert\":\" |        |       Bill overdueGas A$0.00 · Due 09/10/26 |       input_boolean.gas_bill_paidinput_datetime.gas_bill_due\",\"bills\":\"Gas · A$0.00\"}"
+    },
+    {
+      "name": "bill amount: unavailable reads no data, never A$0.00 EN",
+      "ok": true,
+      "detail": "{\"alert\":\" |        |       Bill overdueGas (amount: no data) · Due 09/10/26 |       input_boolean.gas_bill_paidinput_datetime.gas_bill_due\",\"bills\":\"Gas · (amount: no data)\"}"
+    },
+    {
+      "name": "bill amount: unknown reads no data, never A$0.00 EN",
+      "ok": true,
+      "detail": "{\"alert\":\" |        |       Bill overdueGas (amount: no data) · Due 09/10/26 |       input_boolean.gas_bill_paidinput_datetime.gas_bill_due\",\"bills\":\"Gas · (amount: no data)\"}"
+    },
+    {
+      "name": "bill amount: a normal amount is formatted EN",
+      "ok": true,
+      "detail": "{\"alert\":\" |        |       Bill overdueGas A$196.45 · Due 09/10/26 |       input_boolean.gas_bill_paidinput_datetime.gas_bill_due\",\"bills\":\"Gas · A$196.45\"}"
+    },
+    {
+      "name": "bill amount: a real 0 is A$0.00 中文",
+      "ok": true,
+      "detail": "{\"alert\":\" |        |       账单逾期燃气费 A$0.00 · 到期 09/10/26 |       input_boolean.gas_bill_paidinput_datetime.gas_bill_due\",\"bills\":\"燃气费 · A$0.00\"}"
+    },
+    {
+      "name": "bill amount: unavailable reads no data, never A$0.00 中文",
+      "ok": true,
+      "detail": "{\"alert\":\" |        |       账单逾期燃气费 （金额：无数据） · 到期 09/10/26 |       input_boolean.gas_bill_paidinput_datetime.gas_bill_due\",\"bills\":\"燃气费 · （金额：无数据）\"}"
+    },
+    {
+      "name": "bill amount: unknown reads no data, never A$0.00 中文",
+      "ok": true,
+      "detail": "{\"alert\":\" |        |       账单逾期燃气费 （金额：无数据） · 到期 09/10/26 |       input_boolean.gas_bill_paidinput_datetime.gas_bill_due\",\"bills\":\"燃气费 · （金额：无数据）\"}"
+    },
+    {
+      "name": "bill amount: a normal amount is formatted 中文",
+      "ok": true,
+      "detail": "{\"alert\":\" |        |       账单逾期燃气费 A$196.45 · 到期 09/10/26 |       input_boolean.gas_bill_paidinput_datetime.gas_bill_due\",\"bills\":\"燃气费 · A$196.45\"}"
+    },
+    {
+      "name": "occupancy: unavailable keeps the tile, drawn as no data EN",
+      "ok": true,
+      "detail": "{\"cls\":\"card tile na\",\"text\":\"Parents' room | No data | NO DATA\"}"
+    },
+    {
+      "name": "occupancy: unknown keeps the tile, drawn as no data EN",
+      "ok": true,
+      "detail": "{\"cls\":\"card tile na\",\"text\":\"Parents' room | No data | NO DATA\"}"
+    },
+    {
+      "name": "occupancy: occupied still reads occupied EN",
+      "ok": true,
+      "detail": "{\"cls\":\"card tile on\",\"text\":\"Parents' room | Occupied · 4 min ago\"}"
+    },
+    {
+      "name": "occupancy: unoccupied still reads quiet EN",
+      "ok": true,
+      "detail": "{\"cls\":\"card tile \",\"text\":\"Parents' room | Quiet · 4 min\"}"
+    },
+    {
+      "name": "occupancy: unavailable keeps the tile, drawn as no data 中文",
+      "ok": true,
+      "detail": "{\"cls\":\"card tile na\",\"text\":\"父母房 | 无数据 | 无数据\"}"
+    },
+    {
+      "name": "occupancy: unknown keeps the tile, drawn as no data 中文",
+      "ok": true,
+      "detail": "{\"cls\":\"card tile na\",\"text\":\"父母房 | 无数据 | 无数据\"}"
+    },
+    {
+      "name": "occupancy: occupied still reads occupied 中文",
+      "ok": true,
+      "detail": "{\"cls\":\"card tile on\",\"text\":\"父母房 | 有人 · 4 分钟前\"}"
+    },
+    {
+      "name": "occupancy: unoccupied still reads quiet 中文",
+      "ok": true,
+      "detail": "{\"cls\":\"card tile \",\"text\":\"父母房 | 安静 · 4 分钟\"}"
+    },
+    {
+      "name": "touch targets: every interactive element is at least 44×44 at wall",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "touch targets: no horizontal overflow after the change at wall",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "touch targets: every interactive element is at least 44×44 at portrait",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "touch targets: no horizontal overflow after the change at portrait",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "touch targets: every interactive element is at least 44×44 at phone",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "touch targets: no horizontal overflow after the change at phone",
       "ok": true,
       "detail": ""
     }

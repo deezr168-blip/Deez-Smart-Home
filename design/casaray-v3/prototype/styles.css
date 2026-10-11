@@ -165,7 +165,7 @@ main { min-width: 0; padding-inline: 24px; padding-block: 0 40px; }
 }
 .title { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .title h1 { margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.back-btn { display: inline-grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--surface-2); border: 1px solid var(--border); font-size: 20px; }
+.back-btn { display: inline-grid; flex: none; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--surface-2); border: 1px solid var(--border); font-size: 20px; }
 .demo-pill {
   display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px;
   font-size: 11.5px; font-weight: 700; letter-spacing: 0.04em; color: var(--amber);
@@ -174,7 +174,7 @@ main { min-width: 0; padding-inline: 24px; padding-block: 0 40px; }
 .spacer { flex: 1; }
 .tools { display: flex; align-items: center; gap: 8px; }
 .tool {
-  display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 14px; border-radius: 999px;
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px; min-width: 44px; justify-content: center; padding: 0 14px; border-radius: 999px;
   background: var(--surface-2); border: 1px solid var(--border); font-size: 14px; font-weight: 700; color: var(--text-2);
 }
 .tool svg.i { font-size: 18px; }
@@ -245,6 +245,8 @@ button.card:active { transform: scale(0.985); }
   width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; font-size: 21px;
   background: var(--surface-3); color: var(--text-2);
 }
+button.ic { width: 44px; height: 44px; }
+.tile > button { min-height: 44px; }
 .on .ic, .ic.amber { background: var(--amber-bg); color: var(--amber); }
 .ic.green { background: var(--green-bg); color: var(--green); }
 .ic.red { background: var(--red-bg); color: var(--red); }
@@ -271,13 +273,13 @@ button.card:active { transform: scale(0.985); }
 
 /* A tile feature: the filled bar a native HA tile draws for brightness. */
 .feature { grid-column: 1 / -1; display: grid; gap: 6px; }
-.bar { position: relative; height: 38px; border-radius: 12px; overflow: hidden; background: var(--surface-3); }
+.bar { position: relative; height: 44px; border-radius: 12px; overflow: hidden; background: var(--surface-3); }
 .bar .fill { position: absolute; inset: 0 auto 0 0; background: var(--amber-bg); border-right: 2px solid var(--amber); }
 .bar .lbl { position: absolute; inset: 0; display: flex; align-items: center; justify-content: space-between; padding: 0 12px; font-size: 13px; font-weight: 700; color: var(--text-2); pointer-events: none; }
 .bar input[type="range"] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: ew-resize; margin: 0; }
 .bar:focus-within { outline: 2px solid var(--focus); outline-offset: 2px; }
 .seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; padding: 4px; border-radius: 12px; background: var(--surface-3); }
-.seg button { height: 32px; border-radius: 9px; font-size: 13px; font-weight: 700; color: var(--text-2); }
+.seg button { min-height: 44px; border-radius: 9px; font-size: 13px; font-weight: 700; color: var(--text-2); }
 .seg.seg-2 { grid-auto-flow: row; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .seg button[aria-pressed="true"] { background: var(--amber-bg); color: var(--amber); box-shadow: inset 0 0 0 1px var(--amber-border); }
 
@@ -329,8 +331,12 @@ button.card:active { transform: scale(0.985); }
 .list .li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 2px; border-top: 1px solid var(--border); }
 .list .li:first-child { border-top: 0; }
 .list .when { font-size: 12.5px; color: var(--text-muted); white-space: nowrap; }
-.check { width: 24px; height: 24px; border-radius: 7px; border: 1.5px solid var(--border-strong); display: grid; place-items: center; font-size: 16px; color: transparent; }
-.check[aria-checked="true"] { background: var(--green-bg); border-color: var(--green-border); color: var(--green); }
+.check { position: relative; width: 44px; height: 44px; display: grid; place-items: center; font-size: 16px; color: transparent; }
+.check::before { content: ""; position: absolute; left: 10px; top: 10px; width: 24px; height: 24px; border-radius: 7px; border: 1.5px solid var(--border-strong); }
+.check svg.i { position: relative; }
+.check[aria-checked="true"] { color: var(--green); }
+.check[aria-checked="true"]::before { background: var(--green-bg); border-color: var(--green-border); }
+.list .li.li-check { padding-block: 0; }
 .li.done .txt { text-decoration: line-through; color: var(--text-muted); }
 
 /* climate */
@@ -358,11 +364,12 @@ button.card:active { transform: scale(0.985); }
 .sheet .lbl { font-size: 12.5px; font-weight: 700; color: var(--text-2); margin-bottom: 6px; }
 .sheet p { margin: 0; color: var(--text-2); font-size: 13.5px; }
 .switch-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-weight: 600; }
-.toggle { width: 48px; height: 28px; border-radius: 999px; background: var(--surface-3); border: 1px solid var(--border-strong); position: relative; }
-.toggle::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--text-2); transition: left .15s; }
-.toggle[aria-checked="true"] { background: var(--amber-bg); border-color: var(--amber-border); }
-.toggle[aria-checked="true"]::after { left: 23px; background: var(--amber); }
-.btn { height: 40px; padding: 0 16px; border-radius: 12px; font-weight: 700; background: var(--surface-3); border: 1px solid var(--border-strong); }
+.toggle { position: relative; width: 56px; height: 44px; }
+.toggle::before { content: ""; position: absolute; left: 4px; top: 8px; width: 48px; height: 28px; border-radius: 999px; background: var(--surface-3); border: 1px solid var(--border-strong); }
+.toggle::after { content: ""; position: absolute; top: 11px; left: 7px; width: 20px; height: 20px; border-radius: 50%; background: var(--text-2); transition: left .15s; }
+.toggle[aria-checked="true"]::before { background: var(--amber-bg); border-color: var(--amber-border); }
+.toggle[aria-checked="true"]::after { left: 27px; background: var(--amber); }
+.btn { min-height: 44px; padding: 0 16px; border-radius: 12px; font-weight: 700; background: var(--surface-3); border: 1px solid var(--border-strong); }
 
 .toast {
   position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 30;

@@ -246,6 +246,8 @@
     const known = BATTERIES.filter((b) => num(b.id) != null);
     return { known: known.length, low: known.filter((b) => num(b.id) < 25) };
   }
+  // A real 0 is A$0.00. An amount that is unavailable or unknown is never turned into one.
+  const amountText = (b) => (num(b.amt) == null ? t('b.no_amount') : money(num(b.amt)));
   function billState(b) {
     if (na(b.paid)) return 'na';
     if (on(b.paid)) return 'paid';
@@ -276,7 +278,7 @@
       if (BILLS.every((b) => na(b.paid))) return 'unknown';
       if (!over.length) return null;
       return { tone: 'red', ic: 'receipt-text', title: t('a.bill_overdue'), ids: over.flatMap((b) => [b.paid, b.due]),
-        detail: join(over.map((b) => `${nm(b.n)} ${money(num(b.amt) || 0)} · ${t('s.due')} ${dayLabel(dueIn(b.due))}`)), go: 'bills' };
+        detail: join(over.map((b) => `${nm(b.n)} ${amountText(b)} · ${t('s.due')} ${dayLabel(dueIn(b.due))}`)), go: 'bills' };
     },
     () => {
       const d = 'binary_sensor.b_contact_sensor_door';
@@ -715,17 +717,20 @@
     const att = attention();
     const alerts = att.alerts.length
       ? `<div class="alerts${att.alerts.length > 4 ? ' dense' : ''}">${att.alerts.map(alertCard).join('')}</div>`
-      : `<div class="card alert green tile"><div class="ic green">${icon('check-circle')}</div><div><div class="name">${t('a.all_clear')}</div><div class="sub">${t('a.all_clear_d')}</div></div><div></div></div>`;
+      : att.unknown
+        ? `<div class="card alert grey tile"><div class="ic grey">${icon('information-outline')}</div><div><div class="name">${t('a.not_all_answered')}</div><div class="sub">${t('g.clear_unknown', { c: t(att.unknown === 1 ? 'a.unknown_check' : 'a.unknown_checks', { n: att.unknown }) })}</div></div><div></div></div>`
+        : `<div class="card alert green tile"><div class="ic green">${icon('check-circle')}</div><div><div class="name">${t('a.all_clear')}</div><div class="sub">${t('a.all_clear_d')}</div></div><div></div></div>`;
     const unknownNote = att.unknown ? `<span class="count">${t(att.unknown === 1 ? 'a.unknown_check' : 'a.unknown_checks', { n: att.unknown })}</span>` : '';
 
     const weather = weatherCard(false);
     const occ = 'binary_sensor.bedroom_parents_room_ac_room_occupied';
-    const occTile = na(occ) ? '' : tile({ ids: occ, ic: 'motion-sensor', name: t('room.parents'), state: on(occ) ? 'on' : 'off',
-      sub: on(occ) ? `${t('s.occupied')} · ${ago(st(occ).ago)}` : `${t('s.quiet')} · ${dur(st(occ).ago || 0)}` });
+    const occTile = na(occ) ? tile({ ids: occ, ic: 'motion-sensor', name: t('room.parents'), sub: t('s.no_data'), state: 'na', pill: naPill() })
+      : tile({ ids: occ, ic: 'motion-sensor', name: t('room.parents'), state: on(occ) ? 'on' : 'off',
+        sub: on(occ) ? `${t('s.occupied')} · ${ago(st(occ).ago)}` : `${t('s.quiet')} · ${dur(st(occ).ago || 0)}` });
     const rem = num('sensor.energy_production_today_remaining');
     const nowSec = sec(h2('h.now', 'weather-partly-cloudy') + `<div class="stack">${weather}
       ${grid1([tile({ ids: 'sensor.energy_production_today_remaining', ic: 'solar-power', name: lang() === 'zh' ? '今日太阳能' : 'Solar expected today',
-        sub: rem == null ? t('s.no_data') : (lang() === 'zh' ? `预计还有 ${fmt(rem)} kWh` : `${fmt(rem)} kWh still forecast`), state: rem == null ? 'na' : 'off' }), occTile].filter(Boolean))}
+        sub: rem == null ? t('s.no_data') : (lang() === 'zh' ? `预计还有 ${fmt(rem)} kWh` : `${fmt(rem)} kWh still forecast`), state: rem == null ? 'na' : 'off' }), occTile])}
       ${monitoredTile()}</div>`);
 
     const people = PEOPLE.map((p) => {
@@ -749,7 +754,7 @@
     const shop = items == null
       ? tile({ ids: 'todo.shopping_list', ic: 'cart', name: t('h.shopping'), sub: t('s.no_data'), state: 'na' })
       : items.length
-        ? `<div class="card"><div class="list">${items.map((it, i) => `<div class="li ${done[i] ? 'done' : ''}"><button class="check" type="button" role="checkbox" aria-checked="${!!done[i]}" data-shop="${i}" aria-label="${esc(it)}">${icon('check')}</button><span class="txt">${esc(it)}</span><span></span></div>`).join('')}</div>${eid('todo.shopping_list')}</div>`
+        ? `<div class="card"><div class="list">${items.map((it, i) => `<div class="li li-check ${done[i] ? 'done' : ''}"><button class="check" type="button" role="checkbox" aria-checked="${!!done[i]}" data-shop="${i}" aria-label="${esc(it)}">${icon('check')}</button><span class="txt">${esc(it)}</span><span></span></div>`).join('')}</div>${eid('todo.shopping_list')}</div>`
         : `<div class="card na"><div class="sub">${t('s.nothing_on_list')}</div></div>`;
     const d = doorsSummary();
     const secSummary = tile({ tag: 'button', action: 'data-go="security"', ids: DOORS.map((x) => x.id), ic: 'shield-home', name: t('h.security'),
@@ -943,12 +948,11 @@
   VIEWS.bills = () => {
     const row = (b) => {
       const s = billState(b);
-      const amt = num(b.amt);
       const d = dueIn(b.due);
       const when = s === 'na' ? t('s.no_data') : s === 'paid' ? t('s.paid') : s === 'nodue' ? t('s.no_due') : `${s === 'overdue' ? `<span class="bad">${t('s.overdue')}</span>` : t('s.due')} · ${dayLabel(d)}`;
       const pill = s === 'overdue' ? `<span class="pill red">${t('s.overdue')}</span>` : s === 'paid' ? `<span class="pill green">${t('s.paid')}</span>` : s === 'nodue' ? `<span class="pill">${t('s.no_data')}</span>` : '';
       return `<div class="card tile ${s === 'na' ? 'na' : ''}"><div class="ic ${s === 'overdue' ? 'red' : s === 'paid' ? 'green' : ''}">${icon(b.ic)}</div>
-        <div><div class="name">${nm(b.n)}${amt ? ` · ${money(amt)}` : ''}</div><div class="sub">${when}</div></div><div>${pill}</div>
+        <div><div class="name">${nm(b.n)} · ${amountText(b)}</div><div class="sub">${when}</div></div><div>${pill}</div>
         ${s === 'na' ? '' : `<div class="feature"><button type="button" class="btn" data-toggle="${b.paid}">${s === 'paid' ? t('u.mark_unpaid') : t('u.mark_paid')}</button></div>`}
         ${eid([b.paid, b.amt, b.due])}</div>`;
     };

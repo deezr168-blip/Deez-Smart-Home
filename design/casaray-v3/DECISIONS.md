@@ -41,14 +41,14 @@ Nothing was deleted. The proposal, its strings and its gap captions are
 intact. Home's first-screen hierarchy is unchanged.
 
 **Measured at 1180 × 820** (full-page `scrollHeight`; QA re-measured the
-After columns on 05/10/26 and corrected the outage figure, which read 1,612 px):
+After columns on 05/10/26; the outage row was re-measured on 11/10/26 after the occupancy tile stopped hiding):
 
 | Scenario | Before (English) | After (English) | After (中文) |
 |---|---|---|---|
 | Evening (4 alerts) | 2,353 px | 1,722 px | 1,683 px |
 | Concept review snapshot | 2,250 px | 1,619 px | 1,599 px |
 | Everyone away (5 alerts) | 2,326 px | 1,695 px | 1,672 px |
-| Device outage | 2,024 px | 1,582 px | 1,563 px |
+| Device outage | 2,024 px | 1,657 px | 1,608 px |
 
 The two worst days sit slightly above the preferred 1,640 px because the
 alert cards grow with the number of alerts, not because Home grew. Rooms stay
@@ -69,26 +69,33 @@ decided:
 - Hiding More boards where the persistent rail is visible stays a **future
   design candidate only**.
 
-**Post-merge hardening.** Recorded as follow-ups. **None is done in PR #4.**
+**Hardening, as decided on 11/10/26.** The owner moved four of the eight
+follow-ups out of "post-merge" and into PR #4: they were fixed on this branch
+before approval (see *Fixed before merge* below). Three stay post-merge and one
+is documentation.
 
-1. Review whether the Parents' room and Climate HVAC mode controls need the
-   same safeguards as Home.
-2. Review the green "Nothing needs attention" heading when one or more checks
-   are unanswered.
-3. Fix overdue-bill alerts so a missing amount does not become A$0.00.
-4. Define the Parents' room occupancy no-data behaviour.
-5. Raise the shopping-list checkbox and touch targets toward 44 px.
-6. Review the slight layout inconsistency of Lighting's "All lights off" card.
+1. **Post-merge:** review whether the Parents' room and Climate HVAC mode
+   controls need the same safeguards as Home. A hard gate before any build.
+2. **Fixed before merge (11/10/26):** the green "Nothing needs attention" card
+   when one or more checks are unanswered.
+3. **Fixed before merge (11/10/26):** overdue-bill alerts turning a missing
+   amount into A$0.00.
+4. **Fixed before merge (11/10/26):** the Parents' room occupancy tile
+   disappearing when its sensor cannot answer.
+5. **Fixed before merge (11/10/26):** interactive targets under 44 × 44 px.
+6. **Post-merge:** the slight layout inconsistency of Lighting's "All lights
+   off" card.
 7. ~~Reconcile the documented 133 entity count with the verifier's 136.~~
    **Resolved in documentation, 10/10/26** (`ENTITY_MAPPING.md` §1): 133 is
    the prototype's own IDs, 136 adds three IDs the notes name as unused.
-8. Consider conditional More boards visibility: desktop and kiosk versus phone.
+8. **Post-merge:** conditional More boards visibility, desktop and kiosk
+   versus phone.
 
 **QA note, 10/10/26 (merge-readiness check of PR #4 at `0d2a241`).** No code
 changed. The harness (108/108) and verifier (136/136) were re-run and pass.
 The eight follow-ups above were each reproduced against the prototype, and
 all of them are **inherited from Concept D at `58c7fdb`**; PR #4 did not
-introduce them. Findings, so the deferral can be confirmed with evidence:
+introduce them. Findings (items 2–5 were then fixed, see below):
 
 1. *HVAC safeguards.* Home has **no** HVAC control. The Parents' room page and
    Climate board still offer Off / Cool / Heat / Fan and ±0.5° steps. They
@@ -112,6 +119,34 @@ introduce them. Findings, so the deferral can be confirmed with evidence:
    icon sits higher than the other three. Size is identical (251 × 177 px).
 7. *133 vs 136.* Resolved above.
 8. *More boards.* A design choice, not a defect.
+
+**Fixed before merge, 11/10/26.** Code and tests only; no entity ID was added.
+
+- **All-clear (2).** With no alerts and at least one unanswered check, the card
+  is grey with an information icon, titled "Not every check answered", and
+  reads "Nothing is flagged, but 1 check could not answer." The green check
+  card and "Nothing needs attention" appear only when every check answered.
+- **Bill amounts (3).** `num(b.amt) || 0` is gone. A real `0` reads A$0.00;
+  an unavailable or unknown amount reads "(amount: no data)", on the Home
+  alert and on the Bills board (which also used to drop a real 0). The overdue
+  state is still shown, because it comes from the due date and the paid flag.
+- **Occupancy (4).** The Parents' room tile stays in Right now. With the
+  sensor unavailable or unknown it is a dashed grey "No data" tile; occupied
+  and quiet are unchanged. Device outage Home therefore grows from 1,582 to
+  1,657 px in English (1,563 to 1,608 px in Chinese).
+- **Touch targets (5).** Every button, switch, checkbox and range input is at
+  least 44 × 44 px, at wall, portrait and phone sizes, in both languages, on
+  every board, the demo panel and the phone More sheet: top-bar language, theme
+  and demo buttons (44 px tall), the shopping-list checkbox (a 44 px button
+  around the same 24 px box), light and plug icon buttons, the tile name
+  buttons, segment buttons, brightness bars, switches, Back and the Mark paid
+  buttons. The drawn checkbox and switch track are unchanged in size.
+
+New regression checks cover 0 alerts + 1 unanswered check (grey, and green
+only when everything answered), a real zero, an unavailable, an unknown and a
+normal bill amount, occupied / quiet / unavailable / unknown occupancy, and a
+44 px sweep of every board. Run against the previous prototype they fail 19
+times, so they do detect the defects. Harness 140/140.
 
 ---
 

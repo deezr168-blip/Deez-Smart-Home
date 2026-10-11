@@ -50,7 +50,7 @@ python3 design/casaray-v3/tools/gen_entity_table.py        # regenerate ENTITY_M
 NODE_PATH="$(npm root -g)" node design/casaray-v3/tools/test_and_capture.cjs
 ```
 
-The harness needs Playwright with Chromium. It runs 108 checks and rewrites
+The harness needs Playwright with Chromium. It runs 140 checks and rewrites
 `screenshots/`:
 
 - **Navigation:** every board, every room, back, browser back, deep links, the phone tab bar and More sheet.
@@ -58,6 +58,7 @@ The harness needs Playwright with Chromium. It runs 108 checks and rewrites
 - **Interaction:** lights, brightness, language (via `input_boolean.chinese_dashboard`), theme, bills, AC, purifier, shopping list, One tap, entity captions, Escape.
 - **Home length and relocation (V3-007):** Home stays under 1,800 px in English and Chinese, every Needs-attention card is a button that opens a real board, the proposed row, Recent activity, forecast and monitored chart sit on Lighting, House health, Climate and Energy, and the air-con card cannot change the HVAC mode.
 - **Home first screen (V3-005):** status, people, energy and One tap fit 1180×820 in four scenarios and both languages, nothing clips, standing-distance sizes hold, the energy strip keeps measured / no data / unknown / no source apart, One tap states state and action.
+- **Uncertainty and touch targets (V3-007):** 0 alerts + 1 unanswered check is grey and only a fully answered house is green, a real zero bill is A$0.00 while an unavailable or unknown amount reads no data, an unavailable occupancy sensor keeps its tile as no data, and every interactive element on every board, the demo panel and the phone More sheet is at least 44×44 px at wall, portrait and phone sizes.
 - **Honesty:** the outage scenario says *No data*, never `0 W` or "All closed", and counts the checks that could not answer.
 - **Console:** no page errors.
 
