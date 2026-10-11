@@ -343,12 +343,20 @@ button.ic { width: 44px; height: 44px; }
 .li.done .txt { text-decoration: line-through; color: var(--text-muted); }
 
 /* climate */
-.thermo { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; margin-top: 12px; }
-.round { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; font-size: 22px; background: var(--surface-3); border: 1px solid var(--border); }
-.round:hover { border-color: var(--border-strong); }
-.thermo .target { text-align: center; }
-.thermo .target .n { font-size: 34px; font-weight: 600; }
-.thermo .target .l { font-size: 12.5px; color: var(--text-2); }
+.actarget { display: grid; gap: 10px; margin-top: 12px; }
+.actarget .target { text-align: center; }
+.actarget .target .n { font-size: 34px; font-weight: 600; }
+.actarget .target .n.nd { font-size: 24px; color: var(--text-muted); }
+.actarget .target .l { font-size: 12.5px; color: var(--text-2); }
+.acsteps { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.acstep { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 0 10px; border-radius: 12px;
+  background: var(--surface-3); border: 1px solid var(--border); font-size: 14px; font-weight: 700; }
+.acstep:not(:disabled):hover { border-color: var(--border-strong); }
+.ac-why { font-size: 13.5px; color: var(--text-muted); text-align: center; }
+.feature > .ac-why { text-align: left; }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+.seg button { white-space: normal; line-height: 1.2; padding: 4px 6px; }
+.seg button[aria-pressed="true"]:disabled { opacity: 1; cursor: default; }
 
 /* more-boards grid */
 .boards .card { display: flex; align-items: center; gap: 12px; }

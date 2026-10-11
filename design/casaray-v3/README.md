@@ -50,7 +50,7 @@ python3 design/casaray-v3/tools/gen_entity_table.py        # regenerate ENTITY_M
 NODE_PATH="$(npm root -g)" node design/casaray-v3/tools/test_and_capture.cjs
 ```
 
-The harness needs Playwright with Chromium. It runs 236 checks and rewrites
+The harness needs Playwright with Chromium. It runs 335 checks and rewrites
 `screenshots/`:
 
 - **Navigation:** every board, every room, back, browser back, deep links, the phone tab bar and More sheet.
@@ -60,6 +60,7 @@ The harness needs Playwright with Chromium. It runs 236 checks and rewrites
 - **Home first screen (V3-005):** status, people, energy and One tap fit 1180×820 in four scenarios and both languages, nothing clips, standing-distance sizes hold, the energy strip keeps measured / no data / unknown / no source apart, One tap states state and action.
 - **Uncertainty and touch targets (V3-007):** 0 alerts + 1 unanswered check is grey and only a fully answered house is green, a real zero bill is A$0.00 while an unavailable or unknown amount reads no data, an unavailable occupancy sensor keeps its tile as no data, and every interactive element on every board, the demo panel and the phone More sheet is at least 44×44 px at wall, portrait and phone sizes.
 - **Missing-state fallbacks (backlog 9–11):** a missing, null, non-numeric or out-of-range elapsed time, brightness or cover position reads no data, never "1 min", "0%" or "Blind closed", while real 0 values still draw as 0, in both languages.
+- **HVAC control contract (V3-008):** Home has no HVAC control and keeps its link when the air-con cannot answer; unavailable and unknown climate draw no enabled control; every mode and target action names its result and changes one thing; a target is never invented, pre-filled or clamped to a made-up limit; no fan or swing is invented; nothing restores a prior mode; forged actions are refused at click time; "Parents Comfort" is not built.
 - **Honesty:** the outage scenario says *No data*, never `0 W` or "All closed", and counts the checks that could not answer.
 - **Console:** no page errors.
 

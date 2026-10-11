@@ -6,6 +6,201 @@ and `ha-deploy` are unaffected by everything here.
 
 ---
 
+## V3-008 · 11/10/26 · HVAC control contract
+
+**Status:** defined and enforced in the prototype and its tests. Specification
+and prototype-safety work only: no Home Assistant YAML, no live access, no
+deployment.
+
+> **NO REAL HVAC IMPLEMENTATION MAY BEGIN UNTIL THIS CONTRACT IS SATISFIED.**
+> The production gate is at the end of this entry.
+
+It builds on V3-007 (the air-con is not an Off ↔ Cool toggle) and answers the
+question V3-007 left open: exactly what may the wall dashboard do to
+`climate.bedroom_parents_room_ac`, and under what conditions.
+
+### Audit of the prototype before this change
+
+| Where | What it did |
+|---|---|
+| Home One tap card | Navigation only (V3-007). It said "On" or "Off", and when the entity could not answer it became a dead dashed card with no link. |
+| Parents' room page | `acCard`: Off / Cool / Heat / Fan segment, ±0.5° steps, target readout. |
+| Climate board | The same `acCard`. |
+| Mode buttons | Wrote the state directly, with no check that the entity was answering or supported that mode. |
+| ±0.5° | Added to the target and clamped to **16–30°, numbers the prototype invented**. With no target it computed `undefined + 0.5`. Worked while Off. |
+| Wording | "Cooling" / "Heating" for a *mode*, which can be wrong while the compressor is idle. "On" for any non-Off mode. |
+| Fan and swing | No control existed. |
+| Scripts and presets | None. |
+| Generic toggle | Not attached to the climate entity, but `toggleEntity` would have toggled any domain. |
+| Missing attributes | A climate entity answering with no attributes would have thrown. |
+
+### The contract
+
+**R1. Home is information and navigation only.** The One tap air-con card shows
+the mode (Off, Cool, Heat, Fan only, or as reported) and the room temperature,
+and opens the Parents' room page. It carries no mode, target or toggle control.
+No bare Off → Cool, no "Turn on", no implicit restore of a prior mode. It keeps
+its place and its link when the entity cannot answer.
+
+**R2. Controls exist only while the entity answers.** The Parents' room page and
+the Climate board (one shared card, so one contract) draw controls only when the
+entity reports a state that is not `unavailable`, `unknown` or empty.
+
+**R3. Every action names its result and sets exactly one thing.**
+- A mode action sets the HVAC mode and nothing else.
+- A target action sets the target temperature and nothing else.
+- The button says what will happen: "Turn off", "Set Cool", "Set Heat",
+  "Set Fan only", "Set 22.5°". The current mode is a marked, inactive button
+  ("Current: Cool"), so the current state and the proposed action are never the
+  same word.
+- "Turn on", "Resume" and "Restore" are not used, because they do not name a
+  state.
+- In a build, a mode action is `climate.set_hvac_mode` with an explicit
+  `hvac_mode`, and a target action is `climate.set_temperature` with only
+  `temperature`. `climate.turn_on` is prohibited (it restores whatever the
+  device last had), and no action may bundle a mode, temperature, fan or swing.
+
+**R4. Modes.** A mode is offered only if the entity lists it in `hvac_modes` and
+the panel can name it (Off, Cool, Heat, Fan only). With no `hvac_modes` reported
+no mode button is drawn, and the card says "Mode choices: no data". A mode the
+entity reports that the panel cannot name (for example `auto`) is shown exactly
+as reported, no button is marked current, and it can be left only by an explicit
+action.
+
+**R5. Leaving Off.**
+- The mode must be explicit, as above.
+- The target is **not sent and not pre-filled**. What the card shows afterwards
+  is whatever the entity reports. A target that is missing stays "No data".
+- The fan mode and swing mode are **never sent, shown or invented**. A future
+  control for either needs the entity's `fan_modes` / `swing_modes` first and its
+  own contract entry.
+- An attribute that is unavailable stays unknown.
+- What the *device* then does (it may restore its own last target, fan or swing)
+  is device behaviour. The panel reports it only once the entity does.
+
+**R6. Target temperature.** The ± buttons are enabled only when **all** of these
+hold, and each says the exact value it will set:
+- the mode is Cool or Heat (a target means nothing while Off or Fan only);
+- `temperature` is numeric and inside the entity's reported `min_temp`..`max_temp`;
+- `target_temp_step` is reported and positive;
+- the result is inside the reported limits. A limit disables a button. Nothing is
+  ever rounded or clamped to a number the panel made up.
+
+A missing, null, non-numeric or out-of-range target reads "No data", with both
+steps disabled and a one-line reason. The prototype's 16, 30 and 0.5 now live in
+**mock data only**, flagged as demo capabilities that were not read from the
+device; they are not part of this contract.
+
+**R7. Unavailable, unknown or incomplete entity.**
+
+| Entity | Card | Controls |
+|---|---|---|
+| `unavailable` | Dashed, "Offline" + No data pill | None drawn |
+| `unknown` | Dashed, "State unknown" + No data pill | None drawn |
+| Answers, attributes missing | Mode shown; room "No data"; target "No data" | Steps disabled with a reason; modes only as reported |
+| Home card, either state | Dashed, "Offline" / "No data", no mode, no temperature | A link to the Parents' room page, nothing else |
+
+No mode, target, fan or swing is inferred in any of these.
+
+**R8. Click-time re-check.** The handler re-validates against the live entity on
+every click. A stale, forged or tampered button (including a generic toggle or a
+target outside the reported range) is refused and changes nothing. The generic
+toggle can never act on a `climate.` entity.
+
+**R9. Wording.** Current state, proposed action and unavailable state use
+different words, in both languages:
+
+| | English | 中文 |
+|---|---|---|
+| Current mode | Current: Cool | 当前：制冷 |
+| Home card | Cool · room 23.3° — Tap for controls | 制冷 · 室温 23.3° — 点按查看控制 |
+| Actions | Turn off · Set Cool · Set Heat · Set Fan only · Set 22.5° | 关闭空调 · 设为制冷 · 设为制热 · 设为仅送风 · 设为 22.5° |
+| Offline | Offline | 离线 |
+| Unknown | State unknown (card) · No data (Home) | 状态未知 · 无数据 |
+| Missing | No data · Room: no data | 无数据 · 室温：无数据 |
+
+### Parents Comfort: FUTURE / UNAPPROVED
+
+Not built, and nothing in the prototype may imply it exists (a test fails if
+"Parents Comfort" appears on any page). A preset may be proposed only when it
+states, for each of the following, a value or an explicit "left unchanged":
+HVAC mode, target temperature, fan mode, swing mode. Until the owner defines and
+approves one, it stays out.
+
+### Review of the controls that existed
+
+| Control | Verdict | Now |
+|---|---|---|
+| Home air-con card | SAFE AS-IS (navigation) | Shows the mode, not "On"; keeps its link when no data |
+| Mode: Off | NEEDS GUARD | "Turn off"; only if reported, valid and not already Off |
+| Mode: Cool, Heat | NEEDS GUARD | "Set Cool" / "Set Heat"; same guards; sets the mode only |
+| Mode: Fan (fan_only) | NEEDS GUARD, retained | "Set Fan only"; same guards; the owner may still drop it |
+| ± 0.5° | NEEDS GUARD | Names the result; needs a valid target, reported step and limits, and Cool or Heat |
+| Clamp to 16–30° | REMOVE | Replaced by the entity's own limits |
+| "Cooling" / "Heating" wording | REMOVE | The reported mode is shown, never a claimed action |
+| Fan speed and swing controls | FUTURE ONLY | None exist; none may be added without R5 |
+| Generic toggle on climate | REMOVE | Refused in code |
+| Parents Comfort | FUTURE / UNAPPROVED | Not built |
+
+### Contract tests
+
+The harness grows from 236 to 335 checks: 98 new `hvac …` checks, and the older
+air-con interaction check now steps the target only in Cool. They cover:
+
+- Home has no HVAC control, shows the mode, and keeps its link when the entity
+  is unavailable or unknown; a forged generic toggle or power toggle changes
+  nothing;
+- unavailable and unknown climate draw no enabled control on the Parents' room
+  page or the Climate board, and forged mode and target actions are refused at
+  click time;
+- explicit Off, Cool, Heat and Fan only each change the mode and nothing else
+  (target, fan, swing and limits untouched), the toast names the result, and no
+  fan or swing attribute is ever created;
+- no implicit restore: after Cool then Off, nothing reads Turn on / Resume /
+  Restore and leaving Off picks exactly the named mode; leaving Off with no
+  target leaves it No data;
+- only reported modes are offered; an unrecognised mode is shown as reported;
+- target steps name their value, are disabled for a missing, null, text or
+  out-of-range target, for a missing step, minimum or maximum, and while Off or
+  Fan only; the limits are the entity's own (a wider range allows steps the old
+  16–30° clamp refused); forged out-of-range targets are refused;
+- wording in English and 中文, ≥ 44 px, no clipping and no overflow at wall,
+  portrait and phone sizes; "Parents Comfort" appears nowhere.
+
+Run against the previous prototype (`4dd8a25`), 34 of these fail, including two
+groups that crash outright because the old card threw on a climate entity with
+no attributes. The 9 that pass there are positive controls (Home has no control,
+tapping navigates, Cool sets only the mode, an unavailable climate draws no
+control, "Parents Comfort" is absent, no page errors).
+
+### Production-build gate
+
+Before any Home Assistant YAML touches this entity, all of these must be done,
+and **no real HVAC implementation may begin until they are**:
+
+1. **Read-only live check** (not done here) of `climate.bedroom_parents_room_ac`:
+   its states, `hvac_modes`, `min_temp`, `max_temp`, `target_temp_step`,
+   `fan_modes`, `swing_modes` and supported features, and what the device does to
+   its own target, fan and swing when leaving Off. The prototype's capability
+   numbers are demo values.
+2. **Owner approval of the exact controls** a wall panel exposes, including
+   whether Heat and Fan only should exist at all.
+3. **The native cards checked against R3 and R9.** The V2 dashboard uses the
+   native `thermostat` and `climate-hvac-modes` pieces; whether they can name the
+   resulting state on each button, honour R6 and be disabled per R7 has **not**
+   been verified, and the plan must either meet the contract or record an owner
+   decision to relax a rule.
+4. **The contract tests carried into the build's validation**, so an implicit
+   mode, an invented target, limit, fan or swing, or a toggle on Home fails it.
+5. **A defined "Parents Comfort"**, if the owner wants one, per the section above.
+6. **A rollback** for the dashboard change.
+
+Not changed by this entry: Home's first-screen geometry (max Home height still
+1,723 px), the energy truth rules, the 44 px targets, the V3-005 and V3-007
+decisions.
+
+---
+
 ## V3-007 · 05/10/26 · Owner review of PR #4: air-con is navigation, Home is shorter
 
 **Status:** owner decisions, recorded and applied in the prototype.

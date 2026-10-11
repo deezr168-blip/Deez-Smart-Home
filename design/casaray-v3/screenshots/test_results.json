@@ -1,5 +1,5 @@
 {
-  "passed": 236,
+  "passed": 335,
   "failed": 0,
   "results": [
     {
@@ -273,14 +273,19 @@
       "detail": "Unpaid 4 of 6 Overdue 1 Next due Electricity 18/10/26 → Unpaid 3 of 6 Overdue 0 Next due Electricity 18/10/26"
     },
     {
-      "name": "interact: AC target steps by 0.5°",
+      "name": "interact: AC target steps are disabled while the air-con is Off (V3-008)",
       "ok": true,
-      "detail": "22 → 22.5"
+      "detail": ""
     },
     {
       "name": "interact: AC mode segment selects Cool",
       "ok": true,
       "detail": ""
+    },
+    {
+      "name": "interact: AC target steps by the reported step in Cool",
+      "ok": true,
+      "detail": "22 → 22.5"
     },
     {
       "name": "interact: purifier speed segment",
@@ -1179,6 +1184,496 @@
     },
     {
       "name": "fallbacks: no page errors 中文",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "hvac home: no mode, target or toggle control exists on Home EN",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "hvac home: card says the mode \"Off\", not a bare On EN",
+      "ok": true,
+      "detail": "Off | room 23.3° | Parents' air-con | Tap for controls"
+    },
+    {
+      "name": "hvac home: card says the mode \"Cool\", not a bare On EN",
+      "ok": true,
+      "detail": "Cool | room 23.3° | Parents' air-con | Tap for controls"
+    },
+    {
+      "name": "hvac home: card says the mode \"Heat\", not a bare On EN",
+      "ok": true,
+      "detail": "Heat | room 23.3° | Parents' air-con | Tap for controls"
+    },
+    {
+      "name": "hvac home: card says the mode \"Fan only\", not a bare On EN",
+      "ok": true,
+      "detail": "Fan only | room 23.3° | Parents' air-con | Tap for controls"
+    },
+    {
+      "name": "hvac home: unavailable climate reads \"Offline\", draws dashed, infers no mode and keeps its link EN",
+      "ok": true,
+      "detail": "Offline | Parents' air-con | Tap for controls"
+    },
+    {
+      "name": "hvac home: unknown climate reads \"No data\", draws dashed, infers no mode and keeps its link EN",
+      "ok": true,
+      "detail": "No data | Parents' air-con | Tap for controls"
+    },
+    {
+      "name": "hvac home: tapping the card only navigates to the Parents' room EN",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "hvac home: a generic toggle aimed at the climate entity changes nothing EN",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "hvac home: a power toggle aimed at the climate entity changes nothing EN",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "hvac home: no mode, target or toggle control exists on Home 中文",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "hvac home: card says the mode \"关\", not a bare On 中文",
+      "ok": true,
+      "detail": "关 | 室温 23.3° | 父母房空调 | 点按查看控制"
+    },
+    {
+      "name": "hvac home: card says the mode \"制冷\", not a bare On 中文",
+      "ok": true,
+      "detail": "制冷 | 室温 23.3° | 父母房空调 | 点按查看控制"
+    },
+    {
+      "name": "hvac home: card says the mode \"制热\", not a bare On 中文",
+      "ok": true,
+      "detail": "制热 | 室温 23.3° | 父母房空调 | 点按查看控制"
+    },
+    {
+      "name": "hvac home: card says the mode \"仅送风\", not a bare On 中文",
+      "ok": true,
+      "detail": "仅送风 | 室温 23.3° | 父母房空调 | 点按查看控制"
+    },
+    {
+      "name": "hvac home: unavailable climate reads \"离线\", draws dashed, infers no mode and keeps its link 中文",
+      "ok": true,
+      "detail": "离线 | 父母房空调 | 点按查看控制"
+    },
+    {
+      "name": "hvac home: unknown climate reads \"无数据\", draws dashed, infers no mode and keeps its link 中文",
+      "ok": true,
+      "detail": "无数据 | 父母房空调 | 点按查看控制"
+    },
+    {
+      "name": "hvac home: tapping the card only navigates to the Parents' room 中文",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "hvac home: a generic toggle aimed at the climate entity changes nothing 中文",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "hvac home: a power toggle aimed at the climate entity changes nothing 中文",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "hvac room-parents: unavailable climate draws no enabled control, says \"Offline\" and infers nothing EN",
+      "ok": true,
+      "detail": "Air conditioning | Offline | NO DATA"
+    },
+    {
+      "name": "hvac room-parents: unknown climate draws no enabled control, says \"State unknown\" and infers nothing EN",
+      "ok": true,
+      "detail": "Air conditioning | State unknown | NO DATA"
+    },
+    {
+      "name": "hvac climate: unavailable climate draws no enabled control, says \"Offline\" and infers nothing EN",
+      "ok": true,
+      "detail": "Air conditioning | Offline | NO DATA"
+    },
+    {
+      "name": "hvac climate: unknown climate draws no enabled control, says \"State unknown\" and infers nothing EN",
+      "ok": true,
+      "detail": "Air conditioning | State unknown | NO DATA"
+    },
+    {
+      "name": "hvac unavailable: forged mode and target actions are refused at click time EN",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "hvac unknown: forged mode and target actions are refused at click time EN",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "hvac missing attributes: mode shown, everything else No data, nothing enabled but nothing invented EN",
+      "ok": true,
+      "detail": "{\"na\":false,\"text\":\"Parents' room AC | Cool · Room: no data | No data | Target | No data | No data | Target: no data, so it cannot be changed. | Mode choices: no data, so the mode cannot be changed.\",\"sub\":\"Cool · Room: no data\",\"target\":\"No data\",\"modes\":[],\"steps\":[{\"dir\":\"down\",\"text\":\"No data\",\"disabled\":true,\"target\":null},{\"dir\":\"up\",\"text\":\"No data\",\"disabled\":true,\"target\":null}],\"why\":[\"Target: no data, so it cannot be changed.\",\"Mode choices: no data, so the mode cannot be changed.\"]}"
+    },
+    {
+      "name": "hvac room-parents: unavailable climate draws no enabled control, says \"离线\" and infers nothing 中文",
+      "ok": true,
+      "detail": "空调 | 离线 | 无数据"
+    },
+    {
+      "name": "hvac room-parents: unknown climate draws no enabled control, says \"状态未知\" and infers nothing 中文",
+      "ok": true,
+      "detail": "空调 | 状态未知 | 无数据"
+    },
+    {
+      "name": "hvac climate: unavailable climate draws no enabled control, says \"离线\" and infers nothing 中文",
+      "ok": true,
+      "detail": "空调 | 离线 | 无数据"
+    },
+    {
+      "name": "hvac climate: unknown climate draws no enabled control, says \"状态未知\" and infers nothing 中文",
+      "ok": true,
+      "detail": "空调 | 状态未知 | 无数据"
+    },
+    {
+      "name": "hvac unavailable: forged mode and target actions are refused at click time 中文",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "hvac unknown: forged mode and target actions are refused at click time 中文",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "hvac missing attributes: mode shown, everything else No data, nothing enabled but nothing invented 中文",
+      "ok": true,
+      "detail": "{\"na\":false,\"text\":\"父母房空调 | 制冷 · 室温：无数据 | 无数据 | 目标 | 无数据 | 无数据 | 目标温度：无数据，无法调整。 | 可选模式：无数据，无法更改模式。\",\"sub\":\"制冷 · 室温：无数据\",\"target\":\"无数据\",\"modes\":[],\"steps\":[{\"dir\":\"down\",\"text\":\"无数据\",\"disabled\":true,\"target\":null},{\"dir\":\"up\",\"text\":\"无数据\",\"disabled\":true,\"target\":null}],\"why\":[\"目标温度：无数据，无法调整。\",\"可选模式：无数据，无法更改模式。\"]}"
+    },
+    {
+      "name": "hvac wording: from Off the buttons name the result (\"Set Cool\", \"Set Heat\", \"Set Fan only\") and mark the current mode EN",
+      "ok": true,
+      "detail": "[{\"mode\":\"off\",\"text\":\"Current: Off\",\"pressed\":\"true\",\"disabled\":true},{\"mode\":\"cool\",\"text\":\"Set Cool\",\"pressed\":\"false\",\"disabled\":false},{\"mode\":\"heat\",\"text\":\"Set Heat\",\"pressed\":\"false\",\"disabled\":false},{\"mode\":\"fan_only\",\"text\":\"Set Fan only\",\"pressed\":\"false\",\"disabled\":false}]"
+    },
+    {
+      "name": "hvac action: \"Set Cool\" sets the mode to cool and nothing else (target, fan, swing, limits untouched) EN",
+      "ok": true,
+      "detail": "cool {\"current\":23.3,\"target\":22,\"hvac_modes\":[\"off\",\"cool\",\"heat\",\"fan_only\"],\"min_temp\":16,\"max_temp\":30,\"target_temp_step\":0.5,\"fan_mode\":\"low\",\"swing_mode\":\"vertical\"}"
+    },
+    {
+      "name": "hvac action: the toast names the result of \"Set Cool\" EN",
+      "ok": true,
+      "detail": "Demo: air-con set to Cool. No device was contacted."
+    },
+    {
+      "name": "hvac action: \"Set Heat\" sets the mode to heat and nothing else (target, fan, swing, limits untouched) EN",
+      "ok": true,
+      "detail": "heat {\"current\":23.3,\"target\":22,\"hvac_modes\":[\"off\",\"cool\",\"heat\",\"fan_only\"],\"min_temp\":16,\"max_temp\":30,\"target_temp_step\":0.5,\"fan_mode\":\"low\",\"swing_mode\":\"vertical\"}"
+    },
+    {
+      "name": "hvac action: the toast names the result of \"Set Heat\" EN",
+      "ok": true,
+      "detail": "Demo: air-con set to Heat. No device was contacted."
+    },
+    {
+      "name": "hvac action: \"Set Fan only\" sets the mode to fan_only and nothing else (target, fan, swing, limits untouched) EN",
+      "ok": true,
+      "detail": "fan_only {\"current\":23.3,\"target\":22,\"hvac_modes\":[\"off\",\"cool\",\"heat\",\"fan_only\"],\"min_temp\":16,\"max_temp\":30,\"target_temp_step\":0.5,\"fan_mode\":\"low\",\"swing_mode\":\"vertical\"}"
+    },
+    {
+      "name": "hvac action: the toast names the result of \"Set Fan only\" EN",
+      "ok": true,
+      "detail": "Demo: air-con set to Fan only. No device was contacted."
+    },
+    {
+      "name": "hvac action: \"Turn off\" sets the mode to off and nothing else (target, fan, swing, limits untouched) EN",
+      "ok": true,
+      "detail": "off {\"current\":23.3,\"target\":22,\"hvac_modes\":[\"off\",\"cool\",\"heat\",\"fan_only\"],\"min_temp\":16,\"max_temp\":30,\"target_temp_step\":0.5,\"fan_mode\":\"low\",\"swing_mode\":\"vertical\"}"
+    },
+    {
+      "name": "hvac action: the toast names the result of \"Turn off\" EN",
+      "ok": true,
+      "detail": "Demo: air-con set to Off. No device was contacted."
+    },
+    {
+      "name": "hvac action: no fan_mode or swing_mode is invented by any action EN",
+      "ok": true,
+      "detail": "{\"current\":23.3,\"target\":22.5,\"hvac_modes\":[\"off\",\"cool\",\"heat\",\"fan_only\"],\"min_temp\":16,\"max_temp\":30,\"target_temp_step\":0.5}"
+    },
+    {
+      "name": "hvac restore: after Cool then Off, no control reads Turn on / Resume / Restore and Cool is only offered as \"Set Cool\" EN",
+      "ok": true,
+      "detail": "Parents' room AC | Off · Room 23.3° | 22.5° | Target | Set 22.0° | Set 23.0° | Set Cool or Heat first to change the target. | Current: Off | Set Cool | Set Heat | Set Fan only"
+    },
+    {
+      "name": "hvac restore: leaving Off chooses exactly the named mode, never the previous one EN",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "hvac target: leaving Off with no target leaves it No data and disabled, never a default EN",
+      "ok": true,
+      "detail": "[{\"dir\":\"down\",\"text\":\"No data\",\"disabled\":true,\"target\":null},{\"dir\":\"up\",\"text\":\"No data\",\"disabled\":true,\"target\":null}]"
+    },
+    {
+      "name": "hvac wording: from Off the buttons name the result (\"设为制冷\", \"设为制热\", \"设为仅送风\") and mark the current mode 中文",
+      "ok": true,
+      "detail": "[{\"mode\":\"off\",\"text\":\"当前：关\",\"pressed\":\"true\",\"disabled\":true},{\"mode\":\"cool\",\"text\":\"设为制冷\",\"pressed\":\"false\",\"disabled\":false},{\"mode\":\"heat\",\"text\":\"设为制热\",\"pressed\":\"false\",\"disabled\":false},{\"mode\":\"fan_only\",\"text\":\"设为仅送风\",\"pressed\":\"false\",\"disabled\":false}]"
+    },
+    {
+      "name": "hvac action: \"设为制冷\" sets the mode to cool and nothing else (target, fan, swing, limits untouched) 中文",
+      "ok": true,
+      "detail": "cool {\"current\":23.3,\"target\":22,\"hvac_modes\":[\"off\",\"cool\",\"heat\",\"fan_only\"],\"min_temp\":16,\"max_temp\":30,\"target_temp_step\":0.5,\"fan_mode\":\"low\",\"swing_mode\":\"vertical\"}"
+    },
+    {
+      "name": "hvac action: the toast names the result of \"设为制冷\" 中文",
+      "ok": true,
+      "detail": "演示：空调已设为制冷。没有联系任何设备。"
+    },
+    {
+      "name": "hvac action: \"设为制热\" sets the mode to heat and nothing else (target, fan, swing, limits untouched) 中文",
+      "ok": true,
+      "detail": "heat {\"current\":23.3,\"target\":22,\"hvac_modes\":[\"off\",\"cool\",\"heat\",\"fan_only\"],\"min_temp\":16,\"max_temp\":30,\"target_temp_step\":0.5,\"fan_mode\":\"low\",\"swing_mode\":\"vertical\"}"
+    },
+    {
+      "name": "hvac action: the toast names the result of \"设为制热\" 中文",
+      "ok": true,
+      "detail": "演示：空调已设为制热。没有联系任何设备。"
+    },
+    {
+      "name": "hvac action: \"设为仅送风\" sets the mode to fan_only and nothing else (target, fan, swing, limits untouched) 中文",
+      "ok": true,
+      "detail": "fan_only {\"current\":23.3,\"target\":22,\"hvac_modes\":[\"off\",\"cool\",\"heat\",\"fan_only\"],\"min_temp\":16,\"max_temp\":30,\"target_temp_step\":0.5,\"fan_mode\":\"low\",\"swing_mode\":\"vertical\"}"
+    },
+    {
+      "name": "hvac action: the toast names the result of \"设为仅送风\" 中文",
+      "ok": true,
+      "detail": "演示：空调已设为仅送风。没有联系任何设备。"
+    },
+    {
+      "name": "hvac action: \"关闭空调\" sets the mode to off and nothing else (target, fan, swing, limits untouched) 中文",
+      "ok": true,
+      "detail": "off {\"current\":23.3,\"target\":22,\"hvac_modes\":[\"off\",\"cool\",\"heat\",\"fan_only\"],\"min_temp\":16,\"max_temp\":30,\"target_temp_step\":0.5,\"fan_mode\":\"low\",\"swing_mode\":\"vertical\"}"
+    },
+    {
+      "name": "hvac action: the toast names the result of \"关闭空调\" 中文",
+      "ok": true,
+      "detail": "演示：空调已设为关。没有联系任何设备。"
+    },
+    {
+      "name": "hvac action: no fan_mode or swing_mode is invented by any action 中文",
+      "ok": true,
+      "detail": "{\"current\":23.3,\"target\":22.5,\"hvac_modes\":[\"off\",\"cool\",\"heat\",\"fan_only\"],\"min_temp\":16,\"max_temp\":30,\"target_temp_step\":0.5}"
+    },
+    {
+      "name": "hvac restore: after Cool then Off, no control reads Turn on / Resume / Restore and Cool is only offered as \"设为制冷\" 中文",
+      "ok": true,
+      "detail": "父母房空调 | 关 · 室温 23.3° | 22.5° | 目标 | 设为 22.0° | 设为 23.0° | 请先设为制冷或制热，再调整目标温度。 | 当前：关 | 设为制冷 | 设为制热 | 设为仅送风"
+    },
+    {
+      "name": "hvac restore: leaving Off chooses exactly the named mode, never the previous one 中文",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "hvac target: leaving Off with no target leaves it No data and disabled, never a default 中文",
+      "ok": true,
+      "detail": "[{\"dir\":\"down\",\"text\":\"无数据\",\"disabled\":true,\"target\":null},{\"dir\":\"up\",\"text\":\"无数据\",\"disabled\":true,\"target\":null}]"
+    },
+    {
+      "name": "hvac modes: only the modes the entity reports are offered",
+      "ok": true,
+      "detail": "[{\"mode\":\"off\",\"text\":\"Current: Off\",\"pressed\":\"true\",\"disabled\":true},{\"mode\":\"cool\",\"text\":\"Set Cool\",\"pressed\":\"false\",\"disabled\":false}]"
+    },
+    {
+      "name": "hvac modes: with no reported hvac_modes no mode button is drawn and the card says so",
+      "ok": true,
+      "detail": "[\"Set Cool or Heat first to change the target.\",\"Mode choices: no data, so the mode cannot be changed.\"]"
+    },
+    {
+      "name": "hvac modes: an unrecognised reported mode is shown as reported, not mapped to one of ours",
+      "ok": true,
+      "detail": "auto · Room 23.3° [{\"dir\":\"down\",\"text\":\"Set 21.5°\",\"disabled\":true,\"target\":null},{\"dir\":\"up\",\"text\":\"Set 22.5°\",\"disabled\":true,\"target\":null}]"
+    },
+    {
+      "name": "hvac target: steps name the temperature they set (\"Set 21.5°\" / \"Set 22.5°\") EN",
+      "ok": true,
+      "detail": "[{\"dir\":\"down\",\"text\":\"Set 21.5°\",\"disabled\":false,\"target\":\"21.5\"},{\"dir\":\"up\",\"text\":\"Set 22.5°\",\"disabled\":false,\"target\":\"22.5\"}]"
+    },
+    {
+      "name": "hvac target: down sets exactly the named value and changes only the target EN",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "hvac target: a missing target reads No data and disables both steps EN",
+      "ok": true,
+      "detail": "{\"na\":false,\"text\":\"Parents' room AC | Cool · Room 23.3° | No data | Target | No data | No data | Target: no data, so it cannot be changed. | Turn off | Current: Cool | Set Heat | Set Fan only\",\"sub\":\"Cool · Room 23.3°\",\"target\":\"No data\",\"modes\":[{\"mode\":\"off\",\"text\":\"Turn off\",\"pressed\":\"false\",\"disabled\":false},{\"mode\":\"cool\",\"text\":\"Current: Cool\",\"pressed\":\"true\",\"disabled\":true},{\"mode\":\"heat\",\"text\":\"Set Heat\",\"pressed\":\"false\",\"disabled\":false},{\"mode\":\"fan_only\",\"text\":\"Set Fan only\",\"pressed\":\"false\",\"disabled\":false}],\"steps\":[{\"dir\":\"down\",\"text\":\"No data\",\"disabled\":true,\"target\":null},{\"dir\":\"up\",\"text\":\"No data\",\"disabled\":true,\"target\":null}],\"why\":[\"Target: no data, so it cannot be changed.\"]}"
+    },
+    {
+      "name": "hvac target: a null target reads No data and disables both steps EN",
+      "ok": true,
+      "detail": "{\"na\":false,\"text\":\"Parents' room AC | Cool · Room 23.3° | No data | Target | No data | No data | Target: no data, so it cannot be changed. | Turn off | Current: Cool | Set Heat | Set Fan only\",\"sub\":\"Cool · Room 23.3°\",\"target\":\"No data\",\"modes\":[{\"mode\":\"off\",\"text\":\"Turn off\",\"pressed\":\"false\",\"disabled\":false},{\"mode\":\"cool\",\"text\":\"Current: Cool\",\"pressed\":\"true\",\"disabled\":true},{\"mode\":\"heat\",\"text\":\"Set Heat\",\"pressed\":\"false\",\"disabled\":false},{\"mode\":\"fan_only\",\"text\":\"Set Fan only\",\"pressed\":\"false\",\"disabled\":false}],\"steps\":[{\"dir\":\"down\",\"text\":\"No data\",\"disabled\":true,\"target\":null},{\"dir\":\"up\",\"text\":\"No data\",\"disabled\":true,\"target\":null}],\"why\":[\"Target: no data, so it cannot be changed.\"]}"
+    },
+    {
+      "name": "hvac target: a text target reads No data and disables both steps EN",
+      "ok": true,
+      "detail": "{\"na\":false,\"text\":\"Parents' room AC | Cool · Room 23.3° | No data | Target | No data | No data | Target: no data, so it cannot be changed. | Turn off | Current: Cool | Set Heat | Set Fan only\",\"sub\":\"Cool · Room 23.3°\",\"target\":\"No data\",\"modes\":[{\"mode\":\"off\",\"text\":\"Turn off\",\"pressed\":\"false\",\"disabled\":false},{\"mode\":\"cool\",\"text\":\"Current: Cool\",\"pressed\":\"true\",\"disabled\":true},{\"mode\":\"heat\",\"text\":\"Set Heat\",\"pressed\":\"false\",\"disabled\":false},{\"mode\":\"fan_only\",\"text\":\"Set Fan only\",\"pressed\":\"false\",\"disabled\":false}],\"steps\":[{\"dir\":\"down\",\"text\":\"No data\",\"disabled\":true,\"target\":null},{\"dir\":\"up\",\"text\":\"No data\",\"disabled\":true,\"target\":null}],\"why\":[\"Target: no data, so it cannot be changed.\"]}"
+    },
+    {
+      "name": "hvac target: a out of range target reads No data and disables both steps EN",
+      "ok": true,
+      "detail": "{\"na\":false,\"text\":\"Parents' room AC | Cool · Room 23.3° | No data | Target | No data | No data | Temperature limits: no data, so the target cannot be changed. | Turn off | Current: Cool | Set Heat | Set Fan only\",\"sub\":\"Cool · Room 23.3°\",\"target\":\"No data\",\"modes\":[{\"mode\":\"off\",\"text\":\"Turn off\",\"pressed\":\"false\",\"disabled\":false},{\"mode\":\"cool\",\"text\":\"Current: Cool\",\"pressed\":\"true\",\"disabled\":true},{\"mode\":\"heat\",\"text\":\"Set Heat\",\"pressed\":\"false\",\"disabled\":false},{\"mode\":\"fan_only\",\"text\":\"Set Fan only\",\"pressed\":\"false\",\"disabled\":false}],\"steps\":[{\"dir\":\"down\",\"text\":\"No data\",\"disabled\":true,\"target\":null},{\"dir\":\"up\",\"text\":\"No data\",\"disabled\":true,\"target\":null}],\"why\":[\"Temperature limits: no data, so the target cannot be changed.\"]}"
+    },
+    {
+      "name": "hvac target: with no reported step nothing is invented and both steps are disabled EN",
+      "ok": true,
+      "detail": "{\"na\":false,\"text\":\"Parents' room AC | Cool · Room 23.3° | No data | Target | No data | No data | Temperature limits: no data, so the target cannot be changed. | Turn off | Current: Cool | Set Heat | Set Fan only\",\"sub\":\"Cool · Room 23.3°\",\"target\":\"No data\",\"modes\":[{\"mode\":\"off\",\"text\":\"Turn off\",\"pressed\":\"false\",\"disabled\":false},{\"mode\":\"cool\",\"text\":\"Current: Cool\",\"pressed\":\"true\",\"disabled\":true},{\"mode\":\"heat\",\"text\":\"Set Heat\",\"pressed\":\"false\",\"disabled\":false},{\"mode\":\"fan_only\",\"text\":\"Set Fan only\",\"pressed\":\"false\",\"disabled\":false}],\"steps\":[{\"dir\":\"down\",\"text\":\"No data\",\"disabled\":true,\"target\":null},{\"dir\":\"up\",\"text\":\"No data\",\"disabled\":true,\"target\":null}],\"why\":[\"Temperature limits: no data, so the target cannot be changed.\"]}"
+    },
+    {
+      "name": "hvac target: with no reported minimum nothing is invented and both steps are disabled EN",
+      "ok": true,
+      "detail": "{\"na\":false,\"text\":\"Parents' room AC | Cool · Room 23.3° | No data | Target | No data | No data | Temperature limits: no data, so the target cannot be changed. | Turn off | Current: Cool | Set Heat | Set Fan only\",\"sub\":\"Cool · Room 23.3°\",\"target\":\"No data\",\"modes\":[{\"mode\":\"off\",\"text\":\"Turn off\",\"pressed\":\"false\",\"disabled\":false},{\"mode\":\"cool\",\"text\":\"Current: Cool\",\"pressed\":\"true\",\"disabled\":true},{\"mode\":\"heat\",\"text\":\"Set Heat\",\"pressed\":\"false\",\"disabled\":false},{\"mode\":\"fan_only\",\"text\":\"Set Fan only\",\"pressed\":\"false\",\"disabled\":false}],\"steps\":[{\"dir\":\"down\",\"text\":\"No data\",\"disabled\":true,\"target\":null},{\"dir\":\"up\",\"text\":\"No data\",\"disabled\":true,\"target\":null}],\"why\":[\"Temperature limits: no data, so the target cannot be changed.\"]}"
+    },
+    {
+      "name": "hvac target: with no reported maximum nothing is invented and both steps are disabled EN",
+      "ok": true,
+      "detail": "{\"na\":false,\"text\":\"Parents' room AC | Cool · Room 23.3° | No data | Target | No data | No data | Temperature limits: no data, so the target cannot be changed. | Turn off | Current: Cool | Set Heat | Set Fan only\",\"sub\":\"Cool · Room 23.3°\",\"target\":\"No data\",\"modes\":[{\"mode\":\"off\",\"text\":\"Turn off\",\"pressed\":\"false\",\"disabled\":false},{\"mode\":\"cool\",\"text\":\"Current: Cool\",\"pressed\":\"true\",\"disabled\":true},{\"mode\":\"heat\",\"text\":\"Set Heat\",\"pressed\":\"false\",\"disabled\":false},{\"mode\":\"fan_only\",\"text\":\"Set Fan only\",\"pressed\":\"false\",\"disabled\":false}],\"steps\":[{\"dir\":\"down\",\"text\":\"No data\",\"disabled\":true,\"target\":null},{\"dir\":\"up\",\"text\":\"No data\",\"disabled\":true,\"target\":null}],\"why\":[\"Temperature limits: no data, so the target cannot be changed.\"]}"
+    },
+    {
+      "name": "hvac target: while off the steps are disabled and say to choose Cool or Heat first EN",
+      "ok": true,
+      "detail": "[\"Set Cool or Heat first to change the target.\"]"
+    },
+    {
+      "name": "hvac target: while fan_only the steps are disabled and say to choose Cool or Heat first EN",
+      "ok": true,
+      "detail": "[\"Set Cool or Heat first to change the target.\"]"
+    },
+    {
+      "name": "hvac target: steps name the temperature they set (\"设为 21.5°\" / \"设为 22.5°\") 中文",
+      "ok": true,
+      "detail": "[{\"dir\":\"down\",\"text\":\"设为 21.5°\",\"disabled\":false,\"target\":\"21.5\"},{\"dir\":\"up\",\"text\":\"设为 22.5°\",\"disabled\":false,\"target\":\"22.5\"}]"
+    },
+    {
+      "name": "hvac target: down sets exactly the named value and changes only the target 中文",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "hvac target: a missing target reads No data and disables both steps 中文",
+      "ok": true,
+      "detail": "{\"na\":false,\"text\":\"父母房空调 | 制冷 · 室温 23.3° | 无数据 | 目标 | 无数据 | 无数据 | 目标温度：无数据，无法调整。 | 关闭空调 | 当前：制冷 | 设为制热 | 设为仅送风\",\"sub\":\"制冷 · 室温 23.3°\",\"target\":\"无数据\",\"modes\":[{\"mode\":\"off\",\"text\":\"关闭空调\",\"pressed\":\"false\",\"disabled\":false},{\"mode\":\"cool\",\"text\":\"当前：制冷\",\"pressed\":\"true\",\"disabled\":true},{\"mode\":\"heat\",\"text\":\"设为制热\",\"pressed\":\"false\",\"disabled\":false},{\"mode\":\"fan_only\",\"text\":\"设为仅送风\",\"pressed\":\"false\",\"disabled\":false}],\"steps\":[{\"dir\":\"down\",\"text\":\"无数据\",\"disabled\":true,\"target\":null},{\"dir\":\"up\",\"text\":\"无数据\",\"disabled\":true,\"target\":null}],\"why\":[\"目标温度：无数据，无法调整。\"]}"
+    },
+    {
+      "name": "hvac target: a null target reads No data and disables both steps 中文",
+      "ok": true,
+      "detail": "{\"na\":false,\"text\":\"父母房空调 | 制冷 · 室温 23.3° | 无数据 | 目标 | 无数据 | 无数据 | 目标温度：无数据，无法调整。 | 关闭空调 | 当前：制冷 | 设为制热 | 设为仅送风\",\"sub\":\"制冷 · 室温 23.3°\",\"target\":\"无数据\",\"modes\":[{\"mode\":\"off\",\"text\":\"关闭空调\",\"pressed\":\"false\",\"disabled\":false},{\"mode\":\"cool\",\"text\":\"当前：制冷\",\"pressed\":\"true\",\"disabled\":true},{\"mode\":\"heat\",\"text\":\"设为制热\",\"pressed\":\"false\",\"disabled\":false},{\"mode\":\"fan_only\",\"text\":\"设为仅送风\",\"pressed\":\"false\",\"disabled\":false}],\"steps\":[{\"dir\":\"down\",\"text\":\"无数据\",\"disabled\":true,\"target\":null},{\"dir\":\"up\",\"text\":\"无数据\",\"disabled\":true,\"target\":null}],\"why\":[\"目标温度：无数据，无法调整。\"]}"
+    },
+    {
+      "name": "hvac target: a text target reads No data and disables both steps 中文",
+      "ok": true,
+      "detail": "{\"na\":false,\"text\":\"父母房空调 | 制冷 · 室温 23.3° | 无数据 | 目标 | 无数据 | 无数据 | 目标温度：无数据，无法调整。 | 关闭空调 | 当前：制冷 | 设为制热 | 设为仅送风\",\"sub\":\"制冷 · 室温 23.3°\",\"target\":\"无数据\",\"modes\":[{\"mode\":\"off\",\"text\":\"关闭空调\",\"pressed\":\"false\",\"disabled\":false},{\"mode\":\"cool\",\"text\":\"当前：制冷\",\"pressed\":\"true\",\"disabled\":true},{\"mode\":\"heat\",\"text\":\"设为制热\",\"pressed\":\"false\",\"disabled\":false},{\"mode\":\"fan_only\",\"text\":\"设为仅送风\",\"pressed\":\"false\",\"disabled\":false}],\"steps\":[{\"dir\":\"down\",\"text\":\"无数据\",\"disabled\":true,\"target\":null},{\"dir\":\"up\",\"text\":\"无数据\",\"disabled\":true,\"target\":null}],\"why\":[\"目标温度：无数据，无法调整。\"]}"
+    },
+    {
+      "name": "hvac target: a out of range target reads No data and disables both steps 中文",
+      "ok": true,
+      "detail": "{\"na\":false,\"text\":\"父母房空调 | 制冷 · 室温 23.3° | 无数据 | 目标 | 无数据 | 无数据 | 温度范围：无数据，无法调整目标温度。 | 关闭空调 | 当前：制冷 | 设为制热 | 设为仅送风\",\"sub\":\"制冷 · 室温 23.3°\",\"target\":\"无数据\",\"modes\":[{\"mode\":\"off\",\"text\":\"关闭空调\",\"pressed\":\"false\",\"disabled\":false},{\"mode\":\"cool\",\"text\":\"当前：制冷\",\"pressed\":\"true\",\"disabled\":true},{\"mode\":\"heat\",\"text\":\"设为制热\",\"pressed\":\"false\",\"disabled\":false},{\"mode\":\"fan_only\",\"text\":\"设为仅送风\",\"pressed\":\"false\",\"disabled\":false}],\"steps\":[{\"dir\":\"down\",\"text\":\"无数据\",\"disabled\":true,\"target\":null},{\"dir\":\"up\",\"text\":\"无数据\",\"disabled\":true,\"target\":null}],\"why\":[\"温度范围：无数据，无法调整目标温度。\"]}"
+    },
+    {
+      "name": "hvac target: with no reported step nothing is invented and both steps are disabled 中文",
+      "ok": true,
+      "detail": "{\"na\":false,\"text\":\"父母房空调 | 制冷 · 室温 23.3° | 无数据 | 目标 | 无数据 | 无数据 | 温度范围：无数据，无法调整目标温度。 | 关闭空调 | 当前：制冷 | 设为制热 | 设为仅送风\",\"sub\":\"制冷 · 室温 23.3°\",\"target\":\"无数据\",\"modes\":[{\"mode\":\"off\",\"text\":\"关闭空调\",\"pressed\":\"false\",\"disabled\":false},{\"mode\":\"cool\",\"text\":\"当前：制冷\",\"pressed\":\"true\",\"disabled\":true},{\"mode\":\"heat\",\"text\":\"设为制热\",\"pressed\":\"false\",\"disabled\":false},{\"mode\":\"fan_only\",\"text\":\"设为仅送风\",\"pressed\":\"false\",\"disabled\":false}],\"steps\":[{\"dir\":\"down\",\"text\":\"无数据\",\"disabled\":true,\"target\":null},{\"dir\":\"up\",\"text\":\"无数据\",\"disabled\":true,\"target\":null}],\"why\":[\"温度范围：无数据，无法调整目标温度。\"]}"
+    },
+    {
+      "name": "hvac target: with no reported minimum nothing is invented and both steps are disabled 中文",
+      "ok": true,
+      "detail": "{\"na\":false,\"text\":\"父母房空调 | 制冷 · 室温 23.3° | 无数据 | 目标 | 无数据 | 无数据 | 温度范围：无数据，无法调整目标温度。 | 关闭空调 | 当前：制冷 | 设为制热 | 设为仅送风\",\"sub\":\"制冷 · 室温 23.3°\",\"target\":\"无数据\",\"modes\":[{\"mode\":\"off\",\"text\":\"关闭空调\",\"pressed\":\"false\",\"disabled\":false},{\"mode\":\"cool\",\"text\":\"当前：制冷\",\"pressed\":\"true\",\"disabled\":true},{\"mode\":\"heat\",\"text\":\"设为制热\",\"pressed\":\"false\",\"disabled\":false},{\"mode\":\"fan_only\",\"text\":\"设为仅送风\",\"pressed\":\"false\",\"disabled\":false}],\"steps\":[{\"dir\":\"down\",\"text\":\"无数据\",\"disabled\":true,\"target\":null},{\"dir\":\"up\",\"text\":\"无数据\",\"disabled\":true,\"target\":null}],\"why\":[\"温度范围：无数据，无法调整目标温度。\"]}"
+    },
+    {
+      "name": "hvac target: with no reported maximum nothing is invented and both steps are disabled 中文",
+      "ok": true,
+      "detail": "{\"na\":false,\"text\":\"父母房空调 | 制冷 · 室温 23.3° | 无数据 | 目标 | 无数据 | 无数据 | 温度范围：无数据，无法调整目标温度。 | 关闭空调 | 当前：制冷 | 设为制热 | 设为仅送风\",\"sub\":\"制冷 · 室温 23.3°\",\"target\":\"无数据\",\"modes\":[{\"mode\":\"off\",\"text\":\"关闭空调\",\"pressed\":\"false\",\"disabled\":false},{\"mode\":\"cool\",\"text\":\"当前：制冷\",\"pressed\":\"true\",\"disabled\":true},{\"mode\":\"heat\",\"text\":\"设为制热\",\"pressed\":\"false\",\"disabled\":false},{\"mode\":\"fan_only\",\"text\":\"设为仅送风\",\"pressed\":\"false\",\"disabled\":false}],\"steps\":[{\"dir\":\"down\",\"text\":\"无数据\",\"disabled\":true,\"target\":null},{\"dir\":\"up\",\"text\":\"无数据\",\"disabled\":true,\"target\":null}],\"why\":[\"温度范围：无数据，无法调整目标温度。\"]}"
+    },
+    {
+      "name": "hvac target: while off the steps are disabled and say to choose Cool or Heat first 中文",
+      "ok": true,
+      "detail": "[\"请先设为制冷或制热，再调整目标温度。\"]"
+    },
+    {
+      "name": "hvac target: while fan_only the steps are disabled and say to choose Cool or Heat first 中文",
+      "ok": true,
+      "detail": "[\"请先设为制冷或制热，再调整目标温度。\"]"
+    },
+    {
+      "name": "hvac target: limits come from the entity (target 34.5, max 35 allows one more step)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "hvac target: at the reported maximum the up step is disabled and nothing exceeds it",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "hvac target: target 12 with minimum 10 steps down to 11.5 (no invented 16° floor)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "hvac target: at the reported minimum the down step is disabled",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "hvac target: forged out-of-range, non-numeric and no-change targets are refused at click time",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "hvac layout: Parents' room and Climate show the same controls, all ≥ 44 px, unclipped, no overflow at wall EN",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "hvac layout: Parents' room and Climate show the same controls, all ≥ 44 px, unclipped, no overflow at wall 中文",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "hvac layout: Parents' room and Climate show the same controls, all ≥ 44 px, unclipped, no overflow at portrait EN",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "hvac layout: Parents' room and Climate show the same controls, all ≥ 44 px, unclipped, no overflow at portrait 中文",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "hvac layout: Parents' room and Climate show the same controls, all ≥ 44 px, unclipped, no overflow at phone EN",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "hvac layout: Parents' room and Climate show the same controls, all ≥ 44 px, unclipped, no overflow at phone 中文",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "hvac preset: \"Parents Comfort\" is not built anywhere (FUTURE / UNAPPROVED)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "hvac: no page errors",
       "ok": true,
       "detail": ""
     }

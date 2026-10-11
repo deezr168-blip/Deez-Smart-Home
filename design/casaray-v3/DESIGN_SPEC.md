@@ -182,6 +182,28 @@ and Energy. A full Home is about two screens (1,619–1,723 px in English,
 1,599–1,683 px in Chinese, measured at 1180 × 820; the preferred target is
 1,640 px, and the over-target days are the ones with four or five alerts).
 
+### HVAC control (V3-008)
+
+The air-con is the one control whose "on" is not a single state, so it has its
+own contract (`DECISIONS.md` V3-008). In short:
+
+- **Home** shows the mode and the room temperature and opens the Parents' room
+  page. It never changes anything.
+- **Parents' room and Climate** share one card. It shows the current mode
+  ("Current: Cool", inactive), then one button per other mode the entity
+  reports, each naming its result ("Turn off", "Set Cool", "Set Heat",
+  "Set Fan only"), and two target buttons that name the value they set
+  ("Set 21.5°", "Set 22.5°").
+- A mode action sets the mode only; a target action sets the target only. The
+  panel never fills in a target, fan or swing, and never restores a prior mode.
+- The target buttons need Cool or Heat, a numeric target inside the entity's
+  own limits, and a reported step. Anything missing reads "No data" with a
+  one-line reason and the buttons disabled.
+- An unavailable or unknown entity draws a dashed card with no controls
+  ("Offline" / "State unknown"). Home keeps its link.
+- Current state, proposed action and unavailable state are worded differently in
+  English and 中文. "Parents Comfort" is future and unapproved.
+
 ### Room pages
 
 Sections in this order, each only when the room has something for it:

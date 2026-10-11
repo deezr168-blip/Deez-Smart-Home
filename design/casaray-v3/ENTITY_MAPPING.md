@@ -283,6 +283,25 @@ Area and availability come from the 05/09 export.
 
 _133 entity IDs; 133 already on V2, 0 new to CasaRay._
 
+### 2d. The climate entity's attributes (V3-008)
+
+`climate.bedroom_parents_room_ac` is the only entity the panel could change
+HVAC state on. Its **state is the HVAC mode**. The prototype names its mock
+attributes loosely, so a build must map them and read the real values:
+
+| Prototype attribute | Home Assistant attribute | Status |
+|---|---|---|
+| `current` | `current_temperature` | Reading. Missing reads "No data". |
+| `target` | `temperature` | Reading. Missing, non-numeric or outside the limits reads "No data". |
+| `hvac_modes` | `hvac_modes` | **Demo values.** A mode is offered only if reported. |
+| `min_temp`, `max_temp` | `min_temp`, `max_temp` | **Demo values** (16, 30). Not read from the device. |
+| `target_temp_step` | `target_temp_step` | **Demo value** (0.5). Not read from the device. |
+| *(none)* | `fan_mode`, `fan_modes`, `swing_mode`, `swing_modes` | **Deliberately absent.** Never sent, shown or invented. |
+
+The export records only the state (`ok`), not attributes, so none of the demo
+values above is verified. They must be read from the live entity, read-only,
+before any build (`DECISIONS.md` V3-008, production gate).
+
 ## 3. Gaps: things the design shows that no entity provides
 
 | Where | What is missing | What the prototype does | To close it |

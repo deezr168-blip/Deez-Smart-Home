@@ -73,7 +73,7 @@ native Home Assistant control named in the right-hand column.
 | Brightness bar | Dimmable light tiles | `tile` feature `light-brightness` |
 | Purifier speed (off / low / medium / high) | Living room, Climate | `tile` feature `fan-speed` (already in V2) |
 | Blind position | Ray's room | `tile` feature `cover-position` (already in V2) |
-| AC target ±0.5°, mode | Parents' room, Climate | `thermostat` + `climate-hvac-modes` (already in V2) |
+| AC target ±0.5°, mode | Parents' room, Climate (**rules: `DECISIONS.md` V3-008**; the native cards must be checked against them before a build) | `thermostat` + `climate-hvac-modes` (already in V2) |
 | TV power, volume | Room pages, Media | `tile` + `media-player-volume-slider` feature |
 | Plug on/off | Room pages | `tile` toggle. Freezer excluded. |
 | Scene | Room pages | `tile` on `scene.*`, action `scene.turn_on` |

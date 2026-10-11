@@ -83,7 +83,11 @@ window.DEMO_STATES = {
   'number.lg_fridge_freezer_temperature': { s: '-18' },
 
   // Parents' room
-  'climate.bedroom_parents_room_ac': { s: 'off', a: { current: 23.3, target: 22, mode: 'off' } },
+  // The state IS the HVAC mode. `current` and `target` stand for HA's current_temperature and
+  // temperature. `hvac_modes`, `min_temp`, `max_temp` and `target_temp_step` are DEMO capabilities:
+  // they were not read from the device, and a build must read the real ones (V3-008). No fan_mode
+  // or swing_mode is drawn here on purpose: the contract never invents them.
+  'climate.bedroom_parents_room_ac': { s: 'off', a: { current: 23.3, target: 22, hvac_modes: ['off', 'cool', 'heat', 'fan_only'], min_temp: 16, max_temp: 30, target_temp_step: 0.5 } },
   'switch.mainroomlight_switch_1': { s: 'off' },
   'binary_sensor.bedroom_motion_sensor_motion': { s: 'off', ago: 4 },
   'binary_sensor.bedroom_parents_room_ac_room_occupied': { s: 'on', ago: 4 },
@@ -237,7 +241,7 @@ window.SCENARIOS = {
     'sensor.living_room_living_hue_hue_sensor_temperature': { s: '21.4' },
     'sensor.living_room_living_room_temperature': { s: '20.8' },
     'sensor.bedroom_motion_sensor_temperature': { s: '23.2' },
-    'climate.bedroom_parents_room_ac': { s: 'off', a: { current: 23.2, target: 22, mode: 'off' } },
+    'climate.bedroom_parents_room_ac': { s: 'off', a: { current: 23.2, target: 22, hvac_modes: ['off', 'cool', 'heat', 'fan_only'], min_temp: 16, max_temp: 30, target_temp_step: 0.5 } },
     'fan.living_room_air_purifier': { s: 'on', a: { speed: 'medium' } },
     'light.living_room': { s: 'on', a: { brightness: 89, color: 'warm white' }, ago: 41 },
     'light.dining': { s: 'on', a: { brightness: 62, color: 'warm white' }, ago: 18 },

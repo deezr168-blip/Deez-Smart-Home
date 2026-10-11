@@ -386,20 +386,66 @@
       ${eid([id, a.pm])}</div>`;
   }
 
+  // ------------------------------------------- HVAC control contract (V3-008) --
+  // The wall panel may only do what this model says is valid RIGHT NOW. Every
+  // action sets ONE thing, named on its button: a mode (and nothing else) or a
+  // target (and nothing else). Nothing sets or restores a fan or swing mode, a
+  // target is never pre-filled, and no limit or step is invented: they must be
+  // reported by the entity. The state of a climate entity IS its HVAC mode.
+  const AC_ID = 'climate.bedroom_parents_room_ac';
+  const AC_MODES = ['off', 'cool', 'heat', 'fan_only']; // the four the panel can name and set
+  const finite = (v) => (typeof v === 'number' && Number.isFinite(v) ? v : null);
+  const roundTo = (v) => Math.round(v * 100) / 100;
+  function acModel(id = AC_ID) {
+    const s = st(id);
+    const unavailable = String(s.s) === 'unavailable';
+    const valid = !na(id) && typeof s.s === 'string' && s.s !== '';
+    const a = (valid && s.a) || {};
+    const mode = valid ? s.s : null;
+    const reported = Array.isArray(a.hvac_modes) ? a.hvac_modes : null;
+    const modes = reported ? AC_MODES.filter((m) => reported.includes(m)) : [];
+    const step = finite(a.target_temp_step), min = finite(a.min_temp), max = finite(a.max_temp);
+    const limits = step != null && step > 0 && min != null && max != null && min < max;
+    const t0 = finite(a.target);
+    const target = t0 != null && limits && t0 >= min && t0 <= max ? t0 : null; // out of range is not trusted
+    const stepsActive = valid && (mode === 'cool' || mode === 'heat'); // a target means something only here
+    const targetFor = (dir) => (target == null ? null : roundTo(target + dir * step));
+    const inRange = (v) => v != null && v >= min && v <= max;
+    return {
+      valid, unavailable, mode, modes, step, min, max, limits, target, current: valid ? finite(a.current) : null,
+      stepsActive, modesKnown: !!reported,
+      canSetMode: (m) => valid && modes.includes(m) && m !== mode,
+      targetFor,
+      canSetTarget: (v) => valid && stepsActive && target != null && limits && inRange(v) && v !== target,
+      // why the target cannot be changed, most basic reason first (null = it can)
+      whyNoTarget: !valid ? 'ac.why.offline' : target == null ? (t0 == null ? 'ac.why.target_nd' : 'ac.why.limits_nd') : !limits ? 'ac.why.limits_nd' : !stepsActive ? 'ac.why.set_mode_first' : null,
+    };
+  }
+  const modeLabel = (m) => (AC_MODES.includes(m) ? t('ac.m.' + m) : esc(String(m).replace(/_/g, ' ')));
+
   function acCard(id) {
-    if (na(id)) return tile({ ids: id, ic: 'snowflake', name: t('h.ac'), sub: t('s.offline'), state: 'na', pill: naPill() });
-    const a = st(id).a;
-    const mode = st(id).s;
-    const modes = [['off', t('s.off'), 'power'], ['cool', t('u.cool'), 'snowflake'], ['heat', t('u.heat'), 'fire'], ['fan_only', t('u.fan_only'), 'fan']];
-    const active = mode !== 'off';
+    const m = acModel(id);
+    if (!m.valid) return tile({ ids: id, ic: 'snowflake', name: t('h.ac'), sub: m.unavailable ? t('s.offline') : t('ac.unknown'), state: 'na', pill: naPill() });
+    const active = m.mode !== 'off';
+    const room = m.current == null ? t('ac.room_nd') : t('ac.room', { v: fmt(m.current) });
+    const stepBtn = (dir, ic) => {
+      const v = m.targetFor(dir);
+      const ok = v != null && m.canSetTarget(v);
+      return `<button type="button" class="acstep" data-acstep="${dir > 0 ? 'up' : 'down'}"${ok ? ` data-actarget="${v}"` : ' disabled'}${v == null ? '' : ` aria-label="${esc(t('ac.set_to', { v: fmt(v) }))}"`}>${icon(ic)}<span>${v == null ? t('s.no_data') : t('ac.set_to', { v: fmt(v) })}</span></button>`;
+    };
+    const why = m.whyNoTarget;
+    const modeBtns = m.modes.map((mm) => {
+      const cur = m.mode === mm;
+      return `<button type="button" data-acmode="${mm}" aria-pressed="${cur}"${m.canSetMode(mm) ? '' : ' disabled'}>${cur ? t('ac.current', { m: modeLabel(mm) }) : t('ac.do.' + mm)}</button>`;
+    }).join('');
     return `<div class="card ${active ? 'on' : ''}">
-      <div class="tile"><div class="ic">${icon(mode === 'heat' ? 'fire' : 'snowflake')}</div>
-        <div><div class="name">${lang() === 'zh' ? '父母房空调' : "Parents' room AC"}</div>
-        <div class="sub">${active ? `<span class="hl">${t(mode === 'heat' ? 's.heating' : mode === 'cool' ? 's.cooling' : 's.on')}</span> · ` : `${t('s.off')} · `}${lang() === 'zh' ? '室温' : 'Room'} ${fmt(a.current)}°</div></div><div></div></div>
-      <div class="thermo"><button class="round" type="button" data-ac="-0.5" aria-label="${t('u.target')} −">${icon('minus')}</button>
-        <div class="target"><div class="n">${fmt(a.target)}°</div><div class="l">${t('u.target')}</div></div>
-        <button class="round" type="button" data-ac="0.5" aria-label="${t('u.target')} +">${icon('plus')}</button></div>
-      <div class="feature" style="margin-top:12px"><div class="seg" role="group" aria-label="Mode">${modes.map(([v, l]) => `<button type="button" data-acmode="${v}" aria-pressed="${mode === v}">${l}</button>`).join('')}</div></div>
+      <div class="tile"><div class="ic">${icon(m.mode === 'heat' ? 'fire' : 'snowflake')}</div>
+        <div><div class="name">${t('ac.name')}</div>
+        <div class="sub"><span class="${active ? 'hl' : ''}">${modeLabel(m.mode)}</span> · ${room}</div></div><div></div></div>
+      <div class="actarget"><div class="target"><div class="n${m.target == null ? ' nd' : ''}">${m.target == null ? t('s.no_data') : fmt(m.target) + '°'}</div><div class="l">${t('u.target')}</div></div>
+        <div class="acsteps">${stepBtn(-1, 'minus')}${stepBtn(1, 'plus')}</div>
+        ${why ? `<div class="ac-why">${t(why)}</div>` : ''}</div>
+      <div class="feature" style="margin-top:12px">${m.modes.length ? `<div class="seg" role="group" aria-label="${t('ac.mode')}">${modeBtns}</div>` : `<div class="ac-why">${t('ac.why.modes_nd')}</div>`}</div>
       ${eid(id)}</div>`;
   }
 
@@ -664,18 +710,20 @@
     const face = (stateHtml, action, cls, extra = '', open = '<div', close = '</div>', end = '') =>
       `${open} class="card tap ${cls}"${extra}><div class="trow"><div class="ic">${icon(ic)}</div><div class="tstate">${stateHtml}</div></div>
       <div class="tname">${name}</div><div class="tact">${action}${end}</div>${eid(id)}${close}`;
+    // A climate entity is not a switch: restoring "on" needs a mode, a target, a
+    // fan and a swing setting. From Home it only SHOWS the mode and opens the
+    // room's climate controls (V3-007, V3-008). Nothing here changes anything,
+    // and it keeps its place and its link when the entity cannot answer.
+    if (nav) {
+      const m = acModel(id);
+      const word = !m.valid ? (m.unavailable ? t('s.offline') : t('s.no_data')) : modeLabel(m.mode);
+      const detail = !m.valid ? '' : m.current == null ? t('ac.room_nd') : t('k.room', { v: fmt(m.current) });
+      const on_ = m.valid && m.mode !== 'off';
+      return face(`<b class="${on_ ? 'hl' : ''}">${word}</b>${detail ? `<span>${detail}</span>` : ''}`, t('ac.tap_controls'), `${m.valid ? '' : 'na '}${on_ ? 'on ' : ''}nav`,
+        ` type="button" data-go="${nav}" aria-label="${esc(name + '. ' + word + (detail ? ' · ' + detail : '') + ' — ' + t('ac.tap_controls'))}"`, '<button', '</button>', icon('chevron-right'));
+    }
     if (na(id)) return face(`<b>${t('s.no_data')}</b>`, t('k.no_control'), 'na');
     const s = st(id), a = s.a || {};
-    // A climate entity is not a switch: restoring "on" needs a target, a fan
-    // and a swing setting. From Home it only SHOWS the state and opens the
-    // room's climate controls (V3-007). Nothing here changes an HVAC mode.
-    if (nav) {
-      const isOn = s.s !== 'off';
-      const detail = Number.isFinite(a.current) ? t('k.room', { v: fmt(a.current) }) : '';
-      const word = t(isOn ? 'k.on' : 'k.off');
-      return face(`<b class="${isOn ? 'hl' : ''}">${word}</b>${detail ? `<span>${detail}</span>` : ''}`, t('k.open_controls'), isOn ? 'on nav' : 'nav',
-        ` type="button" data-go="${nav}" aria-label="${esc(name + '. ' + word + (detail ? ' · ' + detail : '') + ' — ' + t('k.open_controls'))}"`, '<button', '</button>', icon('chevron-right'));
-    }
     const isOn = s.s === 'on';
     let detail = '';
     if (id.startsWith('light.') && isOn) { const bb = pct(a.brightness); detail = bb == null ? t('k.brightness_nd') : `${bb}%`; }
@@ -1108,6 +1156,7 @@
     const s = st(id);
     if (na(id)) return;
     const domain = id.split('.')[0];
+    if (domain === 'climate') return; // a climate entity is never a switch (V3-008)
     if (domain === 'media_player') s.s = ['on', 'playing'].includes(s.s) ? 'off' : 'on';
     else s.s = s.s === 'on' ? 'off' : 'on';
     s.ago = 0;
@@ -1148,8 +1197,20 @@
     if (d.scene) { return toast(t('t.demo', { what: t('t.scene', { name: d.name }) })); }
     if (d.onetap) { ONETAP[d.onetap](); render(); return toast(t('t.demo', { what: t('t.onetap', { name: t('o.' + d.onetap) }) })); }
     if (d.speed) { const s = st(d.speed); s.a.speed = d.v; s.s = d.v === 'off' ? 'off' : 'on'; return render(); }
-    if (d.ac) { const s = st('climate.bedroom_parents_room_ac'); s.a.target = Math.min(30, Math.max(16, s.a.target + parseFloat(d.ac))); return render(); }
-    if (d.acmode) { st('climate.bedroom_parents_room_ac').s = d.acmode; return render(); }
+    // HVAC (V3-008). Re-checked against the live model at click time, so a stale or forged
+    // button cannot do what the contract forbids. A mode action sets the mode only; a target
+    // action sets the target only. No fan, swing or target is ever filled in or restored.
+    if (d.acmode) {
+      if (!acModel().canSetMode(d.acmode)) return toast(t('ac.refused'));
+      st(AC_ID).s = d.acmode; render();
+      return toast(t('t.demo', { what: t('ac.done_mode', { m: modeLabel(d.acmode) }) }));
+    }
+    if (d.actarget) {
+      const v = parseFloat(d.actarget);
+      if (!acModel().canSetTarget(v)) return toast(t('ac.refused'));
+      st(AC_ID).a.target = v; render();
+      return toast(t('t.demo', { what: t('ac.done_target', { v: fmt(v) }) }));
+    }
     if (d.shop) { UI.done[d.shop] = !UI.done[d.shop]; return render(); }
   });
   // Sliders: live label while dragging, full render on release.

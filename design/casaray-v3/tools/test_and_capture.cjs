@@ -212,11 +212,12 @@ async function shot(page, name, full = false) {
 
     await p.evaluate(() => window.__casaray.go('climate'));
     const t0 = await p.evaluate(() => window.__casaray.state()['climate.bedroom_parents_room_ac'].a.target);
-    await p.locator('[data-ac="0.5"]').click();
-    const t1 = await p.evaluate(() => window.__casaray.state()['climate.bedroom_parents_room_ac'].a.target);
-    check('interact: AC target steps by 0.5°', t1 - t0 === 0.5, `${t0} → ${t1}`);
+    check('interact: AC target steps are disabled while the air-con is Off (V3-008)', (await p.locator('[data-acstep="up"]').isDisabled()) && (await p.locator('[data-acstep="down"]').isDisabled()));
     await p.locator('[data-acmode="cool"]').click();
     check('interact: AC mode segment selects Cool', (await p.locator('[data-acmode="cool"]').getAttribute('aria-pressed')) === 'true');
+    await p.locator('[data-acstep="up"]').click();
+    const t1 = await p.evaluate(() => window.__casaray.state()['climate.bedroom_parents_room_ac'].a.target);
+    check('interact: AC target steps by the reported step in Cool', t1 - t0 === 0.5, `${t0} → ${t1}`);
     await p.locator('[data-speed="fan.living_room_air_purifier"][data-v="low"]').click();
     check('interact: purifier speed segment', (await p.evaluate(() => window.__casaray.state()['fan.living_room_air_purifier'].a.speed)) === 'low');
 
@@ -327,7 +328,7 @@ async function shot(page, name, full = false) {
       // The air-con card only SHOWS state and navigates; it never changes the HVAC mode (V3-007).
       const acBefore = await p.evaluate(() => window.__casaray.state()['climate.bedroom_parents_room_ac'].s);
       const acCard = p.locator('.taps .tap', { hasText: "Parents' air-con" });
-      check('one tap: air-con card has no direct state-changing action', (await acCard.getAttribute('data-toggle')) === null && (await acCard.getAttribute('data-acpower')) === null && (await acCard.getAttribute('aria-pressed')) === null);
+      check('one tap: air-con card has no direct state-changing action', (await acCard.getAttribute('data-toggle')) === null && (await acCard.getAttribute('data-acpower')) === null && (await acCard.getAttribute('data-acmode')) === null && (await acCard.getAttribute('data-actarget')) === null && (await acCard.getAttribute('aria-pressed')) === null);
       await acCard.click();
       check('one tap: air-con card opens the Parents\' room climate controls', p.url().endsWith('#room-parents') && (await p.locator('[data-acmode]').count()) > 0, p.url());
       check('one tap: opening the air-con card leaves the HVAC mode unchanged', (await p.evaluate(() => window.__casaray.state()['climate.bedroom_parents_room_ac'].s)) === acBefore);
@@ -616,6 +617,251 @@ async function shot(page, name, full = false) {
         check(`cover: ${bad} cover draws a dashed card, not Closed ${L}`, d && /\bna\b/.test(d.cls) && !d.bar && !closedW.test(d.text), JSON.stringify(d));
       }
       check(`fallbacks: no page errors ${L}`, p.errors.length === 0, p.errors.join(' | '));
+      await p.context().close();
+    }
+  }
+
+  // ------------------------------------------ 9. HVAC control contract (V3-008) --
+  // The wall panel may do only what the contract allows: Home shows and
+  // navigates; the Parents' room and Climate controls name each result, set one
+  // thing at a time, never invent a target, limit, fan or swing, never restore a
+  // prior mode, and switch off when the entity cannot answer.
+  {
+    const AC = 'climate.bedroom_parents_room_ac';
+    const FULL = { current: 23.3, target: 22, hvac_modes: ['off', 'cool', 'heat', 'fan_only'], min_temp: 16, max_temp: 30, target_temp_step: 0.5 };
+    const setAc = (p, st, a) => p.evaluate(([AC, st, a]) => { window.__casaray.state()[AC] = a === undefined ? { s: st } : { s: st, a }; }, [AC, st, a]);
+    const snap = (p) => p.evaluate((AC) => JSON.stringify(window.__casaray.state()[AC]), AC);
+    const acAttrs = (p) => p.evaluate((AC) => window.__casaray.state()[AC].a || {}, AC);
+    // What the AC card on a page shows, and which of its controls would act.
+    const read = (p, route) => p.evaluate((route) => {
+      window.__casaray.go(route);
+      const c = [...document.querySelectorAll('#view .card')].find((x) => x.querySelector('[data-acmode], [data-acstep], .actarget') || /^(Air conditioning|空调)$/.test(x.querySelector('.name')?.innerText || ''));
+      if (!c) return null;
+      return {
+        na: /\bna\b/.test(c.className), text: c.innerText.replace(/\n+/g, ' | '), sub: c.querySelector('.sub')?.innerText || '',
+        target: c.querySelector('.target .n')?.innerText || null,
+        modes: [...c.querySelectorAll('[data-acmode]')].map((b) => ({ mode: b.dataset.acmode, text: b.innerText, pressed: b.getAttribute('aria-pressed'), disabled: b.disabled })),
+        steps: [...c.querySelectorAll('[data-acstep]')].map((b) => ({ dir: b.dataset.acstep, text: b.innerText.trim(), disabled: b.disabled, target: b.dataset.actarget || null })),
+        why: [...c.querySelectorAll('.ac-why')].map((w) => w.innerText),
+      };
+    }, route);
+    const enabled = (r) => r.modes.filter((m) => !m.disabled).length + r.steps.filter((x) => !x.disabled).length;
+
+    // ---------- Home: information and navigation only, in every state ----------
+    for (const zh of [false, true]) {
+      const L = zh ? '中文' : 'EN';
+      const p = await newPage(browser, VIEWPORTS.wall);
+      if (zh) await p.locator('[data-lang]').click();
+      await setAc(p, 'off', FULL);
+      await p.evaluate(() => window.__casaray.go('home'));
+      check(`hvac home: no mode, target or toggle control exists on Home ${L}`, (await p.locator('#view [data-acmode], #view [data-acstep], #view [data-actarget], #view [data-toggle^="climate."]').count()) === 0);
+      const card = () => p.locator('.taps .tap', { hasText: zh ? '父母房空调' : "Parents' air-con" });
+      for (const [st, word, hl] of [['off', zh ? '关' : 'Off', false], ['cool', zh ? '制冷' : 'Cool', true], ['heat', zh ? '制热' : 'Heat', true], ['fan_only', zh ? '仅送风' : 'Fan only', true]]) {
+        await setAc(p, st, FULL);
+        await p.evaluate(() => window.__casaray.go('home'));
+        const tx = await card().innerText();
+        check(`hvac home: card says the mode "${word}", not a bare On ${L}`, tx.includes(word) && !(zh ? /(^|\n)开(\n|$)/ : /(^|\n)On(\n|$)/).test(tx) && (zh ? /点按查看控制/ : /Tap for controls/).test(tx) && (zh ? /室温 23\.3/ : /room 23\.3/).test(tx), tx.replace(/\n+/g, ' | '));
+      }
+      for (const [st, word] of [['unavailable', zh ? '离线' : 'Offline'], ['unknown', zh ? '无数据' : 'No data']]) {
+        await setAc(p, st);
+        await p.evaluate(() => window.__casaray.go('home'));
+        const tx = await card().innerText();
+        const cls = await card().getAttribute('class');
+        check(`hvac home: ${st} climate reads "${word}", draws dashed, infers no mode and keeps its link ${L}`, tx.includes(word) && /\bna\b/.test(cls) && !/Cool|Heat|Fan only|制冷|制热|仅送风|°/.test(tx) && (await card().getAttribute('data-go')) === 'room-parents', tx.replace(/\n+/g, ' | '));
+      }
+      // Tapping the card, and forged controls, change nothing.
+      await setAc(p, 'cool', FULL);
+      await p.evaluate(() => window.__casaray.go('home'));
+      const before = await snap(p);
+      await card().click();
+      check(`hvac home: tapping the card only navigates to the Parents' room ${L}`, p.url().endsWith('#room-parents') && (await snap(p)) === before);
+      await p.evaluate(() => window.__casaray.go('home'));
+      for (const [label, attrs] of [['a generic toggle', 'data-toggle="climate.bedroom_parents_room_ac"'], ['a power toggle', 'data-acpower="1"']]) {
+        await p.evaluate((attrs) => { document.querySelector('#view').insertAdjacentHTML('beforeend', `<button id="forged" type="button" ${attrs}>x</button>`); }, attrs);
+        await p.locator('#forged').click();
+        await p.evaluate(() => document.querySelector('#forged')?.remove());
+        check(`hvac home: ${label} aimed at the climate entity changes nothing ${L}`, (await snap(p)) === before);
+      }
+      await p.context().close();
+    }
+
+    // ---------- unavailable / unknown: nothing can be changed ----------
+    for (const zh of [false, true]) {
+      const L = zh ? '中文' : 'EN';
+      const p = await newPage(browser, VIEWPORTS.wall);
+      if (zh) await p.locator('[data-lang]').click();
+      for (const route of ['room-parents', 'climate']) {
+        for (const [st, word] of [['unavailable', zh ? '离线' : 'Offline'], ['unknown', zh ? '状态未知' : 'State unknown']]) {
+          await setAc(p, st);
+          const r = await read(p, route);
+          check(`hvac ${route}: ${st} climate draws no enabled control, says "${word}" and infers nothing ${L}`, r && r.na && enabled(r) === 0 && r.modes.length === 0 && r.steps.length === 0 && r.text.includes(word) && !/Cool|Heat|Fan only|制冷|制热|仅送风|\d°/.test(r.text), r && r.text);
+        }
+      }
+      // Forged actions are refused at click time while the entity cannot answer.
+      for (const st of ['unavailable', 'unknown']) {
+        await setAc(p, st);
+        await p.evaluate(() => window.__casaray.go('room-parents'));
+        const before = await snap(p);
+        for (const attrs of ['data-acmode="cool"', 'data-acmode="off"', 'data-actarget="23"']) {
+          await p.evaluate((attrs) => { document.querySelector('#view').insertAdjacentHTML('beforeend', `<button id="forged" type="button" ${attrs}>x</button>`); }, attrs);
+          await p.locator('#forged').click();
+          await p.evaluate(() => document.querySelector('#forged')?.remove());
+        }
+        check(`hvac ${st}: forged mode and target actions are refused at click time ${L}`, (await snap(p)) === before);
+      }
+      // Missing pieces on an answering entity: no attributes at all.
+      await setAc(p, 'cool');
+      const r = await read(p, 'room-parents');
+      check(`hvac missing attributes: mode shown, everything else No data, nothing enabled but nothing invented ${L}`, r && !r.na && r.target === (zh ? '无数据' : 'No data') && r.modes.length === 0 && enabled(r) === 0 && (zh ? /室温：无数据/ : /Room: no data/).test(r.sub) && r.why.length >= 2, r && JSON.stringify(r));
+      await p.context().close();
+    }
+
+    // ---------- explicit actions, one thing at a time ----------
+    for (const zh of [false, true]) {
+      const L = zh ? '中文' : 'EN';
+      const p = await newPage(browser, VIEWPORTS.wall);
+      if (zh) await p.locator('[data-lang]').click();
+      const lbl = zh ? { off: '关闭空调', cool: '设为制冷', heat: '设为制热', fan_only: '设为仅送风', cur: (m) => `当前：${m}`, m: { off: '关', cool: '制冷', heat: '制热', fan_only: '仅送风' } }
+        : { off: 'Turn off', cool: 'Set Cool', heat: 'Set Heat', fan_only: 'Set Fan only', cur: (m) => `Current: ${m}`, m: { off: 'Off', cool: 'Cool', heat: 'Heat', fan_only: 'Fan only' } };
+      await setAc(p, 'off', { ...FULL, fan_mode: 'low', swing_mode: 'vertical' });
+      let r = await read(p, 'room-parents');
+      check(`hvac wording: from Off the buttons name the result ("${lbl.cool}", "${lbl.heat}", "${lbl.fan_only}") and mark the current mode ${L}`,
+        r.modes.map((m) => m.text).join('|') === [lbl.cur(lbl.m.off), lbl.cool, lbl.heat, lbl.fan_only].join('|') && r.modes[0].pressed === 'true' && r.modes[0].disabled && r.modes.slice(1).every((m) => !m.disabled), JSON.stringify(r.modes));
+      for (const mode of ['cool', 'heat', 'fan_only', 'off']) {
+        const before = await acAttrs(p);
+        await p.evaluate(() => window.__casaray.go('room-parents'));
+        await p.locator(`[data-acmode="${mode}"]`).click();
+        const st = await p.evaluate((AC) => window.__casaray.state()[AC].s, AC);
+        const after = await acAttrs(p);
+        check(`hvac action: "${lbl[mode]}" sets the mode to ${mode} and nothing else (target, fan, swing, limits untouched) ${L}`, st === mode && JSON.stringify(before) === JSON.stringify(after), `${st} ${JSON.stringify(after)}`);
+        check(`hvac action: the toast names the result of "${lbl[mode]}" ${L}`, (await p.locator('.toast').innerText()).includes(lbl.m[mode]), await p.locator('.toast').innerText());
+      }
+      // No fan or swing is invented when the entity reports none.
+      await setAc(p, 'off', FULL);
+      await p.evaluate(() => window.__casaray.go('room-parents'));
+      await p.locator('[data-acmode="cool"]').click();
+      await p.locator('[data-acstep="up"]').click();
+      const a2 = await acAttrs(p);
+      check(`hvac action: no fan_mode or swing_mode is invented by any action ${L}`, !('fan_mode' in a2) && !('swing_mode' in a2) && !Object.keys(a2).some((k) => /fan|swing|prev|last|restore|preset/i.test(k)), JSON.stringify(a2));
+      // No implicit restore: after Cool -> Off, only an explicit named action leaves Off.
+      await p.evaluate(() => window.__casaray.go('room-parents'));
+      await p.locator('[data-acmode="off"]').click();
+      r = await read(p, 'room-parents');
+      check(`hvac restore: after Cool then Off, no control reads Turn on / Resume / Restore and Cool is only offered as "${lbl.cool}" ${L}`, r.modes.find((m) => m.mode === 'cool').text === lbl.cool && !/Turn on|Resume|Restore|恢复|继续|开启|打开空调/.test(r.text), r.text);
+      await p.locator('[data-acmode="heat"]').click();
+      check(`hvac restore: leaving Off chooses exactly the named mode, never the previous one ${L}`, (await p.evaluate((AC) => window.__casaray.state()[AC].s, AC)) === 'heat');
+      // A target is never filled in when leaving Off.
+      await setAc(p, 'off', { current: 23.3, hvac_modes: FULL.hvac_modes, min_temp: 16, max_temp: 30, target_temp_step: 0.5 });
+      await p.evaluate(() => window.__casaray.go('room-parents'));
+      await p.locator('[data-acmode="cool"]').click();
+      r = await read(p, 'room-parents');
+      check(`hvac target: leaving Off with no target leaves it No data and disabled, never a default ${L}`, !('target' in (await acAttrs(p))) && r.target === (zh ? '无数据' : 'No data') && r.steps.every((x) => x.disabled), JSON.stringify(r.steps));
+      await p.context().close();
+    }
+
+    // ---------- modes the entity does not report ----------
+    {
+      const p = await newPage(browser, VIEWPORTS.wall);
+      await setAc(p, 'off', { ...FULL, hvac_modes: ['off', 'cool'] });
+      let r = await read(p, 'room-parents');
+      check('hvac modes: only the modes the entity reports are offered', r.modes.map((m) => m.mode).join() === 'off,cool', JSON.stringify(r.modes));
+      await setAc(p, 'off', { ...FULL, hvac_modes: undefined });
+      r = await read(p, 'room-parents');
+      check('hvac modes: with no reported hvac_modes no mode button is drawn and the card says so', r.modes.length === 0 && r.why.some((w) => /Mode choices: no data/.test(w)), JSON.stringify(r.why));
+      await setAc(p, 'auto', FULL);
+      r = await read(p, 'room-parents');
+      check('hvac modes: an unrecognised reported mode is shown as reported, not mapped to one of ours', /auto/.test(r.sub) && r.modes.every((m) => m.pressed === 'false') && r.steps.every((x) => x.disabled), r.sub + ' ' + JSON.stringify(r.steps));
+      await p.context().close();
+    }
+
+    // ---------- target temperature ----------
+    for (const zh of [false, true]) {
+      const L = zh ? '中文' : 'EN';
+      const p = await newPage(browser, VIEWPORTS.wall);
+      if (zh) await p.locator('[data-lang]').click();
+      const set = (v) => (zh ? `设为 ${v}°` : `Set ${v}°`);
+      await setAc(p, 'cool', FULL);
+      let r = await read(p, 'room-parents');
+      check(`hvac target: steps name the temperature they set ("${set('21.5')}" / "${set('22.5')}") ${L}`, r.steps.map((x) => x.text).join('|') === `${set('21.5')}|${set('22.5')}` && r.steps.every((x) => !x.disabled) && r.steps[0].target === '21.5' && r.steps[1].target === '22.5', JSON.stringify(r.steps));
+      await p.locator('[data-acstep="down"]').click();
+      check(`hvac target: down sets exactly the named value and changes only the target ${L}`, (await acAttrs(p)).target === 21.5 && (await p.evaluate((AC) => window.__casaray.state()[AC].s, AC)) === 'cool');
+      for (const [what, a] of [['missing', { ...FULL, target: undefined }], ['null', { ...FULL, target: null }], ['text', { ...FULL, target: 'unknown' }], ['out of range', { ...FULL, target: 99 }]]) {
+        await setAc(p, 'cool', a);
+        r = await read(p, 'room-parents');
+        check(`hvac target: a ${what} target reads No data and disables both steps ${L}`, r.target === (zh ? '无数据' : 'No data') && r.steps.length === 2 && r.steps.every((x) => x.disabled && x.target === null) && r.why.length >= 1, JSON.stringify(r));
+      }
+      for (const [what, drop] of [['step', 'target_temp_step'], ['minimum', 'min_temp'], ['maximum', 'max_temp']]) {
+        await setAc(p, 'cool', { ...FULL, [drop]: undefined });
+        r = await read(p, 'room-parents');
+        check(`hvac target: with no reported ${what} nothing is invented and both steps are disabled ${L}`, r.steps.every((x) => x.disabled) && r.target === (zh ? '无数据' : 'No data') && r.why.some((w) => (zh ? /温度范围：无数据/ : /Temperature limits: no data/).test(w)), JSON.stringify(r));
+      }
+      for (const st of ['off', 'fan_only']) {
+        await setAc(p, st, FULL);
+        r = await read(p, 'room-parents');
+        check(`hvac target: while ${st} the steps are disabled and say to choose Cool or Heat first ${L}`, r.steps.every((x) => x.disabled) && r.why.some((w) => (zh ? /请先设为制冷或制热/ : /Set Cool or Heat first/).test(w)), JSON.stringify(r.why));
+      }
+      await p.context().close();
+    }
+    {
+      // The limits are the entity's own, not ours: a wider range allows steps the old 16-30 clamp refused.
+      const p = await newPage(browser, VIEWPORTS.wall);
+      await setAc(p, 'cool', { ...FULL, min_temp: 10, max_temp: 35, target: 34.5 });
+      let r = await read(p, 'room-parents');
+      check('hvac target: limits come from the entity (target 34.5, max 35 allows one more step)', !r.steps[1].disabled && r.steps[1].target === '35');
+      await p.locator('[data-acstep="up"]').click();
+      r = await read(p, 'room-parents');
+      check('hvac target: at the reported maximum the up step is disabled and nothing exceeds it', (await acAttrs(p)).target === 35 && r.steps[1].disabled);
+      await setAc(p, 'heat', { ...FULL, min_temp: 10, max_temp: 35, target: 12 });
+      r = await read(p, 'room-parents');
+      check('hvac target: target 12 with minimum 10 steps down to 11.5 (no invented 16° floor)', !r.steps[0].disabled && r.steps[0].target === '11.5');
+      await setAc(p, 'heat', { ...FULL, min_temp: 10, max_temp: 35, target: 10 });
+      r = await read(p, 'room-parents');
+      check('hvac target: at the reported minimum the down step is disabled', r.steps[0].disabled && !r.steps[1].disabled);
+      // A forged target outside the reported range is refused at click time.
+      await setAc(p, 'cool', FULL);
+      await p.evaluate(() => window.__casaray.go('room-parents'));
+      const before = await snap(p);
+      for (const v of ['5', '45', 'NaN', '22', '']) {
+        await p.evaluate((v) => { document.querySelector('#view').insertAdjacentHTML('beforeend', `<button id="forged" type="button" data-actarget="${v}">x</button>`); }, v);
+        await p.locator('#forged').click();
+        await p.evaluate(() => document.querySelector('#forged')?.remove());
+      }
+      check('hvac target: forged out-of-range, non-numeric and no-change targets are refused at click time', (await snap(p)) === before);
+      await p.context().close();
+    }
+
+    // ---------- same contract on both pages; no presets; layout ----------
+    for (const [vpName, vp, touch] of [['wall', VIEWPORTS.wall, false], ['portrait', VIEWPORTS.portrait, false], ['phone', VIEWPORTS.phone, true]]) {
+      for (const zh of [false, true]) {
+        const p = await newPage(browser, vp, { touch });
+        if (zh) await p.locator('[data-lang]').click();
+        await setAc(p, 'cool', FULL);
+        const out = [];
+        for (const route of ['room-parents', 'climate']) {
+          const r = await read(p, route);
+          const dims = await p.evaluate(() => [...document.querySelectorAll('#view [data-acmode], #view [data-acstep]')].map((b) => { const q = b.getBoundingClientRect(); return [Math.round(q.width), Math.round(q.height), b.scrollWidth > b.clientWidth + 1]; }));
+          if (dims.some(([w, h, clip]) => w < 44 || h < 44 || clip)) out.push(`${route}: ${JSON.stringify(dims)}`);
+          if (r.modes.length !== 4 || r.steps.length !== 2) out.push(`${route}: controls differ`);
+          if ((await overflow(p)) > 0) out.push(`${route}: overflow`);
+        }
+        check(`hvac layout: Parents' room and Climate show the same controls, all ≥ 44 px, unclipped, no overflow at ${vpName} ${zh ? '中文' : 'EN'}`, out.length === 0, out.join(' | '));
+        await p.context().close();
+      }
+    }
+    {
+      const p = await newPage(browser, VIEWPORTS.wall);
+      let bad = [];
+      for (const zh of [false, true]) {
+        if (zh) await p.locator('[data-lang]').click();
+        for (const route of [...BOARDS, ...ROOMS.map((x) => 'room-' + x)]) {
+          await p.evaluate((x) => window.__casaray.go(x), route);
+          const t = await p.locator('#view').innerText();
+          const ids = await p.evaluate(() => [...document.querySelectorAll('#view [data-scene],#view [data-onetap]')].map((e) => e.dataset.scene || e.dataset.onetap));
+          if (/Parents Comfort|Comfort preset|舒适模式|父母舒适/.test(t) || ids.some((i) => /comfort/i.test(i))) bad.push(route);
+        }
+      }
+      check('hvac preset: "Parents Comfort" is not built anywhere (FUTURE / UNAPPROVED)', bad.length === 0, bad.join());
+      check('hvac: no page errors', p.errors.length === 0, p.errors.join(' | '));
       await p.context().close();
     }
   }
