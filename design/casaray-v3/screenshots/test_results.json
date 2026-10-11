@@ -1,5 +1,5 @@
 {
-  "passed": 140,
+  "passed": 236,
   "failed": 0,
   "results": [
     {
@@ -699,6 +699,486 @@
     },
     {
       "name": "touch targets: no horizontal overflow after the change at phone",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "elapsed: Kitchen movement tile shows a real elapsed time EN",
+      "ok": true,
+      "detail": "Movement | Quiet · 31 min"
+    },
+    {
+      "name": "elapsed: Kitchen movement tile reads a real 0 as just now, not 1 min EN",
+      "ok": true,
+      "detail": "Movement | Quiet · just now"
+    },
+    {
+      "name": "elapsed: Kitchen movement tile with missing elapsed time reads no data, never 1 min EN",
+      "ok": true,
+      "detail": "Movement | Quiet · No data"
+    },
+    {
+      "name": "elapsed: Kitchen movement tile with null elapsed time reads no data, never 1 min EN",
+      "ok": true,
+      "detail": "Movement | Quiet · No data"
+    },
+    {
+      "name": "elapsed: Kitchen movement tile with text elapsed time reads no data, never 1 min EN",
+      "ok": true,
+      "detail": "Movement | Quiet · No data"
+    },
+    {
+      "name": "elapsed: Kitchen movement tile with negative elapsed time reads no data, never 1 min EN",
+      "ok": true,
+      "detail": "Movement | Quiet · No data"
+    },
+    {
+      "name": "elapsed: Kitchen movement tile unavailable reads no data EN",
+      "ok": true,
+      "detail": "Movement | No data | NO DATA"
+    },
+    {
+      "name": "elapsed: Kitchen movement tile unknown reads no data EN",
+      "ok": true,
+      "detail": "Movement | No data | NO DATA"
+    },
+    {
+      "name": "elapsed: Movement chip shows a real elapsed time EN",
+      "ok": true,
+      "detail": "Movement | Quiet, 31 min"
+    },
+    {
+      "name": "elapsed: Movement chip reads a real 0 as just now, not 1 min EN",
+      "ok": true,
+      "detail": "Movement | Quiet, just now"
+    },
+    {
+      "name": "elapsed: Movement chip with missing elapsed time reads no data, never 1 min EN",
+      "ok": true,
+      "detail": "Movement | Quiet, No data"
+    },
+    {
+      "name": "elapsed: Movement chip with null elapsed time reads no data, never 1 min EN",
+      "ok": true,
+      "detail": "Movement | Quiet, No data"
+    },
+    {
+      "name": "elapsed: Movement chip with text elapsed time reads no data, never 1 min EN",
+      "ok": true,
+      "detail": "Movement | Quiet, No data"
+    },
+    {
+      "name": "elapsed: Movement chip with negative elapsed time reads no data, never 1 min EN",
+      "ok": true,
+      "detail": "Movement | Quiet, No data"
+    },
+    {
+      "name": "elapsed: Movement chip unavailable reads no data EN",
+      "ok": true,
+      "detail": "Movement | No data"
+    },
+    {
+      "name": "elapsed: Movement chip unknown reads no data EN",
+      "ok": true,
+      "detail": "Movement | No data"
+    },
+    {
+      "name": "elapsed: Home occupancy tile shows a real elapsed time EN",
+      "ok": true,
+      "detail": "Parents' room | Quiet · 31 min"
+    },
+    {
+      "name": "elapsed: Home occupancy tile reads a real 0 as just now, not 1 min EN",
+      "ok": true,
+      "detail": "Parents' room | Quiet · just now"
+    },
+    {
+      "name": "elapsed: Home occupancy tile with missing elapsed time reads no data, never 1 min EN",
+      "ok": true,
+      "detail": "Parents' room | Quiet · No data"
+    },
+    {
+      "name": "elapsed: Home occupancy tile with null elapsed time reads no data, never 1 min EN",
+      "ok": true,
+      "detail": "Parents' room | Quiet · No data"
+    },
+    {
+      "name": "elapsed: Home occupancy tile with text elapsed time reads no data, never 1 min EN",
+      "ok": true,
+      "detail": "Parents' room | Quiet · No data"
+    },
+    {
+      "name": "elapsed: Home occupancy tile with negative elapsed time reads no data, never 1 min EN",
+      "ok": true,
+      "detail": "Parents' room | Quiet · No data"
+    },
+    {
+      "name": "elapsed: Home occupancy tile unavailable reads no data EN",
+      "ok": true,
+      "detail": "Parents' room | No data | NO DATA"
+    },
+    {
+      "name": "elapsed: Home occupancy tile unknown reads no data EN",
+      "ok": true,
+      "detail": "Parents' room | No data | NO DATA"
+    },
+    {
+      "name": "brightness: a valid brightness shows its percentage EN",
+      "ok": true,
+      "detail": "{\"nd\":false,\"fill\":\"62%\",\"label\":\"62%\",\"aria\":\"Living room Brightness\"}"
+    },
+    {
+      "name": "brightness: a real 0 shows 0% EN",
+      "ok": true,
+      "detail": "{\"nd\":false,\"fill\":\"0%\",\"label\":\"0%\",\"aria\":\"Living room Brightness\"}"
+    },
+    {
+      "name": "brightness: missing reads no data, never 0% EN",
+      "ok": true,
+      "detail": "{\"nd\":true,\"fill\":null,\"label\":\"No data\",\"aria\":\"Living room Brightness: No data\"}"
+    },
+    {
+      "name": "brightness: no attributes reads no data, never 0% EN",
+      "ok": true,
+      "detail": "{\"nd\":true,\"fill\":null,\"label\":\"No data\",\"aria\":\"Living room Brightness: No data\"}"
+    },
+    {
+      "name": "brightness: null reads no data, never 0% EN",
+      "ok": true,
+      "detail": "{\"nd\":true,\"fill\":null,\"label\":\"No data\",\"aria\":\"Living room Brightness: No data\"}"
+    },
+    {
+      "name": "brightness: unknown text reads no data, never 0% EN",
+      "ok": true,
+      "detail": "{\"nd\":true,\"fill\":null,\"label\":\"No data\",\"aria\":\"Living room Brightness: No data\"}"
+    },
+    {
+      "name": "brightness: unavailable text reads no data, never 0% EN",
+      "ok": true,
+      "detail": "{\"nd\":true,\"fill\":null,\"label\":\"No data\",\"aria\":\"Living room Brightness: No data\"}"
+    },
+    {
+      "name": "brightness: out of range reads no data, never 0% EN",
+      "ok": true,
+      "detail": "{\"nd\":true,\"fill\":null,\"label\":\"No data\",\"aria\":\"Living room Brightness: No data\"}"
+    },
+    {
+      "name": "brightness: an off light with no brightness is just off, with no bar EN",
+      "ok": true,
+      "detail": "null"
+    },
+    {
+      "name": "brightness: Home One tap says brightness has no data, not a percentage EN",
+      "ok": true,
+      "detail": "On | brightness: no data | Living room lights | Tap to turn off"
+    },
+    {
+      "name": "brightness: unavailable light draws a dashed card with no bar and no percentage EN",
+      "ok": true,
+      "detail": "{\"cls\":\"card tile na\",\"bar\":false,\"text\":\"Living room | Offline | OFFLINE\"}"
+    },
+    {
+      "name": "brightness: unknown light draws a dashed card with no bar and no percentage EN",
+      "ok": true,
+      "detail": "{\"cls\":\"card tile na\",\"bar\":false,\"text\":\"Living room | Offline | OFFLINE\"}"
+    },
+    {
+      "name": "cover: a real position 0 is Closed EN",
+      "ok": true,
+      "detail": "{\"nd\":false,\"fill\":\"0%\",\"sub\":\"Closed\",\"label\":\"0%\",\"on\":false,\"row\":\"Ray's room | Lights off | Blind closed\"}"
+    },
+    {
+      "name": "cover: position 100 is Open EN",
+      "ok": true,
+      "detail": "{\"nd\":false,\"fill\":\"100%\",\"sub\":\"Open · 100%\",\"label\":\"100%\",\"on\":true,\"row\":\"Ray's room | Lights off | Blind open\"}"
+    },
+    {
+      "name": "cover: an intermediate position shows its percentage EN",
+      "ok": true,
+      "detail": "{\"nd\":false,\"fill\":\"40%\",\"sub\":\"Open · 40%\",\"label\":\"40%\",\"on\":true,\"row\":\"Ray's room | Lights off | Blind open\"}"
+    },
+    {
+      "name": "cover: missing position reads no data, never closed EN",
+      "ok": true,
+      "detail": "{\"nd\":true,\"fill\":null,\"sub\":\"No data\",\"label\":\"No data\",\"on\":false,\"row\":\"Ray's room | Lights off | Blind: no data\"}"
+    },
+    {
+      "name": "cover: no attributes position reads no data, never closed EN",
+      "ok": true,
+      "detail": "{\"nd\":true,\"fill\":null,\"sub\":\"No data\",\"label\":\"No data\",\"on\":false,\"row\":\"Ray's room | Lights off | Blind: no data\"}"
+    },
+    {
+      "name": "cover: null position reads no data, never closed EN",
+      "ok": true,
+      "detail": "{\"nd\":true,\"fill\":null,\"sub\":\"No data\",\"label\":\"No data\",\"on\":false,\"row\":\"Ray's room | Lights off | Blind: no data\"}"
+    },
+    {
+      "name": "cover: unknown text position reads no data, never closed EN",
+      "ok": true,
+      "detail": "{\"nd\":true,\"fill\":null,\"sub\":\"No data\",\"label\":\"No data\",\"on\":false,\"row\":\"Ray's room | Lights off | Blind: no data\"}"
+    },
+    {
+      "name": "cover: unavailable text position reads no data, never closed EN",
+      "ok": true,
+      "detail": "{\"nd\":true,\"fill\":null,\"sub\":\"No data\",\"label\":\"No data\",\"on\":false,\"row\":\"Ray's room | Lights off | Blind: no data\"}"
+    },
+    {
+      "name": "cover: out of range position reads no data, never closed EN",
+      "ok": true,
+      "detail": "{\"nd\":true,\"fill\":null,\"sub\":\"No data\",\"label\":\"No data\",\"on\":false,\"row\":\"Ray's room | Lights off | Blind: no data\"}"
+    },
+    {
+      "name": "cover: unavailable cover draws a dashed card, not Closed EN",
+      "ok": true,
+      "detail": "{\"cls\":\"card tile na\",\"bar\":false,\"text\":\"Blind | Offline | NO DATA\"}"
+    },
+    {
+      "name": "cover: unknown cover draws a dashed card, not Closed EN",
+      "ok": true,
+      "detail": "{\"cls\":\"card tile na\",\"bar\":false,\"text\":\"Blind | Offline | NO DATA\"}"
+    },
+    {
+      "name": "fallbacks: no page errors EN",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "elapsed: Kitchen movement tile shows a real elapsed time 中文",
+      "ok": true,
+      "detail": "动作 | 安静 · 31 分钟"
+    },
+    {
+      "name": "elapsed: Kitchen movement tile reads a real 0 as just now, not 1 min 中文",
+      "ok": true,
+      "detail": "动作 | 安静 · 刚刚"
+    },
+    {
+      "name": "elapsed: Kitchen movement tile with missing elapsed time reads no data, never 1 min 中文",
+      "ok": true,
+      "detail": "动作 | 安静 · 无数据"
+    },
+    {
+      "name": "elapsed: Kitchen movement tile with null elapsed time reads no data, never 1 min 中文",
+      "ok": true,
+      "detail": "动作 | 安静 · 无数据"
+    },
+    {
+      "name": "elapsed: Kitchen movement tile with text elapsed time reads no data, never 1 min 中文",
+      "ok": true,
+      "detail": "动作 | 安静 · 无数据"
+    },
+    {
+      "name": "elapsed: Kitchen movement tile with negative elapsed time reads no data, never 1 min 中文",
+      "ok": true,
+      "detail": "动作 | 安静 · 无数据"
+    },
+    {
+      "name": "elapsed: Kitchen movement tile unavailable reads no data 中文",
+      "ok": true,
+      "detail": "动作 | 无数据 | 无数据"
+    },
+    {
+      "name": "elapsed: Kitchen movement tile unknown reads no data 中文",
+      "ok": true,
+      "detail": "动作 | 无数据 | 无数据"
+    },
+    {
+      "name": "elapsed: Movement chip shows a real elapsed time 中文",
+      "ok": true,
+      "detail": "动作 | 安静, 31 分钟"
+    },
+    {
+      "name": "elapsed: Movement chip reads a real 0 as just now, not 1 min 中文",
+      "ok": true,
+      "detail": "动作 | 安静, 刚刚"
+    },
+    {
+      "name": "elapsed: Movement chip with missing elapsed time reads no data, never 1 min 中文",
+      "ok": true,
+      "detail": "动作 | 安静, 无数据"
+    },
+    {
+      "name": "elapsed: Movement chip with null elapsed time reads no data, never 1 min 中文",
+      "ok": true,
+      "detail": "动作 | 安静, 无数据"
+    },
+    {
+      "name": "elapsed: Movement chip with text elapsed time reads no data, never 1 min 中文",
+      "ok": true,
+      "detail": "动作 | 安静, 无数据"
+    },
+    {
+      "name": "elapsed: Movement chip with negative elapsed time reads no data, never 1 min 中文",
+      "ok": true,
+      "detail": "动作 | 安静, 无数据"
+    },
+    {
+      "name": "elapsed: Movement chip unavailable reads no data 中文",
+      "ok": true,
+      "detail": "动作 | 无数据"
+    },
+    {
+      "name": "elapsed: Movement chip unknown reads no data 中文",
+      "ok": true,
+      "detail": "动作 | 无数据"
+    },
+    {
+      "name": "elapsed: Home occupancy tile shows a real elapsed time 中文",
+      "ok": true,
+      "detail": "父母房 | 安静 · 31 分钟"
+    },
+    {
+      "name": "elapsed: Home occupancy tile reads a real 0 as just now, not 1 min 中文",
+      "ok": true,
+      "detail": "父母房 | 安静 · 刚刚"
+    },
+    {
+      "name": "elapsed: Home occupancy tile with missing elapsed time reads no data, never 1 min 中文",
+      "ok": true,
+      "detail": "父母房 | 安静 · 无数据"
+    },
+    {
+      "name": "elapsed: Home occupancy tile with null elapsed time reads no data, never 1 min 中文",
+      "ok": true,
+      "detail": "父母房 | 安静 · 无数据"
+    },
+    {
+      "name": "elapsed: Home occupancy tile with text elapsed time reads no data, never 1 min 中文",
+      "ok": true,
+      "detail": "父母房 | 安静 · 无数据"
+    },
+    {
+      "name": "elapsed: Home occupancy tile with negative elapsed time reads no data, never 1 min 中文",
+      "ok": true,
+      "detail": "父母房 | 安静 · 无数据"
+    },
+    {
+      "name": "elapsed: Home occupancy tile unavailable reads no data 中文",
+      "ok": true,
+      "detail": "父母房 | 无数据 | 无数据"
+    },
+    {
+      "name": "elapsed: Home occupancy tile unknown reads no data 中文",
+      "ok": true,
+      "detail": "父母房 | 无数据 | 无数据"
+    },
+    {
+      "name": "brightness: a valid brightness shows its percentage 中文",
+      "ok": true,
+      "detail": "{\"nd\":false,\"fill\":\"62%\",\"label\":\"62%\",\"aria\":\"客厅 亮度\"}"
+    },
+    {
+      "name": "brightness: a real 0 shows 0% 中文",
+      "ok": true,
+      "detail": "{\"nd\":false,\"fill\":\"0%\",\"label\":\"0%\",\"aria\":\"客厅 亮度\"}"
+    },
+    {
+      "name": "brightness: missing reads no data, never 0% 中文",
+      "ok": true,
+      "detail": "{\"nd\":true,\"fill\":null,\"label\":\"无数据\",\"aria\":\"客厅 亮度: 无数据\"}"
+    },
+    {
+      "name": "brightness: no attributes reads no data, never 0% 中文",
+      "ok": true,
+      "detail": "{\"nd\":true,\"fill\":null,\"label\":\"无数据\",\"aria\":\"客厅 亮度: 无数据\"}"
+    },
+    {
+      "name": "brightness: null reads no data, never 0% 中文",
+      "ok": true,
+      "detail": "{\"nd\":true,\"fill\":null,\"label\":\"无数据\",\"aria\":\"客厅 亮度: 无数据\"}"
+    },
+    {
+      "name": "brightness: unknown text reads no data, never 0% 中文",
+      "ok": true,
+      "detail": "{\"nd\":true,\"fill\":null,\"label\":\"无数据\",\"aria\":\"客厅 亮度: 无数据\"}"
+    },
+    {
+      "name": "brightness: unavailable text reads no data, never 0% 中文",
+      "ok": true,
+      "detail": "{\"nd\":true,\"fill\":null,\"label\":\"无数据\",\"aria\":\"客厅 亮度: 无数据\"}"
+    },
+    {
+      "name": "brightness: out of range reads no data, never 0% 中文",
+      "ok": true,
+      "detail": "{\"nd\":true,\"fill\":null,\"label\":\"无数据\",\"aria\":\"客厅 亮度: 无数据\"}"
+    },
+    {
+      "name": "brightness: an off light with no brightness is just off, with no bar 中文",
+      "ok": true,
+      "detail": "null"
+    },
+    {
+      "name": "brightness: Home One tap says brightness has no data, not a percentage 中文",
+      "ok": true,
+      "detail": "开 | 亮度：无数据 | 客厅灯 | 点按关闭"
+    },
+    {
+      "name": "brightness: unavailable light draws a dashed card with no bar and no percentage 中文",
+      "ok": true,
+      "detail": "{\"cls\":\"card tile na\",\"bar\":false,\"text\":\"客厅 | 离线 | 离线\"}"
+    },
+    {
+      "name": "brightness: unknown light draws a dashed card with no bar and no percentage 中文",
+      "ok": true,
+      "detail": "{\"cls\":\"card tile na\",\"bar\":false,\"text\":\"客厅 | 离线 | 离线\"}"
+    },
+    {
+      "name": "cover: a real position 0 is Closed 中文",
+      "ok": true,
+      "detail": "{\"nd\":false,\"fill\":\"0%\",\"sub\":\"已关闭\",\"label\":\"0%\",\"on\":false,\"row\":\"Ray 卧室 | 灯已关 | 卷帘已关\"}"
+    },
+    {
+      "name": "cover: position 100 is Open 中文",
+      "ok": true,
+      "detail": "{\"nd\":false,\"fill\":\"100%\",\"sub\":\"打开 · 100%\",\"label\":\"100%\",\"on\":true,\"row\":\"Ray 卧室 | 灯已关 | 卷帘已开\"}"
+    },
+    {
+      "name": "cover: an intermediate position shows its percentage 中文",
+      "ok": true,
+      "detail": "{\"nd\":false,\"fill\":\"40%\",\"sub\":\"打开 · 40%\",\"label\":\"40%\",\"on\":true,\"row\":\"Ray 卧室 | 灯已关 | 卷帘已开\"}"
+    },
+    {
+      "name": "cover: missing position reads no data, never closed 中文",
+      "ok": true,
+      "detail": "{\"nd\":true,\"fill\":null,\"sub\":\"无数据\",\"label\":\"无数据\",\"on\":false,\"row\":\"Ray 卧室 | 灯已关 | 卷帘：无数据\"}"
+    },
+    {
+      "name": "cover: no attributes position reads no data, never closed 中文",
+      "ok": true,
+      "detail": "{\"nd\":true,\"fill\":null,\"sub\":\"无数据\",\"label\":\"无数据\",\"on\":false,\"row\":\"Ray 卧室 | 灯已关 | 卷帘：无数据\"}"
+    },
+    {
+      "name": "cover: null position reads no data, never closed 中文",
+      "ok": true,
+      "detail": "{\"nd\":true,\"fill\":null,\"sub\":\"无数据\",\"label\":\"无数据\",\"on\":false,\"row\":\"Ray 卧室 | 灯已关 | 卷帘：无数据\"}"
+    },
+    {
+      "name": "cover: unknown text position reads no data, never closed 中文",
+      "ok": true,
+      "detail": "{\"nd\":true,\"fill\":null,\"sub\":\"无数据\",\"label\":\"无数据\",\"on\":false,\"row\":\"Ray 卧室 | 灯已关 | 卷帘：无数据\"}"
+    },
+    {
+      "name": "cover: unavailable text position reads no data, never closed 中文",
+      "ok": true,
+      "detail": "{\"nd\":true,\"fill\":null,\"sub\":\"无数据\",\"label\":\"无数据\",\"on\":false,\"row\":\"Ray 卧室 | 灯已关 | 卷帘：无数据\"}"
+    },
+    {
+      "name": "cover: out of range position reads no data, never closed 中文",
+      "ok": true,
+      "detail": "{\"nd\":true,\"fill\":null,\"sub\":\"无数据\",\"label\":\"无数据\",\"on\":false,\"row\":\"Ray 卧室 | 灯已关 | 卷帘：无数据\"}"
+    },
+    {
+      "name": "cover: unavailable cover draws a dashed card, not Closed 中文",
+      "ok": true,
+      "detail": "{\"cls\":\"card tile na\",\"bar\":false,\"text\":\"卷帘 | 离线 | 无数据\"}"
+    },
+    {
+      "name": "cover: unknown cover draws a dashed card, not Closed 中文",
+      "ok": true,
+      "detail": "{\"cls\":\"card tile na\",\"bar\":false,\"text\":\"卷帘 | 离线 | 无数据\"}"
+    },
+    {
+      "name": "fallbacks: no page errors 中文",
       "ok": true,
       "detail": ""
     }

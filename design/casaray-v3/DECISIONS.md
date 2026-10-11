@@ -96,22 +96,37 @@ is documentation.
 verified live). The three post-merge items above stay open and are unchanged.
 
 **V3 backlog: latent truthfulness fallbacks (found in the final PR #4
-review, 11/10/26).** All three are inherited from Concept D, none is reachable
-in a shipped scenario (every real motion and occupancy sensor carries an `ago`,
-and the demo data always supplies brightness and position), and **none is
-fixed**. Each needs its own authorisation, and each must come with a regression
-check like the four hardening fixes above.
+review, 11/10/26) — RESOLVED on `casaray-v3/hardening-1`, 11/10/26.** All
+three were inherited from Concept D and unreachable in a shipped scenario.
+They are fixed and each has regression checks that fail against the merged
+baseline (`d4d6d42`).
 
-9. **`dur(ago || 0)` must not fabricate elapsed time.** When `ago` is absent a
-   quiet sensor reads "Quiet · 1 min". It should say no data, or omit the
-   duration. In `prototype/app.js`: the Kitchen movement tile (~line 427), the
-   Movement chip (~line 571) and the Home occupancy tile (~line 729).
-10. **`brightness ?? 0` must not fabricate zero brightness.** A light that
-    answers without a brightness attribute gets a 0 % bar (~line 328). It should
-    draw no value.
-11. **`position ?? 0` must not imply a cover is closed.** A cover that answers
-    without a `position` reads "Blind closed", whatever its state (~lines 402
-    and 468). It should use the cover's own state, or say no data.
+9. **Elapsed time (`dur(ago || 0)`) — resolved.** A real elapsed time shows as
+   before and a real 0 reads "just now". A missing, null, non-numeric or
+   negative `ago` reads **No data**, never "1 min", on the Kitchen movement
+   tile, the Movement chip and the Home occupancy tile. `ago()` itself now says
+   No data instead of returning an empty string, which also removes the
+   dangling "Closed · " separators on door and people tiles. An unavailable or
+   unknown sensor was already a No-data tile.
+10. **Brightness (`brightness ?? 0`) — resolved.** A real 0 is 0%, a valid value
+    is its percentage, and a missing, null, non-numeric or out-of-range
+    brightness draws an unfilled grey bar reading **No data**. An off light with
+    no brightness is just "Off", with no bar: off is never inferred from a
+    missing attribute, and a missing attribute is never inferred as off. Home's
+    One tap light card says "brightness: no data" rather than a percentage. An
+    unavailable or unknown light stays a dashed card with no bar.
+11. **Cover position (`position ?? 0`) — resolved.** 0 is Closed, 100 is Open,
+    anything between shows its percentage, and a missing, null, non-numeric or
+    out-of-range position reads **No data** (unfilled grey bar, not "on", no
+    "Blind closed"), on the blind tile and on the Rooms row ("Blind: no data").
+    An unavailable or unknown cover stays a dashed card.
+
+The brightness slider's minimum is now 0 so that a real 0 can be drawn; no
+other behaviour changed. Home first screen, heights (max 1,723 px), clipping,
+energy truth, the navigation-only air-con card and the 44 px targets are
+unchanged. The harness grows from 140 to 236 checks: of the 96 new, 56 fail
+against the merged baseline and 40 are positive controls (real values and
+unavailable states) that pass on both.
 
 **QA note, 10/10/26 (merge-readiness check of PR #4 at `0d2a241`).** No code
 changed. The harness (108/108) and verifier (136/136) were re-run and pass.

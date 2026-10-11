@@ -40,7 +40,7 @@ window.I18N = {
     's.no_due': 'No due date set', 's.protected': 'Protected', 's.connected': 'Connected',
     's.up_to_date': 'Up to date', 's.update_available': 'Update available', 's.playing': 'Playing',
     's.idle': 'Idle', 's.cooling': 'Cooling', 's.heating': 'Heating', 's.lights_off': 'Lights off',
-    's.blind_closed': 'Blind closed', 's.blind_open': 'Blind open', 's.nothing_on_list': 'Nothing on the list.',
+    's.blind_closed': 'Blind closed', 's.blind_no_data': 'Blind: no data', 's.blind_open': 'Blind open', 's.nothing_on_list': 'Nothing on the list.',
     's.none_answered': 'No sensor answering', 's.not_measured': 'Not measured',
     's.demo_only': 'Demo only', 's.proposed': 'Proposed',
 
@@ -79,7 +79,7 @@ window.I18N = {
     'k.living_lights': 'Living room lights', 'k.dining_lights': 'Dining lights',
     'k.purifier': 'Air purifier', 'k.parents_ac': "Parents' air-con",
     'k.on': 'On', 'k.off': 'Off', 'k.tap_off': 'tap to turn off', 'k.tap_on': 'tap to turn on',
-    'k.room': 'room {v}°', 'm.two_circuits': 'two circuits, not the whole house', 'k.open_controls': 'open climate controls', 'k.no_control': 'no control without data',
+    'k.room': 'room {v}°', 'k.brightness_nd': 'brightness: no data', 'm.two_circuits': 'two circuits, not the whole house', 'k.open_controls': 'open climate controls', 'k.no_control': 'no control without data',
     'k.whole_house': 'Whole-house scenes (proposed)', 'h.monitored': 'Monitored circuits',
 
     'f.monitored': 'Two circuits are metered, so this is monitored load. It is not the whole house.',
@@ -142,7 +142,7 @@ window.I18N = {
     's.no_due': '未设置到期日', 's.protected': '受保护', 's.connected': '已连接',
     's.up_to_date': '已是最新', 's.update_available': '有可用更新', 's.playing': '播放中',
     's.idle': '空闲', 's.cooling': '制冷中', 's.heating': '制热中', 's.lights_off': '灯已关',
-    's.blind_closed': '卷帘已关', 's.blind_open': '卷帘已开', 's.nothing_on_list': '清单是空的。',
+    's.blind_closed': '卷帘已关', 's.blind_no_data': '卷帘：无数据', 's.blind_open': '卷帘已开', 's.nothing_on_list': '清单是空的。',
     's.none_answered': '没有传感器响应', 's.not_measured': '尚未监测',
     's.demo_only': '仅演示', 's.proposed': '建议',
 
@@ -180,7 +180,7 @@ window.I18N = {
     'k.living_lights': '客厅灯', 'k.dining_lights': '餐厅灯',
     'k.purifier': '空气净化器', 'k.parents_ac': '父母房空调',
     'k.on': '开', 'k.off': '关', 'k.tap_off': '点按关闭', 'k.tap_on': '点按打开',
-    'k.room': '室温 {v}°', 'm.two_circuits': '仅两个回路，非全屋', 'k.open_controls': '打开空调控制', 'k.no_control': '无数据，无法控制',
+    'k.room': '室温 {v}°', 'k.brightness_nd': '亮度：无数据', 'm.two_circuits': '仅两个回路，非全屋', 'k.open_controls': '打开空调控制', 'k.no_control': '无数据，无法控制',
     'k.whole_house': '全屋场景（拟议）', 'h.monitored': '已监控回路',
 
     'f.monitored': '只有两个回路有计量，所以这是已监控负载，不是全屋用电。',

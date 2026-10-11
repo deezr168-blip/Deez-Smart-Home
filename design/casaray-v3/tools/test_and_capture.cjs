@@ -505,6 +505,121 @@ async function shot(page, name, full = false) {
     }
   }
 
+  // ------------------------------- 8. Missing-state fallbacks (V3 backlog 9–11) --
+  // A value the entity did not report is never drawn as 0: not "1 min", not
+  // "0%", not "Blind closed". A real 0 still is 0.
+  {
+    const KITCHEN = 'binary_sensor.k_motion_sensor_motion';
+    const OCC = 'binary_sensor.bedroom_parents_room_ac_room_occupied';
+    for (const zh of [false, true]) {
+      const L = zh ? '中文' : 'EN';
+      const no = zh ? /无数据/ : /No data/;
+      const p = await newPage(browser, VIEWPORTS.wall);
+      if (zh) await p.locator('[data-lang]').click();
+      const put = (id, v) => p.evaluate(([id, v]) => { window.__casaray.state()[id] = v; }, [id, v]);
+      const text = (route, pick) => p.evaluate(([route, pick]) => {
+        window.__casaray.go(route);
+        const q = (sel) => [...document.querySelectorAll(sel)];
+        const el = pick === 'chip' ? q('#chips .chip').find((c) => /Movement|动作/.test(c.innerText))
+          : pick === 'kitchen' ? q('#view .card.tile').find((c) => /^(Movement|动作)/.test(c.querySelector('.name')?.innerText || ''))
+          : pick === 'occ' ? q('#view .sec').find((x) => /Right now|此刻/.test(x.querySelector('h2')?.innerText || '')).querySelectorAll('.card.tile')[1]
+          : pick === 'tap' ? q('.taps .tap').find((c) => /Living room lights|客厅灯/.test(c.innerText))
+          : null;
+        return el ? el.innerText.replace(/\n+/g, ' | ') : null;
+      }, [route, pick]);
+
+      // ---- 9: elapsed time ----
+      for (const [label, id, route, pick, quietWord] of [
+        ['Kitchen movement tile', KITCHEN, 'room-kitchen', 'kitchen', zh ? /安静/ : /Quiet/],
+        ['Movement chip', KITCHEN, 'room-kitchen', 'chip', zh ? /安静/ : /Quiet/],
+        ['Home occupancy tile', OCC, 'home', 'occ', zh ? /安静/ : /Quiet/],
+      ]) {
+        const wasOn = id === OCC ? 'off' : 'off';
+        await put(id, { s: wasOn, ago: 31 });
+        let t = await text(route, pick);
+        check(`elapsed: ${label} shows a real elapsed time ${L}`, t && quietWord.test(t) && (zh ? /31 分钟/ : /31 min/).test(t), t);
+        await put(id, { s: wasOn, ago: 0 });
+        t = await text(route, pick);
+        check(`elapsed: ${label} reads a real 0 as just now, not 1 min ${L}`, t && (zh ? /刚刚/ : /just now/).test(t) && !/1 min|1 分钟/.test(t), t);
+        for (const [what, ago] of [['missing', undefined], ['null', null], ['text', 'unknown'], ['negative', -5]]) {
+          await put(id, ago === undefined ? { s: wasOn } : { s: wasOn, ago });
+          t = await text(route, pick);
+          check(`elapsed: ${label} with ${what} elapsed time reads no data, never 1 min ${L}`, t && quietWord.test(t) && no.test(t) && !/1 min|1 分钟|0 min|0 分钟/.test(t), t);
+        }
+        for (const bad of ['unavailable', 'unknown']) {
+          await put(id, { s: bad });
+          t = await text(route, pick);
+          check(`elapsed: ${label} ${bad} reads no data ${L}`, t && no.test(t) && !quietWord.test(t) && !/min|分钟/.test(t), t);
+        }
+      }
+
+      // ---- 10: brightness ----
+      const LIGHT = 'light.living_room';
+      const bar = (route) => p.evaluate((route) => {
+        window.__casaray.go(route);
+        const c = [...document.querySelectorAll('#view .card.tile')].find((x) => x.querySelector('[data-bright="light.living_room"]'));
+        if (!c) return null;
+        return { nd: !!c.querySelector('.bar.nd'), fill: c.querySelector('.fill') ? c.querySelector('.fill').style.width : null, label: c.querySelector('[data-bl]').innerText, aria: c.querySelector('input').getAttribute('aria-label') };
+      }, route);
+      await put(LIGHT, { s: 'on', a: { brightness: 62 } });
+      let b = await bar('room-living');
+      check(`brightness: a valid brightness shows its percentage ${L}`, b && !b.nd && b.fill === '62%' && b.label === '62%', JSON.stringify(b));
+      await put(LIGHT, { s: 'on', a: { brightness: 0 } });
+      b = await bar('room-living');
+      check(`brightness: a real 0 shows 0% ${L}`, b && !b.nd && b.fill === '0%' && b.label === '0%', JSON.stringify(b));
+      for (const [what, a] of [['missing', {}], ['no attributes', undefined], ['null', { brightness: null }], ['unknown text', { brightness: 'unknown' }], ['unavailable text', { brightness: 'unavailable' }], ['out of range', { brightness: 250 }]]) {
+        await put(LIGHT, a === undefined ? { s: 'on' } : { s: 'on', a });
+        b = await bar('room-living');
+        check(`brightness: ${what} reads no data, never 0% ${L}`, b && b.nd && b.fill === null && no.test(b.label) && !/0%/.test(b.label), JSON.stringify(b));
+      }
+      await put(LIGHT, { s: 'off', a: {} });
+      b = await bar('room-living');
+      check(`brightness: an off light with no brightness is just off, with no bar ${L}`, b === null, JSON.stringify(b));
+      await put(LIGHT, { s: 'on', a: {} });
+      const tap = await text('home', 'tap');
+      check(`brightness: Home One tap says brightness has no data, not a percentage ${L}`, tap && (zh ? /亮度：无数据/ : /brightness: no data/).test(tap) && !/0%/.test(tap), tap);
+      for (const bad of ['unavailable', 'unknown']) {
+        await put(LIGHT, { s: bad });
+        const c = await p.evaluate(() => { window.__casaray.go('room-living'); const x = [...document.querySelectorAll('#view .card.tile')].find((y) => /Living room|客厅/.test(y.querySelector('.name')?.innerText || '')); return x ? { cls: x.className, bar: !!x.querySelector('.bar'), text: x.innerText.replace(/\n+/g, ' | ') } : null; });
+        check(`brightness: ${bad} light draws a dashed card with no bar and no percentage ${L}`, c && /\bna\b/.test(c.cls) && !c.bar && !/\d%/.test(c.text), JSON.stringify(c));
+      }
+
+      // ---- 11: cover position ----
+      const COVER = 'cover.aqara_roller_shade_driver_e1';
+      const blind = () => p.evaluate(() => {
+        window.__casaray.go('room-ray');
+        const c = [...document.querySelectorAll('#view .card.tile')].find((x) => x.querySelector('[data-cover]'));
+        const row = (window.__casaray.go('rooms'), [...document.querySelectorAll('#view [data-go="room-ray"]')][0]);
+        const out = c ? { nd: !!c.querySelector('.bar.nd'), fill: c.querySelector('.fill') ? c.querySelector('.fill').style.width : null, sub: c.querySelector('.sub').innerText, label: c.querySelector('[data-bl]').innerText, on: /\bon\b/.test(c.className), row: row ? row.innerText.replace(/\n+/g, ' | ') : null } : null;
+        return out;
+      });
+      const closedW = zh ? /已关/ : /[Cc]losed/, openW = zh ? /打开|已开/ : /Open|open/;
+      // The Rooms row also lists the lights ("灯已关"), so match the blind's own words there.
+      const closedRow = zh ? /卷帘已关/ : /Blind closed/, openRow = zh ? /卷帘已开/ : /Blind open/;
+      await put(COVER, { s: 'closed', a: { position: 0 } });
+      let c = await blind();
+      check(`cover: a real position 0 is Closed ${L}`, c && !c.nd && c.fill === '0%' && closedW.test(c.sub) && closedRow.test(c.row), JSON.stringify(c));
+      await put(COVER, { s: 'open', a: { position: 100 } });
+      c = await blind();
+      check(`cover: position 100 is Open ${L}`, c && !c.nd && c.fill === '100%' && openW.test(c.sub) && /100%/.test(c.sub) && openRow.test(c.row), JSON.stringify(c));
+      await put(COVER, { s: 'open', a: { position: 40 } });
+      c = await blind();
+      check(`cover: an intermediate position shows its percentage ${L}`, c && c.fill === '40%' && /40%/.test(c.sub) && c.label === '40%', JSON.stringify(c));
+      for (const [what, a] of [['missing', {}], ['no attributes', undefined], ['null', { position: null }], ['unknown text', { position: 'unknown' }], ['unavailable text', { position: 'unavailable' }], ['out of range', { position: 140 }]]) {
+        await put(COVER, a === undefined ? { s: 'closed' } : { s: 'closed', a });
+        c = await blind();
+        check(`cover: ${what} position reads no data, never closed ${L}`, c && c.nd && c.fill === null && no.test(c.sub) && no.test(c.label) && !closedW.test(c.sub) && !closedRow.test(c.row) && !c.on, JSON.stringify(c));
+      }
+      for (const bad of ['unavailable', 'unknown']) {
+        await put(COVER, { s: bad });
+        const d = await p.evaluate(() => { window.__casaray.go('room-ray'); const x = [...document.querySelectorAll('#view .card.tile')].find((y) => /Blind|卷帘/.test(y.querySelector('.name')?.innerText || '')); return x ? { cls: x.className, bar: !!x.querySelector('.bar'), text: x.innerText.replace(/\n+/g, ' | ') } : null; });
+        check(`cover: ${bad} cover draws a dashed card, not Closed ${L}`, d && /\bna\b/.test(d.cls) && !d.bar && !closedW.test(d.text), JSON.stringify(d));
+      }
+      check(`fallbacks: no page errors ${L}`, p.errors.length === 0, p.errors.join(' | '));
+      await p.context().close();
+    }
+  }
+
   // ----------------------------------------------------- screenshots --
   const plan = [
     ['01_wall_home_dark_en', VIEWPORTS.wall, {}, 'home', true],

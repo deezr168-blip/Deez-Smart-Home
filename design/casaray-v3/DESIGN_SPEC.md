@@ -150,6 +150,14 @@ A$0.00. An unavailable occupancy sensor keeps its tile as dashed grey no data.
 Every interactive target is at least 44 × 44 px (the drawn checkbox and switch
 keep their size inside a 44 px button).
 
+**A value the entity did not report is never drawn as 0.** Elapsed time, a
+light's brightness and a cover's position each separate three cases: a real
+value (including a real 0, which is "just now", 0% or Closed), a missing or
+unusable value (No data, on an unfilled grey bar where there is one), and an
+entity that is itself unavailable or unknown (the dashed card). A missing
+brightness is never read as off, and a missing position is never read as
+closed.
+
 **Energy truth strip.** Solar, Grid import, Export. Four kinds of reading
 look different: *measured* is a figure (`0.61 kW`, today's total beneath);
 *no data* is a grey word on a grey tint ("Not reporting"); *unknown* is its

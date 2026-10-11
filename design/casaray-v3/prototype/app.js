@@ -41,7 +41,13 @@
     if (min < 60) return t('m.min', { n: Math.max(1, Math.round(min)) });
     return t('m.hours', { n: Math.round(min / 60) });
   }
-  const ago = (min) => (min == null ? '' : min < 1 ? t('m.just_now') : t('m.ago', { t: dur(min) }));
+  // Elapsed time. A real 0 is "just now". A missing, non-numeric or negative value is
+  // no data: it is never read as 0 minutes.
+  const mins = (m) => (typeof m === 'number' && Number.isFinite(m) && m >= 0 ? m : null);
+  const ago = (min) => { const m = mins(min); return m == null ? t('s.no_data') : m < 1 ? t('m.just_now') : t('m.ago', { t: dur(m) }); };
+  const quietFor = (min) => { const m = mins(min); return m == null ? t('s.no_data') : m < 1 ? t('m.just_now') : dur(m); };
+  // A percentage the entity actually reported (0 to 100), or null. 0 is a real value.
+  const pct = (v) => (typeof v === 'number' && Number.isFinite(v) && v >= 0 && v <= 100 ? v : null);
   const fmt = (n, d = 1) => (n == null ? '—' : Number(n).toLocaleString(lang() === 'zh' ? 'zh-CN' : 'en-AU', { minimumFractionDigits: d, maximumFractionDigits: d }));
   const money = (n) => 'A$' + Number(n).toLocaleString('en-AU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
@@ -325,12 +331,12 @@
     const id = l.id;
     if (na(id)) return tile({ ids: id, ic: 'lightbulb-off', name: nm(l.n), sub: t('s.offline'), state: 'na', pill: naPill('s.offline') });
     const isOn = on(id);
-    const b = st(id).a?.brightness ?? 0;
+    const b = pct(st(id).a?.brightness); // null = the light did not report one
     const sub = isOn ? `<span class="hl">${t('s.on')}</span>${st(id).a?.color ? ' · ' + esc(lang() === 'zh' ? '暖白' : st(id).a.color) : ''}` : t('s.off');
     const feature = l.dim && isOn
-      ? `<div class="feature"><div class="bar"><div class="fill" style="width:${b}%"></div>
-          <div class="lbl"><span>${t('u.brightness')}</span><span data-bl="${id}">${b}%</span></div>
-          <input type="range" min="1" max="100" value="${b}" data-bright="${id}" aria-label="${esc(nm(l.n))} ${t('u.brightness')}"></div></div>`
+      ? `<div class="feature"><div class="bar${b == null ? ' nd' : ''}">${b == null ? '' : `<div class="fill" style="width:${b}%"></div>`}
+          <div class="lbl"><span>${t('u.brightness')}</span><span data-bl="${id}">${b == null ? t('s.no_data') : `${b}%`}</span></div>
+          <input type="range" min="0" max="100" value="${b == null ? 50 : b}" data-bright="${id}" aria-label="${esc(nm(l.n))} ${t('u.brightness')}${b == null ? ': ' + t('s.no_data') : ''}"></div></div>`
       : '';
     // The toggle is a button inside the card so the brightness bar can be dragged without toggling.
     return `<div class="card tile ${isOn ? 'on' : ''}">
@@ -399,12 +405,13 @@
 
   function coverTile(id) {
     if (na(id)) return tile({ ids: id, ic: 'blinds-horizontal', name: lang() === 'zh' ? '卷帘' : 'Blind', sub: t('s.offline'), state: 'na', pill: naPill() });
-    const p = st(id).a?.position ?? 0;
+    const p = pct(st(id).a?.position); // null = the cover did not report a position
+    const word = p == null ? t('s.no_data') : p > 0 ? `<span class="hl">${t('s.open')}</span> · ${p}%` : t('s.closed');
     return `<div class="card tile ${p > 0 ? 'on' : ''}"><div class="ic">${icon('blinds-horizontal')}</div>
-      <div><div class="name">${lang() === 'zh' ? '卷帘' : 'Blind'}</div><div class="sub">${p > 0 ? `<span class="hl">${t('s.open')}</span> · ${p}%` : t('s.closed')}</div></div><div></div>
-      <div class="feature"><div class="bar"><div class="fill" style="width:${p}%"></div>
-        <div class="lbl"><span>${t('u.position')}</span><span data-bl="${id}">${p}%</span></div>
-        <input type="range" min="0" max="100" step="5" value="${p}" data-cover="${id}" aria-label="${t('u.position')}"></div></div>${eid(id)}</div>`;
+      <div><div class="name">${lang() === 'zh' ? '卷帘' : 'Blind'}</div><div class="sub">${word}</div></div><div></div>
+      <div class="feature"><div class="bar${p == null ? ' nd' : ''}">${p == null ? '' : `<div class="fill" style="width:${p}%"></div>`}
+        <div class="lbl"><span>${t('u.position')}</span><span data-bl="${id}">${p == null ? t('s.no_data') : `${p}%`}</span></div>
+        <input type="range" min="0" max="100" step="5" value="${p == null ? 50 : p}" data-cover="${id}" aria-label="${t('u.position')}${p == null ? ': ' + t('s.no_data') : ''}"></div></div>${eid(id)}</div>`;
   }
 
   function sceneBtn([id, n]) {
@@ -424,7 +431,7 @@
     if (na(id)) return tile({ ids: id, ic: 'motion-sensor', name, sub: t('s.no_data'), state: 'na', pill: naPill() });
     const m = on(id);
     return tile({ ids: [id, extra], ic: 'motion-sensor', name, state: m ? 'on' : 'off',
-      sub: m ? `<span class="hl">${t('s.movement_now')}</span>` : `${t('s.quiet')} · ${dur(st(id).ago || 0)}` });
+      sub: m ? `<span class="hl">${t('s.movement_now')}</span>` : `${t('s.quiet')} · ${quietFor(st(id).ago)}` });
   }
 
   function camTile(c) {
@@ -465,7 +472,7 @@
         } else bits.push(`<span>${t('m.plugs_on', { n: k })}</span>`);
       }
     }
-    if (r.cover && !na(r.cover)) bits.push(`<span>${(st(r.cover).a?.position ?? 0) > 0 ? t('s.blind_open') : t('s.blind_closed')}</span>`);
+    if (r.cover && !na(r.cover)) { const bp = pct(st(r.cover).a?.position); bits.push(`<span>${bp == null ? t('s.blind_no_data') : bp > 0 ? t('s.blind_open') : t('s.blind_closed')}</span>`); }
     if (r.door) {
       if (na(r.door)) bits.push(`<span>${lang() === 'zh' ? '门：无数据' : 'Door: no data'}</span>`);
       else if (r.id === 'backyard') bits.push(on(r.door) ? `<span class="hl">${lang() === 'zh' ? '门开着' : 'Door open'}</span>` : `<span>${lang() === 'zh' ? '门已关闭' : 'Door closed'}</span>`);
@@ -568,7 +575,7 @@
       if (r.temp) out.push(chip('thermometer', t('c.room'), temp(r.temp) ?? noData(), temp(r.temp) ? '' : 'na'));
       if (r.motion) {
         const m = r.motion;
-        out.push(chip('motion-sensor', t('c.movement'), na(m) ? noData() : on(m) ? t('s.movement_now') : `${t('s.quiet')}, ${dur(st(m).ago || 0)}`, na(m) ? 'na' : on(m) ? 'warn' : ''));
+        out.push(chip('motion-sensor', t('c.movement'), na(m) ? noData() : on(m) ? t('s.movement_now') : `${t('s.quiet')}, ${quietFor(st(m).ago)}`, na(m) ? 'na' : on(m) ? 'warn' : ''));
       }
       if (r.lux) out.push(chip('white-balance-sunny', t('c.light_level'), num(r.lux) == null ? noData() : `${fmt(num(r.lux), 0)} lx`, num(r.lux) == null ? 'na' : ''));
       if (r.lights) {
@@ -671,7 +678,7 @@
     }
     const isOn = s.s === 'on';
     let detail = '';
-    if (id.startsWith('light.') && isOn && a.brightness) detail = `${a.brightness}%`;
+    if (id.startsWith('light.') && isOn) { const bb = pct(a.brightness); detail = bb == null ? t('k.brightness_nd') : `${bb}%`; }
     const word = t(isOn ? 'k.on' : 'k.off');
     const action = t(isOn ? 'k.tap_off' : 'k.tap_on');
     const plain = `${word}${detail ? ' · ' + detail : ''} — ${action}`;
@@ -726,7 +733,7 @@
     const occ = 'binary_sensor.bedroom_parents_room_ac_room_occupied';
     const occTile = na(occ) ? tile({ ids: occ, ic: 'motion-sensor', name: t('room.parents'), sub: t('s.no_data'), state: 'na', pill: naPill() })
       : tile({ ids: occ, ic: 'motion-sensor', name: t('room.parents'), state: on(occ) ? 'on' : 'off',
-        sub: on(occ) ? `${t('s.occupied')} · ${ago(st(occ).ago)}` : `${t('s.quiet')} · ${dur(st(occ).ago || 0)}` });
+        sub: on(occ) ? `${t('s.occupied')} · ${ago(st(occ).ago)}` : `${t('s.quiet')} · ${quietFor(st(occ).ago)}` });
     const rem = num('sensor.energy_production_today_remaining');
     const nowSec = sec(h2('h.now', 'weather-partly-cloudy') + `<div class="stack">${weather}
       ${grid1([tile({ ids: 'sensor.energy_production_today_remaining', ic: 'solar-power', name: lang() === 'zh' ? '今日太阳能' : 'Solar expected today',
