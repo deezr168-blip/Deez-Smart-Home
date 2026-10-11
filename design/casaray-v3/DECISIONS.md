@@ -91,6 +91,28 @@ is documentation.
 8. **Post-merge:** conditional More boards visibility, desktop and kiosk
    versus phone.
 
+**Merged 11/10/26.** PR #4 was merged into `casaray-v3-design` at `3eed6ca`
+(owner approval; design-branch integration only; nothing deployed, nothing
+verified live). The three post-merge items above stay open and are unchanged.
+
+**V3 backlog: latent truthfulness fallbacks (found in the final PR #4
+review, 11/10/26).** All three are inherited from Concept D, none is reachable
+in a shipped scenario (every real motion and occupancy sensor carries an `ago`,
+and the demo data always supplies brightness and position), and **none is
+fixed**. Each needs its own authorisation, and each must come with a regression
+check like the four hardening fixes above.
+
+9. **`dur(ago || 0)` must not fabricate elapsed time.** When `ago` is absent a
+   quiet sensor reads "Quiet · 1 min". It should say no data, or omit the
+   duration. In `prototype/app.js`: the Kitchen movement tile (~line 427), the
+   Movement chip (~line 571) and the Home occupancy tile (~line 729).
+10. **`brightness ?? 0` must not fabricate zero brightness.** A light that
+    answers without a brightness attribute gets a 0 % bar (~line 328). It should
+    draw no value.
+11. **`position ?? 0` must not imply a cover is closed.** A cover that answers
+    without a `position` reads "Blind closed", whatever its state (~lines 402
+    and 468). It should use the cover's own state, or say no data.
+
 **QA note, 10/10/26 (merge-readiness check of PR #4 at `0d2a241`).** No code
 changed. The harness (108/108) and verifier (136/136) were re-run and pass.
 The eight follow-ups above were each reproduced against the prototype, and
