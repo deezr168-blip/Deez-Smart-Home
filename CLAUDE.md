@@ -153,6 +153,41 @@ goes unavailable and a section never loses its label.
 4. Check open issues and the active backlog **before** planning new work.
    High-severity regressions come before cosmetic improvement.
 
+## Standing Rule — Context First, Questions Last
+
+Before asking the user:
+
+1. Identify the active project and objective.
+2. Search trusted existing project records.
+3. Check prior decisions and task history.
+4. Verify repository, branch and file paths.
+5. Reuse confirmed information.
+6. Resolve safe ambiguities independently.
+7. Ask only for genuinely missing information or required authorisation.
+8. Batch remaining questions into one message.
+9. Record verified facts with source and date.
+10. Never assume missing information is consent.
+11. Distinguish confirmed, estimated, outdated and unknown information.
+12. Preserve existing working configurations.
+
+If no clarification is needed, execute the safe task without additional
+questions.
+
+This adds to the rules around it and relaxes none of them:
+
+- **Required authorisation (item 7) is every approval gate already in this
+  repository** — the *Do not touch* list below, the protected and HIGH-risk
+  classes in `MAINTENANCE.md`, and the owner approvals named in
+  `design/casaray-v3/CLAUDE.md`. "Safe" in the closing line excludes anything
+  those gates cover.
+- **A conflict between two governing instructions is not a "safe ambiguity"
+  (item 6).** `design/casaray-v3/CLAUDE.md` already says to stop and ask the
+  owner when it does not settle one, and that still applies.
+- **Records (item 9) go where this repository already keeps them:**
+  `PROJECT_STATE.md` for V2 work, `design/casaray-v3/DECISIONS.md` for V3 work
+  (V3 does not edit the V2 tracking documents). Item 3 reads the same places.
+  Records never hold credentials — the no-secrets rule below applies.
+
 ## Working rules
 
 - Small, controlled batches. One meaningful improvement per batch.
