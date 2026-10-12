@@ -267,9 +267,13 @@ def self_test() -> int:
         check("--dry-run writes nothing (bytes and mtime unchanged)",
               code == 0 and "dry run" in out and digest(f) == before
               and f.stat().st_mtime_ns == mtime)
-        code, out, _ = run_cli("HEAD", "CR-1", "CR-1", "--dry-run", "--file", f)
+        dup = d / "dup.md"
+        dup.write_text(FIXTURE, encoding="utf-8")
+        code, out, _ = run_cli("HEAD", "CR-1", "CR-1", "--file", dup)
+        sha = out.split()[1] if out.startswith("stamped ") else "?"
         check("a repeated ID on the command line is stamped and named once",
-              code == 0 and out.count("| CR-1 |") == 2 and "CR-1/CR-1" not in out)
+              code == 0 and "CR-1/CR-1" not in out and "into CR-1\n" in out
+              and dup.read_text().count(f"`{sha}`") == 1)
         code, _, _ = run_cli("HEAD", "CR-1", "CR-9", "--file", f)
         check("a refused run leaves the file byte-identical", code == 1 and digest(f) == before)
         code, _, _ = run_cli("HEAD", "CR-1", "--file", f)
