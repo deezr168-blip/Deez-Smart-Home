@@ -64,7 +64,7 @@ read-only guarantee is instead enforced inside the bundled scripts and tested.
 **`provenance-register`** · version 0.1.0 · `scripts/check_register.py`, `assets/templates/`, `references/status-vocabulary.md`, `tests/fixtures/`
 - *Invoke:* `/provenance-register`, or on building or checking an equipment register, inventory, evidence log, quote or purchase comparison, or a report that states owners, models, ratings, measurements, prices or dates.
 - *Inputs:* the existing register if there is one (its columns are kept as they are), plus whatever sources the owner has supplied.
-- *Output:* a register where every row has a `Status` and a `Source`, missing data is the literal word `UNKNOWN`, and the linter passes; plus a list of the questions that would resolve each unknown.
+- *Output:* a register where every row has a `Status` and a `Source`, missing data is the literal word `UNKNOWN`, stale `VERIFIED` dates are flagged (`--max-age-days`), and the linter passes; plus a list of the questions that would resolve each unknown.
 - *Writes:* only the file the owner names. Never uploads, shares, emails or buys without an explicit yes.
 - *Does not do:* entity verification inside the Home Assistant repository (that is `improve-system`'s `references/evidence-rules.md`).
 
@@ -138,3 +138,4 @@ travel with it. Two consequences:
 | Date | Change |
 |---|---|
 | 2026-10-12 | Registry created. Added pilots `session-orient`, `recovery-triage`, `provenance-register` (version 0.1.0). `automate` and `improve-system` untouched. |
+| 2026-10-12 | Aligned the pilots with the *Context First, Questions Last* standing rule merged the same day (audit C8): `recovery-triage` step 7 no longer asks where to file; `provenance-register` maps to *confirmed, estimated, outdated, unknown* and gains `--max-age-days`. Version stays 0.1.0 (pilot, not yet released). |

@@ -54,9 +54,16 @@ Claude from improvising a recovery on a system it cannot see.
 7. **Write it up.**
    `triage_plan.py incident --symptom "<...>"` prints a blank record with
    `UNKNOWN` everywhere. Fill it from evidence only and return it in the
-   conversation. **Do not file it** in a tracking document unprompted. Ask where.
-   V3 records live in `design/casaray-v3/DECISIONS.md`; V2 tracking documents have
-   their own conventions (use `scripts/next_id.py` for the next free ID).
+   conversation. Do not ask where it belongs; the repository already says
+   (root `CLAUDE.md`, *Context First*, item 9). Record **established facts only,
+   never hypotheses**, each marked VERIFIED or REPORTED with its source and date
+   (output the owner pasted from the host is REPORTED: nothing here can check it),
+   in the owner's existing records: on a
+   V2 branch `PROJECT_STATE.md` or `DEPLOYMENT_BLOCKERS.md`, with the next free ID
+   from `scripts/next_id.py`. On a V3 branch there is no operational record,
+   because V3 is design-only and does not edit those documents, so hand the owner
+   the record and say which document it belongs in. Do not invent a new location,
+   and do not file the full record unless the owner asks.
 8. **Close with three lines:** what is established, what is still UNKNOWN, and
    the decision the owner has to make.
 

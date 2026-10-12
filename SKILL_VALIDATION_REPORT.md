@@ -4,21 +4,23 @@ Validation of the three pilot skills added on 2026-10-12: `session-orient`,
 `recovery-triage` and `provenance-register`. Companion files:
 `WORKFLOW_AUDIT.md` (evidence and scoring) and `SKILL_REGISTRY.md` (what exists).
 
-**Result: all checks that this environment can run pass.** 158 automated checks,
-the installed validator on all three skills, and the repository's own gate. The
-list of things that could **not** be tested is in section 5; read it before
-relying on the pilots.
+**Result: all checks that this environment can run pass.** 164 automated checks
+(74 + 50 + 40), the installed validator on all three skills, and the repository's
+own gate. The list of things that could **not** be tested is in section 6; read it
+before relying on the pilots.
 
 Environment: Python 3.13.16 · git 2.43.0 · PyYAML 6.0.1 · Claude Code 2.1.296.
-Branch `casaray-v3-design`, HEAD `d4d6d42` when validated.
+Branch `casaray-v3-design`. First validated at `d4d6d42`; re-validated after the
+owner's PR #6 landed mid-session (section 4a), so the figures here are from the
+integrated tree.
 
 ## 1. Results against the brief
 
 | # | Requirement | Result | Evidence |
 |---|---|---|---|
 | 1 | Skill discovery and frontmatter against the installed specification | **Pass** | The installed validator (`skill-creator/scripts/quick_validate.py`) returns "Skill is valid!" for all three. Keys used: `name`, `description`, `metadata` only. Descriptions are 891, 980 and 912 of 1,024 characters, with no angle brackets and no `: ` that would break the YAML. **The harness listed each skill in its own live skill list as soon as the file existed** (`session-orient`, `recovery-triage`, `provenance-register`), and re-read `session-orient`'s description within the same session after an edit |
-| 2 | Non-destructive tests with fixtures or dry-run | **Pass** | `orient.py --selftest` **74/74**, `triage_plan.py --selftest` **50/50**, `check_register.py --selftest` **34/34**. Fixtures are a throwaway git repository, 14 sample symptom reports, and five files of fictional register data. The refusal paths are tested, not just the happy ones (section 2) |
-| 3 | No existing skill or instruction overwritten | **Pass** | `git diff` is empty; nothing staged; the only changes are **22 new untracked files** (this report included); HEAD still `d4d6d42` when checked. `.claude/settings.json`, `CLAUDE.md`, `MAINTENANCE.md`, `PROJECT_STATE.md`, `AUTOMATION_REGISTRY.md`, `process-memory.json`, `automate/`, `improve-system/`, all dashboards, themes, packages and deployment scripts are unmodified |
+| 2 | Non-destructive tests with fixtures or dry-run | **Pass** | `orient.py --selftest` **74/74**, `triage_plan.py --selftest` **50/50**, `check_register.py --selftest` **40/40**. Fixtures are a throwaway git repository, 14 sample symptom reports, and five files of fictional register data. The refusal paths are tested, not just the happy ones (section 2) |
+| 3 | No existing skill or instruction overwritten | **Pass** | Before committing, `git diff` was empty and nothing was staged; the only changes were **22 new files** (this report included), and HEAD was still `d4d6d42`. The commit adds those 22 files and modifies none. `.claude/settings.json`, `CLAUDE.md`, `MAINTENANCE.md`, `PROJECT_STATE.md`, `AUTOMATION_REGISTRY.md`, `process-memory.json`, `automate/`, `improve-system/`, all dashboards, themes, packages and deployment scripts are unmodified |
 | 4 | No duplicate capability or conflicting trigger | **Pass after one fix** | 140 distinct skill names compared by shared phrases. One real collision found and fixed: "carry on" was claimed by both `session-orient` and `improve-system`. Section 3 |
 | 5 | Output matches existing documentation conventions | **Pass** | ISO dates as in the other root documents; British spelling (the only US-spelled strings are a filename, `authorized_keys`, and a YAML key, `license`); tables and sentence-case headings as in `AUTOMATION_REGISTRY.md`; no emoji, tabs, CRLF or trailing whitespace; no private identifiers from the Drive or branch material read during discovery (searched for by pattern). `bash scripts/ha_validate.sh` exits 0 with the files present: no credential-shaped literals, no protected path touched |
 | 6 | No live Home Assistant settings, credentials, branches or deployment scripts modified or executed | **Pass** | Section 4 lists every operation performed outside the repository |
@@ -53,7 +55,7 @@ Branch `casaray-v3-design`, HEAD `d4d6d42` when validated.
 | Incident template | 13 | ten required sections, substitution of symptom and date, `UNKNOWN` defaults, "NOT RUN, NEEDS APPROVAL" |
 | **Cannot act** | 2 | a walk of the script's own syntax tree finds **no process, network or file-writing capability** outside the test function; running a plan creates no files |
 
-### `provenance-register` · 34 checks
+### `provenance-register` · 40 checks
 
 | Area | Checks | Proves |
 |---|---|---|
@@ -62,6 +64,7 @@ Branch `casaray-v3-design`, HEAD `d4d6d42` when validated.
 | The owner's rule | 7 | **an ASSUMED owner or rating is refused (E7)**; the same row with `UNKNOWN` passes; a REPORTED value with a source is allowed; a REPORTED value without one is refused; "about 2" in a rating cell is refused |
 | Reporting | 5 | ASSUMED rows warn but do not error, strict mode turns that into a failure, duplicate IDs are caught case-insensitively, JSON round-trips, and the report says "a pass does not mean any value is true" |
 | Templates | 6 | all three templates exist and lint with no errors and no warnings |
+| Ageing ("outdated") | 6 | an old VERIFIED date warns (W4); one inside the limit does not; `DD/MM/YY` is read as day/month/year; a future date warns as a likely typo; only VERIFIED rows are aged; ageing is off unless asked for |
 | No side effects | 3 | linting changes nothing; an unsupported file type is refused; **a spreadsheet CSV with a byte-order mark and CRLF line endings lints clean** |
 
 Additional runs outside the suites, all passing: five representative commands,
@@ -115,6 +118,9 @@ Everything that touched anything, so the claim in row 6 can be checked:
 |---|---|
 | `git fetch --unshallow origin casaray-v3-design` | deepened local history from 59 to 362 commits; **no branch moved, no ref changed**; the only state change is the clone's shallow marker |
 | `git ls-remote` (four invocations) | read-only |
+| `git fetch origin casaray-v3-design` | updated the remote-tracking ref only |
+| `git push` ×6 to `casaray-v3-design` | five rejected as non-fast-forward (no effect); one fast-forward `0426180..106759d`. **No force.** The designated branch is the only branch written |
+| `git rebase origin/casaray-v3-design` | rewrote only my own unpublished commit |
 | Google Drive: one `list_recent_files` (30 items) and two title searches | **metadata only. No document was opened.** Nothing created, modified, shared or trashed. Titles are not reproduced in any committed file |
 | GitHub API: `list_pull_requests`, `list_commits` ×2 | read-only; one extra branch read by API, not checked out |
 | `bash scripts/ha_validate.sh` | the repository's validation gate, which its header describes as read-only. Run once. It is not a deployment script; it ran no sync, deploy or restart |
@@ -122,6 +128,33 @@ Everything that touched anything, so the claim in row 6 can be checked:
 | Credentials | `~/.claude/.credentials.json` was never opened. No token, password or key was printed, stored or committed |
 | Deployment scripts, recovery scripts, automations | none executed. Of the host scripts (`scripts/casaray_*`, `deploy_*`), none was run; they were only read |
 | Files written | the 22 new files in the repository; scratch scripts in the session scratch directory. A `__pycache__` folder created inside one skill by a validation import was removed |
+
+## 4a. The remote moved during validation
+
+The first push was rejected as a non-fast-forward: the owner had merged PR #6
+into `casaray-v3-design` while this work was in progress (a 35-line *Context
+First, Questions Last* standing rule added to root `CLAUDE.md`, now 22,717 B).
+
+| Step | What happened |
+|---|---|
+| Diagnosis | **I retried the push five times before reading the error.** The rejection was "fetch first", a divergence and not a network fault, so the retries were pointless. Harmless, but I should have stopped at the first |
+| Look before integrating | fetched that one branch and read the diff: one file changed, no overlap with my 22 |
+| Integration | rebased my single, unpublished commit onto the new head (rewrites no shared history); clean, no conflicts |
+| Re-validation | `orient.py` on the integrated tree: no stale-rules warning, both contradictions still detected, the new size reported correctly |
+| Push | fast-forward `0426180..106759d`, no force |
+| Follow-up | the new rule changed what the pilots should do in two places, so I made those changes as a **separate, reviewable commit** instead of folding them into the first |
+
+The rule is compatible with the pilots: "a conflict between governing
+instructions is not a safe ambiguity" is exactly how `session-orient` treats C2 and
+C5. Two real adjustments followed:
+
+1. `recovery-triage` said to *ask* where an incident record belongs. The
+   repository already says where records go, so asking was an unnecessary question.
+   It now names the documented home and records only established facts, marked
+   VERIFIED or REPORTED with source and date.
+2. The rule's item 11 distinguishes *confirmed, estimated, outdated and unknown*.
+   `provenance-register` covered three; nothing enforced "outdated". It now maps
+   to the four, and `--max-age-days` warns on stale or future VERIFIED dates.
 
 ## 5. Defects found in my own work
 
@@ -145,6 +178,11 @@ reading. Each is fixed and now covered by a test.
 | 13 | "carry on" claimed by two skills | the overlap scan | section 3 |
 | 14 | Wording differed between the plan footer (OBSERVED, INFERRED) and the incident template (VERIFIED, ASSUMED) | reading both | aligned to one vocabulary |
 | 15 | Four of my test assertions were wrong: a fixture missing a file, a check that asserted nothing, a drift test that passed for the wrong reason, and a dangerous-verb scan that flagged questions | self-test failures and review | each made a real assertion |
+| 16 | I retried a rejected push five times, treating a divergence as a network fault | the push output | stopped; read the remote; integrated properly (section 4a) |
+| 17 | `recovery-triage` told Claude to ask the owner where to file a record, which the repository already answers | the newly merged standing rule | now names the documented home |
+| 18 | "outdated" was not told apart from "confirmed" in `provenance-register` | the same rule, item 11 | status mapping and `--max-age-days`, 6 tests |
+| 19 | My first rewrite of item 17 said to record "VERIFIED facts only", contradicting the skill's own rule that host output pasted by the owner is REPORTED | re-reading my own edit | corrected before commit |
+| 20 | `--today` accepted `DD/MM/YY` but its error message said only `YYYY-MM-DD` | testing bad arguments | message made accurate |
 
 Items 12 and 7 are the instructive ones: a reader could not have seen either, and
 both would have broken the skill silently for the next person to use it.

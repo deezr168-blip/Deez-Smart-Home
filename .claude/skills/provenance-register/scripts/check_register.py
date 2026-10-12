@@ -26,6 +26,8 @@ WHAT IT CHECKS
   W1  a vague placeholder (TBC, approx, probably, ?) where UNKNOWN belongs
   W2  the recommended columns "Verified on" / "Verified by" are absent
   W3  ASSUMED rows exist (reported so they are not forgotten)
+  W4  with --max-age-days: a VERIFIED date older than the limit ("outdated"),
+      or in the future (almost certainly a typo)
 
 It reads a file and prints. It never writes, uploads, shares or sends.
 
@@ -34,6 +36,7 @@ USAGE
   check_register.py FILE                  .md (first pipe table) or .csv
   check_register.py FILE --table 2        the second table in a Markdown file
   check_register.py FILE --strict         warnings count as errors
+  check_register.py FILE --max-age-days 180   warn on VERIFIED dates older than that
   check_register.py FILE --json
   check_register.py FILE --require id,status,source,verified on
   check_register.py FILE --also-sensitive 'wattage|colour'
@@ -47,6 +50,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import datetime as dt
 import io
 import json
 import re
@@ -157,9 +161,26 @@ def is_gap(v: str) -> bool:
     return v.strip().upper() in ("UNKNOWN", "N/A")
 
 
+def parse_date(s: str) -> dt.date | None:
+    """YYYY-MM-DD, or DD/MM/YY(YY), which is the repository's date convention."""
+    s = s.strip()
+    try:
+        m = re.fullmatch(r"(\d{4})-(\d{2})-(\d{2})", s)
+        if m:
+            return dt.date(int(m[1]), int(m[2]), int(m[3]))
+        m = re.fullmatch(r"(\d{1,2})/(\d{1,2})/(\d{2}|\d{4})", s)
+        if m:
+            y = int(m[3])
+            return dt.date(y + 2000 if y < 100 else y, int(m[2]), int(m[1]))
+    except ValueError:
+        return None
+    return None
+
+
 def lint(header: list[str], rows: list[tuple[int, list[str]]], *,
          required=REQUIRED_DEFAULT, sensitive: str = SENSITIVE_DEFAULT,
-         also_sensitive: str | None = None) -> dict:
+         also_sensitive: str | None = None, max_age_days: int | None = None,
+         today: dt.date | None = None) -> dict:
     errors: list[dict] = []
     warns: list[dict] = []
 
@@ -215,6 +236,15 @@ def lint(header: list[str], rows: list[tuple[int, list[str]]], *,
             err("E5", f"{status} row has no Source", line)
         if status == "VERIFIED" and on_i is not None and not DATE.match(cells[on_i].strip()):
             err("E6", f"VERIFIED row has no valid 'Verified on' date ({cells[on_i]!r})", line)
+        elif status == "VERIFIED" and on_i is not None and max_age_days is not None:
+            d = parse_date(cells[on_i])
+            if d is not None:
+                age = ((today or dt.date.today()) - d).days
+                if age < 0:
+                    warn("W4", f"'Verified on' {cells[on_i].strip()} is in the future: a typo?", line)
+                elif age > max_age_days:
+                    warn("W4", f"VERIFIED on {cells[on_i].strip()}, {age} days ago (limit {max_age_days}): "
+                               "re-verify, or write 'outdated since <date>' in Notes", line)
         for i in sens_cols:
             v = cells[i].strip()
             if not v:
@@ -313,6 +343,23 @@ def selftest() -> int:
     rep = lint(["ID", "Status", "Source", "Note"], [(2, ["A", "VERIFIED", "doc", "tbc"])])
     check("a vague word warns (W1)", "W1" in codes(rep, "warnings"))
 
+    # "outdated": a VERIFIED date that has gone stale (the repository's own words: confirmed,
+    # estimated, outdated, unknown)
+    hd, now = ["ID", "Status", "Source", "Verified on"], dt.date(2026, 10, 12)
+    row = lambda d, st="VERIFIED": [(2, ["A", st, "doc", d])]            # noqa: E731
+    rep = lint(hd, row("2026-01-05"), max_age_days=90, today=now)
+    check("an old VERIFIED date warns as outdated (W4)", "W4" in codes(rep, "warnings") and not rep["errors"])
+    rep = lint(hd, row("2026-01-05"), max_age_days=365, today=now)
+    check("a date inside the limit does not warn", "W4" not in codes(rep, "warnings"))
+    rep = lint(hd, row("05/01/26"), max_age_days=90, today=now)
+    check("DD/MM/YY is read as day/month/year", "W4" in codes(rep, "warnings"))
+    rep = lint(hd, row("2027-01-05"), max_age_days=90, today=now)
+    check("a future date warns as a likely typo", "W4" in codes(rep, "warnings"))
+    rep = lint(hd, row("N/A", "REPORTED"), max_age_days=1, today=now)
+    check("only VERIFIED rows are aged", "W4" not in codes(rep, "warnings") and not rep["errors"])
+    rep = lint(hd, row("2020-01-01"))
+    check("ageing is off unless asked for", "W4" not in codes(rep, "warnings"))
+
     # strict mode, counting, output
     rep = lint(["ID", "Status", "Source"], [(2, ["A", "ASSUMED", "UNKNOWN"])])
     check("ASSUMED rows warn (W3) but do not error", "W3" in codes(rep, "warnings") and not rep["errors"])
@@ -370,6 +417,9 @@ def main(argv=None) -> int:
                                       f"(default {','.join(REQUIRED_DEFAULT)})")
     ap.add_argument("--sensitive", help="regex replacing the default sensitive-column pattern")
     ap.add_argument("--also-sensitive", help="regex added to the sensitive-column pattern")
+    ap.add_argument("--max-age-days", type=int, metavar="N",
+                    help="warn (W4) when a VERIFIED date is older than N days, or in the future")
+    ap.add_argument("--today", metavar="YYYY-MM-DD", help="treat this as today (for repeatable runs)")
     ap.add_argument("--template", choices=["equipment", "evidence", "quotes"],
                     help="print a blank register")
     ap.add_argument("--selftest", action="store_true", help="prove the tool against its fixtures")
@@ -384,10 +434,20 @@ def main(argv=None) -> int:
         ap.print_help()
         return 2
     required = tuple(x.strip().casefold() for x in a.require.split(",")) if a.require else REQUIRED_DEFAULT
+    today = None
+    if a.today:
+        today = parse_date(a.today)
+        if today is None:
+            print("error: --today must be a date: YYYY-MM-DD or DD/MM/YY", file=sys.stderr)
+            return 2
+    if a.max_age_days is not None and a.max_age_days < 0:
+        print("error: --max-age-days must not be negative", file=sys.stderr)
+        return 2
     try:
         header, rows = read_table(Path(a.file), a.table)
         rep = lint(header, rows, required=required,
-                   sensitive=a.sensitive or SENSITIVE_DEFAULT, also_sensitive=a.also_sensitive)
+                   sensitive=a.sensitive or SENSITIVE_DEFAULT, also_sensitive=a.also_sensitive,
+                   max_age_days=a.max_age_days, today=today)
     except ValueError as e:
         print(f"error: {e}", file=sys.stderr)
         return 2

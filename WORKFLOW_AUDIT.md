@@ -222,7 +222,10 @@ No register found. The closest items are two faulty-equipment report **forms** (
 Seven layers shape a session here: your standing preferences; root `CLAUDE.md`;
 `design/casaray-v3/CLAUDE.md`; `PROJECT_STATE.md`; `MAINTENANCE.md`; the
 `improve-system` skill; and the session harness. The four repository documents
-alone total about 234 KB [M] (21,080 + 182,699 + 21,147 + 9,126 bytes).
+alone totalled about 234 KB [M] when measured (21,080 + 182,699 + 21,147 + 9,126
+bytes). Root `CLAUDE.md` has since grown to 22,717 B with the standing rule
+below (C8), so about 236 KB; every other figure in this document was measured
+before that merge.
 
 ### Conflicts
 
@@ -235,6 +238,7 @@ alone total about 234 KB [M] (21,080 + 182,699 + 21,147 + 9,126 bytes).
 | C5 | Reading `PROJECT_STATE.md` | Root step 1: read in full. Root step 3 and the file's own *Context Loading Strategy* (line 250): load selectively. | **Unsettled, and your decision.** Full read is about 45k tokens [A]. |
 | C6 | Autonomy | Preferences: continue without asking. V3: show the owner a render and get approval at each design milestone. | Settled for V3. |
 | C7 | Files outside the V3 tree | V3: needs Ray's explicit approval. This task names three new root files and new skill directories. | Treated as that approval for those named files only; nothing else outside the tree was touched. |
+| C8 | When to ask the owner a question | Root `CLAUDE.md`, *Standing Rule: Context First, Questions Last*, added by PR #6 and **merged while this audit was in progress** (2026-10-12): search the records first, ask only for what is genuinely missing or needs authorisation, and a conflict between governing instructions is *not* a safe ambiguity. | **Consistent** with how the pilots treat C2 and C5 (report, do not resolve). It changed two things in the pilots, made in a follow-up commit: `recovery-triage` no longer asks where to file a record, and `provenance-register` maps its statuses onto the rule's *confirmed, estimated, outdated, unknown* and gained `--max-age-days` so "outdated" can be told apart from "confirmed". |
 
 ### Duplications
 

@@ -53,8 +53,10 @@ vocabulary are in `references/status-vocabulary.md`.
    recommendation separate and labelled as opinion.
 6. **Run the linter** and fix every error:
    `python3 .claude/skills/provenance-register/scripts/check_register.py FILE`
-   (`--strict` makes warnings fail; `--table N` picks a Markdown table). Do not
-   edit the linter or loosen its patterns to get a pass.
+   (`--strict` makes warnings fail; `--table N` picks a Markdown table;
+   `--max-age-days N` warns when a VERIFIED date has gone stale, which is how
+   *outdated* is told apart from *confirmed*). Do not edit the linter or loosen
+   its patterns to get a pass.
 7. **Report in this shape:**
    ```
    Register: <file>   Rows: 12   VERIFIED 5 · REPORTED 3 · UNKNOWN 4
@@ -106,8 +108,9 @@ column differently (a "Wattage" or "Colour" column that matters) needs
 ## Validation
 
 `python3 .claude/skills/provenance-register/scripts/check_register.py --selftest`
-(34 checks) runs five fixtures of fictional data, the three templates, the
-rule that an assumed owner is refused, and proof that linting changes nothing.
+(40 checks) runs five fixtures of fictional data, the three templates, the
+rule that an assumed owner is refused, the ageing of stale dates, and proof that
+linting changes nothing.
 Last result is in `SKILL_VALIDATION_REPORT.md`.
 
 ## Maintenance

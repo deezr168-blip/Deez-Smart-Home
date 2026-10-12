@@ -43,6 +43,23 @@ These describe different things, so they are mapped, not merged.
 For entity checks inside the Home Assistant repository use `improve-system`'s
 `references/evidence-rules.md`. This vocabulary is for everything else.
 
+## The repository's standing rule: confirmed, estimated, outdated, unknown
+
+Root `CLAUDE.md` (*Standing Rule: Context First, Questions Last*, item 11) says to
+distinguish **confirmed, estimated, outdated and unknown** information. The
+register's words map onto those, with one deliberate omission:
+
+| Standing rule | In a register | Note |
+|---|---|---|
+| confirmed | **VERIFIED** | with a Source, a date and a person |
+| estimated | **ASSUMED** | flagged, and never in an ownership, identifier, rating, measurement or price column |
+| unknown | **UNKNOWN** | the word is written |
+| outdated | **VERIFIED, with an old `Verified on` date** | there is no sixth status: staleness is a property of the *date*, not of the fact. `--max-age-days N` warns (W4) when a VERIFIED date is older than N days or in the future. When you know a value is superseded, write `outdated since <date>` in Notes |
+| (no counterpart) | **REPORTED** | a named source's claim that nobody here has checked. Treat it as unconfirmed until it is |
+
+The same item 9 asks that verified facts be recorded **with source and date**.
+That is what `Source`, `Verified on` and `Verified by` are for.
+
 ## Counting
 
 Say what answered, not the length of the list. Report `VERIFIED 9, UNKNOWN 5`,
