@@ -1,16 +1,72 @@
 {
-  "version": 1,
-  "note": "Only counts that can be re-derived from git history or .claude/process-memory.json. No transcripts, task logs or ChatGPT conversations were available.",
+  "version": 2,
+  "note": "Only counts that can be re-derived from git, the Routines API or .claude/process-memory.json. No transcripts, task logs or ChatGPT conversations were available. user_input and developer_effort are tracked separately on purpose: process-memory's `minutes` field is agent effort and must never be reported as owner input saved.",
+  "status_vocabulary": {
+    "measured": "re-derivable now from git or the Routines API; the command is in `source`",
+    "self_reported": "taken from .claude/process-memory.json; not re-derivable",
+    "estimate": "arithmetic on a self-reported or assumed figure",
+    "unknown": "no evidence"
+  },
+  "measures": {
+    "user_input": "Events the owner has to type, decide, approve or fix by hand. Counted per audit. Proxies available to a routine: commits authored by the owner, approval items listed in the weekly report, PRs the owner had to retarget.",
+    "developer_effort": "Steps and minutes an agent or maintainer spends per occurrence. Used for ranking by procmem.py; never counted as owner input."
+  },
   "audits": [
     {
       "date": "2026-10-12",
-      "window_7d": {"from": "2026-10-05", "to": "2026-10-12", "ha_deploy_commits": 0, "other_branch_activity": "casaray-v3-design / PR #3 / PR #4 (design and docs work; no repeated manual procedure identifiable from commit messages)"},
-      "window_30d": {"from": "2026-09-12", "to": "2026-10-12", "ha_deploy_commits": 91},
+      "revision": 1,
+      "window_7d": {"from": "2026-10-05", "to": "2026-10-12", "ha_deploy_commits": 0, "other_branch_activity": "casaray-v3-design / PRs #4 and #6 (design and docs work; no repeated manual procedure identifiable from commit messages)"},
+      "window_30d": {"from": "2026-09-12", "to": "2026-10-12", "ha_deploy_commits": 49, "source": "git rev-list --count origin/ha-deploy (the branch's whole history, 2026-09-18 to 2026-09-25); the first version said 91, which does not re-derive"},
       "repeated_tasks": [
-        {"name": "stamp a commit SHA into tracking rows", "evidence": "13 commits on ha-deploy whose subject contains 'stamp' (git log origin/ha-deploy --since=2026-09-12 --grep=stamp -i), 12 of them 'docs: stamp' or 're-stamp' one-file edits to LIVE_VERIFICATION_QUEUE.md; process-memory 5x", "status_before": "unautomated, procmem score 9 HIGH", "status_after": "scripts/stamp_sha.py"},
-        {"name": "validate, commit, push both branches", "evidence": "process-memory 16x on 2026-09-19 (self-reported, not re-derivable from git)", "status_after": "still unautomated: push is an external action, left for owner decision"},
-        {"name": "compare a live render against the approved mockup", "evidence": "process-memory 3x, 40 min each (self-reported)", "status_after": "still unautomated: needs judgement, and live access is out of scope"}
-      ]
+        {
+          "name": "stamp a commit SHA into tracking rows",
+          "occurrences": {"value": 8, "status": "measured", "source": "git log origin/ha-deploy --format='%h %s' | grep -E ' docs: (re-)?stamp'; the first version said 13"},
+          "user_input": {"events_per_occurrence": 0, "status": "measured", "source": "all 8 commits are authored by Claude (git log --format=%an); the owner types none of them"},
+          "developer_effort": {"steps_before": 6, "steps_after": 1, "minutes_per_occurrence": 4, "status": "self_reported", "observed_last_7d": 0, "busiest_observed_week": {"occurrences": 8, "minutes_if_4_is_right": 32, "status": "estimate"}},
+          "reliability": {"reworked": 1, "of": 8, "status": "measured", "note": "86ec579 re-stamped after a rebase; the tool makes that one flag, it does not prevent it"},
+          "status_before": "unautomated, procmem score 9 HIGH (driven by the agent-minutes field)",
+          "status_after": "scripts/stamp_sha.py, hardened after review; self-test 27 checks; replay 7 of 8 historical stamps byte-identical, the 8th refused correctly"
+        },
+        {
+          "name": "validator cannot run in the sandbox it is given",
+          "occurrences": {"value": 3, "status": "measured", "source": "owner-authored commits 7309bd8 and 18a4e5d (2026-09-25) plus the 2026-10-12 routine sandbox; the third is as reported by the first run and reproduced by hiding the module"},
+          "user_input": {"events_per_occurrence": 1, "status": "measured", "source": "the two historical occurrences are owner-authored commits"},
+          "developer_effort": {"status": "unknown"},
+          "status_before": "no dependency manifest; a clean environment fails ha_validate.sh with 2 problems (jinja2 and PyYAML)",
+          "status_after": "requirements-dev.txt added and proven in a clean venv (exit 1 to exit 0). Not yet effective: needs the owner to add the install line to the environment setup script"
+        },
+        {
+          "name": "validate, commit, push both branches",
+          "occurrences": {"value": 16, "status": "self_reported", "source": "process-memory 2026-09-19"},
+          "status_after": "still unautomated: push is an external action, left for owner decision"
+        },
+        {
+          "name": "compare a live render against the approved mockup",
+          "occurrences": {"value": 3, "status": "self_reported", "source": "process-memory"},
+          "developer_effort": {"minutes_per_occurrence": 40, "status": "self_reported"},
+          "status_after": "still unautomated: needs judgement, and live access is out of scope"
+        },
+        {
+          "name": "retarget the weekly audit PR by hand",
+          "occurrences": {"value": 1, "status": "measured", "source": "PR #5 opened against ha-deploy; the Routine prompt names no base branch, so every weekly PR will repeat this"},
+          "user_input": {"events_per_occurrence": 1, "status": "measured"},
+          "status_after": "open: needs the owner to add a base-branch line to the Routine prompt"
+        }
+      ],
+      "totals": {
+        "user_input_events_eliminated": {"value": 0, "status": "measured", "note": "nothing is effective until the owner acts on the approval items; two recurring owner-input sources (validator environment, PR base) are identified and have a one-time fix each"},
+        "developer_minutes_saved_this_week": {"value": 0, "status": "measured", "note": "0 stamps in the last 7 days. The 4 min per stamp is self-reported, so any forward figure is an estimate"}
+      },
+      "routine": {
+        "id": "trig_01F4irXHwaazWvbsKKZLhWdr",
+        "cron": "0 22 * * 6",
+        "timezone": "UTC (no CRON_TZ prefix)",
+        "next_fire_utc": "2026-10-17T22:01:54Z",
+        "last_fire_utc": "2026-10-12T02:16:17Z",
+        "last_fire_kind": "creation-time; the cron path has not fired yet",
+        "household_timezone": {"value": "unknown", "inferred": "Australia (NMI/MIRN terms, A$)", "status": "estimate"},
+        "enabled_recurring_routines": 1
+      }
     }
   ]
 }
