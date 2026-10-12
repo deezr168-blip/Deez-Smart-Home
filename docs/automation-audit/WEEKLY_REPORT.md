@@ -37,6 +37,8 @@
    4. Extend `scripts/deny_device_control.py` to cover `media_player__play_media` (see below).
    5. Unchanged from the first version: automating push-to-both-branches (external action); adding `stamp_sha.py --self-test` to `verify_change.sh`.
 
+**Placement (open owner decision).** Every functional change here belongs to the V2 regime: the V3 rules say SHA stamping and the V2 tracking documents are "not used from V3", `ha_validate.sh` is the V2 push gate, and `WORKFLOW_AUDIT.md` (open question 5) asks the same cross-branch question about the pilot skills. PR #5 was retargeted from `ha-deploy` to `casaray-v3-design` on the owner's instruction after a clean check: 0 merge conflicts, no overlapping files, every referenced path present, the root `CLAUDE.md` standing rule untouched, `ha_validate.sh` and `--self-test` passing on the merged tree. Merging there adds files outside `design/casaray-v3/`, which that branch reserves for the owner's explicit approval, and the tooling would then not reach `ha-deploy`, where stamping happens. The branch carries no V3 commits (only commits on top of the `ha-deploy` tip), so it can be retargeted back, or opened a second time against `ha-deploy`, without leaking V3 history. `WORKFLOW_AUDIT.md` independently records two of this PR's fixes as defects: D1 (`AUTOMATION_REGISTRY.md` header, fixed in the regenerated file) and D2 (`ha_validate.sh` tail, fixed here).
+
 **Routine evidence** (Routines API, read-only, 2026-10-12)
 
 | | |

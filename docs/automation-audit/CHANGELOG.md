@@ -11,3 +11,4 @@
 - Corrected the first report: 13 stamps is 8, 91 commits is 49, the first Routine run was creation-time not scheduled, and the missing dependency is jinja2 *and* PyYAML.
 - `REPETITION_HISTORY.json` is now version 2: owner input and agent effort are separate fields, each tagged measured / self_reported / estimate.
 - Recorded Routine schedule evidence (UTC cron, next fire, attached connectors, base-branch gap).
+- Reconciled with the root `SKILL_REGISTRY.md` that landed on `casaray-v3-design` during this revision: this directory's registry now defers to it when present, to avoid two skill indexes disagreeing.
