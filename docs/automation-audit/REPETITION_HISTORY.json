@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "note": "Only counts that can be re-derived from git history or .claude/process-memory.json. No transcripts, task logs or ChatGPT conversations were available.",
+  "audits": [
+    {
+      "date": "2026-10-12",
+      "window_7d": {"from": "2026-10-05", "to": "2026-10-12", "ha_deploy_commits": 0, "other_branch_activity": "casaray-v3-design / PR #3 / PR #4 (design and docs work; no repeated manual procedure identifiable from commit messages)"},
+      "window_30d": {"from": "2026-09-12", "to": "2026-10-12", "ha_deploy_commits": 91},
+      "repeated_tasks": [
+        {"name": "stamp a commit SHA into tracking rows", "evidence": "13 commits on ha-deploy whose subject contains 'stamp' (git log origin/ha-deploy --since=2026-09-12 --grep=stamp -i), 12 of them 'docs: stamp' or 're-stamp' one-file edits to LIVE_VERIFICATION_QUEUE.md; process-memory 5x", "status_before": "unautomated, procmem score 9 HIGH", "status_after": "scripts/stamp_sha.py"},
+        {"name": "validate, commit, push both branches", "evidence": "process-memory 16x on 2026-09-19 (self-reported, not re-derivable from git)", "status_after": "still unautomated: push is an external action, left for owner decision"},
+        {"name": "compare a live render against the approved mockup", "evidence": "process-memory 3x, 40 min each (self-reported)", "status_after": "still unautomated: needs judgement, and live access is out of scope"}
+      ]
+    }
+  ]
+}

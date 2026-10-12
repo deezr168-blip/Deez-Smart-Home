@@ -197,6 +197,14 @@ was *not* verified — for this repository that always includes anything visual.
   across every tracking document. Use it before writing a queue or issue row;
   numbering by eye put two unrelated rows under `CR-318` and `CR-319` on
   2026-09-19, and one of a colliding pair silently never gets checked.
+- `scripts/stamp_sha.py` — the `docs: stamp` second commit, done mechanically:
+  `stamp_sha.py HEAD CR-324 CR-325` fills the `Commit` cell of those rows in
+  `LIVE_VERIFICATION_QUEUE.md` (column found from each table's own header) and
+  prints the commit message. `--dry-run` shows the diff. It edits the file only
+  — you still commit. It refuses an unknown ID, a non-commit SHA, a row already
+  stamped with a different SHA (`--restamp` after a rebase), and one ID matching
+  two rows (the `CR-318` collision; `--all-rows` if it really is one batch).
+  `--self-test` runs the fixtures.
 - `scripts/preserve_check.py` — structural diff against any git ref: views,
   cards, entities, navigation targets, service calls, with the added and
   removed items named. `scripts/verify_change.sh` calls this; run it directly
