@@ -1,0 +1,4 @@
+ID,Supplier,Item,Price,Price basis,Status,Source,Verified on,Verified by,Notes
+EX-Q1,Example Supplier A,Example item,1000,inc tax,ASSUMED,UNKNOWN,UNKNOWN,UNKNOWN,typical price
+EX-Q2,Example Supplier B,,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,UNKNOWN,missing item
+EX-Q3,Example Supplier C,Example item,UNKNOWN
