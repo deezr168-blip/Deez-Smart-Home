@@ -240,8 +240,9 @@
       "data_processing": false,
       "schedule": null,
       "gate_on": null,
-      "automated_by": null,
-      "notes": ""
+      "automated_by": "scripts/stamp_sha.py",
+      "notes": "",
+      "automated_on": "2026-10-12"
     },
     {
       "name": "verify a dashboard change before pushing",
