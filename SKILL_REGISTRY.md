@@ -131,7 +131,7 @@ Everything here needs a decision from you first. The reasons are in
 | Document-pack template | template | W10; needs one finished pack as an exemplar |
 | Fold the A–G classification into `automate` | edit to an existing skill | would change `automate/SKILL.md` |
 | Apply the pending-decisions addendum to the weekly Routine prompt | live schedule edit | `TASK-012` in the register; a live schedule, so the owner decides |
-| Allow `docs/project-tasks/` as a standing path on V3 branches | edit to the V3 rules and `orient.py` | `TASK-020`; until decided, each V3 session needs the owner's approval in so many words |
+| Allow `docs/project-tasks/` as a standing path on V3 branches | edit to the V3 rules and `orient.py` | `TASK-016`; until decided, each V3 session needs the owner's approval in so many words |
 
 ## 6. Placement and promotion
 

@@ -68,7 +68,7 @@ Whenever owner input is genuinely required (an approval, a choice, a go-ahead):
 
    ```
    tasks.py decide --batch answers.json --by owner --via ask-user-question \
-       --basis "selected Approve for TASK-004, Pause for TASK-006"
+       --basis "selected Approve for TASK-NNN, Pause for TASK-MMM"
    ```
 
    where each answer is `{"task", "verdict", "scope", "context", "resume_when", "until"}`:
