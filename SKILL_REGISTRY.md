@@ -41,8 +41,9 @@ read-only guarantee is instead enforced inside the bundled scripts and tested.
 |---|---|---|---|
 | `automate` | `.claude/skills/automate/` | existing, **unchanged** | Find repeated work, score it, and build the strongest case. Owns `process-memory.json` and the generated `AUTOMATION_REGISTRY.md`. |
 | `improve-system` | `.claude/skills/improve-system/` | existing, **unchanged** | One improvement cycle on the dashboards: verify entities, render, gate, record, push. Owns the dashboard gates. |
-| `session-orient` | `.claude/skills/session-orient/` | **pilot 1** | Start of session and before commit: which rule set governs this branch, where a push may go, what changed outside the allowed paths. Read-only. |
+| `session-orient` | `.claude/skills/session-orient/` | **pilot 1**, extended in 0.2.0 | Start of session and before commit: which rule set governs this branch, where a push may go, what changed outside the allowed paths. Read-only. Also prints one TASKS line: the register's counts for the project the branch identifies. |
 | `recovery-triage` | `.claude/skills/recovery-triage/` | **pilot 2** | Something operational is broken or lost: map the symptom to existing read-only diagnostics, interpret what the owner pastes back, draft an approval-gated plan and an incident record. Executes nothing. |
+| `owner-decisions` | `.claude/skills/owner-decisions/` | **pilot 4** | Tasks and owner decisions: one register, one append-only history, "Update me", Approve / Deny / Pause questions, handover, and the weekly audit's items requiring approval. Writes only its two files. |
 | `provenance-register` | `.claude/skills/provenance-register/` | **pilot 3** | Registers, inventories, evidence logs, quote comparisons and reports: every fact carries a status and a source, gaps are `UNKNOWN`, and a linter enforces it. Local drafts only. |
 
 ### Pilot details
@@ -60,6 +61,15 @@ read-only guarantee is instead enforced inside the bundled scripts and tested.
 - *Output:* ordered read-only checks (marked HOST, REPO or LIVE-READ), what must not be done, and an incident record with `UNKNOWN` wherever the evidence is missing.
 - *Writes:* nothing to the repository. The incident record is returned in the conversation; filing it is the owner's call.
 - *Hard stops:* authentication, users and tokens; `configuration.yaml`; restoring a backup; restarts; anything that unlocks, disables a camera or lowers security; deleting anything. It may **prepare** a plan for these, marked `NOT RUN, NEEDS APPROVAL`, and nothing more.
+
+**`owner-decisions`** · version 0.1.0 · `scripts/tasks.py`, `references/lifecycle.md`, `references/weekly-routine.md`
+- *Invoke:* `/owner-decisions`, or on "Update me", "what's outstanding", "what needs my decision", "pending approvals", "open tasks", a resumed or paused task, a session handover, or whenever the owner has to approve, deny or pause something.
+- *Inputs:* the two files `docs/project-tasks/TASK_REGISTER.md` and `DECISION_HISTORY.md`; the branch, to identify the project.
+- *Output:* a ranked list for the current project with blockers and paused context; selectable next actions; AskUserQuestion payloads offering exactly Approve / Deny / Pause; a digest for the weekly Routine; a handover block that says whether the files are committed.
+- *Writes:* only those two files, atomically, and not while they disagree. No network, no git command that writes, no Home Assistant, no device, no purchase or message. Owner decisions are accepted only as `--by owner` through a channel the owner used.
+- *Hard stops:* a general approval never approves a `safety`, `external` or `protected` task; a task is `DONE` only on evidence the tool can check or the owner's word; a past history row is never edited and a task is never deleted.
+- *Why a new skill, not an extension.* Audited first: no task or handover skill existed. `session-orient` is read-only by contract (its self-test proves it), and recording a decision is a write, so the read half ("Update me") is reachable from it but the write half could not live there. `provenance-register` has one job, evidence status on a table, and a decision workflow would bend it. Account-level plugin skills for task lists were not used: they sit outside the repository and would keep a second list, which the brief forbids. The existing skills were extended where they fit: `session-orient` gained the TASKS line, and the register reuses `provenance-register`'s evidence vocabulary rather than inventing one.
+- *Not applied by it:* the addendum for the weekly Routine's prompt is a pending decision (`references/weekly-routine.md`), because it changes a live schedule.
 
 **`provenance-register`** · version 0.1.0 · `scripts/check_register.py`, `assets/templates/`, `references/status-vocabulary.md`, `tests/fixtures/`
 - *Invoke:* `/provenance-register`, or on building or checking an equipment register, inventory, evidence log, quote or purchase comparison, or a report that states owners, models, ratings, measurements, prices or dates.
@@ -79,6 +89,9 @@ The boundary rows are the ones most likely to be confused.
 | a card or view that *renders* wrongly, truncates, or asserts something it cannot see | `improve-system` | `recovery-triage` |
 | the wall iPad showing a stale dashboard, a deploy that will not apply, a kiosk header that will not hide, a disk filling, a rollback, lost login or configuration | `recovery-triage` | `improve-system` |
 | an entity that is unavailable or missing | `improve-system` (`references/evidence-rules.md`) | `recovery-triage` |
+| "Update me", what is outstanding, what needs my decision, pending approvals, approve / deny / pause, resuming a paused task, a handover | `owner-decisions` | `session-orient`, which only *counts* them on one line |
+| "where are we" about *rules and branch* | `session-orient` | `owner-decisions` |
+| "where are we" about *work and decisions* | `owner-decisions` | `session-orient` |
 | a register, inventory, evidence log, quote or purchase comparison, or measurements in a report | `provenance-register` | — |
 | "what do I keep doing by hand", scoring repetition, building a helper | `automate` | — |
 | a vendor comparison with TCO and negotiation points | `operations:vendor-review` first, then `provenance-register` to check the figures | — |
@@ -117,6 +130,8 @@ Everything here needs a decision from you first. The reasons are in
 | Render-versus-mockup comparison | skill | W19; needs photographs this environment cannot get |
 | Document-pack template | template | W10; needs one finished pack as an exemplar |
 | Fold the A–G classification into `automate` | edit to an existing skill | would change `automate/SKILL.md` |
+| Apply the pending-decisions addendum to the weekly Routine prompt | live schedule edit | `TASK-012` in the register; a live schedule, so the owner decides |
+| Allow `docs/project-tasks/` as a standing path on V3 branches | edit to the V3 rules and `orient.py` | `TASK-020`; until decided, each V3 session needs the owner's approval in so many words |
 
 ## 6. Placement and promotion
 
@@ -124,6 +139,7 @@ The pilots live in the project so they are versioned with the repository and
 travel with it. Two consequences:
 
 - They exist on **`casaray-v3-design` only**. The V3 rules forbid merging any V3 branch into `ha-deploy`, so sessions on that line will not see them until the files are copied across by a route you approve.
+- `owner-decisions` is V3-branch work too: the register is tracked state, and the weekly Routine sees it only if its checkout contains these files (`owner-decisions/references/weekly-routine.md`).
 - `provenance-register` is written to be project-neutral. To use it outside this repository, copy its directory to `~/.claude/skills/provenance-register/`. Note that the user-level folder in a cloud container is **ephemeral**: it is not versioned and does not survive the container, so the copy in Git remains the source of truth.
 
 ## 7. Maintenance rules
@@ -139,3 +155,4 @@ travel with it. Two consequences:
 |---|---|
 | 2026-10-12 | Registry created. Added pilots `session-orient`, `recovery-triage`, `provenance-register` (version 0.1.0). `automate` and `improve-system` untouched. |
 | 2026-10-12 | Aligned the pilots with the *Context First, Questions Last* standing rule merged the same day (audit C8): `recovery-triage` step 7 no longer asks where to file; `provenance-register` maps to *confirmed, estimated, outdated, unknown* and gains `--max-age-days`. Version stays 0.1.0 (pilot, not yet released). |
+| 2026-10-12 | Added pilot 4, `owner-decisions` (0.1.0), with `docs/project-tasks/TASK_REGISTER.md` and `DECISION_HISTORY.md` and a standing rule in root `CLAUDE.md`. Extended `session-orient` to 0.2.0 (TASKS line; 84 self-test checks, 10 new). `automate`, `improve-system`, `recovery-triage` and `provenance-register` untouched. |
