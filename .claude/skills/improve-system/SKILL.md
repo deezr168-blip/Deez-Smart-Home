@@ -201,10 +201,16 @@ was *not* verified — for this repository that always includes anything visual.
   `stamp_sha.py HEAD CR-324 CR-325` fills the `Commit` cell of those rows in
   `LIVE_VERIFICATION_QUEUE.md` (column found from each table's own header) and
   prints the commit message. `--dry-run` shows the diff. It edits the file only
-  — you still commit. It refuses an unknown ID, a non-commit SHA, a row already
-  stamped with a different SHA (`--restamp` after a rebase), and one ID matching
-  two rows (the `CR-318` collision; `--all-rows` if it really is one batch).
-  `--self-test` runs the fixtures.
+  — you still commit — and changes only the Commit cell (CRLF endings and a
+  missing final newline survive; the write is atomic). It refuses, leaving the
+  file untouched: an unknown ID (one missing ID refuses the whole run), a
+  non-commit SHA, an unreadable or non-UTF-8 file, a row whose cell count
+  differs from its header, a Commit cell holding anything but a bare SHA or
+  `—`, a row already stamped with a different SHA (`--restamp` after a rebase),
+  and one ID matching two rows (the `CR-318` collision). `--all-rows` is for
+  one batch that really spans several rows; it cannot pick one of two, and
+  stamping only one by hand is correct when two batches share a number
+  (`bd49f14`). A second run is a no-op. `--self-test` runs the fixtures.
 - `scripts/preserve_check.py` — structural diff against any git ref: views,
   cards, entities, navigation targets, service calls, with the added and
   removed items named. `scripts/verify_change.sh` calls this; run it directly
