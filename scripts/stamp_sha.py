@@ -6,9 +6,9 @@ WHY
 A commit cannot contain its own hash (CLAUDE.md, *Working rules*), so every
 batch is two commits: the change with `—` in each row's Commit cell, then a
 one-line `docs: stamp <sha> into the <IDs> rows`. That second edit was done by
-hand in 13 commits between 2026-09-12 and 2026-09-24 (`git log --grep=stamp`),
-and once went wrong enough to need `docs: re-stamp ... after a rebase changed
-the hash` (86ec579).
+hand in 8 `docs: stamp` commits between 2026-09-19 and 2026-09-24 (all on
+`ha-deploy`), and once went wrong enough to need `docs: re-stamp ... after a
+rebase changed the hash` (86ec579).
 
     scripts/stamp_sha.py HEAD CR-324 CR-325            edit LIVE_VERIFICATION_QUEUE.md
     scripts/stamp_sha.py b96067e CR-324 --dry-run      show the diff, change nothing
