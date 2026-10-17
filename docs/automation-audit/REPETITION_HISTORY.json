@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "threshold": 3,
+  "audits": [
+    {
+      "date": "2026-10-17",
+      "window_7d": {"from": "2026-10-10", "to": "2026-10-17", "commits": 0},
+      "window_30d": {"from": "2026-09-17", "to": "2026-10-17", "commits": 0},
+      "total_commits_all_time": 5,
+      "repeated_tasks": [],
+      "skill_created": null,
+      "skill_improved": null,
+      "estimated_minutes_saved_weekly": 0,
+      "evidence_sufficient": false
+    }
+  ]
+}
