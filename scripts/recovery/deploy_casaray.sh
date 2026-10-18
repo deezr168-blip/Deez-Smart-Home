@@ -1,4 +1,11 @@
 #!/bin/sh
+# WITHDRAWN 2026-10-18 -- DO NOT RUN. Superseded by scripts/recovery/register_casaray.sh.
+# Three defects: (1) it also appends 'homeassistant: packages: !include_dir_named packages',
+# which would load packages/casaray_automation.yaml (12 automations including a 03:30
+# self-deploy, 3 shell_commands) as a side effect of registering a dashboard; (2) 'apply'
+# overwrites _recovery/casaray/configuration.yaml.pre, the only record of what its 30/09 run
+# saw; (3) its SAFETY default names a September backup instead of the one it just took.
+#
 # CasaRay — re-register the dashboard, from the Home Assistant Web Terminal (Terminal & SSH add-on).
 #
 # Root cause: CasaRay is a YAML-mode dashboard (url_path casaray-v2) registered in
@@ -16,6 +23,7 @@
 #
 # Needs only BusyBox sh, `ha`, `curl` and `grep` (no docker, no python). Never touches
 # authentication, .storage, integrations, the legacy (UI) dashboard or the dashboard files.
+echo "[casaray] WITHDRAWN: use scripts/recovery/register_casaray.sh (dashboard-only). Nothing changed."; exit 2
 set -u
 MODE="${1:-check}"
 SAFETY="${SAFETY:-b0206554}"

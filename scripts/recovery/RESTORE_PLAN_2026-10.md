@@ -1,5 +1,12 @@
 # CasaRay restore plan — 12 Oct 2026
 
+> **Status 18 Oct 2026: superseded, do not follow.** Login works again, so the reason for a
+> restore is gone. No accessible backup contains CasaRay's registration either: every one was
+> taken after the ~25/09 loss, and the 30/09 one was taken by `deploy_casaray.sh` *before* it
+> appended the block. A restore would roll back logins, tokens and history without bringing
+> CasaRay back. The current plan is `ASSESSMENT_2026-10-18.md`: a dashboard-only registration
+> via `register_casaray.sh`. The text below is kept as the record of what was considered.
+
 **PLAN ONLY. Nothing in this file has been run.** Branch `recovery/phase0-diagnostics`.
 Every command is for the owner to run at the Green's console (after `login`) and every
 step that writes is marked **[APPROVAL]**. No secret is printed by anything here.

@@ -2,6 +2,19 @@
 
 Branch `recovery/phase0-diagnostics`. Nothing here is on `ha-deploy`.
 
+> **Update 18 Oct 2026.** Two parts of this record are superseded; see
+> `ASSESSMENT_2026-10-18.md`.
+> - `casaray_config_block.yaml` is now **dashboard-only**. The `homeassistant: packages:` line
+>   is removed: it would also load `packages/casaray_automation.yaml` (12 automations
+>   including a 03:30 self-deploy, 3 shell commands), and that package defines none of the
+>   helpers or people that went unavailable, so it would not have brought them back.
+> - `deploy_casaray.sh` is **withdrawn** in favour of `register_casaray.sh`. Besides the
+>   packages line, its `apply` overwrites `_recovery/casaray/configuration.yaml.pre`, the only
+>   record of what its 30/09 run saw.
+>
+> Also: the `rollback` modes of `fix_owner_login.sh` and `recover_login.sh` are disabled. Login
+> works again, and either rollback would remove the password store now in use.
+
 ## What happened
 
 During an attempt to recover CasaRay on ~25/09, several files under `/config`

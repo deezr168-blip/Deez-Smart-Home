@@ -1,4 +1,9 @@
 #!/bin/sh
+# STATUS 2026-10-18: login works again (repaired after the Core 2026.10 update, outside this
+# script). 'rollback' is DISABLED: it would remove the auth files it once placed and lock every
+# user out. 'run', 'prepare' and 'apply' already refuse while .storage/auth_provider.homeassistant
+# exists. See scripts/recovery/ASSESSMENT_2026-10-18.md.
+#
 # CasaRay — Home Assistant login recovery (targeted, from an unencrypted backup)
 #
 #   sh /tmp/recover_login.sh run        ONE COMMAND: check -> stage -> fresh verified backup -> asks APPLY
@@ -245,9 +250,7 @@ dashboard)
   dash_sync || die "dashboard sync failed"
   say "done: refresh the CasaRay page on the iPad (a changed theme needs Developer Tools -> YAML -> Reload themes)" ;;
 rollback)
-  [ -e "$R/APPLIED" ] || die "nothing applied"
-  printf '[recover] type ROLLBACK to stop Core and undo the repair: '; read -r ANS
-  [ "$ANS" = ROLLBACK ] || die "not confirmed"; do_rollback ;;
+  die "rollback is disabled (18/10/2026): it would remove the working login files. Nothing changed." ;;
 finish)
   [ -e "$R/APPLIED" ] || die "nothing applied"
   rm -rf "$R/stage" && say "staged copies deleted; pre-apply copies kept in $R/pre" ;;
