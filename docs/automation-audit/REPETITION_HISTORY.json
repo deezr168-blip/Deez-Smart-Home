@@ -4,10 +4,69 @@
   "audits": [
     {
       "date": "2026-10-17",
-      "window_7d": {"from": "2026-10-10", "to": "2026-10-17", "commits": 0},
-      "window_30d": {"from": "2026-09-17", "to": "2026-10-17", "commits": 0},
+      "window_7d": {
+        "from": "2026-10-10",
+        "to": "2026-10-17",
+        "commits": 0
+      },
+      "window_30d": {
+        "from": "2026-09-17",
+        "to": "2026-10-17",
+        "commits": 0
+      },
       "total_commits_all_time": 5,
       "repeated_tasks": [],
+      "skill_created": null,
+      "skill_improved": null,
+      "estimated_minutes_saved_weekly": 0,
+      "evidence_sufficient": false,
+      "evidence_note": "CORRECTED 2026-10-24: counted the checked-out branch (main) only. All-branch history had 54 non-merge commits since 2026-09-24; see audit #2."
+    },
+    {
+      "date": "2026-10-24",
+      "scope": "all remote branches (git log --all); 30d=2026-09-24..2026-10-24, 7d=2026-10-17..2026-10-24",
+      "window_7d": {
+        "commits_non_merge_all_branches": 3,
+        "excluding_own_audit_commit": 2,
+        "both_are": "recovery (live-recovery family, out of scope)"
+      },
+      "window_30d": {
+        "commits_non_merge_all_branches": 54,
+        "by_prefix": {
+          "recovery": 11,
+          "design(v3)": 7,
+          "tooling": 5,
+          "docs(v3)": 3,
+          "docs": 3,
+          "skill": 2,
+          "fix(bills)": 2,
+          "fix": 2,
+          "feat(v3)": 2,
+          "feat(house-health)": 2,
+          "docs(audit)": 2,
+          "other_singletons": 13
+        }
+      },
+      "repeated_tasks": [
+        {
+          "task": "stamp SHA into tracking rows",
+          "count_30d": 8,
+          "all_dates": "2026-09-18..2026-09-25",
+          "last_seen_in_7d": false,
+          "status": "already addressed by scripts/stamp_sha.py (PR #5, unmerged); no new work"
+        },
+        {
+          "task": "retarget weekly audit PR to the intended base branch",
+          "count": 2,
+          "basis": "PR #5 retargeted by owner; PR #9 opened against main",
+          "status": "needs owner decision (base branch line in Routine prompt)"
+        },
+        {
+          "task": "recovery commits",
+          "count_30d": 11,
+          "status": "excluded: live recovery operations"
+        }
+      ],
       "skill_created": null,
       "skill_improved": null,
       "estimated_minutes_saved_weekly": 0,
