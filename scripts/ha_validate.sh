@@ -26,15 +26,38 @@ mapfile -t files < <(git ls-files --cached --others --exclude-standard 2>/dev/nu
 mapfile -t yamls < <(printf '%s\n' "${files[@]:-}" | grep -E '\.ya?ml$' || true)
 mapfile -t dashes < <(printf '%s\n' "${files[@]:-}" | grep -E '^dashboards/.*\.ya?ml$' || true)
 
+# Python powers the deep repository validators. Home Assistant OS add-on
+# shells such as Terminal & SSH may intentionally omit Python; treat that as
+# an unavailable validation capability rather than a dashboard defect.
+if command -v python3 >/dev/null 2>&1; then
+  PYTHON=python3
+elif command -v python >/dev/null 2>&1; then
+  PYTHON=python
+else
+  PYTHON=""
+fi
+
 sect "YAML syntax and duplicate keys"
-if [ "${#yamls[@]}" -eq 0 ]; then pass "no YAML tracked"
-elif python3 scripts/yaml_check.py "${yamls[@]}"; then pass "${#yamls[@]} file(s) parsed, no duplicate keys"
-else fail "YAML problems above"; fi
+if [ "${#yamls[@]}" -eq 0 ]; then
+  pass "no YAML tracked"
+elif [ -z "$PYTHON" ]; then
+  printf '  \033[33mSKIP\033[0m  UNAVAILABLE — Python is not installed in this environment.\n'
+elif "$PYTHON" scripts/yaml_check.py "${yamls[@]}"; then
+  pass "${#yamls[@]} file(s) parsed, no duplicate keys"
+else
+  fail "YAML problems above"
+fi
 
 sect "Dashboard structure, templates, navigation, mass-damage"
-if [ "${#dashes[@]}" -eq 0 ]; then pass "no dashboard files"
-elif python3 scripts/dashboard_check.py "${dashes[@]}"; then pass "dashboard checks passed"
-else fail "dashboard checks failed"; fi
+if [ "${#dashes[@]}" -eq 0 ]; then
+  pass "no dashboard files"
+elif [ -z "$PYTHON" ]; then
+  printf '  \033[33mSKIP\033[0m  UNAVAILABLE — Python is not installed in this environment.\n'
+elif "$PYTHON" scripts/dashboard_check.py "${dashes[@]}"; then
+  pass "dashboard checks passed"
+else
+  fail "dashboard checks failed"
+fi
 
 sect "Entity references resolve against the live export"
 # The one class of error the structural checks cannot see: an entity ID that
@@ -43,7 +66,9 @@ recon=$(mktemp)
 if [ ! -f docs/live/states_export_2026-09-05.txt ]; then
   printf '  \033[33mSKIP\033[0m  no B1 export in the repository — entity existence UNVERIFIED\n'
 elif [ "${#dashes[@]}" -eq 0 ]; then pass "no dashboard files"
-elif python3 scripts/reconcile_entities.py "${dashes[@]}" >"$recon" 2>&1; then
+elif [ -z "$PYTHON" ]; then
+  printf '  \033[33mSKIP\033[0m  UNAVAILABLE — Python is not installed; entity reconciliation not run.\n'
+elif "$PYTHON" scripts/reconcile_entities.py "${dashes[@]}" >"$recon" 2>&1; then
   grep -E 'entity references|ok / unknown' "$recon" | sed 's/^ */  /'
   pass "every entity reference exists in the export"
 else
@@ -56,8 +81,8 @@ rm -f "$recon"
 # drifted from it is worse than none: it reports an entity as answering that
 # the export says is dark, and every width and truthfulness measurement taken
 # against it inherits the lie.
-if [ -f scripts/build_render_fixture.py ] && [ -f docs/live/states_export_2026-09-05.txt ]; then
-  if python3 scripts/build_render_fixture.py --check >/dev/null 2>&1; then
+if [ -n "$PYTHON" ] && [ -f scripts/build_render_fixture.py ] && [ -f docs/live/states_export_2026-09-05.txt ]; then
+  if "$PYTHON" scripts/build_render_fixture.py --check >/dev/null 2>&1; then
     pass "render fixture matches the export"
   else
     fail "docs/live/fixture_states.json is stale — run scripts/build_render_fixture.py"
@@ -142,8 +167,14 @@ fi
 
 printf '\n'
 if [ "$fails" -eq 0 ]; then
-  printf '\033[32mVALIDATION PASSED\033[0m (%d sections)\n' "$n"
-  printf 'Repository-side only — Home Assistant schema and entity existence NOT verified.\n'
+  if [ -z "$PYTHON" ]; then
+    printf '\033[33mVALIDATION PARTIAL\033[0m (%d sections; Python-dependent checks unavailable)\n' "$n"
+    printf 'No repository defect was found by the checks available in this environment.\n'
+    printf 'Run the full validator in an environment with Python before treating this as a complete pass.\n'
+  else
+    printf '\033[32mVALIDATION PASSED\033[0m (%d sections)\n' "$n"
+    printf 'Repository-side only — Home Assistant schema and entity existence NOT verified.\n'
+  fi
   exit 0
 fi
 printf '\033[31mVALIDATION FAILED — %d problem(s). Do not deploy.\033[0m\n' "$fails"
