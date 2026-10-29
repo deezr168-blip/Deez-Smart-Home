@@ -27,6 +27,8 @@ import os
 import re
 import sys
 
+import yaml
+
 EXPORT = "docs/live/states_export_2026-09-05.txt"
 DEFAULT = ["dashboards/casaray_v2.yaml"]
 
@@ -53,6 +55,68 @@ def load_export(path):
             if len(parts) >= 4 and "." in parts[0]:
                 live[parts[0]] = (parts[1], parts[2], parts[3])
     return live
+
+
+PACKAGES = "packages"
+_HELPER_BLOCKS = ("input_boolean", "input_number", "input_select", "input_text",
+                  "input_datetime", "counter", "timer", "script")
+
+
+class _Loose(yaml.SafeLoader):
+    """Packages may carry tags (`!include`, `!secret`); ignore them."""
+
+
+_Loose.add_multi_constructor("!", lambda loader, suffix, node: None)
+
+
+def slug(text):
+    return re.sub(r"[^a-z0-9]+", "_", str(text).lower()).strip("_")
+
+
+def package_defined(directory=PACKAGES):
+    """{entity_id: file} for entities the REPOSITORY defines in packages/.
+
+    These are newer than the 05/09 export, so the export can never list them;
+    without this the entity gate would reject a dashboard card for a helper
+    that Git itself creates. It covers YAML helper blocks, scripts, template
+    sensors and command_line sensors (by `name`) and automations (by `alias`) -- the entity ID Home
+    Assistant derives, not the automation's internal `id`.
+    """
+    defined = {}
+    if not os.path.isdir(directory):
+        return defined
+    for fn in sorted(os.listdir(directory)):
+        if not fn.endswith((".yaml", ".yml")):
+            continue
+        with open(os.path.join(directory, fn), encoding="utf-8") as fh:
+            try:
+                doc = yaml.load(fh, Loader=_Loose) or {}
+            except yaml.YAMLError:
+                continue
+        if not isinstance(doc, dict):
+            continue
+        for dom in _HELPER_BLOCKS:
+            block = doc.get(dom)
+            if isinstance(block, dict):
+                for key in block:
+                    defined[f"{dom}.{key}"] = fn
+        for item in doc.get("automation") or []:
+            if isinstance(item, dict) and item.get("alias"):
+                defined[f"automation.{slug(item['alias'])}"] = fn
+        # `template:` groups hold lists of sensors; `command_line:` groups
+        # hold ONE sensor as a mapping. Both name the entity by `name`.
+        for platform in ("template", "command_line"):
+            for group in doc.get(platform) or []:
+                if not isinstance(group, dict):
+                    continue
+                for dom in ("sensor", "binary_sensor"):
+                    items = group.get(dom) or []
+                    if isinstance(items, dict):
+                        items = [items]
+                    for item in items:
+                        if isinstance(item, dict) and item.get("name"):
+                            defined[f"{dom}.{slug(item['name'])}"] = fn
+    return defined
 
 
 def references(path):
@@ -110,6 +174,8 @@ def main():
                  f"there is nothing to reconcile against without it")
     live = load_export(EXPORT)
     print(f"  export: {len(live)} entities  ({EXPORT})")
+    pkg = package_defined()
+    print(f"  packages/: {len(pkg)} entities defined in Git")
 
     targets = sys.argv[1:] or DEFAULT
     failed = False
@@ -117,7 +183,7 @@ def main():
         refs = references(path)
         services = {e for e in refs if SERVICE_CALLS.match(e)}
         entities = refs - services
-        missing = sorted(entities - live.keys())
+        missing = sorted(entities - live.keys() - pkg.keys())
         stale = sorted(entities & STALE.keys())
         avail = collections.Counter(live[e][2] for e in entities if e in live)
 

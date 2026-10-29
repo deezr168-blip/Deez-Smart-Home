@@ -1,5 +1,7 @@
 # Entity inventory — Deez Smart Home
 
+> **Superseded for CasaRay (2026-10-05).** `docs/CASARAY_AUDIT.md` is generated from the dashboard, the export and `packages/` on every change (`scripts/audit_casaray.py`) and covers all 430 references with a class per entity. The counts below are from 05/09 and are kept as history; do not update them by hand.
+
 Reconciliation of the Home Assistant objects this repository's dashboards
 reference against what the live instance actually reports.
 

@@ -46,10 +46,13 @@ would strand both as lone `column_span: 1` sections, so the three move
 together; the YAML's `BAND n` comments are numbered in this order.
 Two columns, horizontal bands, not vertical stacks — see the geometry rules
 below for why, and do not raise `max_columns` without a live screenshot.
-Navigation lives **in the page**, not in Home Assistant's
-chrome — `kiosk_mode` hides the sidebar and header, so Home's icon rail and
-its named More boards index are the only way around the dashboard. Do not
-remove either.
+Navigation lives **in the page**. Home's icon rail and its named More boards
+index are the dashboard's own way around; do not remove either. Home
+Assistant's sidebar and header now show beside them: CasaRay's `kiosk_mode:`
+block hid them for every user, admins included, and was removed as a lockout
+risk (`fc208cd`, recovery step R0, owner decision 29/10). **Do not
+reintroduce `kiosk_mode` on CasaRay** without an admin-safe exemption and the
+owner's say-so.
 
 ### `dashboards/deez_smart_home.yaml` — legacy, and the reference baseline
 
@@ -80,6 +83,12 @@ reaches `/config/dashboards/` when the owner runs
 `scripts/sync_casaray_to_config.sh`. So "committed in Git" and "live in Home
 Assistant" remain different things and must never be reported as the same one
 — the reason is now a manual step, not a broken bridge.
+
+**Since the ~25/09 configuration loss, the host's state is not known from
+here.** Whether CasaRay is still registered after the October Core update,
+whether `packages/` loads, and whether the 03:30 auto-deploy is armed are
+owner checks. Read `docs/recovery/DEPLOYMENT_READINESS_2026-10-29.md` before
+any deploy.
 
 ## The chip strip — every view has one, and no view has badges
 
@@ -145,8 +154,11 @@ goes unavailable and a section never loses its label.
 1. Read `CLAUDE.md` and `PROJECT_STATE.md` in full. `PROJECT_STATE.md` is the
    authoritative coordination state and carries your routine's startup
    profile.
-2. `git fetch origin ha-deploy`, `git log --oneline -15 ha-deploy`, confirm
-   the tree is clean and the branch is current.
+2. `git fetch origin ha-deploy recovery/casaray-continuation`, then
+   `git log --oneline -15` on the branch you will work on (CasaRay work:
+   `recovery/casaray-continuation`), confirm the tree is clean and the branch
+   is current. The session clone may be shallow; `git fetch --unshallow`
+   before any history question.
 3. Load everything else **selectively**, per the Context Loading Strategy and
    Routine Startup Profiles in `PROJECT_STATE.md`. Do not read
    `DASHBOARD_PROGRESS.md` or `archive/` end to end as a matter of course.
@@ -167,8 +179,9 @@ goes unavailable and a section never loses its label.
   and an honest secondary ("no status entity", "Wi-Fi module not integrated
   yet").
 - Preserve: entity IDs, navigation paths, `/deez-smart-home/` links, the
-  language toggle, kiosk mode, subviews, camera functionality, energy
-  calculations, room controls, themes, popups.
+  language toggle, the legacy dashboard's kiosk mode (CasaRay has none; see
+  above), subviews, camera functionality, energy calculations, room
+  controls, themes, popups.
 - Never `| float(0)`, `| float(100)` or `| float(9999)` as a fallback for a
   missing reading. A sentinel renders as a real measurement. Guard with an
   explicit `unavailable / unknown / none` branch, or test `is number`.
@@ -196,9 +209,13 @@ goes unavailable and a section never loses its label.
 - Run `bash scripts/ha_validate.sh` after every batch. Exit 0 or do not push.
 - If validation fails, fix or revert before pushing. Never force-push, never
   rewrite published history.
-- Push to `ha-deploy` **and** `claude/ha-dashboard-upgrades-wui7ig`. Local
-  `ha-deploy` must be fast-forwarded before pushing it, or the push reports
-  "Everything up-to-date" and the commit silently never deploys.
+- **`ha-deploy` is protected** (owner directive D-001, 05/10, in
+  `docs/DECISION_LOG.md`). Do not push it or the stale mirror
+  `claude/ha-dashboard-upgrades-wui7ig`. CasaRay work continues on
+  `recovery/casaray-continuation` and reaches `ha-deploy` only through a
+  reviewed PR the owner merges. The rule this replaces (push both branches,
+  fast-forwarding local `ha-deploy` first) is in Git history, and it returns
+  only if the owner lifts D-001.
 - Commit tracking-document updates together with the dashboard change they
   describe.
 - A commit cannot contain its own hash. Write the batch's dashboard change
@@ -295,7 +312,10 @@ header, so nothing was stealing width — the wall iPad still resolved the
 sections view as **two** columns. `column_span: 3` clamped to 2, and every
 group meant for a third column dropped onto a row of its own with a hole
 beside it. Home is now `max_columns: 2` and every view on this dashboard is
-two. See `DR-013`.
+two. See `DR-013`. That was measured with no Home Assistant chrome on screen.
+Since R0 removed `kiosk_mode`, the sidebar and header can take width back,
+so the resolved count can only stay at two or drop. Re-measure before relying
+on it.
 
 Do not raise `max_columns` above 2 on any view without a live screenshot
 proving the extra column resolves. A passing validation run cannot see it, the
@@ -311,19 +331,20 @@ a pair of comparable height or one full-width group:
 |---|---|
 | top bar | full width — wordmark(6) + clock(6), then six nav icons at 2 each |
 | chip strip | full width — one card |
-| Needs attention | full width — alert cards at `columns: 6`, two across |
+| Needs attention | full width — alert cards at `columns: 12`, one per row (CVA-005, `8b2f91b`) |
 | One tap | full width — four scene cards at `columns: 3`, four across |
 | Rooms \| Shopping list | one column each |
 | Right now \| Who's home | one column each |
 | Security | full width |
 | Energy now \| Recent activity | one column each |
-| More boards | full width |
+| More boards | full width — board links at `columns: 6`, two across (`4d40250`) |
 
 **A row of buttons that must not reflow should sum to exactly 12.** Four at
 `columns: 3` fill the grid, so the renderer cannot pack five onto a row or
-spread them to eight — eight would need 24 columns of 12. That is how More
-boards holds its four-across shape and how One tap holds its scene bar. Do not
-rely on wrapping.
+spread them to eight — eight would need 24 columns of 12. That is how One tap
+holds its scene bar. More boards holds two across the same way, two at
+`columns: 6`: `4d40250` widened it from four across so the labels read on the
+wall iPad. Do not rely on wrapping.
 
 **`columns` is a fraction of the RENDERED width, and this environment cannot
 measure it.** The 2026-09-15 Home rebuild assumed a full-width band on an iPad
