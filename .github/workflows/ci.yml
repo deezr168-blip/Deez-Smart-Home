@@ -1,0 +1,74 @@
+# Repository checks for CasaRay. Offline: no Home Assistant, no secrets, no
+# network beyond installing two Python packages. A green run means the
+# repository is internally consistent -- NOT that a card renders or that
+# anything is deployed. See CLAUDE.md "What cannot be verified from here".
+name: ci
+
+on:
+  pull_request:
+    branches: [ha-deploy, main]
+  push:
+    branches: [ha-deploy, "autonomous/**", "recovery/**"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-ci.txt
+
+      - run: python -m pip install -r requirements-ci.txt
+
+      # The project's own gate: YAML, structure, templates, navigation, entity
+      # references against the export, secrets, protected paths, mass damage.
+      - name: ha_validate.sh
+        run: bash scripts/ha_validate.sh
+
+      # Behaviour of the tooling and the invariants the project must not lose.
+      - name: unit and regression tests
+        run: python -m unittest discover -s tests -v
+
+      # The committed audit report must match what the tool produces, and the
+      # dashboard may not reference an entity that cannot exist.
+      - name: audit report is current and clean
+        run: python scripts/audit_casaray.py --check --strict
+
+      # What the cards say on a fully dark instance, both languages.
+      - name: render every markdown card
+        run: python .claude/skills/improve-system/scripts/render_cards.py --all > /dev/null
+
+  protected-paths:
+    # A change to these needs the owner (MAINTENANCE.md). The job fails loudly
+    # rather than relying on a reviewer noticing.
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: refuse protected files
+        run: |
+          base="origin/${{ github.base_ref }}"
+          changed=$(git diff --name-only "$base"...HEAD)
+          echo "$changed"
+          bad=$(echo "$changed" | grep -E '^(dashboards/deez_smart_home\.yaml|scripts/deploy_(env|askpass|diagnose)\.sh|DEPLOY_AUTH\.md|\.storage/|secrets\.ya?ml|configuration\.yaml)$|(^|/)\.env' || true)
+          if [ -n "$bad" ]; then
+            echo "::error::protected path(s) changed — needs explicit owner approval:"
+            echo "$bad"
+            exit 1
+          fi
