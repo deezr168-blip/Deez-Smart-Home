@@ -89,5 +89,6 @@ be checked rather than argued.
 - Rebuilding the 106 helpers with no definition in Git — settings are not in Git (A1/A2).
 - Any change to authentication, secrets, `.storage`, `configuration.yaml`,
   `scripts/recovery/*`, the deploy bridge, or router/network gear.
-- Deleting the dead block in `ha_validate.sh` — owner approval (B1).
+- ~~Deleting the dead block in `ha_validate.sh` — owner approval (B1).~~ Done on
+  `recovery/casaray-continuation` (R15, owner-approved 29/10; D-011).
 - Deploying anything, restarting or reloading Home Assistant.

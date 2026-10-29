@@ -6,6 +6,37 @@ on purpose so every routine can load it cheaply at the start of each run.
 
 ---
 
+## Recovery branch (owner approval 2026-10-29) — read first
+
+Where this note disagrees with the 05/10 note below or anything older, this
+note wins.
+
+- **Active CasaRay branch: `recovery/casaray-continuation`.** It was cut from
+  `d22ce8e` (18/09), the last build the owner photographed running, with the
+  owner's approval on 29/10. Every later change was then re-applied one
+  commit at a time with `cherry-pick -x`, and each commit records its
+  original SHA, step (`Recovery-Step: R0…R15`, `A1…A9`) and class. Every
+  commit passed the gate, a loss check, a render diff and (from A3) the test
+  suite and audit check. Full record:
+  `docs/recovery/CASARAY_RECOVERY_REPORT_2026-10-29.md` (Phase 0) and
+  `docs/recovery/DEPLOYMENT_READINESS_2026-10-29.md` (Phase 1).
+- **R0 removed `kiosk_mode` from CasaRay first.** Do not reintroduce it.
+- **Result:** the dashboard, theme and package are identical to
+  `autonomous/casaray-dev` (which is `ha-deploy` `18a4e5d` plus Stage 2).
+  `ha_validate.sh` no longer carries its dead tail (OWNER_ACTION_QUEUE B1,
+  resolved). 28 views, 405 entity references, 28 navigation targets and
+  7 service calls are preserved.
+- **Commit SHAs in tracking rows name the original commits.** Most of them
+  are on `ha-deploy` or `autonomous/casaray-dev`, which both remain. Each
+  replayed commit's `(cherry picked from commit …)` line maps it back.
+- **`ha-deploy` is still protected (D-001).** Nothing on this branch is
+  deployed. The deploy decision is the owner's, made from the readiness
+  report.
+- **The 05/10 claim "CasaRay is registered" is unverified since the October
+  Core update.** It is the first owner check in the readiness report.
+
+---
+
 ## Post-recovery note (2026-10-05) — read before the rest of this file
 
 This file's state was last maintained on 18/09 and **predates the 25/09

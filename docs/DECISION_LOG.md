@@ -95,3 +95,13 @@ language toggle and all three people `unavailable`; four Tapo streams down)
 with its limits: no IDs, no helpers, stale twins. The audit does not consume
 it. It contradicts CLAUDE.md's 19/09 note that the C420 streams recovered, so
 camera availability is treated as unknown until a photograph says otherwise.
+
+## D-011 — Recovery from `d22ce8e`, kiosk removal first (2026-10-29, OWNER)
+
+The owner approved `d22ce8e` as the historical baseline, with the removal of
+`kiosk_mode` as the mandatory first change, and approved replaying Stage 1
+(R0–R15) and Stage 2 (A1–A9, this branch's work) with the integration
+corrections in the recovery report's section 12. That approval covers R15's
+deletion of the validator's dead tail, so **B1 is resolved** and D-008's stop
+is closed. The work is on `recovery/casaray-continuation`. `ha-deploy` stays
+protected (D-001), and nothing is deployed.
