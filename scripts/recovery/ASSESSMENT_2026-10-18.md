@@ -30,6 +30,44 @@ Two faults are separate, and the registration does not fix them:
 | Core 2026.10.1 still accepts `lovelace: dashboards: <slug>: mode: yaml`; only top-level `lovelace: mode: yaml` is deprecated. Its migrations only add dashboards (`lovelace`, and `map` at onboarding), never remove them; a corrupt `lovelace_dashboards` is renamed `.corrupt.<time>` and the list starts empty | Core 2026.10.1 source |
 | The block passes `check_config` 2026.10.1; a deliberately broken one fails at the right line | offline, real HA 2026.10.1 |
 
+## Live check, 30/10 (read-only)
+
+The owner approved the v1.3 evidence workflow on 30/10. Its published copy was verified from the
+cloud session: an anonymous HTTPS fetch of `17fbd86` gave `fetch_casaray_tools.sh` `060734bb…`.
+That helper then verified `casaray_evidence.sh` `4da47bc1…` and `register_casaray.sh`
+`56dea19d…`.
+
+**The evidence script has still not run on the Green.** The cloud session has no route there:
+- no Remote Control computer is connected;
+- Desktop Commander runs inside the cloud container;
+- the Home Assistant connection can read entity states, but has no file or shell access.
+
+So the file-level questions stay open until the owner runs it. The connection does show this,
+and every entity below was `ok` in the 05/09 export:
+
+| Entity | 30/10 |
+|---|---|
+| `input_boolean.chinese_dashboard` (the language toggle; 503 references in CasaRay) | unavailable |
+| `input_number.gas_bill_mj` | unavailable |
+| `input_select.input_select_family_location_selected` (not used by CasaRay) | unavailable |
+| `person.raymond_du`, `person.vinh_du`, `person.ai_q_huang` | unavailable |
+| a zone named Home: `zone.home` or `zone.home_2` (both are named Home, and the connection gives no IDs) | unavailable |
+| `todo.shopping_list`, Hue scenes and lights, mobile-app trackers | working |
+
+The connection sees only entities exposed to Assist, so the other bill helpers cannot be seen
+from here. CasaRay reads 114 distinct helper, person, zone and to-do IDs, and all 114 are in the
+05/09 export.
+
+What this adds to H3: every storage-collection type CasaRay reads is down together, while
+config-entry integrations work. That covers people, `input_*`, and possibly the zone. Two causes
+fit:
+- (a) those collections' `.storage` files were lost while the entity registry survived;
+- (b) the integrations are not loaded at all, as happens when `configuration.yaml` lacks
+  `default_config:`.
+
+Evidence section 5 tells them apart. If `chinese_dashboard`, `gas_bill_mj` and `raymond_du` are
+still in `.storage`, the cause is (b).
+
 ## Root causes
 
 | # | Hypothesis | Confidence |
