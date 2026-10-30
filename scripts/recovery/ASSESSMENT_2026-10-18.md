@@ -74,17 +74,10 @@ session: the only way to read them there streams secrets into the conversation.
    the script keeps running (reopen the Terminal panel). Undo: the `rollback` printed at the end.
 3. **Look:** open `/casaray-v2/home` on the iPad. See *Theme* below.
 
-**Open decision, getting `register_casaray.sh` onto the Green.** It is about 950 lines, and a
-paste of that size into the web terminal is fragile. The hash check would catch a damaged paste but
-cannot prevent one. There are three ways:
-
-- (a) Open it in Studio Code Server, save it, check the hash, then run it from the Terminal add-on.
-  This writes one file under the config folder.
-- (b) In the add-on, `git fetch` this branch into `/homeassistant/deez_repo` (`git` is present) and
-  `git show` the file out. This uses the existing deploy credential, which is protected.
-- (c) Paste it in parts.
-
-Each one needs the owner's choice.
+**Getting the scripts onto the Green: resolved 30/10, see `RUNBOOK_2026-10-30.md`, Step 0.** The
+repository is public, so delivery is an anonymous Git fetch into the add-on's `/tmp`. It uses no
+credential and does not touch the host clone or `/config`. `fetch_casaray_tools.sh` writes both
+scripts only if both match their pinned SHA-256 values. Nothing needs pasting.
 
 | Script | Status |
 |---|---|
@@ -114,7 +107,9 @@ In frontend `20260930.3` a dashboard-level `theme:` is accepted and ignored. Onl
 CasaRay renders in each viewer's profile theme. Options are (a) add `theme: CasaRay` to each of the 28
 views, an `ha-deploy` change that also changes the dashboard sha256 both scripts pin; (b) choose
 CasaRay under Profile → Theme on the wall iPad; or (c) set a backend default theme. (b) and (c) are
-live changes.
+live changes. For (a), the change is prepared as `theme/casaray_per_view_theme.patch` against
+`ha-deploy` `18a4e5d`. It is additive only, validated, and reverses cleanly; the procedure is in
+`RUNBOOK_2026-10-30.md`, Step 3.
 
 ## Not fixed by registration
 
