@@ -1,6 +1,7 @@
 #!/bin/sh
-# CasaRay recovery CR-REC-25 -- READ-ONLY evidence pass, v1.2 candidate (18/10/2026).
-# Run in the Terminal & SSH add-on:   sh /tmp/casaray_evidence_v1.2.sh
+# CasaRay recovery CR-REC-25 -- READ-ONLY evidence pass, v1.3 candidate (30/10/2026).
+# v1.3: rd() also requires a symlink's resolved target to be allowlisted (v1.2 only denylisted it).
+# Run in the Terminal & SSH add-on:   sh /tmp/casaray_evidence.sh
 #
 # Reads ONLY the files named in ALLOW below, and every read goes through rd(),
 # which enforces that allowlist plus a denylist. Prints dashboard registrations,
@@ -59,13 +60,15 @@ DENY() {
 
 # rd <path relative to the config folder>: print the file, or nothing if it is
 # not allowlisted, is denylisted, resolves outside the config folder, or is not
-# a regular file. Symlinks are resolved first and the target is checked too.
+# a regular file. Symlinks are resolved first, and the target must itself be
+# allowlisted and not denylisted.
 rd() {
   DENY "$1" && return 1
   printf '%s\n' "$ALLOW" | grep -qxF "$1" || return 1
   r=$(readlink -f "$C/$1" 2>/dev/null) || return 1
   case "$r" in "$CR"/*) ;; *) return 1 ;; esac
   DENY "${r#"$CR"/}" && return 1
+  printf '%s\n' "$ALLOW" | grep -qxF "${r#"$CR"/}" || return 1
   [ -f "$r" ] || return 1
   cat "$r"
 }
@@ -85,7 +88,7 @@ meta() {
   fi
 }
 
-echo "CasaRay evidence v1.2 (read-only)   config folder: $C"
+echo "CasaRay evidence v1.3 (read-only)   config folder: $C"
 
 h "1 configuration.yaml"
 line "file" "$(meta configuration.yaml)"

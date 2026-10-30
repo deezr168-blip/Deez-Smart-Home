@@ -56,9 +56,11 @@ session: the only way to read them there streams secrets into the conversation.
 
 ## Plan and tools
 
-1. **Evidence (approved as CR-REC-25, not yet run):** `casaray_evidence.sh`, sha256
-   `168a22167463a944c279e60034b6e09cdb29c2fbc23c10fb5a9b2ffd5d1ad9ec`. It is read-only and reads a
-   fixed allowlist of 24 files. It makes no API calls, reads no logs and prints no slugs. It needs
+1. **Evidence (v1.3, needs re-approval; never run):** `casaray_evidence.sh`, sha256
+   `4da47bc1a9d540bf064eefaabd5e866682c4b6dfd0907e896b3e6014ae11bd1f`. CR-REC-25 approved v1.2
+   (`168a2216…ad9ec`). v1.3 closes a gap a Codex review found: `rd()` now also requires a
+   symlink's resolved target to be on the allowlist. Before, an allowlisted name linked to, say, a
+   package file would have been read. It is read-only and reads a fixed allowlist of 24 files. It makes no API calls, reads no logs and prints no slugs. It needs
    to run on the Green, and the cloud session has no route there. In the Terminal & SSH add-on,
    paste it into `/tmp/casaray_evidence.sh`, then run it only if the hash matches:
    `[ "$(sha256sum /tmp/casaray_evidence.sh | cut -d' ' -f1)" = <hash above> ] && sh /tmp/casaray_evidence.sh`.
@@ -86,7 +88,7 @@ Each one needs the owner's choice.
 
 | Script | Status |
 |---|---|
-| `casaray_evidence.sh` | approved, read-only; 6/6 chroot fixtures; 4 mutants caught |
+| `casaray_evidence.sh` | v1.3, read-only, awaiting re-approval (v1.2 was approved); 7/7 chroot fixtures, and the new symlink fixture fails on v1.2 |
 | `register_casaray.sh` | ready for review; 55 scenarios / 85 runs pass, including a disk-full sweep; 3 independent reviews (15 findings, all fixed); 8 regression mutants caught |
 | `casaray_config_block.yaml` | dashboard-only; identical to the block `register_casaray.sh` appends |
 | `deploy_casaray.sh` | **withdrawn** (packages side effect; overwrote the 30/09 evidence; stale slug) |

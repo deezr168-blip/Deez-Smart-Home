@@ -3,7 +3,7 @@
     python3 -I scripts/recovery/tests/test_casaray_evidence.py
 
 Each fixture is a throwaway chroot root holding only a static BusyBox (every
-applet as a symlink), /dev/null, the script at /tmp/casaray_evidence_v1.2.sh
+applet as a symlink), /dev/null, the script at /tmp/casaray_evidence.sh
 (the path the owner uses) and a dummy config tree. Each run is wrapped in
 strace, so the assertions cover what the script opened and every write-class
 syscall, not only what it printed. Every sensitive dummy file carries a canary
@@ -22,7 +22,7 @@ import tempfile
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 CANDIDATE = os.path.join(REPO, "scripts/recovery/casaray_evidence.sh")
-RUN_AS = "/tmp/casaray_evidence_v1.2.sh"
+RUN_AS = "/tmp/casaray_evidence.sh"
 
 DEFAULT_CONFIG = """
 # Loads default set of integrations. Do not remove.
@@ -253,10 +253,26 @@ def fx_symlinks(root):
     os.makedirs(f"{cfg}/themes")
     os.symlink("../.storage/auth", f"{cfg}/themes/deez_your_name.yaml")
     os.symlink("../outside/secret.txt", f"{cfg}/person.yaml")
+    # In-config target that is neither denylisted nor allowlisted: packages are names only.
+    w(f"{cfg}/packages/private.yaml", "chinese_dashboard:\n  name: CANARY_PKG_e66\n")
+    os.symlink("packages/private.yaml", f"{cfg}/helpers.yaml")
     return {"exit": 0, "expect": [
         "not read (refused: symlink outside the config folder or not a regular file)",
         "raymond_du         yaml: none   storage: none",
+        "chinese_dashboard  yaml: none   storage: none",
         "/casaray-v2/ links in live dashboard     0"], "forbid": ["MATCHES", "DIFFERS"]}
+
+
+def fx_symlink_allowed(root):
+    """An allowlisted name linking to another allowlisted file is still read."""
+    cfg = f"{root}/homeassistant"
+    w(f"{cfg}/configuration.yaml", DEFAULT_CONFIG)
+    w(f"{cfg}/deez_repo/dashboards/casaray_v2.yaml", repo("dashboards/casaray_v2.yaml"))
+    os.makedirs(f"{cfg}/dashboards")
+    os.symlink("../deez_repo/dashboards/casaray_v2.yaml", f"{cfg}/dashboards/casaray_v2.yaml")
+    return {"exit": 0, "expect": [
+        "MATCHES git",
+        "/casaray-v2/ links in live dashboard     292"], "forbid": ["DIFFERS", "not read (refused"]}
 
 
 def fx_addon_config(root):
@@ -269,7 +285,8 @@ def fx_addon_config(root):
 
 
 FIXTURES = [("post_loss", fx_post_loss), ("registered", fx_registered), ("dark", fx_dark),
-            ("no_config", fx_no_config), ("symlinks", fx_symlinks), ("addon_config", fx_addon_config)]
+            ("no_config", fx_no_config), ("symlinks", fx_symlinks), ("symlink_allowed", fx_symlink_allowed),
+            ("addon_config", fx_addon_config)]
 TRACE = "open,openat,creat,execve,chroot,unlink,unlinkat,rename,renameat,renameat2,mkdir,mkdirat,rmdir," \
         "link,linkat,symlink,symlinkat,chmod,fchmodat,fchmod,truncate,ftruncate,utimensat,chown,fchownat"
 OPEN_RE = re.compile(r'open(?:at)?\((?:AT_FDCWD, )?"([^"]*)", ([A-Z_|0-9]+)')
