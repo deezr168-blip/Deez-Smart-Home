@@ -1,8 +1,10 @@
 #!/bin/sh
 # STATUS 2026-10-18: login works again (repaired after the Core 2026.10 update, outside this
 # script). 'rollback' is DISABLED: it would remove the auth files it once placed and lock every
-# user out. 'run', 'prepare' and 'apply' already refuse while .storage/auth_provider.homeassistant
-# exists. See scripts/recovery/ASSESSMENT_2026-10-18.md.
+# user out. While .storage/auth_provider.homeassistant exists, 'apply' (and so 'run') refuses at
+# its first step, and 'prepare' refuses in its check, before any backup. 'dashboard' is not gated
+# (it writes dashboards/ and themes/ from ha-deploy); register_casaray.sh supersedes it. Why: the
+# 18 Oct update note at the top of scripts/recovery/RECOVERY_2026-09.md.
 #
 # CasaRay — Home Assistant login recovery (targeted, from an unencrypted backup)
 #
@@ -189,6 +191,8 @@ do_rollback() {
 }
 
 do_apply() {
+  # 18/10/2026: a working password store exists; placing a staged one over it would lock users out.
+  [ -e "$C/.storage/auth_provider.homeassistant" ] && die "a password store exists (login works); apply is disabled (18/10/2026). Nothing changed."
   [ -f "$R/PREPARED" ] && [ -f "$R/plan.txt" ] || die "run prepare first"
   [ -e "$R/APPLIED" ] && die "already applied; use verify or rollback"
   say "will stop Core, then add/replace:"; sed 's/^/    /' "$R/plan.txt"
@@ -224,7 +228,7 @@ do_apply() {
   pyrun verify < /dev/null
   case "$(web '%{url_effective}')" in *onboarding*) say "WARNING: still redirecting to onboarding" ;; *) say "front page no longer redirects to onboarding" ;; esac
   say "DONE. Log in on the iPad with your usual owner username and password."
-  say "If anything is wrong: sh /tmp/recover_login.sh rollback"
+  say "If anything is wrong, do NOT look for a rollback (disabled); send a photo of: ha core logs | tail -40"
 }
 
 case "$MODE" in

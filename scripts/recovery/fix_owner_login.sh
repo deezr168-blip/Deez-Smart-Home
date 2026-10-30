@@ -2,7 +2,7 @@
 # STATUS 2026-10-18: login works again (repaired after the Core 2026.10 update, outside this
 # script). 'rollback' is DISABLED: it would move the password store now in use aside and put
 # back the pre-repair files, locking every user out. 'run' already refuses while a store exists.
-# See scripts/recovery/ASSESSMENT_2026-10-18.md.
+# Why: the 18 Oct update note at the top of scripts/recovery/RECOVERY_2026-09.md.
 #
 # CasaRay — restore the OWNER's login only, with Home Assistant's own tool.
 #
@@ -118,7 +118,7 @@ run)
   done
   say "DONE. Core is up. On the iPad, log in as '$O' with the password you just set."
   say "If the onboarding screen appears, it should now let you log in and finish its remaining steps."
-  say "Anything wrong: sh /tmp/fix_owner_login.sh rollback" ;;
+  say "Anything wrong: do NOT look for a rollback (disabled); photograph: ha core logs | tail -40" ;;
 rollback)
   die "rollback is disabled (18/10/2026): it would remove the password store now in use. Nothing changed." ;;
 finish)
