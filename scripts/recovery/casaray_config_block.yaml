@@ -1,0 +1,13 @@
+
+# --- CasaRay registration (recovery 2026-10) ---------------------------
+# YAML dashboard only. The legacy "Deez Smart Home" dashboard is a UI
+# (storage) dashboard and is deliberately NOT listed here.
+lovelace:
+  dashboards:
+    casaray-v2:
+      mode: yaml
+      title: CasaRay
+      icon: mdi:home-heart
+      show_in_sidebar: true
+      filename: dashboards/casaray_v2.yaml
+# --- end CasaRay registration ------------------------------------------
