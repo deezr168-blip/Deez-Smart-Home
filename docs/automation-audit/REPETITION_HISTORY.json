@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "audits": [
+    {
+      "date": "2026-10-31",
+      "commits_last_7d": 0,
+      "commits_last_30d": 0,
+      "repeated_tasks": [],
+      "skill_created": null,
+      "skill_improved": null,
+      "minutes_saved_estimate": 0,
+      "evidence_sufficient": false
+    }
+  ]
+}
