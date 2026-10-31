@@ -33,7 +33,7 @@ say() { echo "[recover] $*"; }
 die() { echo "[recover] STOP: $*"; exit 1; }
 
 PY=$(cat <<'EOF'
-import sys, os, re, json, tarfile, time
+import sys, os, re, json, tarfile, time, hashlib, stat
 MODE = os.environ.get('MODE', 'check'); CFG = os.environ.get('RCFG', '/config'); R = CFG + '/_recovery'
 SAFE = ['auth_provider.homeassistant', 'core.config', 'backup', 'person', 'input_boolean', 'input_number',
         'input_select', 'input_text', 'input_datetime', 'input_button', 'counter', 'timer', 'schedule',
@@ -51,6 +51,40 @@ def rd(p):
 def js(b):
     try: return json.loads(b).get('data', {})
     except Exception: return None
+
+# Bind preparation to the live inputs and staged bytes. Legacy plans fail closed.
+def fingerprint(p):
+    path = CFG + '/' + p
+    # Reject links in any component, including dangling links.
+    q = CFG
+    for part in p.split('/'):
+        q = q + '/' + part
+        if os.path.islink(q): raise ValueError('symlink in recovery input')
+    try:
+        st = os.stat(path)
+    except FileNotFoundError:
+        return None
+    if not stat.S_ISREG(st.st_mode): raise ValueError('non-regular recovery input')
+    with open(path, 'rb') as f:
+        return hashlib.sha256(f.read()).hexdigest()
+
+if MODE == 'validate':
+    try:
+        with open(R + '/prepared_state.json') as f: state = json.load(f)
+        with open(R + '/plan.txt') as f: plan = f.read().splitlines()
+        allowed = {'.storage/' + n for n in SAFE + ['onboarding']} | {'configuration.yaml', 'secrets.yaml'}
+        if state['version'] != 1 or not plan or plan != state['plan'] or not set(plan) <= allowed:
+            raise ValueError('invalid plan')
+        if os.path.lexists(CFG + '/.storage/auth_provider.homeassistant'):
+            raise ValueError('password store exists')
+        if any(fingerprint(p) != h for p, h in state['live'].items()):
+            raise ValueError('live inputs changed')
+        if any(fingerprint('_recovery/stage/' + p) != state['stage'][p] for p in plan):
+            raise ValueError('staged files changed')
+    except Exception:
+        print('STOP: prepared recovery is stale or invalid; run prepare again'); sys.exit(3)
+    print('prepared recovery matches current live inputs and staged files')
+    sys.exit(0)
 
 if MODE == 'verify':
     for n in ['auth', 'auth_provider.homeassistant', 'core.config', 'backup', 'onboarding', 'person']:
@@ -129,12 +163,22 @@ for f in fail: print('FAIL:', f)
 if fail: sys.exit(3)
 if not any(p.endswith('auth_provider.homeassistant') for p in plan): print('FAIL: nothing to repair'); sys.exit(3)
 if MODE == 'prepare':
+    # An interrupted re-prepare must not leave a previously valid marker behind.
+    if os.path.lexists(R + '/PREPARED'): os.unlink(R + '/PREPARED')
     os.makedirs(R + '/stage', exist_ok=True); os.chmod(R, 0o700)
     for p in plan:
         d = R + '/stage/' + p; os.makedirs(os.path.dirname(d), exist_ok=True)
         with open(d, 'wb') as f: f.write(got[p])
         os.chmod(d, 0o600)
     open(R + '/plan.txt', 'w').write('\n'.join(plan) + '\n')
+    inputs = WANT | {'.storage/auth'} | set(re.findall(r'!include\s+(\S+)', yb + '\n' + yl))
+    if any(p.startswith('/') or '..' in p.split('/') for p in inputs):
+        raise ValueError('unsafe include path')
+    state = {'version': 1, 'plan': plan,
+             'live': {p: fingerprint(p) for p in sorted(inputs)},
+             'stage': {p: fingerprint('_recovery/stage/' + p) for p in plan}}
+    with open(R + '/prepared_state.json', 'w') as f: json.dump(state, f)
+    os.chmod(R + '/prepared_state.json', 0o600)
     open(R + '/PREPARED', 'w').write(time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()) + '\n')
     print('staged %d files in /config/_recovery/stage (mode 600)' % len(plan))
 print('OK')
@@ -192,12 +236,14 @@ do_rollback() {
 
 do_apply() {
   # 18/10/2026: a working password store exists; placing a staged one over it would lock users out.
-  [ -e "$C/.storage/auth_provider.homeassistant" ] && die "a password store exists (login works); apply is disabled (18/10/2026). Nothing changed."
+  { [ -e "$C/.storage/auth_provider.homeassistant" ] || [ -L "$C/.storage/auth_provider.homeassistant" ]; } && die "a password store exists (login works); apply is disabled (18/10/2026). Nothing changed."
   [ -f "$R/PREPARED" ] && [ -f "$R/plan.txt" ] || die "run prepare first"
   [ -e "$R/APPLIED" ] && die "already applied; use verify or rollback"
   say "will stop Core, then add/replace:"; sed 's/^/    /' "$R/plan.txt"
   say "and sync the CasaRay dashboard + theme from ha-deploy (live copies saved first)"
   printf '[recover] type APPLY to continue: '; read -r ANS; [ "$ANS" = APPLY ] || die "not confirmed; nothing changed"
+  # Recheck after confirmation, before dashboard sync, backups, or Core operations.
+  pyrun validate < /dev/null || die "prepared plan failed revalidation; nothing changed"
   mkdir -p "$R/pre"; : > "$R/placed.txt"
   dash_sync || say "WARN: dashboard sync failed; login recovery continues (retry later: sh /tmp/recover_login.sh dashboard)"
   while read -r p; do [ -n "$p" ] && [ -e "$C/$p" ] && mkdir -p "$(dirname "$R/pre/$p")" && cp -p "$C/$p" "$R/pre/$p"; done < "$R/plan.txt"
