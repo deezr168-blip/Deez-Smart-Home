@@ -19,7 +19,7 @@ bash scripts/ha_validate.sh                     # repository gate
 | Check | Result |
 |---|---|
 | Build reproducible (`--check`: committed outputs == fresh build) | pass |
-| V3 gate, 4 locales × structure, navigation, deps, entities, safety, rendered honesty, secrets | **303 passed, 0 failed**, 4 notes |
+| V3 gate, 4 locales × structure, navigation, deps, entities, safety, rendered honesty, secrets | **367 passed, 0 failed**, 4 notes |
 | Regression tests (`tests/v3`, 24 tests) | **OK** |
 | Repository gate `scripts/ha_validate.sh` | **PASSED** (8 sections); its section 8 (HA config check) SKIPPED: no hass, no /config |
 | `dashboards/casaray_v2.yaml` sha256 | `77a4991626d6f8afcd9b78f235c34417d84d9f36c129549a386d8a66c324226c` (unchanged) |
@@ -54,7 +54,7 @@ drift test plants a wrong hash and expects the build to refuse.
 
 ## Notes from the gate (not failures)
 
-- `zh-Hans`: 68 strings fall back to English (partial by design).
+- `zh-Hans`: 97 strings fall back to English (partial by design).
 - Native views reference 30 distinct entities that were not `ok` in the 05/09 export
   (Hue spots, two Tapo C420 streams, the three contact sensors, never-used
   scenes). They draw as No data / Offline / State unknown when so.

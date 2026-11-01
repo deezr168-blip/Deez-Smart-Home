@@ -2,7 +2,7 @@
 
 Every function returns plain Lovelace card or section dicts built only from
 native card types (heading, markdown, tile, button, picture-entity,
-weather-forecast, todo-list). Strings come from the locale catalogue through
+weather-forecast, todo-list, history-graph). Strings come from the locale catalogue through
 `ctx`, so a component never holds copy of its own.
 
 Honesty rules, enforced here and tested in tests/v3:
@@ -166,7 +166,8 @@ def _count(entities, on_states):
 def value_expr(ctx, entity, digits=1, unit=True):
     """Jinja expression: the reading with its own unit, or "No data"."""
     ctx.use(entity)
-    u = (" ~ ' ' ~ (state_attr('" + entity + "','unit_of_measurement') or '')") if unit else ""
+    ua = "state_attr('" + entity + "','unit_of_measurement')"
+    u = (" ~ ((' ' ~ " + ua + ") if " + ua + " else '')") if unit else ""
     rnd = "| round(0) | int" if digits == 0 else "| round(" + str(digits) + ")"
     return ("((states('" + entity + "') | float) " + rnd
             + u + ") if states('" + entity + "') | is_number else "
@@ -324,6 +325,13 @@ def weather(ctx, entity, forecast=False, columns=12):
     if forecast:
         c["forecast_type"] = "daily"
     return c
+
+
+def history(ctx, entities, hours=24, rows=4):
+    """Native history-graph; HA itself draws gaps where an entity was dark."""
+    ctx.use(entities)
+    return {"type": "history-graph", "entities": [{"entity": e} for e in entities],
+            "hours_to_show": hours, "grid_options": grid(12, rows)}
 
 
 def todo(ctx, entity, rows=6):

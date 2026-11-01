@@ -23,7 +23,7 @@ all existing V3 design work is preserved untouched. No recovery branch,
 ```
 src/casaray_v3/                 sources (outside dashboards/: the repo gate
   manifest.yaml                 treats every YAML there as a live dashboard)
-  views/{home,lighting,climate,cameras}.yaml   V3-native view specs
+  views/{home,lighting,climate,cameras,energy}.yaml   V3-native view specs
   i18n/{en,yue,km,zh-Hans}.yaml                string catalogues
   themes/casaray_v3.yaml                       dark + light token theme
 scripts/v3/

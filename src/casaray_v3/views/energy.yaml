@@ -1,0 +1,80 @@
+# V3 Energy — verified Powerpal and Fronius entities only (V3 CLAUDE.md,
+# Energy). Grid export and true whole-house consumption have NO verified
+# source (V3-003), so they are stated as such rather than computed. A future
+# home battery has a reserved, clearly labelled place that says "not
+# installed" — never a placeholder number.
+path: energy
+title: nav.energy
+icon: mdi:lightning-bolt-outline
+sections:
+  - topbar: true
+
+  - span: 2
+    cards:
+      - c: chips
+        parts:
+          - {c: chip_value, label_key: chip.house, entity: sensor.powerpal_gateway_powerpal_power}
+          - {c: chip_value, label_key: chip.solar, entity: sensor.primo_5_0_1_1_ac_power}
+          - {c: chip_value, label_key: energy.solar_today, entity: sensor.primo_5_0_1_1_energy_day, digits: 1}
+          - {c: chip_value, label_key: energy.grid_carbon, entity: sensor.electricity_maps_co2_intensity}
+
+  - span: 1
+    heading: h.house
+    cards:
+      - {c: sensor_tile, entity: sensor.powerpal_gateway_powerpal_power, name: {t: energy.house_now}}
+      - {c: sensor_tile, entity: sensor.powerpal_gateway_powerpal_daily_energy, name: {t: energy.used_today}}
+      - {c: sensor_tile, entity: sensor.powerpal_gateway_powerpal_total_energy, name: {t: energy.meter_total}}
+      - {c: sensor_tile, entity: sensor.powerpal_gateway_powerpal_battery, name: {t: energy.powerpal_battery}}
+      - {c: note, key: energy.two_circuits}
+  - span: 1
+    heading: h.solar
+    cards:
+      - {c: sensor_tile, entity: sensor.primo_5_0_1_1_ac_power, name: {t: energy.solar_now}}
+      - {c: sensor_tile, entity: sensor.primo_5_0_1_1_energy_day, name: {t: energy.solar_today}}
+      - {c: sensor_tile, entity: sensor.primo_5_0_1_1_energy_year, name: {t: energy.solar_year}}
+      - {c: sensor_tile, entity: sensor.primo_5_0_1_1_total_energy, name: {t: energy.solar_total}}
+      - {c: sensor_tile, entity: binary_sensor.casa_solar_online, name: {t: energy.inverter_online}}
+      - {c: sensor_tile, entity: sensor.primo_5_0_1_1_status_message, name: {t: energy.inverter_status}}
+      - {c: sensor_tile, entity: sensor.primo_5_0_1_1_error_message, name: {t: energy.inverter_error}, columns: 12}
+
+  - span: 2
+    heading: h.history
+    cards:
+      - c: history
+        entities: [sensor.powerpal_gateway_powerpal_power, sensor.primo_5_0_1_1_ac_power]
+        hours: 24
+
+  - span: 1
+    heading: h.forecast_solar
+    cards:
+      - {c: sensor_tile, entity: sensor.power_production_now, name: {t: energy.fc_now}}
+      - {c: sensor_tile, entity: sensor.energy_current_hour, name: {t: energy.fc_this_hour}}
+      - {c: sensor_tile, entity: sensor.energy_next_hour, name: {t: energy.fc_next_hour}}
+      - {c: sensor_tile, entity: sensor.energy_production_today, name: {t: energy.fc_today}}
+      - {c: sensor_tile, entity: sensor.energy_production_today_remaining, name: {t: energy.fc_remaining}}
+      - {c: sensor_tile, entity: sensor.energy_production_tomorrow, name: {t: energy.fc_tomorrow}}
+      - {c: sensor_tile, entity: sensor.casa_solar_expected_today, name: {t: energy.expected_today}}
+      - {c: sensor_tile, entity: sensor.power_highest_peak_time_today, name: {t: energy.peak_today}}
+      - {c: sensor_tile, entity: sensor.power_highest_peak_time_tomorrow, name: {t: energy.peak_tomorrow}}
+      - {c: sensor_tile, entity: sensor.electricity_maps_grid_fossil_fuel_percentage, name: {t: energy.grid_fossil}}
+  - span: 1
+    heading: h.circuits
+    cards:
+      - {c: sensor_tile, entity: sensor.g_monitor_freezer_p110m_current_consumption, name: {t: energy.freezer_now}}
+      - {c: sensor_tile, entity: sensor.g_monitor_freezer_p110m_today_s_consumption, name: {t: energy.freezer_today}}
+      - {c: sensor_tile, entity: sensor.r_energy_monitor_p110m_current_consumption, name: {t: energy.ray_now}}
+      - {c: sensor_tile, entity: sensor.r_energy_monitor_p110m_today_s_consumption, name: {t: energy.ray_today}}
+      - {c: heading, key: h.battery_future, style: subtitle}
+      - {c: note, key: energy.battery_not_installed}
+      - {c: note, key: energy.export_note}
+
+  - c: more_boards
+    classic_of: energy
+    items:
+      - [bills, nav.bills, mdi:receipt-text-outline]
+      - [house-health, nav.house_health, mdi:home-heart]
+      - [climate, nav.climate, mdi:thermometer]
+      - [garage, room.garage, mdi:garage-variant]
+      - [ray-bedroom, room.ray, mdi:bed-king-outline]
+      - [home, nav.home, mdi:home-variant-outline]
+      - [alerts, nav.alerts, mdi:bell-outline]

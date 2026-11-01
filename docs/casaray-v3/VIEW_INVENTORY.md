@@ -19,7 +19,7 @@ Baseline: `dashboards/casaray_v2.yaml` ha-deploy@18a4e5d sha256 `77a4991626d6f8a
 | 9 | `guest-room` | carried | `dashboards/casaray_v2.yaml#guest-room` | 10 | — | 3 |
 | 10 | `lighting` | native | `views/lighting.yaml` | 46 | — | 23 |
 | 11 | `climate` | native | `views/climate.yaml` | 11 | — | — |
-| 12 | `energy` | carried | `dashboards/casaray_v2.yaml#energy` | 27 | — | — |
+| 12 | `energy` | native | `views/energy.yaml` | 26 | — | — |
 | 13 | `bills` | carried | `dashboards/casaray_v2.yaml#bills` | 34 | — | — |
 | 14 | `bills-details` | carried | `dashboards/casaray_v2.yaml#bills-details` | 116 | — | 12 |
 | 15 | `security` | carried | `dashboards/casaray_v2.yaml#security` | 30 | — | 5 |
@@ -40,6 +40,7 @@ Baseline: `dashboards/casaray_v2.yaml` ha-deploy@18a4e5d sha256 `77a4991626d6f8a
 | 30 | `v2-lighting` | classic | `dashboards/casaray_v2.yaml#lighting` | 47 | — | 23 |
 | 31 | `v2-climate` | classic | `dashboards/casaray_v2.yaml#climate` | 12 | — | — |
 | 32 | `v2-cameras` | classic | `dashboards/casaray_v2.yaml#cameras` | 21 | — | 4 |
+| 33 | `v2-energy` | classic | `dashboards/casaray_v2.yaml#energy` | 27 | — | — |
 
 ## Native rebuilds: V2 entities not (yet) on the native view
 
@@ -48,13 +49,14 @@ Each is still reachable on that view's classic `v2-<path>` subview, linked from 
 - **home** (16): `binary_sensor.bedroom_parents_room_ac_room_occupied`, `binary_sensor.g_printer_p100_cloud_connection`, `binary_sensor.k_motion_sensor_motion`, `binary_sensor.living_room_living_hue_hue_sensor_motion`, `binary_sensor.sensor_group_motion`, `cover.aqara_roller_shade_driver_e1`, `sensor.bills_unpaid_count`, `sensor.casa_monitored_power`, `sensor.casa_solar_expected_today`, `sensor.g_monitor_freezer_p110m_current_consumption`, `sensor.living_room_living_room_temperature`, `sensor.living_room_ringring_battery`, `sensor.r_energy_monitor_p110m_current_consumption`, `sensor.tapo_camera_bcca_battery`, `switch.g_printer_p100`, `switch.mainroomlight_switch_1`
 - **lighting** (0): none
 - **climate** (0): none
+- **energy** (0): none
 - **cameras** (2): `light.tapo_c200_stockroom_floodlight_timed`, `light.tapo_c425_north_wall_floodlight_timed`
 
 ## Locales
 
 | Locale | Output | url_path | Views | Keys on fallback | Missing keys |
 |---|---|---|---|---|---|
-| en | `dashboards/casaray_v3.yaml` | `/casaray-v3` | 32 | 0 | 0 |
-| yue | `dashboards/casaray_v3/dist/casaray_v3_yue.yaml` | `/casaray-v3-yue` | 32 | 0 | 0 |
-| km | `dashboards/casaray_v3/dist/casaray_v3_km.yaml` | `/casaray-v3-km` | 32 | 0 | 0 |
-| zh-Hans | `dashboards/casaray_v3/dist/casaray_v3_zh-hans.yaml` | `/casaray-v3-zh` | 32 | 68 | 0 |
+| en | `dashboards/casaray_v3.yaml` | `/casaray-v3` | 33 | 0 | 0 |
+| yue | `dashboards/casaray_v3/dist/casaray_v3_yue.yaml` | `/casaray-v3-yue` | 33 | 0 | 0 |
+| km | `dashboards/casaray_v3/dist/casaray_v3_km.yaml` | `/casaray-v3-km` | 33 | 0 | 0 |
+| zh-Hans | `dashboards/casaray_v3/dist/casaray_v3_zh-hans.yaml` | `/casaray-v3-zh` | 33 | 97 | 0 |

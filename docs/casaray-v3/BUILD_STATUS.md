@@ -13,7 +13,7 @@ Branch: `feature/casaray-v3-build` (from `casaray-v3-design` `27f3fed`).
 | 2 | Lighting | **native** | all V2 lights + 29 scenes; wall switches read-only |
 | 3 | Climate | **native, HVAC read-only** | V3-008 not satisfied in Lovelace; controls via classic Parents' room |
 | 4 | Cameras | **native** | 6 cameras, state in words; streams via carried webrtc subviews |
-| 5 | Energy | carried (V2) | next native rebuild |
+| 5 | Energy | **native** | Powerpal + Fronius only; export and battery stated as no source / not installed (V3-003) |
 | 6 | Security | carried (V2) | sirens keep V2 treatment; rebuild needs owner review of siren UX |
 | 7 | People / household | carried (V2) | |
 | 8 | Bills, Bill setup | carried (V2) | baseline lacks the "silent bill" honesty fix — see below |

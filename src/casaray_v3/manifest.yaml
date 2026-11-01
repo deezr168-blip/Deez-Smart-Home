@@ -53,6 +53,7 @@ native:
   - lighting
   - climate
   - cameras
+  - energy
 
 # Every other V2 view is carried verbatim (links rewritten to the locale's
 # url_base) until it is rebuilt. Order follows V2.

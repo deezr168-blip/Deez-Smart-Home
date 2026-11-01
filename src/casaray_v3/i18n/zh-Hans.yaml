@@ -52,3 +52,6 @@ ac.mode_cool: 制冷
 ac.mode_heat: 制热
 ac.mode_fan_only: 仅送风
 ac.current: "当前：{mode}"
+
+# Energy (added with the native Energy view)
+h.solar: "太阳能"

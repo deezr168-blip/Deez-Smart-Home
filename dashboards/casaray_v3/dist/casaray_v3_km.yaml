@@ -100,7 +100,7 @@ views:
         column_span: 2
         cards:
           - type: markdown
-            content: '{%- set ns = namespace(ok=0, on=0) -%}{%- for e in [''person.raymond_du'',''person.vinh_du'',''person.ai_q_huang''] -%}{%- set s = states(e) -%}{%- if s not in [''unavailable'',''unknown'',''none'',''''] -%}{%- set ns.ok = ns.ok + 1 -%}{%- if s in [''home''] -%}{%- set ns.on = ns.on + 1 -%}{%- endif -%}{%- endif -%}{%- endfor -%}{%- if ns.ok == 0 -%}នៅផ្ទះ **គ្មានទិន្នន័យ**{%- else -%}នៅផ្ទះ **{{ ns.on }}**{%- if ns.ok < 3 %} <small>{{ (ns.ok) ~ " ក្នុងចំណោម " ~ (3) ~ " កំពុងឆ្លើយតប" }}</small>{% endif -%}{%- endif -%}{{ '' · '' }}{%- set ns = namespace(ok=0, on=0) -%}{%- for e in [''light.living_room'',''light.dining'',''light.bedroom_bedroom''] -%}{%- set s = states(e) -%}{%- if s not in [''unavailable'',''unknown'',''none'',''''] -%}{%- set ns.ok = ns.ok + 1 -%}{%- if s in [''on''] -%}{%- set ns.on = ns.on + 1 -%}{%- endif -%}{%- endif -%}{%- endfor -%}{%- if ns.ok == 0 -%}ភ្លើងបើក **គ្មានទិន្នន័យ**{%- else -%}ភ្លើងបើក **{{ ns.on }}**{%- if ns.ok < 3 %} <small>{{ (ns.ok) ~ " ក្នុងចំណោម " ~ (3) ~ " កំពុងឆ្លើយតប" }}</small>{% endif -%}{%- endif -%}{{ '' · '' }}{%- set ns = namespace(ok=0, on=0) -%}{%- for e in [''camera.front_door_live_view'',''camera.smart_pet_feeder'',''camera.tapo_c200_stockroom_hd_stream_direct'',''camera.tapo_c425_north_wall_hd_stream_direct'',''camera.tapo_c420_east_wall_hd_stream_direct'',''camera.tapo_c420_south_wall_hd_stream_direct''] -%}{%- set s = states(e) -%}{%- if s not in [''unavailable'',''unknown'',''none'',''''] -%}{%- set ns.ok = ns.ok + 1 -%}{%- if s in [''idle'',''streaming'',''recording''] -%}{%- set ns.on = ns.on + 1 -%}{%- endif -%}{%- endif -%}{%- endfor -%}{%- if ns.ok == 0 -%}កាមេរ៉ាដំណើរការ **គ្មានទិន្នន័យ**{%- else -%}កាមេរ៉ាដំណើរការ **{{ ns.on }}**{%- if ns.ok < 6 %} <small>{{ (ns.ok) ~ " ក្នុងចំណោម " ~ (6) ~ " កំពុងឆ្លើយតប" }}</small>{% endif -%}{%- endif -%}{{ '' · '' }}ផ្ទះឥឡូវនេះ **{{ ((states(''sensor.powerpal_gateway_powerpal_power'') | float) | round(0) | int ~ '' '' ~ (state_attr(''sensor.powerpal_gateway_powerpal_power'',''unit_of_measurement'') or '''')) if states(''sensor.powerpal_gateway_powerpal_power'') | is_number else "គ្មានទិន្នន័យ" }}**{{ '' · '' }}ពន្លឺព្រះអាទិត្យ **{{ ((states(''sensor.primo_5_0_1_1_ac_power'') | float) | round(0) | int ~ '' '' ~ (state_attr(''sensor.primo_5_0_1_1_ac_power'',''unit_of_measurement'') or '''')) if states(''sensor.primo_5_0_1_1_ac_power'') | is_number else "គ្មានទិន្នន័យ" }}**'
+            content: '{%- set ns = namespace(ok=0, on=0) -%}{%- for e in [''person.raymond_du'',''person.vinh_du'',''person.ai_q_huang''] -%}{%- set s = states(e) -%}{%- if s not in [''unavailable'',''unknown'',''none'',''''] -%}{%- set ns.ok = ns.ok + 1 -%}{%- if s in [''home''] -%}{%- set ns.on = ns.on + 1 -%}{%- endif -%}{%- endif -%}{%- endfor -%}{%- if ns.ok == 0 -%}នៅផ្ទះ **គ្មានទិន្នន័យ**{%- else -%}នៅផ្ទះ **{{ ns.on }}**{%- if ns.ok < 3 %} <small>{{ (ns.ok) ~ " ក្នុងចំណោម " ~ (3) ~ " កំពុងឆ្លើយតប" }}</small>{% endif -%}{%- endif -%}{{ '' · '' }}{%- set ns = namespace(ok=0, on=0) -%}{%- for e in [''light.living_room'',''light.dining'',''light.bedroom_bedroom''] -%}{%- set s = states(e) -%}{%- if s not in [''unavailable'',''unknown'',''none'',''''] -%}{%- set ns.ok = ns.ok + 1 -%}{%- if s in [''on''] -%}{%- set ns.on = ns.on + 1 -%}{%- endif -%}{%- endif -%}{%- endfor -%}{%- if ns.ok == 0 -%}ភ្លើងបើក **គ្មានទិន្នន័យ**{%- else -%}ភ្លើងបើក **{{ ns.on }}**{%- if ns.ok < 3 %} <small>{{ (ns.ok) ~ " ក្នុងចំណោម " ~ (3) ~ " កំពុងឆ្លើយតប" }}</small>{% endif -%}{%- endif -%}{{ '' · '' }}{%- set ns = namespace(ok=0, on=0) -%}{%- for e in [''camera.front_door_live_view'',''camera.smart_pet_feeder'',''camera.tapo_c200_stockroom_hd_stream_direct'',''camera.tapo_c425_north_wall_hd_stream_direct'',''camera.tapo_c420_east_wall_hd_stream_direct'',''camera.tapo_c420_south_wall_hd_stream_direct''] -%}{%- set s = states(e) -%}{%- if s not in [''unavailable'',''unknown'',''none'',''''] -%}{%- set ns.ok = ns.ok + 1 -%}{%- if s in [''idle'',''streaming'',''recording''] -%}{%- set ns.on = ns.on + 1 -%}{%- endif -%}{%- endif -%}{%- endfor -%}{%- if ns.ok == 0 -%}កាមេរ៉ាដំណើរការ **គ្មានទិន្នន័យ**{%- else -%}កាមេរ៉ាដំណើរការ **{{ ns.on }}**{%- if ns.ok < 6 %} <small>{{ (ns.ok) ~ " ក្នុងចំណោម " ~ (6) ~ " កំពុងឆ្លើយតប" }}</small>{% endif -%}{%- endif -%}{{ '' · '' }}ផ្ទះឥឡូវនេះ **{{ ((states(''sensor.powerpal_gateway_powerpal_power'') | float) | round(0) | int ~ (('' '' ~ state_attr(''sensor.powerpal_gateway_powerpal_power'',''unit_of_measurement'')) if state_attr(''sensor.powerpal_gateway_powerpal_power'',''unit_of_measurement'') else '''')) if states(''sensor.powerpal_gateway_powerpal_power'') | is_number else "គ្មានទិន្នន័យ" }}**{{ '' · '' }}ពន្លឺព្រះអាទិត្យ **{{ ((states(''sensor.primo_5_0_1_1_ac_power'') | float) | round(0) | int ~ (('' '' ~ state_attr(''sensor.primo_5_0_1_1_ac_power'',''unit_of_measurement'')) if state_attr(''sensor.primo_5_0_1_1_ac_power'',''unit_of_measurement'') else '''')) if states(''sensor.primo_5_0_1_1_ac_power'') | is_number else "គ្មានទិន្នន័យ" }}**'
             grid_options:
               columns: 12
               rows: auto
@@ -6731,7 +6731,7 @@ views:
         column_span: 2
         cards:
           - type: markdown
-            content: ខាងក្នុង **{{ ((states('sensor.living_room_living_hue_hue_sensor_temperature') | float) | round(1) ~ ' ' ~ (state_attr('sensor.living_room_living_hue_hue_sensor_temperature','unit_of_measurement') or '')) if states('sensor.living_room_living_hue_hue_sensor_temperature') | is_number else "គ្មានទិន្នន័យ" }}**{{ ' · ' }}បន្ទប់ឪពុកម្ដាយ **{{ ((states('sensor.bedroom_motion_sensor_temperature') | float) | round(1) ~ ' ' ~ (state_attr('sensor.bedroom_motion_sensor_temperature','unit_of_measurement') or '')) if states('sensor.bedroom_motion_sensor_temperature') | is_number else "គ្មានទិន្នន័យ" }}**
+            content: ខាងក្នុង **{{ ((states('sensor.living_room_living_hue_hue_sensor_temperature') | float) | round(1) ~ ((' ' ~ state_attr('sensor.living_room_living_hue_hue_sensor_temperature','unit_of_measurement')) if state_attr('sensor.living_room_living_hue_hue_sensor_temperature','unit_of_measurement') else '')) if states('sensor.living_room_living_hue_hue_sensor_temperature') | is_number else "គ្មានទិន្នន័យ" }}**{{ ' · ' }}បន្ទប់ឪពុកម្ដាយ **{{ ((states('sensor.bedroom_motion_sensor_temperature') | float) | round(1) ~ ((' ' ~ state_attr('sensor.bedroom_motion_sensor_temperature','unit_of_measurement')) if state_attr('sensor.bedroom_motion_sensor_temperature','unit_of_measurement') else '')) if states('sensor.bedroom_motion_sensor_temperature') | is_number else "គ្មានទិន្នន័យ" }}**
             grid_options:
               columns: 12
               rows: auto
@@ -7003,571 +7003,574 @@ views:
             grid_options:
               columns: 3
               rows: 1
-  - type: sections
-    title: Energy
+  - title: ថាមពល
     path: energy
-    icon: mdi:lightning-bolt
+    icon: mdi:lightning-bolt-outline
+    type: sections
     max_columns: 2
+    theme: CasaRay V3
     sections:
       - type: grid
         column_span: 2
         cards:
           - type: markdown
-            grid_options:
-              columns: 6
-              rows: auto
             content: |-
-              ## {{ '能源' if is_state('input_boolean.chinese_dashboard','on') else 'Energy' }}
-              {% set cn = is_state('input_boolean.chinese_dashboard','on') -%} {% set p = states('sensor.powerpal_gateway_powerpal_power') | float(none) -%} {% if p is not none %}{% if cn %}当前 {{ p | round(0) | int }} W{% else %}{{ p | round(0) | int }} W now{% endif %}{% else %}{{ '用电量无数据' if cn else 'House power not reporting' }}{% endif %}
-          - type: markdown
+              ## ថាមពល
+              <small>កំណែអភិវឌ្ឍន៍ — មិនទាន់ដាក់ឱ្យប្រើ</small>
             grid_options:
               columns: 6
               rows: auto
-            content: |
-              ## {{ now().strftime('%I:%M %p').lstrip('0').lower() }}
+          - type: markdown
+            content: |-
+              ## {{ now().strftime('%H:%M') }}
               {{ now().strftime('%d/%m/%y') }}
-            card_mod:
-              style: |
-                ha-card { text-align: right; white-space: nowrap; }
-          - type: button
             grid_options:
-              columns: 2
-              rows: 1
-            name: Home
-            icon: mdi:home
+              columns: 6
+              rows: auto
+          - type: button
+            name: ទំព័រដើម
+            icon: mdi:home-variant-outline
             show_name: false
-            show_state: false
+            show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/home
-          - type: button
             grid_options:
               columns: 2
               rows: 1
-            name: Rooms
-            icon: mdi:floor-plan
+          - type: button
+            name: ភ្លើង
+            icon: mdi:lightbulb-group-outline
             show_name: false
-            show_state: false
+            show_icon: true
             tap_action:
               action: navigate
-              navigation_path: /casaray-v3-km/rooms
-          - type: button
+              navigation_path: /casaray-v3-km/lighting
             grid_options:
               columns: 2
               rows: 1
-            name: Security
-            icon: mdi:shield-home
-            show_name: false
-            show_state: false
-            tap_action:
-              action: navigate
-              navigation_path: /casaray-v3-km/security
           - type: button
-            grid_options:
-              columns: 2
-              rows: 1
-            name: Energy
-            icon: mdi:lightning-bolt
-            show_name: false
-            show_state: false
-            tap_action:
-              action: navigate
-              navigation_path: /casaray-v3-km/energy
-            card_mod:
-              style: |
-                ha-card {
-                  background: var(--casaray-amber-bg);
-                  border-color: var(--casaray-amber-border);
-                }
-          - type: button
-            grid_options:
-              columns: 2
-              rows: 1
-            name: Climate
+            name: អាកាសធាតុ
             icon: mdi:thermometer
             show_name: false
-            show_state: false
+            show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/climate
-          - type: button
             grid_options:
               columns: 2
               rows: 1
-            name: Cameras
+          - type: button
+            name: កាមេរ៉ា
             icon: mdi:cctv
             show_name: false
-            show_state: false
+            show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/cameras
+            grid_options:
+              columns: 2
+              rows: 1
+          - type: button
+            name: ថាមពល
+            icon: mdi:lightning-bolt-outline
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: none
+            grid_options:
+              columns: 2
+              rows: 1
+          - type: button
+            name: សន្តិសុខ
+            icon: mdi:shield-home-outline
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/security
+            grid_options:
+              columns: 2
+              rows: 1
       - type: grid
         column_span: 2
         cards:
           - type: markdown
+            content: ផ្ទះឥឡូវនេះ **{{ ((states('sensor.powerpal_gateway_powerpal_power') | float) | round(0) | int ~ ((' ' ~ state_attr('sensor.powerpal_gateway_powerpal_power','unit_of_measurement')) if state_attr('sensor.powerpal_gateway_powerpal_power','unit_of_measurement') else '')) if states('sensor.powerpal_gateway_powerpal_power') | is_number else "គ្មានទិន្នន័យ" }}**{{ ' · ' }}ពន្លឺព្រះអាទិត្យ **{{ ((states('sensor.primo_5_0_1_1_ac_power') | float) | round(0) | int ~ ((' ' ~ state_attr('sensor.primo_5_0_1_1_ac_power','unit_of_measurement')) if state_attr('sensor.primo_5_0_1_1_ac_power','unit_of_measurement') else '')) if states('sensor.primo_5_0_1_1_ac_power') | is_number else "គ្មានទិន្នន័យ" }}**{{ ' · ' }}ពន្លឺព្រះអាទិត្យថ្ងៃនេះ **{{ ((states('sensor.primo_5_0_1_1_energy_day') | float) | round(1) ~ ((' ' ~ state_attr('sensor.primo_5_0_1_1_energy_day','unit_of_measurement')) if state_attr('sensor.primo_5_0_1_1_energy_day','unit_of_measurement') else '')) if states('sensor.primo_5_0_1_1_energy_day') | is_number else "គ្មានទិន្នន័យ" }}**{{ ' · ' }}កាបូនបណ្ដាញអគ្គិសនី **{{ ((states('sensor.electricity_maps_co2_intensity') | float) | round(0) | int ~ ((' ' ~ state_attr('sensor.electricity_maps_co2_intensity','unit_of_measurement')) if state_attr('sensor.electricity_maps_co2_intensity','unit_of_measurement') else '')) if states('sensor.electricity_maps_co2_intensity') | is_number else "គ្មានទិន្នន័យ" }}**
             grid_options:
               columns: 12
               rows: auto
-            content: |
-              {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
-              {%- set nd = '无数据' if cn else 'No data' -%}
-              {%- set p = states('sensor.powerpal_gateway_powerpal_power') | float(none) -%}
-              {%- set hd = states('sensor.powerpal_gateway_powerpal_daily_energy') | float(none) -%}
-              {#- Three states, not two. `on` means generating figures are real; `off`
-                  means the inverter is genuinely unreachable and we can say so; but
-                  when the gate sensor itself is unavailable we know nothing, and
-                  printing "Offline" would be asserting a state we cannot see. -#}
-              {%- set gate = states('binary_sensor.casa_solar_online') -%}
-              {%- set up = gate == 'on' -%}
-              {%- set s = states('sensor.primo_5_0_1_1_ac_power') | float(none) -%}
-              {#- energy_day is Wh. Convert at the binding so nothing downstream can
-                  mix it with the kWh figures beside it. -#}
-              {%- set sdw = states('sensor.primo_5_0_1_1_energy_day') | float(none) -%}
-              {%- set sd = (sdw / 1000) if sdw is not none else none -%}
-              {%- set pv = ((p / 1000) | round(2) ~ ' kW') if p is not none else nd -%}
-              {%- set hv = (hd | round(1) ~ ' kWh') if hd is not none else nd -%}
-              {#- Offline is its own word, not `No data`: the difference between "the
-                  inverter is not answering" and "the reading is missing" is the whole
-                  point of the gate. Both solar chips say the same thing so the row
-                  cannot read as one working chip beside one broken one; the dashed
-                  note directly below spells it out in full. -#}
-              {%- set off = ('离线' if cn else 'Offline') if gate == 'off' else nd -%}
-              {%- set sv = (((s | round(0) | int) ~ ' W') if s is not none else nd) if up else off -%}
-              {%- set dv = (((sd | round(1)) ~ ' kWh') if sd is not none else nd) if up else off -%}
-              {{ '家庭用电' if cn else 'Power' }} **{{ pv }}** · {{ '今日用电' if cn else 'Today' }} **{{ hv }}** · {{ '当前发电' if cn else 'Solar now' }} **{{ sv }}** · {{ '今日发电' if cn else 'Solar today' }} **{{ dv }}**
-            card_mod:
-              style: |
-                ha-card {
-                  border-radius: 999px;
-                  background: var(--casaray-surface-3);
-                  border-color: var(--casaray-border-strong);
-                }
-                /* The 19/09 wall photograph shows the Home strip wrapping after
-                   "At home 2 of 3 ·" -- about 45 characters at the default size.
-                   Every reading is kept; the line is made to fit instead.
-                   ha-markdown's own padding is the biggest single win here (32px
-                   of it, side to side), and it buys back roughly two characters
-                   on top of what the smaller type gives. */
-                ha-markdown {
-                  font-size: 0.78em;
-                  line-height: 1.35;
-                  letter-spacing: -0.003em;
-                  padding: 6px 14px !important;
-                }
-                ha-markdown p {
-                  margin: 0 !important;
-                  text-align: center;
-                  /* Balanced rather than ragged: a strip that must take two lines
-                     should look composed, not broken. Ignored by engines that do
-                     not support it, which simply leaves the old ragged wrap. */
-                  text-wrap: balance;
-                }
-          - type: conditional
-            grid_options:
-              columns: 12
-              rows: auto
-            conditions:
-              - condition: state
-                entity: binary_sensor.casa_solar_online
-                state_not: 'on'
-            card:
-              type: markdown
-              content: |
-                {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
-                {#- The conditional fires on `state_not: on`, which is both "the
-                    inverter said no" and "the gate sensor itself is dark". Those are
-                    different facts and the card says which one it has. -#}
-                {%- set gate = states('binary_sensor.casa_solar_online') -%}
-                {%- if gate == 'off' -%}
-                **{{ '太阳能逆变器离线' if cn else 'Solar inverter offline' }}**
-                {{ '发电数据不可用。' if cn else 'Solar generation data unavailable.' }}
-                {%- else -%}
-                **{{ '太阳能状态未知' if cn else 'Solar status unknown' }}**
-                {{ '逆变器监测本身无数据，发电量无法确认。' if cn else 'The inverter monitor is not reporting, so generation cannot be confirmed.' }}
-                {%- endif -%}
-              card_mod:
-                style: |
-                  ha-card {
-                    background: var(--casaray-grey-bg);
-                    border-color: var(--casaray-grey-border);
-                    border-style: dashed;
-                  }
       - type: grid
         column_span: 1
         cards:
           - type: heading
-            heading: Solar
+            heading: ផ្ទះ
             heading_style: title
-            icon: mdi:solar-power
-            visibility:
-              - condition: state
-                entity: input_boolean.chinese_dashboard
-                state_not: 'on'
-          - type: heading
-            heading: 太阳能
-            heading_style: title
-            icon: mdi:solar-power
-            visibility:
-              - condition: state
-                entity: input_boolean.chinese_dashboard
-                state: 'on'
-          - type: tile
             grid_options:
-              columns: 4
-              rows: 1
-            entity: sensor.energy_production_today
-            name: Forecast today
+              columns: 12
+              rows: auto
           - type: tile
+            entity: sensor.powerpal_gateway_powerpal_power
+            tap_action:
+              action: none
+            icon_tap_action:
+              action: none
+            hold_action:
+              action: none
             grid_options:
-              columns: 4
-              rows: 1
-            entity: sensor.energy_production_today_remaining
-            name: Remaining today
+              columns: 6
+              rows: auto
+            name: ផ្ទះឥឡូវនេះ
           - type: tile
+            entity: sensor.powerpal_gateway_powerpal_daily_energy
+            tap_action:
+              action: none
+            icon_tap_action:
+              action: none
+            hold_action:
+              action: none
             grid_options:
-              columns: 4
-              rows: 1
-            entity: sensor.power_highest_peak_time_today
-            name: Best sun time
+              columns: 6
+              rows: auto
+            name: ប្រើថ្ងៃនេះ
           - type: tile
+            entity: sensor.powerpal_gateway_powerpal_total_energy
+            tap_action:
+              action: none
+            icon_tap_action:
+              action: none
+            hold_action:
+              action: none
             grid_options:
-              columns: 4
-              rows: 1
-            entity: sensor.energy_current_hour
-            name: This hour
+              columns: 6
+              rows: auto
+            name: សរុបតាមកុងទ័រ
           - type: tile
+            entity: sensor.powerpal_gateway_powerpal_battery
+            tap_action:
+              action: none
+            icon_tap_action:
+              action: none
+            hold_action:
+              action: none
             grid_options:
-              columns: 4
-              rows: 1
-            entity: sensor.energy_next_hour
-            name: Next hour
-          - type: tile
+              columns: 6
+              rows: auto
+            name: ថ្ម Powerpal
+          - type: markdown
+            content: <small>Powerpal និង Fronius តែប៉ុណ្ណោះ — ការនាំចេញ និងការប្រើប្រាស់ទូទាំងផ្ទះ មិនទាន់មានប្រភពដែលបានផ្ទៀងផ្ទាត់ (V3-003)។</small>
             grid_options:
-              columns: 4
-              rows: 1
-            entity: sensor.energy_production_tomorrow
-            name: Tomorrow
+              columns: 12
+              rows: auto
       - type: grid
         column_span: 1
         cards:
           - type: heading
-            heading: Metered circuits
+            heading: ពន្លឺព្រះអាទិត្យ
             heading_style: title
-            icon: mdi:meter-electric
-            visibility:
-              - condition: state
-                entity: input_boolean.chinese_dashboard
-                state_not: 'on'
-          - type: heading
-            heading: 计量回路
-            heading_style: title
-            icon: mdi:meter-electric
-            visibility:
-              - condition: state
-                entity: input_boolean.chinese_dashboard
-                state: 'on'
+            grid_options:
+              columns: 12
+              rows: auto
           - type: tile
-            entity: sensor.r_energy_monitor_p110m_current_consumption
-            name: Ray Bedroom now
+            entity: sensor.primo_5_0_1_1_ac_power
+            tap_action:
+              action: none
+            icon_tap_action:
+              action: none
+            hold_action:
+              action: none
             grid_options:
               columns: 6
-              rows: 1
+              rows: auto
+            name: ពន្លឺព្រះអាទិត្យឥឡូវនេះ
           - type: tile
-            entity: sensor.r_energy_monitor_p110m_today_s_consumption
-            name: Desk today
+            entity: sensor.primo_5_0_1_1_energy_day
+            tap_action:
+              action: none
+            icon_tap_action:
+              action: none
+            hold_action:
+              action: none
             grid_options:
               columns: 6
-              rows: 1
+              rows: auto
+            name: ពន្លឺព្រះអាទិត្យថ្ងៃនេះ
           - type: tile
-            entity: sensor.g_monitor_freezer_p110m_current_consumption
-            name: Freezer now
+            entity: sensor.primo_5_0_1_1_energy_year
+            tap_action:
+              action: none
+            icon_tap_action:
+              action: none
+            hold_action:
+              action: none
             grid_options:
               columns: 6
-              rows: 1
+              rows: auto
+            name: ពន្លឺព្រះអាទិត្យឆ្នាំនេះ
           - type: tile
-            entity: sensor.g_monitor_freezer_p110m_today_s_consumption
-            name: Freezer today
+            entity: sensor.primo_5_0_1_1_total_energy
+            tap_action:
+              action: none
+            icon_tap_action:
+              action: none
+            hold_action:
+              action: none
             grid_options:
               columns: 6
-              rows: 1
+              rows: auto
+            name: ពន្លឺព្រះអាទិត្យសរុប
+          - type: tile
+            entity: binary_sensor.casa_solar_online
+            tap_action:
+              action: none
+            icon_tap_action:
+              action: none
+            hold_action:
+              action: none
+            grid_options:
+              columns: 6
+              rows: auto
+            name: អ៊ីនវឺតទ័រដំណើរការ
+          - type: tile
+            entity: sensor.primo_5_0_1_1_status_message
+            tap_action:
+              action: none
+            icon_tap_action:
+              action: none
+            hold_action:
+              action: none
+            grid_options:
+              columns: 6
+              rows: auto
+            name: ស្ថានភាពអ៊ីនវឺតទ័រ
+          - type: tile
+            entity: sensor.primo_5_0_1_1_error_message
+            tap_action:
+              action: none
+            icon_tap_action:
+              action: none
+            hold_action:
+              action: none
+            grid_options:
+              columns: 12
+              rows: auto
+            name: សារកំហុសអ៊ីនវឺតទ័រ
       - type: grid
         column_span: 2
         cards:
           - type: heading
-            heading: Trend
-            heading_style: subtitle
-            icon: mdi:chart-areaspline
-            visibility:
-              - condition: state
-                entity: input_boolean.chinese_dashboard
-                state_not: 'on'
-          - type: heading
-            heading: 趋势
-            heading_style: subtitle
-            icon: mdi:chart-areaspline
-            visibility:
-              - condition: state
-                entity: input_boolean.chinese_dashboard
-                state: 'on'
-          - type: statistics-graph
+            heading: 24 ម៉ោងចុងក្រោយ
+            heading_style: title
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: history-graph
+            entities:
+              - entity: sensor.powerpal_gateway_powerpal_power
+              - entity: sensor.primo_5_0_1_1_ac_power
+            hours_to_show: 24
             grid_options:
               columns: 12
               rows: 4
-            days_to_show: 30
-            period: day
-            stat_types:
-              - state
-            chart_type: bar
-            entities:
-              - entity: sensor.powerpal_gateway_powerpal_daily_energy
-                name: House daily energy
       - type: grid
         column_span: 1
         cards:
           - type: heading
-            heading: Grid and meter
+            heading: ព្យាករណ៍ពន្លឺព្រះអាទិត្យ
             heading_style: title
-            icon: mdi:transmission-tower
-            visibility:
-              - condition: state
-                entity: input_boolean.chinese_dashboard
-                state_not: 'on'
-          - type: heading
-            heading: 电网与电表
-            heading_style: title
-            icon: mdi:transmission-tower
-            visibility:
-              - condition: state
-                entity: input_boolean.chinese_dashboard
-                state: 'on'
-          - type: tile
-            grid_options:
-              columns: 6
-              rows: 1
-            entity: sensor.powerpal_gateway_powerpal_total_energy
-            name: Meter total
-          - type: tile
-            grid_options:
-              columns: 6
-              rows: 1
-            entity: sensor.powerpal_gateway_powerpal_battery
-            name: Meter battery
-          - type: tile
-            grid_options:
-              columns: 6
-              rows: 1
-            entity: sensor.electricity_maps_co2_intensity
-            name: Grid carbon
-          - type: tile
-            grid_options:
-              columns: 6
-              rows: 1
-            entity: sensor.electricity_maps_grid_fossil_fuel_percentage
-            name: Fossil share
-      - type: grid
-        column_span: 1
-        cards:
-          - type: heading
-            heading: Solar details
-            heading_style: subtitle
-            icon: mdi:tune
-            visibility:
-              - condition: state
-                entity: input_boolean.chinese_dashboard
-                state_not: 'on'
-          - type: heading
-            heading: 太阳能详情
-            heading_style: subtitle
-            icon: mdi:tune
-            visibility:
-              - condition: state
-                entity: input_boolean.chinese_dashboard
-                state: 'on'
-          - type: tile
-            grid_options:
-              columns: 6
-              rows: 1
-            entity: binary_sensor.casa_solar_online
-            name: Inverter
-          - type: tile
-            grid_options:
-              columns: 6
-              rows: 1
-            entity: sensor.primo_5_0_1_1_status_message
-            name: Status
-          - type: tile
-            grid_options:
-              columns: 6
-              rows: 1
-            entity: sensor.primo_5_0_1_1_error_message
-            name: Error
-          - type: tile
-            grid_options:
-              columns: 6
-              rows: 1
-            entity: sensor.primo_5_0_1_1_energy_year
-            name: This year
-          - type: tile
-            grid_options:
-              columns: 6
-              rows: 1
-            entity: sensor.primo_5_0_1_1_total_energy
-            name: Lifetime
-          - type: tile
-            grid_options:
-              columns: 6
-              rows: 1
-            entity: sensor.power_production_now
-            name: Forecast now
-          - type: tile
-            grid_options:
-              columns: 6
-              rows: 1
-            entity: sensor.power_highest_peak_time_tomorrow
-            name: Peak tomorrow
-          - type: tile
-            grid_options:
-              columns: 6
-              rows: 1
-            entity: sensor.casa_solar_expected_today
-            name: Expected today
-          - type: markdown
             grid_options:
               columns: 12
               rows: auto
-            content: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') -%} {{ ''Forecast.Solar 的预测与逆变器无关，逆变器离线时预测依然可用。逆变器离线期间 SolarNet 仍会发布 0 W，因此本页显示“无数据”而不是 0。'' if cn else ''The Forecast.Solar figures come from a forecast service, not the inverter, so they keep working while it is offline. SolarNet publishes 0 W while the inverter is unreachable, which is why this page shows no data rather than a zero.'' }}'
+          - type: tile
+            entity: sensor.power_production_now
+            tap_action:
+              action: none
+            icon_tap_action:
+              action: none
+            hold_action:
+              action: none
+            grid_options:
+              columns: 6
+              rows: auto
+            name: ព្យាករណ៍ឥឡូវនេះ
+          - type: tile
+            entity: sensor.energy_current_hour
+            tap_action:
+              action: none
+            icon_tap_action:
+              action: none
+            hold_action:
+              action: none
+            grid_options:
+              columns: 6
+              rows: auto
+            name: ព្យាករណ៍ម៉ោងនេះ
+          - type: tile
+            entity: sensor.energy_next_hour
+            tap_action:
+              action: none
+            icon_tap_action:
+              action: none
+            hold_action:
+              action: none
+            grid_options:
+              columns: 6
+              rows: auto
+            name: ព្យាករណ៍ម៉ោងក្រោយ
+          - type: tile
+            entity: sensor.energy_production_today
+            tap_action:
+              action: none
+            icon_tap_action:
+              action: none
+            hold_action:
+              action: none
+            grid_options:
+              columns: 6
+              rows: auto
+            name: ព្យាករណ៍ថ្ងៃនេះ
+          - type: tile
+            entity: sensor.energy_production_today_remaining
+            tap_action:
+              action: none
+            icon_tap_action:
+              action: none
+            hold_action:
+              action: none
+            grid_options:
+              columns: 6
+              rows: auto
+            name: ព្យាករណ៍នៅសល់ថ្ងៃនេះ
+          - type: tile
+            entity: sensor.energy_production_tomorrow
+            tap_action:
+              action: none
+            icon_tap_action:
+              action: none
+            hold_action:
+              action: none
+            grid_options:
+              columns: 6
+              rows: auto
+            name: ព្យាករណ៍ថ្ងៃស្អែក
+          - type: tile
+            entity: sensor.casa_solar_expected_today
+            tap_action:
+              action: none
+            icon_tap_action:
+              action: none
+            hold_action:
+              action: none
+            grid_options:
+              columns: 6
+              rows: auto
+            name: រំពឹងថ្ងៃនេះ
+          - type: tile
+            entity: sensor.power_highest_peak_time_today
+            tap_action:
+              action: none
+            icon_tap_action:
+              action: none
+            hold_action:
+              action: none
+            grid_options:
+              columns: 6
+              rows: auto
+            name: ម៉ោងកំពូលថ្ងៃនេះ
+          - type: tile
+            entity: sensor.power_highest_peak_time_tomorrow
+            tap_action:
+              action: none
+            icon_tap_action:
+              action: none
+            hold_action:
+              action: none
+            grid_options:
+              columns: 6
+              rows: auto
+            name: ម៉ោងកំពូលថ្ងៃស្អែក
+          - type: tile
+            entity: sensor.electricity_maps_grid_fossil_fuel_percentage
+            tap_action:
+              action: none
+            icon_tap_action:
+              action: none
+            hold_action:
+              action: none
+            grid_options:
+              columns: 6
+              rows: auto
+            name: ចំណែកឥន្ធនៈហ្វូស៊ីល
+      - type: grid
+        column_span: 1
+        cards:
+          - type: heading
+            heading: សៀគ្វីដែលតាមដាន
+            heading_style: title
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: tile
+            entity: sensor.g_monitor_freezer_p110m_current_consumption
+            tap_action:
+              action: none
+            icon_tap_action:
+              action: none
+            hold_action:
+              action: none
+            grid_options:
+              columns: 6
+              rows: auto
+            name: ទូកកឥឡូវនេះ
+          - type: tile
+            entity: sensor.g_monitor_freezer_p110m_today_s_consumption
+            tap_action:
+              action: none
+            icon_tap_action:
+              action: none
+            hold_action:
+              action: none
+            grid_options:
+              columns: 6
+              rows: auto
+            name: ទូកកថ្ងៃនេះ
+          - type: tile
+            entity: sensor.r_energy_monitor_p110m_current_consumption
+            tap_action:
+              action: none
+            icon_tap_action:
+              action: none
+            hold_action:
+              action: none
+            grid_options:
+              columns: 6
+              rows: auto
+            name: បន្ទប់ Ray ឥឡូវនេះ
+          - type: tile
+            entity: sensor.r_energy_monitor_p110m_today_s_consumption
+            tap_action:
+              action: none
+            icon_tap_action:
+              action: none
+            hold_action:
+              action: none
+            grid_options:
+              columns: 6
+              rows: auto
+            name: បន្ទប់ Ray ថ្ងៃនេះ
+          - type: heading
+            heading: ថ្មផ្ទះ (អនាគត)
+            heading_style: subtitle
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: markdown
+            content: <small>មិនទាន់ដំឡើង។ កន្លែងនេះត្រូវបានបម្រុងទុក ហើយនឹងបង្ហាញតែពេលមានថ្មប៉ុណ្ណោះ។</small>
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: markdown
+            content: <small>ការនាំចេញទៅបណ្ដាញ៖ គ្មានប្រភពដែលបានផ្ទៀងផ្ទាត់ទេ ដូច្នេះ V3 មិនបង្ហាញលេខទាយទេ។</small>
+            grid_options:
+              columns: 12
+              rows: auto
       - type: grid
         column_span: 2
         cards:
-          - type: button
+          - type: heading
+            heading: ទំព័រផ្សេងទៀត
+            heading_style: title
             grid_options:
-              columns: 6
-              rows: 1
-            name: Home
-            icon: mdi:home
-            show_state: false
-            tap_action:
-              action: navigate
-              navigation_path: /casaray-v3-km/home
-            visibility:
-              - condition: state
-                entity: input_boolean.chinese_dashboard
-                state_not: 'on'
-            card_mod:
-              style: |
-                /* A compact horizontal band, not a near-square card. The button
-                   card stacks icon over label by default, which on the wall iPad
-                   made the two footer buttons the tallest thing on several pages
-                   (19/09 photographs). Turning its flex axis puts the icon beside
-                   the label and lets the card collapse to one row. */
-                ha-card {
-                  flex-direction: row !important;
-                  align-items: center;
-                  justify-content: center;
-                  gap: 10px;
-                  padding: 6px 12px !important;
-                  min-height: 0 !important;
-                  --mdc-icon-size: 20px;
-                }
-                ha-card ha-icon { margin: 0 !important; }
-                ha-card span { font-size: 0.9em; }
+              columns: 12
+              rows: auto
           - type: button
-            grid_options:
-              columns: 6
-              rows: 1
-            name: 首页
-            icon: mdi:home
-            show_state: false
-            tap_action:
-              action: navigate
-              navigation_path: /casaray-v3-km/home
-            visibility:
-              - condition: state
-                entity: input_boolean.chinese_dashboard
-                state: 'on'
-            card_mod:
-              style: |
-                /* A compact horizontal band, not a near-square card. The button
-                   card stacks icon over label by default, which on the wall iPad
-                   made the two footer buttons the tallest thing on several pages
-                   (19/09 photographs). Turning its flex axis puts the icon beside
-                   the label and lets the card collapse to one row. */
-                ha-card {
-                  flex-direction: row !important;
-                  align-items: center;
-                  justify-content: center;
-                  gap: 10px;
-                  padding: 6px 12px !important;
-                  min-height: 0 !important;
-                  --mdc-icon-size: 20px;
-                }
-                ha-card ha-icon { margin: 0 !important; }
-                ha-card span { font-size: 0.9em; }
-          - type: button
-            grid_options:
-              columns: 6
-              rows: 1
-            name: Bills
-            icon: mdi:file-document-outline
-            show_state: false
+            name: វិក្កយបត្រ
+            icon: mdi:receipt-text-outline
+            show_name: true
+            show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/bills
-            visibility:
-              - condition: state
-                entity: input_boolean.chinese_dashboard
-                state_not: 'on'
-            card_mod:
-              style: |
-                /* A compact horizontal band, not a near-square card. The button
-                   card stacks icon over label by default, which on the wall iPad
-                   made the two footer buttons the tallest thing on several pages
-                   (19/09 photographs). Turning its flex axis puts the icon beside
-                   the label and lets the card collapse to one row. */
-                ha-card {
-                  flex-direction: row !important;
-                  align-items: center;
-                  justify-content: center;
-                  gap: 10px;
-                  padding: 6px 12px !important;
-                  min-height: 0 !important;
-                  --mdc-icon-size: 20px;
-                }
-                ha-card ha-icon { margin: 0 !important; }
-                ha-card span { font-size: 0.9em; }
-          - type: button
             grid_options:
-              columns: 6
+              columns: 3
               rows: 1
-            name: 账单
-            icon: mdi:file-document-outline
-            show_state: false
+          - type: button
+            name: សុខភាពផ្ទះ
+            icon: mdi:home-heart
+            show_name: true
+            show_icon: true
             tap_action:
               action: navigate
-              navigation_path: /casaray-v3-km/bills
-            visibility:
-              - condition: state
-                entity: input_boolean.chinese_dashboard
-                state: 'on'
-            card_mod:
-              style: |
-                /* A compact horizontal band, not a near-square card. The button
-                   card stacks icon over label by default, which on the wall iPad
-                   made the two footer buttons the tallest thing on several pages
-                   (19/09 photographs). Turning its flex axis puts the icon beside
-                   the label and lets the card collapse to one row. */
-                ha-card {
-                  flex-direction: row !important;
-                  align-items: center;
-                  justify-content: center;
-                  gap: 10px;
-                  padding: 6px 12px !important;
-                  min-height: 0 !important;
-                  --mdc-icon-size: 20px;
-                }
-                ha-card ha-icon { margin: 0 !important; }
-                ha-card span { font-size: 0.9em; }
-    theme: CasaRay
+              navigation_path: /casaray-v3-km/house-health
+            grid_options:
+              columns: 3
+              rows: 1
+          - type: button
+            name: អាកាសធាតុ
+            icon: mdi:thermometer
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/climate
+            grid_options:
+              columns: 3
+              rows: 1
+          - type: button
+            name: យានដ្ឋាន
+            icon: mdi:garage-variant
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/garage
+            grid_options:
+              columns: 3
+              rows: 1
+          - type: button
+            name: បន្ទប់ Ray
+            icon: mdi:bed-king-outline
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/ray-bedroom
+            grid_options:
+              columns: 3
+              rows: 1
+          - type: button
+            name: ទំព័រដើម
+            icon: mdi:home-variant-outline
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/home
+            grid_options:
+              columns: 3
+              rows: 1
+          - type: button
+            name: ការជូនដំណឹង
+            icon: mdi:bell-outline
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/alerts
+            grid_options:
+              columns: 3
+              rows: 1
+          - type: button
+            name: ទិដ្ឋភាព V2 ចាស់
+            icon: mdi:history
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/v2-energy
+            grid_options:
+              columns: 3
+              rows: 1
   - type: sections
     title: Bills
     path: bills
@@ -17653,6 +17656,572 @@ views:
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/security
+            visibility:
+              - condition: state
+                entity: input_boolean.chinese_dashboard
+                state: 'on'
+            card_mod:
+              style: |
+                /* A compact horizontal band, not a near-square card. The button
+                   card stacks icon over label by default, which on the wall iPad
+                   made the two footer buttons the tallest thing on several pages
+                   (19/09 photographs). Turning its flex axis puts the icon beside
+                   the label and lets the card collapse to one row. */
+                ha-card {
+                  flex-direction: row !important;
+                  align-items: center;
+                  justify-content: center;
+                  gap: 10px;
+                  padding: 6px 12px !important;
+                  min-height: 0 !important;
+                  --mdc-icon-size: 20px;
+                }
+                ha-card ha-icon { margin: 0 !important; }
+                ha-card span { font-size: 0.9em; }
+    subview: true
+    theme: CasaRay
+  - type: sections
+    title: Energy (V2)
+    path: v2-energy
+    icon: mdi:lightning-bolt
+    max_columns: 2
+    sections:
+      - type: grid
+        column_span: 2
+        cards:
+          - type: markdown
+            grid_options:
+              columns: 6
+              rows: auto
+            content: |-
+              ## {{ '能源' if is_state('input_boolean.chinese_dashboard','on') else 'Energy' }}
+              {% set cn = is_state('input_boolean.chinese_dashboard','on') -%} {% set p = states('sensor.powerpal_gateway_powerpal_power') | float(none) -%} {% if p is not none %}{% if cn %}当前 {{ p | round(0) | int }} W{% else %}{{ p | round(0) | int }} W now{% endif %}{% else %}{{ '用电量无数据' if cn else 'House power not reporting' }}{% endif %}
+          - type: markdown
+            grid_options:
+              columns: 6
+              rows: auto
+            content: |
+              ## {{ now().strftime('%I:%M %p').lstrip('0').lower() }}
+              {{ now().strftime('%d/%m/%y') }}
+            card_mod:
+              style: |
+                ha-card { text-align: right; white-space: nowrap; }
+          - type: button
+            grid_options:
+              columns: 2
+              rows: 1
+            name: Home
+            icon: mdi:home
+            show_name: false
+            show_state: false
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/home
+          - type: button
+            grid_options:
+              columns: 2
+              rows: 1
+            name: Rooms
+            icon: mdi:floor-plan
+            show_name: false
+            show_state: false
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/rooms
+          - type: button
+            grid_options:
+              columns: 2
+              rows: 1
+            name: Security
+            icon: mdi:shield-home
+            show_name: false
+            show_state: false
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/security
+          - type: button
+            grid_options:
+              columns: 2
+              rows: 1
+            name: Energy
+            icon: mdi:lightning-bolt
+            show_name: false
+            show_state: false
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/energy
+            card_mod:
+              style: |
+                ha-card {
+                  background: var(--casaray-amber-bg);
+                  border-color: var(--casaray-amber-border);
+                }
+          - type: button
+            grid_options:
+              columns: 2
+              rows: 1
+            name: Climate
+            icon: mdi:thermometer
+            show_name: false
+            show_state: false
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/climate
+          - type: button
+            grid_options:
+              columns: 2
+              rows: 1
+            name: Cameras
+            icon: mdi:cctv
+            show_name: false
+            show_state: false
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/cameras
+      - type: grid
+        column_span: 2
+        cards:
+          - type: markdown
+            grid_options:
+              columns: 12
+              rows: auto
+            content: |
+              {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+              {%- set nd = '无数据' if cn else 'No data' -%}
+              {%- set p = states('sensor.powerpal_gateway_powerpal_power') | float(none) -%}
+              {%- set hd = states('sensor.powerpal_gateway_powerpal_daily_energy') | float(none) -%}
+              {#- Three states, not two. `on` means generating figures are real; `off`
+                  means the inverter is genuinely unreachable and we can say so; but
+                  when the gate sensor itself is unavailable we know nothing, and
+                  printing "Offline" would be asserting a state we cannot see. -#}
+              {%- set gate = states('binary_sensor.casa_solar_online') -%}
+              {%- set up = gate == 'on' -%}
+              {%- set s = states('sensor.primo_5_0_1_1_ac_power') | float(none) -%}
+              {#- energy_day is Wh. Convert at the binding so nothing downstream can
+                  mix it with the kWh figures beside it. -#}
+              {%- set sdw = states('sensor.primo_5_0_1_1_energy_day') | float(none) -%}
+              {%- set sd = (sdw / 1000) if sdw is not none else none -%}
+              {%- set pv = ((p / 1000) | round(2) ~ ' kW') if p is not none else nd -%}
+              {%- set hv = (hd | round(1) ~ ' kWh') if hd is not none else nd -%}
+              {#- Offline is its own word, not `No data`: the difference between "the
+                  inverter is not answering" and "the reading is missing" is the whole
+                  point of the gate. Both solar chips say the same thing so the row
+                  cannot read as one working chip beside one broken one; the dashed
+                  note directly below spells it out in full. -#}
+              {%- set off = ('离线' if cn else 'Offline') if gate == 'off' else nd -%}
+              {%- set sv = (((s | round(0) | int) ~ ' W') if s is not none else nd) if up else off -%}
+              {%- set dv = (((sd | round(1)) ~ ' kWh') if sd is not none else nd) if up else off -%}
+              {{ '家庭用电' if cn else 'Power' }} **{{ pv }}** · {{ '今日用电' if cn else 'Today' }} **{{ hv }}** · {{ '当前发电' if cn else 'Solar now' }} **{{ sv }}** · {{ '今日发电' if cn else 'Solar today' }} **{{ dv }}**
+            card_mod:
+              style: |
+                ha-card {
+                  border-radius: 999px;
+                  background: var(--casaray-surface-3);
+                  border-color: var(--casaray-border-strong);
+                }
+                /* The 19/09 wall photograph shows the Home strip wrapping after
+                   "At home 2 of 3 ·" -- about 45 characters at the default size.
+                   Every reading is kept; the line is made to fit instead.
+                   ha-markdown's own padding is the biggest single win here (32px
+                   of it, side to side), and it buys back roughly two characters
+                   on top of what the smaller type gives. */
+                ha-markdown {
+                  font-size: 0.78em;
+                  line-height: 1.35;
+                  letter-spacing: -0.003em;
+                  padding: 6px 14px !important;
+                }
+                ha-markdown p {
+                  margin: 0 !important;
+                  text-align: center;
+                  /* Balanced rather than ragged: a strip that must take two lines
+                     should look composed, not broken. Ignored by engines that do
+                     not support it, which simply leaves the old ragged wrap. */
+                  text-wrap: balance;
+                }
+          - type: conditional
+            grid_options:
+              columns: 12
+              rows: auto
+            conditions:
+              - condition: state
+                entity: binary_sensor.casa_solar_online
+                state_not: 'on'
+            card:
+              type: markdown
+              content: |
+                {%- set cn = is_state('input_boolean.chinese_dashboard','on') -%}
+                {#- The conditional fires on `state_not: on`, which is both "the
+                    inverter said no" and "the gate sensor itself is dark". Those are
+                    different facts and the card says which one it has. -#}
+                {%- set gate = states('binary_sensor.casa_solar_online') -%}
+                {%- if gate == 'off' -%}
+                **{{ '太阳能逆变器离线' if cn else 'Solar inverter offline' }}**
+                {{ '发电数据不可用。' if cn else 'Solar generation data unavailable.' }}
+                {%- else -%}
+                **{{ '太阳能状态未知' if cn else 'Solar status unknown' }}**
+                {{ '逆变器监测本身无数据，发电量无法确认。' if cn else 'The inverter monitor is not reporting, so generation cannot be confirmed.' }}
+                {%- endif -%}
+              card_mod:
+                style: |
+                  ha-card {
+                    background: var(--casaray-grey-bg);
+                    border-color: var(--casaray-grey-border);
+                    border-style: dashed;
+                  }
+      - type: grid
+        column_span: 1
+        cards:
+          - type: heading
+            heading: Solar
+            heading_style: title
+            icon: mdi:solar-power
+            visibility:
+              - condition: state
+                entity: input_boolean.chinese_dashboard
+                state_not: 'on'
+          - type: heading
+            heading: 太阳能
+            heading_style: title
+            icon: mdi:solar-power
+            visibility:
+              - condition: state
+                entity: input_boolean.chinese_dashboard
+                state: 'on'
+          - type: tile
+            grid_options:
+              columns: 4
+              rows: 1
+            entity: sensor.energy_production_today
+            name: Forecast today
+          - type: tile
+            grid_options:
+              columns: 4
+              rows: 1
+            entity: sensor.energy_production_today_remaining
+            name: Remaining today
+          - type: tile
+            grid_options:
+              columns: 4
+              rows: 1
+            entity: sensor.power_highest_peak_time_today
+            name: Best sun time
+          - type: tile
+            grid_options:
+              columns: 4
+              rows: 1
+            entity: sensor.energy_current_hour
+            name: This hour
+          - type: tile
+            grid_options:
+              columns: 4
+              rows: 1
+            entity: sensor.energy_next_hour
+            name: Next hour
+          - type: tile
+            grid_options:
+              columns: 4
+              rows: 1
+            entity: sensor.energy_production_tomorrow
+            name: Tomorrow
+      - type: grid
+        column_span: 1
+        cards:
+          - type: heading
+            heading: Metered circuits
+            heading_style: title
+            icon: mdi:meter-electric
+            visibility:
+              - condition: state
+                entity: input_boolean.chinese_dashboard
+                state_not: 'on'
+          - type: heading
+            heading: 计量回路
+            heading_style: title
+            icon: mdi:meter-electric
+            visibility:
+              - condition: state
+                entity: input_boolean.chinese_dashboard
+                state: 'on'
+          - type: tile
+            entity: sensor.r_energy_monitor_p110m_current_consumption
+            name: Ray Bedroom now
+            grid_options:
+              columns: 6
+              rows: 1
+          - type: tile
+            entity: sensor.r_energy_monitor_p110m_today_s_consumption
+            name: Desk today
+            grid_options:
+              columns: 6
+              rows: 1
+          - type: tile
+            entity: sensor.g_monitor_freezer_p110m_current_consumption
+            name: Freezer now
+            grid_options:
+              columns: 6
+              rows: 1
+          - type: tile
+            entity: sensor.g_monitor_freezer_p110m_today_s_consumption
+            name: Freezer today
+            grid_options:
+              columns: 6
+              rows: 1
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: Trend
+            heading_style: subtitle
+            icon: mdi:chart-areaspline
+            visibility:
+              - condition: state
+                entity: input_boolean.chinese_dashboard
+                state_not: 'on'
+          - type: heading
+            heading: 趋势
+            heading_style: subtitle
+            icon: mdi:chart-areaspline
+            visibility:
+              - condition: state
+                entity: input_boolean.chinese_dashboard
+                state: 'on'
+          - type: statistics-graph
+            grid_options:
+              columns: 12
+              rows: 4
+            days_to_show: 30
+            period: day
+            stat_types:
+              - state
+            chart_type: bar
+            entities:
+              - entity: sensor.powerpal_gateway_powerpal_daily_energy
+                name: House daily energy
+      - type: grid
+        column_span: 1
+        cards:
+          - type: heading
+            heading: Grid and meter
+            heading_style: title
+            icon: mdi:transmission-tower
+            visibility:
+              - condition: state
+                entity: input_boolean.chinese_dashboard
+                state_not: 'on'
+          - type: heading
+            heading: 电网与电表
+            heading_style: title
+            icon: mdi:transmission-tower
+            visibility:
+              - condition: state
+                entity: input_boolean.chinese_dashboard
+                state: 'on'
+          - type: tile
+            grid_options:
+              columns: 6
+              rows: 1
+            entity: sensor.powerpal_gateway_powerpal_total_energy
+            name: Meter total
+          - type: tile
+            grid_options:
+              columns: 6
+              rows: 1
+            entity: sensor.powerpal_gateway_powerpal_battery
+            name: Meter battery
+          - type: tile
+            grid_options:
+              columns: 6
+              rows: 1
+            entity: sensor.electricity_maps_co2_intensity
+            name: Grid carbon
+          - type: tile
+            grid_options:
+              columns: 6
+              rows: 1
+            entity: sensor.electricity_maps_grid_fossil_fuel_percentage
+            name: Fossil share
+      - type: grid
+        column_span: 1
+        cards:
+          - type: heading
+            heading: Solar details
+            heading_style: subtitle
+            icon: mdi:tune
+            visibility:
+              - condition: state
+                entity: input_boolean.chinese_dashboard
+                state_not: 'on'
+          - type: heading
+            heading: 太阳能详情
+            heading_style: subtitle
+            icon: mdi:tune
+            visibility:
+              - condition: state
+                entity: input_boolean.chinese_dashboard
+                state: 'on'
+          - type: tile
+            grid_options:
+              columns: 6
+              rows: 1
+            entity: binary_sensor.casa_solar_online
+            name: Inverter
+          - type: tile
+            grid_options:
+              columns: 6
+              rows: 1
+            entity: sensor.primo_5_0_1_1_status_message
+            name: Status
+          - type: tile
+            grid_options:
+              columns: 6
+              rows: 1
+            entity: sensor.primo_5_0_1_1_error_message
+            name: Error
+          - type: tile
+            grid_options:
+              columns: 6
+              rows: 1
+            entity: sensor.primo_5_0_1_1_energy_year
+            name: This year
+          - type: tile
+            grid_options:
+              columns: 6
+              rows: 1
+            entity: sensor.primo_5_0_1_1_total_energy
+            name: Lifetime
+          - type: tile
+            grid_options:
+              columns: 6
+              rows: 1
+            entity: sensor.power_production_now
+            name: Forecast now
+          - type: tile
+            grid_options:
+              columns: 6
+              rows: 1
+            entity: sensor.power_highest_peak_time_tomorrow
+            name: Peak tomorrow
+          - type: tile
+            grid_options:
+              columns: 6
+              rows: 1
+            entity: sensor.casa_solar_expected_today
+            name: Expected today
+          - type: markdown
+            grid_options:
+              columns: 12
+              rows: auto
+            content: '{% set cn = is_state(''input_boolean.chinese_dashboard'',''on'') -%} {{ ''Forecast.Solar 的预测与逆变器无关，逆变器离线时预测依然可用。逆变器离线期间 SolarNet 仍会发布 0 W，因此本页显示“无数据”而不是 0。'' if cn else ''The Forecast.Solar figures come from a forecast service, not the inverter, so they keep working while it is offline. SolarNet publishes 0 W while the inverter is unreachable, which is why this page shows no data rather than a zero.'' }}'
+      - type: grid
+        column_span: 2
+        cards:
+          - type: button
+            grid_options:
+              columns: 6
+              rows: 1
+            name: Home
+            icon: mdi:home
+            show_state: false
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/home
+            visibility:
+              - condition: state
+                entity: input_boolean.chinese_dashboard
+                state_not: 'on'
+            card_mod:
+              style: |
+                /* A compact horizontal band, not a near-square card. The button
+                   card stacks icon over label by default, which on the wall iPad
+                   made the two footer buttons the tallest thing on several pages
+                   (19/09 photographs). Turning its flex axis puts the icon beside
+                   the label and lets the card collapse to one row. */
+                ha-card {
+                  flex-direction: row !important;
+                  align-items: center;
+                  justify-content: center;
+                  gap: 10px;
+                  padding: 6px 12px !important;
+                  min-height: 0 !important;
+                  --mdc-icon-size: 20px;
+                }
+                ha-card ha-icon { margin: 0 !important; }
+                ha-card span { font-size: 0.9em; }
+          - type: button
+            grid_options:
+              columns: 6
+              rows: 1
+            name: 首页
+            icon: mdi:home
+            show_state: false
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/home
+            visibility:
+              - condition: state
+                entity: input_boolean.chinese_dashboard
+                state: 'on'
+            card_mod:
+              style: |
+                /* A compact horizontal band, not a near-square card. The button
+                   card stacks icon over label by default, which on the wall iPad
+                   made the two footer buttons the tallest thing on several pages
+                   (19/09 photographs). Turning its flex axis puts the icon beside
+                   the label and lets the card collapse to one row. */
+                ha-card {
+                  flex-direction: row !important;
+                  align-items: center;
+                  justify-content: center;
+                  gap: 10px;
+                  padding: 6px 12px !important;
+                  min-height: 0 !important;
+                  --mdc-icon-size: 20px;
+                }
+                ha-card ha-icon { margin: 0 !important; }
+                ha-card span { font-size: 0.9em; }
+          - type: button
+            grid_options:
+              columns: 6
+              rows: 1
+            name: Bills
+            icon: mdi:file-document-outline
+            show_state: false
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/bills
+            visibility:
+              - condition: state
+                entity: input_boolean.chinese_dashboard
+                state_not: 'on'
+            card_mod:
+              style: |
+                /* A compact horizontal band, not a near-square card. The button
+                   card stacks icon over label by default, which on the wall iPad
+                   made the two footer buttons the tallest thing on several pages
+                   (19/09 photographs). Turning its flex axis puts the icon beside
+                   the label and lets the card collapse to one row. */
+                ha-card {
+                  flex-direction: row !important;
+                  align-items: center;
+                  justify-content: center;
+                  gap: 10px;
+                  padding: 6px 12px !important;
+                  min-height: 0 !important;
+                  --mdc-icon-size: 20px;
+                }
+                ha-card ha-icon { margin: 0 !important; }
+                ha-card span { font-size: 0.9em; }
+          - type: button
+            grid_options:
+              columns: 6
+              rows: 1
+            name: 账单
+            icon: mdi:file-document-outline
+            show_state: false
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/bills
             visibility:
               - condition: state
                 entity: input_boolean.chinese_dashboard

@@ -25,7 +25,7 @@ import render_check as R  # noqa: E402
 ROOT = B.ROOT
 ALLOWED_CUSTOM = {"custom:webrtc-camera"}      # V2's only custom card; carried views only
 NATIVE_TYPES = {"heading", "markdown", "tile", "button", "picture-entity",
-                "weather-forecast", "todo-list"}
+                "weather-forecast", "todo-list", "history-graph"}
 SENTINEL = re.compile(r"\|\s*float\(\s*(0|100|9999)\s*\)")
 SECRET_PATTERNS = [
     re.compile(r"eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}"),  # JWT / HA token

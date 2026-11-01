@@ -9,6 +9,7 @@ Authority: `docs/live/states_export_2026-09-05.txt` — proves an ID **exists**.
 | `binary_sensor.b_contact_sensor_door` | B/Contact Sensor Door | Backyard | unavailable | home |
 | `binary_sensor.bedroom_parents_room_ac_filter_clean_required` | Parents Room AC Filter clean required | Parents Room | ok | home, climate |
 | `binary_sensor.bedroom_parents_room_ac_room_occupied` | Parents Room AC Room occupied | Parents Room | ok | climate |
+| `binary_sensor.casa_solar_online` | Casa Solar Online | - | ok | energy |
 | `binary_sensor.eero_wan_status` | eero Gateway WAN status | Network | ok | home |
 | `binary_sensor.f_contact_sensor_door` | F/Contact Sensor Door | Living Room | unavailable | home |
 | `binary_sensor.g_monitor_freezer_p110m_overloaded` | G/Monitor Freezer P110M Overloaded | Garage | ok | home |
@@ -71,15 +72,36 @@ Authority: `docs/live/states_export_2026-09-05.txt` — proves an ID **exists**.
 | `sensor.bedroom_motion_sensor_humidity` | Parents Room Motion Sensor Humidity | Parents Room | ok | climate |
 | `sensor.bedroom_motion_sensor_temperature` | Parents Room Motion Sensor Temperature | Parents Room | ok | home, climate |
 | `sensor.bedroom_parents_room_ac_filter_last_reset` | Parents Room AC Filter last reset | Parents Room | ok | climate |
+| `sensor.casa_solar_expected_today` | Casa Solar Expected Today | - | ok | energy |
+| `sensor.electricity_maps_co2_intensity` | Electricity Maps CO2 intensity | Energy | ok | energy |
+| `sensor.electricity_maps_grid_fossil_fuel_percentage` | Electricity Maps Grid fossil fuel percentage | Energy | ok | energy |
+| `sensor.energy_current_hour` | Solar production forecast Estimated energy production - this hour | Energy | ok | energy |
+| `sensor.energy_next_hour` | Solar production forecast Estimated energy production - next hour | Energy | ok | energy |
+| `sensor.energy_production_today` | Solar production forecast Estimated energy production - today | Energy | ok | energy |
+| `sensor.energy_production_today_remaining` | Solar production forecast Estimated energy production - remaining today | Energy | ok | energy |
+| `sensor.energy_production_tomorrow` | Solar production forecast Estimated energy production - tomorrow | Energy | ok | energy |
 | `sensor.front_door_battery` | Front Door Battery | Living Room | ok | home, cameras |
 | `sensor.front_door_last_activity` | Front Door Last activity | Living Room | ok | cameras |
+| `sensor.g_monitor_freezer_p110m_current_consumption` | G/Monitor Freezer P110M Current consumption | Garage | ok | energy |
+| `sensor.g_monitor_freezer_p110m_today_s_consumption` | G/Monitor Freezer P110M Today's consumption | Garage | ok | energy |
 | `sensor.living_room_living_hue_hue_sensor_temperature` | Living Room Motion Sensor Temperature | Living Room | ok | home, climate |
 | `sensor.living_room_living_room_temperature` | Dining Room Motion Sensor Temperature | Dining | ok | climate |
 | `sensor.living_room_ringring_battery` | RingRing Battery | Living Room | ok | cameras |
-| `sensor.powerpal_gateway_powerpal_daily_energy` | Powerpal Gateway Powerpal Daily Energy | Energy | ok | home |
-| `sensor.powerpal_gateway_powerpal_power` | Powerpal Gateway Powerpal Power | Energy | ok | home |
-| `sensor.primo_5_0_1_1_ac_power` | Primo 5.0-1 (1) AC power | Energy | ok | home |
-| `sensor.primo_5_0_1_1_energy_day` | Primo 5.0-1 (1) Energy day | Energy | ok | home |
+| `sensor.power_highest_peak_time_today` | Solar production forecast Highest power peak time - today | Energy | ok | energy |
+| `sensor.power_highest_peak_time_tomorrow` | Solar production forecast Highest power peak time - tomorrow | Energy | ok | energy |
+| `sensor.power_production_now` | Solar production forecast Estimated power production - now | Energy | ok | energy |
+| `sensor.powerpal_gateway_powerpal_battery` | Powerpal Gateway Powerpal Battery | Energy | ok | energy |
+| `sensor.powerpal_gateway_powerpal_daily_energy` | Powerpal Gateway Powerpal Daily Energy | Energy | ok | home, energy |
+| `sensor.powerpal_gateway_powerpal_power` | Powerpal Gateway Powerpal Power | Energy | ok | home, energy |
+| `sensor.powerpal_gateway_powerpal_total_energy` | Powerpal Gateway Powerpal Total Energy | Energy | ok | energy |
+| `sensor.primo_5_0_1_1_ac_power` | Primo 5.0-1 (1) AC power | Energy | ok | home, energy |
+| `sensor.primo_5_0_1_1_energy_day` | Primo 5.0-1 (1) Energy day | Energy | ok | home, energy |
+| `sensor.primo_5_0_1_1_energy_year` | Primo 5.0-1 (1) Energy year | Energy | ok | energy |
+| `sensor.primo_5_0_1_1_error_message` | Primo 5.0-1 (1) Error message | Energy | ok | energy |
+| `sensor.primo_5_0_1_1_status_message` | Primo 5.0-1 (1) Status message | Energy | ok | energy |
+| `sensor.primo_5_0_1_1_total_energy` | Primo 5.0-1 (1) Total energy | Energy | ok | energy |
+| `sensor.r_energy_monitor_p110m_current_consumption` | R/Energy Monitor P110M Current consumption | Ray Bedroom | ok | energy |
+| `sensor.r_energy_monitor_p110m_today_s_consumption` | R/Energy Monitor P110M Today's consumption | Ray Bedroom | ok | energy |
 | `sensor.sun_next_rising` | Sun Next rising | - | ok | home |
 | `sensor.sun_next_setting` | Sun Next setting | - | ok | home |
 | `sensor.tapo_c420_south_wall_battery` | Tapo C420 - South Wall Battery | Network | ok | home, cameras |
