@@ -1,0 +1,143 @@
+# CasaRay V3 strings — Cantonese, Traditional (Hong Kong) script.
+# STATUS: draft by Claude, NOT native-reviewed. Every string needs review by a
+# Cantonese reader in the household before any deployment. Missing keys fall
+# back to English and are listed in the build report.
+# Proper nouns and device names stay Latin (CasaRay, Hue, Fronius, eero, Ray).
+app.name: CasaRay
+app.dev_banner: 開發版本 — 未部署
+
+nav.home: 主頁
+nav.rooms: 房間
+nav.lighting: 燈光
+nav.climate: 冷氣同天氣
+nav.cameras: 鏡頭
+nav.energy: 用電
+nav.security: 保安
+nav.bills: 帳單
+nav.people: 家人
+nav.network: 網絡
+nav.house_health: 屋企狀況
+nav.alerts: 通知
+nav.entertainment: 娛樂
+nav.automations: 自動化
+nav.classic: 舊版 V2 畫面
+nav.all_rooms: 所有房間
+nav.back: 返回
+
+room.living: 客廳
+room.dining: 飯廳
+room.kitchen: 廚房
+room.parents: 爸媽房
+room.ray: Ray 間房
+room.garage: 車房
+room.backyard: 後院
+room.guest: 客房
+room.stockroom: 雜物房
+room.north_wall: 北牆
+room.east_wall: 東牆
+room.south_wall: 南牆
+room.front_door: 前門
+room.pet_feeder: 寵物餵食器
+
+h.attention: 要留意
+h.one_tap: 一按即用
+h.rooms: 房間
+h.shopping: 購物清單
+h.right_now: 而家
+h.whos_home: 邊個喺屋企
+h.security: 保安
+h.energy_now: 而家用電
+h.climate_now: 而家溫度
+h.more: 更多畫面
+h.whole_house: 全屋
+h.room_lights: 各房燈
+h.outdoor_lights: 鏡頭射燈
+h.indicators: 指示燈
+h.wall_switches: 牆身開關
+h.scenes_living: 客廳場景
+h.scenes_dining: 飯廳場景
+h.scenes_bedroom: Ray 間房場景
+h.air_con: 爸媽房冷氣
+h.temperatures: 各房溫度
+h.forecast: 天氣預報
+h.ac_status: 冷氣詳情
+h.cameras: 鏡頭
+h.camera_batteries: 鏡頭電量
+h.camera_privacy: 私隱同偵測
+
+chip.people: 喺屋企
+chip.lights: 開咗嘅燈
+chip.cameras: 鏡頭在線
+chip.house: 全屋用電
+chip.solar: 太陽能
+chip.inside: 室內
+chip.outside: 室外
+chip.ac: 冷氣
+chip.offline: 離線
+chip.unknown: 未知
+chip.reporting: "{m} 個之中 {n} 個有回應"
+
+s.no_data: 冇數據
+s.offline: 離線
+s.state_unknown: 狀態未知
+s.online: 在線
+s.on: 開
+s.off: 關
+s.open: 打開咗
+s.closed: 閂咗
+s.home: 喺屋企
+s.away: 出咗街
+s.not_reporting: "{n} 個冇回應"
+
+act.evening: 夜晚
+act.night: 瞓覺
+act.bright: 全光
+act.all_off: 熄晒燈
+act.ac_nav: 冷氣
+act.tap_controls: 按一下去控制
+act.all_cameras: 所有鏡頭
+
+att.camera_offline: "{name}鏡頭離線"
+att.door_open: "{name}門打開咗"
+att.filter: 冷氣隔塵網要洗
+att.fridge_open: 雪櫃門打開咗
+att.freezer_overload: 冰櫃插蘇超負荷
+att.wan_down: 上唔到網
+att.battery_low: "{name}電量低（{v}%）"
+att.people_dark: 冇任何人嘅位置數據
+att.all_clear: "{n} 項檢查全部有回應 — 冇嘢要留意。"
+att.clear_partial: "{n} 項有回應嘅檢查冇問題 · {m} 項冇回應。"
+att.all_dark: "冇一項檢查有回應，所以講唔到屋企情況。"
+
+ac.mode_off: 關
+ac.mode_cool: 冷氣
+ac.mode_heat: 暖氣
+ac.mode_fan_only: 淨係吹風
+ac.mode_dry: 抽濕
+ac.mode_auto: 自動
+ac.mode_heat_cool: 冷暖自動
+ac.room: 室溫
+ac.target: 設定溫度
+ac.current: "而家：{mode}"
+ac.readonly_note: "V3-008 控制規則未批准之前，V3 只顯示冷氣狀態。控制仍然喺舊版爸媽房畫面。"
+ac.open_controls: 冷氣控制（舊版）
+
+cam.legend: "在線 · 離線 · 狀態未知 — 每個鏡頭都會用文字講明。"
+cam.alert_note: "暫時未有鏡頭配對到已核實嘅移動感應，所以 V3 唔顯示個別鏡頭警報。"
+cam.privacy_note: "呢度只可以睇。私隱同偵測開關要喺舊版鏡頭畫面改。"
+cam.summary: "{a} 個在線 · {b} 個離線 · {c} 個未知"
+
+light.switch_note: "呢啲開關會截斷智能燈膽電源。V3 只顯示狀態；控制仍然喺舊版燈光畫面。"
+light.on_count: "{a} 盞開咗 · {c} 盞之中 {b} 盞有回應"
+light.scene_note: 場景顯示上次用嘅時間；「未知」即係重啟之後未用過。
+
+energy.house_now: 全屋而家
+energy.used_today: 今日用咗
+energy.solar_now: 太陽能而家
+energy.solar_today: 太陽能今日
+energy.two_circuits: "只計 Powerpal 同 Fronius — 輸出電網同全屋用電未有已核實數據來源（V3-003）。"
+
+weather.sunrise: 日出
+weather.sunset: 日落
+
+lang.label: 語言

@@ -1,0 +1,99 @@
+# V3 Lighting — every light the V2 board carried, brightness as a tile
+# feature, whole-house actions (V3-007 moved them here from Home), Hue scenes
+# by room. Wall switches that cut bulb power are read-only (owner standing
+# rule: avoid toggling physical power to smart bulbs); their controls stay on
+# the classic v2-lighting view.
+path: lighting
+title: nav.lighting
+icon: mdi:lightbulb-group-outline
+sections:
+  - topbar: true
+
+  - span: 2
+    cards:
+      - c: chips
+        parts:
+          - c: chip_count
+            label_key: chip.lights
+            entities: [light.living_room, light.dining, light.bedroom_bedroom, light.bedroom_nightlight,
+                       light.living_room_hue_ambiance_spot_1, light.living_room_hue_ambiance_spot_2,
+                       light.living_room_hue_ambiance_spot_3, light.living_room_hue_ambiance_spot_4]
+            on_states: ["on"]
+
+  - span: 2
+    heading: h.whole_house
+    cards:
+      - {c: action_button, label_key: act.evening, icon: mdi:weather-sunset, action: light.turn_on,
+         target: light.living_room, data: {brightness_pct: 55}}
+      - {c: action_button, label_key: act.night, icon: mdi:weather-night, action: light.turn_on,
+         target: [light.living_room, light.bedroom_bedroom, light.dining], data: {brightness_pct: 10}}
+      - {c: action_button, label_key: act.bright, icon: mdi:white-balance-sunny, action: light.turn_on,
+         target: [light.living_room, light.bedroom_bedroom, light.dining], data: {brightness_pct: 100}}
+      - {c: action_button, label_key: act.all_off, icon: mdi:lightbulb-group-off-outline, action: light.turn_off,
+         target: [light.living_room, light.dining, light.bedroom_bedroom]}
+
+  - span: 1
+    heading: h.room_lights
+    cards:
+      - {c: light_tile, entity: light.living_room, name: {t: room.living}}
+      - {c: light_tile, entity: light.dining, name: {t: room.dining}}
+      - {c: light_tile, entity: light.bedroom_bedroom, name: {t: room.ray}}
+      - {c: light_tile, entity: light.bedroom_nightlight}
+      - {c: light_tile, entity: light.living_room_hue_ambiance_spot_1}
+      - {c: light_tile, entity: light.living_room_hue_ambiance_spot_2}
+      - {c: light_tile, entity: light.living_room_hue_ambiance_spot_3}
+      - {c: light_tile, entity: light.living_room_hue_ambiance_spot_4}
+  - span: 1
+    heading: h.outdoor_lights
+    cards:
+      - {c: light_tile, entity: light.tapo_c425_north_wall_floodlight_timed, brightness: false}
+      - {c: light_tile, entity: light.tapo_c420_east_wall_floodlight_timed, brightness: false}
+      - {c: light_tile, entity: light.tapo_c420_south_wall_floodlight_timed, brightness: false}
+      - {c: light_tile, entity: light.tapo_c200_stockroom_floodlight_timed, brightness: false}
+      - {c: heading, key: h.indicators, style: subtitle}
+      - {c: light_tile, entity: light.smart_pet_feeder_indicator_light, brightness: false}
+      - {c: light_tile, entity: light.kogan_tv, brightness: false}
+      - {c: heading, key: h.wall_switches, style: subtitle}
+      - {c: readonly_tile, entity: switch.mainroomlight_switch_1}
+      - {c: readonly_tile, entity: switch.bedroomlight_switch_1}
+      - {c: readonly_tile, entity: switch.dinning_light_switch_1}
+      - {c: note, key: light.switch_note}
+
+  - span: 2
+    heading: h.scenes_living
+    cards:
+      - c: scene_buttons
+        prefix: Living room
+        scenes: [scene.living_room_living_room_bright, scene.living_room_living_room_concentrate,
+                 scene.living_room_living_room_dimmed, scene.living_room_living_room_energize,
+                 scene.living_room_living_room_midwinter, scene.living_room_living_room_nightlight,
+                 scene.living_room_living_room_read, scene.living_room_living_room_relax]
+  - span: 2
+    heading: h.scenes_dining
+    cards:
+      - c: scene_buttons
+        prefix: Dining
+        scenes: [scene.dining_dining_concentrate, scene.dining_dining_energize, scene.dining_dining_midwinter,
+                 scene.dining_dining_nightlight, scene.dining_dining_read, scene.dining_dining_relax]
+      - {c: note, key: light.scene_note}
+  - span: 2
+    heading: h.scenes_bedroom
+    cards:
+      - c: scene_buttons
+        prefix: Bedroom
+        scenes: [scene.bedroom_bedroom_amber_bloom, scene.bedroom_bedroom_baby_s_breath, scene.bedroom_bedroom_blossom,
+                 scene.bedroom_bedroom_concentrate, scene.bedroom_bedroom_dreamy_dusk, scene.bedroom_bedroom_nature_s_colors,
+                 scene.bedroom_bedroom_nightlight, scene.bedroom_bedroom_nighttime, scene.bedroom_bedroom_pensive,
+                 scene.bedroom_bedroom_read, scene.bedroom_bedroom_silverstone, scene.bedroom_bedroom_soho,
+                 scene.bedroom_bedroom_starlight, scene.bedroom_bedroom_suzuka, scene.bedroom_bedroom_vapor_wave]
+
+  - c: more_boards
+    classic_of: lighting
+    items:
+      - [rooms, nav.rooms, mdi:floor-plan]
+      - [living-room, room.living, mdi:sofa-outline]
+      - [dining, room.dining, mdi:table-chair]
+      - [parents-room, room.parents, mdi:bed-outline]
+      - [ray-bedroom, room.ray, mdi:bed-king-outline]
+      - [guest-room, room.guest, mdi:bed-single-outline]
+      - [garage, room.garage, mdi:garage-variant]

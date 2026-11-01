@@ -1,0 +1,93 @@
+# CasaRay V3 theme — DEVELOPMENT ONLY — NOT DEPLOYED.
+#
+# Deliberately NOT under /themes: nothing on this branch may be picked up by a
+# `frontend: themes: !include_dir_merge_named themes` include if the branch is
+# ever checked out on the host. Installing it is a deployment step.
+#
+# One token set (--v3-*), a value per mode. Components read only the tokens
+# and Home Assistant's own variables mapped from them, so no card knows which
+# mode it is in. Dark starts from the sampled V2 values (#0d1114 page,
+# #161b1f card, #1a1f25 elevated, #201615 alert). Light is its own palette,
+# not an inversion. tests/v3/test_theme.py checks WCAG AA for text on cards in
+# both modes.
+CasaRay V3:
+  # --- shared (mode-independent) ---
+  v3-radius: "18px"
+  v3-radius-pill: "999px"
+  v3-space-1: "4px"
+  v3-space-2: "8px"
+  v3-space-3: "12px"
+  v3-space-4: "16px"
+  v3-font-text: "Inter, -apple-system, 'Segoe UI', 'Noto Sans HK', 'Noto Sans SC', 'Noto Sans Khmer', 'Khmer OS', sans-serif"
+  v3-font-display: "'SF Pro Display', Inter, -apple-system, 'Noto Sans HK', 'Noto Sans Khmer', sans-serif"
+  v3-line-height: "1.55"     # Khmer needs the extra room; harmless for Latin and Han
+  ha-card-border-radius: "var(--v3-radius)"
+  ha-card-border-width: "1px"
+  ha-card-box-shadow: "none"
+  primary-font-family: "var(--v3-font-text)"
+  paper-font-common-base_-_font-family: "var(--v3-font-text)"
+  ha-font-family-body: "var(--v3-font-text)"
+  ha-line-height-normal: "var(--v3-line-height)"
+  modes:
+    dark:
+      v3-page: "#0d1114"
+      v3-card: "#161b1f"
+      v3-elevated: "#1a1f25"
+      v3-border: "rgba(160, 190, 220, 0.14)"
+      v3-text: "#eef2f7"
+      v3-text-2: "#a9b4c3"
+      v3-accent: "#e8a33d"          # amber — active / on / selected
+      v3-ok: "#5fd39a"              # green — healthy / secure / closed
+      v3-alert: "#f07a7a"           # red — fault / needs attention
+      v3-alert-bg: "#201615"
+      v3-muted: "#9aa3ae"           # grey — unavailable / offline / no data
+      primary-background-color: "var(--v3-page)"
+      lovelace-background: "radial-gradient(120% 80% at 50% -10%, rgba(70, 110, 160, 0.22), transparent 60%), #0d1114"
+      card-background-color: "var(--v3-card)"
+      ha-card-background: "var(--v3-card)"
+      secondary-background-color: "var(--v3-elevated)"
+      ha-card-border-color: "var(--v3-border)"
+      divider-color: "var(--v3-border)"
+      primary-text-color: "var(--v3-text)"
+      secondary-text-color: "var(--v3-text-2)"
+      primary-color: "var(--v3-accent)"
+      accent-color: "var(--v3-accent)"
+      state-icon-color: "var(--v3-text-2)"
+      state-active-color: "var(--v3-accent)"
+      state-light-active-color: "var(--v3-accent)"
+      state-unavailable-color: "var(--v3-muted)"
+      error-color: "var(--v3-alert)"
+      warning-color: "var(--v3-accent)"
+      success-color: "var(--v3-ok)"
+      disabled-text-color: "var(--v3-muted)"
+    light:
+      v3-page: "#f3f5f8"
+      v3-card: "#ffffff"
+      v3-elevated: "#eef1f5"
+      v3-border: "rgba(30, 45, 65, 0.12)"
+      v3-text: "#141a21"
+      v3-text-2: "#4a5666"
+      v3-accent: "#9a5b00"          # darkened amber so it holds AA on white
+      v3-ok: "#1f7a4f"
+      v3-alert: "#b42318"
+      v3-alert-bg: "#fdecea"
+      v3-muted: "#5f6b7a"
+      primary-background-color: "var(--v3-page)"
+      lovelace-background: "var(--v3-page)"
+      card-background-color: "var(--v3-card)"
+      ha-card-background: "var(--v3-card)"
+      secondary-background-color: "var(--v3-elevated)"
+      ha-card-border-color: "var(--v3-border)"
+      divider-color: "var(--v3-border)"
+      primary-text-color: "var(--v3-text)"
+      secondary-text-color: "var(--v3-text-2)"
+      primary-color: "var(--v3-accent)"
+      accent-color: "var(--v3-accent)"
+      state-icon-color: "var(--v3-text-2)"
+      state-active-color: "var(--v3-accent)"
+      state-light-active-color: "var(--v3-accent)"
+      state-unavailable-color: "var(--v3-muted)"
+      error-color: "var(--v3-alert)"
+      warning-color: "var(--v3-accent)"
+      success-color: "var(--v3-ok)"
+      disabled-text-color: "var(--v3-muted)"

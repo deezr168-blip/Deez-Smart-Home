@@ -1,0 +1,54 @@
+# CasaRay V3 strings — Simplified Chinese, reusing the V2 dashboard's own
+# vocabulary (grep dashboards/casaray_v2.yaml before adding a term). Kept so
+# the V2 Chinese experience has a V3 home. Partial on purpose: keys not here
+# fall back to English and are listed in the build report.
+app.name: CasaRay
+app.dev_banner: 开发版本 — 未部署
+
+nav.home: 首页
+nav.rooms: 房间
+nav.lighting: 灯光
+nav.climate: 气候
+nav.cameras: 摄像头
+nav.energy: 能源
+nav.security: 安防
+nav.bills: 账单
+nav.people: 家人
+nav.network: 网络
+nav.house_health: 房屋健康
+nav.alerts: 通知
+nav.entertainment: 娱乐
+nav.automations: 自动化
+nav.back: 返回
+
+room.living: 客厅
+room.dining: 餐厅
+room.kitchen: 厨房
+room.parents: 父母房
+room.garage: 车库
+room.backyard: 后院
+room.guest: 客房
+
+h.attention: 需要注意
+h.one_tap: 一键
+h.rooms: 房间
+h.shopping: 购物清单
+h.right_now: 此刻
+h.whos_home: 谁在家
+h.security: 安防
+h.energy_now: 当前能耗
+h.more: 更多面板
+
+s.no_data: 无数据
+s.offline: 离线
+s.state_unknown: 状态未知
+s.on: 开
+s.off: 关
+s.home: 在家
+s.away: 外出
+
+ac.mode_off: 关闭
+ac.mode_cool: 制冷
+ac.mode_heat: 制热
+ac.mode_fan_only: 仅送风
+ac.current: "当前：{mode}"

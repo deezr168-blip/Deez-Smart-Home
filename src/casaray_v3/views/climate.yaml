@@ -1,0 +1,64 @@
+# V3 Climate — READ-ONLY for HVAC. V3-008 ("no real HVAC implementation may
+# begin until this contract is satisfied") is not yet satisfied in Lovelace,
+# so V3 draws the air-con's reported mode, room and target only, and links to
+# the classic Parents' room view, which keeps V2's existing controls
+# unchanged. Climate React / timer switches are shown, not toggled.
+path: climate
+title: nav.climate
+icon: mdi:thermometer
+sections:
+  - topbar: true
+
+  - span: 2
+    cards:
+      - c: chips
+        parts:
+          - c: chip_value
+            label_key: chip.inside
+            entity: sensor.living_room_living_hue_hue_sensor_temperature
+            digits: 1
+          - c: chip_value
+            label_key: room.parents
+            entity: sensor.bedroom_motion_sensor_temperature
+            digits: 1
+
+  - span: 1
+    heading: h.air_con
+    cards:
+      - {c: ac_summary, entity: climate.bedroom_parents_room_ac}
+      - {c: note, key: ac.readonly_note}
+      - {c: nav_button, label_key: ac.open_controls, icon: mdi:air-conditioner, target: parents-room, columns: 12}
+  - span: 1
+    heading: h.ac_status
+    cards:
+      - {c: readonly_tile, entity: binary_sensor.bedroom_parents_room_ac_room_occupied}
+      - {c: readonly_tile, entity: binary_sensor.bedroom_parents_room_ac_filter_clean_required}
+      - {c: readonly_tile, entity: sensor.bedroom_parents_room_ac_filter_last_reset}
+      - {c: readonly_tile, entity: switch.bedroom_parents_room_ac_climate_react}
+      - {c: readonly_tile, entity: switch.bedroom_parents_room_ac_timer}
+      - {c: readonly_tile, entity: sensor.bedroom_motion_sensor_humidity, name: {t: room.parents}}
+
+  - span: 1
+    heading: h.temperatures
+    cards:
+      # Names follow the export's AREA, not the entity ID: the "living_room"
+      # temperature sensor is in the Dining area (export: "Dining Room Motion
+      # Sensor Temperature"). The ID is right; the label must be too.
+      - {c: sensor_tile, entity: sensor.living_room_living_hue_hue_sensor_temperature, name: {t: room.living}, columns: 12}
+      - {c: sensor_tile, entity: sensor.living_room_living_room_temperature, name: {t: room.dining}, columns: 12}
+      - {c: sensor_tile, entity: sensor.bedroom_motion_sensor_temperature, name: {t: room.parents}, columns: 12}
+  - span: 1
+    heading: h.forecast
+    cards:
+      - {c: weather, entity: weather.forecast_home, forecast: true}
+
+  - c: more_boards
+    classic_of: climate
+    items:
+      - [parents-room, room.parents, mdi:bed-outline]
+      - [living-room, room.living, mdi:sofa-outline]
+      - [dining, room.dining, mdi:table-chair]
+      - [energy, nav.energy, mdi:lightning-bolt-outline]
+      - [house-health, nav.house_health, mdi:home-heart]
+      - [rooms, nav.rooms, mdi:floor-plan]
+      - [home, nav.home, mdi:home-variant-outline]

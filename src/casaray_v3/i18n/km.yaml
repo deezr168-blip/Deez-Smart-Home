@@ -1,0 +1,144 @@
+# CasaRay V3 strings — Khmer (ភាសាខ្មែរ).
+# STATUS: draft by Claude, NOT native-reviewed. Khmer machine drafting is
+# unreliable for nuance; every string needs review by a Khmer reader before
+# any deployment. Missing keys fall back to English (build report lists them).
+# Khmer has no spaces between words and needs extra line height — the V3
+# theme sets that; no V3 card fixes a text width.
+app.name: CasaRay
+app.dev_banner: កំណែអភិវឌ្ឍន៍ — មិនទាន់ដាក់ឱ្យប្រើ
+
+nav.home: ទំព័រដើម
+nav.rooms: បន្ទប់
+nav.lighting: ភ្លើង
+nav.climate: អាកាសធាតុ
+nav.cameras: កាមេរ៉ា
+nav.energy: ថាមពល
+nav.security: សន្តិសុខ
+nav.bills: វិក្កយបត្រ
+nav.people: មនុស្ស
+nav.network: បណ្ដាញ
+nav.house_health: សុខភាពផ្ទះ
+nav.alerts: ការជូនដំណឹង
+nav.entertainment: កម្សាន្ត
+nav.automations: ស្វ័យប្រវត្តិកម្ម
+nav.classic: ទិដ្ឋភាព V2 ចាស់
+nav.all_rooms: បន្ទប់ទាំងអស់
+nav.back: ត្រឡប់ក្រោយ
+
+room.living: បន្ទប់ទទួលភ្ញៀវ
+room.dining: បន្ទប់បាយ
+room.kitchen: ផ្ទះបាយ
+room.parents: បន្ទប់ឪពុកម្ដាយ
+room.ray: បន្ទប់ Ray
+room.garage: យានដ្ឋាន
+room.backyard: ទីធ្លាខាងក្រោយ
+room.guest: បន្ទប់ភ្ញៀវ
+room.stockroom: បន្ទប់ស្តុក
+room.north_wall: ជញ្ជាំងខាងជើង
+room.east_wall: ជញ្ជាំងខាងកើត
+room.south_wall: ជញ្ជាំងខាងត្បូង
+room.front_door: ទ្វារមុខ
+room.pet_feeder: ឧបករណ៍ដាក់ចំណីសត្វ
+
+h.attention: ត្រូវយកចិត្តទុកដាក់
+h.one_tap: ចុចម្ដង
+h.rooms: បន្ទប់
+h.shopping: បញ្ជីទិញឥវ៉ាន់
+h.right_now: ឥឡូវនេះ
+h.whos_home: អ្នកនៅផ្ទះ
+h.security: សន្តិសុខ
+h.energy_now: ថាមពលឥឡូវនេះ
+h.climate_now: សីតុណ្ហភាពឥឡូវនេះ
+h.more: ទំព័រផ្សេងទៀត
+h.whole_house: ទូទាំងផ្ទះ
+h.room_lights: ភ្លើងតាមបន្ទប់
+h.outdoor_lights: ភ្លើងហ្វាកាមេរ៉ា
+h.indicators: ភ្លើងសញ្ញា
+h.wall_switches: កុងតាក់ជញ្ជាំង
+h.scenes_living: ឈុតភ្លើងបន្ទប់ទទួលភ្ញៀវ
+h.scenes_dining: ឈុតភ្លើងបន្ទប់បាយ
+h.scenes_bedroom: ឈុតភ្លើងបន្ទប់ Ray
+h.air_con: ម៉ាស៊ីនត្រជាក់បន្ទប់ឪពុកម្ដាយ
+h.temperatures: សីតុណ្ហភាពតាមបន្ទប់
+h.forecast: ព្យាករណ៍អាកាសធាតុ
+h.ac_status: ព័ត៌មានម៉ាស៊ីនត្រជាក់
+h.cameras: កាមេរ៉ា
+h.camera_batteries: ថ្មកាមេរ៉ា
+h.camera_privacy: ឯកជនភាព និងការចាប់សញ្ញា
+
+chip.people: នៅផ្ទះ
+chip.lights: ភ្លើងបើក
+chip.cameras: កាមេរ៉ាដំណើរការ
+chip.house: ផ្ទះឥឡូវនេះ
+chip.solar: ពន្លឺព្រះអាទិត្យ
+chip.inside: ខាងក្នុង
+chip.outside: ខាងក្រៅ
+chip.ac: ម៉ាស៊ីនត្រជាក់
+chip.offline: ដាច់
+chip.unknown: មិនដឹង
+chip.reporting: "{n} ក្នុងចំណោម {m} កំពុងឆ្លើយតប"
+
+s.no_data: គ្មានទិន្នន័យ
+s.offline: ដាច់បណ្ដាញ
+s.state_unknown: មិនដឹងស្ថានភាព
+s.online: កំពុងដំណើរការ
+s.on: បើក
+s.off: បិទ
+s.open: បើកចំហ
+s.closed: បិទជិត
+s.home: នៅផ្ទះ
+s.away: ចេញក្រៅ
+s.not_reporting: "{n} មិនឆ្លើយតប"
+
+act.evening: ពេលល្ងាច
+act.night: ពេលយប់
+act.bright: ភ្លឺពេញ
+act.all_off: បិទភ្លើងទាំងអស់
+act.ac_nav: ម៉ាស៊ីនត្រជាក់
+act.tap_controls: ចុចដើម្បីបញ្ជា
+act.all_cameras: កាមេរ៉ាទាំងអស់
+
+att.camera_offline: "កាមេរ៉ា {name} ដាច់បណ្ដាញ"
+att.door_open: "ទ្វារ {name} បើកចំហ"
+att.filter: តម្រងម៉ាស៊ីនត្រជាក់ត្រូវសម្អាត
+att.fridge_open: ទ្វារទូទឹកកកបើកចំហ
+att.freezer_overload: ព្រីទូកកលើសទម្ងន់
+att.wan_down: អ៊ីនធឺណិតដាច់
+att.battery_low: "ថ្ម {name} ខ្សោយ ({v}%)"
+att.people_dark: គ្មានទិន្នន័យទីតាំងរបស់នរណាម្នាក់
+att.all_clear: "ការត្រួតពិនិត្យទាំង {n} បានឆ្លើយតប — គ្មានអ្វីត្រូវយកចិត្តទុកដាក់ទេ។"
+att.clear_partial: "គ្មានបញ្ហាក្នុងការត្រួតពិនិត្យ {n} ដែលឆ្លើយតប · {m} មិនឆ្លើយតប។"
+att.all_dark: "គ្មានការត្រួតពិនិត្យណាមួយឆ្លើយតបទេ ដូច្នេះមិនអាចនិយាយអំពីផ្ទះបានទេ។"
+
+ac.mode_off: បិទ
+ac.mode_cool: ត្រជាក់
+ac.mode_heat: កំដៅ
+ac.mode_fan_only: កង្ហារតែប៉ុណ្ណោះ
+ac.mode_dry: ស្ងួត
+ac.mode_auto: ស្វ័យប្រវត្តិ
+ac.mode_heat_cool: កំដៅ/ត្រជាក់
+ac.room: បន្ទប់
+ac.target: គោលដៅ
+ac.current: "បច្ចុប្បន្ន៖ {mode}"
+ac.readonly_note: "V3 បង្ហាញម៉ាស៊ីនត្រជាក់តែសម្រាប់មើល រហូតដល់កិច្ចសន្យាបញ្ជា V3-008 ត្រូវបានអនុម័ត។ ការបញ្ជានៅលើទិដ្ឋភាពបន្ទប់ឪពុកម្ដាយចាស់។"
+ac.open_controls: ការបញ្ជាម៉ាស៊ីនត្រជាក់ (ចាស់)
+
+cam.legend: "ដំណើរការ · ដាច់បណ្ដាញ · មិនដឹងស្ថានភាព — កាមេរ៉ានីមួយៗប្រាប់ជាពាក្យ។"
+cam.alert_note: "មិនទាន់មានកាមេរ៉ាណាភ្ជាប់ជាមួយឧបករណ៍ចាប់ចលនាដែលបានផ្ទៀងផ្ទាត់ទេ ដូច្នេះ V3 មិនបង្ហាញការប្រកាសអាសន្នតាមកាមេរ៉ាទេ។"
+cam.privacy_note: "នៅទីនេះសម្រាប់មើលតែប៉ុណ្ណោះ។ ប្ដូរកុងតាក់ឯកជនភាព និងការចាប់សញ្ញានៅទិដ្ឋភាពកាមេរ៉ាចាស់។"
+cam.summary: "{a} ដំណើរការ · {b} ដាច់ · {c} មិនដឹង"
+
+light.switch_note: "កុងតាក់ទាំងនេះកាត់ភ្លើងទៅអំពូលឆ្លាតវៃ។ V3 សម្រាប់មើលតែប៉ុណ្ណោះ; ការបញ្ជានៅលើទិដ្ឋភាពភ្លើងចាស់។"
+light.on_count: "{a} បើក · {b} ក្នុងចំណោម {c} ឆ្លើយតប"
+light.scene_note: ឈុតភ្លើងបង្ហាញពេលប្រើចុងក្រោយ; «unknown» មានន័យថាមិនទាន់ប្រើតាំងពីចាប់ផ្ដើមឡើងវិញ។
+
+energy.house_now: ផ្ទះឥឡូវនេះ
+energy.used_today: ប្រើថ្ងៃនេះ
+energy.solar_now: ពន្លឺព្រះអាទិត្យឥឡូវនេះ
+energy.solar_today: ពន្លឺព្រះអាទិត្យថ្ងៃនេះ
+energy.two_circuits: "Powerpal និង Fronius តែប៉ុណ្ណោះ — ការនាំចេញ និងការប្រើប្រាស់ទូទាំងផ្ទះ មិនទាន់មានប្រភពដែលបានផ្ទៀងផ្ទាត់ (V3-003)។"
+
+weather.sunrise: ថ្ងៃរះ
+weather.sunset: ថ្ងៃលិច
+
+lang.label: ភាសា

@@ -1,0 +1,58 @@
+# CasaRay V3 — build manifest.  DEVELOPMENT ONLY — NOT DEPLOYED.
+#
+# scripts/v3/build_dashboard.py reads this file and nothing else decides what
+# the generated dashboards contain. Edit sources here, never the generated
+# dashboards/casaray_v3.yaml or dashboards/casaray_v3/dist/*.yaml.
+
+# The V2 recovery baseline. The build refuses to run if this file's SHA-256
+# differs, so V3 can never silently drift away from the pinned baseline.
+baseline:
+  file: dashboards/casaray_v2.yaml
+  sha256: 77a4991626d6f8afcd9b78f235c34417d84d9f36c129549a386d8a66c324226c
+  url_base: casaray-v2
+  ref: ha-deploy@18a4e5d
+
+# Entity authority (exists / what it is called). Availability in it is a
+# 05/09/26 snapshot and is reported, never trusted as today's state.
+entity_authority: docs/live/states_export_2026-09-05.txt
+
+# Build-time localisation: one generated dashboard per locale, each with its
+# own url_path, so no new runtime helper is needed (helpers are out of scope).
+# A missing string falls back along `fallback`, then to English; every
+# fallback is listed in the build report.
+locales:
+  - code: en
+    name: English
+    url_base: casaray-v3
+    output: dashboards/casaray_v3.yaml
+    fallback: []
+  - code: yue
+    name: 廣東話 (Cantonese, Traditional script)
+    url_base: casaray-v3-yue
+    output: dashboards/casaray_v3/dist/casaray_v3_yue.yaml
+    fallback: [en]
+  - code: km
+    name: ភាសាខ្មែរ (Khmer)
+    url_base: casaray-v3-km
+    output: dashboards/casaray_v3/dist/casaray_v3_km.yaml
+    fallback: [en]
+  - code: zh-Hans
+    name: 简体中文 (V2 vocabulary, kept for parity)
+    url_base: casaray-v3-zh
+    output: dashboards/casaray_v3/dist/casaray_v3_zh-hans.yaml
+    fallback: [en]
+
+theme: CasaRay V3          # src/casaray_v3/themes/casaray_v3.yaml
+classic_theme: CasaRay     # themes/deez_your_name.yaml, what V2 views need
+
+# V3-native views, rebuilt from sources in src/casaray_v3/views/.
+# Each replaces the V2 view with the same path (so every carried link still
+# lands) and the original V2 view is kept as a `v2-<path>` classic subview.
+native:
+  - home
+  - lighting
+  - climate
+  - cameras
+
+# Every other V2 view is carried verbatim (links rewritten to the locale's
+# url_base) until it is rebuilt. Order follows V2.

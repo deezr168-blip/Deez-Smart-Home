@@ -6,6 +6,38 @@ and `ha-deploy` are unaffected by everything here.
 
 ---
 
+## V3-009 · 01/11/26 · V3 becomes a Lovelace build target, offline, on its own branch
+
+**Status:** owner instruction (01/11/26), implemented on `feature/casaray-v3-build`.
+DEVELOPMENT ONLY — NOT DEPLOYED.
+
+The owner directed a complete offline Lovelace build of V3 on a dedicated
+branch, `feature/casaray-v3-build`, with paths outside `design/casaray-v3/`
+(`src/casaray_v3/`, `scripts/v3/`, `tests/v3/`, `docs/casaray-v3/`, generated
+`dashboards/casaray_v3*.yaml`). That instruction is the approval this file's
+*Hard boundaries* require for both. Everything else in those boundaries stands:
+no deployment, no `ha-deploy` or recovery-branch change, no live writes,
+CR-T01 / CR-T02 paused.
+
+Decided in the build (each recorded in `docs/casaray-v3/ARCHITECTURE.md`):
+
+1. **Baseline pinned:** `ha-deploy@18a4e5d` `casaray_v2.yaml`, sha256
+   `77a49916…6c`. The build refuses to run on drift.
+2. **No silent loss:** V2 views not yet rebuilt are carried verbatim (links
+   rewritten); each rebuilt view keeps its V2 original as a `v2-<path>` subview.
+3. **Languages:** English, Cantonese (`yue`, Traditional HK script) and Khmer,
+   built per locale at build time, because a three-way runtime switch needs a
+   new helper and helpers are out of scope. This departs from *Language:
+   English and Chinese (Khmer later)* above: Cantonese is the owner's new
+   requirement, and Simplified Chinese is kept as a fourth, partial locale
+   (`zh-Hans`, V2 vocabulary) for parity. `yue` and `km` are unreviewed drafts.
+4. **HVAC read-only** in V3-native views until V3-008's production gate is met.
+5. **"All lights off"** no longer cuts `switch.mainroomlight_switch_1` (bulb
+   power) in V3-native views. Departure from V2, owner rule on bulb power.
+6. **Back = Home** on top-level views: Lovelace has no history-back action.
+
+---
+
 ## V3-007 · 05/10/26 · Owner review of PR #4: air-con is navigation, Home is shorter
 
 **Status:** owner decisions, recorded and applied in the prototype.

@@ -1,0 +1,140 @@
+# CasaRay V3 strings — English (reference catalogue; every key must exist here).
+# Placeholders in {braces} are filled by the build, at runtime, from a template.
+app.name: CasaRay
+app.dev_banner: Development build — not deployed
+
+nav.home: Home
+nav.rooms: Rooms
+nav.lighting: Lighting
+nav.climate: Climate
+nav.cameras: Cameras
+nav.energy: Energy
+nav.security: Security
+nav.bills: Bills
+nav.people: People
+nav.network: Network
+nav.house_health: House health
+nav.alerts: Alerts
+nav.entertainment: Entertainment
+nav.automations: Automations
+nav.classic: Classic V2 view
+nav.all_rooms: All rooms
+nav.back: Back
+
+room.living: Living room
+room.dining: Dining
+room.kitchen: Kitchen
+room.parents: Parents' room
+room.ray: Ray's room
+room.garage: Garage
+room.backyard: Backyard
+room.guest: Guest room
+room.stockroom: Stockroom
+room.north_wall: North wall
+room.east_wall: East wall
+room.south_wall: South wall
+room.front_door: Front door
+room.pet_feeder: Pet feeder
+
+h.attention: Needs attention
+h.one_tap: One tap
+h.rooms: Rooms
+h.shopping: Shopping list
+h.right_now: Right now
+h.whos_home: Who's home
+h.security: Security
+h.energy_now: Energy now
+h.climate_now: Climate now
+h.more: More boards
+h.whole_house: Whole house
+h.room_lights: Room lights
+h.outdoor_lights: Camera floodlights
+h.indicators: Indicators
+h.wall_switches: Wall switches
+h.scenes_living: Living room scenes
+h.scenes_dining: Dining scenes
+h.scenes_bedroom: Ray's room scenes
+h.air_con: Parents' room air-con
+h.temperatures: Room temperatures
+h.forecast: Forecast
+h.ac_status: Air-con details
+h.cameras: Cameras
+h.camera_batteries: Camera batteries
+h.camera_privacy: Privacy and detection
+
+chip.people: Home
+chip.lights: Lights on
+chip.cameras: Cameras online
+chip.house: House now
+chip.solar: Solar now
+chip.inside: Inside
+chip.outside: Outside
+chip.ac: Air-con
+chip.offline: Offline
+chip.unknown: Unknown
+chip.reporting: "{n} of {m} reporting"
+
+s.no_data: No data
+s.offline: Offline
+s.state_unknown: State unknown
+s.online: Online
+s.on: "On"
+s.off: "Off"
+s.open: Open
+s.closed: Closed
+s.home: Home
+s.away: Away
+s.not_reporting: "{n} not reporting"
+
+act.evening: Evening
+act.night: Night
+act.bright: Bright
+act.all_off: All lights off
+act.ac_nav: Air-con
+act.tap_controls: Tap for controls
+act.all_cameras: All cameras
+
+att.camera_offline: "{name} camera offline"
+att.door_open: "{name} door open"
+att.filter: Air-con filter needs cleaning
+att.fridge_open: Fridge door open
+att.freezer_overload: Freezer plug overloaded
+att.wan_down: Internet connection down
+att.battery_low: "{name} battery low ({v}%)"
+att.people_dark: No location data for anyone
+att.all_clear: "All {n} checks answered — nothing needs attention."
+att.clear_partial: "Nothing flagged among {n} checks that answered · {m} not reporting."
+att.all_dark: "No check is answering, so nothing can be said about the house."
+
+ac.mode_off: "Off"
+ac.mode_cool: Cool
+ac.mode_heat: Heat
+ac.mode_fan_only: Fan only
+ac.mode_dry: Dry
+ac.mode_auto: Auto
+ac.mode_heat_cool: Heat/cool
+ac.room: Room
+ac.target: Target
+ac.current: "Current: {mode}"
+ac.readonly_note: "V3 shows the air-con read-only until the V3-008 control contract is approved. Controls stay on the classic Parents' room view."
+ac.open_controls: Air-con controls (classic)
+
+cam.legend: "Online · Offline · State unknown — each camera says which, in words."
+cam.alert_note: "No camera has a verified motion entity mapped to it yet, so V3 shows no per-camera alert state."
+cam.privacy_note: "Read-only here. Privacy and detection switches change from the classic Cameras view."
+cam.summary: "{a} online · {b} offline · {c} unknown"
+
+light.switch_note: "These switches cut power to smart bulbs. Read-only in V3; they stay on the classic Lighting view."
+light.on_count: "{a} on · {b} of {c} reporting"
+light.scene_note: Scenes show when they were last used; "unknown" just means never used since restart.
+
+energy.house_now: House now
+energy.used_today: Used today
+energy.solar_now: Solar now
+energy.solar_today: Solar today
+energy.two_circuits: "Powerpal and Fronius only — export and whole-house consumption have no verified source (V3-003)."
+
+weather.sunrise: Sunrise
+weather.sunset: Sunset
+
+lang.label: Language
