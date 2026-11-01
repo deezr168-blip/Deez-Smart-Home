@@ -282,7 +282,8 @@ V2 = yaml.safe_load((ROOT / MAN["baseline"]["file"]).read_text(encoding="utf-8")
 V2_BY = {v["path"]: v for v in V2["views"]}
 REBUILT_17 = ("security", "network", "ray-bedroom", "guest-room")
 ROOMS_18 = ("rooms", "living-room", "kitchen", "dining", "parents-room", "garage")
-REBUILT = REBUILT_17 + ROOMS_18
+CORE_19 = ("house-health", "alerts", "people")
+REBUILT = REBUILT_17 + ROOMS_18 + CORE_19
 
 
 def tiles(v):
@@ -425,8 +426,9 @@ class NativeRebuilds(unittest.TestCase):
         self.assertEqual(c["tap_action"]["action"], "navigate")
 
     def test_only_listed_switches_act_and_none_is_protected(self):
+        # switches and helper toggles (gated alike since CR-V3-19)
         acting = {c["entity"] for p in MAN["native"] for c in tiles(view(dash("en"), p))
-                  if c["entity"].startswith("switch.") and V.acting(c)}
+                  if c["entity"].split(".")[0] in ("switch", "input_boolean") and V.acting(c)}
         self.assertEqual(acting, set(MAN["controls"]))
         self.assertFalse(any(V.protected_switch(e) for e in MAN["controls"]))
 
@@ -549,7 +551,8 @@ class RoomsBatch(unittest.TestCase):
     def test_zone_count_is_not_used_and_still_has_a_home(self):
         self.assertNotIn("zone.home", B.entities_in(view(dash("en"), "rooms")))
         row = MAN["migration"]["rooms"]["zone.home"]
-        self.assertEqual((row["to"], row["status"]), ("people", "carried"))
+        # CR-V3-18 left it on carried People; CR-V3-19 rebuilt People natively.
+        self.assertEqual((row["to"], row["status"]), ("people", "native"))
         self.assertIn("zone.home", B.entities_in(view(dash("en"), "people")))
         out = render(dash("en"), "rooms", self.dark)
         self.assertIn("Home **No data**", out)
@@ -645,6 +648,140 @@ class RoomsBatch(unittest.TestCase):
         allow = dict(MAN["controls"], **{"switch.g_monitor_freezer_p110m": {"v2_view": "garage"}})
         bad, _ = V.tile_safety(mutated("garage", "switch.g_monitor_freezer_p110m"), V2_BY, allow, "casaray-v2", "casaray-v3")
         self.assertTrue(any("protected class" in b for b in bad), "an allowlist entry cannot unlock a protected load")
+
+
+class CoreBoards(unittest.TestCase):
+    """CR-V3-19: House health, Alerts and People."""
+    states, attrs = R.scenarios()["normal"]
+    dark = R.scenarios()["dark"][0]
+    P = ["person.raymond_du", "person.vinh_du", "person.ai_q_huang"]
+
+    def people_out(self, **st):
+        return render(dash("en"), "people", dict(self.states, **st))
+
+    # ---- People: occupancy uncertainty
+    def test_nobody_home_only_when_everyone_answered(self):
+        a, b, c = self.P
+        self.assertIn("**At home** Nobody is home", self.people_out(**{a: "not_home", b: "not_home", c: "not_home"}))
+        out = self.people_out(**{a: "not_home", b: "unavailable", c: "unknown"})
+        self.assertNotIn("Nobody is home", out)
+        self.assertIn("Nobody confirmed at home", out)
+        self.assertIn("2 not reporting a location", out)
+        out = render(dash("en"), "people", self.dark)
+        self.assertIn("Nobody is reporting a location", out)
+        self.assertNotIn("Nobody is home", out)
+
+    def test_silent_person_is_never_counted_away(self):
+        a, b, c = self.P
+        out = self.people_out(**{a: "home", b: "unavailable", c: "Work"})
+        self.assertIn("**At home** Raymond", out)
+        self.assertIn("**Away** Ai Q · 1 not reporting a location", out)
+        self.assertNotIn("Vinh", out.split("**Away**")[1].split("\n")[0])
+
+    def test_zone_zero_not_claimed_while_people_are_dark(self):
+        a, b, c = self.P
+        out = self.people_out(**{"zone.home": "0", a: "not_home", b: "unavailable", c: "not_home"})
+        self.assertIn("**In the home zone** Not confirmed <small>1 of 3 people not reporting</small>", out)
+        out = self.people_out(**{"zone.home": "0", a: "not_home", b: "not_home", c: "not_home"})   # positive control
+        self.assertIn("**In the home zone** 0\n", out)
+        self.assertIn("**In the home zone** No data", render(dash("en"), "people", self.dark))
+        out = self.people_out(**{"zone.home": "2", a: "home", b: "unavailable", c: "unavailable"})
+        self.assertNotIn("differs", out)        # no comparison while people are dark
+
+    def test_zone_home_has_moved_to_native_people(self):
+        row = MAN["migration"]["rooms"]["zone.home"]
+        self.assertEqual((row["to"], row["status"]), ("people", "native"))
+        self.assertIn("zone.home", B.entities_in(view(dash("en"), "people")))
+        self.assertNotIn("zone.home", [c.get("entity") for c in tiles(view(dash("en"), "people"))],
+                         "no raw zone tile: a bare tile would show a zero the people cannot back")
+
+    def test_guest_mode_keeps_v2_toggle_only_through_the_allowlist(self):
+        c = next(c for c in tiles(view(dash("en"), "people")) if c["entity"] == "input_boolean.guest_mode")
+        self.assertEqual(C.effective_tile_actions(c), ("more-info", "toggle"))
+        self.assertIn("input_boolean.guest_mode", MAN["controls"])
+        unlisted = {k: v for k, v in MAN["controls"].items() if k != "input_boolean.guest_mode"}
+        bad, _ = V.tile_safety(view(dash("en"), "people"), V2_BY, unlisted, "casaray-v2", "casaray-v3")
+        self.assertTrue(any("guest_mode" in b and "not in manifest controls" in b for b in bad))
+
+    # ---- Alerts
+    def alerts(self, **st):
+        outs = R.render_view(view(dash("en"), "alerts"), dict(self.states, **st), self.attrs)
+        return outs
+
+    def test_strip_and_lists_agree(self):
+        W, D, M = ("binary_sensor.eero_wan_status", "binary_sensor.emergency_button_dad_cloud_connection",
+                   "binary_sensor.emergency_button_mum_cloud_connection")
+        scenarios = [{}, {W: "off", D: "weird", M: "unavailable", "sensor.front_door_battery": "9"},
+                     {"binary_sensor.lph_se_dcd9_pump": "on", "binary_sensor.lg_fridge_door": "on"}]
+        for st in scenarios + [None]:
+            outs = R.render_view(view(dash("en"), "alerts"), self.dark if st is None else dict(self.states, **st), self.attrs)
+            strip, lists = outs[2], outs[3:6]
+            counts = [int(x) if x.isdigit() else None for x in re.findall(r"\*\*(\d+|No data)\*\*", strip)]
+            self.assertEqual(len(counts), 3, strip)
+            for n, body in zip(counts, lists):
+                bullets = body.count("\n- **")
+                self.assertEqual(bullets, n or 0, (st, strip, body))
+
+    def test_emergency_buttons_are_never_cleared_by_silence_or_an_odd_state(self):
+        D, M = "binary_sensor.emergency_button_dad_cloud_connection", "binary_sensor.emergency_button_mum_cloud_connection"
+        crit = lambda **st: self.alerts(**st)[3]
+        self.assertIn("Dad's emergency button cannot be confirmed", crit(**{D: "unavailable"}))
+        self.assertIn("Dad's emergency button cannot be confirmed", crit(**{D: "weird"}))
+        self.assertIn("Mum's emergency button is not connected", crit(**{M: "off"}))
+        out = crit(**{D: "on", M: "on", "binary_sensor.eero_wan_status": "on",
+                      "binary_sensor.g_monitor_freezer_p110m_overloaded": "off"})
+        self.assertIn("nothing needs attention", out)                      # positive control
+        self.assertNotIn("nothing needs attention", render(dash("en"), "alerts", self.dark))
+
+    def test_alerts_has_no_state_changing_action(self):
+        v = view(dash("en"), "alerts")
+        self.assertEqual(list(V.actions(v)), [])
+        self.assertEqual(tiles(v), [])
+
+    # ---- House health
+    def test_unverified_summary_sensors_are_retained_not_shown(self):
+        rows = MAN["migration"]["house-health"]
+        hh = B.entities_in(view(dash("en"), "house-health"))
+        for e in ("sensor.house_status", "sensor.active_rooms_count", "sensor.house_lights_on"):
+            self.assertEqual(rows[e]["status"], "retained")
+            self.assertIn("CR-213", rows[e]["note"])
+            self.assertNotIn(e, hh)
+            self.assertIn(e, B.entities_in(view(dash("en"), "v2-house-health")))
+
+    def test_system_updates_inert_air_con_firmware_as_v2(self):
+        hh = {c["entity"]: c for c in tiles(view(dash("en"), "house-health"))}
+        for e in ("update.home_assistant_core_update", "update.home_assistant_supervisor_update",
+                  "update.home_assistant_operating_system_update"):
+            self.assertEqual(C.effective_tile_actions(hh[e]), ("navigate", "none"), e)
+            self.assertTrue(V.protected_setting(e))
+        self.assertEqual(C.effective_tile_actions(hh["update.bedroom_parents_room_ac_firmware"]), ("more-info", "none"))
+
+    def test_batteries_low_list_and_dark(self):
+        out = render(dash("en"), "house-health", dict(self.states, **{"sensor.front_door_battery": "12",
+                     "sensor.tapo_c425_north_wall_battery": "29", "sensor.gas_meter_pulse_sensor_battery": "unknown"}))
+        self.assertIn("**Lowest: 12% (Front door)** · 14 of 15 reporting", out)
+        self.assertIn("**Under 30%:** Front door, North wall", out)
+        dark = render(dash("en"), "house-health", self.dark)
+        self.assertIn("No battery is reporting a level.", dark)
+        self.assertNotIn("**0**", dark)
+        self.assertIn("Lights on **No data**", dark)
+
+    def test_wiring_notes_render_as_a_list(self):
+        md = [c["content"] for c in V.walk_cards(view(dash("en"), "house-health"))
+              if c.get("type") == "markdown" and "Brightness average" in c.get("content", "")]
+        self.assertEqual(len(md), 1)
+        self.assertFalse(md[0].startswith("<small>"))
+        self.assertEqual(md[0].count("\n- ") + md[0].startswith("- "), 4)
+
+    # ---- confirmation coverage, every native view
+    def test_every_native_button_press_asks_first(self):
+        for code in [l["code"] for l in MAN["locales"]]:
+            for p in MAN["native"]:
+                self.assertEqual(V.unconfirmed_presses(view(dash(code), p)), [], f"{code}/{p}")
+        bad = copy.deepcopy(view(dash("en"), "people"))         # positive control: a planted bare press
+        bad["sections"][1]["cards"].append({"type": "button", "tap_action": {
+            "action": "perform-action", "perform_action": "button.press", "target": {"entity_id": "button.x"}}})
+        self.assertTrue(V.unconfirmed_presses(bad))
 
 
 class Safety(unittest.TestCase):

@@ -64,6 +64,9 @@ native:
   - dining
   - parents-room
   - garage
+  - house-health
+  - alerts
+  - people
 
 # Switches a V3-native view may control. V3-native views are read-only for
 # switches by default; each switch below is a device control that V2 already
@@ -91,6 +94,8 @@ controls:
   switch.g_monitor_freezer_p110m_led: {v2_view: garage, note: freezer plug's LED (the plug itself stays read-only)}
   switch.master_bedroom_light_sensor_55_qled_4k_ai: {v2_view: parents-room, note: TV's ambient light sensor}
   switch.smart_pet_feeder_time_watermark: {v2_view: dining, note: pet feeder video timestamp overlay}
+  # CR-V3-19: a helper toggle is gated exactly like a switch.
+  input_boolean.guest_mode: {v2_view: people, note: "household guest mode (V2 tile: details on tap, toggle on the icon)"}
 
 # Every other V2 view is carried verbatim (links rewritten to the locale's
 # url_base) until it is rebuilt. Order follows V2.
@@ -140,7 +145,14 @@ migration:
       {to: lighting, status: native, note: "bulb-power switch, read-only (owner rule on bulb power)"}
   rooms:
     zone.home:
-      {to: people, status: carried, note: "household count; native Rooms counts the three people instead, since a zone count reads 0 while the people it counts are dark"}
+      {to: people, status: native, note: "on native People beside the three people, a zero shown as such only while all of them answer; native Rooms counts the people instead"}
+  house-health:
+    sensor.house_status:
+      {to: v2-house-health, status: retained, note: "summary sensor whose definition is unverified (CR-213); V3 states what the verified entities say instead"}
+    sensor.active_rooms_count:
+      {to: v2-house-health, status: retained, note: "unverified count (CR-213) that reads 0 while the motion sensors are dark; V3 counts rooms with movement from the four sensors, stating what answered"}
+    sensor.house_lights_on:
+      {to: v2-house-health, status: retained, note: "unverified count (CR-213) that reads 0 while the lights are dark; V3 counts the three light groups, stating what answered"}
   cameras:
     light.tapo_c200_stockroom_floodlight_timed:
       {to: lighting, status: native, note: camera floodlight}

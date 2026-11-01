@@ -1,0 +1,139 @@
+# V3 House health — rebuilt natively (CR-V3-19).
+# What is on it: unavailable entities (sensor.casa_offline_devices, which
+# counts ENTITIES, not devices — CR-200, said on the card), the 15 batteries
+# with the lowest and those under 30% (V2's threshold), the network link,
+# the named devices that are offline, backups and updates, and V2's wiring
+# notes.
+# Not on it, kept on the classic view only (manifest migration, `retained`):
+# sensor.house_status, sensor.active_rooms_count and sensor.house_lights_on.
+# Their definitions are unverified (CR-213), and a summary count reads 0 while
+# its inputs are dark, so V3 counts lights on and rooms with movement from the
+# verified entities themselves, stating what answered.
+# Home Assistant Core / Supervisor / OS updates are read-only here (an install
+# from a wall panel restarts the house system; gated). The air-con firmware
+# keeps V2's tile, as on Parents' room.
+path: house-health
+title: nav.house_health
+icon: mdi:home-heart
+sections:
+  - topbar: true
+
+  - span: 2
+    cards:
+      - c: chips
+        parts:
+          - {c: chip_value, label_key: hh.unavailable_entities, entity: sensor.casa_offline_devices}
+          - c: chip_count
+            label_key: chip.updates
+            entities: [update.home_assistant_core_update, update.home_assistant_supervisor_update,
+                       update.home_assistant_operating_system_update, update.bedroom_parents_room_ac_firmware]
+            on_states: ["on"]
+          - c: chip_state
+            label_key: chip.internet
+            entity: binary_sensor.eero_wan_status
+            words: {"on": s.online, "off": s.offline}
+            unavailable: s.no_data
+
+  # Overall: unavailable entities, said precisely; lights and movement counted honestly
+  - span: 2
+    heading: h.overall
+    cards:
+      - {c: sensor_tile, entity: sensor.casa_offline_devices, name: {t: hh.unavailable_entities}, columns: 4}
+      - c: chips
+        parts:
+          - c: chip_count
+            label_key: chip.lights
+            entities: [light.living_room, light.dining, light.bedroom_bedroom]
+            on_states: ["on"]
+          - c: chip_count
+            label_key: hh.rooms_movement
+            entities: [binary_sensor.living_room_living_hue_hue_sensor_motion, binary_sensor.k_motion_sensor_motion,
+                       binary_sensor.sensor_group_motion, binary_sensor.bedroom_motion_sensor_motion]
+            on_states: ["on"]
+      - {c: note, key: hh.entities_note}
+      - {c: note, key: hh.summary_note}
+
+  # Batteries | network and offline devices
+  - span: 1
+    heading: h.batteries
+    cards:
+      - c: battery_summary
+        threshold: 30
+        items: &batteries
+          - {entity: sensor.front_door_battery, name_key: room.front_door}
+          - {entity: sensor.living_room_ringring_battery, name_key: al.ringring}
+          - {entity: sensor.tapo_c425_north_wall_battery, name_key: room.north_wall}
+          - {entity: sensor.tapo_c420_south_wall_battery, name_key: room.south_wall}
+          - {entity: sensor.tapo_camera_bcca_battery, name_key: room.east_wall}
+          - {entity: sensor.aqara_roller_shade_driver_e1_battery, name_key: ray.shade}
+          - {entity: sensor.powerpal_gateway_powerpal_battery, name_key: hh.powerpal}
+          - {entity: sensor.gas_meter_pulse_sensor_battery, name_key: hh.gas_meter}
+          - {entity: sensor.kitchen_electrolux_fridge_battery, name_key: chip.fridge}
+          - {entity: sensor.living_room_livingroomswitch_battery, name_key: hh.living_switch}
+          - {entity: sensor.living_room_living_hue_hue_sensor_battery, name_key: hh.living_motion}
+          - {entity: sensor.master_bedroom_living_hue_hue_sensor_battery, name_key: hh.living_hue}
+          - {entity: sensor.living_room_living_room_battery, name_key: dining.room_motion}
+          - {entity: sensor.bedroom_bedlightswitch_battery, name_key: hh.ray_switch}
+          - {entity: sensor.master_bedroom_bedroom_hue_sensor_battery, name_key: dining.bedroom_motion}
+      - {c: sensor_tile, entity: sensor.front_door_battery, name: {t: room.front_door}}
+      - {c: sensor_tile, entity: sensor.living_room_ringring_battery, name: {t: al.ringring}}
+      - {c: sensor_tile, entity: sensor.tapo_c425_north_wall_battery, name: {t: room.north_wall}}
+      - {c: sensor_tile, entity: sensor.tapo_c420_south_wall_battery, name: {t: room.south_wall}}
+      - {c: sensor_tile, entity: sensor.tapo_camera_bcca_battery, name: {t: room.east_wall}}
+      - {c: sensor_tile, entity: sensor.aqara_roller_shade_driver_e1_battery, name: {t: ray.shade}}
+      - {c: sensor_tile, entity: sensor.powerpal_gateway_powerpal_battery, name: {t: hh.powerpal}}
+      - {c: sensor_tile, entity: sensor.gas_meter_pulse_sensor_battery, name: {t: hh.gas_meter}}
+      - {c: sensor_tile, entity: sensor.kitchen_electrolux_fridge_battery, name: {t: chip.fridge}}
+      - {c: sensor_tile, entity: sensor.living_room_livingroomswitch_battery, name: {t: hh.living_switch}}
+      - {c: sensor_tile, entity: sensor.living_room_living_hue_hue_sensor_battery, name: {t: hh.living_motion}}
+      - {c: sensor_tile, entity: sensor.master_bedroom_living_hue_hue_sensor_battery, name: {t: hh.living_hue}}
+      - {c: sensor_tile, entity: sensor.living_room_living_room_battery, name: {t: dining.room_motion}}
+      - {c: sensor_tile, entity: sensor.bedroom_bedlightswitch_battery, name: {t: hh.ray_switch}}
+      - {c: sensor_tile, entity: sensor.master_bedroom_bedroom_hue_sensor_battery, name: {t: dining.bedroom_motion}, columns: 12}
+  - span: 1
+    heading: h.internet
+    cards:
+      - {c: sensor_tile, entity: binary_sensor.eero_wan_status, name: {t: chip.internet}}
+      - {c: sensor_tile, entity: binary_sensor.remote_ui, name: {t: chip.remote}}
+      - {c: sensor_tile, entity: binary_sensor.matter_zigbee_hub_problem, name: {t: chip.zigbee}, columns: 12}
+      - {c: note, key: hh.network_note}
+      - {c: heading, key: h.offline_devices, style: subtitle}
+      - c: attention
+        checks:
+          - {entity: sensor.primo_5_0_1_1_ac_power, when: offline, key: al.inverter_offline}
+          - {entity: camera.tapo_c420_east_wall_hd_stream_direct, when: offline, key: att.camera_offline, name_key: room.east_wall}
+          - {entity: camera.tapo_c420_south_wall_hd_stream_direct, when: offline, key: att.camera_offline, name_key: room.south_wall}
+          - {entity: media_player.pogo, when: offline, key: hh.device_offline, name_key: hh.pogo}
+          - {entity: light.kogan_tv, when: offline, key: hh.device_offline, name_key: guest.tv_backlight}
+          - {entity: light.living_room_hue_ambiance_spot_1, when: offline, key: hh.device_offline, name_key: hh.spot1}
+          - {entity: light.living_room_hue_ambiance_spot_2, when: offline, key: hh.device_offline, name_key: hh.spot2}
+          - {entity: light.living_room_hue_ambiance_spot_3, when: offline, key: hh.device_offline, name_key: hh.spot3}
+          - {entity: light.living_room_hue_ambiance_spot_4, when: offline, key: hh.device_offline, name_key: hh.spot4}
+
+  # Backups and updates, full width
+  - span: 2
+    heading: h.backups_updates
+    cards:
+      - {c: sensor_tile, entity: sensor.backup_last_successful_automatic_backup, name: {t: hh.last_backup}}
+      - {c: sensor_tile, entity: sensor.backup_next_scheduled_automatic_backup, name: {t: hh.next_backup}}
+      - {c: readonly_tile, entity: update.home_assistant_core_update, name: {t: hh.core}, columns: 3, nav: v2-house-health}
+      - {c: readonly_tile, entity: update.home_assistant_supervisor_update, name: {t: hh.supervisor}, columns: 3, nav: v2-house-health}
+      - {c: readonly_tile, entity: update.home_assistant_operating_system_update, name: {t: hh.os}, columns: 3, nav: v2-house-health}
+      - {c: control_tile, entity: update.bedroom_parents_room_ac_firmware, name: {t: parents.firmware}, columns: 3}
+      - {c: note, key: hh.updates_note}
+
+  - span: 2
+    heading: h.instrumentation
+    cards:
+      - {c: prose, key: hh.wiring_notes}
+
+  - c: more_boards
+    classic_of: house-health
+    items:
+      - [home, nav.home, mdi:home-variant-outline]
+      - [alerts, nav.alerts, mdi:bell-outline]
+      - [network, nav.network, mdi:router-wireless]
+      - [energy, nav.energy, mdi:lightning-bolt-outline]
+      - [security, nav.security, mdi:shield-home-outline]
+      - [rooms, nav.rooms, mdi:floor-plan]
+      - [people, nav.people, mdi:account-group-outline]

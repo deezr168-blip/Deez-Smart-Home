@@ -10,21 +10,21 @@
       "url_base": "casaray-v3",
       "fallback_keys": [],
       "missing_keys": [],
-      "views": 43
+      "views": 46
     },
     "yue": {
       "output": "dashboards/casaray_v3/dist/casaray_v3_yue.yaml",
       "url_base": "casaray-v3-yue",
       "fallback_keys": [],
       "missing_keys": [],
-      "views": 43
+      "views": 46
     },
     "km": {
       "output": "dashboards/casaray_v3/dist/casaray_v3_km.yaml",
       "url_base": "casaray-v3-km",
       "fallback_keys": [],
       "missing_keys": [],
-      "views": 43
+      "views": 46
     },
     "zh-Hans": {
       "output": "dashboards/casaray_v3/dist/casaray_v3_zh-hans.yaml",
@@ -42,6 +42,13 @@
         "act.bright",
         "act.evening",
         "act.night",
+        "al.button_offline",
+        "al.button_unconfirmed",
+        "al.dad",
+        "al.mum",
+        "al.pump_running",
+        "al.ringring",
+        "al.wan_unconfirmed",
         "att.all_clear",
         "att.all_dark",
         "att.battery_low",
@@ -53,6 +60,9 @@
         "att.fridge_open",
         "att.siren_on",
         "att.wan_down",
+        "bat.lowest",
+        "bat.none_reporting",
+        "bat.under",
         "cam.alert_note",
         "cam.privacy_note",
         "cam.summary",
@@ -63,6 +73,7 @@
         "chip.cloud",
         "chip.freezer_plug",
         "chip.fridge_door",
+        "chip.guest_mode",
         "chip.house",
         "chip.inside",
         "chip.light",
@@ -76,6 +87,7 @@
         "chip.socket",
         "chip.solar",
         "chip.tv_backlight",
+        "chip.updates",
         "chip.zigbee",
         "det.alarm",
         "det.alerts",
@@ -169,6 +181,28 @@
         "h.temperatures",
         "h.wall_switches",
         "h.whole_house",
+        "hh.core",
+        "hh.device_offline",
+        "hh.entities_note",
+        "hh.last_backup",
+        "hh.living_hue",
+        "hh.living_motion",
+        "hh.living_switch",
+        "hh.network_note",
+        "hh.next_backup",
+        "hh.os",
+        "hh.pogo",
+        "hh.ray_switch",
+        "hh.rooms_movement",
+        "hh.spot1",
+        "hh.spot2",
+        "hh.spot3",
+        "hh.spot4",
+        "hh.summary_note",
+        "hh.supervisor",
+        "hh.unavailable_entities",
+        "hh.updates_note",
+        "hh.wiring_notes",
         "kitchen.auto_off_of",
         "kitchen.bottom_bench",
         "kitchen.coffee",
@@ -247,6 +281,20 @@
         "plug.protection",
         "plug.today",
         "plug.voltage",
+        "pp.ai_phone",
+        "pp.charging",
+        "pp.location_unknown",
+        "pp.none_confirmed",
+        "pp.people_dark",
+        "pp.ray_activity",
+        "pp.ray_distance",
+        "pp.ray_ipad",
+        "pp.ray_phone",
+        "pp.unconfirmed",
+        "pp.vinh_phone",
+        "pp.whereabouts_note",
+        "pp.zone_differs",
+        "pp.zone_note",
         "ray.bedroom_light",
         "ray.nightlight",
         "ray.no_climate",
@@ -285,7 +333,7 @@
         "weather.sunset"
       ],
       "missing_keys": [],
-      "views": 43
+      "views": 46
     }
   },
   "views": [
@@ -390,6 +438,7 @@
           "destination": "Security",
           "status": "native",
           "also_on": [
+            "house-health",
             "kitchen",
             "rooms"
           ],
@@ -402,6 +451,7 @@
           "destination": "Security",
           "status": "native",
           "also_on": [
+            "house-health",
             "living-room",
             "rooms"
           ],
@@ -415,6 +465,7 @@
           "status": "native",
           "also_on": [
             "dining",
+            "house-health",
             "rooms"
           ],
           "note": "dining motion (sensor group)"
@@ -577,9 +628,9 @@
           "name": "Home",
           "to": "people",
           "destination": "People",
-          "status": "carried",
+          "status": "native",
           "also_on": [],
-          "note": "household count; native Rooms counts the three people instead, since a zone count reads 0 while the people it counts are dark"
+          "note": "on native People beside the three people, a zero shown as such only while all of them answer; native Rooms counts the people instead"
         }
       ]
     },
@@ -1392,11 +1443,10 @@
     },
     {
       "path": "people",
-      "kind": "carried",
-      "source": "dashboards/casaray_v2.yaml#people",
+      "kind": "native",
+      "source": "views/people.yaml",
       "v2_equivalent": "people",
       "entities": [
-        "input_boolean.chinese_dashboard",
         "input_boolean.guest_mode",
         "person.ai_q_huang",
         "person.raymond_du",
@@ -1414,7 +1464,9 @@
         "zone.home"
       ],
       "unverified": [],
-      "dark_at_export": []
+      "dark_at_export": [],
+      "v2_entities_not_on_native": [],
+      "migration": []
     },
     {
       "path": "automations",
@@ -1459,23 +1511,28 @@
     },
     {
       "path": "house-health",
-      "kind": "carried",
-      "source": "dashboards/casaray_v2.yaml#house-health",
+      "kind": "native",
+      "source": "views/house-health.yaml",
       "v2_equivalent": "house-health",
       "entities": [
+        "binary_sensor.bedroom_motion_sensor_motion",
         "binary_sensor.eero_wan_status",
+        "binary_sensor.k_motion_sensor_motion",
+        "binary_sensor.living_room_living_hue_hue_sensor_motion",
         "binary_sensor.matter_zigbee_hub_problem",
         "binary_sensor.remote_ui",
+        "binary_sensor.sensor_group_motion",
         "camera.tapo_c420_east_wall_hd_stream_direct",
         "camera.tapo_c420_south_wall_hd_stream_direct",
-        "input_boolean.chinese_dashboard",
+        "light.bedroom_bedroom",
+        "light.dining",
         "light.kogan_tv",
+        "light.living_room",
         "light.living_room_hue_ambiance_spot_1",
         "light.living_room_hue_ambiance_spot_2",
         "light.living_room_hue_ambiance_spot_3",
         "light.living_room_hue_ambiance_spot_4",
         "media_player.pogo",
-        "sensor.active_rooms_count",
         "sensor.aqara_roller_shade_driver_e1_battery",
         "sensor.backup_last_successful_automatic_backup",
         "sensor.backup_next_scheduled_automatic_backup",
@@ -1483,8 +1540,6 @@
         "sensor.casa_offline_devices",
         "sensor.front_door_battery",
         "sensor.gas_meter_pulse_sensor_battery",
-        "sensor.house_lights_on",
-        "sensor.house_status",
         "sensor.kitchen_electrolux_fridge_battery",
         "sensor.living_room_living_hue_hue_sensor_battery",
         "sensor.living_room_living_room_battery",
@@ -1512,6 +1567,40 @@
         "light.living_room_hue_ambiance_spot_3",
         "light.living_room_hue_ambiance_spot_4",
         "media_player.pogo"
+      ],
+      "v2_entities_not_on_native": [
+        "sensor.active_rooms_count",
+        "sensor.house_lights_on",
+        "sensor.house_status"
+      ],
+      "migration": [
+        {
+          "entity": "sensor.active_rooms_count",
+          "name": "Active Rooms Count",
+          "to": "v2-house-health",
+          "destination": "v2-house-health",
+          "status": "retained",
+          "also_on": [],
+          "note": "unverified count (CR-213) that reads 0 while the motion sensors are dark; V3 counts rooms with movement from the four sensors, stating what answered"
+        },
+        {
+          "entity": "sensor.house_lights_on",
+          "name": "House Lights On",
+          "to": "v2-house-health",
+          "destination": "v2-house-health",
+          "status": "retained",
+          "also_on": [],
+          "note": "unverified count (CR-213) that reads 0 while the lights are dark; V3 counts the three light groups, stating what answered"
+        },
+        {
+          "entity": "sensor.house_status",
+          "name": "House Status",
+          "to": "v2-house-health",
+          "destination": "v2-house-health",
+          "status": "retained",
+          "also_on": [],
+          "note": "summary sensor whose definition is unverified (CR-213); V3 states what the verified entities say instead"
+        }
       ]
     },
     {
@@ -1596,8 +1685,8 @@
     },
     {
       "path": "alerts",
-      "kind": "carried",
-      "source": "dashboards/casaray_v2.yaml#alerts",
+      "kind": "native",
+      "source": "views/alerts.yaml",
       "v2_equivalent": "alerts",
       "entities": [
         "binary_sensor.b_contact_sensor_door",
@@ -1609,7 +1698,6 @@
         "binary_sensor.g_monitor_freezer_p110m_overloaded",
         "binary_sensor.lg_fridge_door",
         "binary_sensor.lph_se_dcd9_pump",
-        "input_boolean.chinese_dashboard",
         "sensor.aqara_roller_shade_driver_e1_battery",
         "sensor.front_door_battery",
         "sensor.living_room_ringring_battery",
@@ -1621,7 +1709,9 @@
         "binary_sensor.b_contact_sensor_door",
         "binary_sensor.f_contact_sensor_door",
         "binary_sensor.lph_se_dcd9_pump"
-      ]
+      ],
+      "v2_entities_not_on_native": [],
+      "migration": []
     },
     {
       "path": "v2-home",
@@ -2305,6 +2395,118 @@
         "switch.g_monitor_freezer_p110m",
         "switch.g_monitor_freezer_p110m_auto_off_enabled",
         "switch.g_monitor_freezer_p110m_led"
+      ],
+      "unverified": [],
+      "dark_at_export": []
+    },
+    {
+      "path": "v2-house-health",
+      "kind": "classic",
+      "source": "dashboards/casaray_v2.yaml#house-health",
+      "v2_equivalent": "house-health",
+      "entities": [
+        "binary_sensor.eero_wan_status",
+        "binary_sensor.matter_zigbee_hub_problem",
+        "binary_sensor.remote_ui",
+        "camera.tapo_c420_east_wall_hd_stream_direct",
+        "camera.tapo_c420_south_wall_hd_stream_direct",
+        "input_boolean.chinese_dashboard",
+        "light.kogan_tv",
+        "light.living_room_hue_ambiance_spot_1",
+        "light.living_room_hue_ambiance_spot_2",
+        "light.living_room_hue_ambiance_spot_3",
+        "light.living_room_hue_ambiance_spot_4",
+        "media_player.pogo",
+        "sensor.active_rooms_count",
+        "sensor.aqara_roller_shade_driver_e1_battery",
+        "sensor.backup_last_successful_automatic_backup",
+        "sensor.backup_next_scheduled_automatic_backup",
+        "sensor.bedroom_bedlightswitch_battery",
+        "sensor.casa_offline_devices",
+        "sensor.front_door_battery",
+        "sensor.gas_meter_pulse_sensor_battery",
+        "sensor.house_lights_on",
+        "sensor.house_status",
+        "sensor.kitchen_electrolux_fridge_battery",
+        "sensor.living_room_living_hue_hue_sensor_battery",
+        "sensor.living_room_living_room_battery",
+        "sensor.living_room_livingroomswitch_battery",
+        "sensor.living_room_ringring_battery",
+        "sensor.master_bedroom_bedroom_hue_sensor_battery",
+        "sensor.master_bedroom_living_hue_hue_sensor_battery",
+        "sensor.powerpal_gateway_powerpal_battery",
+        "sensor.primo_5_0_1_1_ac_power",
+        "sensor.tapo_c420_south_wall_battery",
+        "sensor.tapo_c425_north_wall_battery",
+        "sensor.tapo_camera_bcca_battery",
+        "update.bedroom_parents_room_ac_firmware",
+        "update.home_assistant_core_update",
+        "update.home_assistant_operating_system_update",
+        "update.home_assistant_supervisor_update"
+      ],
+      "unverified": [],
+      "dark_at_export": [
+        "camera.tapo_c420_east_wall_hd_stream_direct",
+        "camera.tapo_c420_south_wall_hd_stream_direct",
+        "light.kogan_tv",
+        "light.living_room_hue_ambiance_spot_1",
+        "light.living_room_hue_ambiance_spot_2",
+        "light.living_room_hue_ambiance_spot_3",
+        "light.living_room_hue_ambiance_spot_4",
+        "media_player.pogo"
+      ]
+    },
+    {
+      "path": "v2-alerts",
+      "kind": "classic",
+      "source": "dashboards/casaray_v2.yaml#alerts",
+      "v2_equivalent": "alerts",
+      "entities": [
+        "binary_sensor.b_contact_sensor_door",
+        "binary_sensor.bedroom_parents_room_ac_filter_clean_required",
+        "binary_sensor.eero_wan_status",
+        "binary_sensor.emergency_button_dad_cloud_connection",
+        "binary_sensor.emergency_button_mum_cloud_connection",
+        "binary_sensor.f_contact_sensor_door",
+        "binary_sensor.g_monitor_freezer_p110m_overloaded",
+        "binary_sensor.lg_fridge_door",
+        "binary_sensor.lph_se_dcd9_pump",
+        "input_boolean.chinese_dashboard",
+        "sensor.aqara_roller_shade_driver_e1_battery",
+        "sensor.front_door_battery",
+        "sensor.living_room_ringring_battery",
+        "sensor.primo_5_0_1_1_ac_power",
+        "sensor.tapo_c425_north_wall_battery"
+      ],
+      "unverified": [],
+      "dark_at_export": [
+        "binary_sensor.b_contact_sensor_door",
+        "binary_sensor.f_contact_sensor_door",
+        "binary_sensor.lph_se_dcd9_pump"
+      ]
+    },
+    {
+      "path": "v2-people",
+      "kind": "classic",
+      "source": "dashboards/casaray_v2.yaml#people",
+      "v2_equivalent": "people",
+      "entities": [
+        "input_boolean.chinese_dashboard",
+        "input_boolean.guest_mode",
+        "person.ai_q_huang",
+        "person.raymond_du",
+        "person.vinh_du",
+        "sensor.ais_iphone_battery_level",
+        "sensor.ais_iphone_battery_state",
+        "sensor.raymonds_ipad_battery_level",
+        "sensor.raymonds_ipad_battery_state",
+        "sensor.raymonds_iphone_activity",
+        "sensor.raymonds_iphone_battery_level",
+        "sensor.raymonds_iphone_battery_state",
+        "sensor.raymonds_iphone_distance",
+        "sensor.vine_s_phone_battery_level",
+        "sensor.vine_s_phone_battery_state",
+        "zone.home"
       ],
       "unverified": [],
       "dark_at_export": []

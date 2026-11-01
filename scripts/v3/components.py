@@ -66,6 +66,12 @@ def note(ctx, key, columns=12):
     return markdown("<small>" + ctx.t(key) + "</small>", columns)
 
 
+def prose(ctx, key, columns=12):
+    """A static explanation that may hold a list (not wrapped in <small>, which
+    would stop the bullets rendering)."""
+    return markdown(ctx.t(key), columns)
+
+
 # ---------------------------------------------------------------- tiles
 
 def light_tile(ctx, entity, name=None, columns=6, brightness=True):
@@ -229,6 +235,20 @@ def attention(ctx, checks):
         msg_key = c["key"]
         lines.append("{%- set s = states('" + e + "') -%}")
         when = c["when"]
+        if when == "on_ok":
+            # Only 'on' is fine (a link, an emergency button): 'off' is raised as
+            # `key`; anything else, dark or unexpected, as `dark_key`. Never clear.
+            lines.append("{%- if s == 'on' -%}{%- set ns.ok = ns.ok + 1 -%}"
+                         "{%- elif s == 'off' -%}{%- set ns.ok = ns.ok + 1 -%}{%- set ns.hits = ns.hits + [" +
+                         ctx.jt(msg_key, name=jstr(name)) + "] -%}"
+                         "{%- else -%}{%- set ns.hits = ns.hits + [" + ctx.jt(c["dark_key"], name=jstr(name)) +
+                         "] -%}{%- endif -%}")
+            continue
+        if c.get("dark_key"):
+            # Silence is itself the alert here (an emergency button, the internet
+            # link): a dark sensor is raised in its own words, never counted clear.
+            lines.append("{%- if s in " + BAD + " -%}{%- set ns.hits = ns.hits + [" +
+                         ctx.jt(c["dark_key"], name=jstr(name)) + "] -%}{%- else -%}")
         if when == "offline":
             # The question is "is it offline?": unavailable answers it (a hit);
             # unknown does not answer it (not reporting).
@@ -236,6 +256,8 @@ def attention(ctx, checks):
                          "{%- set ns.hits = ns.hits + [" + ctx.jt(msg_key, name=jstr(name)) + "] -%}"
                          "{%- elif s in " + BAD + " -%}{%- set ns.dark = ns.dark + 1 -%}"
                          "{%- else -%}{%- set ns.ok = ns.ok + 1 -%}{%- endif -%}")
+            if c.get("dark_key"):
+                lines.append("{%- endif -%}")
             continue
         if when == "count>0":
             req = c.get("requires", [])
@@ -249,6 +271,8 @@ def attention(ctx, checks):
                          ctx.jt(msg_key, name=jstr(name), v="(s | float) | round(0) | int") + "] -%}"
                          "{%- elif s | is_number and rq.dark == 0 -%}{%- set ns.ok = ns.ok + 1 -%}"
                          "{%- else -%}{%- set ns.dark = ns.dark + 1 -%}{%- endif -%}")
+            if c.get("dark_key"):
+                lines.append("{%- endif -%}")
             continue
         lines.append("{%- if s in " + BAD + " -%}{%- set ns.dark = ns.dark + 1 -%}{%- else -%}"
                      "{%- set ns.ok = ns.ok + 1 -%}")
@@ -263,6 +287,8 @@ def attention(ctx, checks):
             lines.append("{%- if s in " + st + " -%}{%- set ns.hits = ns.hits + [" +
                          ctx.jt(msg_key, name=jstr(name)) + "] -%}{%- endif -%}")
         lines.append("{%- endif -%}")
+        if c.get("dark_key"):
+            lines.append("{%- endif -%}")
     total = len(checks)
     lines.append(
         "{%- if ns.hits | count > 0 -%}"
@@ -573,6 +599,114 @@ def freezer_status(ctx, plug, overload):
         + "{%- elif " + o + " == 'off' and " + s + " == 'on' -%}" + ctx.t("garage.on_ok")
         + "{%- elif " + s + " == 'off' -%}**" + ctx.t("garage.plug_off") + "**"
         + "{%- else -%}" + ctx.t("garage.not_reporting") + "{%- endif -%}")
+
+
+def _check_expr(c):
+    """(hit, dark) Jinja boolean expressions for one attention-style check, the
+    same semantics attention() uses, so a count strip and its lists agree."""
+    e = c["entity"]
+    s = "states('" + e + "')"
+    when = c["when"]
+    if when == "on_ok":
+        return s + " != 'on'", "false"
+    if when == "offline":
+        hit, dark = s + " == 'unavailable'", s + " in ['unknown','none','']"
+    elif isinstance(when, str) and when.startswith("battery<"):
+        lim = when.split("<")[1]
+        hit = "(" + s + " | is_number and (" + s + " | float) < " + lim + ")"
+        dark = "(" + s + " in " + BAD + " or not (" + s + " | is_number))"
+    else:
+        st = "[" + ",".join("'" + w + "'" for w in when) + "]"
+        hit, dark = s + " in " + st, s + " in " + BAD
+    if c.get("dark_key"):
+        hit, dark = "(" + hit + " or " + s + " in " + BAD + ")", "false"
+    return hit, dark
+
+
+def alert_counts(ctx, groups):
+    """One chip per severity: hits among the checks that answered, and how many
+    did not. A group where nothing answered says No data, never 0."""
+    parts = []
+    for gi, g in enumerate(groups):
+        ctx.use([c["entity"] for c in g["checks"]])
+        v = f"a{gi}"
+        pre = "{%- set " + v + " = namespace(hit=0, dark=0) -%}"
+        for c in g["checks"]:
+            hit, dark = _check_expr(c)
+            pre += ("{%- if " + hit + " -%}{%- set " + v + ".hit = " + v + ".hit + 1 -%}"
+                    "{%- elif " + dark + " -%}{%- set " + v + ".dark = " + v + ".dark + 1 -%}{%- endif -%}")
+        n = len(g["checks"])
+        parts.append(pre + ctx.t(g["label_key"]) + " **{%- if " + v + ".dark == " + str(n) + " and " + v
+                     + ".hit == 0 -%}" + ctx.t("s.no_data") + "{%- else -%}{{ " + v + ".hit }}{%- endif -%}**"
+                     + "{%- if " + v + ".dark and " + v + ".dark < " + str(n) + " %} <small>{{ "
+                     + ctx.jt("s.not_reporting", n=v + ".dark") + " }}</small>{% endif -%}")
+    return chips(ctx, parts)
+
+
+def presence(ctx, people):
+    """Who is home, honestly. Home and away are only what a person entity says;
+    one that is not reporting is counted as such and never as away. "Nobody is
+    home" is only said when every person answered and none is home.
+    people: [{entity, name}] — names as V2 shows them (proper nouns, not translated)."""
+    ents = [x["entity"] for x in people]
+    ctx.use(ents)
+    ids = "[" + ",".join("'" + p + "'" for p in ents) + "]"
+    names = "{" + ",".join("'" + x["entity"] + "':" + jstr(x["name"]) for x in people) + "}"
+    head = ("{%- set ns = namespace(home=[], away=[], dark=0) -%}{%- for p in " + ids + " -%}"
+            "{%- set s = states(p) -%}{%- if s == 'home' -%}{%- set ns.home = ns.home + [(" + names + ")[p]] -%}"
+            "{%- elif s in " + BAD + " -%}{%- set ns.dark = ns.dark + 1 -%}"
+            "{%- else -%}{%- set ns.away = ns.away + [(" + names + ")[p]] -%}{%- endif -%}{%- endfor -%}")
+    sep = jstr(ctx.t("list.sep"))
+    body = ("**" + ctx.t("pp.at_home") + "** {%- if ns.home %} " + "{{ ns.home | join(" + sep + ") }}"
+            "{%- elif ns.dark == " + str(len(people)) + " %} " + ctx.t("pp.nobody_reporting")
+            + "{%- elif ns.dark %} " + ctx.t("pp.none_confirmed")
+            + "{%- else %} " + ctx.t("pp.nobody_home") + "{%- endif %}\n\n"
+            "**" + ctx.t("pp.away") + "** {%- if ns.away %} {{ ns.away | join(" + sep + ") }}{%- else %} —{%- endif %}"
+            "{%- if ns.dark %} · {{ " + ctx.jt("pp.location_unknown", n="ns.dark") + " }}{%- endif %}")
+    return markdown(head + body)
+
+
+def zone_presence(ctx, zone, people):
+    """Home Assistant's own zone count, beside the people. A count of zero is
+    only stated as such when every person answered: while any is dark, a zero
+    zone cannot tell 'nobody home' from 'nobody reporting'."""
+    ctx.use([zone] + list(people))
+    z = "states('" + zone + "')"
+    ids = "[" + ",".join("'" + p + "'" for p in people) + "]"
+    head = ("{%- set ns = namespace(dark=0, home=0) -%}{%- for p in " + ids + " -%}"
+            "{%- if states(p) in " + BAD + " -%}{%- set ns.dark = ns.dark + 1 -%}"
+            "{%- elif states(p) == 'home' -%}{%- set ns.home = ns.home + 1 -%}{%- endif -%}{%- endfor -%}")
+    n = "((" + z + " | float) | round(0) | int)"
+    differs = ("(' <small>' ~ " + ctx.jt("pp.zone_differs", n="ns.home") + " ~ '</small>') if (ns.dark == 0 and "
+               + n + " != ns.home) else ''")
+    # One expression, no {% %} tags, so no trim can eat the spaces or the note's line break.
+    value = ("{{ " + jstr(ctx.t("s.no_data")) + " if not (" + z + " | is_number) else ("
+             "(" + jstr(ctx.t("pp.unconfirmed")) + " ~ ' <small>' ~ "
+             + ctx.jt("pp.people_dark", n="ns.dark", m=str(len(people))) + " ~ '</small>')"
+             " if ((" + z + " | float) == 0 and ns.dark) else (" + n + " ~ (" + differs + "))) }}")
+    body = "**" + ctx.t("pp.zone") + "** " + value + "\n\n<small>" + ctx.t("pp.zone_note") + "</small>"
+    return markdown(head + body)
+
+
+def battery_summary(ctx, items, threshold=None):
+    """Lowest battery and who, how many report, and (with a threshold) which are
+    under it. Nothing reporting says so; no level is guessed."""
+    ctx.use([i["entity"] for i in items])
+    pairs = "[" + ",".join("('" + i["entity"] + "'," + jstr(ctx.t(i["name_key"])) + ")" for i in items) + "]"
+    head = ("{%- set ns = namespace(low=none, who='', n=0, under=[]) -%}{%- for e, nm in " + pairs + " -%}"
+            "{%- if states(e) | is_number -%}{%- set v = states(e) | float -%}{%- set ns.n = ns.n + 1 -%}"
+            "{%- if ns.low is none or v < ns.low -%}{%- set ns.low = v -%}{%- set ns.who = nm -%}{%- endif -%}")
+    if threshold is not None:
+        head += "{%- if v < " + str(threshold) + " -%}{%- set ns.under = ns.under + [nm] -%}{%- endif -%}"
+    head += "{%- endif -%}{%- endfor -%}"
+    m = str(len(items))
+    body = ("{%- if ns.low is none -%}**" + ctx.t("bat.none_reporting") + "**"
+            "{%- else -%}**{{ " + ctx.jt("bat.lowest", v="(ns.low | round(0) | int)", name="ns.who") + " }}**"
+            " · {{ " + ctx.jt("chip.reporting", n="ns.n", m=m) + " }}{%- endif -%}")
+    if threshold is not None:
+        body += ("{%- if ns.under %}\n\n**{{ " + ctx.jt("bat.under", t=str(threshold)) + " }}** "
+                 "{{ ns.under | join(" + jstr(ctx.t("list.sep")) + ") }}{%- endif -%}")
+    return markdown(head + body)
 
 
 def scene_buttons(ctx, scenes, prefix, columns=3):

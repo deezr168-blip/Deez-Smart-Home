@@ -1,0 +1,84 @@
+# V3 People — rebuilt natively (CR-V3-19). Every V2 People entity is here.
+# Presence is only what a person entity says. A person who is not reporting
+# is counted as not reporting, never as away, and "Nobody is home" is only
+# said when all three answered (V2 said it with two of three silent). The
+# home-zone count is shown beside the people, but a zero is only stated as a
+# zero while every person answers.
+# Guest mode keeps V2's tile (details on tap, toggle on the icon): an
+# existing V2 control, not a protected class.
+path: people
+title: nav.people
+icon: mdi:account-group-outline
+sections:
+  - topbar: true
+
+  - span: 2
+    cards:
+      - c: chips
+        parts:
+          - c: chip_count
+            label_key: chip.people
+            entities: [person.raymond_du, person.vinh_du, person.ai_q_huang]
+            on_states: [home]
+          - c: chip_state
+            label_key: chip.guest_mode
+            entity: input_boolean.guest_mode
+            words: {"on": s.on, "off": s.off}
+
+  - span: 1
+    heading: h.household
+    cards:
+      - c: presence
+        people:
+          - {entity: person.raymond_du, name: Raymond}
+          - {entity: person.vinh_du, name: Vinh}
+          - {entity: person.ai_q_huang, name: Ai Q}
+      - {c: sensor_tile, entity: person.raymond_du, name: Raymond}
+      - {c: sensor_tile, entity: person.vinh_du, name: Vinh}
+      - {c: sensor_tile, entity: person.ai_q_huang, name: Ai Q}
+      - {c: control_tile, entity: input_boolean.guest_mode, name: {t: chip.guest_mode}}
+      - c: zone_presence
+        zone: zone.home
+        people: [person.raymond_du, person.vinh_du, person.ai_q_huang]
+  - span: 1
+    heading: h.device_status
+    cards:
+      - c: battery_summary
+        items:
+          - {entity: sensor.raymonds_iphone_battery_level, name_key: pp.ray_phone}
+          - {entity: sensor.raymonds_ipad_battery_level, name_key: pp.ray_ipad}
+          - {entity: sensor.ais_iphone_battery_level, name_key: pp.ai_phone}
+          - {entity: sensor.vine_s_phone_battery_level, name_key: pp.vinh_phone}
+      - {c: sensor_tile, entity: sensor.raymonds_iphone_battery_level, name: {t: pp.ray_phone}}
+      - {c: sensor_tile, entity: sensor.raymonds_iphone_battery_state, name: {t: pp.charging}}
+      - {c: sensor_tile, entity: sensor.vine_s_phone_battery_level, name: {t: pp.vinh_phone}}
+      - {c: sensor_tile, entity: sensor.vine_s_phone_battery_state, name: {t: pp.charging}}
+      - {c: sensor_tile, entity: sensor.ais_iphone_battery_level, name: {t: pp.ai_phone}}
+      - {c: sensor_tile, entity: sensor.ais_iphone_battery_state, name: {t: pp.charging}}
+      - {c: sensor_tile, entity: sensor.raymonds_ipad_battery_level, name: {t: pp.ray_ipad}}
+      - {c: sensor_tile, entity: sensor.raymonds_ipad_battery_state, name: {t: pp.charging}}
+
+  - span: 1
+    heading: h.whereabouts
+    cards:
+      - {c: sensor_tile, entity: sensor.raymonds_iphone_distance, name: {t: pp.ray_distance}}
+      - {c: sensor_tile, entity: sensor.raymonds_iphone_activity, name: {t: pp.ray_activity}}
+      - {c: note, key: pp.whereabouts_note}
+  - span: 1
+    heading: h.presence_today
+    cards:
+      - c: history
+        entities: [person.raymond_du, person.vinh_du, person.ai_q_huang]
+        hours: 24
+        rows: 4
+
+  - c: more_boards
+    classic_of: people
+    items:
+      - [home, nav.home, mdi:home-variant-outline]
+      - [rooms, nav.rooms, mdi:floor-plan]
+      - [security, nav.security, mdi:shield-home-outline]
+      - [network, nav.network, mdi:router-wireless]
+      - [house-health, nav.house_health, mdi:home-heart]
+      - [alerts, nav.alerts, mdi:bell-outline]
+      - [parents-room, room.parents, mdi:bed-outline]

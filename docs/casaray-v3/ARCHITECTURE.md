@@ -23,9 +23,10 @@ all existing V3 design work is preserved untouched. No recovery branch,
 ```
 src/casaray_v3/                 sources (outside dashboards/: the repo gate
   manifest.yaml                 treats every YAML there as a live dashboard)
-  views/<path>.yaml             V3-native view specs (15: home, lighting, climate, cameras,
+  views/<path>.yaml             V3-native view specs (18: home, lighting, climate, cameras,
                                 energy, security, network, rooms, living-room, kitchen,
-                                dining, parents-room, ray-bedroom, garage, guest-room)
+                                dining, parents-room, ray-bedroom, garage, guest-room,
+                                house-health, alerts, people)
   i18n/{en,yue,km,zh-Hans}.yaml                string catalogues
   themes/casaray_v3.yaml                       dark + light token theme
 scripts/v3/
@@ -94,6 +95,8 @@ Every component follows the root rules, and the gate tests them by rendering:
 - unavailable / unknown / missing → "No data", "Offline" or "State unknown";
   never a sentinel (`| float(0)` is gated);
 - counts state what answered (`4 of 6 reporting`);
+- presence is only what a person entity says: a silent person is never away,
+  and "nobody is home" needs every person to answer;
 - a summary count sensor (unpaid bills) is a hit above zero, but its zero is
   an answer only while the inputs it summarises answer too, because a count
   over dark inputs reads 0 without measuring anything;
@@ -113,6 +116,8 @@ Every component follows the root rules, and the gate tests them by rendering:
 | Room device switches (desk, printer, grow unit, plug settings) | V2's exact tile behaviour, only for entries in manifest `controls` | owner: preserve existing room controls; protected classes refused regardless |
 | Power-strip sockets, child locks, sensing switches, air-con switches, the freezer and unrecorded appliance plugs, camera / doorbell settings | read-only tiles; a tap opens the room's classic view | CR-V3-18: gated protected classes (loads not recorded, critical load, reduces sensing or alerting, V3-008) |
 | Button presses (filter reset) | allowed only with a confirmation | CR-V3-18: gated (`unconfirmed_presses`) |
+| Home Assistant Core / Supervisor / OS updates | read-only tiles; a tap opens House health's classic view | CR-V3-19: an install from a wall panel restarts the house system (gated) |
+| Helper toggles (`input_boolean`, e.g. guest mode) | V2's tile behaviour only via manifest `controls` | CR-V3-19: gated exactly like switches |
 | All lights off | `light.turn_off` on the three lights only | V2 also cut `switch.mainroomlight_switch_1`; recorded departure |
 
 Each is enforced by `validate_dashboard.py` and `tests/v3`.

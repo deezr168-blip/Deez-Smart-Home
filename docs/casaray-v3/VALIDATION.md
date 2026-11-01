@@ -19,11 +19,13 @@ bash scripts/ha_validate.sh                     # repository gate
 | Check | Result |
 |---|---|
 | Build reproducible (`--check`: committed outputs == fresh build) | pass |
-| V3 gate, 4 locales × 15 native views: structure, navigation, deps, entities, safety, tile safety, protected classes, button confirmations, rendered honesty, secrets, migration map, controls allowlist | **1191 passed, 0 failed**, 12 notes |
-| Regression tests (`tests/v3`, 63 tests) | **OK** |
+| V3 gate, 4 locales × 18 native views: structure, navigation, deps, entities, safety, tile safety, protected classes, button confirmations, rendered honesty, secrets, migration map, controls allowlist | **1413 passed, 0 failed**, 14 notes |
+| Regression tests (`tests/v3`, 76 tests) | **OK** |
 | Migration map: all 16 V2-home entities and the 2 V2-cameras floodlights have a verified V3 place | **18 of 18 native** (CR-V3-17 made the last 6 native) |
 | Rebuilt Security, Network, Ray's room, Guest room: every V2 entity on its native rebuild | **4 of 4** (rooms: entity set identical to V2) |
-| Rebuilt Rooms index, Living room, Kitchen, Dining, Parents' room, Garage: every V2 entity accounted for | **6 of 6** (155 of 156 per-view entity references on the rebuilds; `zone.home` stays on carried People, a verified migration row) |
+| Rebuilt Rooms index, Living room, Kitchen, Dining, Parents' room, Garage: every V2 entity accounted for | **6 of 6** (155 of 156 per-view entity references on the rebuilds; `zone.home` is on People, native since CR-V3-19) |
+| Rebuilt House health, Alerts, People: every V2 entity accounted for | **3 of 3** (63 of 66 on the rebuilds; `house_status`, `active_rooms_count`, `house_lights_on` retained on classic House health, CR-213) |
+| Earlier native views and their classic copies vs `ddba0a6` | **15 of 15 identical** in every locale |
 | Repository gate `scripts/ha_validate.sh` | **PASSED** (8 sections); its section 8 (HA config check) SKIPPED: no hass, no /config |
 | `dashboards/casaray_v2.yaml` sha256 | `77a4991626d6f8afcd9b78f235c34417d84d9f36c129549a386d8a66c324226c` (unchanged) |
 | V2, legacy dashboard, `themes/` | unchanged vs `casaray-v3-design` |
@@ -80,13 +82,24 @@ asks first in every locale (and a copy with the confirmation removed is
 caught); the freezer line and room conditions never claim what nothing
 measured. Three real-build mutants are caught: the freezer plug made a
 control, the filter reset without a confirmation, Climate's button pointed
-back at the native Parents' room. The unpaid-bills check reports clear only when the
+back at the native Parents' room.
+CR-V3-19 adds: presence never infers absence ("Nobody is home" only when all
+three people answered; a silent person is never away), a zero zone is "Not
+confirmed" while anyone is silent, the alert strip agrees with its lists in
+every scenario, emergency buttons and the internet link are raised when dark
+or odd, unverified summary sensors stay off the native view, HA system updates
+are inert, guest mode acts only through the allowlist, and every button press
+on all 18 native views asks first (a planted bare press is caught). Five
+real-build mutants are caught: presence saying nobody is home despite silent
+people, the zone zero claimed while people are dark, the Core update made a
+control, guest mode dropped from the allowlist, an emergency button back to
+off-only. The tree was restored byte for byte after each. The unpaid-bills check reports clear only when the
 count and all six paid flags answer, and is shown both raising a count and
 refusing a zero from dark inputs.
 
 ## Notes from the gate (not failures)
 
-- `zh-Hans`: 253 strings fall back to English (partial by design; V2 vocabulary only).
+- `zh-Hans`: 301 strings fall back to English (partial by design; V2 vocabulary only).
 - Native views reference 30 distinct entities that were not `ok` in the 05/09 export
   (Hue spots, two Tapo C420 streams, the three contact sensors, never-used
   scenes). They draw as No data / Offline / State unknown when so.

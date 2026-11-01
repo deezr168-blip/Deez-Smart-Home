@@ -6,6 +6,56 @@ and `ha-deploy` are unaffected by everything here.
 
 ---
 
+## V3-012 · 01/11/26 · House health, Alerts and People rebuilt natively; presence never inferred
+
+**Status:** owner instruction CR-V3-19 (01/11/26), implemented on
+`feature/casaray-v3-build`. DEVELOPMENT ONLY — NOT DEPLOYED. V3-011's main-light
+question stays open: Parents' main light remains read-only until its load is
+verified.
+
+1. **Presence is only what a person entity says.** A silent person is "not
+   reporting a location", never "away". "Nobody is home" is said only when
+   all three people answered and none is home. V2 said it with two of three
+   silent, so this is a departure, recorded. With some people silent and none
+   home, V3 says "Nobody confirmed at home".
+2. **`zone.home` is native on People.** Its migration row moved from
+   `carried` to `native`. It sits beside the people, never as a bare tile,
+   because a bare tile would show a 0 the people cannot back. A zero is
+   stated only while all three people answer; otherwise it says "Not
+   confirmed" and how many are silent. The zone-versus-people comparison
+   is shown only while everyone answers. V2 said "agrees with the count by
+   person" when both were 0 only because nobody answered.
+3. **Alerts keeps V2's conditions, severities and thresholds** (batteries
+   under 30%), as three lists plus a count strip built from the same check
+   semantics, so they cannot disagree.
+   - **The internet link and both emergency buttons are "only on is fine"**
+     (V2: `state_not: on`). Off is "not connected"; dark or any unexpected
+     state is "cannot be confirmed", raised as an alert and never folded
+     into a count.
+   - **Read-only:** V2 has no acknowledge, dismiss or quiet-hours action,
+     and neither has V3; V2's note on why carries over.
+4. **House health keeps the unavailable-entity count, with V2's caveat that
+   it counts entities, not devices (CR-200).**
+   - **Retained on the classic view:** `sensor.house_status`,
+     `sensor.active_rooms_count` and `sensor.house_lights_on`. Their
+     definitions are unverified (CR-213), and a summary count reads 0
+     while its inputs are dark.
+   - **Counted from verified entities instead:** lights on and rooms with
+     movement, each stating what answered.
+5. **New protected class: Home Assistant Core, Supervisor and OS updates.**
+   They are read-only, and a tap opens the classic view. An install from a
+   wall panel restarts the house system. The air-con firmware keeps V2's
+   tile, as on Parents' room.
+6. **Helper toggles are gated like switches.** `input_boolean.guest_mode`
+   keeps V2's tile behaviour only as a manifest `controls` entry; removing it
+   fails the gate.
+7. **Frozen V2 claims reworded:** "Ai's iPhone location sensors are currently
+   not reporting" and "Hue bridge not answering" (inferred from one spot).
+   V3 states what the board shows: which phone reports distance, and which
+   spot is offline.
+
+---
+
 ## V3-011 · 01/11/26 · The room boards rebuilt natively; which room switches stay read-only
 
 **Status:** owner instruction CR-V3-18 (01/11/26), implemented on

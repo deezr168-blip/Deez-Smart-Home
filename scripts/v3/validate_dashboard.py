@@ -48,6 +48,9 @@ CRITICAL_LOADS = {
 }
 # Non-switch settings that reduce what a camera or doorbell can do.
 PROTECTED_SETTING = re.compile(r"detection|night_vision|privacy|front_door_volume")
+# Home Assistant's own Core / Supervisor / OS updates: an install from a wall
+# panel restarts the house system (CR-V3-19).
+SYSTEM_UPDATE = re.compile(r"^update\.home_assistant_")
 
 
 def protected_switch(entity):
@@ -56,7 +59,8 @@ def protected_switch(entity):
 
 
 def protected_setting(entity):
-    return entity.split(".")[0] in ("select", "number") and bool(PROTECTED_SETTING.search(entity))
+    return ((entity.split(".")[0] in ("select", "number") and bool(PROTECTED_SETTING.search(entity)))
+            or bool(SYSTEM_UPDATE.search(entity)))
 
 
 def v2_tiles(v2_view, entity):
@@ -155,12 +159,12 @@ def tile_safety(view, v2_by_path, controls, old_url, new_url):
         dom = e.split(".")[0]
         if (protected_switch(e) or protected_setting(e)) and acting(c):
             prot.append(e)
-        if dom not in ("switch", "climate", "siren", "camera") or not acting(c):
+        if dom not in ("switch", "input_boolean", "climate", "siren", "camera") or not acting(c):
             continue
         if dom == "siren":
             if c not in [B.rewrite_links(x, old_url, new_url) for x in v2_tiles(v2v, e)]:
                 bad.append(e + " (siren tile differs from V2)")
-        elif dom == "switch":
+        elif dom in ("switch", "input_boolean"):   # a helper toggle is gated like a switch
             ctl = controls.get(e)
             src = v2_tiles(v2_by_path.get((ctl or {}).get("v2_view"), {}), e)
             if protected_switch(e):

@@ -17,10 +17,11 @@ Branch: `feature/casaray-v3-build` (from `casaray-v3-design` `27f3fed`).
 | 6 | Security | **native** (CR-V3-17) | doors, motion, cameras, sirens, detection; sirens are the V2 tiles byte for byte; camera switches read-only (controls on classic `v2-security`) |
 | 6a | Network | **native** (CR-V3-17) | 14 cloud-linked devices online / offline / not reporting, Wi-Fi signal, devices HA can read; read-only, as V2 |
 | 6b | Ray's room, Guest room | **native** (CR-V3-17) | every V2 device control kept (allowlisted switches, blind features, scenes, media); bulb-power wall switch read-only |
-| 7 | People / household | carried (V2) | |
+| 7 | People / household | **native** (CR-V3-19) | presence never inferred from silent people; `zone.home` beside them, a zero only while all answer |
 | 8 | Bills, Bill setup | carried (V2) | baseline lacks the "silent bill" honesty fix — see below |
 | 6c | Rooms index, Living room, Kitchen, Dining, Parents' room, Garage | **native** (CR-V3-18) | every V2 room control kept or, where sensitive, read-only with the V2 control one tap away on the classic subview; Parents' room air-con read-only (V3-008) |
-| — | House health, Alerts, Automations, Entertainment, 6 camera subviews | carried (V2) | |
+| 6d | House health, Alerts | **native** (CR-V3-19) | V2's alert conditions, severities and thresholds; unverified summary sensors retained on classic (CR-213); HA system updates read-only |
+| — | Automations, Entertainment, 6 camera subviews | carried (V2) | |
 
 Per-view entity counts and every V2 entity not yet on a native view:
 `VIEW_INVENTORY.md` (generated).
@@ -134,6 +135,29 @@ V2 original as a classic `v2-<path>` subview.
 
 Still carried: House health, Alerts, Automations, Entertainment, People, Bills,
 Bill setup and the six camera stream subviews.
+
+## CR-V3-19: House health, Alerts and People rebuilt natively (01/11/26)
+
+All three are native, and each keeps its V2 original as a classic `v2-<path>`
+subview.
+
+| View | Native now | Not inferred | Read-only / retained |
+|---|---|---|---|
+| People | chips, presence (at home / away / not reporting), the three people, guest mode, the home-zone count, phone batteries and charging, Ray's distance and activity, 24 h presence history | a silent person is never "away"; "Nobody is home" only when all three answered; a zero zone is "Not confirmed" while anyone is silent | — (guest mode keeps V2's toggle as a manifest `controls` entry) |
+| Alerts | count strip, Critical, Warnings and Information lists: V2's conditions and thresholds | the link and both emergency buttons: off is "not connected", dark or odd is "cannot be confirmed", raised and never folded into a count; "nothing needs attention" only when every check answered | no state-changing action exists (none in V2 either) |
+| House health | unavailable entities (CR-200 caveat), updates available, internet, lights on and rooms with movement, 15 batteries (lowest, under 30%), network, named offline devices, backups and updates, wiring notes | lights and movement counted from verified entities, stating what answered | retained on classic: `house_status`, `active_rooms_count`, `house_lights_on` (CR-213); HA Core / Supervisor / OS updates read-only |
+
+- **Migration:** `zone.home` moved from `carried` to `native` (People). The
+  three summary sensors are `retained`, each with its reason in the manifest.
+  Every other V2 entity of the three views is on its rebuild.
+- **Gate:** HA system updates are a protected class; helper toggles are gated
+  like switches; every native button press must ask first (all 18 native
+  views pass, and a planted bare press is caught).
+- **No earlier native view changed.** All 15, and their classic copies, are
+  identical to `ddba0a6` in every locale.
+
+Still carried: Automations, Entertainment, Bills, Bill setup and the six camera
+stream subviews.
 
 ## Known discrepancies carried from the baseline
 

@@ -1,0 +1,71 @@
+# V3 Alerts — rebuilt natively (CR-V3-19). The same conditions V2's alert
+# cards fire on, at V2's severities and thresholds (batteries under 30%),
+# as three honest lists: a check that is not reporting is counted as such,
+# never as clear, and "nothing needs attention" is only said when every check
+# in that list answered. The count strip uses the same check semantics, so
+# the strip and the lists cannot disagree.
+# Silence is itself the alert for the internet link and the two emergency
+# buttons (V2 raised them whenever they were not 'on'): a dark sensor is
+# raised in its own words ("cannot be confirmed"), never folded into a count.
+# Read-only: V2 has no acknowledge / dismiss action and neither does this.
+path: alerts
+title: nav.alerts
+icon: mdi:bell-outline
+sections:
+  - topbar: true
+
+  - span: 2
+    cards:
+      - c: alert_counts
+        groups:
+          - label_key: al.critical
+            checks: &critical
+              - {entity: binary_sensor.eero_wan_status, when: on_ok, key: att.wan_down, dark_key: al.wan_unconfirmed}
+              - {entity: binary_sensor.g_monitor_freezer_p110m_overloaded, when: ["on"], key: al.freezer_overloaded}
+              - {entity: binary_sensor.emergency_button_dad_cloud_connection, when: on_ok, key: al.button_offline,
+                 dark_key: al.button_unconfirmed, name_key: al.dad}
+              - {entity: binary_sensor.emergency_button_mum_cloud_connection, when: on_ok, key: al.button_offline,
+                 dark_key: al.button_unconfirmed, name_key: al.mum}
+          - label_key: al.warnings
+            checks: &warnings
+              - {entity: binary_sensor.f_contact_sensor_door, when: ["on"], key: att.door_open, name_key: room.front_door}
+              - {entity: binary_sensor.b_contact_sensor_door, when: ["on"], key: att.door_open, name_key: room.backyard}
+              - {entity: binary_sensor.lg_fridge_door, when: ["on"], key: att.fridge_open}
+              - {entity: sensor.front_door_battery, when: "battery<30", key: att.battery_low, name_key: room.front_door}
+              - {entity: sensor.living_room_ringring_battery, when: "battery<30", key: att.battery_low, name_key: al.ringring}
+              - {entity: sensor.tapo_c425_north_wall_battery, when: "battery<30", key: att.battery_low, name_key: room.north_wall}
+              - {entity: sensor.aqara_roller_shade_driver_e1_battery, when: "battery<30", key: att.battery_low, name_key: ray.shade}
+          - label_key: al.information
+            checks: &information
+              - {entity: binary_sensor.bedroom_parents_room_ac_filter_clean_required, when: ["on"], key: att.filter}
+              - {entity: sensor.primo_5_0_1_1_ac_power, when: offline, key: al.inverter_offline}
+              - {entity: binary_sensor.lph_se_dcd9_pump, when: ["on"], key: al.pump_running}
+
+  - span: 2
+    heading: al.critical
+    cards:
+      - {c: attention, checks: *critical}
+
+  - span: 1
+    heading: al.warnings
+    cards:
+      - {c: attention, checks: *warnings}
+  - span: 1
+    heading: al.information
+    cards:
+      - {c: attention, checks: *information}
+
+  - span: 2
+    cards:
+      - {c: note, key: al.not_implemented}
+
+  - c: more_boards
+    classic_of: alerts
+    items:
+      - [home, nav.home, mdi:home-variant-outline]
+      - [house-health, nav.house_health, mdi:home-heart]
+      - [security, nav.security, mdi:shield-home-outline]
+      - [network, nav.network, mdi:router-wireless]
+      - [parents-room, room.parents, mdi:bed-outline]
+      - [garage, room.garage, mdi:garage-variant]
+      - [energy, nav.energy, mdi:lightning-bolt-outline]

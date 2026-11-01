@@ -30,12 +30,12 @@ Baseline: `dashboards/casaray_v2.yaml` ha-deploy@18a4e5d sha256 `77a4991626d6f8a
 | 20 | `camera-south-wall` | carried | `dashboards/casaray_v2.yaml#camera-south-wall` | 2 | — | 1 |
 | 21 | `camera-stockroom` | carried | `dashboards/casaray_v2.yaml#camera-stockroom` | 1 | — | — |
 | 22 | `camera-pet-feeder` | carried | `dashboards/casaray_v2.yaml#camera-pet-feeder` | 4 | — | — |
-| 23 | `people` | carried | `dashboards/casaray_v2.yaml#people` | 16 | — | — |
+| 23 | `people` | native | `views/people.yaml` | 15 | — | — |
 | 24 | `automations` | carried | `dashboards/casaray_v2.yaml#automations` | 8 | — | — |
 | 25 | `entertainment` | carried | `dashboards/casaray_v2.yaml#entertainment` | 10 | — | 2 |
-| 26 | `house-health` | carried | `dashboards/casaray_v2.yaml#house-health` | 38 | — | 8 |
+| 26 | `house-health` | native | `views/house-health.yaml` | 41 | — | 8 |
 | 27 | `network` | native | `views/network.yaml` | 56 | — | 11 |
-| 28 | `alerts` | carried | `dashboards/casaray_v2.yaml#alerts` | 15 | — | 3 |
+| 28 | `alerts` | native | `views/alerts.yaml` | 14 | — | 3 |
 | 29 | `v2-home` | classic | `dashboards/casaray_v2.yaml#home` | 51 | — | 5 |
 | 30 | `v2-lighting` | classic | `dashboards/casaray_v2.yaml#lighting` | 47 | — | 23 |
 | 31 | `v2-climate` | classic | `dashboards/casaray_v2.yaml#climate` | 12 | — | — |
@@ -51,6 +51,9 @@ Baseline: `dashboards/casaray_v2.yaml` ha-deploy@18a4e5d sha256 `77a4991626d6f8a
 | 41 | `v2-dining` | classic | `dashboards/casaray_v2.yaml#dining` | 28 | — | 6 |
 | 42 | `v2-parents-room` | classic | `dashboards/casaray_v2.yaml#parents-room` | 34 | — | 2 |
 | 43 | `v2-garage` | classic | `dashboards/casaray_v2.yaml#garage` | 13 | — | — |
+| 44 | `v2-house-health` | classic | `dashboards/casaray_v2.yaml#house-health` | 38 | — | 8 |
+| 45 | `v2-alerts` | classic | `dashboards/casaray_v2.yaml#alerts` | 15 | — | 3 |
+| 46 | `v2-people` | classic | `dashboards/casaray_v2.yaml#people` | 16 | — | — |
 
 ## Native rebuilds: where every V2 entity now lives
 
@@ -62,9 +65,9 @@ For each rebuilt view, every V2 entity that is not on the rebuild itself, or tha
 |---|---|---|---|---|---|
 | `binary_sensor.bedroom_parents_room_ac_room_occupied` | Parents Room AC Room occupied | Climate · `climate` | native | `parents-room` | Parents' room occupancy beside the air-con it serves |
 | `binary_sensor.g_printer_p100_cloud_connection` | G/Printer P100 Cloud connection | Network · `network` | native | — | printer plug's cloud link, in device connectivity |
-| `binary_sensor.k_motion_sensor_motion` | K/Motion Sensor Motion | Security · `security` | native | `kitchen`, `rooms` | kitchen motion |
-| `binary_sensor.living_room_living_hue_hue_sensor_motion` | Living Room Motion Sensor Motion | Security · `security` | native | `living-room`, `rooms` | living-room motion |
-| `binary_sensor.sensor_group_motion` | Sensor group Motion | Security · `security` | native | `dining`, `rooms` | dining motion (sensor group) |
+| `binary_sensor.k_motion_sensor_motion` | K/Motion Sensor Motion | Security · `security` | native | `house-health`, `kitchen`, `rooms` | kitchen motion |
+| `binary_sensor.living_room_living_hue_hue_sensor_motion` | Living Room Motion Sensor Motion | Security · `security` | native | `house-health`, `living-room`, `rooms` | living-room motion |
+| `binary_sensor.sensor_group_motion` | Sensor group Motion | Security · `security` | native | `dining`, `house-health`, `rooms` | dining motion (sensor group) |
 | `cover.aqara_roller_shade_driver_e1` | Aqara Roller Shade Driver E1 | Rooms · `ray-bedroom` | native | — | roller shade, V2's open/close and position features |
 | `sensor.bills_unpaid_count` | Bills Unpaid Count | Home · `home` | native | — | Needs attention; a zero counts only while the six paid flags answer |
 | `sensor.casa_monitored_power` | Casa Monitored Power | Energy · `energy` | native | — | monitored-circuit total beside its two circuits (V3-007) |
@@ -77,11 +80,11 @@ For each rebuilt view, every V2 entity that is not on the rebuild itself, or tha
 | `switch.g_printer_p100` | G/Printer P100 | Rooms · `guest-room` | native | `network`, `rooms` | printer plug, V2 tile behaviour (manifest controls) |
 | `switch.mainroomlight_switch_1` | MainRoomLight Switch 1 | Lighting · `lighting` | native | `parents-room` | bulb-power switch, read-only (owner rule on bulb power) |
 
-### rooms (1: 1 carried)
+### rooms (1: 1 native)
 
 | Entity | Friendly name (export) | Destination | Coverage | Also on | Note |
 |---|---|---|---|---|---|
-| `zone.home` | Home | People · `people` | carried | — | household count; native Rooms counts the three people instead, since a zone count reads 0 while the people it counts are dark |
+| `zone.home` | Home | People · `people` | native | — | on native People beside the three people, a zero shown as such only while all of them answer; native Rooms counts the people instead |
 
 ### living-room (0: none)
 
@@ -134,7 +137,23 @@ Every V2 entity of this view is on its native rebuild.
 | `light.tapo_c200_stockroom_floodlight_timed` | Tapo C200 - Stockroom Floodlight (Timed) | Lighting · `lighting` | native | — | camera floodlight |
 | `light.tapo_c425_north_wall_floodlight_timed` | Tapo C425 - North Wall Floodlight (Timed) | Lighting · `lighting` | native | — | camera floodlight |
 
+### people (0: none)
+
+Every V2 entity of this view is on its native rebuild.
+
+### house-health (3: 3 retained)
+
+| Entity | Friendly name (export) | Destination | Coverage | Also on | Note |
+|---|---|---|---|---|---|
+| `sensor.active_rooms_count` | Active Rooms Count | v2-house-health · `v2-house-health` | retained | — | unverified count (CR-213) that reads 0 while the motion sensors are dark; V3 counts rooms with movement from the four sensors, stating what answered |
+| `sensor.house_lights_on` | House Lights On | v2-house-health · `v2-house-health` | retained | — | unverified count (CR-213) that reads 0 while the lights are dark; V3 counts the three light groups, stating what answered |
+| `sensor.house_status` | House Status | v2-house-health · `v2-house-health` | retained | — | summary sensor whose definition is unverified (CR-213); V3 states what the verified entities say instead |
+
 ### network (0: none)
+
+Every V2 entity of this view is on its native rebuild.
+
+### alerts (0: none)
 
 Every V2 entity of this view is on its native rebuild.
 
@@ -143,7 +162,7 @@ Every V2 entity of this view is on its native rebuild.
 
 | Locale | Output | url_path | Views | Keys on fallback | Missing keys |
 |---|---|---|---|---|---|
-| en | `dashboards/casaray_v3.yaml` | `/casaray-v3` | 43 | 0 | 0 |
-| yue | `dashboards/casaray_v3/dist/casaray_v3_yue.yaml` | `/casaray-v3-yue` | 43 | 0 | 0 |
-| km | `dashboards/casaray_v3/dist/casaray_v3_km.yaml` | `/casaray-v3-km` | 43 | 0 | 0 |
-| zh-Hans | `dashboards/casaray_v3/dist/casaray_v3_zh-hans.yaml` | `/casaray-v3-zh` | 43 | 253 | 0 |
+| en | `dashboards/casaray_v3.yaml` | `/casaray-v3` | 46 | 0 | 0 |
+| yue | `dashboards/casaray_v3/dist/casaray_v3_yue.yaml` | `/casaray-v3-yue` | 46 | 0 | 0 |
+| km | `dashboards/casaray_v3/dist/casaray_v3_km.yaml` | `/casaray-v3-km` | 46 | 0 | 0 |
+| zh-Hans | `dashboards/casaray_v3/dist/casaray_v3_zh-hans.yaml` | `/casaray-v3-zh` | 46 | 301 | 0 |
