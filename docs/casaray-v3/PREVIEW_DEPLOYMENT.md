@@ -14,11 +14,41 @@ picked it up runs in Anthropic's cloud, not on Ray's laptop:
 
 Nothing on the Green was read for configuration or changed.
 
-**To proceed:** run Claude Code on the laptop itself, in this repository at the
+**Superseded 01/11/26 by the browser-only path below; kept for the record.** To proceed:
+run Claude Code on the laptop itself, in this repository at the
 candidate below, on the same network as the Green and with an existing
 authorised credential available to it. Alternatively, connect the laptop to the
 cloud session through Remote Control. Steps 3–9 are written for that session,
 and for Ray to follow by hand if preferred.
+
+## Browser-only path (chosen 01/11/26: the laptop cannot run Claude Code)
+
+Ray performs every step in the Home Assistant web UI. Claude guides one screen
+at a time and records what Ray reports. Deployment is claimed only after Ray
+confirms the live result.
+
+Direct downloads, pinned to the verified commit. Both were checked
+byte-identical to the commit on 01/11/26:
+
+| File | Pinned raw link | sha256 |
+|---|---|---|
+| Dashboard (English) | https://raw.githubusercontent.com/deezr168-blip/Deez-Smart-Home/8f1ec337e28e1cdd86154668175e1b9f903f22c4/dashboards/casaray_v3.yaml | `04a214e4783d3dec8498edc340c51009cc54d6df096a70b94a99ef1cc4bbf25d` |
+| Theme `CasaRay V3` | https://raw.githubusercontent.com/deezr168-blip/Deez-Smart-Home/8f1ec337e28e1cdd86154668175e1b9f903f22c4/src/casaray_v3/themes/casaray_v3.yaml | `17a51b9015d115e56ce7da7801625f1d1183da781059063c1641d9f40a574e21` |
+
+Screens, in order. Each is reported back before the next one is given.
+
+| # | Screen | Changes anything? |
+|---|---|---|
+| A | Profile → Theme list; Settings → Dashboards (list, default, `/casaray-v3` free?, V2 present?); ⋮ → Resources (`card-mod`, `webrtc-camera`) | no |
+| B | Settings → System → Backups → create, wait, download (recommended before the first change) | adds a backup only |
+| C | Settings → Dashboards → Add dashboard → from scratch: `CasaRay V3 Preview`, URL `casaray-v3`, not default | adds one dashboard |
+| D | open it → Edit → Raw configuration editor → replace all with the pinned dashboard file → Save | that dashboard only |
+| E | theme, only if a browser file editor add-on is already installed (File editor or Studio Code Server): new file `/config/themes/casaray_v3.yaml` from the pinned theme file, then Developer tools → Actions → `frontend.reload_themes` | one file plus a theme reload; no restart. Skipped if no editor is installed: no add-on is installed for this |
+| F | verify: load, rail and More boards, each "Classic V2 view" button, carried pages, missing-card or template errors; protected tiles looked at, not tapped | no |
+
+The native views work without the theme, in the default look. The carried and
+`v2-*` views need `card-mod`, `webrtc-camera` and theme `CasaRay` to look and
+behave as V2 does.
 
 ## Candidate
 
