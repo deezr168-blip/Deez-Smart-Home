@@ -1,9 +1,9 @@
 # CasaRay V3 Preview — deployment runbook
 
 **Status: NOT DEPLOYED** (01/11/26). Ray has repaired `configuration.yaml`. The
-pre-V3 backup is requested but not yet confirmed. The theme is not loaded and the
-dashboard has not been created. Live state and the restart answer are in the two
-sections after the browser-only path.
+pre-V3 backup has completed (Ray's report), but its locations and an external download
+are not yet confirmed. The theme is not loaded and the dashboard has not been created.
+Live state and the restart answer are in the two sections after the browser-only path.
 
 Ray approved deploying V3 as a separate preview beside V2
 (01/11/26). The first attempt stopped at step 2, live access, because the session that
@@ -47,10 +47,10 @@ because they decide whether the theme can be loaded without losing anything.
 | # | Screen | Changes anything? | Status 01/11/26 |
 |---|---|---|---|
 | A | Settings → Dashboards: list, default, `/casaray-v3` free?, V2 present? Its theme and resource checks moved to E1 | no | given; results not yet reported. Needed before C |
-| B | Settings → System → Backups: confirm `config-repaired-pre-v3` completed, then download it to a place outside the Green | no (download only) | backup requested; completion not confirmed |
-| E1 | Read-only: themes loaded now (Profile) against theme files on disk; resource URLs (⋮ → Resources) against the folders that serve them | no | next, after B |
-| E2 | Studio Code Server (installed and in use): upload the pinned theme as `/config/themes/casaray_v3.yaml`, then check its sha256 in the terminal | one new file | after E1 |
-| E3 | Developer tools → Actions → `frontend.reload_themes`, **only if E1 shows every theme loaded now has its file on disk** | theme reload; no restart | after E2 |
+| B | Settings → System → Backups: confirm `config-repaired-pre-v3` completed, note its locations, then download it to a place outside the Green | no (download only) | **completed** (Ray's report). Locations and external download not yet confirmed |
+| E1 | Read-only: list `/config/themes`. The Profile theme list and the Resources list are already known from earlier observations (see the live-state table) | no | next |
+| E2 | Studio Code Server (installed and in use): upload the pinned theme as `/config/themes/casaray_v3.yaml`, then check its sha256 in the terminal | one new file | after B's download is confirmed and E1 is reported |
+| E3 | Developer tools → Actions → `frontend.reload_themes`. First look at the Profile theme list once more: it must still show no custom theme | theme reload; no restart | after E2 |
 | C | Settings → Dashboards → Add dashboard → from scratch: `CasaRay V3 Preview`, URL `casaray-v3`, not default | adds one dashboard | not started |
 | D | open it → Edit → Raw configuration editor → replace all with the pinned dashboard file → Save | that dashboard only | not started |
 | F | verify: load, rail and More boards, each "Classic V2 view" button, carried pages, missing-card or template errors; protected tiles looked at, not tapped | no | not started |
@@ -71,14 +71,46 @@ report.
 | Include files | were missing; Ray created them. Their contents are not recorded here |
 | `/config/themes/` | exists. What it contains is checked at E1 |
 | `ha core check` | passed twice |
-| Core | **not restarted** |
-| Backup `config-repaired-pre-v3` | requested; completion not confirmed |
+| Core | **not restarted**. Version **2026.9.2**, from `ha core info` earlier. Upstream, that release pins frontend `20260826.7` |
+| Backup `config-repaired-pre-v3` | **completed** (Ray). Locations and external download not yet confirmed |
+| Profile → Theme list | earlier observation (Ray): **no custom themes**, only Home Assistant's own |
+| Settings → Dashboards → ⋮ → Resources | earlier observation (Ray): **empty**. So `card-mod`, `webrtc-camera` and every other front-end resource are not registered |
 | V3 | not deployed. No theme file, no dashboard |
 
-## Restarts and reloads — Home Assistant 2026.10.1 source
+**What the two earlier observations mean for the preview:**
 
-Read from `homeassistant/components/frontend/__init__.py`, `homeassistant/bootstrap.py`,
-`homeassistant/config.py` and `homeassistant/components/config/view.py` at tag `2026.10.1`.
+- **Theme reload.**
+  - No custom theme is loaded now, so a reload cannot remove one.
+  - At start-up Core resets a backend default theme whose theme is not loaded (`_async_setup_themes`), so the backend default is necessarily `default`.
+  - Nothing reloads themes except `frontend.reload_themes` or a restart, and neither has run. E1 therefore only needs the folder listing, plus one more look at the Profile list just before E3.
+- **What works without the resources:**
+  - The 18 native views use native cards only.
+  - The V3 theme has no `card-mod` keys; checked on the pinned file.
+- **What degrades on the 28 carried and `v2-*` views:**
+  - Their `card_mod` styling is expected to be ignored.
+  - Their `theme: CasaRay` is not loaded, so they fall back to the default look.
+  - The six camera stream pages are expected to show "Custom element doesn't exist: webrtc-camera".
+  - F records what actually happens.
+- **Registering resources is outside the preview.**
+  - The Resources list applies to every dashboard on the instance.
+  - The files those resources would load may be among what went missing from `/config`.
+  - It is an owner decision on the recovery track.
+
+## Restarts and reloads — Home Assistant 2026.9.2 source (the installed version)
+
+Read from `homeassistant/components/frontend/__init__.py`, `homeassistant/bootstrap.py`
+and `homeassistant/config.py` at tag **`2026.9.2`**, the version `ha core info` reported.
+The first reading on 01/11/26 used `2026.10.1`, before the installed version was known.
+
+Diffing the two releases:
+
+- `_async_setup_themes`, which includes `reload_themes`, differs only in the
+  validation-library rename (`vol` → `probatio`). Its behaviour is the same.
+- `DEFAULT_CONFIG` is identical in both.
+- `frontend` is in `DEFAULT_INTEGRATIONS` in both.
+
+The editor write path (`homeassistant/components/config/view.py`) was read at `2026.10.1`
+only.
 
 **Loading a theme: reload, no restart.**
 
@@ -93,8 +125,17 @@ Read from `homeassistant/components/frontend/__init__.py`, `homeassistant/bootst
     running Core.
   - If the backend default theme (`frontend.set_theme`) is not in the new set, it falls back
     to `default`.
-  - E1 rules both out before E3 is run.
-- If a theme fails validation, the reload fails and changes nothing.
+  - The earlier Profile observation rules both out (see the live-state table), and E3
+    re-checks it.
+- Corrected 01/11/26: a theme failure does not always stop the reload.
+  - These make the whole reload fail, and nothing changes:
+    - `configuration.yaml` or a theme file cannot be read as YAML;
+    - a theme's values are not plain text (a list or an empty value).
+  - A theme whose `modes:` has neither `light` nor `dark` is logged as invalid and left
+    out; the rest load.
+  - The pinned `casaray_v3.yaml` (sha256 `17a51b90…`) passes these rules, checked offline
+    with the 2026.9.2 schema mirrored. It has 16 shared variables, `dark` and `light` with
+    60 variables between them, no `card-mod` keys, and one theme, `CasaRay V3`.
 
 **Read only when Core starts, so a change needs a restart.** The preview needs none of these:
 
@@ -144,8 +185,18 @@ build is `/casaray-v3/<view>`. A different URL needs a rebuild with a different
 
 ## 1. Read-only pre-checks (record each result)
 
-1. **Version:** Settings → About shows the Home Assistant Core version (V3 was
-   written against frontend `20260930.3` / Core 2026.10.1).
+1. **Version:** Settings → About shows the Home Assistant Core and frontend versions.
+   - The Green reports Core **2026.9.2**, from `ha core info` earlier. Upstream, that
+     release pins frontend `20260826.7`; the frontend actually loaded is to be confirmed
+     on Settings → About.
+   - This line used to say V3 was written against frontend `20260930.3` / Core 2026.10.1.
+     That is the newer pairing, not the installed one.
+   - Checked on `20260826.7` (01/11/26): a tile's default actions are details on tap, and
+     on the icon a toggle only for fan, input_boolean, light, switch, group, automation,
+     humidifier, valve, button, input_button and scene. This is the table the V3 gate
+     assumes, so the three siren tiles, whose icon action is left unset, do nothing on an
+     icon tap.
+   - Other card features on 2026.9.2 are verified only by F.
 2. **Dashboards:** Settings → Dashboards. Confirm that `/casaray-v3` is **not
    in use**. Record which dashboard is the default, and whether CasaRay V2
    (`/casaray-v2`) is registered and opens. On 30/10 it was not registered;
@@ -164,8 +215,9 @@ database). Wait until it shows as completed, then **download** it to the
 laptop, separately from the Cloud copy. Record only its name, date and size
 here, never its contents or the encryption key.
 
-On 01/11/26 the backup is `config-repaired-pre-v3`, requested after the
-`configuration.yaml` repair. Before E2 it must be confirmed in the list with:
+On 01/11/26 the backup is `config-repaired-pre-v3`, taken after the
+`configuration.yaml` repair. **Ray reports it completed.** Still to confirm before E2:
+its locations, and the download. The list should show:
 
 - a completion date and time;
 - a size, not a few KB;
@@ -259,7 +311,7 @@ before sending.
 | Source commit | |
 | Readback canonical-JSON sha256 matches candidate | |
 | Theme installed (`CasaRay V3`) | |
-| Backup (name, date, size; downloaded to laptop) | `config-repaired-pre-v3`, requested 01/11/26. Completion, size and download not yet confirmed |
+| Backup (name, date, size; downloaded to laptop) | `config-repaired-pre-v3`, completed 01/11/26 (Ray). Size, locations and download not yet confirmed |
 | Default dashboard unchanged | |
 | V2 status before / after | |
 | Defects found and fixed | |
