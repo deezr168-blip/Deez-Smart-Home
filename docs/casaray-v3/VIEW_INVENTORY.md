@@ -9,13 +9,13 @@ Baseline: `dashboards/casaray_v2.yaml` ha-deploy@18a4e5d sha256 `77a4991626d6f8a
 | # | Path | Kind | Source | Entities | Not in export | Dark at 05/09 export |
 |---|---|---|---|---|---|---|
 | 1 | `home` | native | `views/home.yaml` | 41 | — | 5 |
-| 2 | `rooms` | carried | `dashboards/casaray_v2.yaml#rooms` | 17 | — | 1 |
-| 3 | `living-room` | carried | `dashboards/casaray_v2.yaml#living-room` | 47 | — | 10 |
-| 4 | `kitchen` | carried | `dashboards/casaray_v2.yaml#kitchen` | 23 | — | — |
-| 5 | `dining` | carried | `dashboards/casaray_v2.yaml#dining` | 28 | — | 6 |
-| 6 | `parents-room` | carried | `dashboards/casaray_v2.yaml#parents-room` | 34 | — | 2 |
+| 2 | `rooms` | native | `views/rooms.yaml` | 18 | — | 1 |
+| 3 | `living-room` | native | `views/living-room.yaml` | 46 | — | 10 |
+| 4 | `kitchen` | native | `views/kitchen.yaml` | 22 | — | — |
+| 5 | `dining` | native | `views/dining.yaml` | 27 | — | 6 |
+| 6 | `parents-room` | native | `views/parents-room.yaml` | 33 | — | 2 |
 | 7 | `ray-bedroom` | native | `views/ray-bedroom.yaml` | 30 | — | 7 |
-| 8 | `garage` | carried | `dashboards/casaray_v2.yaml#garage` | 13 | — | — |
+| 8 | `garage` | native | `views/garage.yaml` | 12 | — | — |
 | 9 | `guest-room` | native | `views/guest-room.yaml` | 9 | — | 3 |
 | 10 | `lighting` | native | `views/lighting.yaml` | 46 | — | 23 |
 | 11 | `climate` | native | `views/climate.yaml` | 11 | — | — |
@@ -45,6 +45,12 @@ Baseline: `dashboards/casaray_v2.yaml` ha-deploy@18a4e5d sha256 `77a4991626d6f8a
 | 35 | `v2-network` | classic | `dashboards/casaray_v2.yaml#network` | 57 | — | 11 |
 | 36 | `v2-ray-bedroom` | classic | `dashboards/casaray_v2.yaml#ray-bedroom` | 31 | — | 7 |
 | 37 | `v2-guest-room` | classic | `dashboards/casaray_v2.yaml#guest-room` | 10 | — | 3 |
+| 38 | `v2-rooms` | classic | `dashboards/casaray_v2.yaml#rooms` | 17 | — | 1 |
+| 39 | `v2-living-room` | classic | `dashboards/casaray_v2.yaml#living-room` | 47 | — | 10 |
+| 40 | `v2-kitchen` | classic | `dashboards/casaray_v2.yaml#kitchen` | 23 | — | — |
+| 41 | `v2-dining` | classic | `dashboards/casaray_v2.yaml#dining` | 28 | — | 6 |
+| 42 | `v2-parents-room` | classic | `dashboards/casaray_v2.yaml#parents-room` | 34 | — | 2 |
+| 43 | `v2-garage` | classic | `dashboards/casaray_v2.yaml#garage` | 13 | — | — |
 
 ## Native rebuilds: where every V2 entity now lives
 
@@ -71,7 +77,33 @@ For each rebuilt view, every V2 entity that is not on the rebuild itself, or tha
 | `switch.g_printer_p100` | G/Printer P100 | Rooms · `guest-room` | native | `network`, `rooms` | printer plug, V2 tile behaviour (manifest controls) |
 | `switch.mainroomlight_switch_1` | MainRoomLight Switch 1 | Lighting · `lighting` | native | `parents-room` | bulb-power switch, read-only (owner rule on bulb power) |
 
+### rooms (1: 1 carried)
+
+| Entity | Friendly name (export) | Destination | Coverage | Also on | Note |
+|---|---|---|---|---|---|
+| `zone.home` | Home | People · `people` | carried | — | household count; native Rooms counts the three people instead, since a zone count reads 0 while the people it counts are dark |
+
+### living-room (0: none)
+
+Every V2 entity of this view is on its native rebuild.
+
+### kitchen (0: none)
+
+Every V2 entity of this view is on its native rebuild.
+
+### dining (0: none)
+
+Every V2 entity of this view is on its native rebuild.
+
+### parents-room (0: none)
+
+Every V2 entity of this view is on its native rebuild.
+
 ### ray-bedroom (0: none)
+
+Every V2 entity of this view is on its native rebuild.
+
+### garage (0: none)
 
 Every V2 entity of this view is on its native rebuild.
 
@@ -111,7 +143,7 @@ Every V2 entity of this view is on its native rebuild.
 
 | Locale | Output | url_path | Views | Keys on fallback | Missing keys |
 |---|---|---|---|---|---|
-| en | `dashboards/casaray_v3.yaml` | `/casaray-v3` | 37 | 0 | 0 |
-| yue | `dashboards/casaray_v3/dist/casaray_v3_yue.yaml` | `/casaray-v3-yue` | 37 | 0 | 0 |
-| km | `dashboards/casaray_v3/dist/casaray_v3_km.yaml` | `/casaray-v3-km` | 37 | 0 | 0 |
-| zh-Hans | `dashboards/casaray_v3/dist/casaray_v3_zh-hans.yaml` | `/casaray-v3-zh` | 37 | 165 | 0 |
+| en | `dashboards/casaray_v3.yaml` | `/casaray-v3` | 43 | 0 | 0 |
+| yue | `dashboards/casaray_v3/dist/casaray_v3_yue.yaml` | `/casaray-v3-yue` | 43 | 0 | 0 |
+| km | `dashboards/casaray_v3/dist/casaray_v3_km.yaml` | `/casaray-v3-km` | 43 | 0 | 0 |
+| zh-Hans | `dashboards/casaray_v3/dist/casaray_v3_zh-hans.yaml` | `/casaray-v3-zh` | 43 | 253 | 0 |

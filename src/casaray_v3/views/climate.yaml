@@ -27,7 +27,9 @@ sections:
     cards:
       - {c: ac_summary, entity: climate.bedroom_parents_room_ac}
       - {c: note, key: ac.readonly_note}
-      - {c: nav_button, label_key: ac.open_controls, icon: mdi:air-conditioner, target: parents-room, columns: 12}
+      # Parents' room is native (read-only HVAC) since CR-V3-18, so the V2 thermostat
+      # controls live on its classic copy.
+      - {c: nav_button, label_key: ac.open_controls, icon: mdi:air-conditioner, target: v2-parents-room, columns: 12}
   - span: 1
     heading: h.ac_status
     cards:

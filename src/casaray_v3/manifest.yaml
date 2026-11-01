@@ -58,6 +58,12 @@ native:
   - network
   - ray-bedroom
   - guest-room
+  - rooms
+  - living-room
+  - kitchen
+  - dining
+  - parents-room
+  - garage
 
 # Switches a V3-native view may control. V3-native views are read-only for
 # switches by default; each switch below is a device control that V2 already
@@ -76,6 +82,15 @@ controls:
   switch.g_printer_p100_led: {v2_view: guest-room, note: printer plug's LED}
   switch.g_printer_p100_auto_off_enabled: {v2_view: guest-room, note: printer plug's auto-off}
   switch.g_printer_p100_auto_update_enabled: {v2_view: guest-room, note: printer plug's firmware auto-update}
+  # CR-V3-18: ordinary settings only. Plug and appliance POWER in these rooms
+  # (freezer, coffee machine, bench plugs, socket strips) stays read-only.
+  switch.k_coffee_p100_led: {v2_view: kitchen, note: coffee plug's LED}
+  switch.k_top_p100_led: {v2_view: kitchen, note: top bench plug's LED}
+  switch.k_bot_p100_led: {v2_view: kitchen, note: bottom bench plug's LED}
+  switch.lg_fridge_express_mode: {v2_view: kitchen, note: fridge express (fast-cool) mode}
+  switch.g_monitor_freezer_p110m_led: {v2_view: garage, note: freezer plug's LED (the plug itself stays read-only)}
+  switch.master_bedroom_light_sensor_55_qled_4k_ai: {v2_view: parents-room, note: TV's ambient light sensor}
+  switch.smart_pet_feeder_time_watermark: {v2_view: dining, note: pet feeder video timestamp overlay}
 
 # Every other V2 view is carried verbatim (links rewritten to the locale's
 # url_base) until it is rebuilt. Order follows V2.
@@ -123,6 +138,9 @@ migration:
       {to: guest-room, status: native, note: "printer plug, V2 tile behaviour (manifest controls)"}
     switch.mainroomlight_switch_1:
       {to: lighting, status: native, note: "bulb-power switch, read-only (owner rule on bulb power)"}
+  rooms:
+    zone.home:
+      {to: people, status: carried, note: "household count; native Rooms counts the three people instead, since a zone count reads 0 while the people it counts are dark"}
   cameras:
     light.tapo_c200_stockroom_floodlight_timed:
       {to: lighting, status: native, note: camera floodlight}

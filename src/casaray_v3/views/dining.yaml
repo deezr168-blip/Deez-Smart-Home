@@ -1,0 +1,91 @@
+# V3 Dining — rebuilt natively (CR-V3-18). Every V2 Dining entity is here.
+# Kept exactly as V2: the dining light's brightness, the six scenes, the pet
+# feeder's camera (opens its stream page), indicator light, volume and video
+# timestamp switch (manifest controls).
+# Read-only here, V2 controls on the classic view (gated protected classes):
+# the bulb-power wall switch, the feeder's privacy and motion-alarm switches,
+# its night-vision and detection-sensitivity selects, and the dining motion
+# sensor's motion / light sensing switches.
+path: dining
+title: room.dining
+icon: mdi:table-chair
+sections:
+  - topbar: true
+
+  - span: 2
+    cards:
+      - c: chips
+        parts:
+          - c: chip_state
+            label_key: chip.motion_word
+            entity: binary_sensor.sensor_group_motion
+            words: {"on": rc.movement_word, "off": rc.quiet_word}
+          - {c: chip_value, label_key: chip.temperature, entity: sensor.living_room_living_room_temperature, digits: 1}
+          - c: chip_state
+            label_key: chip.light
+            entity: light.dining
+            words: {"on": s.on, "off": s.off}
+          - {c: chip_value, label_key: rc.light_level, entity: sensor.sensor_group_illuminance}
+
+  - span: 2
+    heading: h.lighting
+    cards:
+      - {c: light_tile, entity: light.dining, name: {t: dining.light}}
+      - {c: readonly_tile, entity: switch.dinning_light_switch_1, name: {t: ray.wall_switch}, nav: v2-dining}
+      - {c: note, key: room.switch_note}
+      - {c: heading, key: h.scenes, style: subtitle}
+      - c: scene_buttons
+        prefix: Dining
+        columns: 4
+        scenes: [scene.dining_dining_relax, scene.dining_dining_read, scene.dining_dining_nightlight,
+                 scene.dining_dining_energize, scene.dining_dining_concentrate, scene.dining_dining_midwinter]
+
+  # Sensors, full width: the room's own readings, then the other motion sensors
+  - span: 2
+    heading: h.sensors
+    cards:
+      - {c: sensor_tile, entity: binary_sensor.sensor_group_motion, name: {t: chip.motion_word}, columns: 4}
+      - {c: sensor_tile, entity: sensor.living_room_living_room_temperature, name: {t: chip.temperature}, columns: 4}
+      - {c: sensor_tile, entity: sensor.sensor_group_illuminance, name: {t: rc.light_level}, columns: 4}
+      - {c: sensor_tile, entity: binary_sensor.master_bedroom_bedroom_hue_sensor_motion, name: {t: dining.bedroom_motion}, columns: 4}
+      - {c: sensor_tile, entity: sensor.master_bedroom_bedroom_hue_sensor_temperature, name: {t: dining.bedroom_temp}, columns: 4}
+      - {c: sensor_tile, entity: sensor.master_bedroom_bedroom_hue_sensor_illuminance, name: {t: dining.bedroom_lux}, columns: 4}
+      - {c: sensor_tile, entity: sensor.master_bedroom_bedroom_hue_sensor_battery, name: {t: dining.bedroom_battery}, columns: 4}
+      - {c: sensor_tile, entity: binary_sensor.living_room_living_room_motion, name: {t: dining.room_motion}, columns: 4}
+      - {c: sensor_tile, entity: sensor.living_room_living_room_illuminance, name: {t: dining.room_lux}, columns: 4}
+      - {c: readonly_tile, entity: switch.living_room_living_room_motion_sensor_enabled, name: {t: room.motion_sensing}, columns: 6, nav: v2-dining}
+      - {c: readonly_tile, entity: switch.living_room_living_room_light_sensor_enabled, name: {t: room.light_sensing}, columns: 6, nav: v2-dining}
+      - {c: note, key: room.sensing_note}
+
+  # Pet feeder: camera | settings
+  - span: 1
+    heading: h.pet_feeder
+    cards:
+      - {c: camera_card, entity: camera.smart_pet_feeder, name_key: room.pet_feeder, subview: camera-pet-feeder, columns: 12, rows: 4}
+  - span: 1
+    heading: h.feeder_settings
+    cards:
+      - {c: light_tile, entity: light.smart_pet_feeder_indicator_light, name: {t: dining.indicator}, brightness: false}
+      - {c: control_tile, entity: number.smart_pet_feeder_volume, name: {t: dining.volume}}
+      - {c: control_tile, entity: switch.smart_pet_feeder_time_watermark, name: {t: dining.timestamp}}
+      - {c: readonly_tile, entity: switch.smart_pet_feeder_privacy_mode, name: {c: fmt, key: det.privacy, name: {t: room.pet_feeder}}, nav: v2-dining}
+      - {c: readonly_tile, entity: switch.smart_pet_feeder_motion_alarm, name: {c: fmt, key: det.alarm, name: {t: room.pet_feeder}}, nav: v2-dining}
+      - {c: readonly_tile, entity: select.smart_pet_feeder_night_vision, name: {t: dining.night_vision}, nav: v2-dining}
+      - {c: readonly_tile, entity: select.smart_pet_feeder_motion_detection_sensitivity, name: {t: dining.sensitivity}, columns: 12, nav: v2-dining}
+      - {c: note, key: dining.feeder_note}
+
+  - span: 2
+    cards:
+      - {c: note, key: dining.no_climate}
+      - {c: note, key: room.no_automations}
+
+  - c: more_boards
+    classic_of: dining
+    items:
+      - [rooms, nav.all_rooms, mdi:floor-plan]
+      - [lighting, nav.lighting, mdi:lightbulb-group-outline]
+      - [kitchen, room.kitchen, mdi:countertop-outline]
+      - [living-room, room.living, mdi:sofa-outline]
+      - [cameras, nav.cameras, mdi:cctv]
+      - [home, nav.home, mdi:home-variant-outline]
+      - [security, nav.security, mdi:shield-home-outline]

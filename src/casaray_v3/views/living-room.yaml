@@ -1,0 +1,132 @@
+# V3 Living room — rebuilt natively (CR-V3-18). Every V2 Living Room entity
+# is here, on the same device. Kept exactly as V2: the room light's brightness,
+# the four Hue spots, the six scenes, the air purifier with its fan-speed
+# feature, the TV's media-control card, the front-door camera (opens its stream
+# page), selects (open their details).
+# Read-only here, V2 controls on the classic view (gated protected classes):
+# the five power-board sockets (what each one powers is not recorded), the
+# board's child lock, the Hue sensor's motion / light sensing switches, and
+# the doorbell chime volume.
+path: living-room
+title: room.living
+icon: mdi:sofa-outline
+sections:
+  - topbar: true
+
+  - span: 2
+    cards:
+      - c: chips
+        parts:
+          - c: chip_state
+            label_key: chip.motion_word
+            entity: binary_sensor.living_room_living_hue_hue_sensor_motion
+            words: {"on": rc.movement_word, "off": rc.quiet_word}
+          - {c: chip_value, label_key: chip.temperature, entity: sensor.living_room_living_hue_hue_sensor_temperature, digits: 1}
+          - c: chip_state
+            label_key: chip.light
+            entity: light.living_room
+            words: {"on": s.on, "off": s.off}
+          - {c: chip_value, label_key: chip.air_quality, entity: sensor.living_room_air_purifier_air_quality}
+
+  # Lighting — the room light, the four spots, then scenes
+  - span: 2
+    heading: h.lighting
+    cards:
+      - {c: light_tile, entity: light.living_room, name: {t: room.living}, columns: 12}
+      - {c: light_tile, entity: light.living_room_hue_ambiance_spot_1, name: {c: fmt, key: lr.spot, n: 1}, brightness: false, columns: 3}
+      - {c: light_tile, entity: light.living_room_hue_ambiance_spot_2, name: {c: fmt, key: lr.spot, n: 2}, brightness: false, columns: 3}
+      - {c: light_tile, entity: light.living_room_hue_ambiance_spot_3, name: {c: fmt, key: lr.spot, n: 3}, brightness: false, columns: 3}
+      - {c: light_tile, entity: light.living_room_hue_ambiance_spot_4, name: {c: fmt, key: lr.spot, n: 4}, brightness: false, columns: 3}
+      - c: chips
+        parts:
+          - c: chip_count
+            label_key: lr.spots_on
+            entities: [light.living_room_hue_ambiance_spot_1, light.living_room_hue_ambiance_spot_2,
+                       light.living_room_hue_ambiance_spot_3, light.living_room_hue_ambiance_spot_4]
+            on_states: ["on"]
+      - {c: heading, key: h.scenes, style: subtitle}
+      - c: scene_buttons
+        prefix: Living room
+        columns: 4
+        scenes: [scene.living_room_living_room_relax, scene.living_room_living_room_bright,
+                 scene.living_room_living_room_read, scene.living_room_living_room_nightlight,
+                 scene.living_room_living_room_energize, scene.living_room_living_room_concentrate]
+
+  # Climate (air quality) | sensors
+  - span: 1
+    heading: h.air_quality
+    cards:
+      - {c: control_tile, entity: fan.living_room_air_purifier, name: {t: lr.purifier}, columns: 12, features: [fan-speed]}
+      - {c: sensor_tile, entity: sensor.living_room_air_purifier_air_quality, name: {t: lr.aq}}
+      - {c: sensor_tile, entity: sensor.living_room_air_purifier_odor_sensor, name: {t: lr.odor}}
+      - {c: sensor_tile, entity: sensor.living_room_air_purifier_pm1, name: PM1}
+      - {c: sensor_tile, entity: sensor.living_room_air_purifier_pm1_health_concern, name: {c: fmt, key: lr.pm_level, pm: PM1}}
+      - {c: sensor_tile, entity: sensor.living_room_air_purifier_pm2_5, name: PM2.5}
+      - {c: sensor_tile, entity: sensor.living_room_air_purifier_pm2_5_health_concern, name: {c: fmt, key: lr.pm_level, pm: PM2.5}}
+      - {c: sensor_tile, entity: sensor.living_room_air_purifier_pm10, name: PM10}
+      - {c: sensor_tile, entity: sensor.living_room_air_purifier_pm10_health_concern, name: {c: fmt, key: lr.pm_level, pm: PM10}}
+  - span: 1
+    heading: h.sensors
+    cards:
+      - {c: sensor_tile, entity: binary_sensor.living_room_living_hue_hue_sensor_motion, name: {t: chip.motion_word}}
+      - {c: sensor_tile, entity: sensor.living_room_living_hue_hue_sensor_temperature, name: {t: chip.temperature}}
+      - {c: sensor_tile, entity: sensor.living_room_living_hue_hue_sensor_illuminance, name: {t: rc.light_level}}
+      - {c: sensor_tile, entity: binary_sensor.f_contact_sensor_door, name: {t: room.front_door}}
+      - c: history
+        entities: [sensor.living_room_living_hue_hue_sensor_temperature, sensor.living_room_living_hue_hue_sensor_illuminance]
+        hours: 24
+        rows: 3
+      - {c: heading, key: h.other_motion, style: subtitle}
+      - {c: sensor_tile, entity: binary_sensor.master_bedroom_living_hue_hue_sensor_motion, name: {t: lr.hue_motion}}
+      - {c: sensor_tile, entity: sensor.master_bedroom_living_hue_hue_sensor_temperature, name: {t: lr.hue_temp}}
+      - {c: sensor_tile, entity: sensor.master_bedroom_living_hue_hue_sensor_illuminance, name: {t: lr.hue_lux}}
+      - {c: sensor_tile, entity: sensor.master_bedroom_living_hue_hue_sensor_battery, name: {t: lr.hue_battery}}
+      - {c: sensor_tile, entity: binary_sensor.living_room_living_room_motion_2, name: {t: lr.room_motion}}
+      - {c: sensor_tile, entity: sensor.living_room_living_room_illuminance_2, name: {t: lr.room_lux}}
+
+  # Entertainment | front door
+  - span: 1
+    heading: h.entertainment
+    cards:
+      - {c: media, entity: media_player.living_room_tv_samsung_q9_series_65}
+  - span: 1
+    heading: h.front_door
+    cards:
+      - {c: camera_card, entity: camera.front_door_live_view, name_key: room.front_door, subview: camera-front-door, columns: 12, rows: 4}
+      - {c: sensor_tile, entity: sensor.front_door_battery, name: {t: lr.doorbell_battery}}
+      - {c: sensor_tile, entity: sensor.living_room_ringring_battery, name: {t: lr.ringring_battery}}
+      - {c: sensor_tile, entity: binary_sensor.living_room_ringring_motion, name: {t: lr.ringring_motion}}
+      - {c: readonly_tile, entity: number.front_door_volume, name: {t: lr.chime_volume}, nav: v2-living-room}
+
+  # Power board and device settings, full width
+  - span: 2
+    heading: h.power_board
+    cards:
+      - {c: note, key: room.sockets_note}
+      - {c: readonly_tile, entity: switch.genio_power_board_with_usb_livingroom_socket_1, name: {c: fmt, key: room.socket, n: 1}, columns: 4, nav: v2-living-room}
+      - {c: readonly_tile, entity: switch.genio_power_board_with_usb_livingroom_socket_2, name: {c: fmt, key: room.socket, n: 2}, columns: 4, nav: v2-living-room}
+      - {c: readonly_tile, entity: switch.genio_power_board_with_usb_livingroom_socket_3, name: {c: fmt, key: room.socket, n: 3}, columns: 4, nav: v2-living-room}
+      - {c: readonly_tile, entity: switch.genio_power_board_with_usb_livingroom_socket_4, name: {c: fmt, key: room.socket, n: 4}, columns: 4, nav: v2-living-room}
+      - {c: readonly_tile, entity: switch.genio_power_board_with_usb_livingroom_socket_5, name: {c: fmt, key: room.socket, n: 5}, columns: 4, nav: v2-living-room}
+      - {c: readonly_tile, entity: switch.genio_power_board_with_usb_livingroom_child_lock, name: {t: lr.child_lock}, columns: 4, nav: v2-living-room}
+      - {c: heading, key: h.settings, style: subtitle}
+      - {c: control_tile, entity: select.living_room_air_purifier_lamp, name: {t: lr.purifier_lamp}, columns: 3}
+      - {c: control_tile, entity: select.genio_power_board_with_usb_livingroom_power_on_behavior, name: {t: lr.board_boot}, columns: 3}
+      - {c: readonly_tile, entity: switch.living_room_living_hue_hue_sensor_motion_sensor_enabled, name: {t: room.motion_sensing}, columns: 3, nav: v2-living-room}
+      - {c: readonly_tile, entity: switch.living_room_living_hue_hue_sensor_light_sensor_enabled, name: {t: room.light_sensing}, columns: 3, nav: v2-living-room}
+      - {c: note, key: room.sensing_note}
+
+  - span: 2
+    cards:
+      - {c: note, key: room.no_automations}
+
+  - c: more_boards
+    classic_of: living-room
+    items:
+      - [rooms, nav.all_rooms, mdi:floor-plan]
+      - [lighting, nav.lighting, mdi:lightbulb-group-outline]
+      - [cameras, nav.cameras, mdi:cctv]
+      - [home, nav.home, mdi:home-variant-outline]
+      - [dining, room.dining, mdi:table-chair]
+      - [kitchen, room.kitchen, mdi:countertop-outline]
+      - [entertainment, nav.entertainment, mdi:television-classic]

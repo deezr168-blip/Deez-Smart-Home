@@ -512,6 +512,69 @@ def v2_verbatim(ctx, view, entities):
     return out
 
 
+def confirm_button(ctx, label_key, icon, action, target, confirm_key, columns=3, rows=1):
+    """A button whose service call asks first (V2's filter-reset pattern), with
+    the confirmation text localised. Never for a siren or a switch (gated)."""
+    ctx.use(target)
+    return {"type": "button", "name": ctx.t(label_key), "icon": icon, "show_state": False,
+            "show_name": True, "show_icon": True,
+            "tap_action": {"action": "perform-action", "perform_action": action,
+                           "target": {"entity_id": target},
+                           "confirmation": {"text": ctx.t(confirm_key)}},
+            "hold_action": {"action": "none"}, "grid_options": grid(columns, rows)}
+
+
+def shown_when(ctx, card, entity, state):
+    """Show `card` only while `entity` is `state` (V2's conditional card, as a
+    native visibility condition)."""
+    ctx.use(entity)
+    c = dict(card)
+    c["visibility"] = [{"condition": "state", "entity": entity, "state": state}]
+    return c
+
+
+def room_conditions(ctx, rooms, bare_key):
+    """One line per instrumented room: temperature and movement, each with its
+    own No data branch; uninstrumented rooms are counted into one closing line
+    (V2 Rooms' room conditions)."""
+    nd = jstr(ctx.t("s.no_data"))
+    rows, bare = [], 0
+    for r in rooms:
+        t, m = r.get("temp"), r.get("motion")
+        if not t and not m:
+            bare += 1
+            continue
+        parts = []
+        if t:
+            ctx.use(t)
+            parts.append("{{ ((states('" + t + "') | float) | round(1) ~ '°') if states('" + t + "') | is_number else "
+                         + jstr(ctx.t("rc.temp") + " " + ctx.t("s.no_data")) + " }}")
+        if m:
+            ctx.use(m)
+            parts.append("{{ " + jstr(ctx.t("rc.movement")) + " if states('" + m + "') == 'on' else ("
+                         + jstr(ctx.t("rc.quiet")) + " if states('" + m + "') == 'off' else "
+                         + jstr(ctx.t("rc.motion") + " " + ctx.t("s.no_data")) + ") }}")
+        rows.append("- **" + ctx.t(r["name_key"]) + "** " + " · ".join(parts))
+    del nd
+    body = "\n".join(rows)
+    if bare:
+        body += "\n\n<small>" + ctx.t(bare_key).replace("{n}", str(bare)) + "</small>"
+    return markdown(body)
+
+
+def freezer_status(ctx, plug, overload):
+    """V2 Garage's freezer line, kept to what the sensors say: overloaded wins;
+    'plug on, not overloaded' only when both answer (V2 said 'running normally',
+    which nothing here measures); a switched-off plug; otherwise not reporting."""
+    ctx.use([plug, overload])
+    o, s = "states('" + overload + "')", "states('" + plug + "')"
+    return markdown(
+        "{%- if " + o + " == 'on' -%}**" + ctx.t("garage.overloaded") + "** " + ctx.t("garage.check_first")
+        + "{%- elif " + o + " == 'off' and " + s + " == 'on' -%}" + ctx.t("garage.on_ok")
+        + "{%- elif " + s + " == 'off' -%}**" + ctx.t("garage.plug_off") + "**"
+        + "{%- else -%}" + ctx.t("garage.not_reporting") + "{%- endif -%}")
+
+
 def scene_buttons(ctx, scenes, prefix, columns=3):
     """Scene buttons labelled from the states export's own friendly names."""
     out = []

@@ -1,0 +1,62 @@
+# V3 Rooms — the room index, rebuilt natively (CR-V3-18). Every room tile is
+# the same entity V2 shows and opens the same page (V2: tap navigates, the
+# icon does nothing — reproduced exactly). The household count uses the three
+# people (what answered), not zone.home: a zone count reads 0 while the people
+# it counts are dark, so it stays on the People board (manifest migration).
+path: rooms
+title: nav.rooms
+icon: mdi:floor-plan
+sections:
+  - topbar: true
+
+  - span: 2
+    cards:
+      - c: chips
+        parts:
+          - c: chip_count
+            label_key: chip.people
+            entities: [person.raymond_du, person.vinh_du, person.ai_q_huang]
+            on_states: [home]
+          - c: chip_state
+            label_key: chip.internet
+            entity: binary_sensor.eero_wan_status
+            words: {"on": s.online, "off": s.offline}
+            unavailable: s.no_data
+
+  - span: 2
+    heading: h.rooms
+    cards:
+      - {c: readonly_tile, entity: light.living_room, name: {t: room.living}, nav: living-room}
+      - {c: readonly_tile, entity: binary_sensor.k_motion_sensor_motion, name: {t: room.kitchen}, nav: kitchen}
+      - {c: readonly_tile, entity: light.dining, name: {t: room.dining}, nav: dining}
+      - {c: readonly_tile, entity: climate.bedroom_parents_room_ac, name: {t: room.parents}, nav: parents-room}
+      - {c: readonly_tile, entity: light.bedroom_bedroom, name: {t: room.ray}, nav: ray-bedroom}
+      - {c: readonly_tile, entity: switch.g_monitor_freezer_p110m, name: {t: room.garage}, nav: garage}
+      - {c: readonly_tile, entity: switch.g_printer_p100, name: {t: room.guest}, nav: guest-room}
+      - {c: readonly_tile, entity: binary_sensor.b_contact_sensor_door, name: {t: room.backyard}, nav: security}
+
+  - span: 2
+    heading: h.room_conditions
+    cards:
+      - c: room_conditions
+        bare_key: rc.bare
+        rooms:
+          - {name_key: room.living, temp: sensor.living_room_living_hue_hue_sensor_temperature,
+             motion: binary_sensor.living_room_living_hue_hue_sensor_motion}
+          - {name_key: room.kitchen, motion: binary_sensor.k_motion_sensor_motion}
+          - {name_key: room.dining, temp: sensor.living_room_living_room_temperature, motion: binary_sensor.sensor_group_motion}
+          - {name_key: room.parents, temp: sensor.bedroom_motion_sensor_temperature, motion: binary_sensor.bedroom_motion_sensor_motion}
+          - {name_key: room.ray}
+          - {name_key: room.garage}
+          - {name_key: room.guest}
+
+  - c: more_boards
+    classic_of: rooms
+    items:
+      - [home, nav.home, mdi:home-variant-outline]
+      - [lighting, nav.lighting, mdi:lightbulb-group-outline]
+      - [climate, nav.climate, mdi:thermometer]
+      - [security, nav.security, mdi:shield-home-outline]
+      - [energy, nav.energy, mdi:lightning-bolt-outline]
+      - [house-health, nav.house_health, mdi:home-heart]
+      - [people, nav.people, mdi:account-group-outline]

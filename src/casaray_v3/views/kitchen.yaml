@@ -1,0 +1,102 @@
+# V3 Kitchen — rebuilt natively (CR-V3-18). Every V2 Kitchen entity is here.
+# Kept exactly as V2: the fridge and freezer setpoints with their number
+# feature, the fridge's express mode, the plug LEDs, the auto-off timers
+# (details dialog), the shopping list.
+# Read-only here, V2 controls on the classic view: the coffee machine and both
+# bench plugs, and their auto-off switches — appliance power whose loads are
+# not recorded (gated: critical / unverified loads).
+path: kitchen
+title: room.kitchen
+icon: mdi:countertop-outline
+sections:
+  - topbar: true
+
+  - span: 2
+    cards:
+      - c: chips
+        parts:
+          - c: chip_state
+            label_key: chip.occupancy
+            entity: binary_sensor.k_motion_sensor_occupancy
+            words: {"on": rc.occupied, "off": rc.not_occupied}
+          - {c: chip_value, label_key: chip.fridge, entity: sensor.kitchen_electrolux_fridge_temperature, digits: 1}
+          - c: chip_state
+            label_key: chip.fridge_door
+            entity: binary_sensor.lg_fridge_door
+            words: {"on": s.open, "off": s.closed}
+          - c: chip_count
+            label_key: chip.bench_on
+            entities: [switch.k_coffee_p100, switch.k_top_p100, switch.k_bot_p100]
+            on_states: ["on"]
+
+  # Room template: no light and no climate device in the kitchen, said once
+  - span: 2
+    cards:
+      - {c: note, key: kitchen.no_light_climate}
+
+  # Appliances | fridge
+  - span: 1
+    heading: h.bench_plugs
+    cards:
+      - {c: readonly_tile, entity: switch.k_coffee_p100, name: {t: kitchen.coffee}, nav: v2-kitchen}
+      - {c: readonly_tile, entity: switch.k_bot_p100, name: {t: kitchen.bottom_bench}, nav: v2-kitchen}
+      - {c: readonly_tile, entity: switch.k_top_p100, name: {t: kitchen.top_bench}, nav: v2-kitchen}
+      - {c: note, key: kitchen.plugs_note, columns: 6}
+  - span: 1
+    heading: h.fridge
+    cards:
+      - {c: sensor_tile, entity: binary_sensor.lg_fridge_door, name: {t: chip.fridge_door}}
+      - {c: control_tile, entity: switch.lg_fridge_express_mode, name: {t: kitchen.express}}
+      - {c: control_tile, entity: number.lg_fridge_fridge_temperature, name: {t: kitchen.fridge_set}, features: [numeric-input]}
+      - {c: control_tile, entity: number.lg_fridge_freezer_temperature, name: {t: kitchen.freezer_set}, features: [numeric-input]}
+
+  # Electrolux fridge sensor | motion
+  - span: 1
+    heading: h.electrolux
+    cards:
+      - {c: sensor_tile, entity: sensor.kitchen_electrolux_fridge_temperature, name: {t: chip.temperature}}
+      - {c: sensor_tile, entity: sensor.kitchen_electrolux_fridge_humidity, name: {t: chip.humidity}}
+      - {c: sensor_tile, entity: sensor.kitchen_electrolux_fridge_battery, name: {t: kitchen.sensor_battery}, columns: 12}
+  - span: 1
+    heading: h.sensors
+    cards:
+      - {c: sensor_tile, entity: binary_sensor.k_motion_sensor_motion, name: {t: chip.motion_word}}
+      - {c: sensor_tile, entity: binary_sensor.k_motion_sensor_occupancy, name: {t: chip.occupancy}}
+      - c: history
+        entities: [binary_sensor.k_motion_sensor_motion, binary_sensor.lg_fridge_door]
+        hours: 24
+        rows: 3
+
+  - span: 2
+    heading: h.shopping
+    cards:
+      - {c: todo, entity: todo.shopping_list, rows: 6}
+
+  # Plug settings: LEDs act as in V2; auto-off switches read-only (they can cut appliance power)
+  - span: 2
+    heading: h.plug_settings
+    cards:
+      - {c: control_tile, entity: switch.k_coffee_p100_led, name: {c: fmt, key: kitchen.led_of, name: {t: kitchen.coffee}}, columns: 4}
+      - {c: readonly_tile, entity: switch.k_coffee_p100_auto_off_enabled, name: {c: fmt, key: kitchen.auto_off_of, name: {t: kitchen.coffee}}, columns: 4, nav: v2-kitchen}
+      - {c: control_tile, entity: number.k_coffee_p100_turn_off_in, name: {c: fmt, key: kitchen.off_in_of, name: {t: kitchen.coffee}}, columns: 4}
+      - {c: control_tile, entity: switch.k_top_p100_led, name: {c: fmt, key: kitchen.led_of, name: {t: kitchen.top_bench}}, columns: 4}
+      - {c: readonly_tile, entity: switch.k_top_p100_auto_off_enabled, name: {c: fmt, key: kitchen.auto_off_of, name: {t: kitchen.top_bench}}, columns: 4, nav: v2-kitchen}
+      - {c: control_tile, entity: number.k_top_p100_turn_off_in, name: {c: fmt, key: kitchen.off_in_of, name: {t: kitchen.top_bench}}, columns: 4}
+      - {c: control_tile, entity: switch.k_bot_p100_led, name: {c: fmt, key: kitchen.led_of, name: {t: kitchen.bottom_bench}}, columns: 4}
+      - {c: readonly_tile, entity: switch.k_bot_p100_auto_off_enabled, name: {c: fmt, key: kitchen.auto_off_of, name: {t: kitchen.bottom_bench}}, columns: 4, nav: v2-kitchen}
+      - {c: control_tile, entity: number.k_bot_p100_turn_off_in, name: {c: fmt, key: kitchen.off_in_of, name: {t: kitchen.bottom_bench}}, columns: 4}
+
+  - span: 2
+    cards:
+      - {c: note, key: room.no_automations}
+
+  - c: more_boards
+    classic_of: kitchen
+    items:
+      - [rooms, nav.all_rooms, mdi:floor-plan]
+      - [dining, room.dining, mdi:table-chair]
+      - [living-room, room.living, mdi:sofa-outline]
+      - [home, nav.home, mdi:home-variant-outline]
+      - [energy, nav.energy, mdi:lightning-bolt-outline]
+      - [security, nav.security, mdi:shield-home-outline]
+      - [network, nav.network, mdi:router-wireless]

@@ -19,10 +19,11 @@ bash scripts/ha_validate.sh                     # repository gate
 | Check | Result |
 |---|---|
 | Build reproducible (`--check`: committed outputs == fresh build) | pass |
-| V3 gate, 4 locales × 9 native views: structure, navigation, deps, entities, safety, tile safety, rendered honesty, secrets, migration map, controls allowlist | **696 passed, 0 failed**, 8 notes |
-| Regression tests (`tests/v3`, 49 tests) | **OK** |
+| V3 gate, 4 locales × 15 native views: structure, navigation, deps, entities, safety, tile safety, protected classes, button confirmations, rendered honesty, secrets, migration map, controls allowlist | **1191 passed, 0 failed**, 12 notes |
+| Regression tests (`tests/v3`, 63 tests) | **OK** |
 | Migration map: all 16 V2-home entities and the 2 V2-cameras floodlights have a verified V3 place | **18 of 18 native** (CR-V3-17 made the last 6 native) |
 | Rebuilt Security, Network, Ray's room, Guest room: every V2 entity on its native rebuild | **4 of 4** (rooms: entity set identical to V2) |
+| Rebuilt Rooms index, Living room, Kitchen, Dining, Parents' room, Garage: every V2 entity accounted for | **6 of 6** (155 of 156 per-view entity references on the rebuilds; `zone.home` stays on carried People, a verified migration row) |
 | Repository gate `scripts/ha_validate.sh` | **PASSED** (8 sections); its section 8 (HA config check) SKIPPED: no hass, no /config |
 | `dashboards/casaray_v2.yaml` sha256 | `77a4991626d6f8afcd9b78f235c34417d84d9f36c129549a386d8a66c324226c` (unchanged) |
 | V2, legacy dashboard, `themes/` | unchanged vs `casaray-v3-design` |
@@ -70,13 +71,22 @@ switch and the bulb-power switch made controls, a listed switch acting unlike
 V2) plus an allowlist missing the printer plug, and expects each to be caught;
 the real views pass. Rebuilt views are also checked tile by tile against
 their V2 tiles: same effective tap and icon actions, same features, same
-scenes, apart from the protected switches, which open the classic controls. The unpaid-bills check reports clear only when the
+scenes, apart from the protected switches, which open the classic controls.
+CR-V3-18 adds: ordinary room settings act as in V2 and sensitive switches /
+settings are inert and gated; the rooms index opens the same pages as V2;
+the air-con stays read-only with one tap to the V2 thermostat; Climate's
+controls button opens `v2-parents-room` in every locale; the filter reset
+asks first in every locale (and a copy with the confirmation removed is
+caught); the freezer line and room conditions never claim what nothing
+measured. Three real-build mutants are caught: the freezer plug made a
+control, the filter reset without a confirmation, Climate's button pointed
+back at the native Parents' room. The unpaid-bills check reports clear only when the
 count and all six paid flags answer, and is shown both raising a count and
 refusing a zero from dark inputs.
 
 ## Notes from the gate (not failures)
 
-- `zh-Hans`: 97 strings fall back to English (partial by design).
+- `zh-Hans`: 253 strings fall back to English (partial by design; V2 vocabulary only).
 - Native views reference 30 distinct entities that were not `ok` in the 05/09 export
   (Hue spots, two Tapo C420 streams, the three contact sensors, never-used
   scenes). They draw as No data / Offline / State unknown when so.

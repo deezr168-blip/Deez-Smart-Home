@@ -1,0 +1,75 @@
+# V3 Garage — rebuilt natively (CR-V3-18). Every V2 Garage entity is here.
+# The freezer plug and its auto-off switch are read-only here (a critical
+# load: switched off by a mis-tap, the freezer thaws). Their V2 controls are
+# on the classic Garage view. Kept as V2: the plug LED (manifest controls) and
+# the power-protection / auto-off timer numbers (details dialog).
+path: garage
+title: room.garage
+icon: mdi:garage-variant
+sections:
+  - topbar: true
+
+  - span: 2
+    cards:
+      - c: chips
+        parts:
+          - c: chip_state
+            label_key: chip.freezer_plug
+            entity: switch.g_monitor_freezer_p110m
+            words: {"on": s.on, "off": s.off}
+          - {c: chip_value, label_key: chip.power_now, entity: sensor.g_monitor_freezer_p110m_current_consumption}
+          - c: chip_state
+            label_key: chip.socket
+            entity: binary_sensor.g_monitor_freezer_p110m_cloud_connection
+            words: {"on": s.online, "off": s.offline}
+            unavailable: s.no_data
+          - {c: chip_value, label_key: plug.today, entity: sensor.g_monitor_freezer_p110m_today_s_consumption, digits: 1}
+
+  - span: 2
+    cards:
+      - {c: note, key: garage.no_light_climate}
+
+  # Freezer | electrical
+  - span: 1
+    heading: h.freezer
+    cards:
+      - {c: readonly_tile, entity: switch.g_monitor_freezer_p110m, name: {t: garage.freezer_plug}, nav: v2-garage}
+      - {c: sensor_tile, entity: binary_sensor.g_monitor_freezer_p110m_cloud_connection, name: {t: garage.socket_online}}
+      - {c: sensor_tile, entity: binary_sensor.g_monitor_freezer_p110m_overloaded, name: {t: plug.overloaded}, columns: 12}
+      - {c: freezer_status, plug: switch.g_monitor_freezer_p110m, overload: binary_sensor.g_monitor_freezer_p110m_overloaded}
+      - {c: note, key: garage.plug_note}
+  - span: 1
+    heading: h.electrical
+    cards:
+      - {c: sensor_tile, entity: sensor.g_monitor_freezer_p110m_current_consumption, name: {t: plug.drawing}}
+      - {c: sensor_tile, entity: sensor.g_monitor_freezer_p110m_today_s_consumption, name: {t: plug.today}}
+      - {c: sensor_tile, entity: sensor.g_monitor_freezer_p110m_current, name: {t: plug.current}}
+      - {c: sensor_tile, entity: sensor.g_monitor_freezer_p110m_this_month_s_consumption, name: {t: plug.month}}
+      - {c: sensor_tile, entity: sensor.g_monitor_freezer_p110m_voltage, name: {t: plug.voltage}, columns: 12}
+      - c: history
+        entities: [sensor.g_monitor_freezer_p110m_current_consumption]
+        hours: 24
+        rows: 3
+
+  - span: 2
+    heading: h.settings
+    cards:
+      - {c: control_tile, entity: number.g_monitor_freezer_p110m_power_protection, name: {t: plug.protection}, columns: 3}
+      - {c: readonly_tile, entity: switch.g_monitor_freezer_p110m_auto_off_enabled, name: {t: plug.auto_off}, columns: 3, nav: v2-garage}
+      - {c: control_tile, entity: number.g_monitor_freezer_p110m_turn_off_in, name: {t: plug.auto_off_in}, columns: 3}
+      - {c: control_tile, entity: switch.g_monitor_freezer_p110m_led, name: {t: plug.led}, columns: 3}
+
+  - span: 2
+    cards:
+      - {c: note, key: room.no_automations}
+
+  - c: more_boards
+    classic_of: garage
+    items:
+      - [rooms, nav.all_rooms, mdi:floor-plan]
+      - [energy, nav.energy, mdi:lightning-bolt-outline]
+      - [home, nav.home, mdi:home-variant-outline]
+      - [network, nav.network, mdi:router-wireless]
+      - [house-health, nav.house_health, mdi:home-heart]
+      - [kitchen, room.kitchen, mdi:countertop-outline]
+      - [security, nav.security, mdi:shield-home-outline]

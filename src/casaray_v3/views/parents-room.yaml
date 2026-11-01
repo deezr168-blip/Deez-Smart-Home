@@ -1,0 +1,137 @@
+# V3 Parents' room — rebuilt natively (CR-V3-18), to the V3 rule for parents:
+# plain words, large targets, state in words as well as colour.
+# Every V2 Parents Room entity is here.
+#  * Air-con: read-only (V3-008), stated in words; one large button opens the
+#    classic Parents' room, where V2's thermostat controls are unchanged. The
+#    Climate React and AC timer switches are read-only too (air-con
+#    behaviour). The timer's end time shows only while the timer is on, as V2.
+#  * The main light is a bulb-power wall switch: read-only (owner rule, as on
+#    V3 Lighting); its V2 control is on the classic view.
+#  * The power point's five sockets are read-only (what each powers is not
+#    recorded).
+#  * Kept exactly as V2: the TV's media-control card, the TV light-sensor
+#    switch (manifest controls), the AC firmware tile (details dialog), and the
+#    filter reset button, which asks before it acts (text now localised).
+path: parents-room
+title: room.parents
+icon: mdi:bed-outline
+sections:
+  - topbar: true
+
+  - span: 2
+    cards:
+      - c: chips
+        parts:
+          - c: chip_state
+            label_key: chip.occupancy
+            entity: binary_sensor.bedroom_parents_room_ac_room_occupied
+            words: {"on": rc.occupied, "off": rc.not_occupied}
+          - {c: chip_value, label_key: chip.temperature, entity: sensor.bedroom_motion_sensor_temperature, digits: 1}
+          - {c: chip_value, label_key: chip.humidity, entity: sensor.bedroom_motion_sensor_humidity, digits: 0}
+          - c: chip_state
+            label_key: chip.ac
+            entity: climate.bedroom_parents_room_ac
+            words: {"off": ac.mode_off, cool: ac.mode_cool, heat: ac.mode_heat, fan_only: ac.mode_fan_only,
+                    dry: ac.mode_dry, auto: ac.mode_auto, heat_cool: ac.mode_heat_cool}
+
+  # Lighting | air-con
+  - span: 1
+    heading: h.lighting
+    cards:
+      - {c: readonly_tile, entity: switch.mainroomlight_switch_1, name: {t: parents.main_light}, columns: 12, nav: v2-parents-room}
+      - {c: note, key: room.switch_note}
+  - span: 1
+    heading: h.air_con
+    cards:
+      - {c: ac_summary, entity: climate.bedroom_parents_room_ac}
+      - {c: nav_button, label_key: ac.open_controls, icon: mdi:air-conditioner, target: v2-parents-room, columns: 12, rows: 2}
+      - {c: readonly_tile, entity: switch.bedroom_parents_room_ac_climate_react, name: {t: parents.climate_react}, nav: v2-parents-room}
+      - {c: readonly_tile, entity: switch.bedroom_parents_room_ac_timer, name: {t: parents.ac_timer}, nav: v2-parents-room}
+      - c: shown_when
+        entity: switch.bedroom_parents_room_ac_timer
+        state: "on"
+        card: {c: sensor_tile, entity: sensor.bedroom_parents_room_ac_timer_end_time, name: {t: parents.timer_ends}, columns: 12}
+      - {c: note, key: ac.readonly_note}
+
+  # Sensors | emergency buttons
+  - span: 1
+    heading: h.sensors
+    cards:
+      - {c: sensor_tile, entity: binary_sensor.bedroom_motion_sensor_motion, name: {t: chip.motion_word}}
+      - {c: sensor_tile, entity: binary_sensor.bedroom_parents_room_ac_room_occupied, name: {t: chip.occupancy}}
+      - {c: sensor_tile, entity: sensor.bedroom_motion_sensor_temperature, name: {t: chip.temperature}}
+      - {c: sensor_tile, entity: sensor.bedroom_motion_sensor_humidity, name: {t: chip.humidity}}
+      - {c: sensor_tile, entity: binary_sensor.m_contact_sensor_door, name: {t: parents.door}, columns: 12}
+      - c: history
+        entities: [sensor.bedroom_motion_sensor_temperature, sensor.bedroom_motion_sensor_humidity]
+        hours: 24
+        rows: 3
+  - span: 1
+    heading: h.emergency
+    cards:
+      - c: connectivity
+        devices:
+          - {entity: binary_sensor.emergency_button_dad_cloud_connection, signal: sensor.emergency_button_dad_signal_level}
+          - {entity: binary_sensor.emergency_button_mum_cloud_connection, signal: sensor.emergency_button_mum_signal_level}
+      - {c: sensor_tile, entity: binary_sensor.emergency_button_dad_cloud_connection, name: {t: parents.dad_button}}
+      - {c: sensor_tile, entity: binary_sensor.emergency_button_mum_cloud_connection, name: {t: parents.mum_button}}
+      - {c: sensor_tile, entity: sensor.emergency_button_dad_signal_level, name: {t: parents.dad_signal}}
+      - {c: sensor_tile, entity: sensor.emergency_button_mum_signal_level, name: {t: parents.mum_signal}}
+      - {c: note, key: parents.emergency_note}
+
+  # Entertainment | television
+  - span: 1
+    heading: h.entertainment
+    cards:
+      - {c: media, entity: media_player.55_qled_4k_ai_qa55q7faawxxy}
+  - span: 1
+    heading: h.television
+    cards:
+      - {c: sensor_tile, entity: sensor.master_bedroom_55_qled_4k_ai_power, name: {t: plug.drawing}}
+      - {c: sensor_tile, entity: sensor.master_bedroom_55_qled_4k_ai_energy, name: {t: parents.tv_energy}}
+      - {c: sensor_tile, entity: sensor.master_bedroom_55_qled_4k_ai_energy_saved, name: {t: parents.tv_saved}}
+      - {c: sensor_tile, entity: sensor.master_bedroom_55_qled_4k_ai_tv_channel_name, name: {t: parents.tv_channel}}
+      - {c: sensor_tile, entity: sensor.master_bedroom_light_sensor_55_qled_4k_ai_illuminance, name: {t: parents.room_light}}
+      - {c: sensor_tile, entity: sensor.master_bedroom_light_sensor_55_qled_4k_ai_brightness_intensity, name: {t: parents.tv_brightness}}
+      - {c: control_tile, entity: switch.master_bedroom_light_sensor_55_qled_4k_ai, name: {t: parents.tv_light_sensor}, columns: 12}
+
+  # Power point | air-con maintenance and sensor health
+  - span: 1
+    heading: h.power_point
+    cards:
+      - {c: readonly_tile, entity: switch.master_bedroom_power_point_socket_1, name: {c: fmt, key: room.socket, n: 1}, nav: v2-parents-room}
+      - {c: readonly_tile, entity: switch.master_bedroom_power_point_socket_2, name: {c: fmt, key: room.socket, n: 2}, nav: v2-parents-room}
+      - {c: readonly_tile, entity: switch.master_bedroom_power_point_socket_3, name: {c: fmt, key: room.socket, n: 3}, nav: v2-parents-room}
+      - {c: readonly_tile, entity: switch.master_bedroom_power_point_socket_4, name: {c: fmt, key: room.socket, n: 4}, nav: v2-parents-room}
+      - {c: readonly_tile, entity: switch.master_bedroom_power_point_socket_5, name: {c: fmt, key: room.socket, n: 5}, columns: 12, nav: v2-parents-room}
+      - {c: note, key: room.sockets_note}
+  - span: 1
+    heading: h.ac_maintenance
+    cards:
+      - {c: sensor_tile, entity: binary_sensor.bedroom_parents_room_ac_filter_clean_required, name: {t: parents.filter}}
+      - {c: sensor_tile, entity: sensor.bedroom_parents_room_ac_filter_last_reset, name: {t: parents.filter_reset_at}}
+      - c: confirm_button
+        label_key: parents.reset_filter
+        icon: mdi:restart
+        action: button.press
+        target: button.bedroom_parents_room_ac_reset_filter
+        confirm_key: parents.reset_confirm
+        columns: 6
+      - {c: control_tile, entity: update.bedroom_parents_room_ac_firmware, name: {t: parents.firmware}}
+      - {c: sensor_tile, entity: binary_sensor.bedroom_motion_sensor_connectivity, name: {t: parents.sensor_link}}
+      - {c: sensor_tile, entity: binary_sensor.bedroom_motion_sensor_main_sensor, name: {t: parents.sensor_core}}
+
+  - span: 2
+    cards:
+      - {c: note, key: room.no_automations}
+
+  - c: more_boards
+    classic_of: parents-room
+    items:
+      - [rooms, nav.all_rooms, mdi:floor-plan]
+      - [climate, nav.climate, mdi:thermometer]
+      - [home, nav.home, mdi:home-variant-outline]
+      - [security, nav.security, mdi:shield-home-outline]
+      - [people, nav.people, mdi:account-group-outline]
+      - [entertainment, nav.entertainment, mdi:television-classic]
+      - [ray-bedroom, room.ray, mdi:bed-king-outline]

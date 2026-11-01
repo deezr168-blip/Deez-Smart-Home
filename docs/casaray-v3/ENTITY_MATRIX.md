@@ -8,75 +8,94 @@ Authority: `docs/live/states_export_2026-09-05.txt` — proves an ID **exists**.
 |---|---|---|---|---|
 | `binary_sensor.aqara_roller_shade_driver_e1_configuration_status` | Aqara Roller Shade Driver E1 Configuration status | Ray Bedroom | ok | ray-bedroom |
 | `binary_sensor.b_contact_sensor_cloud_connection` | B/Contact Sensor Cloud connection | Backyard | unavailable | network |
-| `binary_sensor.b_contact_sensor_door` | B/Contact Sensor Door | Backyard | unavailable | home, security |
-| `binary_sensor.bedroom_motion_sensor_motion` | Parents Room Motion Sensor Motion | Parents Room | ok | security |
-| `binary_sensor.bedroom_parents_room_ac_filter_clean_required` | Parents Room AC Filter clean required | Parents Room | ok | home, climate |
-| `binary_sensor.bedroom_parents_room_ac_room_occupied` | Parents Room AC Room occupied | Parents Room | ok | climate |
+| `binary_sensor.b_contact_sensor_door` | B/Contact Sensor Door | Backyard | unavailable | home, rooms, security |
+| `binary_sensor.bedroom_motion_sensor_connectivity` | Parents Room Motion Sensor Connectivity | Parents Room | ok | parents-room |
+| `binary_sensor.bedroom_motion_sensor_main_sensor` | Parents Room Motion Sensor Main sensor | Parents Room | ok | parents-room |
+| `binary_sensor.bedroom_motion_sensor_motion` | Parents Room Motion Sensor Motion | Parents Room | ok | rooms, parents-room, security |
+| `binary_sensor.bedroom_parents_room_ac_filter_clean_required` | Parents Room AC Filter clean required | Parents Room | ok | home, parents-room, climate |
+| `binary_sensor.bedroom_parents_room_ac_room_occupied` | Parents Room AC Room occupied | Parents Room | ok | parents-room, climate |
 | `binary_sensor.casa_solar_online` | Casa Solar Online | - | ok | energy |
-| `binary_sensor.eero_wan_status` | eero Gateway WAN status | Network | ok | home, guest-room, security, network |
-| `binary_sensor.emergency_button_dad_cloud_connection` | Emergency Button Dad Cloud connection | Parents Room | ok | network |
-| `binary_sensor.emergency_button_mum_cloud_connection` | Emergency Button Mum Cloud connection | Parents Room | ok | network |
+| `binary_sensor.eero_wan_status` | eero Gateway WAN status | Network | ok | home, rooms, guest-room, security, network |
+| `binary_sensor.emergency_button_dad_cloud_connection` | Emergency Button Dad Cloud connection | Parents Room | ok | parents-room, network |
+| `binary_sensor.emergency_button_mum_cloud_connection` | Emergency Button Mum Cloud connection | Parents Room | ok | parents-room, network |
 | `binary_sensor.f_contact_sensor_cloud_connection` | F/Contact Sensor Cloud connection | Living Room | unavailable | network |
-| `binary_sensor.f_contact_sensor_door` | F/Contact Sensor Door | Living Room | unavailable | home, security |
-| `binary_sensor.g_monitor_freezer_p110m_cloud_connection` | G/Monitor Freezer P110M Cloud connection | Garage | ok | network |
-| `binary_sensor.g_monitor_freezer_p110m_overloaded` | G/Monitor Freezer P110M Overloaded | Garage | ok | home |
+| `binary_sensor.f_contact_sensor_door` | F/Contact Sensor Door | Living Room | unavailable | home, living-room, security |
+| `binary_sensor.g_monitor_freezer_p110m_cloud_connection` | G/Monitor Freezer P110M Cloud connection | Garage | ok | garage, network |
+| `binary_sensor.g_monitor_freezer_p110m_overloaded` | G/Monitor Freezer P110M Overloaded | Garage | ok | home, garage |
 | `binary_sensor.g_printer_p100_cloud_connection` | G/Printer P100 Cloud connection | Guest Room | ok | network |
 | `binary_sensor.k_bot_p100_cloud_connection` | K/Bot P100 Cloud connection | Kitchen | ok | network |
 | `binary_sensor.k_coffee_p100_cloud_connection` | K/Coffee P100 Cloud connection | Kitchen | ok | network |
 | `binary_sensor.k_motion_sensor_cloud_connection` | K/Motion Sensor Cloud connection | Kitchen | ok | network |
-| `binary_sensor.k_motion_sensor_motion` | K/Motion Sensor Motion | Kitchen | ok | security |
+| `binary_sensor.k_motion_sensor_motion` | K/Motion Sensor Motion | Kitchen | ok | rooms, kitchen, security |
+| `binary_sensor.k_motion_sensor_occupancy` | K/Motion Sensor Occupancy | Kitchen | ok | kitchen |
 | `binary_sensor.k_smart_button_cloud_connection` | K/Smart Button Cloud connection | Kitchen | ok | network |
 | `binary_sensor.k_top_p100_cloud_connection` | K/Top P100 Cloud connection | Kitchen | ok | network |
-| `binary_sensor.lg_fridge_door` | LG-Fridge Door | Kitchen | ok | home |
-| `binary_sensor.living_room_living_hue_hue_sensor_motion` | Living Room Motion Sensor Motion | Living Room | ok | security |
+| `binary_sensor.lg_fridge_door` | LG-Fridge Door | Kitchen | ok | home, kitchen |
+| `binary_sensor.living_room_living_hue_hue_sensor_motion` | Living Room Motion Sensor Motion | Living Room | ok | rooms, living-room, security |
+| `binary_sensor.living_room_living_room_motion` | Dining Room Motion Sensor Motion | Dining | ok | dining |
+| `binary_sensor.living_room_living_room_motion_2` | Living room Motion | Living Room | ok | living-room |
+| `binary_sensor.living_room_ringring_motion` | RingRing Motion | Living Room | ok | living-room |
 | `binary_sensor.lph_se_dcd9_pump` | LPH-SE DCD9 Pump | Ray Bedroom | unavailable | ray-bedroom |
 | `binary_sensor.m_contact_sensor_cloud_connection` | M/Contact Sensor Cloud connection | Parents Room | unavailable | network |
-| `binary_sensor.m_contact_sensor_door` | M/Contact Sensor Door | Parents Room | unavailable | home, security |
+| `binary_sensor.m_contact_sensor_door` | M/Contact Sensor Door | Parents Room | unavailable | home, parents-room, security |
+| `binary_sensor.master_bedroom_bedroom_hue_sensor_motion` | Bedroom Hue Sensor Motion | Dining | ok | dining |
+| `binary_sensor.master_bedroom_living_hue_hue_sensor_motion` | Living Hue Hue Sensor Motion | Living Room | ok | living-room |
 | `binary_sensor.matter_zigbee_hub_problem` | Matter ZigBee Hub Problem | - | ok | network |
 | `binary_sensor.network_tp_linkhub_h100_cloud_connection` | TP-LinkHub H100 Cloud connection | Network | unavailable | network |
 | `binary_sensor.r_energy_monitor_p110m_cloud_connection` | R/Energy Monitor P110M Cloud connection | Ray Bedroom | ok | network |
 | `binary_sensor.r_energy_monitor_p110m_overloaded` | R/Energy Monitor P110M Overloaded | Ray Bedroom | ok | ray-bedroom |
 | `binary_sensor.remote_ui` | Remote UI | - | ok | network |
-| `binary_sensor.sensor_group_motion` | Sensor group Motion | Dining | ok | security |
-| `camera.front_door_live_view` | Front Door Live view | Living Room | ok | home, security, cameras, network |
-| `camera.smart_pet_feeder` | Smart Pet Feeder | Dining | ok | home, security, cameras, network |
+| `binary_sensor.sensor_group_motion` | Sensor group Motion | Dining | ok | rooms, dining, security |
+| `button.bedroom_parents_room_ac_reset_filter` | Parents Room AC Reset filter | Parents Room | unknown | parents-room |
+| `camera.front_door_live_view` | Front Door Live view | Living Room | ok | home, living-room, security, cameras, network |
+| `camera.smart_pet_feeder` | Smart Pet Feeder | Dining | ok | home, dining, security, cameras, network |
 | `camera.tapo_c200_stockroom_hd_stream_direct` | Tapo C200 - Stockroom HD Stream (Direct) | Network | ok | home, security, cameras, network |
 | `camera.tapo_c420_east_wall_hd_stream_direct` | Tapo C420 East Wall HD Stream (Direct) | Network | unavailable | home, security, cameras, network |
 | `camera.tapo_c420_south_wall_hd_stream_direct` | Tapo C420 - South Wall HD Stream (Direct) | Network | unavailable | home, security, cameras, network |
 | `camera.tapo_c425_north_wall_hd_stream_direct` | Tapo C425 - North Wall HD Stream (Direct) | Network | ok | home, security, cameras, network |
-| `climate.bedroom_parents_room_ac` | Parents Room AC | Parents Room | ok | home, climate |
+| `climate.bedroom_parents_room_ac` | Parents Room AC | Parents Room | ok | home, rooms, parents-room, climate |
 | `cover.aqara_roller_shade_driver_e1` | Aqara Roller Shade Driver E1 | Ray Bedroom | ok | ray-bedroom |
+| `fan.living_room_air_purifier` | Air purifier | Living Room | ok | living-room |
 | `input_boolean.car_insurance_paid` |     car_insurance_paid | - | ok | home |
 | `input_boolean.council_rate_paid` |     council_rate_paid | - | ok | home |
 | `input_boolean.elec_bill_paid` | Electricity Bill Paid | - | ok | home |
 | `input_boolean.gas_bill_paid` | Gas Bill Paid | - | ok | home |
 | `input_boolean.rego_paid` |     rego_paid | - | ok | home |
 | `input_boolean.water_bill_paid` |     water_bill_paid | - | ok | home |
-| `light.bedroom_bedroom` | Bedroom | Ray Bedroom | ok | home, ray-bedroom, lighting |
+| `light.bedroom_bedroom` | Bedroom | Ray Bedroom | ok | home, rooms, ray-bedroom, lighting |
 | `light.bedroom_nightlight` | NightLight | Ray Bedroom | ok | ray-bedroom, lighting |
-| `light.dining` | Dining | Dining | ok | home, lighting |
+| `light.dining` | Dining | Dining | ok | home, rooms, dining, lighting |
 | `light.kogan_tv` | Kogan Tv | Guest Room | unavailable | guest-room, lighting |
-| `light.living_room` | Living room | Living Room | ok | home, lighting |
-| `light.living_room_hue_ambiance_spot_1` | Living Room Inner Left | Living Room | unavailable | lighting |
-| `light.living_room_hue_ambiance_spot_2` | Living Room Inner Right | Living Room | unavailable | lighting |
-| `light.living_room_hue_ambiance_spot_3` | Living Room Outter Left | Living Room | unavailable | lighting |
-| `light.living_room_hue_ambiance_spot_4` | Living Room Outter Right | Living Room | unavailable | lighting |
-| `light.smart_pet_feeder_indicator_light` | Smart Pet Feeder Indicator light | Dining | ok | lighting |
+| `light.living_room` | Living room | Living Room | ok | home, rooms, living-room, lighting |
+| `light.living_room_hue_ambiance_spot_1` | Living Room Inner Left | Living Room | unavailable | living-room, lighting |
+| `light.living_room_hue_ambiance_spot_2` | Living Room Inner Right | Living Room | unavailable | living-room, lighting |
+| `light.living_room_hue_ambiance_spot_3` | Living Room Outter Left | Living Room | unavailable | living-room, lighting |
+| `light.living_room_hue_ambiance_spot_4` | Living Room Outter Right | Living Room | unavailable | living-room, lighting |
+| `light.smart_pet_feeder_indicator_light` | Smart Pet Feeder Indicator light | Dining | ok | dining, lighting |
 | `light.tapo_c200_stockroom_floodlight_timed` | Tapo C200 - Stockroom Floodlight (Timed) | Network | ok | lighting |
 | `light.tapo_c420_east_wall_floodlight_timed` | Tapo C420 East Wall Floodlight (Timed) | Network | unavailable | lighting |
 | `light.tapo_c420_south_wall_floodlight_timed` | Tapo C420 - South Wall Floodlight (Timed) | Network | unavailable | lighting |
 | `light.tapo_c425_north_wall_floodlight_timed` | Tapo C425 - North Wall Floodlight (Timed) | Network | ok | lighting |
-| `media_player.55_qled_4k_ai_qa55q7faawxxy` | 55&quot; QLED 4k AI (QA55Q7FAAWXXY) | Parents Room | ok | network |
-| `media_player.living_room_tv_samsung_q9_series_65` | [TV] Samsung Q9 Series (65) | Living Room | ok | network |
+| `media_player.55_qled_4k_ai_qa55q7faawxxy` | 55&quot; QLED 4k AI (QA55Q7FAAWXXY) | Parents Room | ok | parents-room, network |
+| `media_player.living_room_tv_samsung_q9_series_65` | [TV] Samsung Q9 Series (65) | Living Room | ok | living-room, network |
 | `media_player.pogo` | Pogo | Guest Room | unavailable | guest-room, network |
 | `media_player.q70f8036` | 55" QLED 4k AI | Ray Bedroom | ok | network |
+| `number.front_door_volume` | Front Door Volume | Living Room | ok | living-room |
+| `number.g_monitor_freezer_p110m_power_protection` | G/Monitor Freezer P110M Power protection | Garage | ok | garage |
+| `number.g_monitor_freezer_p110m_turn_off_in` | G/Monitor Freezer P110M Turn off in | Garage | ok | garage |
 | `number.g_printer_p100_turn_off_in` | G/Printer P100 Turn off in | Guest Room | ok | guest-room |
+| `number.k_bot_p100_turn_off_in` | K/Bot P100 Turn off in | Kitchen | ok | kitchen |
+| `number.k_coffee_p100_turn_off_in` | K/Coffee P100 Turn off in | Kitchen | ok | kitchen |
+| `number.k_top_p100_turn_off_in` | K/Top P100 Turn off in | Kitchen | ok | kitchen |
+| `number.lg_fridge_freezer_temperature` | LG-Fridge freezer temperature | Kitchen | ok | kitchen |
+| `number.lg_fridge_fridge_temperature` | LG-Fridge fridge temperature | Kitchen | ok | kitchen |
 | `number.lph_se_dcd9_plants_age` | LPH-SE DCD9 Plants age | Ray Bedroom | unavailable | ray-bedroom |
 | `number.r_energy_monitor_p110m_power_protection` | R/Energy Monitor P110M Power protection | Ray Bedroom | ok | ray-bedroom |
 | `number.r_energy_monitor_p110m_turn_off_in` | R/Energy Monitor P110M Turn off in | Ray Bedroom | ok | ray-bedroom |
-| `person.ai_q_huang` | Ai Q Huang | - | ok | home |
-| `person.raymond_du` | Raymond Du. | - | ok | home |
-| `person.vinh_du` | Vinh Du | - | ok | home |
+| `number.smart_pet_feeder_volume` | Smart Pet Feeder Volume | Dining | ok | dining |
+| `person.ai_q_huang` | Ai Q Huang | - | ok | home, rooms |
+| `person.raymond_du` | Raymond Du. | - | ok | home, rooms |
+| `person.vinh_du` | Vinh Du | - | ok | home, rooms |
 | `scene.bedroom_bedroom_amber_bloom` | Bedroom Amber bloom | Ray Bedroom | ok | lighting |
 | `scene.bedroom_bedroom_baby_s_breath` | Bedroom Baby's breath | Ray Bedroom | ok | lighting |
 | `scene.bedroom_bedroom_blossom` | Bedroom Blossom | Ray Bedroom | ok | lighting |
@@ -92,29 +111,34 @@ Authority: `docs/live/states_export_2026-09-05.txt` — proves an ID **exists**.
 | `scene.bedroom_bedroom_starlight` | Bedroom Starlight | Ray Bedroom | unknown | lighting |
 | `scene.bedroom_bedroom_suzuka` | Bedroom Suzuka | Ray Bedroom | unknown | lighting |
 | `scene.bedroom_bedroom_vapor_wave` | Bedroom Vapor wave | Ray Bedroom | ok | lighting |
-| `scene.dining_dining_concentrate` | Dining Concentrate | Dining | unknown | lighting |
-| `scene.dining_dining_energize` | Dining Energize | Dining | unknown | lighting |
-| `scene.dining_dining_midwinter` | Dining Midwinter | Dining | unknown | lighting |
-| `scene.dining_dining_nightlight` | Dining Nightlight | Dining | unknown | lighting |
-| `scene.dining_dining_read` | Dining Read | Dining | unknown | lighting |
-| `scene.dining_dining_relax` | Dining Relax | Dining | unknown | lighting |
-| `scene.living_room_living_room_bright` | Living room Bright | Living Room | ok | lighting |
-| `scene.living_room_living_room_concentrate` | Living room Concentrate | Living Room | unknown | lighting |
+| `scene.dining_dining_concentrate` | Dining Concentrate | Dining | unknown | dining, lighting |
+| `scene.dining_dining_energize` | Dining Energize | Dining | unknown | dining, lighting |
+| `scene.dining_dining_midwinter` | Dining Midwinter | Dining | unknown | dining, lighting |
+| `scene.dining_dining_nightlight` | Dining Nightlight | Dining | unknown | dining, lighting |
+| `scene.dining_dining_read` | Dining Read | Dining | unknown | dining, lighting |
+| `scene.dining_dining_relax` | Dining Relax | Dining | unknown | dining, lighting |
+| `scene.living_room_living_room_bright` | Living room Bright | Living Room | ok | living-room, lighting |
+| `scene.living_room_living_room_concentrate` | Living room Concentrate | Living Room | unknown | living-room, lighting |
 | `scene.living_room_living_room_dimmed` | Living room Dimmed | Living Room | unknown | lighting |
-| `scene.living_room_living_room_energize` | Living room Energize | Living Room | unknown | lighting |
+| `scene.living_room_living_room_energize` | Living room Energize | Living Room | unknown | living-room, lighting |
 | `scene.living_room_living_room_midwinter` | Living room Midwinter | Living Room | unknown | lighting |
-| `scene.living_room_living_room_nightlight` | Living room Nightlight | Living Room | unknown | lighting |
-| `scene.living_room_living_room_read` | Living room Read | Living Room | unknown | lighting |
-| `scene.living_room_living_room_relax` | Living room Relax | Living Room | unknown | lighting |
+| `scene.living_room_living_room_nightlight` | Living room Nightlight | Living Room | unknown | living-room, lighting |
+| `scene.living_room_living_room_read` | Living room Read | Living Room | unknown | living-room, lighting |
+| `scene.living_room_living_room_relax` | Living room Relax | Living Room | unknown | living-room, lighting |
+| `select.genio_power_board_with_usb_livingroom_power_on_behavior` | Genio Power Board with USB-LivingRoom Power-on behavior | Living Room | ok | living-room |
+| `select.living_room_air_purifier_lamp` | Air purifier Lamp | Living Room | ok | living-room |
 | `select.lph_se_dcd9_light_brightness` | LPH-SE DCD9 Light brightness | Ray Bedroom | unavailable | ray-bedroom |
 | `select.lph_se_dcd9_light_mode` | LPH-SE DCD9 Light mode | Ray Bedroom | unavailable | ray-bedroom |
+| `select.smart_pet_feeder_motion_detection_sensitivity` | Smart Pet Feeder Motion detection sensitivity | Dining | ok | dining |
+| `select.smart_pet_feeder_night_vision` | Smart Pet Feeder Night vision | Dining | ok | dining |
 | `sensor.ais_iphone_battery_level` | Ai’s iPhone Battery Level | - | ok | network |
 | `sensor.aqara_roller_shade_driver_e1_battery` | Aqara Roller Shade Driver E1 Battery | Ray Bedroom | ok | home, ray-bedroom |
 | `sensor.aqara_roller_shade_driver_e1_battery_charge_state` | Aqara Roller Shade Driver E1 Battery charge state | Ray Bedroom | ok | ray-bedroom |
 | `sensor.b_contact_sensor_signal_level` | B/Contact Sensor Signal level | Backyard | unavailable | network |
-| `sensor.bedroom_motion_sensor_humidity` | Parents Room Motion Sensor Humidity | Parents Room | ok | climate |
-| `sensor.bedroom_motion_sensor_temperature` | Parents Room Motion Sensor Temperature | Parents Room | ok | home, climate |
-| `sensor.bedroom_parents_room_ac_filter_last_reset` | Parents Room AC Filter last reset | Parents Room | ok | climate |
+| `sensor.bedroom_motion_sensor_humidity` | Parents Room Motion Sensor Humidity | Parents Room | ok | parents-room, climate |
+| `sensor.bedroom_motion_sensor_temperature` | Parents Room Motion Sensor Temperature | Parents Room | ok | home, rooms, parents-room, climate |
+| `sensor.bedroom_parents_room_ac_filter_last_reset` | Parents Room AC Filter last reset | Parents Room | ok | parents-room, climate |
+| `sensor.bedroom_parents_room_ac_timer_end_time` | Parents Room AC Timer end time | Parents Room | ok | parents-room |
 | `sensor.bills_unpaid_count` | Bills Unpaid Count | - | ok | home |
 | `sensor.casa_monitored_power` | Casa Monitored Power | - | ok | energy |
 | `sensor.casa_solar_expected_today` | Casa Solar Expected Today | - | ok | energy |
@@ -122,19 +146,22 @@ Authority: `docs/live/states_export_2026-09-05.txt` — proves an ID **exists**.
 | `sensor.eero_external_ip` | eero Gateway External IP | Network | ok | network |
 | `sensor.electricity_maps_co2_intensity` | Electricity Maps CO2 intensity | Energy | ok | energy |
 | `sensor.electricity_maps_grid_fossil_fuel_percentage` | Electricity Maps Grid fossil fuel percentage | Energy | ok | energy |
-| `sensor.emergency_button_dad_signal_level` | Emergency Button Dad Signal level | Parents Room | ok | network |
-| `sensor.emergency_button_mum_signal_level` | Emergency Button Mum Signal level | Parents Room | ok | network |
+| `sensor.emergency_button_dad_signal_level` | Emergency Button Dad Signal level | Parents Room | ok | parents-room, network |
+| `sensor.emergency_button_mum_signal_level` | Emergency Button Mum Signal level | Parents Room | ok | parents-room, network |
 | `sensor.energy_current_hour` | Solar production forecast Estimated energy production - this hour | Energy | ok | energy |
 | `sensor.energy_next_hour` | Solar production forecast Estimated energy production - next hour | Energy | ok | energy |
 | `sensor.energy_production_today` | Solar production forecast Estimated energy production - today | Energy | ok | energy |
 | `sensor.energy_production_today_remaining` | Solar production forecast Estimated energy production - remaining today | Energy | ok | energy |
 | `sensor.energy_production_tomorrow` | Solar production forecast Estimated energy production - tomorrow | Energy | ok | energy |
 | `sensor.f_contact_sensor_signal_level` | F/Contact Sensor Signal level | Living Room | unavailable | network |
-| `sensor.front_door_battery` | Front Door Battery | Living Room | ok | home, cameras |
+| `sensor.front_door_battery` | Front Door Battery | Living Room | ok | home, living-room, cameras |
 | `sensor.front_door_last_activity` | Front Door Last activity | Living Room | ok | cameras |
-| `sensor.g_monitor_freezer_p110m_current_consumption` | G/Monitor Freezer P110M Current consumption | Garage | ok | energy |
+| `sensor.g_monitor_freezer_p110m_current` | G/Monitor Freezer P110M Current | Garage | ok | garage |
+| `sensor.g_monitor_freezer_p110m_current_consumption` | G/Monitor Freezer P110M Current consumption | Garage | ok | garage, energy |
 | `sensor.g_monitor_freezer_p110m_signal_level` | G/Monitor Freezer P110M Signal level | Garage | ok | network |
-| `sensor.g_monitor_freezer_p110m_today_s_consumption` | G/Monitor Freezer P110M Today's consumption | Garage | ok | energy |
+| `sensor.g_monitor_freezer_p110m_this_month_s_consumption` | G/Monitor Freezer P110M This month's consumption | Garage | ok | garage |
+| `sensor.g_monitor_freezer_p110m_today_s_consumption` | G/Monitor Freezer P110M Today's consumption | Garage | ok | garage, energy |
+| `sensor.g_monitor_freezer_p110m_voltage` | G/Monitor Freezer P110M Voltage | Garage | ok | garage |
 | `sensor.g_printer_p100_auto_off_at` | G/Printer P100 Auto-off at | Guest Room | unknown | guest-room |
 | `sensor.g_printer_p100_signal_level` | G/Printer P100 Signal level | Guest Room | ok | network |
 | `sensor.k_bot_p100_signal_level` | K/Bot P100 Signal level | Kitchen | ok | network |
@@ -142,10 +169,36 @@ Authority: `docs/live/states_export_2026-09-05.txt` — proves an ID **exists**.
 | `sensor.k_motion_sensor_signal_level` | K/Motion Sensor Signal level | Kitchen | ok | network |
 | `sensor.k_smart_button_signal_level` | K/Smart Button Signal level | Kitchen | ok | network |
 | `sensor.k_top_p100_signal_level` | K/Top P100 Signal level | Kitchen | ok | network |
-| `sensor.living_room_living_hue_hue_sensor_temperature` | Living Room Motion Sensor Temperature | Living Room | ok | home, climate |
-| `sensor.living_room_living_room_temperature` | Dining Room Motion Sensor Temperature | Dining | ok | climate |
-| `sensor.living_room_ringring_battery` | RingRing Battery | Living Room | ok | cameras |
+| `sensor.kitchen_electrolux_fridge_battery` | Electrolux Fridge Battery | Kitchen | ok | kitchen |
+| `sensor.kitchen_electrolux_fridge_humidity` | Electrolux Fridge Humidity | Kitchen | ok | kitchen |
+| `sensor.kitchen_electrolux_fridge_temperature` | Electrolux Fridge Temperature | Kitchen | ok | kitchen |
+| `sensor.living_room_air_purifier_air_quality` | Air purifier Air quality | Living Room | ok | living-room |
+| `sensor.living_room_air_purifier_odor_sensor` | Air purifier Odor sensor | Living Room | ok | living-room |
+| `sensor.living_room_air_purifier_pm1` | Air purifier PM1 | Living Room | ok | living-room |
+| `sensor.living_room_air_purifier_pm10` | Air purifier PM10 | Living Room | ok | living-room |
+| `sensor.living_room_air_purifier_pm10_health_concern` | Air purifier PM10 health concern | Living Room | ok | living-room |
+| `sensor.living_room_air_purifier_pm1_health_concern` | Air purifier PM1 health concern | Living Room | ok | living-room |
+| `sensor.living_room_air_purifier_pm2_5` | Air purifier PM2.5 | Living Room | ok | living-room |
+| `sensor.living_room_air_purifier_pm2_5_health_concern` | Air purifier PM2.5 health concern | Living Room | ok | living-room |
+| `sensor.living_room_living_hue_hue_sensor_illuminance` | Living Room Motion Sensor Illuminance | Living Room | ok | living-room |
+| `sensor.living_room_living_hue_hue_sensor_temperature` | Living Room Motion Sensor Temperature | Living Room | ok | home, rooms, living-room, climate |
+| `sensor.living_room_living_room_illuminance` | Dining Room Motion Sensor Illuminance | Dining | ok | dining |
+| `sensor.living_room_living_room_illuminance_2` | Living room Illuminance | Living Room | ok | living-room |
+| `sensor.living_room_living_room_temperature` | Dining Room Motion Sensor Temperature | Dining | ok | rooms, dining, climate |
+| `sensor.living_room_ringring_battery` | RingRing Battery | Living Room | ok | living-room, cameras |
 | `sensor.m_contact_sensor_signal_level` | M/Contact Sensor Signal level | Parents Room | unavailable | network |
+| `sensor.master_bedroom_55_qled_4k_ai_energy` | 55" QLED 4k AI Energy | Parents Room | ok | parents-room |
+| `sensor.master_bedroom_55_qled_4k_ai_energy_saved` | 55" QLED 4k AI Energy saved | Parents Room | ok | parents-room |
+| `sensor.master_bedroom_55_qled_4k_ai_power` | 55" QLED 4k AI Power | Parents Room | ok | parents-room |
+| `sensor.master_bedroom_55_qled_4k_ai_tv_channel_name` | 55" QLED 4k AI TV channel name | Parents Room | ok | parents-room |
+| `sensor.master_bedroom_bedroom_hue_sensor_battery` | Bedroom Hue Sensor Battery | Dining | ok | dining |
+| `sensor.master_bedroom_bedroom_hue_sensor_illuminance` | Bedroom Hue Sensor Illuminance | Dining | ok | dining |
+| `sensor.master_bedroom_bedroom_hue_sensor_temperature` | Bedroom Hue Sensor Temperature | Dining | ok | dining |
+| `sensor.master_bedroom_light_sensor_55_qled_4k_ai_brightness_intensity` | Light Sensor - 55" QLED 4k AI Brightness intensity | Parents Room | ok | parents-room |
+| `sensor.master_bedroom_light_sensor_55_qled_4k_ai_illuminance` | Light Sensor - 55" QLED 4k AI Illuminance | Parents Room | ok | parents-room |
+| `sensor.master_bedroom_living_hue_hue_sensor_battery` | Living Hue Hue Sensor Battery | Living Room | ok | living-room |
+| `sensor.master_bedroom_living_hue_hue_sensor_illuminance` | Living Hue Hue Sensor Illuminance | Living Room | ok | living-room |
+| `sensor.master_bedroom_living_hue_hue_sensor_temperature` | Living Hue Hue Sensor Temperature | Living Room | ok | living-room |
 | `sensor.network_tp_linkhub_h100_signal_level` | TP-LinkHub H100 Signal level | Network | unavailable | network |
 | `sensor.power_highest_peak_time_today` | Solar production forecast Highest power peak time - today | Energy | ok | energy |
 | `sensor.power_highest_peak_time_tomorrow` | Solar production forecast Highest power peak time - tomorrow | Energy | ok | energy |
@@ -169,6 +222,7 @@ Authority: `docs/live/states_export_2026-09-05.txt` — proves an ID **exists**.
 | `sensor.raymonds_ipad_battery_level` | Raymond’s iPad Battery Level | - | ok | network |
 | `sensor.raymonds_iphone_battery_level` | Deez Raymond’s iPhone Battery Level | - | ok | network |
 | `sensor.raymonds_iphone_ssid` | Deez Raymond’s iPhone SSID | - | ok | network |
+| `sensor.sensor_group_illuminance` | Sensor group Illuminance | Dining | ok | dining |
 | `sensor.sun_next_rising` | Sun Next rising | - | ok | home |
 | `sensor.sun_next_setting` | Sun Next setting | - | ok | home |
 | `sensor.tapo_c200_stockroom_rssi` | Tapo C200 - Stockroom RSSI | Network | ok | network |
@@ -180,28 +234,54 @@ Authority: `docs/live/states_export_2026-09-05.txt` — proves an ID **exists**.
 | `siren.tapo_c200_stockroom_siren` | Tapo C200 - Stockroom Siren | Network | ok | security |
 | `siren.tapo_c425_north_wall_siren` | Tapo C425 - North Wall Siren | Network | ok | security |
 | `siren.tapo_h200` | Tapo H200 | Network | ok | security |
-| `switch.bedroom_parents_room_ac_climate_react` | Parents Room AC Climate React | Parents Room | ok | climate |
-| `switch.bedroom_parents_room_ac_timer` | Parents Room AC Timer | Parents Room | ok | climate |
+| `switch.bedroom_parents_room_ac_climate_react` | Parents Room AC Climate React | Parents Room | ok | parents-room, climate |
+| `switch.bedroom_parents_room_ac_timer` | Parents Room AC Timer | Parents Room | ok | parents-room, climate |
 | `switch.bedroomlight_switch_1` | BedRoomLight Switch 1 | Ray Bedroom | ok | ray-bedroom, lighting |
-| `switch.dinning_light_switch_1` | Dinning light Switch 1 | Dining | ok | lighting |
+| `switch.dinning_light_switch_1` | Dinning light Switch 1 | Dining | ok | dining, lighting |
 | `switch.front_door_in_home_chime` | Front Door In-home chime | Living Room | ok | security |
 | `switch.front_door_motion_detection` | Front Door Motion detection | Living Room | ok | security, cameras |
-| `switch.g_monitor_freezer_p110m` | G/Monitor Freezer P110M | Garage | ok | network |
-| `switch.g_printer_p100` | G/Printer P100 | Guest Room | ok | guest-room, network |
+| `switch.g_monitor_freezer_p110m` | G/Monitor Freezer P110M | Garage | ok | rooms, garage, network |
+| `switch.g_monitor_freezer_p110m_auto_off_enabled` | G/Monitor Freezer P110M Auto-off enabled | Garage | ok | garage |
+| `switch.g_monitor_freezer_p110m_led` | G/Monitor Freezer P110M LED | Garage | ok | garage |
+| `switch.g_printer_p100` | G/Printer P100 | Guest Room | ok | rooms, guest-room, network |
 | `switch.g_printer_p100_auto_off_enabled` | G/Printer P100 Auto-off enabled | Guest Room | ok | guest-room |
 | `switch.g_printer_p100_auto_update_enabled` | G/Printer P100 Auto-update enabled | Guest Room | ok | guest-room |
 | `switch.g_printer_p100_led` | G/Printer P100 LED | Guest Room | ok | guest-room |
-| `switch.k_bot_p100` | K/Bot P100 | Kitchen | ok | network |
-| `switch.k_coffee_p100` | K/Coffee P100 | Kitchen | ok | network |
-| `switch.k_top_p100` | K/Top P100 | Kitchen | ok | network |
+| `switch.genio_power_board_with_usb_livingroom_child_lock` | Genio Power Board with USB-LivingRoom Child lock | Living Room | ok | living-room |
+| `switch.genio_power_board_with_usb_livingroom_socket_1` | Genio Power Board with USB-LivingRoom Socket 1 | Living Room | ok | living-room |
+| `switch.genio_power_board_with_usb_livingroom_socket_2` | Genio Power Board with USB-LivingRoom Socket 2 | Living Room | ok | living-room |
+| `switch.genio_power_board_with_usb_livingroom_socket_3` | Genio Power Board with USB-LivingRoom Socket 3 | Living Room | ok | living-room |
+| `switch.genio_power_board_with_usb_livingroom_socket_4` | Genio Power Board with USB-LivingRoom Socket 4 | Living Room | ok | living-room |
+| `switch.genio_power_board_with_usb_livingroom_socket_5` | Genio Power Board with USB-LivingRoom Socket 5 | Living Room | ok | living-room |
+| `switch.k_bot_p100` | K/Bot P100 | Kitchen | ok | kitchen, network |
+| `switch.k_bot_p100_auto_off_enabled` | K/Bot P100 Auto-off enabled | Kitchen | ok | kitchen |
+| `switch.k_bot_p100_led` | K/Bot P100 LED | Kitchen | ok | kitchen |
+| `switch.k_coffee_p100` | K/Coffee P100 | Kitchen | ok | kitchen, network |
+| `switch.k_coffee_p100_auto_off_enabled` | K/Coffee P100 Auto-off enabled | Kitchen | ok | kitchen |
+| `switch.k_coffee_p100_led` | K/Coffee P100 LED | Kitchen | ok | kitchen |
+| `switch.k_top_p100` | K/Top P100 | Kitchen | ok | kitchen, network |
+| `switch.k_top_p100_auto_off_enabled` | K/Top P100 Auto-off enabled | Kitchen | ok | kitchen |
+| `switch.k_top_p100_led` | K/Top P100 LED | Kitchen | ok | kitchen |
+| `switch.lg_fridge_express_mode` | LG-Fridge Express mode | Kitchen | ok | kitchen |
+| `switch.living_room_living_hue_hue_sensor_light_sensor_enabled` | Living Room Motion Sensor Light sensor enabled | Living Room | ok | living-room |
+| `switch.living_room_living_hue_hue_sensor_motion_sensor_enabled` | Living Room Motion Sensor Motion sensor enabled | Living Room | ok | living-room |
+| `switch.living_room_living_room_light_sensor_enabled` | Dining Room Motion Sensor Light sensor enabled | Dining | ok | dining |
+| `switch.living_room_living_room_motion_sensor_enabled` | Dining Room Motion Sensor Motion sensor enabled | Dining | ok | dining |
 | `switch.lph_se_dcd9_power` | LPH-SE DCD9 Power | Ray Bedroom | unavailable | ray-bedroom |
 | `switch.lph_se_dcd9_pump_cycling` | LPH-SE DCD9 Pump cycling | Ray Bedroom | unavailable | ray-bedroom |
-| `switch.mainroomlight_switch_1` | MainRoomLight Switch 1 | Parents Room | ok | lighting |
+| `switch.mainroomlight_switch_1` | MainRoomLight Switch 1 | Parents Room | ok | parents-room, lighting |
+| `switch.master_bedroom_light_sensor_55_qled_4k_ai` | Light Sensor - 55" QLED 4k AI | Parents Room | ok | parents-room |
+| `switch.master_bedroom_power_point_socket_1` | Master bedroom power point Socket 1 | Parents Room | ok | parents-room |
+| `switch.master_bedroom_power_point_socket_2` | Master bedroom power point Socket 2 | Parents Room | ok | parents-room |
+| `switch.master_bedroom_power_point_socket_3` | Master bedroom power point Socket 3 | Parents Room | ok | parents-room |
+| `switch.master_bedroom_power_point_socket_4` | Master bedroom power point Socket 4 | Parents Room | ok | parents-room |
+| `switch.master_bedroom_power_point_socket_5` | Master bedroom power point Socket 5 | Parents Room | ok | parents-room |
 | `switch.r_energy_monitor_p110m` | R/Energy Monitor P110M | Ray Bedroom | ok | ray-bedroom, network |
 | `switch.r_energy_monitor_p110m_auto_off_enabled` | R/Energy Monitor P110M Auto-off enabled | Ray Bedroom | ok | ray-bedroom |
 | `switch.r_energy_monitor_p110m_led` | R/Energy Monitor P110M LED | Ray Bedroom | ok | ray-bedroom |
-| `switch.smart_pet_feeder_motion_alarm` | Smart Pet Feeder Motion alarm | Dining | ok | security |
-| `switch.smart_pet_feeder_privacy_mode` | Smart Pet Feeder Privacy mode | Dining | ok | security, cameras |
+| `switch.smart_pet_feeder_motion_alarm` | Smart Pet Feeder Motion alarm | Dining | ok | dining, security |
+| `switch.smart_pet_feeder_privacy_mode` | Smart Pet Feeder Privacy mode | Dining | ok | dining, security, cameras |
+| `switch.smart_pet_feeder_time_watermark` | Smart Pet Feeder Time watermark | Dining | ok | dining |
 | `switch.tapo_c200_stockroom_notifications` | Tapo C200 - Stockroom Notifications | Network | ok | security |
 | `switch.tapo_c200_stockroom_privacy` | Tapo C200 - Stockroom Privacy | Network | ok | security, cameras |
 | `switch.tapo_c420_east_wall_privacy` | Tapo C420 East Wall Privacy | Network | unavailable | cameras |
@@ -212,5 +292,6 @@ Authority: `docs/live/states_export_2026-09-05.txt` — proves an ID **exists**.
 | `switch.tapo_c425_north_wall_privacy` | Tapo C425 - North Wall Privacy | Network | ok | security, cameras |
 | `switch.tapo_camera_bcca_motion_detection` | Tapo C420 - East Wall Motion detection | Network | ok | security |
 | `switch.tapo_camera_bcca_person_detection` | Tapo C420 - East Wall Person detection | Network | ok | security |
-| `todo.shopping_list` | Shopping List | - | ok | home |
+| `todo.shopping_list` | Shopping List | - | ok | home, kitchen |
+| `update.bedroom_parents_room_ac_firmware` | Parents Room AC Firmware | Parents Room | ok | parents-room |
 | `weather.forecast_home` | Forecast Home | Energy | ok | home, climate |

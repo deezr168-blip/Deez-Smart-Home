@@ -19,7 +19,8 @@ Branch: `feature/casaray-v3-build` (from `casaray-v3-design` `27f3fed`).
 | 6b | Ray's room, Guest room | **native** (CR-V3-17) | every V2 device control kept (allowlisted switches, blind features, scenes, media); bulb-power wall switch read-only |
 | 7 | People / household | carried (V2) | |
 | 8 | Bills, Bill setup | carried (V2) | baseline lacks the "silent bill" honesty fix — see below |
-| — | Rooms index, Living room, Kitchen, Dining, Parents' room, Garage, House health, Alerts, Automations, Entertainment, 6 camera subviews | carried (V2) | |
+| 6c | Rooms index, Living room, Kitchen, Dining, Parents' room, Garage | **native** (CR-V3-18) | every V2 room control kept or, where sensitive, read-only with the V2 control one tap away on the classic subview; Parents' room air-con read-only (V3-008) |
+| — | House health, Alerts, Automations, Entertainment, 6 camera subviews | carried (V2) | |
 
 Per-view entity counts and every V2 entity not yet on a native view:
 `VIEW_INVENTORY.md` (generated).
@@ -97,9 +98,42 @@ it in one tap, although the V2 note says the tiles open details. V3 keeps those
 read-only; the classic view carries V2's behaviour as it is. Worth an owner
 look before V2 is retired or kept as the fallback.
 
-Still carried: the Rooms index, Living room, Kitchen, Dining, Parents' room,
-Garage, House health, Alerts, Automations, Entertainment, People, Bills and
-the six camera stream subviews.
+Still carried after CR-V3-17: the room boards (rebuilt in CR-V3-18, below),
+House health, Alerts, Automations, Entertainment, People, Bills and the six
+camera stream subviews.
+
+## CR-V3-18: the room boards rebuilt natively (01/11/26)
+
+Rooms index, Living room, Kitchen, Dining, Parents' room and Garage are native.
+Every V2 entity of each is on its rebuild, except `zone.home`, which stays on
+the carried People board (a verified migration row; see below). Each keeps its
+V2 original as a classic `v2-<path>` subview.
+
+| View | Native now | Kept exactly as V2 | Read-only here (V2 control on the classic subview) |
+|---|---|---|---|
+| Rooms index | the eight room tiles (same entity, same page, icon inert, as V2), people home, internet, room conditions | every tile's tap target | — |
+| Living room | room light + four Hue spots, six scenes, air purifier, air quality, sensors and history, TV, front-door camera and doorbell, power board, settings | brightness, fan-speed feature, scenes, media card, camera opens its stream, selects | 5 power-board sockets, child lock, Hue motion / light sensing, doorbell chime volume |
+| Kitchen | chips, bench plugs, fridge, Electrolux sensor, motion and history, shopping list, plug settings | fridge / freezer setpoints (number feature), express mode, plug LEDs, auto-off timers | coffee machine and both bench plugs, and their auto-off switches |
+| Dining | dining light, six scenes, sensors, pet feeder camera and settings | brightness, scenes, indicator light, feeder volume, video timestamp | bulb-power wall switch, feeder privacy and motion alarm, night vision, detection sensitivity, motion / light sensing |
+| Parents' room | occupancy, temperature, humidity, air-con stated in words, sensors, emergency buttons (connectivity and signal), TV, power point, air-con maintenance | TV media card, TV light-sensor switch, firmware tile, filter reset (asks first, now localised), timer end shown only while the timer is on | **air-con** (V3-008; one large button opens the V2 thermostat), Climate React, AC timer, main light (bulb power), 5 power-point sockets |
+| Garage | freezer status, electrical readings and history, settings | plug LED, power-protection and auto-off timer numbers | the freezer plug and its auto-off |
+
+- **Allowlist additions (ordinary settings only):** kitchen and freezer plug
+  LEDs, fridge express mode, TV light sensor, pet-feeder video timestamp.
+- **New protected classes in the gate:** power-strip sockets, child locks,
+  sensing switches, air-con switches, critical / unrecorded appliance loads,
+  and camera / doorbell settings. These are read-only whatever the manifest
+  says (`validate_dashboard.py`).
+- **Climate's "Air-con controls (classic)" button now opens `v2-parents-room`**.
+  This is the only change to an earlier native view, and it is tested in every
+  locale.
+- **`zone.home`:** native Rooms counts the three people (what answered)
+  instead, because a zone count reads 0 while the people it counts are dark.
+- **Owner call:** the parents' main light is a bulb-power wall switch, so
+  native Parents' room has no light control. See DECISIONS V3-011.
+
+Still carried: House health, Alerts, Automations, Entertainment, People, Bills,
+Bill setup and the six camera stream subviews.
 
 ## Known discrepancies carried from the baseline
 

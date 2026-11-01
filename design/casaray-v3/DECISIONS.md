@@ -6,6 +6,54 @@ and `ha-deploy` are unaffected by everything here.
 
 ---
 
+## V3-011 · 01/11/26 · The room boards rebuilt natively; which room switches stay read-only
+
+**Status:** owner instruction CR-V3-18 (01/11/26), implemented on
+`feature/casaray-v3-build`. DEVELOPMENT ONLY — NOT DEPLOYED. Item 3 needs the
+owner's review.
+
+1. **Rooms index, Living room, Kitchen, Dining, Parents' room and Garage are
+   native.** Every V2 entity of each is on its rebuild, apart from one:
+   `zone.home`, which stays on the carried People board (item 4).
+2. **The allowlist grew only by ordinary settings.** These are the kitchen and
+   freezer plug LEDs, the fridge's express mode, the TV light-sensor setting
+   and the pet feeder's video timestamp. Each keeps V2's exact tile behaviour.
+3. **Read-only on native views, and gated as protected classes so the
+   allowlist cannot unlock them.** Their V2 controls are unchanged on each
+   room's classic subview:
+   - the freezer plug and its auto-off: a critical load, and a mis-tap
+     thaws it;
+   - the coffee machine and both bench plugs, and their auto-offs: appliance
+     power whose loads are not recorded;
+   - every power-strip socket, and the board's child lock;
+   - the Hue / dining sensors' motion and light sensing switches: turning one
+     off silently stops what relies on it;
+   - Climate React and the AC timer: air-con behaviour, V3-008;
+   - the pet feeder's night-vision and detection-sensitivity selects, and
+     the doorbell chime volume: camera and alerting.
+
+   **Owner call:** the parents' main light is `switch.mainroomlight_switch_1`,
+   a bulb-power switch. It is read-only, as on V3 Lighting, so native
+   Parents' room has no light control; the control is one tap away on the
+   classic view. If those bulbs are not smart bulbs, the switch is the light,
+   and it should probably be a control.
+4. **`zone.home` is not used on native Rooms.** A zone count reads 0 while the
+   people it counts are dark, which would be a fabricated zero. Native Rooms
+   counts the three people instead (what answered). The entity keeps its
+   place on the carried People board, a verified migration row.
+5. **Climate's "Air-con controls (classic)" button now opens
+   `v2-parents-room`.** Parents' room is native with read-only HVAC, so V2's
+   thermostat lives on its classic copy. This is the only change to an
+   earlier native view, and it is tested.
+6. **V2 statements that nothing measures were reworded, not copied.** V2
+   Garage said "running normally" when the plug was on and not overloaded;
+   V3 says just that. V2 Parents' room said the button-press entities "are
+   currently not reporting", a claim frozen in text; V3 states what the page
+   shows and does not show. The filter-reset button keeps V2's action and
+   asks first, now in each language.
+
+---
+
 ## V3-010 · 01/11/26 · Security, Network and two rooms rebuilt natively; how controls carry over
 
 **Status:** owner instruction CR-V3-17 (01/11/26), implemented on

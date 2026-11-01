@@ -280,7 +280,9 @@ class MigratedEntities(unittest.TestCase):
 
 V2 = yaml.safe_load((ROOT / MAN["baseline"]["file"]).read_text(encoding="utf-8"))
 V2_BY = {v["path"]: v for v in V2["views"]}
-REBUILT = ("security", "network", "ray-bedroom", "guest-room")
+REBUILT_17 = ("security", "network", "ray-bedroom", "guest-room")
+ROOMS_18 = ("rooms", "living-room", "kitchen", "dining", "parents-room", "garage")
+REBUILT = REBUILT_17 + ROOMS_18
 
 
 def tiles(v):
@@ -309,7 +311,8 @@ class NativeRebuilds(unittest.TestCase):
         d = dash("en")
         for p in REBUILT:
             v2e = B.entities_in(V2_BY[p]) - {"input_boolean.chinese_dashboard"}
-            missing = v2e - B.entities_in(view(d, p))
+            moved = set(MAN.get("migration", {}).get(p, {}))   # e.g. zone.home -> People (carried)
+            missing = v2e - B.entities_in(view(d, p)) - moved
             self.assertEqual(missing, set(), p)
 
     # ---- Security: safety behaviour unchanged
@@ -393,8 +396,14 @@ class NativeRebuilds(unittest.TestCase):
             v2t = {c["entity"]: c for c in tiles(V2_BY[p])}
             for c in tiles(view(d, p)):
                 e = c["entity"]
-                if V.protected_switch(e):
+                if V.protected_switch(e) or V.protected_setting(e):
                     self.assertEqual(C.effective_tile_actions(c), ("navigate", "none"), f"{p}: {e}")
+                    goes = c["tap_action"]["navigation_path"].split("/")[2]
+                    if e in v2t and C.effective_tile_actions(v2t[e]) == ("navigate", "none"):
+                        # V2 already used it as a link only (Rooms index): same page as V2
+                        self.assertEqual(goes, v2t[e]["tap_action"]["navigation_path"].split("/")[2], f"{p}: {e}")
+                    else:
+                        self.assertEqual(goes, "v2-" + p, f"{p}: {e} must open the classic controls")
                     continue
                 if e not in v2t:
                     continue     # a reading V2 showed only inside a summary template
@@ -430,9 +439,11 @@ class NativeRebuilds(unittest.TestCase):
             targets = {n.split("/")[2] for n in V.nav_paths(view(d, p))}
             self.assertIn("v2-" + p, targets, f"{p} links to its classic copy")
             self.assertIn("home", targets, f"{p} links Home")
+            if p in ROOMS_18 and p != "rooms":
+                self.assertIn("rooms", targets, f"{p} links back to All rooms")
 
     def test_rooms_dark_say_no_data(self):
-        for p in ("ray-bedroom", "guest-room"):
+        for p in ("ray-bedroom", "guest-room", "living-room", "kitchen", "dining", "parents-room", "garage"):
             out = render(dash("en"), p, self.dark)
             self.assertNotIn("**Normal**", out, p)
             self.assertNotIn("**Off**", out, p)
@@ -472,6 +483,168 @@ class NativeRebuilds(unittest.TestCase):
         unlisted.pop("switch.g_printer_p100")
         bad, _ = V.tile_safety(view(d, "guest-room"), V2_BY, unlisted, "casaray-v2", "casaray-v3")
         self.assertTrue(any("not in manifest controls" in b for b in bad))
+
+
+class RoomsBatch(unittest.TestCase):
+    """CR-V3-18: Rooms index, Living room, Kitchen, Dining, Parents' room, Garage."""
+    states, attrs = R.scenarios()["normal"]
+    dark = R.scenarios()["dark"][0]
+
+    def acts(self, p, entity):
+        c = next(c for c in tiles(view(dash("en"), p)) if c["entity"] == entity)
+        return C.effective_tile_actions(c)
+
+    def test_ordinary_settings_keep_v2_toggles(self):
+        for p, e in [("kitchen", "switch.k_coffee_p100_led"), ("kitchen", "switch.lg_fridge_express_mode"),
+                     ("garage", "switch.g_monitor_freezer_p110m_led"),
+                     ("parents-room", "switch.master_bedroom_light_sensor_55_qled_4k_ai"),
+                     ("dining", "switch.smart_pet_feeder_time_watermark")]:
+            self.assertEqual(self.acts(p, e), ("more-info", "toggle"), e)
+            self.assertIn(e, MAN["controls"])
+
+    def test_sensitive_switches_and_settings_are_inert(self):
+        inert = [("garage", "switch.g_monitor_freezer_p110m"), ("garage", "switch.g_monitor_freezer_p110m_auto_off_enabled"),
+                 ("kitchen", "switch.k_coffee_p100"), ("kitchen", "switch.k_bot_p100_auto_off_enabled"),
+                 ("living-room", "switch.genio_power_board_with_usb_livingroom_socket_3"),
+                 ("living-room", "switch.genio_power_board_with_usb_livingroom_child_lock"),
+                 ("living-room", "switch.living_room_living_hue_hue_sensor_motion_sensor_enabled"),
+                 ("living-room", "number.front_door_volume"),
+                 ("parents-room", "switch.master_bedroom_power_point_socket_5"),
+                 ("parents-room", "switch.bedroom_parents_room_ac_climate_react"),
+                 ("parents-room", "switch.bedroom_parents_room_ac_timer"),
+                 ("parents-room", "switch.mainroomlight_switch_1"),
+                 ("dining", "switch.dinning_light_switch_1"), ("dining", "switch.smart_pet_feeder_privacy_mode"),
+                 ("dining", "select.smart_pet_feeder_night_vision"),
+                 ("dining", "select.smart_pet_feeder_motion_detection_sensitivity")]
+        for p, e in inert:
+            self.assertEqual(self.acts(p, e), ("navigate", "none"), e)
+            self.assertTrue(V.protected_switch(e) or V.protected_setting(e), f"{e} must be a gated class")
+            self.assertNotIn(e, MAN["controls"])
+
+    def test_ordinary_room_controls_unchanged_from_v2(self):
+        # lights, fan, fridge setpoints, scenes, media: same entity, same features, same actions
+        self.assertEqual(self.acts("living-room", "fan.living_room_air_purifier"), ("more-info", "toggle"))
+        fan = next(c for c in tiles(view(dash("en"), "living-room")) if c["entity"] == "fan.living_room_air_purifier")
+        self.assertEqual([f["type"] for f in fan["features"]], ["fan-speed"])
+        for e in ("number.lg_fridge_fridge_temperature", "number.lg_fridge_freezer_temperature"):
+            c = next(c for c in tiles(view(dash("en"), "kitchen")) if c["entity"] == e)
+            self.assertEqual([f["type"] for f in c["features"]], ["numeric-input"])
+        for p in ("living-room", "dining"):
+            calls = lambda v: sorted(a["target"]["entity_id"] for a in V.actions(v) if a.get("perform_action") == "scene.turn_on")
+            self.assertEqual(calls(view(dash("en"), p)), calls(V2_BY[p]), p)
+        media = {p: [c["entity"] for c in V.walk_cards(view(dash("en"), p)) if c.get("type") == "media-control"]
+                 for p in ("living-room", "parents-room")}
+        self.assertEqual(media, {"living-room": ["media_player.living_room_tv_samsung_q9_series_65"],
+                                 "parents-room": ["media_player.55_qled_4k_ai_qa55q7faawxxy"]})
+        self.assertEqual([c["entity"] for c in V.walk_cards(view(dash("en"), "kitchen")) if c.get("type") == "todo-list"],
+                         ["todo.shopping_list"])
+
+    def test_rooms_index_tiles_open_the_same_pages_as_v2(self):
+        want = {(c["entity"], c["tap_action"]["navigation_path"].split("/")[2]) for c in tiles(V2_BY["rooms"])}
+        got = {(c["entity"], c["tap_action"]["navigation_path"].split("/")[2]) for c in tiles(view(dash("en"), "rooms"))}
+        self.assertEqual(got, want)
+        for c in tiles(view(dash("en"), "rooms")):
+            self.assertEqual(c["icon_tap_action"], {"action": "none"})
+
+    def test_zone_count_is_not_used_and_still_has_a_home(self):
+        self.assertNotIn("zone.home", B.entities_in(view(dash("en"), "rooms")))
+        row = MAN["migration"]["rooms"]["zone.home"]
+        self.assertEqual((row["to"], row["status"]), ("people", "carried"))
+        self.assertIn("zone.home", B.entities_in(view(dash("en"), "people")))
+        out = render(dash("en"), "rooms", self.dark)
+        self.assertIn("Home **No data**", out)
+
+    def test_parents_air_con_read_only_with_one_tap_to_the_v2_controls(self):
+        v = view(dash("en"), "parents-room")
+        self.assertFalse([c for c in V.walk_cards(v) if c.get("type") == "thermostat"])
+        self.assertFalse([a for a in V.actions(v) if "climate" in str(a)])
+        targets = {n.split("/")[2] for n in V.nav_paths(v)}
+        self.assertIn("v2-parents-room", targets)
+        thermo = [c for c in V.walk_cards(view(dash("en"), "v2-parents-room")) if c.get("type") == "thermostat"]
+        self.assertEqual([c["entity"] for c in thermo], ["climate.bedroom_parents_room_ac"])   # V2 controls intact
+
+    def test_climate_controls_button_now_opens_the_classic_parents_room(self):
+        for loc in MAN["locales"]:
+            d = B.load_yaml(ROOT / loc["output"])
+            btn = [c for c in V.walk_cards(view(d, "climate")) if c.get("type") == "button"
+                   and "air-conditioner" in str(c.get("icon"))]
+            self.assertEqual(len(btn), 1, loc["code"])
+            self.assertEqual(btn[0]["tap_action"]["navigation_path"], f"/{loc['url_base']}/v2-parents-room")
+
+    def test_filter_reset_asks_first_in_every_locale(self):
+        v2b = next(c for s in V2_BY["parents-room"]["sections"] for c in s["cards"]
+                   if c.get("entity") == "button.bedroom_parents_room_ac_reset_filter")
+        for code in [l["code"] for l in MAN["locales"]]:
+            presses = [a for a in V.actions(view(dash(code), "parents-room")) if a.get("perform_action") == "button.press"]
+            self.assertEqual(len(presses), 1, code)
+            a = presses[0]
+            self.assertEqual((a["perform_action"], a["target"]),
+                             (v2b["tap_action"]["perform_action"], v2b["tap_action"]["target"]), code)
+            self.assertTrue(a["confirmation"]["text"], code)
+        self.assertEqual(V.unconfirmed_presses(view(dash("en"), "parents-room")), [])
+        bad = copy.deepcopy(view(dash("en"), "parents-room"))      # positive control
+        for a in V.actions(bad):
+            a.pop("confirmation", None)
+        self.assertTrue(V.unconfirmed_presses(bad))
+
+    def test_timer_end_only_while_the_timer_is_on(self):
+        c = next(c for c in tiles(view(dash("en"), "parents-room"))
+                 if c["entity"] == "sensor.bedroom_parents_room_ac_timer_end_time")
+        v2c = next(c for s in V2_BY["parents-room"]["sections"] for c in s["cards"] if c.get("type") == "conditional")
+        self.assertEqual(c["visibility"], v2c["conditions"])
+
+    def test_freezer_line_says_only_what_the_sensors_say(self):
+        d = dash("en")
+        o, s = "binary_sensor.g_monitor_freezer_p110m_overloaded", "switch.g_monitor_freezer_p110m"
+        for st, want in [({o: "on", s: "on"}, "freezer circuit is overloaded"),
+                         ({o: "off", s: "on"}, "Freezer plug on · not overloaded."),
+                         ({o: "off", s: "off"}, "The freezer plug is switched off."),
+                         ({o: "unavailable", s: "on"}, "Freezer monitor is not reporting."),
+                         ({o: "unavailable", s: "unavailable"}, "Freezer monitor is not reporting.")]:
+            out = render(d, "garage", dict(self.states, **st))
+            self.assertIn(want, out, st)
+            self.assertNotIn("running normally", out)
+
+    def test_room_conditions_never_call_a_dark_room_quiet(self):
+        out = render(dash("en"), "rooms", self.dark)
+        self.assertNotIn("quiet", out)
+        self.assertNotRegex(out, r"\d+(\.\d)?°")
+        s = dict(self.states, **{"sensor.living_room_living_room_temperature": "unknown",
+                                 "binary_sensor.sensor_group_motion": "on"})
+        self.assertIn("**Dining** temperature No data · movement", render(dash("en"), "rooms", s))
+
+    def test_counts_state_what_answered(self):
+        s = dict(self.states, **{"switch.k_coffee_p100": "on", "switch.k_top_p100": "unavailable", "switch.k_bot_p100": "off"})
+        self.assertIn("Bench plugs on **1** <small>2 of 3 reporting</small>", render(dash("en"), "kitchen", s))
+        dark = render(dash("en"), "kitchen", self.dark)
+        self.assertIn("Bench plugs on **No data**", dark)
+        self.assertNotIn("**0**", dark)
+
+    def test_emergency_note_makes_no_live_claim(self):
+        for code in [l["code"] for l in MAN["locales"]]:
+            out = render(dash(code), "parents-room", self.states)
+            self.assertNotIn("currently not reporting", out, code)
+        self.assertIn("Do not treat this page alone as proof", render(dash("en"), "parents-room", self.states))
+
+    def test_tile_safety_catches_unsafe_room_changes(self):
+        d = dash("en")
+
+        def mutated(p, entity):
+            v = copy.deepcopy(view(d, p))
+            for c in V.walk_cards(v):
+                if c.get("entity") == entity and c.get("type") == "tile":
+                    c.update(tap_action={"action": "more-info"}, icon_tap_action={"action": "toggle"})
+            return v
+        for p, e in [("garage", "switch.g_monitor_freezer_p110m"), ("kitchen", "switch.k_coffee_p100"),
+                     ("living-room", "switch.genio_power_board_with_usb_livingroom_socket_1"),
+                     ("parents-room", "switch.bedroom_parents_room_ac_timer"),
+                     ("dining", "select.smart_pet_feeder_night_vision"),
+                     ("living-room", "switch.living_room_living_hue_hue_sensor_light_sensor_enabled")]:
+            bad, prot = V.tile_safety(mutated(p, e), V2_BY, MAN["controls"], "casaray-v2", "casaray-v3")
+            self.assertTrue(prot, e)
+        allow = dict(MAN["controls"], **{"switch.g_monitor_freezer_p110m": {"v2_view": "garage"}})
+        bad, _ = V.tile_safety(mutated("garage", "switch.g_monitor_freezer_p110m"), V2_BY, allow, "casaray-v2", "casaray-v3")
+        self.assertTrue(any("protected class" in b for b in bad), "an allowlist entry cannot unlock a protected load")
 
 
 class Safety(unittest.TestCase):

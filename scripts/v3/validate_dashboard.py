@@ -30,13 +30,33 @@ NATIVE_TYPES = {"heading", "markdown", "tile", "button", "picture-entity",
 # Switches no V3-native view may ever control, whatever the manifest says:
 # anything that disables a camera or reduces alerting, and bulb-power wall
 # switches (owner rule). Their V2 controls stay on the classic subviews.
-PROTECTED_SWITCH = re.compile(r"privacy|detection|notification|chime|alarm|siren")
+PROTECTED_SWITCH = re.compile(
+    r"privacy|detection|notification|chime|alarm|siren"   # cameras and alerting
+    r"|sensor_enabled"                                     # turning a motion / light sensor off
+    r"|child_lock"                                         # a safety lock
+    r"|socket_\d"                                          # power-strip sockets: what each powers is not recorded
+    r"|climate_react|_ac_timer")                           # air-con behaviour (V3-008)
 BULB_POWER = {"switch.mainroomlight_switch_1", "switch.bedroomlight_switch_1",
               "switch.dinning_light_switch_1"}
+# Appliance power that is critical (the freezer) or whose load is not recorded
+# (kitchen bench plugs, the coffee machine), with the auto-off that can cut it.
+CRITICAL_LOADS = {
+    "switch.g_monitor_freezer_p110m", "switch.g_monitor_freezer_p110m_auto_off_enabled",
+    "switch.k_coffee_p100", "switch.k_coffee_p100_auto_off_enabled",
+    "switch.k_top_p100", "switch.k_top_p100_auto_off_enabled",
+    "switch.k_bot_p100", "switch.k_bot_p100_auto_off_enabled",
+}
+# Non-switch settings that reduce what a camera or doorbell can do.
+PROTECTED_SETTING = re.compile(r"detection|night_vision|privacy|front_door_volume")
 
 
 def protected_switch(entity):
-    return entity.startswith("switch.") and (bool(PROTECTED_SWITCH.search(entity)) or entity in BULB_POWER)
+    return entity.startswith("switch.") and (bool(PROTECTED_SWITCH.search(entity)) or entity in BULB_POWER
+                                             or entity in CRITICAL_LOADS)
+
+
+def protected_setting(entity):
+    return entity.split(".")[0] in ("select", "number") and bool(PROTECTED_SETTING.search(entity))
 
 
 def v2_tiles(v2_view, entity):
@@ -112,6 +132,13 @@ def actions(node):
             yield from actions(x)
 
 
+def unconfirmed_presses(view):
+    """Targets of button / input_button presses that do not ask first."""
+    return [a.get("target") for a in actions(view)
+            if str(a.get("perform_action", "")).startswith(("button.", "input_button."))
+            and not (a.get("confirmation") or {}).get("text")]
+
+
 def tile_safety(view, v2_by_path, controls, old_url, new_url):
     """(problems, protected_controls) for one native view's tiles.
 
@@ -126,7 +153,7 @@ def tile_safety(view, v2_by_path, controls, old_url, new_url):
             continue
         e = c["entity"]
         dom = e.split(".")[0]
-        if protected_switch(e) and acting(c):
+        if (protected_switch(e) or protected_setting(e)) and acting(c):
             prot.append(e)
         if dom not in ("switch", "climate", "siren", "camera") or not acting(c):
             continue
@@ -237,7 +264,9 @@ def validate(g: Gate):
             bad_ro, prot = tile_safety(v, v2_by_path, controls, base["url_base"], loc["url_base"])
             g.check(not bad_ro, f"{vt} climate/camera tiles read-only; switches act only as in V2 (manifest controls); sirens only as the V2 tile",
                     str(bad_ro))
-            g.check(not prot, f"{vt} no control on a camera-privacy/detection/alert or bulb-power switch", str(prot))
+            g.check(not prot, f"{vt} no control on a protected switch or setting (camera, alerting, sensing, sockets, HVAC, critical loads, bulb power)", str(prot))
+            bare = unconfirmed_presses(v)
+            g.check(not bare, f"{vt} every button press asks first", str(bare))
             # rendered honesty
             for scen, (states, attrs) in R.scenarios().items():
                 try:
