@@ -234,7 +234,7 @@ class MigratedEntities(unittest.TestCase):
                   "sensor.r_energy_monitor_p110m_current_consumption"):
             self.assertIn(e, by)
         t = by["sensor.casa_monitored_power"]
-        self.assertEqual(t["tap_action"], {"action": "none"})
+        self.assertEqual(t["tap_action"], {"action": "more-info"})   # a sensor's details: history, no control
         self.assertEqual(t["icon_tap_action"], {"action": "none"})
 
     def test_every_v2_entity_of_a_rebuilt_view_is_accounted_for(self):
@@ -242,7 +242,8 @@ class MigratedEntities(unittest.TestCase):
         rows = {r["path"]: r for r in rep["views"]}
         home = {m["entity"]: m for m in rows["home"]["migration"]}
         self.assertEqual(len(home), 16)
-        self.assertEqual({m["status"] for m in home.values()} - {"native", "carried"}, set())
+        # CR-V3-17: the six that were carried are native now, so all 16 are.
+        self.assertEqual({m["status"] for m in home.values()}, {"native"})
         for e, m in home.items():
             self.assertIn(e, rows[m["to"]]["entities"], e)
             self.assertIn(e, rows["v2-home"]["entities"], e)   # classic copy keeps it
@@ -266,7 +267,7 @@ class MigratedEntities(unittest.TestCase):
         bad = {
             "row removed": lambda m: m["home"].pop("sensor.casa_monitored_power"),
             "wrong view": lambda m: m["home"]["sensor.casa_monitored_power"].update(to="climate"),
-            "wrong kind": lambda m: m["home"]["switch.g_printer_p100"].update(status="native"),
+            "wrong kind": lambda m: m["home"]["switch.g_printer_p100"].update(status="carried"),
             "unknown view": lambda m: m["home"]["switch.g_printer_p100"].update(to="appliances"),
             "stray key": lambda m: m["home"]["switch.g_printer_p100"].update({"read-only": None}),
             "retained, no reason": lambda m: m["home"]["switch.g_printer_p100"].update(status="retained", note=""),
@@ -276,6 +277,201 @@ class MigratedEntities(unittest.TestCase):
             with self.assertRaises(SystemExit, msg=name):
                 self._build_with(mutate)
         self._build_with(lambda m: None)  # positive control: the real map builds
+
+V2 = yaml.safe_load((ROOT / MAN["baseline"]["file"]).read_text(encoding="utf-8"))
+V2_BY = {v["path"]: v for v in V2["views"]}
+REBUILT = ("security", "network", "ray-bedroom", "guest-room")
+
+
+def tiles(v):
+    return [c for c in V.walk_cards(v) if c.get("type") == "tile"]
+
+
+class NativeRebuilds(unittest.TestCase):
+    """CR-V3-17: Security, Network, Ray's room and Guest room rebuilt natively."""
+    states, attrs = R.scenarios()["normal"]
+    dark = R.scenarios()["dark"][0]
+
+    def test_rebuilt_views_are_native_and_keep_a_classic_copy(self):
+        for p in REBUILT:
+            self.assertIn(p, MAN["native"])
+            for code in [l["code"] for l in MAN["locales"]]:
+                d = dash(code)
+                self.assertEqual(view(d, p)["theme"], MAN["theme"], (code, p))
+                classic = view(d, "v2-" + p)
+                want = B.rewrite_links(copy.deepcopy(V2_BY[p]), "casaray-v2", next(
+                    l["url_base"] for l in MAN["locales"] if l["code"] == code))
+                want.update(path="v2-" + p, subview=True, theme=MAN["classic_theme"],
+                            title=f"{V2_BY[p].get('title', p)} (V2)")
+                self.assertEqual(classic, want, f"{code}: classic v2-{p} must be the V2 view verbatim")
+
+    def test_every_v2_entity_of_a_rebuilt_view_is_on_it(self):
+        d = dash("en")
+        for p in REBUILT:
+            v2e = B.entities_in(V2_BY[p]) - {"input_boolean.chinese_dashboard"}
+            missing = v2e - B.entities_in(view(d, p))
+            self.assertEqual(missing, set(), p)
+
+    # ---- Security: safety behaviour unchanged
+    def test_sirens_are_the_v2_tiles_byte_for_byte(self):
+        want = [c for c in tiles(V2_BY["security"]) if c["entity"].startswith("siren.")]
+        self.assertEqual(len(want), 3)
+        for code in [l["code"] for l in MAN["locales"]]:
+            got = [c for c in tiles(view(dash(code), "security")) if c["entity"].startswith("siren.")]
+            self.assertEqual(got, want, code)
+        for c in want:   # what that behaviour is: details on tap, nothing on the icon
+            self.assertEqual(C.effective_tile_actions(c), ("more-info", "none"), c["entity"])
+
+    def test_security_has_no_arming_disarming_or_emergency_action(self):
+        sec = view(dash("en"), "security")
+        self.assertEqual(list(V.actions(sec)), [])
+        txt = yaml.safe_dump(sec)
+        for dom in ("alarm_control_panel.", "lock.", "siren.turn_on", "siren.toggle", "button.press"):
+            self.assertNotIn(dom, txt)
+
+    def test_camera_switches_are_read_only_and_lead_to_the_classic_controls(self):
+        sw = [c for c in tiles(view(dash("en"), "security")) if c["entity"].startswith("switch.")]
+        self.assertEqual(len(sw), 12)
+        for c in sw:
+            self.assertEqual(c["icon_tap_action"], {"action": "none"}, c["entity"])
+            self.assertEqual(c["tap_action"], {"action": "navigate", "navigation_path": "/casaray-v3/v2-security"})
+        self.assertIn("switch.tapo_c425_north_wall_privacy", [c["entity"] for c in sw])
+
+    def test_security_dark_claims_nothing(self):
+        out = render(dash("en"), "security", self.dark)
+        self.assertNotIn("nothing needs attention", out)
+        self.assertNotIn("**0**", out)
+        self.assertIn("Doors open **No data**", out)
+        ok = dict(self.states, **{e: "off" for e in ("binary_sensor.f_contact_sensor_door",
+                  "binary_sensor.m_contact_sensor_door", "binary_sensor.b_contact_sensor_door",
+                  "siren.tapo_h200", "siren.tapo_c425_north_wall_siren", "siren.tapo_c200_stockroom_siren")},
+                  **{e: "idle" for e in self.states if e.startswith("camera.")})
+        self.assertIn("nothing needs attention", render(dash("en"), "security", ok))   # positive control
+        out = render(dash("en"), "security", dict(ok, **{"siren.tapo_c425_north_wall_siren": "on"}))
+        self.assertIn("North wall siren sounding", out)
+
+    # ---- Network: connectivity in three states
+    def test_network_states_online_offline_not_reporting(self):
+        s = dict(self.states, **{"binary_sensor.g_printer_p100_cloud_connection": "on",
+                                 "binary_sensor.k_coffee_p100_cloud_connection": "off",
+                                 "binary_sensor.k_top_p100_cloud_connection": "unknown",
+                                 "binary_sensor.k_bot_p100_cloud_connection": "unavailable",
+                                 "sensor.g_printer_p100_signal_level": "3",
+                                 "sensor.k_coffee_p100_signal_level": "unavailable"})
+        out = render(dash("en"), "network", s)
+        self.assertIn("G/Printer P100 — **Online** · signal 3", out)
+        self.assertIn("K/Coffee P100 — **Offline**\n", out)          # no signal claimed from a dark sensor
+        self.assertIn("K/Top P100 — **Not reporting**", out)
+        self.assertIn("K/Bot P100 — **Not reporting**", out)
+        self.assertRegex(out, r"\*\*\d+ online · \d+ offline · \d+ not reporting\*\*")
+
+    def test_network_dark_says_nothing_answered(self):
+        out = render(dash("en"), "network", self.dark)
+        self.assertIn("No device is reporting", out)
+        self.assertNotIn("0 online", out)
+        self.assertNotIn("Online**", out)
+        self.assertIn("Cameras **No data**", out)
+        self.assertIn("Internet **No data**", out)
+
+    def test_network_lines_do_not_run_together(self):
+        out = render(dash("en"), "network", self.states)
+        self.assertEqual(out.count("\n- "), 14 + 4, "14 devices and 4 groups, one per line")
+
+    # ---- Rooms: original device assignments and controls
+    def test_room_entities_match_v2_exactly(self):
+        d = dash("en")
+        for p in ("ray-bedroom", "guest-room"):
+            v2e = B.entities_in(V2_BY[p]) - {"input_boolean.chinese_dashboard"}
+            self.assertEqual(B.entities_in(view(d, p)), v2e, p)
+
+    def test_tiles_behave_as_their_v2_tiles(self):
+        """Every tile on a rebuilt view does what its V2 tile did, apart from the
+        deliberate, gated departures: protected switches (camera privacy /
+        detection / alerts, bulb power) lead to the classic controls instead."""
+        d = dash("en")
+        for p in REBUILT:
+            v2t = {c["entity"]: c for c in tiles(V2_BY[p])}
+            for c in tiles(view(d, p)):
+                e = c["entity"]
+                if V.protected_switch(e):
+                    self.assertEqual(C.effective_tile_actions(c), ("navigate", "none"), f"{p}: {e}")
+                    continue
+                if e not in v2t:
+                    continue     # a reading V2 showed only inside a summary template
+                self.assertIn(e, v2t, f"{p}: {e} was not a tile on V2")
+                self.assertEqual(C.effective_tile_actions(c), C.effective_tile_actions(v2t[e]), f"{p}: {e}")
+                want = [f["type"] for f in v2t[e].get("features", [])]
+                got = [f["type"] for f in c.get("features", [])]
+                self.assertEqual(got, want, f"{p}: {e} features")
+
+    def test_scene_buttons_call_the_same_scenes(self):
+        def scene_calls(v):
+            return sorted(a["target"]["entity_id"] for a in V.actions(v) if a.get("perform_action") == "scene.turn_on")
+        self.assertEqual(scene_calls(view(dash("en"), "ray-bedroom")), scene_calls(V2_BY["ray-bedroom"]))
+        self.assertEqual(len(scene_calls(V2_BY["ray-bedroom"])), 6)
+
+    def test_bulb_power_wall_switch_stays_read_only(self):
+        c = next(c for c in tiles(view(dash("en"), "ray-bedroom")) if c["entity"] == "switch.bedroomlight_switch_1")
+        self.assertEqual(c["icon_tap_action"], {"action": "none"})
+        self.assertEqual(c["tap_action"]["action"], "navigate")
+
+    def test_only_listed_switches_act_and_none_is_protected(self):
+        acting = {c["entity"] for p in MAN["native"] for c in tiles(view(dash("en"), p))
+                  if c["entity"].startswith("switch.") and V.acting(c)}
+        self.assertEqual(acting, set(MAN["controls"]))
+        self.assertFalse(any(V.protected_switch(e) for e in MAN["controls"]))
+
+    def test_rooms_navigation_reaches_the_rebuilt_rooms(self):
+        d = dash("en")
+        for src in ("home", "rooms"):
+            targets = {n.split("/")[2] for n in V.nav_paths(view(d, src))}
+            self.assertTrue({"ray-bedroom", "guest-room"} <= targets, src)
+        for p in REBUILT:
+            targets = {n.split("/")[2] for n in V.nav_paths(view(d, p))}
+            self.assertIn("v2-" + p, targets, f"{p} links to its classic copy")
+            self.assertIn("home", targets, f"{p} links Home")
+
+    def test_rooms_dark_say_no_data(self):
+        for p in ("ray-bedroom", "guest-room"):
+            out = render(dash("en"), p, self.dark)
+            self.assertNotIn("**Normal**", out, p)
+            self.assertNotIn("**Off**", out, p)
+            self.assertIn("**Offline**", out, p)
+
+    # ---- the gate's tile rules, shown biting on broken views
+    def _safety(self, v):
+        return V.tile_safety(v, V2_BY, MAN["controls"], "casaray-v2", "casaray-v3")
+
+    def test_tile_safety_passes_the_real_views(self):
+        for p in MAN["native"]:
+            self.assertEqual(self._safety(view(dash("en"), p)), ([], []), p)
+
+    def test_tile_safety_catches_unsafe_changes(self):
+        d = dash("en")
+
+        def mutated(p, entity, **change):
+            v = copy.deepcopy(view(d, p))
+            for c in V.walk_cards(v):
+                if c.get("entity") == entity and c.get("type") == "tile":
+                    c.update(change)
+            return v
+        cases = {
+            "siren icon made to toggle": mutated("security", "siren.tapo_h200", icon_tap_action={"action": "toggle"}),
+            "siren colour changed": mutated("security", "siren.tapo_h200", color="amber"),
+            "privacy switch made a control": mutated("security", "switch.tapo_c425_north_wall_privacy",
+                                                     tap_action={"action": "more-info"}, icon_tap_action={"action": "toggle"}),
+            "bulb power made a control": mutated("ray-bedroom", "switch.bedroomlight_switch_1",
+                                                 tap_action={"action": "more-info"}, icon_tap_action={"action": "toggle"}),
+            "listed switch acting unlike V2": mutated("guest-room", "switch.g_printer_p100",
+                                                      tap_action={"action": "toggle"}),
+        }
+        for name, v in cases.items():
+            bad, prot = self._safety(v)
+            self.assertTrue(bad or prot, name)
+        unlisted = dict(MAN["controls"])
+        unlisted.pop("switch.g_printer_p100")
+        bad, _ = V.tile_safety(view(d, "guest-room"), V2_BY, unlisted, "casaray-v2", "casaray-v3")
+        self.assertTrue(any("not in manifest controls" in b for b in bad))
 
 
 class Safety(unittest.TestCase):

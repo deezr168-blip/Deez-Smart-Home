@@ -54,6 +54,28 @@ native:
   - climate
   - cameras
   - energy
+  - security
+  - network
+  - ray-bedroom
+  - guest-room
+
+# Switches a V3-native view may control. V3-native views are read-only for
+# switches by default; each switch below is a device control that V2 already
+# offers on the named view (a tile whose icon toggles it), carried over with
+# V2's exact tile behaviour. The gate refuses a switch control that is not
+# listed here, a listed one with no such V2 tile, and any switch in a
+# protected class (camera privacy / detection / alerts / chime / alarm, sirens,
+# bulb-power wall switches), whatever this list says.
+controls:
+  switch.r_energy_monitor_p110m: {v2_view: ray-bedroom, note: desk plug}
+  switch.r_energy_monitor_p110m_led: {v2_view: ray-bedroom, note: desk plug's LED}
+  switch.r_energy_monitor_p110m_auto_off_enabled: {v2_view: ray-bedroom, note: desk plug's auto-off}
+  switch.lph_se_dcd9_power: {v2_view: ray-bedroom, note: grow unit power}
+  switch.lph_se_dcd9_pump_cycling: {v2_view: ray-bedroom, note: grow unit pump cycling}
+  switch.g_printer_p100: {v2_view: guest-room, note: printer smart plug}
+  switch.g_printer_p100_led: {v2_view: guest-room, note: printer plug's LED}
+  switch.g_printer_p100_auto_off_enabled: {v2_view: guest-room, note: printer plug's auto-off}
+  switch.g_printer_p100_auto_update_enabled: {v2_view: guest-room, note: printer plug's firmware auto-update}
 
 # Every other V2 view is carried verbatim (links rewritten to the locale's
 # url_base) until it is rebuilt. Order follows V2.
@@ -72,15 +94,15 @@ migration:
     binary_sensor.bedroom_parents_room_ac_room_occupied:
       {to: climate, status: native, note: Parents' room occupancy beside the air-con it serves}
     binary_sensor.g_printer_p100_cloud_connection:
-      {to: network, status: carried, note: printer plug's cloud link}
+      {to: network, status: native, note: "printer plug's cloud link, in device connectivity"}
     binary_sensor.k_motion_sensor_motion:
-      {to: security, status: carried, note: kitchen motion}
+      {to: security, status: native, note: kitchen motion}
     binary_sensor.living_room_living_hue_hue_sensor_motion:
-      {to: security, status: carried, note: living-room motion}
+      {to: security, status: native, note: living-room motion}
     binary_sensor.sensor_group_motion:
-      {to: security, status: carried, note: dining motion (sensor group)}
+      {to: security, status: native, note: dining motion (sensor group)}
     cover.aqara_roller_shade_driver_e1:
-      {to: ray-bedroom, status: carried, note: roller shade control stays the V2 one in Ray's room}
+      {to: ray-bedroom, status: native, note: "roller shade, V2's open/close and position features"}
     sensor.bills_unpaid_count:
       {to: home, status: native, note: "Needs attention; a zero counts only while the six paid flags answer"}
     sensor.casa_monitored_power:
@@ -98,7 +120,7 @@ migration:
     sensor.tapo_camera_bcca_battery:
       {to: cameras, status: native, note: east-wall camera battery; also on House health}
     switch.g_printer_p100:
-      {to: guest-room, status: carried, note: printer plug toggle stays the V2 one (no Appliances board exists)}
+      {to: guest-room, status: native, note: "printer plug, V2 tile behaviour (manifest controls)"}
     switch.mainroomlight_switch_1:
       {to: lighting, status: native, note: "bulb-power switch, read-only (owner rule on bulb power)"}
   cameras:

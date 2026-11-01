@@ -1,0 +1,71 @@
+# V3 Guest room — rebuilt natively (CR-V3-17). Every V2 Guest Room entity is
+# here, on the same device it controlled in V2:
+#  * the printer smart plug and its LED / auto-off / auto-update switches keep
+#    V2's tile behaviour exactly (tap opens details, the icon toggles), and only
+#    because each is listed in the manifest's `controls` (gated);
+#  * the Kogan TV backlight keeps V2's plain light tile; Pogo keeps V2's native
+#    media-control card with its own playback controls;
+#  * the printer's cloud link is on Network (V2 Home placed it there too).
+path: guest-room
+title: room.guest
+icon: mdi:bed-single-outline
+sections:
+  - topbar: true
+
+  - span: 2
+    cards:
+      - c: chips
+        parts:
+          - c: chip_state
+            label_key: chip.printer
+            entity: switch.g_printer_p100
+            words: {"on": s.on, "off": s.off}
+          - c: chip_state
+            label_key: chip.tv_backlight
+            entity: light.kogan_tv
+            words: {"on": s.on, "off": s.off}
+          - c: chip_state
+            label_key: chip.internet
+            entity: binary_sensor.eero_wan_status
+            words: {"on": s.online, "off": s.offline}
+            unavailable: s.no_data
+
+  # BAND 3 — lighting | printer
+  - span: 1
+    heading: h.lighting
+    cards:
+      - {c: light_tile, entity: light.kogan_tv, name: {t: guest.tv_backlight}, columns: 12, brightness: false}
+  - span: 1
+    heading: h.printer
+    cards:
+      - {c: control_tile, entity: switch.g_printer_p100, name: {t: guest.printer_plug}, columns: 12}
+
+  # BAND 4 — entertainment | printer settings
+  - span: 1
+    heading: h.entertainment
+    cards:
+      - {c: media, entity: media_player.pogo}
+  - span: 1
+    heading: h.printer_settings
+    cards:
+      - {c: control_tile, entity: switch.g_printer_p100_led, name: {t: guest.plug_led}}
+      - {c: control_tile, entity: switch.g_printer_p100_auto_off_enabled, name: {t: guest.auto_off}}
+      - {c: control_tile, entity: number.g_printer_p100_turn_off_in, name: {t: guest.turn_off_in}}
+      - {c: sensor_tile, entity: sensor.g_printer_p100_auto_off_at, name: {t: guest.auto_off_at}}
+      - {c: control_tile, entity: switch.g_printer_p100_auto_update_enabled, name: {t: guest.auto_update}, columns: 12}
+
+  - span: 2
+    cards:
+      - {c: note, key: guest.no_climate}
+      - {c: note, key: room.no_automations}
+
+  - c: more_boards
+    classic_of: guest-room
+    items:
+      - [rooms, nav.all_rooms, mdi:floor-plan]
+      - [network, nav.network, mdi:router-wireless]
+      - [entertainment, nav.entertainment, mdi:television-classic]
+      - [home, nav.home, mdi:home-variant-outline]
+      - [ray-bedroom, room.ray, mdi:bed-king-outline]
+      - [energy, nav.energy, mdi:lightning-bolt-outline]
+      - [security, nav.security, mdi:shield-home-outline]

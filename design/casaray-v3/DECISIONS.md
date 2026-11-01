@@ -6,6 +6,45 @@ and `ha-deploy` are unaffected by everything here.
 
 ---
 
+## V3-010 · 01/11/26 · Security, Network and two rooms rebuilt natively; how controls carry over
+
+**Status:** owner instruction CR-V3-17 (01/11/26), implemented on
+`feature/casaray-v3-build`. DEVELOPMENT ONLY — NOT DEPLOYED. Items 4 and 5
+need the owner's review.
+
+1. **Sirens are carried, not rebuilt.** The owner asked that siren operation
+   be preserved exactly, so native Security holds the three V2 siren tiles
+   copied byte for byte from the pinned baseline (`v2_verbatim`). Behaviour, read
+   from the frontend source (`tile-card-helpers.ts`, fetched 01/11/26): tap
+   opens details; an unset icon tap does nothing for `siren`. A siren sounds
+   only from the control inside Home Assistant's own details dialog. No
+   arming, disarming or emergency action was added. The gate refuses any
+   siren tile that differs from V2's.
+2. **Room switches keep V2's behaviour only from an allowlist.** V3-native
+   views remain read-only for switches by default. The nine room device
+   switches that V2 lets you toggle (desk plug, grow unit, printer plug and
+   their LED / auto-off / auto-update settings) are listed in the manifest's
+   `controls` and keep V2's exact tile behaviour. Everything else is refused.
+3. **Protected classes stay read-only whatever the list says.** These are
+   camera privacy, detection, notification, chime and alarm switches, and
+   bulb-power wall switches. Their V2 controls stay on the classic subviews,
+   which are unchanged and one tap away.
+4. **Finding, for the owner:** on V2 Security today an icon tap on a camera
+   privacy, detection or alert tile toggles it in one tap. The tiles set only
+   `tap_action: more-info`, and Home Assistant toggles a `switch` on an unset
+   icon tap. V2's note says the tiles open details. V3 does not reproduce
+   this; the classic `v2-security` subview does, because it is V2 verbatim.
+5. **Open against this file's Cameras and security rule ("any action that
+   sounds one is confirmed").** Preserving V2 exactly means sounding a siren
+   from the details dialog is not confirmed by CasaRay; Home Assistant's
+   dialog has no confirmation step. Adding one means changing the siren
+   tiles, so it is the owner's call.
+6. **Sensor tiles open their details again.** A V3 reading without a
+   navigation target now opens more-info on tap, as a V2 tile does (history;
+   read-only domains only). This touched 37 tiles on the earlier native views.
+
+---
+
 ## V3-009 · 01/11/26 · V3 becomes a Lovelace build target, offline, on its own branch
 
 **Status:** owner instruction (01/11/26), implemented on `feature/casaray-v3-build`.

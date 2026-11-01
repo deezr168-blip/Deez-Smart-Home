@@ -14,15 +14,15 @@ Baseline: `dashboards/casaray_v2.yaml` ha-deploy@18a4e5d sha256 `77a4991626d6f8a
 | 4 | `kitchen` | carried | `dashboards/casaray_v2.yaml#kitchen` | 23 | — | — |
 | 5 | `dining` | carried | `dashboards/casaray_v2.yaml#dining` | 28 | — | 6 |
 | 6 | `parents-room` | carried | `dashboards/casaray_v2.yaml#parents-room` | 34 | — | 2 |
-| 7 | `ray-bedroom` | carried | `dashboards/casaray_v2.yaml#ray-bedroom` | 31 | — | 7 |
+| 7 | `ray-bedroom` | native | `views/ray-bedroom.yaml` | 30 | — | 7 |
 | 8 | `garage` | carried | `dashboards/casaray_v2.yaml#garage` | 13 | — | — |
-| 9 | `guest-room` | carried | `dashboards/casaray_v2.yaml#guest-room` | 10 | — | 3 |
+| 9 | `guest-room` | native | `views/guest-room.yaml` | 9 | — | 3 |
 | 10 | `lighting` | native | `views/lighting.yaml` | 46 | — | 23 |
 | 11 | `climate` | native | `views/climate.yaml` | 11 | — | — |
 | 12 | `energy` | native | `views/energy.yaml` | 27 | — | — |
 | 13 | `bills` | carried | `dashboards/casaray_v2.yaml#bills` | 34 | — | — |
 | 14 | `bills-details` | carried | `dashboards/casaray_v2.yaml#bills-details` | 116 | — | 12 |
-| 15 | `security` | carried | `dashboards/casaray_v2.yaml#security` | 30 | — | 5 |
+| 15 | `security` | native | `views/security.yaml` | 29 | — | 5 |
 | 16 | `cameras` | native | `views/cameras.yaml` | 18 | — | 4 |
 | 17 | `camera-front-door` | carried | `dashboards/casaray_v2.yaml#camera-front-door` | 3 | — | 1 |
 | 18 | `camera-north-wall` | carried | `dashboards/casaray_v2.yaml#camera-north-wall` | 2 | — | — |
@@ -34,28 +34,32 @@ Baseline: `dashboards/casaray_v2.yaml` ha-deploy@18a4e5d sha256 `77a4991626d6f8a
 | 24 | `automations` | carried | `dashboards/casaray_v2.yaml#automations` | 8 | — | — |
 | 25 | `entertainment` | carried | `dashboards/casaray_v2.yaml#entertainment` | 10 | — | 2 |
 | 26 | `house-health` | carried | `dashboards/casaray_v2.yaml#house-health` | 38 | — | 8 |
-| 27 | `network` | carried | `dashboards/casaray_v2.yaml#network` | 57 | — | 11 |
+| 27 | `network` | native | `views/network.yaml` | 56 | — | 11 |
 | 28 | `alerts` | carried | `dashboards/casaray_v2.yaml#alerts` | 15 | — | 3 |
 | 29 | `v2-home` | classic | `dashboards/casaray_v2.yaml#home` | 51 | — | 5 |
 | 30 | `v2-lighting` | classic | `dashboards/casaray_v2.yaml#lighting` | 47 | — | 23 |
 | 31 | `v2-climate` | classic | `dashboards/casaray_v2.yaml#climate` | 12 | — | — |
 | 32 | `v2-cameras` | classic | `dashboards/casaray_v2.yaml#cameras` | 21 | — | 4 |
 | 33 | `v2-energy` | classic | `dashboards/casaray_v2.yaml#energy` | 27 | — | — |
+| 34 | `v2-security` | classic | `dashboards/casaray_v2.yaml#security` | 30 | — | 5 |
+| 35 | `v2-network` | classic | `dashboards/casaray_v2.yaml#network` | 57 | — | 11 |
+| 36 | `v2-ray-bedroom` | classic | `dashboards/casaray_v2.yaml#ray-bedroom` | 31 | — | 7 |
+| 37 | `v2-guest-room` | classic | `dashboards/casaray_v2.yaml#guest-room` | 10 | — | 3 |
 
 ## Native rebuilds: where every V2 entity now lives
 
 For each rebuilt view, every V2 entity that is not on the rebuild itself, or that the migration moved onto it, with its destination and coverage. Source: `src/casaray_v3/manifest.yaml` `migration`; the build checks every row against the generated dashboard and refuses to run on a false or missing one. `native` = on a V3-native view; `carried` = on a carried V2 board, so it still renders as V2 until that board is rebuilt; `retained` / `blocked` = only on the classic `v2-<path>` subview, for the reason given. Every entity also stays on its classic subview, linked from the native view's More boards band, until native parity is verified on a device.
 
-### home (16: 10 native, 6 carried)
+### home (16: 16 native)
 
 | Entity | Friendly name (export) | Destination | Coverage | Also on | Note |
 |---|---|---|---|---|---|
 | `binary_sensor.bedroom_parents_room_ac_room_occupied` | Parents Room AC Room occupied | Climate · `climate` | native | `parents-room` | Parents' room occupancy beside the air-con it serves |
-| `binary_sensor.g_printer_p100_cloud_connection` | G/Printer P100 Cloud connection | Network · `network` | carried | — | printer plug's cloud link |
-| `binary_sensor.k_motion_sensor_motion` | K/Motion Sensor Motion | Security · `security` | carried | `kitchen`, `rooms` | kitchen motion |
-| `binary_sensor.living_room_living_hue_hue_sensor_motion` | Living Room Motion Sensor Motion | Security · `security` | carried | `living-room`, `rooms` | living-room motion |
-| `binary_sensor.sensor_group_motion` | Sensor group Motion | Security · `security` | carried | `dining`, `rooms` | dining motion (sensor group) |
-| `cover.aqara_roller_shade_driver_e1` | Aqara Roller Shade Driver E1 | Rooms · `ray-bedroom` | carried | — | roller shade control stays the V2 one in Ray's room |
+| `binary_sensor.g_printer_p100_cloud_connection` | G/Printer P100 Cloud connection | Network · `network` | native | — | printer plug's cloud link, in device connectivity |
+| `binary_sensor.k_motion_sensor_motion` | K/Motion Sensor Motion | Security · `security` | native | `kitchen`, `rooms` | kitchen motion |
+| `binary_sensor.living_room_living_hue_hue_sensor_motion` | Living Room Motion Sensor Motion | Security · `security` | native | `living-room`, `rooms` | living-room motion |
+| `binary_sensor.sensor_group_motion` | Sensor group Motion | Security · `security` | native | `dining`, `rooms` | dining motion (sensor group) |
+| `cover.aqara_roller_shade_driver_e1` | Aqara Roller Shade Driver E1 | Rooms · `ray-bedroom` | native | — | roller shade, V2's open/close and position features |
 | `sensor.bills_unpaid_count` | Bills Unpaid Count | Home · `home` | native | — | Needs attention; a zero counts only while the six paid flags answer |
 | `sensor.casa_monitored_power` | Casa Monitored Power | Energy · `energy` | native | — | monitored-circuit total beside its two circuits (V3-007) |
 | `sensor.casa_solar_expected_today` | Casa Solar Expected Today | Energy · `energy` | native | — | solar forecast group |
@@ -64,8 +68,16 @@ For each rebuilt view, every V2 entity that is not on the rebuild itself, or tha
 | `sensor.living_room_ringring_battery` | RingRing Battery | Cameras · `cameras` | native | `alerts`, `house-health`, `living-room` | doorbell battery; also on House health |
 | `sensor.r_energy_monitor_p110m_current_consumption` | R/Energy Monitor P110M Current consumption | Energy · `energy` | native | `ray-bedroom` | monitored circuits |
 | `sensor.tapo_camera_bcca_battery` | Tapo C420 - East Wall Battery | Cameras · `cameras` | native | `camera-east-wall`, `house-health` | east-wall camera battery; also on House health |
-| `switch.g_printer_p100` | G/Printer P100 | Rooms · `guest-room` | carried | `network`, `rooms` | printer plug toggle stays the V2 one (no Appliances board exists) |
+| `switch.g_printer_p100` | G/Printer P100 | Rooms · `guest-room` | native | `network`, `rooms` | printer plug, V2 tile behaviour (manifest controls) |
 | `switch.mainroomlight_switch_1` | MainRoomLight Switch 1 | Lighting · `lighting` | native | `parents-room` | bulb-power switch, read-only (owner rule on bulb power) |
+
+### ray-bedroom (0: none)
+
+Every V2 entity of this view is on its native rebuild.
+
+### guest-room (0: none)
+
+Every V2 entity of this view is on its native rebuild.
 
 ### lighting (0: none)
 
@@ -79,6 +91,10 @@ Every V2 entity of this view is on its native rebuild.
 
 Every V2 entity of this view is on its native rebuild.
 
+### security (0: none)
+
+Every V2 entity of this view is on its native rebuild.
+
 ### cameras (2: 2 native)
 
 | Entity | Friendly name (export) | Destination | Coverage | Also on | Note |
@@ -86,12 +102,16 @@ Every V2 entity of this view is on its native rebuild.
 | `light.tapo_c200_stockroom_floodlight_timed` | Tapo C200 - Stockroom Floodlight (Timed) | Lighting · `lighting` | native | — | camera floodlight |
 | `light.tapo_c425_north_wall_floodlight_timed` | Tapo C425 - North Wall Floodlight (Timed) | Lighting · `lighting` | native | — | camera floodlight |
 
+### network (0: none)
+
+Every V2 entity of this view is on its native rebuild.
+
 
 ## Locales
 
 | Locale | Output | url_path | Views | Keys on fallback | Missing keys |
 |---|---|---|---|---|---|
-| en | `dashboards/casaray_v3.yaml` | `/casaray-v3` | 33 | 0 | 0 |
-| yue | `dashboards/casaray_v3/dist/casaray_v3_yue.yaml` | `/casaray-v3-yue` | 33 | 0 | 0 |
-| km | `dashboards/casaray_v3/dist/casaray_v3_km.yaml` | `/casaray-v3-km` | 33 | 0 | 0 |
-| zh-Hans | `dashboards/casaray_v3/dist/casaray_v3_zh-hans.yaml` | `/casaray-v3-zh` | 33 | 97 | 0 |
+| en | `dashboards/casaray_v3.yaml` | `/casaray-v3` | 37 | 0 | 0 |
+| yue | `dashboards/casaray_v3/dist/casaray_v3_yue.yaml` | `/casaray-v3-yue` | 37 | 0 | 0 |
+| km | `dashboards/casaray_v3/dist/casaray_v3_km.yaml` | `/casaray-v3-km` | 37 | 0 | 0 |
+| zh-Hans | `dashboards/casaray_v3/dist/casaray_v3_zh-hans.yaml` | `/casaray-v3-zh` | 37 | 165 | 0 |

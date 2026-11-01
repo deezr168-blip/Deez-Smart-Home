@@ -23,7 +23,8 @@ all existing V3 design work is preserved untouched. No recovery branch,
 ```
 src/casaray_v3/                 sources (outside dashboards/: the repo gate
   manifest.yaml                 treats every YAML there as a live dashboard)
-  views/{home,lighting,climate,cameras,energy}.yaml   V3-native view specs
+  views/<path>.yaml             V3-native view specs (9: home, lighting, climate, cameras,
+                                energy, security, network, ray-bedroom, guest-room)
   i18n/{en,yue,km,zh-Hans}.yaml                string catalogues
   themes/casaray_v3.yaml                       dark + light token theme
 scripts/v3/
@@ -105,9 +106,10 @@ Every component follows the root rules, and the gate tests them by rendering:
 | Surface | V3 behaviour | Why |
 |---|---|---|
 | Parents' air-con | read-only; link to classic Parents' room controls | V3-008: no HVAC implementation until the contract is satisfied |
-| Camera privacy / detection | read-only tiles | approval boundary: nothing may disable a camera |
+| Camera privacy / detection / alerts / chime / alarm | read-only tiles; a tap opens the classic view's V2 controls | approval boundary: nothing may disable a camera or reduce alerting |
 | Bulb-power wall switches | read-only tiles | owner rule: avoid toggling physical power to smart bulbs |
-| Sirens | not on native views (Security is carried, V2 treatment intact) | — |
+| Sirens | the V2 tiles, byte for byte (`v2_verbatim`): tap opens details, icon does nothing | owner: preserve siren operation exactly; no arming, disarming or emergency action |
+| Room device switches (desk, printer, grow unit, plug settings) | V2's exact tile behaviour, only for entries in manifest `controls` | owner: preserve existing room controls; protected classes refused regardless |
 | All lights off | `light.turn_off` on the three lights only | V2 also cut `switch.mainroomlight_switch_1`; recorded departure |
 
 Each is enforced by `validate_dashboard.py` and `tests/v3`.

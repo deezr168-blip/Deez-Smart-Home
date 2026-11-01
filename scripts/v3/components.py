@@ -94,8 +94,17 @@ def readonly_tile(ctx, entity, name=None, columns=6, nav=None):
     return t
 
 
+# Domains whose more-info dialog only shows state, history and attributes.
+READ_ONLY_DOMAINS = {"sensor", "binary_sensor", "weather", "sun", "person", "device_tracker", "zone"}
+
+
 def sensor_tile(ctx, entity, name=None, columns=6, nav=None):
-    return readonly_tile(ctx, entity, name, columns, nav)
+    """A reading. Without `nav`, a tap opens its details (history), as a V2
+    tile does; only for read-only domains, whose dialog has no control."""
+    t = readonly_tile(ctx, entity, name, columns, nav)
+    if not nav and entity.split(".")[0] in READ_ONLY_DOMAINS:
+        t["tap_action"] = {"action": "more-info"}
+    return t
 
 
 def person_tile(ctx, entity, nav="people", columns=4):
@@ -359,7 +368,151 @@ def todo(ctx, entity, rows=6):
     return {"type": "todo-list", "entity": entity, "grid_options": grid(12, rows)}
 
 
-def scene_buttons(ctx, scenes, prefix):
+def media(ctx, entity, columns=12):
+    """Native media-control card, as V2 uses it (its own play / volume controls)."""
+    ctx.use(entity)
+    return {"type": "media-control", "entity": entity, "grid_options": grid(columns)}
+
+
+def fmt(ctx, key, **parts):
+    """A localised string with {placeholders} filled at build time (static names)."""
+    s = ctx.t(key)
+    for k, v in parts.items():
+        s = s.replace("{" + k + "}", str(v))
+    return s
+
+
+# ---------------------------------------------------------------- state in words
+
+def word_expr(ctx, entity, words, unavailable="s.offline"):
+    """Jinja expression: the state in words. `words` maps states to string keys;
+    unavailable -> Offline (or `unavailable`), unknown/none/'' -> State unknown,
+    any other state is shown raw rather than guessed."""
+    ctx.use(entity)
+    m = "{" + ",".join(jstr(k) + ":" + jstr(ctx.t(v)) for k, v in words.items()) + "}"
+    s = "states('" + entity + "')"
+    return ("(" + jstr(ctx.t(unavailable)) + " if " + s + " == 'unavailable' else ("
+            + jstr(ctx.t("s.state_unknown")) + " if " + s + " in ['unknown','none',''] else "
+            + "(" + m + ").get(" + s + ", " + s + ")))")
+
+
+def chip_state(ctx, label_key, entity, words, unavailable="s.offline"):
+    return ctx.t(label_key) + " **{{ " + word_expr(ctx, entity, words, unavailable) + " }}**"
+
+
+# ---------------------------------------------------------------- connectivity
+
+def connectivity(ctx, devices, strip=" Cloud connection"):
+    """Per-device connectivity, honestly: 'on' is online, 'off' is offline (an
+    answer), anything else is not reporting. Names come from the export's own
+    friendly names (device names stay Latin); a signal reading is added only
+    when it is a number. The summary counts what answered."""
+    ents = [d["entity"] for d in devices]
+    ctx.use(ents)
+    ids = "[" + ",".join("'" + e + "'" for e in ents) + "]"
+    head = ("{%- set ns = namespace(a=0, b=0, c=0) -%}{%- for e in " + ids + " -%}"
+            "{%- set s = states(e) -%}{%- if s == 'on' -%}{%- set ns.a = ns.a + 1 -%}"
+            "{%- elif s == 'off' -%}{%- set ns.b = ns.b + 1 -%}"
+            "{%- else -%}{%- set ns.c = ns.c + 1 -%}{%- endif -%}{%- endfor -%}")
+    # No right-trim on the closing tag: the newlines before the list must survive.
+    summary = ("{%- if ns.a + ns.b == 0 -%}**" + ctx.t("net.none_reporting") + "**"
+               "{%- else -%}**{{ " + ctx.jt("net.summary", a="ns.a", b="ns.b", c="ns.c") + " }}**{%- endif %}")
+    rows = []
+    for d in devices:
+        e = d["entity"]
+        name = ctx.friendly(e)
+        if name.endswith(strip):
+            name = name[: -len(strip)]
+        st = ("(" + jstr(ctx.t("s.online")) + " if states('" + e + "') == 'on' else ("
+              + jstr(ctx.t("s.offline")) + " if states('" + e + "') == 'off' else "
+              + jstr(ctx.t("s.not_reporting_one")) + "))")
+        row = "- " + name + " — **{{ " + st + " }}**"
+        sig = d.get("signal")
+        if sig:
+            ctx.use(sig)
+            # Expression only (no {% %} tags), so no trim can swallow the line break.
+            row += ("{{ (' · " + ctx.t("net.signal") + " ' ~ ((states('" + sig + "') | float) | round(0) | int))"
+                    " if states('" + sig + "') | is_number else '' }}")
+        rows.append(row)
+    return markdown(head + summary + "\n\n" + "\n".join(rows))
+
+
+def reporting_groups(ctx, groups, note_key=None):
+    """'Cameras 4 of 6 reporting' per group: reporting means any state other
+    than unavailable / unknown. A group where nothing answers says No data."""
+    pre, lines = [], []
+    for i, g in enumerate(groups):
+        ents = g["entities"]
+        ctx.use(ents)
+        ids = "[" + ",".join("'" + e + "'" for e in ents) + "]"
+        v = f"g{i}"
+        pre.append("{%- set " + v + " = namespace(u=0) -%}{%- for e in " + ids + " -%}"
+                   "{%- if states(e) not in " + BAD + " -%}{%- set " + v + ".u = " + v + ".u + 1 -%}"
+                   "{%- endif -%}{%- endfor -%}")
+        lines.append("- " + ctx.t(g["key"]) + " **{{ " + jstr(ctx.t("s.no_data")) + " if " + v + ".u == 0 else ("
+                     + ctx.jt("chip.reporting", n=v + ".u", m=str(len(ents))) + ") }}**")
+    body = "".join(pre) + "\n".join(lines)
+    if note_key:
+        body += "\n\n<small>" + ctx.t(note_key) + "</small>"
+    return markdown(body)
+
+
+# ---------------------------------------------------------------- V2 controls kept
+
+# Home Assistant's tile card: an unset icon_tap_action toggles these domains and
+# does nothing for every other one (frontend tile-card-helpers.ts,
+# getEntityDefaultTileIconAction, read 01/11/26). An unset tap_action opens
+# more-info. control_tile writes those effective actions out explicitly.
+TILE_TOGGLE_DOMAINS = {"fan", "input_boolean", "light", "switch", "group", "automation",
+                       "humidifier", "valve", "button", "input_button", "scene"}
+
+
+def effective_tile_actions(card):
+    """What tapping a tile card actually does: (tap, icon tap)."""
+    dom = card["entity"].split(".")[0]
+    tap = (card.get("tap_action") or {"action": "more-info"}).get("action")
+    icon = (card.get("icon_tap_action")
+            or {"action": "toggle" if dom in TILE_TOGGLE_DOMAINS else "none"}).get("action")
+    return tap, icon
+
+
+def control_tile(ctx, entity, name=None, columns=6, rows=None, features=None):
+    """A device control kept exactly as its V2 tile behaves: tap opens details,
+    the icon toggles only where Home Assistant's tile would. Switches may only
+    use this when listed in the manifest's `controls` (gated: provenance on the
+    V2 view, never a protected class)."""
+    ctx.use(entity)
+    dom = entity.split(".")[0]
+    t = {"type": "tile", "entity": entity,
+         "tap_action": {"action": "more-info"},
+         "icon_tap_action": {"action": "toggle" if dom in TILE_TOGGLE_DOMAINS else "none"},
+         "grid_options": grid(columns, rows if rows else (2 if features else 1))}
+    if name:
+        t["name"] = name
+    if features:
+        t["features"] = [{"type": f} for f in features]
+        t["features_position"] = "bottom"
+    return t
+
+
+def v2_verbatim(ctx, view, entities):
+    """The V2 card for each entity, copied exactly from the pinned baseline view
+    (links rewritten to this locale). Used where behaviour must not change by a
+    single key — the sirens. The gate checks the copy is still identical."""
+    import copy
+    src = ctx.v2_views[view]
+    out = []
+    for e in entities:
+        found = [c for s in src.get("sections", []) for c in s.get("cards", [])
+                 if c.get("type") == "tile" and c.get("entity") == e]
+        if len(found) != 1:
+            raise SystemExit(f"v2_verbatim: {e} has {len(found)} tiles on V2 {view}, need exactly 1")
+        ctx.use(e)
+        out.append(ctx.rewrite(copy.deepcopy(found[0])))
+    return out
+
+
+def scene_buttons(ctx, scenes, prefix, columns=3):
     """Scene buttons labelled from the states export's own friendly names."""
     out = []
     for sid in scenes:
@@ -371,5 +524,5 @@ def scene_buttons(ctx, scenes, prefix):
                     "show_name": True, "show_icon": True,
                     "tap_action": {"action": "perform-action", "perform_action": "scene.turn_on",
                                    "target": {"entity_id": sid}},
-                    "hold_action": {"action": "none"}, "grid_options": grid(3, 1)})
+                    "hold_action": {"action": "none"}, "grid_options": grid(columns, 1)})
     return out

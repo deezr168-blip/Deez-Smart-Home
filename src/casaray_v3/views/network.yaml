@@ -1,0 +1,124 @@
+# V3 Network — rebuilt natively (CR-V3-17). Read-only throughout: V2 Network
+# has no control, and neither does this. Every V2 Network entity is here.
+#
+# Connectivity is stated three ways, never two: a cloud-connection sensor that
+# is 'on' is online, 'off' is offline (an answer), anything else is "not
+# reporting" — a device that is not answering is not called offline, and a
+# list where nothing answers says so instead of "0 online". Counts are of what
+# answered (root rule 1). These are the devices Home Assistant can read, not
+# the router's client list (no router entity exposes that).
+path: network
+title: nav.network
+icon: mdi:router-wireless
+sections:
+  - topbar: true
+
+  - span: 2
+    cards:
+      - c: chips
+        parts:
+          - c: chip_state
+            label_key: chip.internet
+            entity: binary_sensor.eero_wan_status
+            words: {"on": s.online, "off": s.offline}
+            unavailable: s.no_data
+          - c: chip_count
+            label_key: chip.cloud
+            entities:
+              - binary_sensor.k_coffee_p100_cloud_connection
+              - binary_sensor.k_top_p100_cloud_connection
+              - binary_sensor.k_bot_p100_cloud_connection
+              - binary_sensor.g_printer_p100_cloud_connection
+              - binary_sensor.g_monitor_freezer_p110m_cloud_connection
+              - binary_sensor.r_energy_monitor_p110m_cloud_connection
+              - binary_sensor.k_smart_button_cloud_connection
+              - binary_sensor.k_motion_sensor_cloud_connection
+              - binary_sensor.emergency_button_dad_cloud_connection
+              - binary_sensor.emergency_button_mum_cloud_connection
+              - binary_sensor.f_contact_sensor_cloud_connection
+              - binary_sensor.m_contact_sensor_cloud_connection
+              - binary_sensor.b_contact_sensor_cloud_connection
+              - binary_sensor.network_tp_linkhub_h100_cloud_connection
+            on_states: ["on"]
+          - c: chip_state
+            label_key: chip.remote
+            entity: binary_sensor.remote_ui
+            words: {"on": s.connected, "off": s.not_connected}
+            unavailable: s.no_data
+          - c: chip_state
+            label_key: chip.zigbee
+            entity: binary_sensor.matter_zigbee_hub_problem
+            words: {"on": s.problem, "off": s.normal}
+            unavailable: s.no_data
+
+  # BAND 3 — internet | Wi-Fi signal
+  - span: 1
+    heading: h.internet
+    cards:
+      - {c: sensor_tile, entity: binary_sensor.eero_wan_status, name: {t: chip.internet}}
+      - {c: sensor_tile, entity: binary_sensor.remote_ui, name: {t: chip.remote}}
+      - {c: sensor_tile, entity: binary_sensor.matter_zigbee_hub_problem, name: {t: chip.zigbee}}
+      - {c: sensor_tile, entity: sensor.eero_external_ip, name: {t: net.wan_ip}}
+  - span: 1
+    heading: h.wifi
+    cards:
+      - {c: sensor_tile, entity: sensor.tapo_c200_stockroom_rssi, name: {t: net.stockroom_signal}}
+      - {c: sensor_tile, entity: sensor.tapo_c425_north_wall_rssi, name: {t: net.north_signal}}
+      - {c: sensor_tile, entity: sensor.deez_ssid, name: {t: net.wall_panel}}
+      - {c: sensor_tile, entity: sensor.raymonds_iphone_ssid, name: {t: net.ray_phone}}
+
+  # BAND 4 — every cloud-linked device, online / offline / not reporting
+  - span: 2
+    heading: h.connectivity
+    cards:
+      - c: connectivity
+        devices:
+          - {entity: binary_sensor.k_coffee_p100_cloud_connection, signal: sensor.k_coffee_p100_signal_level}
+          - {entity: binary_sensor.k_top_p100_cloud_connection, signal: sensor.k_top_p100_signal_level}
+          - {entity: binary_sensor.k_bot_p100_cloud_connection, signal: sensor.k_bot_p100_signal_level}
+          - {entity: binary_sensor.g_printer_p100_cloud_connection, signal: sensor.g_printer_p100_signal_level}
+          - {entity: binary_sensor.g_monitor_freezer_p110m_cloud_connection, signal: sensor.g_monitor_freezer_p110m_signal_level}
+          - {entity: binary_sensor.r_energy_monitor_p110m_cloud_connection, signal: sensor.r_energy_monitor_p110m_signal_level}
+          - {entity: binary_sensor.k_smart_button_cloud_connection, signal: sensor.k_smart_button_signal_level}
+          - {entity: binary_sensor.k_motion_sensor_cloud_connection, signal: sensor.k_motion_sensor_signal_level}
+          - {entity: binary_sensor.emergency_button_dad_cloud_connection, signal: sensor.emergency_button_dad_signal_level}
+          - {entity: binary_sensor.emergency_button_mum_cloud_connection, signal: sensor.emergency_button_mum_signal_level}
+          - {entity: binary_sensor.f_contact_sensor_cloud_connection, signal: sensor.f_contact_sensor_signal_level}
+          - {entity: binary_sensor.m_contact_sensor_cloud_connection, signal: sensor.m_contact_sensor_signal_level}
+          - {entity: binary_sensor.b_contact_sensor_cloud_connection, signal: sensor.b_contact_sensor_signal_level}
+          - {entity: binary_sensor.network_tp_linkhub_h100_cloud_connection, signal: sensor.network_tp_linkhub_h100_signal_level}
+      - {c: note, key: net.signal_note}
+
+  # BAND 5 — what Home Assistant can read, by kind; and what is not measured
+  - span: 2
+    heading: h.monitored
+    cards:
+      - c: reporting_groups
+        note_key: net.not_router
+        groups:
+          - key: net.group_cameras
+            entities: [camera.front_door_live_view, camera.tapo_c425_north_wall_hd_stream_direct,
+                       camera.tapo_c420_east_wall_hd_stream_direct, camera.tapo_c420_south_wall_hd_stream_direct,
+                       camera.tapo_c200_stockroom_hd_stream_direct, camera.smart_pet_feeder]
+          - key: net.group_plugs
+            entities: [switch.k_coffee_p100, switch.k_top_p100, switch.k_bot_p100, switch.g_printer_p100,
+                       switch.g_monitor_freezer_p110m, switch.r_energy_monitor_p110m]
+          - key: net.group_screens
+            entities: [media_player.living_room_tv_samsung_q9_series_65, media_player.55_qled_4k_ai_qa55q7faawxxy,
+                       media_player.q70f8036, media_player.pogo]
+          - key: net.group_phones
+            entities: [sensor.raymonds_iphone_battery_level, sensor.raymonds_ipad_battery_level,
+                       sensor.ais_iphone_battery_level, sensor.vine_s_phone_battery_level]
+      - {c: heading, key: h.not_measured, style: subtitle}
+      - {c: note, key: net.not_measured}
+
+  - c: more_boards
+    classic_of: network
+    items:
+      - [house-health, nav.house_health, mdi:home-heart]
+      - [security, nav.security, mdi:shield-home-outline]
+      - [cameras, nav.cameras, mdi:cctv]
+      - [alerts, nav.alerts, mdi:bell-outline]
+      - [energy, nav.energy, mdi:lightning-bolt-outline]
+      - [rooms, nav.rooms, mdi:floor-plan]
+      - [home, nav.home, mdi:home-variant-outline]

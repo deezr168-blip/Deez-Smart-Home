@@ -263,6 +263,8 @@ def build(write=True):
     for li, loc in enumerate(man["locales"]):
         ctx = Ctx(loc, cats, export, loc["url_base"])
         ctx.theme = man["theme"]
+        ctx.v2_views = {v["path"]: v for v in v2_views}   # for verbatim V2 cards (sirens)
+        ctx.rewrite = (lambda node, _o=base["url_base"], _n=loc["url_base"]: rewrite_links(node, _o, _n))
         views, rows = [], []
         for v in v2_views:
             p = v["path"]

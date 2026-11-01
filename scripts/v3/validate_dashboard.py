@@ -21,11 +21,33 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import build_dashboard as B  # noqa: E402
 import render_check as R  # noqa: E402
+import components as C  # noqa: E402
 
 ROOT = B.ROOT
 ALLOWED_CUSTOM = {"custom:webrtc-camera"}      # V2's only custom card; carried views only
 NATIVE_TYPES = {"heading", "markdown", "tile", "button", "picture-entity",
-                "weather-forecast", "todo-list", "history-graph"}
+                "weather-forecast", "todo-list", "history-graph", "media-control"}
+# Switches no V3-native view may ever control, whatever the manifest says:
+# anything that disables a camera or reduces alerting, and bulb-power wall
+# switches (owner rule). Their V2 controls stay on the classic subviews.
+PROTECTED_SWITCH = re.compile(r"privacy|detection|notification|chime|alarm|siren")
+BULB_POWER = {"switch.mainroomlight_switch_1", "switch.bedroomlight_switch_1",
+              "switch.dinning_light_switch_1"}
+
+
+def protected_switch(entity):
+    return entity.startswith("switch.") and (bool(PROTECTED_SWITCH.search(entity)) or entity in BULB_POWER)
+
+
+def v2_tiles(v2_view, entity):
+    return [c for s in v2_view.get("sections", []) for c in walk_cards(s.get("cards", []), True)
+            if c.get("type") == "tile" and c.get("entity") == entity]
+
+
+def acting(card):
+    """A tile whose tap or icon tap can change something (not none / navigate / more-info only)."""
+    tap, icon = C.effective_tile_actions(card)
+    return tap not in ("none", "navigate") or icon not in ("none",)
 SENTINEL = re.compile(r"\|\s*float\(\s*(0|100|9999)\s*\)")
 SECRET_PATTERNS = [
     re.compile(r"eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}"),  # JWT / HA token
@@ -90,6 +112,41 @@ def actions(node):
             yield from actions(x)
 
 
+def tile_safety(view, v2_by_path, controls, old_url, new_url):
+    """(problems, protected_controls) for one native view's tiles.
+
+    climate / camera tiles must be read-only; a siren tile may act only if it
+    IS the V2 tile for that entity on the same V2 view (byte for byte, links
+    rewritten); a switch may act only if it is in manifest `controls`, not a
+    protected class, and behaves exactly like its tile on the named V2 view."""
+    v2v = v2_by_path.get(view["path"], {})
+    bad, prot = [], []
+    for c in walk_cards(view):
+        if c.get("type") != "tile":
+            continue
+        e = c["entity"]
+        dom = e.split(".")[0]
+        if protected_switch(e) and acting(c):
+            prot.append(e)
+        if dom not in ("switch", "climate", "siren", "camera") or not acting(c):
+            continue
+        if dom == "siren":
+            if c not in [B.rewrite_links(x, old_url, new_url) for x in v2_tiles(v2v, e)]:
+                bad.append(e + " (siren tile differs from V2)")
+        elif dom == "switch":
+            ctl = controls.get(e)
+            src = v2_tiles(v2_by_path.get((ctl or {}).get("v2_view"), {}), e)
+            if protected_switch(e):
+                bad.append(e + " (protected class)")
+            elif not ctl:
+                bad.append(e + " (not in manifest controls)")
+            elif not any(C.effective_tile_actions(x) == C.effective_tile_actions(c) for x in src):
+                bad.append(e + " (behaves differently from its V2 tile)")
+        else:
+            bad.append(e)
+    return bad, prot
+
+
 def validate(g: Gate):
     man = B.load_yaml(B.SRC / "manifest.yaml")
     base = man["baseline"]
@@ -98,6 +155,15 @@ def validate(g: Gate):
     export = B.load_export(ROOT / man["entity_authority"])
     v2 = yaml.safe_load((ROOT / base["file"]).read_text(encoding="utf-8"))
     v2_paths = [v["path"] for v in v2["views"]]
+    v2_by_path = {v["path"]: v for v in v2["views"]}
+    controls = man.get("controls", {}) or {}
+    # The allowlist itself: each entry a real V2 toggle, never a protected class.
+    for e, ctl in sorted(controls.items()):
+        src = v2_tiles(v2_by_path.get(ctl.get("v2_view"), {}), e)
+        g.check(e in export, f"controls: {e} exists in the states export")
+        g.check(not protected_switch(e), f"controls: {e} is not a protected switch")
+        g.check(any(C.effective_tile_actions(x)[1] == "toggle" for x in src),
+                f"controls: {e} is a toggle on V2 {ctl.get('v2_view')} today", str(len(src)) + " V2 tiles")
 
     try:
         _, rep, stale = B.build(write=False)
@@ -168,10 +234,10 @@ def validate(g: Gate):
             g.check(not hvac, f"{vt} no HVAC action (V3-008 not yet satisfied)")
             sw = [a for a in acts if "switch." in str(a.get("target")) or "siren." in str(a.get("target"))]
             g.check(not sw, f"{vt} no switch/siren actions (privacy, bulb power, sirens stay classic)")
-            ro = [c for c in cards if c["type"] == "tile" and c["entity"].split(".")[0] in ("switch", "climate", "siren", "camera")
-                  and (c.get("icon_tap_action", {}).get("action") != "none"
-                       or c.get("tap_action", {}).get("action") not in ("none", "navigate"))]
-            g.check(not ro, f"{vt} switch/climate tiles are read-only", str([c['entity'] for c in ro]))
+            bad_ro, prot = tile_safety(v, v2_by_path, controls, base["url_base"], loc["url_base"])
+            g.check(not bad_ro, f"{vt} climate/camera tiles read-only; switches act only as in V2 (manifest controls); sirens only as the V2 tile",
+                    str(bad_ro))
+            g.check(not prot, f"{vt} no control on a camera-privacy/detection/alert or bulb-power switch", str(prot))
             # rendered honesty
             for scen, (states, attrs) in R.scenarios().items():
                 try:

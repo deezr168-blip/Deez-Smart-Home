@@ -1,0 +1,113 @@
+# V3 Ray's room — rebuilt natively (CR-V3-17). Every V2 Ray Bedroom entity is
+# here, on the same device it controlled in V2:
+#  * lights keep their brightness bars; the six scene buttons call the same
+#    scenes; the roller shade keeps V2's open/close and position features;
+#  * the desk plug, the grow unit's power and pump-cycling switches and the
+#    plug's LED / auto-off switches keep V2's tile behaviour exactly (tap opens
+#    details, the icon toggles), and only because each is listed in the
+#    manifest's `controls` (gated);
+#  * selects and numbers open their details dialog, as in V2;
+#  * the bulb-power wall switch is read-only (owner rule on bulb power, as on
+#    V3 Lighting); its V2 control stays on the classic view.
+# Room order follows the V3 room template: lighting first, then devices; the
+# empty climate and automation groups get one honest line.
+path: ray-bedroom
+title: room.ray
+icon: mdi:bed-king-outline
+sections:
+  - topbar: true
+
+  - span: 2
+    cards:
+      - c: chips
+        parts:
+          - c: chip_state
+            label_key: chip.light
+            entity: light.bedroom_bedroom
+            words: {"on": s.on, "off": s.off}
+          - c: chip_state
+            label_key: chip.blind
+            entity: cover.aqara_roller_shade_driver_e1
+            words: {open: s.open, closed: s.closed, opening: s.opening, closing: s.closing}
+          - {c: chip_value, label_key: chip.desk_power, entity: sensor.r_energy_monitor_p110m_current_consumption}
+          - c: chip_state
+            label_key: chip.overload
+            entity: binary_sensor.r_energy_monitor_p110m_overloaded
+            words: {"on": s.overloaded, "off": s.normal}
+            unavailable: s.no_data
+
+  # BAND 3 — lighting, full width: lights, the wall switch, then scenes
+  - span: 2
+    heading: h.lighting
+    cards:
+      - {c: light_tile, entity: light.bedroom_bedroom, name: {t: ray.bedroom_light}}
+      - {c: light_tile, entity: light.bedroom_nightlight, name: {t: ray.nightlight}}
+      - {c: readonly_tile, entity: switch.bedroomlight_switch_1, name: {t: ray.wall_switch}, nav: v2-ray-bedroom}
+      - {c: note, key: room.switch_note, columns: 6}
+      - {c: heading, key: h.scenes, style: subtitle}
+      - c: scene_buttons
+        prefix: Bedroom
+        columns: 4
+        scenes: [scene.bedroom_bedroom_read, scene.bedroom_bedroom_nightlight, scene.bedroom_bedroom_nighttime,
+                 scene.bedroom_bedroom_concentrate, scene.bedroom_bedroom_silverstone, scene.bedroom_bedroom_soho]
+
+  # BAND 4 — blind | grow unit
+  - span: 1
+    heading: h.blind
+    cards:
+      - {c: control_tile, entity: cover.aqara_roller_shade_driver_e1, name: {t: ray.shade}, columns: 12,
+         rows: 3, features: [cover-open-close, cover-position]}
+      - {c: sensor_tile, entity: sensor.aqara_roller_shade_driver_e1_battery, name: {t: ray.shade_battery}}
+      - {c: sensor_tile, entity: sensor.aqara_roller_shade_driver_e1_battery_charge_state, name: {t: ray.shade_charge}}
+      - {c: sensor_tile, entity: binary_sensor.aqara_roller_shade_driver_e1_configuration_status, name: {t: ray.shade_config}, columns: 12}
+  - span: 1
+    heading: h.grow_unit
+    cards:
+      - {c: control_tile, entity: switch.lph_se_dcd9_power, name: {t: grow.power}}
+      - {c: control_tile, entity: switch.lph_se_dcd9_pump_cycling, name: {t: grow.pump_cycling}}
+      - {c: sensor_tile, entity: binary_sensor.lph_se_dcd9_pump, name: {t: grow.pump}}
+      - {c: control_tile, entity: select.lph_se_dcd9_light_mode, name: {t: grow.light_mode}}
+      - {c: control_tile, entity: select.lph_se_dcd9_light_brightness, name: {t: grow.brightness}}
+      - {c: control_tile, entity: number.lph_se_dcd9_plants_age, name: {t: grow.plant_age}}
+
+  # BAND 5 — power use | plug details and settings
+  - span: 1
+    heading: h.power_use
+    cards:
+      - {c: control_tile, entity: switch.r_energy_monitor_p110m, name: {t: plug.desk}}
+      - {c: sensor_tile, entity: sensor.r_energy_monitor_p110m_current_consumption, name: {t: plug.drawing}}
+      - {c: sensor_tile, entity: sensor.r_energy_monitor_p110m_today_s_consumption, name: {t: plug.today}}
+      - {c: sensor_tile, entity: sensor.r_energy_monitor_p110m_this_month_s_consumption, name: {t: plug.month}}
+      # The overload alarm keeps V2's full-width-of-a-half-section shape (root
+      # CLAUDE.md: a deliberate exception, not to be normalised to 6).
+      - {c: sensor_tile, entity: binary_sensor.r_energy_monitor_p110m_overloaded, name: {t: plug.overloaded}, columns: 12}
+      - c: history
+        entities: [sensor.r_energy_monitor_p110m_current_consumption]
+        hours: 24
+        rows: 3
+  - span: 1
+    heading: h.device_settings
+    cards:
+      - {c: sensor_tile, entity: sensor.r_energy_monitor_p110m_voltage, name: {t: plug.voltage}}
+      - {c: sensor_tile, entity: sensor.r_energy_monitor_p110m_current, name: {t: plug.current}}
+      - {c: control_tile, entity: switch.r_energy_monitor_p110m_led, name: {t: plug.led}}
+      - {c: control_tile, entity: switch.r_energy_monitor_p110m_auto_off_enabled, name: {t: plug.auto_off}}
+      - {c: control_tile, entity: number.r_energy_monitor_p110m_turn_off_in, name: {t: plug.auto_off_in}}
+      - {c: control_tile, entity: number.r_energy_monitor_p110m_power_protection, name: {t: plug.protection}}
+
+  # Room template: climate and automations, stated rather than left empty
+  - span: 2
+    cards:
+      - {c: note, key: ray.no_climate}
+      - {c: note, key: room.no_automations}
+
+  - c: more_boards
+    classic_of: ray-bedroom
+    items:
+      - [rooms, nav.all_rooms, mdi:floor-plan]
+      - [lighting, nav.lighting, mdi:lightbulb-group-outline]
+      - [energy, nav.energy, mdi:lightning-bolt-outline]
+      - [home, nav.home, mdi:home-variant-outline]
+      - [guest-room, room.guest, mdi:bed-single-outline]
+      - [parents-room, room.parents, mdi:bed-outline]
+      - [security, nav.security, mdi:shield-home-outline]

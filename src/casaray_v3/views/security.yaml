@@ -1,0 +1,161 @@
+# V3 Security — monitoring rebuilt natively (CR-V3-17). Two columns,
+# horizontal bands. Every V2 Security entity is here.
+#
+# Safety, deliberately unchanged from V2:
+#  * Sirens are the V2 tiles copied byte for byte from the pinned baseline
+#    (v2_verbatim): tap opens details, the icon does nothing (Home Assistant's
+#    tile default for siren), nothing sounds from this page. Same red, same
+#    full-width-of-a-half-section shape. The gate checks the copy is identical.
+#  * Camera privacy, detection, alert, chime and alarm switches are read-only
+#    here (V3 boundary: nothing may disable a camera or reduce alerting without
+#    owner approval). A tap goes to the classic Security view, where the V2
+#    controls are, exactly as before.
+#  * No arming, disarming or emergency action exists on this page.
+path: security
+title: nav.security
+icon: mdi:shield-home-outline
+sections:
+  - topbar: true
+
+  # BAND 2 — chips: counts of what answered
+  - span: 2
+    cards:
+      - c: chips
+        parts:
+          - c: chip_count
+            label_key: chip.doors_open
+            entities: [binary_sensor.f_contact_sensor_door, binary_sensor.m_contact_sensor_door,
+                       binary_sensor.b_contact_sensor_door]
+            on_states: ["on"]
+          - c: chip_count
+            label_key: chip.motion
+            entities: [binary_sensor.living_room_living_hue_hue_sensor_motion, binary_sensor.k_motion_sensor_motion,
+                       binary_sensor.sensor_group_motion, binary_sensor.bedroom_motion_sensor_motion]
+            on_states: ["on"]
+          - c: chip_cameras
+            ents: [camera.front_door_live_view, camera.tapo_c425_north_wall_hd_stream_direct,
+                   camera.tapo_c420_east_wall_hd_stream_direct, camera.tapo_c420_south_wall_hd_stream_direct,
+                   camera.tapo_c200_stockroom_hd_stream_direct, camera.smart_pet_feeder]
+          - c: chip_count
+            label_key: chip.alerting
+            entities: [switch.front_door_motion_detection, switch.tapo_c425_north_wall_notifications,
+                       switch.tapo_camera_bcca_motion_detection, switch.tapo_c420_south_wall_motion_detection,
+                       switch.tapo_c200_stockroom_notifications, switch.smart_pet_feeder_motion_alarm]
+            on_states: ["on"]
+          - c: chip_state
+            label_key: chip.internet
+            entity: binary_sensor.eero_wan_status
+            words: {"on": s.online, "off": s.offline}
+            unavailable: s.no_data
+
+  # BAND 3 — needs attention: open doors, offline cameras, a sounding siren
+  - span: 2
+    heading: h.attention
+    cards:
+      - c: attention
+        checks:
+          - {entity: binary_sensor.f_contact_sensor_door, when: ["on"], key: att.door_open, name_key: room.front_door}
+          - {entity: binary_sensor.m_contact_sensor_door, when: ["on"], key: att.door_open, name_key: room.parents}
+          - {entity: binary_sensor.b_contact_sensor_door, when: ["on"], key: att.door_open, name_key: room.backyard}
+          - {entity: camera.front_door_live_view, when: offline, key: att.camera_offline, name_key: room.front_door}
+          - {entity: camera.tapo_c425_north_wall_hd_stream_direct, when: offline, key: att.camera_offline, name_key: room.north_wall}
+          - {entity: camera.tapo_c420_east_wall_hd_stream_direct, when: offline, key: att.camera_offline, name_key: room.east_wall}
+          - {entity: camera.tapo_c420_south_wall_hd_stream_direct, when: offline, key: att.camera_offline, name_key: room.south_wall}
+          - {entity: camera.tapo_c200_stockroom_hd_stream_direct, when: offline, key: att.camera_offline, name_key: room.stockroom}
+          - {entity: camera.smart_pet_feeder, when: offline, key: att.camera_offline, name_key: room.pet_feeder}
+          - {entity: siren.tapo_h200, when: ["on"], key: att.siren_on, name_key: sec.hub}
+          - {entity: siren.tapo_c425_north_wall_siren, when: ["on"], key: att.siren_on, name_key: room.north_wall}
+          - {entity: siren.tapo_c200_stockroom_siren, when: ["on"], key: att.siren_on, name_key: room.stockroom}
+
+  # BAND 4 — doors, full width, with their 24-hour history
+  - span: 2
+    heading: h.doors
+    cards:
+      - {c: sensor_tile, entity: binary_sensor.f_contact_sensor_door, name: {t: room.front_door}, columns: 4}
+      - {c: sensor_tile, entity: binary_sensor.m_contact_sensor_door, name: {t: room.parents}, columns: 4}
+      - {c: sensor_tile, entity: binary_sensor.b_contact_sensor_door, name: {t: room.backyard}, columns: 4}
+      - c: history
+        entities: [binary_sensor.f_contact_sensor_door, binary_sensor.m_contact_sensor_door, binary_sensor.b_contact_sensor_door]
+        hours: 24
+        rows: 3
+
+  # BAND 5 — motion | sirens
+  - span: 1
+    heading: h.motion
+    cards:
+      - {c: sensor_tile, entity: binary_sensor.living_room_living_hue_hue_sensor_motion, name: {t: room.living}}
+      - {c: sensor_tile, entity: binary_sensor.k_motion_sensor_motion, name: {t: room.kitchen}}
+      - {c: sensor_tile, entity: binary_sensor.sensor_group_motion, name: {t: room.dining}}
+      - {c: sensor_tile, entity: binary_sensor.bedroom_motion_sensor_motion, name: {t: room.parents}}
+      - c: history
+        entities: [binary_sensor.living_room_living_hue_hue_sensor_motion, binary_sensor.k_motion_sensor_motion,
+                   binary_sensor.sensor_group_motion, binary_sensor.bedroom_motion_sensor_motion]
+        hours: 12
+        rows: 3
+  - span: 1
+    heading: h.sirens
+    cards:
+      - c: v2_verbatim
+        view: security
+        entities: [siren.tapo_h200, siren.tapo_c425_north_wall_siren, siren.tapo_c200_stockroom_siren]
+      - {c: note, key: sec.siren_note}
+
+  # BAND 6 — camera health, full width; each tile opens that camera's stream page
+  - span: 2
+    heading: h.camera_health
+    cards:
+      - c: camera_summary
+        cams:
+          - {entity: camera.front_door_live_view, name_key: room.front_door}
+          - {entity: camera.tapo_c425_north_wall_hd_stream_direct, name_key: room.north_wall}
+          - {entity: camera.tapo_c420_east_wall_hd_stream_direct, name_key: room.east_wall}
+          - {entity: camera.tapo_c420_south_wall_hd_stream_direct, name_key: room.south_wall}
+          - {entity: camera.tapo_c200_stockroom_hd_stream_direct, name_key: room.stockroom}
+          - {entity: camera.smart_pet_feeder, name_key: room.pet_feeder}
+      - {c: readonly_tile, entity: camera.front_door_live_view, name: {t: room.front_door}, columns: 4, nav: camera-front-door}
+      - {c: readonly_tile, entity: camera.tapo_c425_north_wall_hd_stream_direct, name: {t: room.north_wall}, columns: 4, nav: camera-north-wall}
+      - {c: readonly_tile, entity: camera.tapo_c420_east_wall_hd_stream_direct, name: {t: room.east_wall}, columns: 4, nav: camera-east-wall}
+      - {c: readonly_tile, entity: camera.tapo_c420_south_wall_hd_stream_direct, name: {t: room.south_wall}, columns: 4, nav: camera-south-wall}
+      - {c: readonly_tile, entity: camera.tapo_c200_stockroom_hd_stream_direct, name: {t: room.stockroom}, columns: 4, nav: camera-stockroom}
+      - {c: readonly_tile, entity: camera.smart_pet_feeder, name: {t: room.pet_feeder}, columns: 4, nav: camera-pet-feeder}
+
+  # BAND 7 — detection settings, read-only; a tap opens the classic controls
+  - span: 2
+    heading: h.detection
+    cards:
+      - {c: note, key: sec.detection_note}
+      - {c: readonly_tile, entity: switch.front_door_motion_detection, columns: 4, nav: v2-security,
+         name: {c: fmt, key: det.motion, name: {t: room.front_door}}}
+      - {c: readonly_tile, entity: switch.front_door_in_home_chime, columns: 4, nav: v2-security,
+         name: {c: fmt, key: det.chime, name: {t: room.front_door}}}
+      - {c: readonly_tile, entity: switch.tapo_c425_north_wall_privacy, columns: 4, nav: v2-security,
+         name: {c: fmt, key: det.privacy, name: {t: room.north_wall}}}
+      - {c: readonly_tile, entity: switch.tapo_c425_north_wall_notifications, columns: 4, nav: v2-security,
+         name: {c: fmt, key: det.alerts, name: {t: room.north_wall}}}
+      - {c: readonly_tile, entity: switch.tapo_camera_bcca_motion_detection, columns: 4, nav: v2-security,
+         name: {c: fmt, key: det.motion, name: {t: room.east_wall}}}
+      - {c: readonly_tile, entity: switch.tapo_camera_bcca_person_detection, columns: 4, nav: v2-security,
+         name: {c: fmt, key: det.person, name: {t: room.east_wall}}}
+      - {c: readonly_tile, entity: switch.tapo_c420_south_wall_motion_detection, columns: 4, nav: v2-security,
+         name: {c: fmt, key: det.motion, name: {t: room.south_wall}}}
+      - {c: readonly_tile, entity: switch.tapo_c420_south_wall_person_detection, columns: 4, nav: v2-security,
+         name: {c: fmt, key: det.person, name: {t: room.south_wall}}}
+      - {c: readonly_tile, entity: switch.tapo_c200_stockroom_privacy, columns: 4, nav: v2-security,
+         name: {c: fmt, key: det.privacy, name: {t: room.stockroom}}}
+      - {c: readonly_tile, entity: switch.tapo_c200_stockroom_notifications, columns: 4, nav: v2-security,
+         name: {c: fmt, key: det.alerts, name: {t: room.stockroom}}}
+      - {c: readonly_tile, entity: switch.smart_pet_feeder_privacy_mode, columns: 4, nav: v2-security,
+         name: {c: fmt, key: det.privacy, name: {t: room.pet_feeder}}}
+      - {c: readonly_tile, entity: switch.smart_pet_feeder_motion_alarm, columns: 4, nav: v2-security,
+         name: {c: fmt, key: det.alarm, name: {t: room.pet_feeder}}}
+
+  - c: more_boards
+    classic_of: security
+    items:
+      - [cameras, nav.cameras, mdi:cctv]
+      - [network, nav.network, mdi:router-wireless]
+      - [house-health, nav.house_health, mdi:home-heart]
+      - [alerts, nav.alerts, mdi:bell-outline]
+      - [rooms, nav.rooms, mdi:floor-plan]
+      - [home, nav.home, mdi:home-variant-outline]
+      - [people, nav.people, mdi:account-group-outline]
