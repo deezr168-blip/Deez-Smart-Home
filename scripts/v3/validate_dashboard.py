@@ -99,8 +99,17 @@ def validate(g: Gate):
     v2 = yaml.safe_load((ROOT / base["file"]).read_text(encoding="utf-8"))
     v2_paths = [v["path"] for v in v2["views"]]
 
-    _, rep, stale = B.build(write=False)
+    try:
+        _, rep, stale = B.build(write=False)
+    except SystemExit as e:  # baseline drift or a false / missing migration row
+        g.check(False, "build runs (baseline pinned, migration map verified)", str(e)[:400])
+        return
+    g.check(True, "build runs (baseline pinned, migration map verified)")
     g.check(not stale, "build reproducible: committed outputs == fresh build", ", ".join(stale))
+    for r in rep["views"]:
+        if r["kind"] == "native":
+            g.check(isinstance(r.get("migration"), list),
+                    f"[{r['path']}] every V2 entity has a verified V3 place ({len(r.get('migration', []))} moved)")
 
     en_cat = B.load_yaml(B.SRC / "i18n" / "en.yaml")
     for loc in man["locales"]:

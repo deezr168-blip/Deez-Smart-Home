@@ -101,6 +101,7 @@ att.fridge_open: Fridge door open
 att.freezer_overload: Freezer plug overloaded
 att.wan_down: Internet connection down
 att.battery_low: "{name} battery low ({v}%)"
+att.bills_unpaid: "Unpaid bills: {v}"
 att.people_dark: No location data for anyone
 att.all_clear: "All {n} checks answered — nothing needs attention."
 att.clear_partial: "Nothing flagged among {n} checks that answered · {m} not reporting."
@@ -170,3 +171,5 @@ energy.ray_now: "Ray's room now"
 energy.ray_today: "Ray's room today"
 energy.battery_not_installed: "Not installed. This place is reserved; it will show readings only once a battery entity exists."
 energy.export_note: "Grid export: no verified source entity (no Fronius smart-meter power sensor exists), so V3 shows none rather than a guess."
+energy.monitored_total: "Monitored total (2 circuits)"
+energy.monitored_note: "Two circuits are metered, so this is monitored load — not the whole house."

@@ -57,3 +57,52 @@ native:
 
 # Every other V2 view is carried verbatim (links rewritten to the locale's
 # url_base) until it is rebuilt. Order follows V2.
+
+# Where each V2 entity of a rebuilt view lives now, when it is not on that
+# view's native rebuild. The build verifies every row against the generated
+# dashboard and refuses to run when one is false, so this list cannot drift
+# into a claim:
+#   native   on the named V3-native view
+#   carried  on the named carried V2 board (still V2 rendering until rebuilt)
+#   retained deliberately only on the classic v2-<path> subview  (needs reason)
+#   blocked  cannot be placed yet                                 (needs reason)
+# An entity left out while missing from its native rebuild fails the build.
+migration:
+  home:
+    binary_sensor.bedroom_parents_room_ac_room_occupied:
+      {to: climate, status: native, note: Parents' room occupancy beside the air-con it serves}
+    binary_sensor.g_printer_p100_cloud_connection:
+      {to: network, status: carried, note: printer plug's cloud link}
+    binary_sensor.k_motion_sensor_motion:
+      {to: security, status: carried, note: kitchen motion}
+    binary_sensor.living_room_living_hue_hue_sensor_motion:
+      {to: security, status: carried, note: living-room motion}
+    binary_sensor.sensor_group_motion:
+      {to: security, status: carried, note: dining motion (sensor group)}
+    cover.aqara_roller_shade_driver_e1:
+      {to: ray-bedroom, status: carried, note: roller shade control stays the V2 one in Ray's room}
+    sensor.bills_unpaid_count:
+      {to: home, status: native, note: "Needs attention; a zero counts only while the six paid flags answer"}
+    sensor.casa_monitored_power:
+      {to: energy, status: native, note: monitored-circuit total beside its two circuits (V3-007)}
+    sensor.casa_solar_expected_today:
+      {to: energy, status: native, note: solar forecast group}
+    sensor.g_monitor_freezer_p110m_current_consumption:
+      {to: energy, status: native, note: monitored circuits (no Appliances board exists)}
+    sensor.living_room_living_room_temperature:
+      {to: climate, status: native, note: "dining temperature (export: Dining Room Motion Sensor Temperature)"}
+    sensor.living_room_ringring_battery:
+      {to: cameras, status: native, note: doorbell battery; also on House health}
+    sensor.r_energy_monitor_p110m_current_consumption:
+      {to: energy, status: native, note: monitored circuits}
+    sensor.tapo_camera_bcca_battery:
+      {to: cameras, status: native, note: east-wall camera battery; also on House health}
+    switch.g_printer_p100:
+      {to: guest-room, status: carried, note: printer plug toggle stays the V2 one (no Appliances board exists)}
+    switch.mainroomlight_switch_1:
+      {to: lighting, status: native, note: "bulb-power switch, read-only (owner rule on bulb power)"}
+  cameras:
+    light.tapo_c200_stockroom_floodlight_timed:
+      {to: lighting, status: native, note: camera floodlight}
+    light.tapo_c425_north_wall_floodlight_timed:
+      {to: lighting, status: native, note: camera floodlight}

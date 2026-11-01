@@ -153,6 +153,12 @@
         "camera.tapo_c420_south_wall_hd_stream_direct",
         "camera.tapo_c425_north_wall_hd_stream_direct",
         "climate.bedroom_parents_room_ac",
+        "input_boolean.car_insurance_paid",
+        "input_boolean.council_rate_paid",
+        "input_boolean.elec_bill_paid",
+        "input_boolean.gas_bill_paid",
+        "input_boolean.rego_paid",
+        "input_boolean.water_bill_paid",
         "light.bedroom_bedroom",
         "light.dining",
         "light.living_room",
@@ -161,6 +167,7 @@
         "person.vinh_du",
         "sensor.aqara_roller_shade_driver_e1_battery",
         "sensor.bedroom_motion_sensor_temperature",
+        "sensor.bills_unpaid_count",
         "sensor.front_door_battery",
         "sensor.living_room_living_hue_hue_sensor_temperature",
         "sensor.powerpal_gateway_powerpal_daily_energy",
@@ -189,7 +196,6 @@
         "binary_sensor.living_room_living_hue_hue_sensor_motion",
         "binary_sensor.sensor_group_motion",
         "cover.aqara_roller_shade_driver_e1",
-        "sensor.bills_unpaid_count",
         "sensor.casa_monitored_power",
         "sensor.casa_solar_expected_today",
         "sensor.g_monitor_freezer_p110m_current_consumption",
@@ -199,6 +205,182 @@
         "sensor.tapo_camera_bcca_battery",
         "switch.g_printer_p100",
         "switch.mainroomlight_switch_1"
+      ],
+      "migration": [
+        {
+          "entity": "binary_sensor.bedroom_parents_room_ac_room_occupied",
+          "name": "Parents Room AC Room occupied",
+          "to": "climate",
+          "destination": "Climate",
+          "status": "native",
+          "also_on": [
+            "parents-room"
+          ],
+          "note": "Parents' room occupancy beside the air-con it serves"
+        },
+        {
+          "entity": "binary_sensor.g_printer_p100_cloud_connection",
+          "name": "G/Printer P100 Cloud connection",
+          "to": "network",
+          "destination": "Network",
+          "status": "carried",
+          "also_on": [],
+          "note": "printer plug's cloud link"
+        },
+        {
+          "entity": "binary_sensor.k_motion_sensor_motion",
+          "name": "K/Motion Sensor Motion",
+          "to": "security",
+          "destination": "Security",
+          "status": "carried",
+          "also_on": [
+            "kitchen",
+            "rooms"
+          ],
+          "note": "kitchen motion"
+        },
+        {
+          "entity": "binary_sensor.living_room_living_hue_hue_sensor_motion",
+          "name": "Living Room Motion Sensor Motion",
+          "to": "security",
+          "destination": "Security",
+          "status": "carried",
+          "also_on": [
+            "living-room",
+            "rooms"
+          ],
+          "note": "living-room motion"
+        },
+        {
+          "entity": "binary_sensor.sensor_group_motion",
+          "name": "Sensor group Motion",
+          "to": "security",
+          "destination": "Security",
+          "status": "carried",
+          "also_on": [
+            "dining",
+            "rooms"
+          ],
+          "note": "dining motion (sensor group)"
+        },
+        {
+          "entity": "cover.aqara_roller_shade_driver_e1",
+          "name": "Aqara Roller Shade Driver E1",
+          "to": "ray-bedroom",
+          "destination": "Rooms",
+          "status": "carried",
+          "also_on": [],
+          "note": "roller shade control stays the V2 one in Ray's room"
+        },
+        {
+          "entity": "sensor.bills_unpaid_count",
+          "name": "Bills Unpaid Count",
+          "to": "home",
+          "destination": "Home",
+          "status": "native",
+          "also_on": [],
+          "note": "Needs attention; a zero counts only while the six paid flags answer"
+        },
+        {
+          "entity": "sensor.casa_monitored_power",
+          "name": "Casa Monitored Power",
+          "to": "energy",
+          "destination": "Energy",
+          "status": "native",
+          "also_on": [],
+          "note": "monitored-circuit total beside its two circuits (V3-007)"
+        },
+        {
+          "entity": "sensor.casa_solar_expected_today",
+          "name": "Casa Solar Expected Today",
+          "to": "energy",
+          "destination": "Energy",
+          "status": "native",
+          "also_on": [],
+          "note": "solar forecast group"
+        },
+        {
+          "entity": "sensor.g_monitor_freezer_p110m_current_consumption",
+          "name": "G/Monitor Freezer P110M Current consumption",
+          "to": "energy",
+          "destination": "Energy",
+          "status": "native",
+          "also_on": [
+            "garage"
+          ],
+          "note": "monitored circuits (no Appliances board exists)"
+        },
+        {
+          "entity": "sensor.living_room_living_room_temperature",
+          "name": "Dining Room Motion Sensor Temperature",
+          "to": "climate",
+          "destination": "Climate",
+          "status": "native",
+          "also_on": [
+            "dining",
+            "rooms"
+          ],
+          "note": "dining temperature (export: Dining Room Motion Sensor Temperature)"
+        },
+        {
+          "entity": "sensor.living_room_ringring_battery",
+          "name": "RingRing Battery",
+          "to": "cameras",
+          "destination": "Cameras",
+          "status": "native",
+          "also_on": [
+            "alerts",
+            "house-health",
+            "living-room"
+          ],
+          "note": "doorbell battery; also on House health"
+        },
+        {
+          "entity": "sensor.r_energy_monitor_p110m_current_consumption",
+          "name": "R/Energy Monitor P110M Current consumption",
+          "to": "energy",
+          "destination": "Energy",
+          "status": "native",
+          "also_on": [
+            "ray-bedroom"
+          ],
+          "note": "monitored circuits"
+        },
+        {
+          "entity": "sensor.tapo_camera_bcca_battery",
+          "name": "Tapo C420 - East Wall Battery",
+          "to": "cameras",
+          "destination": "Cameras",
+          "status": "native",
+          "also_on": [
+            "camera-east-wall",
+            "house-health"
+          ],
+          "note": "east-wall camera battery; also on House health"
+        },
+        {
+          "entity": "switch.g_printer_p100",
+          "name": "G/Printer P100",
+          "to": "guest-room",
+          "destination": "Rooms",
+          "status": "carried",
+          "also_on": [
+            "network",
+            "rooms"
+          ],
+          "note": "printer plug toggle stays the V2 one (no Appliances board exists)"
+        },
+        {
+          "entity": "switch.mainroomlight_switch_1",
+          "name": "MainRoomLight Switch 1",
+          "to": "lighting",
+          "destination": "Lighting",
+          "status": "native",
+          "also_on": [
+            "parents-room"
+          ],
+          "note": "bulb-power switch, read-only (owner rule on bulb power)"
+        }
       ]
     },
     {
@@ -598,7 +780,8 @@
         "scene.living_room_living_room_read",
         "scene.living_room_living_room_relax"
       ],
-      "v2_entities_not_on_native": []
+      "v2_entities_not_on_native": [],
+      "migration": []
     },
     {
       "path": "climate",
@@ -620,7 +803,8 @@
       ],
       "unverified": [],
       "dark_at_export": [],
-      "v2_entities_not_on_native": []
+      "v2_entities_not_on_native": [],
+      "migration": []
     },
     {
       "path": "energy",
@@ -629,6 +813,7 @@
       "v2_equivalent": "energy",
       "entities": [
         "binary_sensor.casa_solar_online",
+        "sensor.casa_monitored_power",
         "sensor.casa_solar_expected_today",
         "sensor.electricity_maps_co2_intensity",
         "sensor.electricity_maps_grid_fossil_fuel_percentage",
@@ -657,7 +842,8 @@
       ],
       "unverified": [],
       "dark_at_export": [],
-      "v2_entities_not_on_native": []
+      "v2_entities_not_on_native": [],
+      "migration": []
     },
     {
       "path": "bills",
@@ -923,6 +1109,26 @@
       "v2_entities_not_on_native": [
         "light.tapo_c200_stockroom_floodlight_timed",
         "light.tapo_c425_north_wall_floodlight_timed"
+      ],
+      "migration": [
+        {
+          "entity": "light.tapo_c200_stockroom_floodlight_timed",
+          "name": "Tapo C200 - Stockroom Floodlight (Timed)",
+          "to": "lighting",
+          "destination": "Lighting",
+          "status": "native",
+          "also_on": [],
+          "note": "camera floodlight"
+        },
+        {
+          "entity": "light.tapo_c425_north_wall_floodlight_timed",
+          "name": "Tapo C425 - North Wall Floodlight (Timed)",
+          "to": "lighting",
+          "destination": "Lighting",
+          "status": "native",
+          "also_on": [],
+          "note": "camera floodlight"
+        }
       ]
     },
     {

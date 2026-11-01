@@ -54,7 +54,16 @@ sections:
           - {entity: sensor.front_door_battery, when: "battery<20", key: att.battery_low, name_key: room.front_door}
           - {entity: sensor.tapo_c425_north_wall_battery, when: "battery<20", key: att.battery_low, name_key: room.north_wall}
           - {entity: sensor.tapo_c420_south_wall_battery, when: "battery<20", key: att.battery_low, name_key: room.south_wall}
-          - {entity: sensor.aqara_roller_shade_driver_e1_battery, when: "battery<20", key: att.battery_low, name_key: room.living}
+          # The shade is in Ray's room (export area "Ray Bedroom"), not the living room.
+          - {entity: sensor.aqara_roller_shade_driver_e1_battery, when: "battery<20", key: att.battery_low, name_key: room.ray}
+          # Unpaid bills, as V2 Home raised them (CR-243). The summary sensor's
+          # definition lives on the instance, not in git, so a zero only counts
+          # as an answer while the six paid flags it summarises answer too.
+          - entity: sensor.bills_unpaid_count
+            when: count>0
+            key: att.bills_unpaid
+            requires: [input_boolean.elec_bill_paid, input_boolean.gas_bill_paid, input_boolean.water_bill_paid,
+                       input_boolean.council_rate_paid, input_boolean.rego_paid, input_boolean.car_insurance_paid]
 
   # BAND 4 — one tap: three whole-house lighting actions + air-con NAVIGATION
   - span: 2

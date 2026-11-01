@@ -8,7 +8,7 @@ Baseline: `dashboards/casaray_v2.yaml` ha-deploy@18a4e5d sha256 `77a4991626d6f8a
 
 | # | Path | Kind | Source | Entities | Not in export | Dark at 05/09 export |
 |---|---|---|---|---|---|---|
-| 1 | `home` | native | `views/home.yaml` | 34 | — | 5 |
+| 1 | `home` | native | `views/home.yaml` | 41 | — | 5 |
 | 2 | `rooms` | carried | `dashboards/casaray_v2.yaml#rooms` | 17 | — | 1 |
 | 3 | `living-room` | carried | `dashboards/casaray_v2.yaml#living-room` | 47 | — | 10 |
 | 4 | `kitchen` | carried | `dashboards/casaray_v2.yaml#kitchen` | 23 | — | — |
@@ -19,7 +19,7 @@ Baseline: `dashboards/casaray_v2.yaml` ha-deploy@18a4e5d sha256 `77a4991626d6f8a
 | 9 | `guest-room` | carried | `dashboards/casaray_v2.yaml#guest-room` | 10 | — | 3 |
 | 10 | `lighting` | native | `views/lighting.yaml` | 46 | — | 23 |
 | 11 | `climate` | native | `views/climate.yaml` | 11 | — | — |
-| 12 | `energy` | native | `views/energy.yaml` | 26 | — | — |
+| 12 | `energy` | native | `views/energy.yaml` | 27 | — | — |
 | 13 | `bills` | carried | `dashboards/casaray_v2.yaml#bills` | 34 | — | — |
 | 14 | `bills-details` | carried | `dashboards/casaray_v2.yaml#bills-details` | 116 | — | 12 |
 | 15 | `security` | carried | `dashboards/casaray_v2.yaml#security` | 30 | — | 5 |
@@ -42,15 +42,50 @@ Baseline: `dashboards/casaray_v2.yaml` ha-deploy@18a4e5d sha256 `77a4991626d6f8a
 | 32 | `v2-cameras` | classic | `dashboards/casaray_v2.yaml#cameras` | 21 | — | 4 |
 | 33 | `v2-energy` | classic | `dashboards/casaray_v2.yaml#energy` | 27 | — | — |
 
-## Native rebuilds: V2 entities not (yet) on the native view
+## Native rebuilds: where every V2 entity now lives
 
-Each is still reachable on that view's classic `v2-<path>` subview, linked from the native view's More boards band.
+For each rebuilt view, every V2 entity that is not on the rebuild itself, or that the migration moved onto it, with its destination and coverage. Source: `src/casaray_v3/manifest.yaml` `migration`; the build checks every row against the generated dashboard and refuses to run on a false or missing one. `native` = on a V3-native view; `carried` = on a carried V2 board, so it still renders as V2 until that board is rebuilt; `retained` / `blocked` = only on the classic `v2-<path>` subview, for the reason given. Every entity also stays on its classic subview, linked from the native view's More boards band, until native parity is verified on a device.
 
-- **home** (16): `binary_sensor.bedroom_parents_room_ac_room_occupied`, `binary_sensor.g_printer_p100_cloud_connection`, `binary_sensor.k_motion_sensor_motion`, `binary_sensor.living_room_living_hue_hue_sensor_motion`, `binary_sensor.sensor_group_motion`, `cover.aqara_roller_shade_driver_e1`, `sensor.bills_unpaid_count`, `sensor.casa_monitored_power`, `sensor.casa_solar_expected_today`, `sensor.g_monitor_freezer_p110m_current_consumption`, `sensor.living_room_living_room_temperature`, `sensor.living_room_ringring_battery`, `sensor.r_energy_monitor_p110m_current_consumption`, `sensor.tapo_camera_bcca_battery`, `switch.g_printer_p100`, `switch.mainroomlight_switch_1`
-- **lighting** (0): none
-- **climate** (0): none
-- **energy** (0): none
-- **cameras** (2): `light.tapo_c200_stockroom_floodlight_timed`, `light.tapo_c425_north_wall_floodlight_timed`
+### home (16: 10 native, 6 carried)
+
+| Entity | Friendly name (export) | Destination | Coverage | Also on | Note |
+|---|---|---|---|---|---|
+| `binary_sensor.bedroom_parents_room_ac_room_occupied` | Parents Room AC Room occupied | Climate · `climate` | native | `parents-room` | Parents' room occupancy beside the air-con it serves |
+| `binary_sensor.g_printer_p100_cloud_connection` | G/Printer P100 Cloud connection | Network · `network` | carried | — | printer plug's cloud link |
+| `binary_sensor.k_motion_sensor_motion` | K/Motion Sensor Motion | Security · `security` | carried | `kitchen`, `rooms` | kitchen motion |
+| `binary_sensor.living_room_living_hue_hue_sensor_motion` | Living Room Motion Sensor Motion | Security · `security` | carried | `living-room`, `rooms` | living-room motion |
+| `binary_sensor.sensor_group_motion` | Sensor group Motion | Security · `security` | carried | `dining`, `rooms` | dining motion (sensor group) |
+| `cover.aqara_roller_shade_driver_e1` | Aqara Roller Shade Driver E1 | Rooms · `ray-bedroom` | carried | — | roller shade control stays the V2 one in Ray's room |
+| `sensor.bills_unpaid_count` | Bills Unpaid Count | Home · `home` | native | — | Needs attention; a zero counts only while the six paid flags answer |
+| `sensor.casa_monitored_power` | Casa Monitored Power | Energy · `energy` | native | — | monitored-circuit total beside its two circuits (V3-007) |
+| `sensor.casa_solar_expected_today` | Casa Solar Expected Today | Energy · `energy` | native | — | solar forecast group |
+| `sensor.g_monitor_freezer_p110m_current_consumption` | G/Monitor Freezer P110M Current consumption | Energy · `energy` | native | `garage` | monitored circuits (no Appliances board exists) |
+| `sensor.living_room_living_room_temperature` | Dining Room Motion Sensor Temperature | Climate · `climate` | native | `dining`, `rooms` | dining temperature (export: Dining Room Motion Sensor Temperature) |
+| `sensor.living_room_ringring_battery` | RingRing Battery | Cameras · `cameras` | native | `alerts`, `house-health`, `living-room` | doorbell battery; also on House health |
+| `sensor.r_energy_monitor_p110m_current_consumption` | R/Energy Monitor P110M Current consumption | Energy · `energy` | native | `ray-bedroom` | monitored circuits |
+| `sensor.tapo_camera_bcca_battery` | Tapo C420 - East Wall Battery | Cameras · `cameras` | native | `camera-east-wall`, `house-health` | east-wall camera battery; also on House health |
+| `switch.g_printer_p100` | G/Printer P100 | Rooms · `guest-room` | carried | `network`, `rooms` | printer plug toggle stays the V2 one (no Appliances board exists) |
+| `switch.mainroomlight_switch_1` | MainRoomLight Switch 1 | Lighting · `lighting` | native | `parents-room` | bulb-power switch, read-only (owner rule on bulb power) |
+
+### lighting (0: none)
+
+Every V2 entity of this view is on its native rebuild.
+
+### climate (0: none)
+
+Every V2 entity of this view is on its native rebuild.
+
+### energy (0: none)
+
+Every V2 entity of this view is on its native rebuild.
+
+### cameras (2: 2 native)
+
+| Entity | Friendly name (export) | Destination | Coverage | Also on | Note |
+|---|---|---|---|---|---|
+| `light.tapo_c200_stockroom_floodlight_timed` | Tapo C200 - Stockroom Floodlight (Timed) | Lighting · `lighting` | native | — | camera floodlight |
+| `light.tapo_c425_north_wall_floodlight_timed` | Tapo C425 - North Wall Floodlight (Timed) | Lighting · `lighting` | native | — | camera floodlight |
+
 
 ## Locales
 

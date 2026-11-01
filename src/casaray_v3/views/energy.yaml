@@ -60,6 +60,11 @@ sections:
   - span: 1
     heading: h.circuits
     cards:
+      # The instance's own total of the two metered plugs below (V3-007: the
+      # monitored-power reading moves from Home to Energy). Shown beside both
+      # circuits so a total that disagrees with them is visible.
+      - {c: sensor_tile, entity: sensor.casa_monitored_power, name: {t: energy.monitored_total}, columns: 12}
+      - {c: note, key: energy.monitored_note}
       - {c: sensor_tile, entity: sensor.g_monitor_freezer_p110m_current_consumption, name: {t: energy.freezer_now}}
       - {c: sensor_tile, entity: sensor.g_monitor_freezer_p110m_today_s_consumption, name: {t: energy.freezer_today}}
       - {c: sensor_tile, entity: sensor.r_energy_monitor_p110m_current_consumption, name: {t: energy.ray_now}}

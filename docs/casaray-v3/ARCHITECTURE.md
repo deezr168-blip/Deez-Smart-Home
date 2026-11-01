@@ -52,6 +52,9 @@ docs/casaray-v3/                ARCHITECTURE, DESIGN_SYSTEM, BUILD_STATUS,
      the locale's url_path, `theme: CasaRay` set so it renders as V2 does.
 3. Append a **classic** `v2-<path>` subview for every native rebuild, so no
    V2 function is lost while the rebuild matures; each native view links to it.
+   Verify the manifest's `migration` map: every V2 entity of a rebuilt view is
+   on the rebuild or has a row naming where it went, and every row is true
+   of the generated views. A false or missing row aborts the build.
 4. Dump with fixed settings (no timestamps, insertion order, literal blocks),
    then write the build report, view inventory and entity matrix.
 
@@ -89,6 +92,9 @@ Every component follows the root rules, and the gate tests them by rendering:
 - unavailable / unknown / missing → "No data", "Offline" or "State unknown";
   never a sentinel (`| float(0)` is gated);
 - counts state what answered (`4 of 6 reporting`);
+- a summary count sensor (unpaid bills) is a hit above zero, but its zero is
+  an answer only while the inputs it summarises answer too, because a count
+  over dark inputs reads 0 without measuring anything;
 - Needs attention says "nothing needs attention" **only** when every check
   answered; otherwise it states how many are not reporting;
 - the air-con shows the reported mode as reported (an unknown mode is shown

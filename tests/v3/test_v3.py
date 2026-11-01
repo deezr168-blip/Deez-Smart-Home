@@ -137,11 +137,7 @@ class Honesty(unittest.TestCase):
 
     def test_all_clear_only_when_every_check_answered(self):
         d = dash("en")
-        ok = dict(self.states)
-        ok.update({e: "off" for e in ok if e.startswith("binary_sensor.")})
-        ok.update({e: "idle" for e in ok if e.startswith("camera.")})
-        ok.update({e: "80" for e in ok if e.endswith("_battery")})
-        ok["binary_sensor.eero_wan_status"] = "on"
+        ok = answering(self.states)  # every check, the unpaid-bills count included
         self.assertIn("nothing needs attention", render(d, "home", ok))   # positive control
         one_dark = dict(ok, **{"binary_sensor.lg_fridge_door": "unavailable"})
         out = render(d, "home", one_dark)
@@ -181,6 +177,105 @@ class Honesty(unittest.TestCase):
                 for scen, (st, at) in R.scenarios().items():
                     for o in R.render_view(view(d, p), st, at):
                         self.assertFalse(o.startswith("    "), f"{code}/{p}/{scen}")
+
+
+PAID_FLAGS = ["input_boolean.elec_bill_paid", "input_boolean.gas_bill_paid",
+              "input_boolean.water_bill_paid", "input_boolean.council_rate_paid",
+              "input_boolean.rego_paid", "input_boolean.car_insurance_paid"]
+
+
+def answering(states):
+    """Every Needs-attention check answering and clear (the positive control)."""
+    ok = dict(states)
+    ok.update({e: "off" for e in ok if e.startswith("binary_sensor.")})
+    ok.update({e: "idle" for e in ok if e.startswith("camera.")})
+    ok.update({e: "80" for e in ok if e.endswith("_battery")})
+    ok.update({e: "on" for e in PAID_FLAGS})
+    ok["binary_sensor.eero_wan_status"] = "on"
+    ok["sensor.bills_unpaid_count"] = "0"
+    return ok
+
+
+class MigratedEntities(unittest.TestCase):
+    """The 16 V2-home entities (and every other rebuilt view's) have a verified V3 place."""
+    states, attrs = R.scenarios()["normal"]
+
+    def test_bills_count_is_an_attention_item(self):
+        d, ok = dash("en"), answering(self.states)
+        self.assertIn("nothing needs attention", render(d, "home", ok))       # positive control
+        self.assertIn("Unpaid bills: 2", render(d, "home", dict(ok, **{"sensor.bills_unpaid_count": "2"})))
+
+    def test_bills_zero_is_not_an_answer_while_its_inputs_are_dark(self):
+        d, ok = dash("en"), answering(self.states)
+        for flag in PAID_FLAGS:
+            out = render(d, "home", dict(ok, **{flag: "unavailable"}))
+            self.assertNotIn("nothing needs attention", out, flag)
+            self.assertIn("1 not reporting", out, flag)
+        out = render(d, "home", dict(ok, **{"sensor.bills_unpaid_count": "unavailable"}))
+        self.assertNotIn("nothing needs attention", out)
+        self.assertIn("1 not reporting", out)
+
+    def test_unpaid_bills_still_raised_when_the_flags_are_dark(self):
+        s = dict(answering(self.states), **{"sensor.bills_unpaid_count": "3"},
+                 **{f: "unavailable" for f in PAID_FLAGS})
+        self.assertIn("Unpaid bills: 3", render(dash("en"), "home", s))
+
+    def test_shade_battery_alert_names_the_room_it_is_in(self):
+        s = dict(answering(self.states), **{"sensor.aqara_roller_shade_driver_e1_battery": "9"})
+        out = render(dash("en"), "home", s)
+        self.assertIn("Ray's room battery low (9%)", out)
+        self.assertNotIn("Living room battery low", out)
+
+    def test_monitored_total_sits_beside_its_circuits_read_only(self):
+        tiles = [c for s in view(dash("en"), "energy")["sections"] for c in s["cards"]
+                 if c.get("type") == "tile"]
+        by = {c["entity"]: c for c in tiles}
+        for e in ("sensor.casa_monitored_power", "sensor.g_monitor_freezer_p110m_current_consumption",
+                  "sensor.r_energy_monitor_p110m_current_consumption"):
+            self.assertIn(e, by)
+        t = by["sensor.casa_monitored_power"]
+        self.assertEqual(t["tap_action"], {"action": "none"})
+        self.assertEqual(t["icon_tap_action"], {"action": "none"})
+
+    def test_every_v2_entity_of_a_rebuilt_view_is_accounted_for(self):
+        _, rep, _ = B.build(write=False)
+        rows = {r["path"]: r for r in rep["views"]}
+        home = {m["entity"]: m for m in rows["home"]["migration"]}
+        self.assertEqual(len(home), 16)
+        self.assertEqual({m["status"] for m in home.values()} - {"native", "carried"}, set())
+        for e, m in home.items():
+            self.assertIn(e, rows[m["to"]]["entities"], e)
+            self.assertIn(e, rows["v2-home"]["entities"], e)   # classic copy keeps it
+
+    def _build_with(self, mutate):
+        orig = B.load_yaml
+
+        def fake(path, loader=B.DupKeyLoader):
+            d = orig(path, loader)
+            if Path(path).name == "manifest.yaml":
+                d = copy.deepcopy(d)
+                mutate(d["migration"])
+            return d
+        B.load_yaml = fake
+        try:
+            B.build(write=False)
+        finally:
+            B.load_yaml = orig
+
+    def test_false_or_missing_migration_rows_stop_the_build(self):
+        bad = {
+            "row removed": lambda m: m["home"].pop("sensor.casa_monitored_power"),
+            "wrong view": lambda m: m["home"]["sensor.casa_monitored_power"].update(to="climate"),
+            "wrong kind": lambda m: m["home"]["switch.g_printer_p100"].update(status="native"),
+            "unknown view": lambda m: m["home"]["switch.g_printer_p100"].update(to="appliances"),
+            "stray key": lambda m: m["home"]["switch.g_printer_p100"].update({"read-only": None}),
+            "retained, no reason": lambda m: m["home"]["switch.g_printer_p100"].update(status="retained", note=""),
+            "stale row": lambda m: m["home"].update({"sensor.not_on_v2_home": {"to": "home", "status": "native"}}),
+        }
+        for name, mutate in bad.items():
+            with self.assertRaises(SystemExit, msg=name):
+                self._build_with(mutate)
+        self._build_with(lambda m: None)  # positive control: the real map builds
 
 
 class Safety(unittest.TestCase):

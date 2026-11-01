@@ -55,3 +55,8 @@ ac.current: "当前：{mode}"
 
 # Energy (added with the native Energy view)
 h.solar: "太阳能"
+
+# Needs attention and monitored load (added with the V2-home migration)
+att.bills_unpaid: "未付账单：{v} 张"
+energy.monitored_total: "监测用电（2 个回路）"
+energy.monitored_note: "只有两个回路装了计量插座，因此这是被监测的用电量，并非全屋。"

@@ -201,9 +201,16 @@ def chips(ctx, parts):
 def attention(ctx, checks):
     """Needs attention, honestly.
 
-    checks: list of dicts {entity, when: [states] | 'battery<N', key, name_key?}
+    checks: list of dicts {entity, when: [states] | 'battery<N' | 'offline' |
+    'count>0', key, name_key?, requires?}
     A check whose entity does not answer counts as not reporting, never as
-    clear. The all-clear line is only written when every check answered."""
+    clear. The all-clear line is only written when every check answered.
+
+    'count>0' is for a summary count sensor (e.g. unpaid bills): above zero
+    is a hit; zero is only an answer when every entity in `requires` (the
+    inputs it summarises) answers too, because a count whose inputs are dark
+    reads 0 without having measured anything (root rule: a summary sensor
+    whose inputs are down is a sentinel)."""
     ents = [c["entity"] for c in checks]
     ctx.use(ents)
     lines = ["{%- set ns = namespace(ok=0, dark=0, hits=[]) -%}"]
@@ -220,6 +227,19 @@ def attention(ctx, checks):
                          "{%- set ns.hits = ns.hits + [" + ctx.jt(msg_key, name=jstr(name)) + "] -%}"
                          "{%- elif s in " + BAD + " -%}{%- set ns.dark = ns.dark + 1 -%}"
                          "{%- else -%}{%- set ns.ok = ns.ok + 1 -%}{%- endif -%}")
+            continue
+        if when == "count>0":
+            req = c.get("requires", [])
+            ctx.use(req)
+            rids = "[" + ",".join("'" + r + "'" for r in req) + "]"
+            lines.append("{%- set rq = namespace(dark=0) -%}{%- for r in " + rids + " -%}"
+                         "{%- if states(r) in " + BAD + " -%}{%- set rq.dark = rq.dark + 1 -%}{%- endif -%}"
+                         "{%- endfor -%}"
+                         "{%- if s | is_number and (s | float) > 0 -%}{%- set ns.ok = ns.ok + 1 -%}"
+                         "{%- set ns.hits = ns.hits + [" +
+                         ctx.jt(msg_key, name=jstr(name), v="(s | float) | round(0) | int") + "] -%}"
+                         "{%- elif s | is_number and rq.dark == 0 -%}{%- set ns.ok = ns.ok + 1 -%}"
+                         "{%- else -%}{%- set ns.dark = ns.dark + 1 -%}{%- endif -%}")
             continue
         lines.append("{%- if s in " + BAD + " -%}{%- set ns.dark = ns.dark + 1 -%}{%- else -%}"
                      "{%- set ns.ok = ns.ok + 1 -%}")

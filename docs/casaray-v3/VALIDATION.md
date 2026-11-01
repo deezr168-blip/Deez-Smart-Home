@@ -19,8 +19,9 @@ bash scripts/ha_validate.sh                     # repository gate
 | Check | Result |
 |---|---|
 | Build reproducible (`--check`: committed outputs == fresh build) | pass |
-| V3 gate, 4 locales × structure, navigation, deps, entities, safety, rendered honesty, secrets | **367 passed, 0 failed**, 4 notes |
-| Regression tests (`tests/v3`, 24 tests) | **OK** |
+| V3 gate, 4 locales × structure, navigation, deps, entities, safety, rendered honesty, secrets, migration map | **373 passed, 0 failed**, 4 notes |
+| Regression tests (`tests/v3`, 31 tests) | **OK** |
+| Migration map: all 16 V2-home entities and the 2 V2-cameras floodlights have a verified V3 place | **18 of 18** (12 native, 6 carried, 0 retained, 0 blocked) |
 | Repository gate `scripts/ha_validate.sh` | **PASSED** (8 sections); its section 8 (HA config check) SKIPPED: no hass, no /config |
 | `dashboards/casaray_v2.yaml` sha256 | `77a4991626d6f8afcd9b78f235c34417d84d9f36c129549a386d8a66c324226c` (unchanged) |
 | V2, legacy dashboard, `themes/` | unchanged vs `casaray-v3-design` |
@@ -32,6 +33,11 @@ unique view paths · every V2 view has a V3 home · classic copy of every rebuil
 view · no `badges` · every `navigation_path` resolves inside the locale's own
 url_path, none left on `/casaray-v2/` · custom cards ⊂ {`webrtc-camera`} ·
 every entity exists in the export · no missing string keys.
+
+Once per build: the build runs (baseline pinned, and every row of the
+manifest's `migration` map is true: the named view exists, is the stated kind
+and really references the entity; no V2 entity of a rebuilt view is left
+without a row; `retained` / `blocked` rows carry a reason).
 
 Per native view: native card types only · no `card_mod` · `grid_options` on
 every card · `max_columns ≤ 2` · nothing below `columns: 2` · no
@@ -50,7 +56,12 @@ URLs, private keys — across every V3 file.
 Each honesty test proves it can see what it guards against: the all-clear line
 appears when every check answers and disappears when one goes dark; the
 sentinel and secret patterns are shown to match planted samples; the baseline
-drift test plants a wrong hash and expects the build to refuse.
+drift test plants a wrong hash and expects the build to refuse; the migration
+test plants seven wrong maps (row removed, wrong view, wrong kind, unknown view,
+stray key, unreasoned retention, stale row) and expects each to stop the build,
+then builds the real map. The unpaid-bills check reports clear only when the
+count and all six paid flags answer, and is shown both raising a count and
+refusing a zero from dark inputs.
 
 ## Notes from the gate (not failures)
 

@@ -104,6 +104,7 @@ att.fridge_open: 雪櫃門打開咗
 att.freezer_overload: 冰櫃插蘇超負荷
 att.wan_down: 上唔到網
 att.battery_low: "{name}電量低（{v}%）"
+att.bills_unpaid: "未交帳單：{v} 張"
 att.people_dark: 冇任何人嘅位置數據
 att.all_clear: "{n} 項檢查全部有回應 — 冇嘢要留意。"
 att.clear_partial: "{n} 項有回應嘅檢查冇問題 · {m} 項冇回應。"
@@ -173,3 +174,5 @@ energy.ray_now: "Ray 間房而家"
 energy.ray_today: "Ray 間房今日"
 energy.battery_not_installed: "未安裝。呢個位已經留低；要有電池實體先會顯示讀數。"
 energy.export_note: "輸出電網：冇已核實嘅數據來源（冇 Fronius 智能電錶功率感應器），所以 V3 唔會估一個數出嚟。"
+energy.monitored_total: "監察總用電（2 個電路）"
+energy.monitored_note: "只有兩個電路裝咗計量插蘇，所以呢個係監察到嘅用電，唔係全屋。"

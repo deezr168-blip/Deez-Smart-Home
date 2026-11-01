@@ -22,6 +22,12 @@ Authority: `docs/live/states_export_2026-09-05.txt` — proves an ID **exists**.
 | `camera.tapo_c420_south_wall_hd_stream_direct` | Tapo C420 - South Wall HD Stream (Direct) | Network | unavailable | home, cameras |
 | `camera.tapo_c425_north_wall_hd_stream_direct` | Tapo C425 - North Wall HD Stream (Direct) | Network | ok | home, cameras |
 | `climate.bedroom_parents_room_ac` | Parents Room AC | Parents Room | ok | home, climate |
+| `input_boolean.car_insurance_paid` |     car_insurance_paid | - | ok | home |
+| `input_boolean.council_rate_paid` |     council_rate_paid | - | ok | home |
+| `input_boolean.elec_bill_paid` | Electricity Bill Paid | - | ok | home |
+| `input_boolean.gas_bill_paid` | Gas Bill Paid | - | ok | home |
+| `input_boolean.rego_paid` |     rego_paid | - | ok | home |
+| `input_boolean.water_bill_paid` |     water_bill_paid | - | ok | home |
 | `light.bedroom_bedroom` | Bedroom | Ray Bedroom | ok | home, lighting |
 | `light.bedroom_nightlight` | NightLight | Ray Bedroom | ok | lighting |
 | `light.dining` | Dining | Dining | ok | home, lighting |
@@ -72,6 +78,8 @@ Authority: `docs/live/states_export_2026-09-05.txt` — proves an ID **exists**.
 | `sensor.bedroom_motion_sensor_humidity` | Parents Room Motion Sensor Humidity | Parents Room | ok | climate |
 | `sensor.bedroom_motion_sensor_temperature` | Parents Room Motion Sensor Temperature | Parents Room | ok | home, climate |
 | `sensor.bedroom_parents_room_ac_filter_last_reset` | Parents Room AC Filter last reset | Parents Room | ok | climate |
+| `sensor.bills_unpaid_count` | Bills Unpaid Count | - | ok | home |
+| `sensor.casa_monitored_power` | Casa Monitored Power | - | ok | energy |
 | `sensor.casa_solar_expected_today` | Casa Solar Expected Today | - | ok | energy |
 | `sensor.electricity_maps_co2_intensity` | Electricity Maps CO2 intensity | Energy | ok | energy |
 | `sensor.electricity_maps_grid_fossil_fuel_percentage` | Electricity Maps Grid fossil fuel percentage | Energy | ok | energy |
