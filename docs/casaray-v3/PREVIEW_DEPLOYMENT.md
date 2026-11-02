@@ -1,8 +1,12 @@
 # CasaRay V3 Preview — deployment runbook
 
-**Status: NOT DEPLOYED** (01/11/26). Ray has repaired `configuration.yaml`. The
-pre-V3 backup has completed (Ray's report), but its locations and an external download
-are not yet confirmed. The theme is not loaded and the dashboard has not been created.
+**Status: NOT DEPLOYED** (02/11/26). Ray has repaired `configuration.yaml`.
+
+- The pre-V3 backup has completed and has been downloaded outside Home Assistant (both
+  confirmed by Ray).
+- A second copy off the laptop and a size match are not yet confirmed.
+- The theme is not loaded and the dashboard has not been created.
+- E1 has been requested; its output has not been received.
 Live state and the restart answer are in the two sections after the browser-only path.
 
 Ray approved deploying V3 as a separate preview beside V2
@@ -47,9 +51,9 @@ because they decide whether the theme can be loaded without losing anything.
 | # | Screen | Changes anything? | Status 01/11/26 |
 |---|---|---|---|
 | A | Settings → Dashboards: list, default, `/casaray-v3` free?, V2 present? Its theme and resource checks moved to E1 | no | given; results not yet reported. Needed before C |
-| B | Settings → System → Backups: confirm `config-repaired-pre-v3` completed, note its locations, then download it to a place outside the Green | no (download only) | **completed** (Ray's report). Locations and external download not yet confirmed |
-| E1 | Read-only: list `/config/themes`. The Profile theme list and the Resources list are already known from earlier observations (see the live-state table) | no | next |
-| E2 | Studio Code Server (installed and in use): upload the pinned theme as `/config/themes/casaray_v3.yaml`, then check its sha256 in the terminal | one new file | after B's download is confirmed and E1 is reported |
+| B | Settings → System → Backups: confirm `config-repaired-pre-v3` completed, note its locations, then download it to a place outside the Green | no (download only) | **completed and downloaded outside Home Assistant** (both confirmed by Ray). Second off-laptop copy and size match not confirmed. Locations and contents not reported |
+| E1 | Read-only: `ls -laR /config/themes`. The Profile theme list and the Resources list are already known from earlier observations (see the live-state table) | no | requested 02/11/26; output not yet received |
+| E2 | Studio Code Server terminal: fetch the pinned theme, check its sha256, place it as `/config/themes/casaray_v3.yaml`, then check it in place and run `ha core check`. Exact steps below | one new file, inert until E3 | steps prepared and dry-run tested; held until the E1 output is reviewed |
 | E3 | Developer tools → Actions → `frontend.reload_themes`. First look at the Profile theme list once more: it must still show no custom theme | theme reload; no restart | after E2 |
 | C | Settings → Dashboards → Add dashboard → from scratch: `CasaRay V3 Preview`, URL `casaray-v3`, not default | adds one dashboard | not started |
 | D | open it → Edit → Raw configuration editor → replace all with the pinned dashboard file → Save | that dashboard only | not started |
@@ -72,7 +76,7 @@ report.
 | `/config/themes/` | exists. What it contains is checked at E1 |
 | `ha core check` | passed twice |
 | Core | **not restarted**. Version **2026.9.2**, from `ha core info` earlier. Upstream, that release pins frontend `20260826.7` |
-| Backup `config-repaired-pre-v3` | **completed** (Ray). Locations and external download not yet confirmed |
+| Backup `config-repaired-pre-v3` | **completed**, and **downloaded outside Home Assistant** (both confirmed by Ray). Second copy off the laptop and size match **not confirmed** |
 | Profile → Theme list | earlier observation (Ray): **no custom themes**, only Home Assistant's own |
 | Settings → Dashboards → ⋮ → Resources | earlier observation (Ray): **empty**. So `card-mod`, `webrtc-camera` and every other front-end resource are not registered |
 | V3 | not deployed. No theme file, no dashboard |
@@ -159,6 +163,108 @@ only.
 from what is on disk. Anything the running Core loaded from files that have since gone
 missing would not come back.
 
+## Theme install, exact steps (prepared 02/11/26)
+
+### E1 — read-only
+
+Run in the Studio Code Server terminal:
+
+```sh
+ls -laR /config/themes
+```
+
+E1's output is reviewed before E2 runs.
+
+**What a theme reload reads.** Core 2026.9.2 pins `annotatedyaml` 1.0.2, which provides
+`!include_dir_merge_named`. Its `_find_files` and `_include_dir_merge_named_yaml`, read
+02/11/26:
+
+- It loads every `*.yaml` file in `/config/themes` and its sub-folders, in sorted order.
+- It skips:
+  - files and folders whose names start with `.`;
+  - `.yml` files;
+  - `secrets.yaml`;
+  - any file whose content is not a mapping. An empty file is skipped.
+- If two files define the same theme name, the later file's definition wins.
+
+| E1 shows | Next |
+|---|---|
+| empty (`.` and `..` only) | E2 as written |
+| `casaray_v3.yaml` already there | E2 stops by itself. Send its `sha256sum` first |
+| other `*.yaml` files | E2 as written. Before E3, their theme names are needed, because the reload loads them too |
+| `No such file or directory` | stop and report it |
+
+### E2 — adds one file, inert until E3
+
+Paste into the Studio Code Server terminal:
+
+```sh
+(
+F=/config/themes/casaray_v3.yaml
+URL=https://raw.githubusercontent.com/deezr168-blip/Deez-Smart-Home/8f1ec337e28e1cdd86154668175e1b9f903f22c4/src/casaray_v3/themes/casaray_v3.yaml
+WANT=17a51b9015d115e56ce7da7801625f1d1183da781059063c1641d9f40a574e21
+T=$(mktemp) || exit 1
+trap 'rm -f "$T"' EXIT
+if [ ! -d /config/themes ]; then echo "STOP: /config/themes is not a folder. Nothing changed."
+elif [ -e "$F" ]; then echo "STOP: $F already exists. Nothing changed."
+elif ! curl -fsSL "$URL" -o "$T"; then echo "STOP: download failed. Nothing changed."
+elif [ "$(sha256sum "$T" | cut -d' ' -f1)" != "$WANT" ]; then echo "STOP: hash does not match. Nothing changed."
+elif cp "$T" "$F" && chmod 644 "$F"; then echo "INSTALLED: $F"
+else echo "STOP: copy failed."; rm -f "$F"
+fi
+)
+```
+
+What the block does:
+
+- It downloads the pinned file to a temporary file and checks its sha256.
+- It copies the file into place only when all four hold: the folder exists, the target
+  does not, the download worked, and the hash matches.
+- Otherwise it prints `STOP: …` and changes nothing. The temporary file is always removed.
+- The Studio Code Server image ships `curl` and the `ha` CLI (its Dockerfile, read
+  01/11/26).
+
+**Dry run (Claude, 02/11/26), in the cloud session against a stand-in folder.**
+
+- The exact text above, with only the folder path substituted, installed into an empty
+  folder: 4119 bytes, mode 644, hash `17a51b90…`.
+- On a second run it refused, because the file existed.
+- It stopped with nothing changed for a missing folder, a wrong file and a failed download.
+- It behaves the same under `sh` and `bash`.
+- On the same day the pinned link served exactly 4119 bytes, hash `17a51b90…`,
+  byte-identical to commit `8f1ec33`.
+
+**Hash check in place:**
+
+```sh
+sha256sum /config/themes/casaray_v3.yaml
+ls -l /config/themes/casaray_v3.yaml
+ha core check
+```
+
+Expected results:
+
+- `17a51b9015d115e56ce7da7801625f1d1183da781059063c1641d9f40a574e21  /config/themes/casaray_v3.yaml`
+- a size of `4119`
+- `ha core check` completing successfully. It validates the themes folder with the
+  installed Core's own frontend schema and changes nothing.
+
+**Fallback if the Green cannot reach GitHub.**
+
+1. Open the pinned link in the laptop's browser and save the file as `casaray_v3.yaml`.
+2. Drag it onto `themes` in Studio Code Server's Explorer.
+3. Run the same three checks.
+4. On a wrong hash: `rm /config/themes/casaray_v3.yaml`, then report it.
+
+**Undo, before E3:** `rm /config/themes/casaray_v3.yaml`. Nothing has loaded it. Until E3,
+only a theme reload, `ha core check` or a Core restart reads the folder, and no restart is
+planned.
+
+### E3 — given after E2's three results are reported
+
+Before running E3, look at Profile → Theme once more. It must still show no custom theme.
+Then run Developer tools → Actions → `frontend.reload_themes`.
+
 ## Candidate
 
 | Item | Value |
@@ -216,8 +322,15 @@ laptop, separately from the Cloud copy. Record only its name, date and size
 here, never its contents or the encryption key.
 
 On 01/11/26 the backup is `config-repaired-pre-v3`, taken after the
-`configuration.yaml` repair. **Ray reports it completed.** Still to confirm before E2:
-its locations, and the download. The list should show:
+`configuration.yaml` repair.
+
+- **Ray reports it completed (01/11/26) and downloaded outside Home Assistant (02/11/26).**
+- Still open: a second copy off the laptop, and a check that the downloaded file's size
+  matches the size Home Assistant shows. Its locations and contents have not been reported.
+- These items do not block E2: E2 adds one inert file that one command removes. They stay
+  open in the deployment record.
+
+The list should show:
 
 - a completion date and time;
 - a size, not a few KB;
@@ -311,7 +424,7 @@ before sending.
 | Source commit | |
 | Readback canonical-JSON sha256 matches candidate | |
 | Theme installed (`CasaRay V3`) | |
-| Backup (name, date, size; downloaded to laptop) | `config-repaired-pre-v3`, completed 01/11/26 (Ray). Size, locations and download not yet confirmed |
+| Backup (name, date, size; downloaded to laptop) | `config-repaired-pre-v3`: completed 01/11/26 and downloaded outside Home Assistant 02/11/26 (Ray). Second off-laptop copy, size match, size and locations not yet confirmed |
 | Default dashboard unchanged | |
 | V2 status before / after | |
 | Defects found and fixed | |
