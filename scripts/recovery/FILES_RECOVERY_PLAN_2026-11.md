@@ -228,7 +228,7 @@ source (R12). Its form depends on whether the source is encrypted.
 |---|---|
 | Survey tool | `scripts/recovery/files_survey.py` |
 | sha256 | `956183884c9e19812a250acbd78a6e0229ec74b1efff1129754bb8fd6fe5660e` |
-| Pinned link | (stamped after commit) |
+| Pinned link | https://raw.githubusercontent.com/deezr168-blip/Deez-Smart-Home/b1eab5724a469116e6caeab85085c933fb71b60f/scripts/recovery/files_survey.py |
 | Tests | `python3 -I scripts/recovery/tests/test_files_survey.py`: 54 passed, 0 failed, 03/11/26 |
 
 **What the tests cover.** They run against a simulated Green:
