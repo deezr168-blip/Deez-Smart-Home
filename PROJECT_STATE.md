@@ -867,6 +867,45 @@ guard working, not a bug.
 
 ## Current Work / Blockers
 
+### Recovery — `CFG-005`: custom integrations and front-end files missing from the Green (owner track, opened 2026-11-03)
+
+**Status: OPEN. Planning only. Nothing has been run on the Green from this
+repository.** The plan is `scripts/recovery/FILES_RECOVERY_PLAN_2026-11.md` on
+`recovery/phase0-diagnostics` (PR #10, not to be merged). Established facts only;
+each is marked with its source and date.
+
+- **REPORTED (owner, 02/11/26), on `/config`:**
+  - `/config/custom_components` (HACS included) and `/config/www/community` are
+    missing; `/config/www` exists;
+  - the HACS config entry shows "Not loaded";
+  - Core 2026.9.2;
+  - `configuration.yaml` and empty `automations.yaml`, `scripts.yaml` and
+    `scenes.yaml` were recreated, and `ha core check` passed;
+  - owner and Cloud login work after a password reset.
+- **REPORTED (owner, 02/11/26), on backups and the preview:** CasaRay V3 Preview
+  imported at `/casaray-v3`, with 46 views. An automatic backup dated 01/11/26
+  exists (encrypted, about 1.18 GB); others may exist.
+- **VERIFIED (Claude, read-only connector, 02/11/26):** the four Tapo
+  `HD Stream (Direct)` camera entities read `unavailable`. The cause is not
+  established.
+- **VERIFIED (source code, 02–03/11/26):**
+  - Retention deletes only automatic backups, and runs after every new backup,
+    manual ones included (Core 2026.9.2).
+  - The UI's Download saves a **decrypted** copy of an encrypted backup when the
+    stored key matches (frontend 20260826.7). A laptop copy's encryption must be
+    read from the file.
+  - The Supervisor's add-on API proxy holds non-streaming responses in memory, so
+    backups are not downloaded through it.
+- **Tools prepared on the recovery branch, tested offline only:**
+  - `files_survey.py`, read-only, pinned at `b1eab57`;
+  - `backup_check.html`, browser-local and offline;
+  - `restore_files.py`, approval-gated; creates only the two folders.
+- **Next, for the owner:**
+  1. Preserve the 01/11 automatic backup off the Green, and check the copy.
+  2. Run the survey.
+  3. Approving the restore and the single restart that follows comes later, after
+     the memory-only configuration check (plan, G5).
+
 ### Main (CasaRay Upgrade)
 
 **2026-09-01 — CasaRay Design v1 frozen, pause lifted, Batch 1 landed. This

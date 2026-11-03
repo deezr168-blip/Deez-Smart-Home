@@ -1,0 +1,794 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
+<title>Backup copy check</title>
+<!--
+  CasaRay recovery: check a Home Assistant backup copy on the laptop, offline.  v1.0, 03/11/2026.
+
+  Open this file from disk in a desktop browser. It reads the chosen backup in one pass and
+  reports its size and SHA-256, whether the archive is complete, whether the copy is
+  encrypted, and which custom integrations and www/community folders it holds. The page
+  makes no network request: its Content-Security-Policy forbids every fetch, image, font and
+  frame from anywhere. Nothing is uploaded.
+
+  When the copy is NOT encrypted and complete, it can also save casaray_payload.tar: only
+  custom_components/ and www/community/, plus a manifest of every file's size and SHA-256.
+  scripts/recovery/restore_files.py on the Green verifies that manifest before staging.
+
+  Tests: scripts/recovery/tests/test_backup_check.py (Node and real Chromium).
+-->
+<style>
+:root {
+  --bg: #f6f7f9; --card: #ffffff; --text: #16191d; --dim: #59616b; --line: #d9dde3;
+  --ok: #19713f; --warn: #8a5a00; --bad: #b3261e; --accent: #1f5fbf; --code: #eef1f5;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #0d1114; --card: #161b1f; --text: #e8ebee; --dim: #a3abb5; --line: #2a3138;
+          --ok: #5fd08b; --warn: #f0b44c; --bad: #ff8a80; --accent: #8ab4ff; --code: #1d2329; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text);
+       font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 860px; margin: 0 auto; padding: 24px 16px 48px; }
+h1 { font-size: 1.6rem; margin: 0 0 8px; }
+h2 { font-size: 1.2rem; margin: 28px 0 8px; }
+p { margin: 8px 0; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin: 16px 0; }
+.dim { color: var(--dim); }
+label.pick { display: block; font-weight: 600; margin-bottom: 8px; }
+input[type=file] { max-width: 100%; }
+button { font: inherit; padding: 10px 16px; border-radius: 8px; border: 1px solid var(--accent);
+         background: var(--accent); color: var(--card); cursor: pointer; margin: 8px 8px 0 0; }
+button.secondary { background: transparent; color: var(--accent); }
+button:disabled { opacity: .45; cursor: not-allowed; }
+progress { width: 100%; height: 12px; margin-top: 12px; }
+table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+th, td { text-align: left; vertical-align: top; padding: 6px 8px; border-top: 1px solid var(--line); }
+th { width: 34%; color: var(--dim); font-weight: 600; }
+.ok { color: var(--ok); font-weight: 600; }
+.warn { color: var(--warn); font-weight: 600; }
+.bad { color: var(--bad); font-weight: 600; }
+textarea { width: 100%; min-height: 260px; font: 13px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+           background: var(--code); color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
+code { background: var(--code); padding: 1px 5px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Backup copy check</h1>
+  <p>For a Home Assistant backup saved on this computer. <strong>It runs only in this browser tab.</strong>
+     The file is read from your disk and is never uploaded: this page is not allowed to make any network request.</p>
+
+  <div class="card">
+    <label class="pick" for="file">1. Choose the downloaded backup (<code>.tar</code>)</label>
+    <input type="file" id="file" accept=".tar,application/x-tar">
+    <div><button id="run" disabled>2. Check it</button></div>
+    <progress id="prog" max="1" value="0" hidden></progress>
+    <p id="status" class="dim" role="status" aria-live="polite"></p>
+  </div>
+
+  <section id="result" hidden>
+    <h2>Result</h2>
+    <div class="card"><table id="facts"></table></div>
+
+    <h2>Summary to paste back</h2>
+    <p class="dim">Names, sizes, dates, versions and yes/no answers only: no file contents, keys or passwords.</p>
+    <textarea id="summary" readonly></textarea>
+    <div><button id="copy" class="secondary">Copy summary</button></div>
+
+    <div id="payloadBox" class="card" hidden>
+      <h2 style="margin-top:0">Optional: save only the two missing folders</h2>
+      <p>Creates <code>casaray_payload.tar</code> holding only <code>custom_components/</code> and
+         <code>www/community/</code> from this backup, with a manifest of every file's size and SHA-256.
+         Nothing else from the backup is included.</p>
+      <button id="save">Save casaray_payload.tar</button>
+      <p id="saveStatus" class="dim" role="status"></p>
+    </div>
+  </section>
+</main>
+
+<script id="core">
+"use strict";
+(function (root) {
+  const VERSION = "1.0";
+  const enc = new TextEncoder();
+  const dec = new TextDecoder("utf-8", { fatal: false });
+  const PAYLOAD_CAP = 768 * 1024 * 1024;
+
+  // ------------------------------------------------------------ SHA-256 (incremental) ---
+  const K = new Uint32Array([
+    0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+    0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+    0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+    0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+    0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+    0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+    0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+    0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2]);
+
+  class Sha256 {
+    constructor() {
+      this.h = new Uint32Array([0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
+                                0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19]);
+      this.block = new Uint8Array(64);
+      this.blen = 0;
+      this.total = 0;
+      this.w = new Uint32Array(64);
+    }
+    compress(b, off) {
+      const w = this.w, h = this.h;
+      for (let i = 0; i < 16; i++) {
+        const j = off + i * 4;
+        w[i] = (b[j] << 24) | (b[j + 1] << 16) | (b[j + 2] << 8) | b[j + 3];
+      }
+      for (let i = 16; i < 64; i++) {
+        const x = w[i - 15], y = w[i - 2];
+        const s0 = ((x >>> 7) | (x << 25)) ^ ((x >>> 18) | (x << 14)) ^ (x >>> 3);
+        const s1 = ((y >>> 17) | (y << 15)) ^ ((y >>> 19) | (y << 13)) ^ (y >>> 10);
+        w[i] = (w[i - 16] + s0 + w[i - 7] + s1) | 0;
+      }
+      let a = h[0], bb = h[1], c = h[2], d = h[3], e = h[4], f = h[5], g = h[6], hh = h[7];
+      for (let i = 0; i < 64; i++) {
+        const S1 = ((e >>> 6) | (e << 26)) ^ ((e >>> 11) | (e << 21)) ^ ((e >>> 25) | (e << 7));
+        const ch = (e & f) ^ (~e & g);
+        const t1 = (hh + S1 + ch + K[i] + w[i]) | 0;
+        const S0 = ((a >>> 2) | (a << 30)) ^ ((a >>> 13) | (a << 19)) ^ ((a >>> 22) | (a << 10));
+        const maj = (a & bb) ^ (a & c) ^ (bb & c);
+        const t2 = (S0 + maj) | 0;
+        hh = g; g = f; f = e; e = (d + t1) | 0; d = c; c = bb; bb = a; a = (t1 + t2) | 0;
+      }
+      h[0] = (h[0] + a) | 0; h[1] = (h[1] + bb) | 0; h[2] = (h[2] + c) | 0; h[3] = (h[3] + d) | 0;
+      h[4] = (h[4] + e) | 0; h[5] = (h[5] + f) | 0; h[6] = (h[6] + g) | 0; h[7] = (h[7] + hh) | 0;
+    }
+    update(data) {
+      let i = 0;
+      const n = data.length;
+      this.total += n;
+      if (this.blen) {
+        const k = Math.min(64 - this.blen, n);
+        this.block.set(data.subarray(0, k), this.blen);
+        this.blen += k;
+        i = k;
+        if (this.blen === 64) { this.compress(this.block, 0); this.blen = 0; }
+      }
+      for (; i + 64 <= n; i += 64) this.compress(data, i);
+      if (i < n) { this.block.set(data.subarray(i), 0); this.blen = n - i; }
+      return this;
+    }
+    hex() {
+      const bits = this.total * 8;
+      const pad = new Uint8Array((this.blen < 56 ? 56 : 120) - this.blen + 8);
+      pad[0] = 0x80;
+      const hi = Math.floor(bits / 0x100000000), lo = bits >>> 0, L = pad.length;
+      pad[L - 8] = (hi >>> 24) & 255; pad[L - 7] = (hi >>> 16) & 255; pad[L - 6] = (hi >>> 8) & 255; pad[L - 5] = hi & 255;
+      pad[L - 4] = (lo >>> 24) & 255; pad[L - 3] = (lo >>> 16) & 255; pad[L - 2] = (lo >>> 8) & 255; pad[L - 1] = lo & 255;
+      const total = this.total;
+      this.update(pad);
+      this.total = total;
+      let s = "";
+      for (let i = 0; i < 8; i++) s += (this.h[i] >>> 0).toString(16).padStart(8, "0");
+      return s;
+    }
+  }
+
+  // ------------------------------------------------------- byte reader over a stream ---
+  class Reader {
+    constructor(stream, onChunk) {
+      this.r = stream.getReader();
+      this.chunks = [];
+      this.avail = 0;
+      this.done = false;
+      this.onChunk = onChunk || null;
+    }
+    async fill(n) {
+      while (this.avail < n && !this.done) {
+        const { value, done } = await this.r.read();
+        if (done) { this.done = true; break; }
+        if (value && value.length) {
+          if (this.onChunk) this.onChunk(value);
+          this.chunks.push(value);
+          this.avail += value.length;
+        }
+      }
+    }
+    take(n) {
+      const out = new Uint8Array(n);
+      let off = 0;
+      while (off < n) {
+        const c = this.chunks[0];
+        const k = Math.min(c.length, n - off);
+        out.set(c.subarray(0, k), off);
+        off += k;
+        if (k === c.length) this.chunks.shift(); else this.chunks[0] = c.subarray(k);
+      }
+      this.avail -= n;
+      return out;
+    }
+    async read(n) { await this.fill(n); return this.take(Math.min(n, this.avail)); }
+    async peek(n) {
+      await this.fill(n);
+      const k = Math.min(n, this.avail), out = new Uint8Array(k);
+      let off = 0;
+      for (const c of this.chunks) {
+        if (off >= k) break;
+        const m = Math.min(c.length, k - off);
+        out.set(c.subarray(0, m), off);
+        off += m;
+      }
+      return out;
+    }
+    async skip(n) {
+      let left = n;
+      while (left > 0) {
+        await this.fill(1);
+        if (this.avail === 0) break;
+        const c = this.chunks[0];
+        const k = Math.min(c.length, left);
+        left -= k;
+        this.avail -= k;
+        if (k === c.length) this.chunks.shift(); else this.chunks[0] = c.subarray(k);
+      }
+      return n - left;
+    }
+    async drain() {
+      let n = 0;
+      for (;;) {
+        await this.fill(1);
+        if (this.avail === 0) return n;
+        n += this.avail;
+        this.chunks = [];
+        this.avail = 0;
+      }
+    }
+    // A stream of exactly n bytes (fewer only at end of input) taken from this reader.
+    sub(n, onUse) {
+      let left = n;
+      const self = this;
+      return new ReadableStream({
+        async pull(ctrl) {
+          if (left <= 0) { ctrl.close(); return; }
+          await self.fill(1);
+          if (self.avail === 0) { ctrl.close(); return; }
+          const c = self.chunks[0];
+          const k = Math.min(c.length, left);
+          ctrl.enqueue(c.slice(0, k));
+          left -= k;
+          self.avail -= k;
+          if (k === c.length) self.chunks.shift(); else self.chunks[0] = c.subarray(k);
+          onUse(k);
+        },
+      });
+    }
+  }
+
+  // ---------------------------------------------------------------------- tar reading ---
+  class ArchiveError extends Error {}
+
+  function field(b, off, len) {
+    let end = off;
+    while (end < off + len && b[end] !== 0) end++;
+    return dec.decode(b.subarray(off, end));
+  }
+  function num(b, off, len) {
+    if (b[off] & 0x80) {
+      let v = 0;
+      for (let i = off + 1; i < off + len; i++) v = v * 256 + b[i];
+      return v;
+    }
+    const s = field(b, off, len).trim();
+    return s ? parseInt(s, 8) : 0;
+  }
+  function checksumOk(h) {
+    let sum = 0;
+    for (let i = 0; i < 512; i++) sum += (i >= 148 && i < 156) ? 32 : h[i];
+    return sum === num(h, 148, 8);
+  }
+  function isZero(h) {
+    for (let i = 0; i < h.length; i++) if (h[i]) return false;
+    return true;
+  }
+  function parsePax(b) {
+    const out = {};
+    let i = 0;
+    while (i < b.length) {
+      let sp = i;
+      while (sp < b.length && b[sp] !== 0x20) sp++;
+      const len = parseInt(dec.decode(b.subarray(i, sp)), 10);
+      if (!(len > 0) || i + len > b.length) break;
+      const rec = dec.decode(b.subarray(sp + 1, i + len - 1));
+      const eq = rec.indexOf("=");
+      if (eq > 0) out[rec.slice(0, eq)] = rec.slice(eq + 1);
+      i += len;
+    }
+    return out;
+  }
+  function norm(name) {
+    let n = name;
+    while (n.startsWith("./")) n = n.slice(2);
+    while (n.endsWith("/")) n = n.slice(0, -1);
+    return n;
+  }
+  const TYPE_NAMES = { "0": "file", "7": "file", "5": "directory", "2": "symbolic link", "1": "hard link",
+                       "3": "character device", "4": "block device", "6": "fifo", "S": "sparse file" };
+
+  // Calls visit(entry, api) for every entry, then skips whatever the visitor left unread.
+  // Returns {ended, truncated, count}; throws ArchiveError on a corrupt header.
+  async function walkTar(reader, visit) {
+    let pax = {}, gpax = {}, longName = null, longLink = null, count = 0;
+    for (;;) {
+      const h = await reader.read(512);
+      if (h.length === 0) return { ended: false, truncated: true, count };
+      if (h.length < 512) return { ended: false, truncated: true, count };
+      if (isZero(h)) {
+        const h2 = await reader.read(512);
+        return { ended: h2.length === 512 && isZero(h2), truncated: h2.length < 512, count };
+      }
+      if (!checksumOk(h)) throw new ArchiveError("a header failed its checksum");
+      const type = h[156] === 0 ? "0" : String.fromCharCode(h[156]);
+      let size = num(h, 124, 12);
+      const magic = dec.decode(h.subarray(257, 262));
+      let name = field(h, 0, 100);
+      if (magic === "ustar") {
+        const prefix = field(h, 345, 155);
+        if (prefix) name = prefix + "/" + name;
+      }
+      const padded = Math.ceil(size / 512) * 512;
+      if (type === "x" || type === "g" || type === "L" || type === "K") {
+        const data = await reader.read(size);
+        if (data.length < size) return { ended: false, truncated: true, count };
+        if ((await reader.skip(padded - size)) < padded - size) return { ended: false, truncated: true, count };
+        if (type === "x") pax = parsePax(data);
+        else if (type === "g") gpax = Object.assign(gpax, parsePax(data));
+        else if (type === "L") longName = field(data, 0, data.length);
+        else longLink = field(data, 0, data.length);
+        continue;
+      }
+      const meta = Object.assign({}, gpax, pax);
+      if (longName !== null) name = longName;
+      if (meta.path !== undefined) name = meta.path;
+      if (meta.size !== undefined) size = parseInt(meta.size, 10);
+      const entry = {
+        name, size, type,
+        linkname: longLink !== null ? longLink : (meta.linkpath !== undefined ? meta.linkpath : field(h, 157, 100)),
+        mtime: meta.mtime !== undefined ? parseFloat(meta.mtime) : num(h, 136, 12),
+        mode: num(h, 100, 8),
+      };
+      pax = {}; longName = null; longLink = null; count++;
+      const total = Math.ceil(size / 512) * 512;
+      let used = 0;
+      const api = {
+        async read(max) {
+          const n = Math.min(size - used, max);
+          const d = await reader.read(n);
+          used += d.length;
+          return d;
+        },
+        stream() { return reader.sub(size - used, (k) => { used += k; }); },
+      };
+      await visit(entry, api);
+      const rest = total - used;
+      if ((await reader.skip(rest)) < rest) return { ended: false, truncated: true, count };
+    }
+  }
+
+  // ------------------------------------------------------------- what the backup holds ---
+  const KEY_FILES = ["configuration.yaml", "automations.yaml", "scripts.yaml", "scenes.yaml", "secrets.yaml",
+                     "home-assistant_v2.db"];
+  function listEntries(t) { const s = t.trim(); return (s === "" || s === "[]") ? 0 : (t.match(/^- /gm) || []).length; }
+  function mapEntries(t) { const s = t.trim(); return (s === "" || s === "{}") ? 0 : (t.match(/^[^\s#\-][^:\n]*:/gm) || []).length; }
+  const COUNTERS = { "automations.yaml": listEntries, "scenes.yaml": listEntries, "scripts.yaml": mapEntries };
+
+  function clean(v, n) {
+    const s = String(v === undefined || v === null ? "-" : v).replace(/[\x00-\x1f\x7f]/g, "?");
+    return s.length <= n ? s : s.slice(0, n - 1) + "~";
+  }
+  function storageData(raw) {
+    try { const j = JSON.parse(dec.decode(raw)); return (j && typeof j === "object") ? j.data : null; }
+    catch (e) { return null; }
+  }
+  function safeMeta(raw) {
+    const m = JSON.parse(dec.decode(raw));
+    if (!m || typeof m !== "object") throw new Error("not an object");
+    const ha = (m.homeassistant && typeof m.homeassistant === "object") ? m.homeassistant : null;
+    const apps = Array.isArray(m.addons) ? m.addons : (Array.isArray(m.apps) ? m.apps : []);
+    return {
+      slug: clean(m.slug, 20), name: clean(m.name, 60), date: clean(m.date, 32), type: clean(m.type, 10),
+      protected: m.protected === true, compressed: m.compressed !== false,
+      ha: ha ? clean(ha.version, 20) : null, excludeDb: ha ? ha.exclude_database === true : null,
+      folders: Array.isArray(m.folders) ? m.folders.map((f) => clean(f, 30)) : [],
+      apps: apps.map((a) => clean(a && a.slug, 40)),
+    };
+  }
+  function expectedArchives(meta) {
+    const ext = meta.compressed ? ".tar.gz" : ".tar";
+    const out = [];
+    if (meta.ha) out.push("homeassistant" + ext);
+    for (const f of meta.folders) out.push(f.replace(/\//g, "_") + ext);
+    for (const a of meta.apps) out.push(a + ext);
+    return out;
+  }
+  function newHa() {
+    return { entries: 0, newest: 0, top: {}, cc: {}, community: {}, wwwOther: new Set(), keyfiles: {},
+             resources: null, hacs: null, unsafe: [], payload: [], payloadDirs: [], payloadBytes: 0,
+             payloadTooBig: false, payloadShort: [] };
+  }
+
+  async function scanHa(e, api, ha) {
+    const p = norm(e.name);
+    if (!p.startsWith("data/")) return;
+    const rel = p.slice(5);
+    if (!rel) return;
+    ha.entries++;
+    const parts = rel.split("/");
+    const top = parts[0];
+    const isFile = e.type === "0" || e.type === "7";
+    if (isFile && !rel.startsWith(".storage/") && !rel.startsWith("home-assistant_v2.db")) ha.newest = Math.max(ha.newest, e.mtime);
+    if (isFile) ha.top[top] = (ha.top[top] || 0) + 1;
+    const inCc = top === "custom_components" && parts.length >= 2 && parts[1] !== "";
+    const inCommunity = top === "www" && parts[1] === "community" && parts.length >= 3 && parts[2] !== "";
+    if (inCc || inCommunity) {
+      if (parts.some((x) => x === ".." || x === "." || x === "") || rel.includes("\\") || rel.startsWith("/")) {
+        ha.unsafe.push(clean(rel, 120) + " (unsafe path)");
+        return;
+      }
+      if (!(isFile || e.type === "5")) {
+        ha.unsafe.push(clean(rel, 120) + " (" + (TYPE_NAMES[e.type] || "type " + e.type) + ")");
+        return;
+      }
+      let raw = null;
+      if (isFile) {
+        if (ha.payloadBytes + e.size > PAYLOAD_CAP) ha.payloadTooBig = true;
+        else {
+          raw = await api.read(e.size);
+          if (raw.length !== e.size) ha.payloadShort.push(clean(rel, 120));
+          ha.payload.push({ path: rel, mode: e.mode, mtime: e.mtime, data: raw });
+          ha.payloadBytes += raw.length;
+        }
+      } else ha.payloadDirs.push(rel);
+      if (inCc) {
+        const c = ha.cc[parts[1]] || (ha.cc[parts[1]] = { files: 0, bytes: 0, newest: 0, manifest: null });
+        if (isFile) {
+          c.files++; c.bytes += e.size; c.newest = Math.max(c.newest, e.mtime);
+          if (parts.length === 3 && parts[2] === "manifest.json" && raw) {
+            try {
+              const m = JSON.parse(dec.decode(raw));
+              c.manifest = { domain: clean(m.domain, 40), version: clean(m.version, 24), name: clean(m.name, 50) };
+            } catch (err) { c.manifest = { domain: "unreadable", version: "-", name: "-" }; }
+          }
+        }
+      } else {
+        const d = ha.community[parts[2]] || (ha.community[parts[2]] = { files: 0, bytes: 0, newest: 0 });
+        if (isFile) { d.files++; d.bytes += e.size; d.newest = Math.max(d.newest, e.mtime); }
+      }
+      return;
+    }
+    if (top === "www" && parts.length >= 2 && parts[1] && parts[1] !== "community") ha.wwwOther.add(clean(parts[1], 60));
+    if (KEY_FILES.includes(rel) && isFile) {
+      const k = { size: e.size, mtime: e.mtime };
+      if (COUNTERS[rel]) k.entries = COUNTERS[rel](dec.decode(await api.read(Math.min(e.size, 8 << 20))));
+      ha.keyfiles[rel] = k;
+    }
+    if (rel === ".storage/lovelace_resources" && isFile) {
+      const d = storageData(await api.read(Math.min(e.size, 32 << 20)));
+      const items = d && Array.isArray(d.items) ? d.items : [];
+      ha.resources = items.map((i) => clean(i && i.type, 10) + " " + clean(i && i.url, 100));
+    }
+    if (rel === ".storage/hacs.repositories" && isFile) {
+      const d = storageData(await api.read(Math.min(e.size, 32 << 20)));
+      ha.hacs = [];
+      if (d && typeof d === "object") {
+        for (const r of Object.values(d)) {
+          if (r && typeof r === "object" && r.installed) {
+            ha.hacs.push(clean(r.category, 14) + " " + clean(r.full_name, 60) + " " +
+                         clean(r.version_installed || String(r.installed_commit || "").slice(0, 7) || "?", 24));
+          }
+        }
+        ha.hacs.sort();
+      }
+    }
+  }
+
+  async function analyse(file, onProgress) {
+    const rep = { version: VERSION, fileName: clean(file.name || "backup.tar", 120), fileSize: file.size, sha256: null,
+                  outer: { ended: false, truncated: false, members: [] }, meta: null, metaError: null,
+                  archives: {}, ha: null, error: null, bytesRead: 0 };
+    const hasher = new Sha256();
+    let lastTick = 0;
+    const reader = new Reader(file.stream(), (chunk) => {
+      hasher.update(chunk);
+      rep.bytesRead += chunk.length;
+      if (onProgress && (rep.bytesRead - lastTick > 8 * 1024 * 1024 || rep.bytesRead === file.size)) {
+        lastTick = rep.bytesRead;
+        onProgress(rep.bytesRead, file.size);
+      }
+    });
+    try {
+      const res = await walkTar(reader, async (entry, api) => {
+        const name = norm(entry.name);
+        rep.outer.members.push({ name: clean(name, 80), size: entry.size, type: entry.type });
+        if (name === "backup.json") {
+          try { rep.meta = safeMeta(await api.read(1 << 20)); } catch (err) { rep.metaError = "unreadable"; }
+          return;
+        }
+        if (!/\.(tar\.gz|tgz|tar)$/.test(name) || !(entry.type === "0" || entry.type === "7")) return;
+        const head = await reader.peek(Math.min(entry.size, 512));
+        const gz = head.length >= 2 && head[0] === 0x1f && head[1] === 0x8b;
+        const tar = !gz && head.length >= 262 && dec.decode(head.subarray(257, 262)) === "ustar";
+        const arc = { size: entry.size, format: gz ? "gzip" : (tar ? "tar" : "unreadable"), ok: null, entries: 0, error: null };
+        rep.archives[name] = arc;
+        if (!gz && !tar) return;
+        const ha = name.startsWith("homeassistant.") ? newHa() : null;
+        let src = api.stream();
+        if (gz) src = src.pipeThrough(new DecompressionStream("gzip"));
+        const inner = new Reader(src);
+        try {
+          const r = await walkTar(inner, async (ie, iapi) => { arc.entries++; if (ha) await scanHa(ie, iapi, ha); });
+          await inner.drain();
+          arc.ok = r.ended;
+          if (!r.ended) arc.error = r.truncated ? "ends early" : "no end marker";
+        } catch (err) {
+          arc.ok = false;
+          arc.error = err instanceof ArchiveError ? err.message : "data is corrupt or cut short";
+          throw new ArchiveError(name + ": " + arc.error);
+        }
+        if (ha) rep.ha = ha;
+      });
+      rep.outer.ended = res.ended;
+      rep.outer.truncated = res.truncated;
+      await reader.drain();
+      rep.sha256 = hasher.hex();
+    } catch (err) {
+      rep.error = err instanceof ArchiveError ? err.message : "the file could not be read to the end";
+    }
+    return verdict(rep);
+  }
+
+  function verdict(rep) {
+    const v = { complete: false, completeWhy: [], encryption: "unknown", encryptionWhy: "", payloadOk: false, payloadWhy: [] };
+    const m = rep.meta;
+    if (rep.error) v.completeWhy.push(rep.error);
+    if (!rep.outer.ended) v.completeWhy.push(rep.outer.truncated ? "the file ends early" : "the archive has no end marker");
+    if (!m) v.completeWhy.push(rep.metaError ? "backup.json is unreadable" : "backup.json is missing");
+    const missing = m ? expectedArchives(m).filter((a) => !(a in rep.archives)) : [];
+    if (missing.length) v.completeWhy.push("missing " + missing.join(", "));
+    const broken = Object.entries(rep.archives).filter(([, a]) => a.ok === false).map(([n, a]) => n + " (" + a.error + ")");
+    if (broken.length) v.completeWhy.push("broken " + broken.join(", "));
+    v.complete = v.completeWhy.length === 0;
+    const ha = Object.entries(rep.archives).find(([n]) => n.startsWith("homeassistant."));
+    if (!m || !ha) v.encryption = "unknown";
+    else if (m.protected && ha[1].format === "unreadable") {
+      v.encryption = "encrypted";
+      v.encryptionWhy = "backup.json says protected and the Home Assistant archive is not readable without the key";
+    } else if (!m.protected && ha[1].format !== "unreadable") {
+      v.encryption = "not encrypted";
+      v.encryptionWhy = "backup.json says not protected and the Home Assistant archive reads as plain " + ha[1].format;
+    } else if (m.protected) {
+      v.encryption = "inconsistent";
+      v.encryptionWhy = "backup.json says protected but the Home Assistant archive reads as plain " + ha[1].format;
+    } else {
+      v.encryption = "inconsistent";
+      v.encryptionWhy = "backup.json says not protected but the Home Assistant archive is not readable";
+    }
+    const h = rep.ha;
+    if (!v.complete) v.payloadWhy.push("the copy is not complete");
+    if (v.encryption !== "not encrypted") v.payloadWhy.push("the copy is not a plain (unencrypted) backup");
+    if (!h) v.payloadWhy.push("the Home Assistant archive was not read");
+    else {
+      if (!h.cc.hacs) v.payloadWhy.push("custom_components/hacs is not in this backup");
+      if (!Object.keys(h.community).length) v.payloadWhy.push("www/community is not in this backup");
+      if (h.unsafe.length) v.payloadWhy.push(h.unsafe.length + " unsafe or link entries inside the two folders");
+      if (h.payloadTooBig) v.payloadWhy.push("the two folders are larger than this page will hold");
+      if (h.payloadShort.length) v.payloadWhy.push("some files were cut short");
+    }
+    v.payloadOk = v.payloadWhy.length === 0;
+    rep.verdict = v;
+    return rep;
+  }
+
+  function ts(sec) {
+    if (!sec) return "-";
+    return new Date(sec * 1000).toISOString().slice(0, 16).replace("T", " ") + "Z";
+  }
+  function mb(n) { return (n / 1048576).toFixed(1) + " MB"; }
+
+  function summary(rep) {
+    const v = rep.verdict, m = rep.meta, h = rep.ha;
+    const L = [];
+    L.push("Backup copy check v" + rep.version + " (browser, offline; nothing uploaded)");
+    L.push("file: " + rep.fileName + " | " + rep.fileSize + " bytes | read " + rep.bytesRead + " bytes");
+    L.push("sha256: " + (rep.sha256 || "not computed (file not read to the end)"));
+    L.push("complete: " + (v.complete ? "YES" : "NO - " + v.completeWhy.join("; ")));
+    L.push("encryption: " + v.encryption.toUpperCase() + (v.encryptionWhy ? " - " + v.encryptionWhy : ""));
+    if (m) {
+      L.push("backup.json: slug " + m.slug + " | date " + m.date + " | type " + m.type + " | HA " + (m.ha || "-") +
+             " | protected " + m.protected + " | db excluded " + m.excludeDb + " | folders [" + m.folders.join(", ") +
+             "] | add-ons " + m.apps.length);
+    }
+    const arcs = Object.entries(rep.archives).map(([n, a]) => n + " " + a.format + " " + mb(a.size) +
+      (a.ok === true ? " OK (" + a.entries + " entries)" : a.ok === false ? " BROKEN (" + a.error + ")" : " not readable"));
+    L.push("inner archives: " + (arcs.join(" | ") || "none"));
+    if (h) {
+      const cc = Object.entries(h.cc).sort().map(([k, c]) => k + " " + (c.manifest ? c.manifest.version : "no manifest") +
+        " (" + c.files + " files)");
+      L.push("custom_components (" + cc.length + "): " + (cc.join(", ") || "none"));
+      const co = Object.entries(h.community).sort().map(([k, d]) => k + " (" + d.files + " files)");
+      L.push("www/community (" + co.length + "): " + (co.join(", ") || "none"));
+      L.push("www, other items: " + ([...h.wwwOther].sort().join(", ") || "none"));
+      L.push("key files: " + KEY_FILES.map((k) => {
+        const f = h.keyfiles[k];
+        return k + " " + (f ? f.size + " bytes " + ts(f.mtime) + (f.entries !== undefined ? " entries " + f.entries : "") : "ABSENT");
+      }).join(" | "));
+      L.push("dashboard resources recorded: " + (h.resources === null ? "no record" : h.resources.length +
+        (h.resources.length ? " - " + h.resources.join(", ") : "")));
+      L.push("HACS recorded installed: " + (h.hacs === null ? "no record" : h.hacs.length +
+        (h.hacs.length ? " - " + h.hacs.join(", ") : "")));
+      L.push("links or unsafe paths in the two folders: " + (h.unsafe.length ? h.unsafe.slice(0, 20).join(", ") : "none"));
+      L.push("newest config file (not .storage, not database): " + ts(h.newest));
+      L.push("two-folder payload: " + (v.payloadOk ? "ready (" + h.payload.length + " files, " + mb(h.payloadBytes) + ")"
+        : "not offered - " + v.payloadWhy.join("; ")));
+    }
+    return L.join("\n");
+  }
+
+  // --------------------------------------------------------------- payload tar writer ---
+  function octalField(h, off, len, value) {
+    const s = Math.floor(value).toString(8).padStart(len - 1, "0");
+    if (s.length > len - 1) throw new Error("value too large for tar field");
+    h.set(enc.encode(s), off);
+    h[off + len - 1] = 0;
+  }
+  function header(name, size, mode, mtime, type) {
+    const h = new Uint8Array(512);
+    const nb = enc.encode(name);
+    h.set(nb.subarray(0, 100), 0);
+    octalField(h, 100, 8, mode);
+    octalField(h, 108, 8, 0);
+    octalField(h, 116, 8, 0);
+    octalField(h, 124, 12, size);
+    octalField(h, 136, 12, mtime);
+    for (let i = 148; i < 156; i++) h[i] = 32;
+    h[156] = type.charCodeAt(0);
+    h.set(enc.encode("ustar"), 257);
+    h[262] = 0;
+    h.set(enc.encode("00"), 263);
+    let sum = 0;
+    for (let i = 0; i < 512; i++) sum += h[i];
+    h.set(enc.encode(sum.toString(8).padStart(6, "0")), 148);
+    h[154] = 0;
+    h[155] = 32;
+    return h;
+  }
+  function paxRecord(key, value) {
+    const bodyLen = enc.encode(" " + key + "=" + value + "\n").length;
+    let n = bodyLen + String(bodyLen).length;
+    while (String(n).length + bodyLen !== n) n = String(n).length + bodyLen;
+    return enc.encode(n + " " + key + "=" + value + "\n");
+  }
+  function pushEntry(parts, name, data, mode, mtime, type) {
+    const ascii = /^[\x20-\x7e]*$/.test(name);
+    if (!ascii || enc.encode(name).length > 99) {
+      const rec = paxRecord("path", name);
+      parts.push(header("PaxHeader/" + name.replace(/[^\x20-\x7e]/g, "_").slice(-80), rec.length, 0o644, mtime, "x"));
+      parts.push(rec, new Uint8Array((512 - (rec.length % 512)) % 512));
+    }
+    parts.push(header(name.replace(/[^\x20-\x7e]/g, "_").slice(0, 99), data.length, mode, mtime, type));
+    if (data.length) parts.push(data, new Uint8Array((512 - (data.length % 512)) % 512));
+  }
+  function buildPayload(rep, nowSec) {
+    if (!rep.verdict || !rep.verdict.payloadOk) throw new Error("payload not offered for this copy");
+    const h = rep.ha, m = rep.meta;
+    const files = h.payload.slice().sort((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0));
+    const inRoot = (p) => p === "custom_components" || p.startsWith("custom_components/") ||
+                          p === "www/community" || p.startsWith("www/community/");
+    const dirs = new Set(h.payloadDirs.filter(inRoot));
+    for (const f of files) {
+      const segs = f.path.split("/");
+      for (let i = 1; i < segs.length; i++) {
+        const d = segs.slice(0, i).join("/");
+        if (inRoot(d)) dirs.add(d);
+      }
+    }
+    dirs.add("custom_components"); dirs.add("www/community");
+    const manifest = {
+      format: "casaray-payload/1", tool: "backup_check.html " + VERSION, created_utc: ts(nowSec),
+      source: { backup_date: m.date, ha_version: m.ha, type: m.type, copy: "not encrypted", file_sha256: rep.sha256 },
+      roots: ["custom_components", "www/community"],
+      dirs: [...dirs].sort(),
+      files: files.map((f) => ({ path: f.path, size: f.data.length, sha256: new Sha256().update(f.data).hex(),
+                                 mode: (f.mode & 0o111) ? "0755" : "0644" })),
+    };
+    const parts = [];
+    const mbytes = enc.encode(JSON.stringify(manifest, null, 1) + "\n");
+    pushEntry(parts, "casaray_payload_manifest.json", mbytes, 0o644, nowSec, "0");
+    for (const d of manifest.dirs) pushEntry(parts, d + "/", new Uint8Array(0), 0o755, nowSec, "5");
+    for (const f of files) pushEntry(parts, f.path, f.data, (f.mode & 0o111) ? 0o755 : 0o644, Math.floor(f.mtime) || nowSec, "0");
+    parts.push(new Uint8Array(1024));
+    return { parts, manifest };
+  }
+
+  root.BackupCheck = { VERSION, Sha256, analyse, summary, buildPayload, walkTar, Reader };
+})(globalThis);
+</script>
+
+<script id="ui">
+"use strict";
+(function () {
+  const $ = (id) => document.getElementById(id);
+  let report = null;
+  $("file").addEventListener("change", () => {
+    $("run").disabled = !$("file").files.length;
+    $("result").hidden = true;
+    $("status").textContent = "";
+  });
+  $("run").addEventListener("click", async () => {
+    const f = $("file").files[0];
+    if (!f) return;
+    $("run").disabled = true;
+    $("result").hidden = true;
+    $("prog").hidden = false;
+    $("prog").value = 0;
+    $("status").textContent = "Reading " + (f.size / 1048576).toFixed(0) + " MB. Large backups take a few minutes; keep this tab open.";
+    report = await BackupCheck.analyse(f, (done, total) => { $("prog").value = total ? done / total : 0; });
+    $("prog").value = 1;
+    render(report);
+    $("run").disabled = false;
+  });
+  function row(label, value, cls) {
+    const tr = document.createElement("tr");
+    const th = document.createElement("th"); th.textContent = label;
+    const td = document.createElement("td"); td.textContent = value;
+    if (cls) td.className = cls;
+    tr.append(th, td);
+    return tr;
+  }
+  function render(rep) {
+    const v = rep.verdict, t = $("facts");
+    t.replaceChildren();
+    t.append(row("Complete", v.complete ? "Yes" : "No: " + v.completeWhy.join("; "), v.complete ? "ok" : "bad"));
+    const encClass = v.encryption === "encrypted" ? "ok" : v.encryption === "not encrypted" ? "warn" : "bad";
+    t.append(row("Encryption", v.encryption + (v.encryptionWhy ? ". " + v.encryptionWhy : ""), encClass));
+    if (v.encryption === "not encrypted") {
+      t.append(row("Handle with care", "This copy holds every password, token and key of the Home Assistant install in plain form. Keep it on this computer only: not in a synced folder (OneDrive, iCloud, Dropbox, Google Drive), not in email or chat.", "warn"));
+    }
+    t.append(row("Size", rep.fileSize + " bytes"));
+    t.append(row("SHA-256", rep.sha256 || "not computed (file not read to the end)"));
+    if (rep.meta) t.append(row("Backup", rep.meta.date + ", " + rep.meta.type + ", Home Assistant " + (rep.meta.ha || "-")));
+    if (rep.ha) {
+      const cc = Object.keys(rep.ha.cc).sort();
+      t.append(row("custom_components", cc.length ? cc.length + ": " + cc.join(", ") : "none",
+                   rep.ha.cc.hacs ? "ok" : "bad"));
+      const co = Object.keys(rep.ha.community).sort();
+      t.append(row("www/community", co.length ? co.length + ": " + co.join(", ") : "none", co.length ? "ok" : "bad"));
+    }
+    $("summary").value = BackupCheck.summary(rep);
+    $("payloadBox").hidden = !v.payloadOk;
+    $("saveStatus").textContent = "";
+    $("result").hidden = false;
+    $("status").textContent = "Done. Nothing was uploaded.";
+  }
+  $("copy").addEventListener("click", async () => {
+    $("summary").select();
+    try { await navigator.clipboard.writeText($("summary").value); $("status").textContent = "Summary copied."; }
+    catch (e) { document.execCommand("copy"); $("status").textContent = "Summary selected; press Ctrl+C or Cmd+C if it did not copy."; }
+  });
+  $("save").addEventListener("click", () => {
+    const { parts, manifest } = BackupCheck.buildPayload(report, Math.floor(Date.now() / 1000));
+    const blob = new Blob(parts, { type: "application/x-tar" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "casaray_payload.tar";
+    document.body.append(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+    $("saveStatus").textContent = "Saved casaray_payload.tar: " + manifest.files.length + " files, " +
+      (blob.size / 1048576).toFixed(1) + " MB.";
+  });
+})();
+</script>
+</body>
+</html>
