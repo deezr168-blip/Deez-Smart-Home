@@ -63,7 +63,7 @@ because they decide whether the theme can be loaded without losing anything.
 | # | Screen | Changes anything? | Status 01/11/26 |
 |---|---|---|---|
 | A | Settings → Dashboards: list, default, `/casaray-v3` free?, V2 present? Its theme and resource checks moved to E1 | no | given; results not yet reported. Needed before C |
-| B | Settings → System → Backups: confirm the pre-V3 backup completed, note its locations, then download it to a place outside the Green | no (download only) | **completed and downloaded outside Home Assistant** (both confirmed by Ray). Second off-laptop copy and size match not confirmed. Locations and contents not reported |
+| B | Settings → System → Backups: confirm the pre-V3 backup completed, note its locations, then download it to a place outside the Green | no (download only) | **completed and downloaded outside Home Assistant** (both confirmed by Ray). Second off-laptop copy and size match not confirmed. Locations and contents not reported. **The laptop copy may be decrypted**: for an encrypted backup, the UI saves a decrypted copy when the stored key matches (frontend 20260826.7). Whether this copy is encrypted is unchecked; `scripts/recovery/backup_check.html` on `recovery/phase0-diagnostics` reads it locally |
 | E1 | Read-only: `ls -laR /config/themes`. The Profile theme list and the Resources list are already known from earlier observations (see the live-state table) | no | output not received. The listing is repeated in E3's first check |
 | E2 | Studio Code Server terminal: fetch the pinned theme, check its sha256, place it as `/config/themes/casaray_v3.yaml`, then check it in place and run `ha core check`. Exact steps below | one new file, inert until E3 | **file uploaded by hand** (Ray, fallback path). Location confirmed by Ray's screenshot. `ha core check` passed afterwards (Ray). **Hash not received, so not complete** |
 | E3 | Hash gate, then a Profile look, then Developer tools → Actions → `frontend.reload_themes`, then a Profile look. Exact steps below | theme reload; no restart | a reload was instructed; completion unconfirmed |
@@ -397,6 +397,11 @@ On 01/11/26 the pre-V3 backup was taken after the
 - **Ray reports it completed (01/11/26) and downloaded outside Home Assistant (02/11/26).**
 - Still open: a second copy off the laptop, and a check that the downloaded file's size
   matches the size Home Assistant shows. Its locations and contents have not been reported.
+- **The laptop copy may hold every credential in plain form.** For an encrypted backup, Home Assistant's Download
+  saves a decrypted copy when the stored key matches, with no prompt (frontend 20260826.7,
+  `backup/helper/download_backup.ts`). Keep that copy on the laptop's own disk, not in a synced folder.
+  `scripts/recovery/backup_check.html` (recovery branch) reports whether the copy is encrypted and complete,
+  locally in the browser.
 - These items do not block E2: E2 adds one inert file that one command removes. They stay
   open in the deployment record.
 
