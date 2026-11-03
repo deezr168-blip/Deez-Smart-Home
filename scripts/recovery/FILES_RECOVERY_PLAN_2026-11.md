@@ -230,8 +230,8 @@ The tool is `scripts/recovery/restore_files.py` (section 9).
 | Tool | sha256 | Pinned link | Tests, 03/11/26 |
 |---|---|---|---|
 | `files_survey.py` | `956183884c9e19812a250acbd78a6e0229ec74b1efff1129754bb8fd6fe5660e` | https://raw.githubusercontent.com/deezr168-blip/Deez-Smart-Home/b1eab5724a469116e6caeab85085c933fb71b60f/scripts/recovery/files_survey.py | `tests/test_files_survey.py`: 54 passed |
-| `backup_check.html` | `f59c7716fbf02618d2511a8ae2817341bf9a8e120dff8acd68cd3a666e6d2c36` | (stamped after commit) | `tests/test_backup_check.py`: 64 passed, in Node and in real headless Chromium |
-| `restore_files.py` | `cb6b9cbb5884121a45040ebde7449384ea690198014e42e2e7ef7fb17f21a6be` | (stamped after commit) | `tests/test_restore_files.py`: 69 passed |
+| `backup_check.html` | `f59c7716fbf02618d2511a8ae2817341bf9a8e120dff8acd68cd3a666e6d2c36` | https://raw.githubusercontent.com/deezr168-blip/Deez-Smart-Home/baf942e2d12286cc6c03a2213ea129132c59d196/scripts/recovery/backup_check.html | `tests/test_backup_check.py`: 64 passed, in Node and in real headless Chromium |
+| `restore_files.py` | `cb6b9cbb5884121a45040ebde7449384ea690198014e42e2e7ef7fb17f21a6be` | https://raw.githubusercontent.com/deezr168-blip/Deez-Smart-Home/baf942e2d12286cc6c03a2213ea129132c59d196/scripts/recovery/restore_files.py | `tests/test_restore_files.py`: 69 passed |
 
 **What the tests establish:**
 
