@@ -1,6 +1,7 @@
 # CasaRay V3 Preview — deployment runbook
 
-**Status: NOT DEPLOYED** (02/11/26). Ray has repaired `configuration.yaml`.
+**Status: NOT DEPLOYED** (02/11/26). Ray has repaired `configuration.yaml` and reports the preview
+imported. It counts as deployed only after F verifies it.
 
 - The pre-V3 backup has completed and has been downloaded outside Home Assistant (both
   confirmed by Ray).
@@ -12,7 +13,12 @@
   the message or in the session's upload folders.
 - A theme reload has been instructed; whether it ran is unconfirmed. Whether
   `CasaRay V3` is loaded is unknown.
-- The dashboard has not been created.
+- **The dashboard:** Ray reports `CasaRay V3 Preview` imported at `/casaray-v3`, with 46
+  views (02/11/26). That matches the candidate's 46. Claude has not seen it, and F has not been run.
+- **Front-end resources are absent.** Ray reports `/config/custom_components` (HACS included) and
+  `/config/www/community` missing (02/11/26), so the carried and `v2-*` views stay degraded as
+  described above. Their recovery is a separate track: `scripts/recovery/FILES_RECOVERY_PLAN_2026-11.md`
+  on `recovery/phase0-diagnostics`.
 Live state and the restart answer are in the two sections after the browser-only path.
 
 Ray approved deploying V3 as a separate preview beside V2
@@ -57,12 +63,12 @@ because they decide whether the theme can be loaded without losing anything.
 | # | Screen | Changes anything? | Status 01/11/26 |
 |---|---|---|---|
 | A | Settings → Dashboards: list, default, `/casaray-v3` free?, V2 present? Its theme and resource checks moved to E1 | no | given; results not yet reported. Needed before C |
-| B | Settings → System → Backups: confirm `config-repaired-pre-v3` completed, note its locations, then download it to a place outside the Green | no (download only) | **completed and downloaded outside Home Assistant** (both confirmed by Ray). Second off-laptop copy and size match not confirmed. Locations and contents not reported |
+| B | Settings → System → Backups: confirm the pre-V3 backup completed, note its locations, then download it to a place outside the Green | no (download only) | **completed and downloaded outside Home Assistant** (both confirmed by Ray). Second off-laptop copy and size match not confirmed. Locations and contents not reported |
 | E1 | Read-only: `ls -laR /config/themes`. The Profile theme list and the Resources list are already known from earlier observations (see the live-state table) | no | output not received. The listing is repeated in E3's first check |
 | E2 | Studio Code Server terminal: fetch the pinned theme, check its sha256, place it as `/config/themes/casaray_v3.yaml`, then check it in place and run `ha core check`. Exact steps below | one new file, inert until E3 | **file uploaded by hand** (Ray, fallback path). Location confirmed by Ray's screenshot. `ha core check` passed afterwards (Ray). **Hash not received, so not complete** |
 | E3 | Hash gate, then a Profile look, then Developer tools → Actions → `frontend.reload_themes`, then a Profile look. Exact steps below | theme reload; no restart | a reload was instructed; completion unconfirmed |
-| C | Settings → Dashboards → Add dashboard → from scratch: `CasaRay V3 Preview`, URL `casaray-v3`, not default | adds one dashboard | not started |
-| D | open it → Edit → Raw configuration editor → replace all with the pinned dashboard file → Save | that dashboard only | not started |
+| C | Settings → Dashboards → Add dashboard → from scratch: `CasaRay V3 Preview`, URL `casaray-v3`, not default | adds one dashboard | **done** (Ray, 02/11/26); default not reported |
+| D | open it → Edit → Raw configuration editor → replace all with the pinned dashboard file → Save | that dashboard only | **done**, 46 views (Ray, 02/11/26); readback hash not checked |
 | F | verify: load, rail and More boards, each "Classic V2 view" button, carried pages, missing-card or template errors; protected tiles looked at, not tapped | no | not started |
 
 The native views work without the theme, in the default look. The carried and
@@ -82,7 +88,7 @@ report.
 | `/config/themes/` | exists. What it contains is checked at E1 |
 | `ha core check` | passed twice |
 | Core | **not restarted**. Version **2026.9.2**, from `ha core info` earlier. Upstream, that release pins frontend `20260826.7` |
-| Backup `config-repaired-pre-v3` | **completed**, and **downloaded outside Home Assistant** (both confirmed by Ray). Second copy off the laptop and size match **not confirmed** |
+| Pre-V3 backup (taken 01/11/26 after the repair) | **completed**, and **downloaded outside Home Assistant** (both confirmed by Ray). Second copy off the laptop and size match **not confirmed** |
 | Profile → Theme list | earlier observation (Ray): **no custom themes**, only Home Assistant's own |
 | Settings → Dashboards → ⋮ → Resources | earlier observation (Ray): **empty**. So `card-mod`, `webrtc-camera` and every other front-end resource are not registered |
 | Theme file `/config/themes/casaray_v3.yaml` | uploaded by hand 02/11/26 (Ray). Location confirmed by Ray's screenshot (not seen by Claude). `ha core check` passed after the upload (Ray). **sha256 not yet received** |
@@ -385,7 +391,7 @@ database). Wait until it shows as completed, then **download** it to the
 laptop, separately from the Cloud copy. Record only its name, date and size
 here, never its contents or the encryption key.
 
-On 01/11/26 the backup is `config-repaired-pre-v3`, taken after the
+On 01/11/26 the pre-V3 backup was taken after the
 `configuration.yaml` repair.
 
 - **Ray reports it completed (01/11/26) and downloaded outside Home Assistant (02/11/26).**
@@ -488,8 +494,12 @@ before sending.
 | Source commit | |
 | Readback canonical-JSON sha256 matches candidate | |
 | Theme installed (`CasaRay V3`) | file uploaded by hand 02/11/26 (Ray); `ha core check` passed (Ray). sha256 not yet verified; load (listed in Profile) not yet confirmed |
-| Backup (name, date, size; downloaded to laptop) | `config-repaired-pre-v3`: completed 01/11/26 and downloaded outside Home Assistant 02/11/26 (Ray). Second off-laptop copy, size match, size and locations not yet confirmed |
+| Backup (date, size; downloaded to laptop) | the pre-V3 backup: completed 01/11/26 and downloaded outside Home Assistant 02/11/26 (Ray). Second off-laptop copy, size match, size and locations not yet confirmed |
 | Default dashboard unchanged | |
 | V2 status before / after | |
 | Defects found and fixed | |
 | Device checks still outstanding | wall iPad and iPhone rendering, live entity availability, camera streams |
+
+**Record note (03/11/26).** Earlier versions of this file named the pre-V3 backup. Backup
+identifiers stay out of the repository (the recovery-triage skill's rule), so the name has been
+removed. Published history still holds it; it is not a secret.
