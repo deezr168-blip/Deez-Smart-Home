@@ -6,7 +6,10 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
 <title>Backup copy check</title>
 <!--
-  CasaRay recovery: check a Home Assistant backup copy on the laptop, offline.  v1.0, 03/11/2026.
+  CasaRay recovery: check a Home Assistant backup copy offline, in the browser.  v1.1, 06/11/2026.
+  v1.1: works from a hosted link too (on an iPhone, in Safari on iOS 16.4 or later). Inside another
+  site's frame the save button is replaced by a note, because such frames block downloads. It refuses
+  to start in a browser without DecompressionStream, and the themes follow the host's light/dark setting.
 
   Open this file from disk in a desktop browser. It reads the chosen backup in one pass and
   reports its size and SHA-256, whether the archive is complete, whether the copy is
@@ -21,37 +24,54 @@
   Tests: scripts/recovery/tests/test_backup_check.py (Node and real Chromium).
 -->
 <style>
+/* One column of cards, summary before detail. System fonts only: this page may load nothing. */
 :root {
-  --bg: #f6f7f9; --card: #ffffff; --text: #16191d; --dim: #59616b; --line: #d9dde3;
-  --ok: #19713f; --warn: #8a5a00; --bad: #b3261e; --accent: #1f5fbf; --code: #eef1f5;
+  --bg: #f4f6f8; --card: #ffffff; --text: #15191d; --dim: #56606b; --line: #d6dbe1;
+  --accent: #1f5fbf; --code: #edf0f4;
+  --ok: #19713f; --warn: #8a5a00; --bad: #b3261e;
+  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
-  :root { --bg: #0d1114; --card: #161b1f; --text: #e8ebee; --dim: #a3abb5; --line: #2a3138;
-          --ok: #5fd08b; --warn: #f0b44c; --bad: #ff8a80; --accent: #8ab4ff; --code: #1d2329; }
+  :root:not([data-theme="light"]) {
+    --bg: #0d1114; --card: #161b1f; --text: #e8ebee; --dim: #a3abb5; --line: #2a3138;
+    --accent: #8ab4ff; --code: #1d2329; --ok: #5fd08b; --warn: #f0b44c; --bad: #ff8a80;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1114; --card: #161b1f; --text: #e8ebee; --dim: #a3abb5; --line: #2a3138;
+  --accent: #8ab4ff; --code: #1d2329; --ok: #5fd08b; --warn: #f0b44c; --bad: #ff8a80;
+  color-scheme: dark;
 }
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--text);
-       font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.5 var(--font-body); }
 main { max-width: 860px; margin: 0 auto; padding: 24px 16px 48px; }
+h1, h2 { text-wrap: balance; }
 h1 { font-size: 1.6rem; margin: 0 0 8px; }
 h2 { font-size: 1.2rem; margin: 28px 0 8px; }
-p { margin: 8px 0; }
+p { margin: 8px 0; max-width: 65ch; }
+ul.reports { margin: 8px 0 0; padding-left: 20px; color: var(--dim); }
 .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin: 16px 0; }
 .dim { color: var(--dim); }
 label.pick { display: block; font-weight: 600; margin-bottom: 8px; }
-input[type=file] { max-width: 100%; }
+input[type=file] { max-width: 100%; font: inherit; }
 button { font: inherit; padding: 10px 16px; border-radius: 8px; border: 1px solid var(--accent);
          background: var(--accent); color: var(--card); cursor: pointer; margin: 8px 8px 0 0; }
 button.secondary { background: transparent; color: var(--accent); }
 button:disabled { opacity: .45; cursor: not-allowed; }
+button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 progress { width: 100%; height: 12px; margin-top: 12px; }
-table { width: 100%; border-collapse: collapse; font-size: .95rem; }
-th, td { text-align: left; vertical-align: top; padding: 6px 8px; border-top: 1px solid var(--line); }
+table { width: 100%; border-collapse: collapse; font-size: .95rem; table-layout: fixed; }
+th, td { text-align: left; vertical-align: top; padding: 6px 8px; border-top: 1px solid var(--line);
+         overflow-wrap: anywhere; }
+td { font-variant-numeric: tabular-nums; }
 th { width: 34%; color: var(--dim); font-weight: 600; }
 .ok { color: var(--ok); font-weight: 600; }
 .warn { color: var(--warn); font-weight: 600; }
 .bad { color: var(--bad); font-weight: 600; }
-textarea { width: 100%; min-height: 260px; font: 13px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+textarea { width: 100%; min-height: 260px; font: 13px/1.45 var(--font-mono);
            background: var(--code); color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
 code { background: var(--code); padding: 1px 5px; border-radius: 4px; }
 </style>
@@ -59,15 +79,21 @@ code { background: var(--code); padding: 1px 5px; border-radius: 4px; }
 <body>
 <main>
   <h1>Backup copy check</h1>
-  <p>For a Home Assistant backup saved on this computer. <strong>It runs only in this browser tab.</strong>
-     The file is read from your disk and is never uploaded: this page is not allowed to make any network request.</p>
+  <p>For a Home Assistant backup saved on this device. <strong>It runs only in this browser tab.</strong>
+     The file is read from your storage and is never uploaded: this page is not allowed to make any network request.</p>
 
   <div class="card">
     <label class="pick" for="file">1. Choose the downloaded backup (<code>.tar</code>)</label>
-    <input type="file" id="file" accept=".tar,application/x-tar">
+    <input type="file" id="file">
     <div><button id="run" disabled>2. Check it</button></div>
     <progress id="prog" max="1" value="0" hidden></progress>
     <p id="status" class="dim" role="status" aria-live="polite"></p>
+    <ul class="reports">
+      <li>Whether the copy is complete, including every inner archive's checksum</li>
+      <li>Whether the copy is encrypted, read from the file itself</li>
+      <li>For a readable copy: the custom integrations and <code>www/community</code> folders it holds</li>
+      <li>Its size and SHA-256, to compare with the Green's own file</li>
+    </ul>
   </div>
 
   <section id="result" hidden>
@@ -86,6 +112,9 @@ code { background: var(--code); padding: 1px 5px; border-radius: 4px; }
          Nothing else from the backup is included.</p>
       <button id="save">Save casaray_payload.tar</button>
       <p id="saveStatus" class="dim" role="status"></p>
+      <p id="saveBlocked" class="warn" hidden>Saving is not possible in this view: the page is shown inside
+         another site's frame, which blocks downloads. To save this file, open backup_check.html from disk
+         on a computer. The check above is complete either way.</p>
     </div>
   </section>
 </main>
@@ -93,7 +122,7 @@ code { background: var(--code); padding: 1px 5px; border-radius: 4px; }
 <script id="core">
 "use strict";
 (function (root) {
-  const VERSION = "1.0";
+  const VERSION = "1.1";
   const enc = new TextEncoder();
   const dec = new TextDecoder("utf-8", { fatal: false });
   const PAYLOAD_CAP = 768 * 1024 * 1024;
@@ -718,14 +747,22 @@ code { background: var(--code); padding: 1px 5px; border-radius: 4px; }
 (function () {
   const $ = (id) => document.getElementById(id);
   let report = null;
+  let framed = true;
+  try { framed = window.self !== window.top; } catch (e) { framed = true; }
+  const supported = typeof DecompressionStream === "function" && typeof ReadableStream === "function" &&
+                    typeof Blob === "function" && typeof Blob.prototype.stream === "function";
+  if (!supported) {
+    $("status").textContent = "This browser cannot run the check: it needs a current desktop browser, or Safari on iOS 16.4 or later.";
+    $("status").className = "bad";
+  }
   $("file").addEventListener("change", () => {
-    $("run").disabled = !$("file").files.length;
+    $("run").disabled = !supported || !$("file").files.length;
     $("result").hidden = true;
-    $("status").textContent = "";
+    if (supported) $("status").textContent = "";
   });
   $("run").addEventListener("click", async () => {
     const f = $("file").files[0];
-    if (!f) return;
+    if (!f || !supported) return;
     $("run").disabled = true;
     $("result").hidden = true;
     $("prog").hidden = false;
@@ -751,20 +788,22 @@ code { background: var(--code); padding: 1px 5px; border-radius: 4px; }
     const encClass = v.encryption === "encrypted" ? "ok" : v.encryption === "not encrypted" ? "warn" : "bad";
     t.append(row("Encryption", v.encryption + (v.encryptionWhy ? ". " + v.encryptionWhy : ""), encClass));
     if (v.encryption === "not encrypted") {
-      t.append(row("Handle with care", "This copy holds every password, token and key of the Home Assistant install in plain form. Keep it on this computer only: not in a synced folder (OneDrive, iCloud, Dropbox, Google Drive), not in email or chat.", "warn"));
+      t.append(row("Handle with care", "This copy holds every password, token and key of the Home Assistant install in plain form. Keep it on this device only: not in a synced folder (iCloud Drive, OneDrive, Dropbox, Google Drive), not in email, chat or AirDrop.", "warn"));
     }
     t.append(row("Size", rep.fileSize + " bytes"));
     t.append(row("SHA-256", rep.sha256 || "not computed (file not read to the end)"));
     if (rep.meta) t.append(row("Backup", rep.meta.date + ", " + rep.meta.type + ", Home Assistant " + (rep.meta.ha || "-")));
     if (rep.ha) {
       const cc = Object.keys(rep.ha.cc).sort();
-      t.append(row("custom_components", cc.length ? cc.length + ": " + cc.join(", ") : "none",
+      t.append(row("Custom integrations", cc.length ? cc.length + ": " + cc.join(", ") : "none",
                    rep.ha.cc.hacs ? "ok" : "bad"));
       const co = Object.keys(rep.ha.community).sort();
-      t.append(row("www/community", co.length ? co.length + ": " + co.join(", ") : "none", co.length ? "ok" : "bad"));
+      t.append(row("Community folders", co.length ? co.length + ": " + co.join(", ") : "none", co.length ? "ok" : "bad"));
     }
     $("summary").value = BackupCheck.summary(rep);
     $("payloadBox").hidden = !v.payloadOk;
+    $("save").hidden = framed;
+    $("saveBlocked").hidden = !framed;
     $("saveStatus").textContent = "";
     $("result").hidden = false;
     $("status").textContent = "Done. Nothing was uploaded.";

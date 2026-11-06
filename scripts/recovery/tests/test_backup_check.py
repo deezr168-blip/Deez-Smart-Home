@@ -20,8 +20,8 @@ config entry; none may reach the summary or the payload.
 
 What this does NOT establish: behaviour on a real Home Assistant backup, on
 SecureTar-encrypted data, on browsers other than this Chromium build, or on
-files larger than these fixtures. Needs Node and Playwright; prints SKIP
-without them.
+files larger than these fixtures. Phone width is Chromium's emulation, not an
+iPhone. Needs Node and Playwright; prints SKIP without them.
 """
 import gzip
 import hashlib
@@ -247,9 +247,47 @@ const [page_path, plain, enc, saveTo] = process.argv.slice(2);
   await wait("encrypted.tar");
   const summaryEnc = await page.inputValue("#summary");
   const payloadShownEnc = await page.isVisible("#payloadBox");
+
+  // Inside another page's frame (as on a hosted link): no save button, a note instead.
+  const fs = require("fs"), path = require("path");
+  const wrapper = path.join(path.dirname(saveTo), "framed.html");
+  fs.writeFileSync(wrapper, '<!DOCTYPE html><html><body><iframe id="f" src="file://' + page_path +
+                   '" style="width:900px;height:1400px"></iframe></body></html>');
+  const fpage = await ctx.newPage();
+  await fpage.goto("file://" + wrapper);
+  await fpage.waitForTimeout(500);
+  const frame = fpage.frames().find((f) => f.url().endsWith("backup_check.html"));
+  await frame.setInputFiles("#file", plain);
+  await frame.click("#run");
+  await frame.waitForFunction(() => document.getElementById("summary").value.includes("plain.tar"), null,
+                              { timeout: 120000 });
+  const framedSaveVisible = await frame.isVisible("#save");
+  const framedNoteVisible = await frame.isVisible("#saveBlocked");
+
+  // iPhone width: results must not make the page scroll sideways.
+  const phone = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, isMobile: true,
+                                           hasTouch: true });
+  const ppage = await phone.newPage();
+  await ppage.goto("file://" + page_path);
+  await ppage.setInputFiles("#file", plain);
+  await ppage.click("#run");
+  await ppage.waitForFunction(() => document.getElementById("summary").value.includes("plain.tar"), null,
+                              { timeout: 120000 });
+  const phoneOverflow = await ppage.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+
+  // A browser without DecompressionStream: the page says so and keeps the button disabled.
+  const old = await browser.newContext();
+  await old.addInitScript(() => { delete window.DecompressionStream; });
+  const opage = await old.newPage();
+  await opage.goto("file://" + page_path);
+  await opage.setInputFiles("#file", plain);
+  const oldStatus = await opage.textContent("#status");
+  const oldDisabled = await opage.isDisabled("#run");
+
   await browser.close();
   process.stdout.write(JSON.stringify({ summaryPlain, payloadShown, careShown, summaryEnc, payloadShownEnc,
-                                        requests, errors, download: download.suggestedFilename() }));
+                                        requests, errors, download: download.suggestedFilename(),
+                                        framedSaveVisible, framedNoteVisible, phoneOverflow, oldStatus, oldDisabled }));
 })().catch((e) => { console.error(String(e && e.stack || e)); process.exit(1); });
 """
 
@@ -360,6 +398,12 @@ def main():
               % r.get("requests"))
         check(not r.get("errors"), "Chromium: no console or page errors %s" % r.get("errors"))
         check(r.get("download") == "casaray_payload.tar", "Chromium: download named casaray_payload.tar")
+        check(r.get("framedNoteVisible") and not r.get("framedSaveVisible"),
+              "Chromium, inside a frame: save button replaced by the note (%s, %s)"
+              % (r.get("framedSaveVisible"), r.get("framedNoteVisible")))
+        check(r.get("phoneOverflow", 99) <= 0, "Chromium at 390 px: no sideways scroll (%s px)" % r.get("phoneOverflow"))
+        check("cannot run the check" in (r.get("oldStatus") or "") and r.get("oldDisabled"),
+              "browser without DecompressionStream: says so, button disabled")
         if os.path.exists(saved):
             verify_payload(saved, "Chromium payload")
         else:
@@ -368,6 +412,8 @@ def main():
         with open(PAGE) as handle:
             page = handle.read()
         check("default-src 'none'" in page, "page carries a Content-Security-Policy that forbids network access")
+        check(':root:not([data-theme="light"])' in page and ':root[data-theme="dark"]' in page,
+              "theme tokens follow the guarded light/dark pattern")
         check(not any(w in page for w in ("fetch(", "XMLHttpRequest", "WebSocket", "sendBeacon", "<img src=\"http",
                                           "src=\"http", "href=\"http")), "page source has no network call")
     finally:
