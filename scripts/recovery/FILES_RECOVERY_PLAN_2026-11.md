@@ -236,7 +236,7 @@ The tool is `scripts/recovery/restore_files.py` (section 9).
 | Tool | sha256 | Pinned link | Tests, 03/11/26 |
 |---|---|---|---|
 | `files_survey.py` | `956183884c9e19812a250acbd78a6e0229ec74b1efff1129754bb8fd6fe5660e` | https://raw.githubusercontent.com/deezr168-blip/Deez-Smart-Home/b1eab5724a469116e6caeab85085c933fb71b60f/scripts/recovery/files_survey.py | `tests/test_files_survey.py`: 54 passed |
-| `backup_check.html` v1.1 | `4c6ecec66dd4fc341f1143f88c693f62e5097d1ef9c3e6fb4dc9640d0baef79c` | (stamped after commit) | `tests/test_backup_check.py`: 68 passed, 06/11/26, in Node and real headless Chromium, including inside a frame, at 390 px width (emulation, not an iPhone) and in a browser without `DecompressionStream`. v1.0 (`f59c7716…`) was 64 passed |
+| `backup_check.html` v1.1 | `4c6ecec66dd4fc341f1143f88c693f62e5097d1ef9c3e6fb4dc9640d0baef79c` | https://raw.githubusercontent.com/deezr168-blip/Deez-Smart-Home/ee750df3b003b1ff4438c6f3d505aa07218273d7/scripts/recovery/backup_check.html | `tests/test_backup_check.py`: 68 passed, 06/11/26, in Node and real headless Chromium, including inside a frame, at 390 px width (emulation, not an iPhone) and in a browser without `DecompressionStream`. v1.0 (`f59c7716…`) was 64 passed |
 | `restore_files.py` | `cb6b9cbb5884121a45040ebde7449384ea690198014e42e2e7ef7fb17f21a6be` | https://raw.githubusercontent.com/deezr168-blip/Deez-Smart-Home/baf942e2d12286cc6c03a2213ea129132c59d196/scripts/recovery/restore_files.py | `tests/test_restore_files.py`: 69 passed |
 
 **What the tests establish:**
