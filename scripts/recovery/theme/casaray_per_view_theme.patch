@@ -1,0 +1,264 @@
+From de69c76fecf5490c0fe151f4c451f35af7debfcf Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Fri, 30 Oct 2026 13:43:26 +0000
+Subject: [PATCH] ui(casaray): apply the CasaRay theme per view
+
+Frontend 20260930.3 (Core 2026.10.1) ignores a dashboard-level 'theme:'.
+It applies only a view's own 'theme:' (hui-root passes
+.theme=${view.theme} to hui-view-container, and LovelaceConfig has no
+theme field). So all 28 views rendered in the viewer's profile theme.
+
+Adds 'theme: CasaRay' to every view, the 7 subviews included, plus a
+comment on the now-documentary top-level key. Purely additive: with the
+28 keys removed, the parsed dashboard is identical to ha-deploy 18a4e5d.
+No card, entity, path or link changes. scripts/ha_validate.sh passes.
+Home Assistant 2026.10.1's loader reads 28 views, all themed.
+
+Requires themes/deez_your_name.yaml (defines CasaRay) in /config/themes/.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01Jhp8H3KkTuJ1jpkMuSPTgR
+---
+ dashboards/casaray_v2.yaml | 30 ++++++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
+
+diff --git a/dashboards/casaray_v2.yaml b/dashboards/casaray_v2.yaml
+index 8b541b7..22a1b12 100644
+--- a/dashboards/casaray_v2.yaml
++++ b/dashboards/casaray_v2.yaml
+@@ -36,6 +36,8 @@
+ # /config/themes/ and themes reloaded, or this falls back to the user's
+ # default theme and CasaRay loses its background and glass entirely.
+ # scripts/sync_casaray_to_config.sh syncs both.
++# Frontend 20260930.3 ignores this dashboard-level key: it applies only a view's own
++# theme:, so every view below also sets theme: CasaRay. Kept as documentation.
+ theme: CasaRay
+ 
+ views:
+@@ -71,6 +73,7 @@ views:
+ - type: sections
+   title: CasaRay
+   path: home
++  theme: CasaRay
+   icon: mdi:home-heart
+   max_columns: 2
+   sections:
+@@ -1485,6 +1488,7 @@ views:
+ - type: sections
+   title: Rooms
+   path: rooms
++  theme: CasaRay
+   icon: mdi:floor-plan
+   max_columns: 2
+   # No `badges:` here. Home Assistant renders badges ABOVE the sections, so a
+@@ -1979,6 +1983,7 @@ views:
+ - type: sections
+   title: Living Room
+   path: living-room
++  theme: CasaRay
+   icon: mdi:sofa
+   max_columns: 2
+   # No `badges:` here. Home Assistant renders badges ABOVE the sections, so a
+@@ -2810,6 +2815,7 @@ views:
+ - type: sections
+   title: Kitchen
+   path: kitchen
++  theme: CasaRay
+   icon: mdi:silverware-fork-knife
+   max_columns: 2
+   # No `badges:` here. Home Assistant renders badges ABOVE the sections, so a
+@@ -3358,6 +3364,7 @@ views:
+ - type: sections
+   title: Dining
+   path: dining
++  theme: CasaRay
+   icon: mdi:table-chair
+   max_columns: 2
+   # No `badges:` here. Home Assistant renders badges ABOVE the sections, so a
+@@ -3960,6 +3967,7 @@ views:
+ - type: sections
+   title: Parents Room
+   path: parents-room
++  theme: CasaRay
+   icon: mdi:bed-king
+   max_columns: 2
+   # No `badges:` here. Home Assistant renders badges ABOVE the sections, so a
+@@ -4676,6 +4684,7 @@ views:
+ - type: sections
+   title: Ray Bedroom
+   path: ray-bedroom
++  theme: CasaRay
+   icon: mdi:bed
+   max_columns: 2
+   # No `badges:` here. Home Assistant renders badges ABOVE the sections, so a
+@@ -5369,6 +5378,7 @@ views:
+ - type: sections
+   title: Garage
+   path: garage
++  theme: CasaRay
+   icon: mdi:garage
+   max_columns: 2
+   # No `badges:` here. Home Assistant renders badges ABOVE the sections, so a
+@@ -5802,6 +5812,7 @@ views:
+ - type: sections
+   title: Guest Room
+   path: guest-room
++  theme: CasaRay
+   icon: mdi:bed-empty
+   max_columns: 2
+   # No `badges:` here. Home Assistant renders badges ABOVE the sections, so a
+@@ -6185,6 +6196,7 @@ views:
+ - type: sections
+   title: Lighting
+   path: lighting
++  theme: CasaRay
+   icon: mdi:lightbulb-group
+   max_columns: 2
+   # No `badges:` here. Home Assistant renders badges ABOVE the sections, so a
+@@ -6990,6 +7002,7 @@ views:
+ - type: sections
+   title: Climate
+   path: climate
++  theme: CasaRay
+   icon: mdi:thermometer
+   max_columns: 2
+   # No `badges:` here. Home Assistant renders badges ABOVE the sections, so a
+@@ -7476,6 +7489,7 @@ views:
+ - type: sections
+   title: Energy
+   path: energy
++  theme: CasaRay
+   icon: mdi:lightning-bolt
+   max_columns: 2
+   # No `badges:` here. Home Assistant renders badges ABOVE the sections, so a
+@@ -7989,6 +8003,7 @@ views:
+ - type: sections
+   title: Bills
+   path: bills
++  theme: CasaRay
+   icon: mdi:file-document-outline
+   max_columns: 2
+   # No `badges:` here. Home Assistant renders badges ABOVE the sections, so a
+@@ -8655,6 +8670,7 @@ views:
+ - type: sections
+   title: Bill setup & details
+   path: bills-details
++  theme: CasaRay
+   icon: mdi:file-cog-outline
+   subview: true
+   max_columns: 2
+@@ -9618,6 +9634,7 @@ views:
+ - type: sections
+   title: Security
+   path: security
++  theme: CasaRay
+   icon: mdi:shield-home
+   max_columns: 2
+   # No `badges:` here. Home Assistant renders badges ABOVE the sections, so a
+@@ -10281,6 +10298,7 @@ views:
+ - type: sections
+   title: Cameras
+   path: cameras
++  theme: CasaRay
+   icon: mdi:cctv
+   max_columns: 2
+   # No `badges:` here. Home Assistant renders badges ABOVE the sections, so a
+@@ -10752,6 +10770,7 @@ views:
+ - type: sections
+   title: Front Door
+   path: camera-front-door
++  theme: CasaRay
+   icon: mdi:doorbell-video
+   subview: true
+   max_columns: 1
+@@ -10793,6 +10812,7 @@ views:
+ - type: sections
+   title: North Wall
+   path: camera-north-wall
++  theme: CasaRay
+   icon: mdi:cctv
+   subview: true
+   max_columns: 1
+@@ -10820,6 +10840,7 @@ views:
+ - type: sections
+   title: East Wall
+   path: camera-east-wall
++  theme: CasaRay
+   icon: mdi:cctv
+   subview: true
+   max_columns: 1
+@@ -10847,6 +10868,7 @@ views:
+ - type: sections
+   title: South Wall
+   path: camera-south-wall
++  theme: CasaRay
+   icon: mdi:cctv
+   subview: true
+   max_columns: 1
+@@ -10874,6 +10896,7 @@ views:
+ - type: sections
+   title: Stockroom
+   path: camera-stockroom
++  theme: CasaRay
+   icon: mdi:cctv
+   subview: true
+   max_columns: 1
+@@ -10897,6 +10920,7 @@ views:
+ - type: sections
+   title: Pet Feeder
+   path: camera-pet-feeder
++  theme: CasaRay
+   icon: mdi:paw
+   subview: true
+   max_columns: 1
+@@ -10937,6 +10961,7 @@ views:
+ - type: sections
+   title: People
+   path: people
++  theme: CasaRay
+   icon: mdi:account-group
+   max_columns: 2
+   # No `badges:` here. Home Assistant renders badges ABOVE the sections, so a
+@@ -11430,6 +11455,7 @@ views:
+ - type: sections
+   title: Automations
+   path: automations
++  theme: CasaRay
+   icon: mdi:robot
+   max_columns: 2
+   # No `badges:` here. Home Assistant renders badges ABOVE the sections, so a
+@@ -11788,6 +11814,7 @@ views:
+ - type: sections
+   title: Entertainment
+   path: entertainment
++  theme: CasaRay
+   icon: mdi:television-play
+   max_columns: 2
+   # No `badges:` here. Home Assistant renders badges ABOVE the sections, so a
+@@ -12269,6 +12296,7 @@ views:
+ - type: sections
+   title: House Health
+   path: house-health
++  theme: CasaRay
+   icon: mdi:heart-pulse
+   max_columns: 2
+   # No `badges:` here. Home Assistant renders badges ABOVE the sections, so a
+@@ -12972,6 +13000,7 @@ views:
+ - type: sections
+   title: Network
+   path: network
++  theme: CasaRay
+   icon: mdi:wifi
+   max_columns: 2
+   # No `badges:` here. Home Assistant renders badges ABOVE the sections, so a
+@@ -13518,6 +13547,7 @@ views:
+ - type: sections
+   title: Alerts
+   path: alerts
++  theme: CasaRay
+   icon: mdi:bell-alert
+   max_columns: 2
+   # No `badges:` here. Home Assistant renders badges ABOVE the sections, so a
+-- 
+2.43.0
+
