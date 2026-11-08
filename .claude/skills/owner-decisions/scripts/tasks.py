@@ -307,6 +307,14 @@ def load(root: Path, register: Path | None = None, history: Path | None = None) 
     for r in prow:
         pats = [] if r["Branches"] in (NONE, "") else [x.strip() for x in r["Branches"].split(",") if x.strip()]
         projects.append(Project(r["Key"], pats, r["Shown"], r["Name"]))
+    # How long the owner has been asked is measured from when the task ENTERED
+    # AWAITING_DECISION, never from its last edit: a NOTE must not reset the clock.
+    since = {}
+    for e in events:
+        if e["To"] == "AWAITING_DECISION" and e["Event"] in ("ADDED", "RAISED", "REOPENED", "RESUMED"):
+            since[e["Task"]] = e["Date"]
+    for t in tasks:
+        t["_since"] = since.get(t["ID"], t["Updated"])
     return Store(root, reg_path, hist_path, reg_doc, hist_doc, projects, tasks, events, problems)
 
 
@@ -667,7 +675,7 @@ def lint(store: Store, *, today: str, stale_days: int = 14, verify_commits: bool
         if s.last_date and t["Updated"] != s.last_date:
             rep.err("E12", f"{where}: {tid} Updated {t['Updated']} but its last event is {s.last_date}")
         if t["Status"] == "AWAITING_DECISION":
-            a = age_days(t["Updated"], today)
+            a = age_days(t.get("_since", t["Updated"]), today)
             if a is not None and a >= stale_days:
                 rep.warn("W1", f"{where}: {tid} has waited {a} days for the owner")
         if t["Status"] == "PAUSED":
@@ -951,7 +959,7 @@ def op_complete(store: Store, tid: str, *, source: str, verified_by: str, eviden
 def rank_key(t: dict) -> tuple:
     order = {s: i for i, s in enumerate(RANK_ORDER)}
     return (PRIORITIES.index(t["P"]) if t["P"] in PRIORITIES else 9,
-            order.get(t["Status"], 9), t["Updated"], t["ID"])
+            order.get(t["Status"], 9), t.get("_since") or t["Updated"], t["ID"])
 
 
 def pause_info(store: Store, tid: str) -> dict:
@@ -1120,7 +1128,7 @@ def render_update(u: dict, store: Store, detail: bool = False) -> str:
     for i, t in enumerate(u["ranked"], 1):
         gate = f" [{t['Gate']}]" if t["Gate"] != "none" else ""
         L.append(f"{i:>3}  {t['P']}  {t['ID']}  {t['Status']}{gate}  {t['Task']}")
-        age = age_days(t["Updated"], u["today"])
+        age = age_days(t.get("_since", t["Updated"]) if t["Status"] == "AWAITING_DECISION" else t["Updated"], u["today"])
         if detail:
             L.append(f"          evidence {t['Evidence']}"
                      + (f"   (last change {age}d ago)" if age is not None else ""))
@@ -1138,7 +1146,7 @@ def render_update(u: dict, store: Store, detail: bool = False) -> str:
             if t["Status"] == "BLOCKED":
                 bits.append("blocked: " + (last_blocker(store, t["ID"]) or "not recorded"))
             if age:
-                bits.append(f"changed {age}d ago")
+                bits.append((f"waiting {age}d" if t["Status"] == "AWAITING_DECISION" else f"changed {age}d ago"))
             L += wrap(" · ".join(bits), "          ")
             L += wrap("next: " + shorten(t["Next action"], 230), "          ")
     for t in u["closed"]:
@@ -1203,7 +1211,7 @@ def build_digest(store: Store, today: str, stale_days: int, since: str | None) -
     pend = sorted([t for t in store.tasks if t["Status"] == "AWAITING_DECISION"], key=rank_key)
     items = []
     for t in pend:
-        a = age_days(t["Updated"], today)
+        a = age_days(t.get("_since", t["Updated"]), today)
         items.append({"id": t["ID"], "project": t["Project"], "p": t["P"], "gate": t["Gate"], "task": t["Task"],
                       "proposal": t["Next action"], "home": t["Home"], "age_days": a,
                       "stale": a is not None and a >= stale_days})
@@ -1264,7 +1272,7 @@ def render_handover(store: Store, keys: list[str], today: str, branch: str | Non
     section("IN FLIGHT", sorted([t for t in mine if t["Status"] == "IN_PROGRESS"], key=rank_key),
             lambda t: f"{t['ID']} {t['P']} {t['Task']} — next: {t['Next action']}")
     section("WAITING ON THE OWNER", sorted([t for t in mine if t["Status"] == "AWAITING_DECISION"], key=rank_key),
-            lambda t: f"{t['ID']} {t['P']} {t['Task']} (waiting {age_days(t['Updated'], today)}d)")
+            lambda t: f"{t['ID']} {t['P']} {t['Task']} (waiting {age_days(t.get('_since', t['Updated']), today)}d)")
     section("PAUSED (resume context saved)", sorted([t for t in mine if t["Status"] == "PAUSED"], key=rank_key),
             lambda t: f"{t['ID']} {t['Task']} — {pause_info(store, t['ID']).get('context', '?')}")
     section("BLOCKED", [t for t in mine if t["Status"] == "BLOCKED"],
@@ -2166,6 +2174,12 @@ def selftest() -> int:
         check("N3 lookup of a denied task reports the denial", "DEC-" in o and "DENIED" in o, o)
 
         # ---------------------------------------------------------------- O. digest for the weekly routine
+        rc, oe, e = cli(u, "edit", ids["U3a"], "--next", "Reworded proposal", "--note", "sharpened before asking", today="2026-10-10")
+        rc, oj, e = cli(u, "digest", "--json", "--stale-days", "7", today="2026-10-12")
+        age3a = next((i["age_days"] for i in json.loads(oj)["pending"] if i["id"] == ids["U3a"]), None)
+        check("O0 editing a pending task does not reset how long the owner has waited", age3a == 10, f"age {age3a}, want 10")
+        rc, oo, e = cli(u, "update", "--branch", "casaray-v3-design", today="2026-10-12")
+        check("O0b Update me says 'waiting', measured from when it was raised", "waiting 10d" in oo, oo[:600])
         rc, o, e = cli(u, "digest", "--stale-days", "7", "--since", "2026-10-05", today="2026-10-12")
         check("O1 digest lists every pending decision with its gate and age",
               "Items requiring approval" in o and ids["U15"] in o and "protected" in o and "**stale**" in o, o)
