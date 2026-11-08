@@ -57,3 +57,8 @@ only from what the owner actually answered; no answer means no decision.
 | DEC-044 | 2026-11-08 | TASK-007 | NOTE | APPROVED | APPROVED | — | Next action updated after the owner's blanket approval, 2026-11-08 | — | — | claude |
 | DEC-045 | 2026-11-08 | TASK-015 | NOTE | APPROVED | APPROVED | — | Next action updated after the owner's blanket approval, 2026-11-08 | — | — | claude |
 | DEC-046 | 2026-11-08 | TASK-019 | NOTE | APPROVED | APPROVED | — | Next action updated after the owner's blanket approval, 2026-11-08 | — | — | claude |
+| DEC-047 | 2026-11-08 | TASK-018 | RAISED | OPEN | AWAITING_DECISION | — | Run the read-only review: check the Parents' room AC card and the Climate board against Home's safeguards (V3-007, hardening 2-5, items 9-11). Report findings; change no code, no entity, no doc under design/casaray-v3/. It does not unblock any build. | — | — | claude |
+| DEC-048 | 2026-11-08 | TASK-018 | APPROVED | AWAITING_DECISION | APPROVED | Run the read-only review and report the findings. Changes no code, entity or design document; unblocks no build. | Approval is for the review only | owner replied 'Approve 018' in chat, 2026-11-08 | chat | owner |
+| DEC-049 | 2026-11-08 | TASK-018 | STARTED | APPROVED | IN_PROGRESS | — | — | — | — | claude |
+| DEC-050 | 2026-11-08 | TASK-018 | NOTE | IN_PROGRESS | IN_PROGRESS | — | Review run after the owner approved it (DEC-048); findings recorded here, not filed in DECISIONS.md | — | — | claude |
+| DEC-051 | 2026-11-08 | TASK-025 | ADDED | — | AWAITING_DECISION | gate=none; p=P1 | Home: design/casaray-v3/DECISIONS.md#*HVAC safeguards.* Home has | Read from design/casaray-v3/DECISIONS.md#*HVAC safeguards.* Home has | — | claude |
