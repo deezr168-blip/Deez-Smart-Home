@@ -994,10 +994,11 @@ def build_update(store: Store, branch: str | None, project: str | None, show_all
     paused = sorted([t for t in sel if t["Status"] == "PAUSED"], key=rank_key)
     closed_sel = sorted([t for t in sel if t["Status"] in CLOSED], key=rank_key)
     ranked = [t for t in ranked_all if t["Status"] not in CLOSED]
+    ranked_open = ranked              # the whole list: actions are counted from this, never from a --limit view
     if limit:
         ranked = ranked[:limit]
     return {"today": today, "branch": branch, "projects": keys, "resolved": resolved,
-            "counts": counts, "ranked": ranked, "paused": paused, "closed": closed_sel,
+            "counts": counts, "ranked": ranked, "ranked_all": ranked_open, "paused": paused, "closed": closed_sel,
             "other_projects": other,
             "blockers": [t for t in ranked_all if t["Status"] in ("AWAITING_DECISION", "BLOCKED")],
             "last_change": max([t["Updated"] for t in mine] or [NONE])}
@@ -1043,7 +1044,7 @@ def build_ask(store: Store, ids: list[str] | None, branch: str | None, project: 
 
 def next_actions(u: dict, store: Store) -> list[dict]:
     """Selectable next actions for 'Update me'. Each is {key,label,description,tasks}."""
-    r = u["ranked"]
+    r = u.get("ranked_all", u["ranked"])
     decide = [t for t in r if t["Status"] == "AWAITING_DECISION"]
     work = [t for t in r if t["Status"] in ("IN_PROGRESS", "APPROVED") or
             (t["Status"] == "OPEN" and t["Gate"] == "none")]
@@ -1082,7 +1083,8 @@ def selection_payload(u: dict, store: Store) -> dict:
     qs.append({"question": "What should I take on next? You can pick more than one.",
                "header": "Next action", "multiSelect": True,
                "options": [{"label": a["label"], "description": a["description"]} for a in opts[:4]]})
-    pick = [t for t in u["ranked"] if t["Status"] in ("IN_PROGRESS", "APPROVED", "OPEN", "AWAITING_DECISION")][:4]
+    pick = [t for t in u.get("ranked_all", u["ranked"])
+            if t["Status"] in ("IN_PROGRESS", "APPROVED", "OPEN", "AWAITING_DECISION")][:4]
     if len(pick) >= 2:
         qs.append({"question": "Which of the top-ranked tasks should I start with? You can pick several.",
                    "header": "Tasks", "multiSelect": True,
@@ -1594,7 +1596,7 @@ def main(argv: list[str] | None = None) -> int:
             if args.select:
                 out_json(selection_payload(u, store))
             elif args.json:
-                out_json({**{k: v for k, v in u.items() if k not in ("ranked", "paused", "closed", "blockers")},
+                out_json({**{k: v for k, v in u.items() if k not in ("ranked", "ranked_all", "paused", "closed", "blockers")},
                           "ranked": u["ranked"], "paused": u["paused"], "closed": u["closed"],
                           "blockers": [t["ID"] for t in u["blockers"]],
                           "next_actions": next_actions(u, store), "selection": selection_payload(u, store)})
@@ -2109,6 +2111,9 @@ def selftest() -> int:
         except Exception as ex:      # noqa
             ok = False
         check("L16 --json is valid and complete", ok)
+        rc, ol, e = cli(u, "update", "--branch", "casaray-v3-design", "--limit", "2", today="2026-10-12")
+        check("L16b --limit shortens the list but not the counts the next actions offer",
+              len(re.findall(r"^\s*\d+\s+P\d\s+TASK-", ol, re.M)) == 2 and "Decide (6)" in ol, ol[-500:])
         rc, o9, e = cli(u, "update", "--project", "nope", today="2026-10-12")
         check("L17 an unknown project is refused with the known ones", rc == 1 and "casaray-v3" in e)
         rc, oa, e = cli(u, "update", "--branch", "casaray-v3-design", "--gate", "protected", today="2026-10-12")
