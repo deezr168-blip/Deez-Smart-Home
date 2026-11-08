@@ -180,5 +180,9 @@ row differs from that ref or any task has disappeared.
 The tool refuses to write while the two files already disagree, so one hand edit
 cannot quietly compound.
 
+A cell cannot hold a pipe: `|` is replaced by `/` so a cell can never break the table.
+So a regex alternation written into a task would be silently altered. Describe it in
+words, and put the exact pattern in the diff that will be reviewed.
+
 Both files must be committed to survive the session. A cloud container is
 reclaimed when the session ends; `tasks.py handover` says whether they are saved.

@@ -1006,7 +1006,8 @@ def build_update(store: Store, branch: str | None, project: str | None, show_all
 
 def question_for(t: dict, store: Store) -> dict:
     gated = t["Gate"] != "none"
-    prop = t["Next action"] if len(t["Next action"]) <= 300 else t["Next action"][:297] + "..."
+    prop = re.sub(r"^Proposal(?: \(agent's[^)]*\))?:\s*", "", t["Next action"])    # the question says "Proposal:" itself
+    prop = prop if len(prop) <= 450 else prop[:447] + "..."
     q = (f"{t['ID']} · {t['P']} · {t['Task']}. Proposal: {prop} "
          + (f"[{t['Gate']}-gated: approving covers only this exact action, once.] " if gated else "")
          + "Approve, deny or pause?")
