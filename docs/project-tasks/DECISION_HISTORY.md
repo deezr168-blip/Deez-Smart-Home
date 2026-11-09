@@ -62,3 +62,4 @@ only from what the owner actually answered; no answer means no decision.
 | DEC-049 | 2026-11-08 | TASK-018 | STARTED | APPROVED | IN_PROGRESS | — | — | — | — | claude |
 | DEC-050 | 2026-11-08 | TASK-018 | NOTE | IN_PROGRESS | IN_PROGRESS | — | Review run after the owner approved it (DEC-048); findings recorded here, not filed in DECISIONS.md | — | — | claude |
 | DEC-051 | 2026-11-08 | TASK-025 | ADDED | — | AWAITING_DECISION | gate=none; p=P1 | Home: design/casaray-v3/DECISIONS.md#*HVAC safeguards.* Home has | Read from design/casaray-v3/DECISIONS.md#*HVAC safeguards.* Home has | — | claude |
+| DEC-052 | 2026-11-09 | TASK-023 | NOTE | BLOCKED | BLOCKED | — | Pointer corrected 2026-11-09: the newer recovery record is on recovery/phase0-diagnostics (PR 10), not PR 3's queue of 5 Oct | — | — | claude |
