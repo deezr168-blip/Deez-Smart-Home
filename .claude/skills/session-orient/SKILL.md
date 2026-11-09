@@ -2,9 +2,9 @@
 name: session-orient
 description: Orient at the start of any session in the Deez Smart Home repository, and check scope before committing. Resolves which rule set governs the current branch (CasaRay V2 on ha-deploy, CasaRay V3 design on casaray-v3-design or casaray-v3/agent branches, a recovery branch, or unrecognised), then states where a push may and may not go, which gate to run, which paths are protected, and where the instruction files contradict each other, from one read-only command. Use at the start of every session, when the user says orient, where are we, resume a session, which rules apply, or where do I push, before the first write on a branch not yet checked, and before a commit to confirm nothing changed outside the permitted paths. Not for improving dashboards (improve-system), for faults (recovery-triage) or for finding repeated work (automate). Read-only, never fetches, commits, pushes or edits.
 metadata:
-  version: "0.1.0"
+  version: "0.2.0"
   status: pilot
-  origin: WORKFLOW_AUDIT.md W03 and W06
+  origin: WORKFLOW_AUDIT.md W03 and W06; 0.2.0 adds the TASKS line (owner-decisions)
 ---
 
 # Session orient
@@ -54,6 +54,25 @@ says "carry on", "next" or "keep going" (triggers `improve-system` owns), **run 
 first.** If the rules turn out to be V2, continue with `improve-system`. If they are
 V3 or unsettled, do not follow its push steps; say why and ask.
 
+## Outstanding tasks (owner-decisions)
+
+If `docs/project-tasks/TASK_REGISTER.md` exists the report gains one **TASKS** line:
+how many decisions are awaiting the owner, and how much is in progress, ready,
+blocked or paused, for the project this branch identifies. It is the start-of-session
+half of the handover: the previous session's open questions are in front of you
+before you plan anything.
+
+- It **counts**; it does not rank, ask or record. For the ranked list and the
+  Approve / Deny / Pause questions, run the `owner-decisions` skill ("Update me").
+- It stays read-only. The register is read through that skill's `summary()` with
+  bytecode writing off, and `--selftest` proves nothing in the worktree, the index or
+  the skill directory changes.
+- A missing register prints nothing. An unreadable one prints a warning and does
+  **not** change the exit code; run `tasks.py check`.
+- If the line says the branch **does not identify a project**, say so to the owner
+  and ask which one they mean. Do not guess.
+- The counts are not validated. A damaged register can still be counted.
+
 ## Rules for using the output
 
 - **It is not an approval.** `--approved PATH` records that the owner approved a
@@ -82,6 +101,7 @@ MAY WRITE  design/casaray-v3/**
 MAY PUSH   origin casaray-v3-design
 MUST NOT   any commit, merge, rebase, push or pull request against ha-deploy
 GATES      python3 design/casaray-v3/tools/verify_entities.py ...
+TASKS      casaray-v3, tooling: 18 awaiting your decision · 1 in progress · 2 ready · ...
 CONTRADICTIONS BETWEEN INSTRUCTION FILES
   C1  push target: ...   Settled for this branch: follow the V3 file.
   C5  reading PROJECT_STATE.md: ...   Unsettled: the owner's call.
@@ -107,7 +127,7 @@ which is how the self-test and any "what would apply on X" question are answered
 ## Validation
 
 `python3 .claude/skills/session-orient/scripts/orient.py --selftest` builds a
-throwaway repository and checks 74 behaviours, including the refusals above. It
+throwaway repository and checks 84 behaviours, including the refusals above. It
 needs only Python 3 and git. Last result is in `SKILL_VALIDATION_REPORT.md`.
 
 ## Maintenance

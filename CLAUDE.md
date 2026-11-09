@@ -188,6 +188,53 @@ This adds to the rules around it and relaxes none of them:
   (V3 does not edit the V2 tracking documents). Item 3 reads the same places.
   Records never hold credentials — the no-secrets rule below applies.
 
+## Standing Rule — Owner Decisions and Task Tracking
+
+Outstanding tasks and the owner's decisions live in one place, so a session resumes
+from them instead of asking again. The `owner-decisions` skill
+(`.claude/skills/owner-decisions/`) runs it; this rule binds whether or not the
+skill is loaded. Full rules: its `references/lifecycle.md`.
+
+1. **Where.** `docs/project-tasks/TASK_REGISTER.md` holds the current state of each
+   task (ID, project, priority, status, gate, evidence, decision, next action);
+   `docs/project-tasks/DECISION_HISTORY.md` is the append-only log of every change.
+   It is an **index**: a task that already has a home record (a backlog item,
+   `DECISIONS.md`, an audit, a PR) keeps its detail there and the register points at
+   it. Do not copy detail across and do not start another registry. Facts still go
+   where *Context First* item 9 says; the register tracks the state of the decision.
+2. **"Update me"** means: `python3 .claude/skills/owner-decisions/scripts/tasks.py update`.
+   It names the project the branch identifies, lists what is outstanding ranked by
+   priority, shows blockers and paused context, and offers the next actions as a
+   selection. If the branch identifies no project, ask which; do not guess.
+3. **Asking.** When owner input is genuinely required, make it a task and put it as
+   **Approve / Deny / Pause** (`AskUserQuestion`, from `tasks.py ask`), batched with
+   the rest. Look first (`tasks.py lookup`): a recorded decision is reused, and a
+   denied task is not raised again without new evidence (`reopen`).
+4. **Recording.** Record only what the owner actually answered. No answer is not a
+   decision (*Context First* item 10). The tool refuses an owner decision written by
+   anyone else.
+5. **General approval never bypasses safety.** A `safety`, `external` or `protected`
+   task needs a specific, single-use approval naming the exact action; "approve all"
+   skips it. The register records consent; it grants no authority. The *Do not touch*
+   list, the V3 hard boundaries and `MAINTENANCE.md` still bind whoever carries the
+   action out, and no deploy, restart, device action, purchase, payment, message,
+   upload or share happens on the strength of a register entry.
+6. **Never fabricate completion.** A task is `DONE` only on `VERIFIED` evidence the
+   tool can check, or the owner's word. Work that is deployed but not yet seen on the
+   wall iPad stays `IN_PROGRESS`.
+7. **Keep what was said.** Denied tasks and paused context are never deleted or
+   rewritten; correct a mistake with a later `NOTE` row.
+8. **End of a session.** Run `tasks.py handover` and commit the register and history
+   with the work. A cloud container is reclaimed when the session ends; uncommitted
+   register changes are lost.
+9. **Weekly audit.** The Routine's *Items requiring approval* comes from
+   `tasks.py digest`. It reports and records new needs; it never decides.
+10. **Branch rules still apply.** The register paths are outside
+    `design/casaray-v3/`, so on a V3 branch writing them needs the owner's approval in
+    so many words, unless `DECISION_HISTORY.md` records a standing approval for them.
+    V3 design decisions themselves are still recorded in
+    `design/casaray-v3/DECISIONS.md`; the register tracks their state.
+
 ## Working rules
 
 - Small, controlled batches. One meaningful improvement per batch.

@@ -36,12 +36,23 @@ EXIT CODES
 
 --approved is an assertion by the caller that the owner approved a path. This
 tool cannot verify it, says so in its output, and it never overrides BLOCKED.
+
+OUTSTANDING TASKS (added with the owner-decisions skill)
+
+If docs/project-tasks/TASK_REGISTER.md exists, the report gains one TASKS line: the
+counts for the project this branch identifies. It reads the register through that
+skill's summary() and nothing else. Bytecode writing is switched off while it is
+imported, so the "no write of any kind" promise above still holds. A missing
+register prints nothing; an unreadable one prints a warning and never stops the
+orientation. The ranked list, and the Approve / Deny / Pause questions, are the
+owner-decisions skill's job ("Update me").
 """
 
 from __future__ import annotations
 
 import argparse
 import fnmatch
+import importlib.util
 import json
 import os
 import re
@@ -491,6 +502,36 @@ def conflicts(repo: Path, regime: Regime) -> list[dict]:
     return out
 
 
+TASKS_PY = Path(__file__).resolve().parents[2] / "owner-decisions" / "scripts" / "tasks.py"
+TASK_REGISTER = "docs/project-tasks/TASK_REGISTER.md"
+
+
+def outstanding(repo: Path, branch: str) -> dict | None:
+    """Counts from the owner-decisions register, or None when the repository has none.
+
+    Read-only: the module is imported with bytecode writing off, and summary() only reads.
+    Never raises: a damaged register is reported, not allowed to stop an orientation.
+    """
+    if not (repo / TASK_REGISTER).is_file():
+        return None
+    if not TASKS_PY.is_file():
+        return {"error": "the owner-decisions skill is not installed alongside this one"}
+    keep = sys.dont_write_bytecode
+    sys.dont_write_bytecode = True
+    name = "owner_decisions_tasks"
+    try:
+        spec = importlib.util.spec_from_file_location(name, TASKS_PY)
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules[name] = mod            # dataclasses need the module registered while it loads
+        spec.loader.exec_module(mod)
+        return mod.summary(repo, branch or None)
+    except Exception as e:                 # noqa: BLE001 - see docstring
+        return {"error": f"{type(e).__name__}: {e}"[:200]}
+    finally:
+        sys.modules.pop(name, None)
+        sys.dont_write_bytecode = keep
+
+
 def gather(repo: Path, branch_override: str | None) -> dict:
     rc, cur = git(repo, "branch", "--show-current")
     branch = branch_override if branch_override is not None else cur.strip()
@@ -538,6 +579,7 @@ def gather(repo: Path, branch_override: str | None) -> dict:
         "conflicts": conflicts(repo, regime),
         "drift": drift(repo, regime),
         "device_guard_present": "deny_device_control.py" in settings,
+        "tasks": outstanding(repo, branch),
     }
 
 
@@ -584,6 +626,21 @@ def render(f: dict) -> str:
     L.append("")
     for i, item in enumerate(r["notes"]):
         L.append(("NOTES      " if i == 0 else "           ") + item)
+    tk = f.get("tasks")
+    if tk:
+        L.append("")
+        if tk.get("error"):
+            L.append(f"TASKS      the task register could not be read: {tk['error']}")
+            L.append("           python3 .claude/skills/owner-decisions/scripts/tasks.py check")
+        else:
+            c = tk["counts"]
+            where = (", ".join(tk["projects"]) if tk["resolved"]
+                     else "all projects (this branch does not identify one)")
+            L.append(f"TASKS      {where}: {c['AWAITING_DECISION']} awaiting your decision · "
+                     f"{c['IN_PROGRESS']} in progress · {c['OPEN'] + c['APPROVED']} ready · "
+                     f"{c['BLOCKED']} blocked · {c['PAUSED']} paused")
+            L.append('           Say "Update me" for the ranked list and the Approve / Deny / Pause questions.')
+            L.append("           (counted from the register, not validated: tasks.py check)")
     L.append("")
     L.append("READ       (sizes; tokens are bytes/4, an estimate)")
     for d in f["instruction_files"]:
@@ -844,6 +901,48 @@ def selftest() -> int:
         check("--base=-dash value is refused by the tool's own guard (exit 2)",
               main(["--scope", "--base=--evil"]) == 2)
         check("--base naming no commit is refused (exit 2)", main(["--scope", "--base", "no-such-ref-xyz"]) == 2)
+
+    # 8. the outstanding-tasks line (owner-decisions): present, honest, and read-only
+    with tempfile.TemporaryDirectory() as tmp:
+        repo = Path(tmp) / "r"
+        repo.mkdir()
+        _run(repo, "init", "-q", "-b", "casaray-v3-design")
+        (repo / "CLAUDE.md").write_text("fixture\n")
+        _run(repo, "add", "-A")
+        _run(repo, "commit", "-q", "-m", "base")
+        f0 = gather(repo, None)
+        check("tasks: no register prints no TASKS line", f0["tasks"] is None and "TASKS" not in render(f0))
+
+        def tasks_cli(*a):
+            return subprocess.run([sys.executable, str(TASKS_PY), "--root", str(repo), "--today", "2026-10-12", *a],
+                                  capture_output=True, text=True)
+        tasks_cli("init")
+        for i, (st, pr) in enumerate([("AWAITING_DECISION", "casaray-v3"), ("AWAITING_DECISION", "casaray-v3"),
+                                      ("OPEN", "casaray-v3"), ("AWAITING_DECISION", "casaray-v2")], 1):
+            tasks_cli("add", "--project", pr, "--priority", "P2", "--title", f"fixture task {i}", "--status", st,
+                      "--home", "register", "--evidence-status", "REPORTED", "--source", "fixture", "--next", "n")
+        pyc = TASKS_PY.parent / "__pycache__"
+        pyc_before = pyc.exists()
+        snap, index_snap = _tree_state(repo), (repo / ".git/index").read_bytes()
+        f1 = gather(repo, None)
+        text = render(f1)
+        check("tasks: counts for the project the branch identifies",
+              f1["tasks"]["awaiting"] == 2 and "2 awaiting your decision" in text and "1 ready" in text, text[-700:])
+        check("tasks: the line points at Update me", 'Say "Update me"' in text)
+        check("tasks: another project's tasks are not counted here", "casaray-v2" not in text.split("TASKS")[1].split("READ")[0])
+        f2 = gather(repo, "claude/some-session")
+        check("tasks: a branch that identifies no project says so and counts all",
+              "does not identify one" in render(f2) and f2["tasks"]["awaiting"] == 3)
+        check("tasks: reading the register wrote nothing to the worktree", _tree_state(repo) == snap)
+        check("tasks: and left the git index untouched", (repo / ".git/index").read_bytes() == index_snap)
+        check("tasks: and created no __pycache__ in the skill", pyc.exists() == pyc_before)
+        (repo / TASK_REGISTER).write_text("| not a register\n")
+        f3 = gather(repo, None)
+        check("tasks: an unreadable register is reported, not fatal",
+              "could not be read" in render(f3) and f3["tasks"].get("error"))
+        with contextlib.redirect_stdout(io.StringIO()):
+            got = main(["--repo", str(repo)])
+        check("tasks: an unreadable register does not change the exit code", got == 0, f"got {got}")
 
     ok = all(c for _, c, _ in results)
     for name, cond, detail in results:
