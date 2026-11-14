@@ -21,6 +21,10 @@ imported. It counts as deployed only after F verifies it.
   on `recovery/phase0-diagnostics`.
 Live state and the restart answer are in the two sections after the browser-only path.
 
+**Update approved, not yet applied (14/11/26):** the V3-013 Home upgrade. The owner approved
+the design, the merge (`7f16e79`) and deploying it. Steps U1–U4 are in the next section. It
+counts as deployed only after Ray reports U4 from the wall iPad.
+
 Ray approved deploying V3 as a separate preview beside V2
 (01/11/26). The first attempt stopped at step 2, live access, because the session that
 picked it up runs in Anthropic's cloud, not on Ray's laptop:
@@ -41,6 +45,30 @@ candidate below, on the same network as the Green and with an existing
 authorised credential available to it. Alternatively, connect the laptop to the
 cloud session through Remote Control. Steps 3–9 are written for that session,
 and for Ray to follow by hand if preferred.
+
+## Update 14/11/26 — V3-013 Home (owner-approved; Ray applies it in the browser)
+
+This replaces the stored config of the one dashboard already imported at `/casaray-v3`. It
+needs no restart and no theme change, and it touches no other dashboard. Only the Home view
+differs from what is live. That was checked in all four locale outputs against `7aaff9e`, whose
+dashboard file is byte-identical to the `8f1ec33` file imported on 02/11/26.
+
+| File | Pinned raw link | sha256 | Parsed config, canonical JSON (prefix) |
+|---|---|---|---|
+| New: dashboard (English), 46 views, 997,569 bytes | https://raw.githubusercontent.com/deezr168-blip/Deez-Smart-Home/7f16e79b06492f0fb1f9df93da9ac8029812769a/dashboards/casaray_v3.yaml | `dff3399dc5ecdc6b68766bea48e45b63273e16a6faaa9ee2ec91fac6576b2ab7` | `10550f25b91e1edc` |
+| Rollback: what is live now, 46 views | the `8f1ec337…` link in the next section | `04a214e4783d3dec8498edc340c51009cc54d6df096a70b94a99ef1cc4bbf25d` | `d92ec791c7f5bd02` |
+
+The new link was fetched without a login on 14/11/26 and matched the commit byte for byte.
+
+| # | Screen | Changes anything? | Status |
+|---|---|---|---|
+| U1 | Read only: Settings → Dashboards (is `CasaRay V3 Preview` at `casaray-v3` still listed; which dashboard is default) · Settings → System → Storage (disk used and total) · Settings → System → Backups (newest backup's date and size) | no | given 14/11/26 |
+| U2 | Rollback copy: Raw configuration editor → select all → copy into a text file on the laptop → close without saving. Then a backup, sized to the free space U1 reports (on 03/11 Ray reported about 0.6 GB free; a full backup was about 1.18 GB) | the backup only | after U1 |
+| U3 | Raw configuration editor → select all → paste the new file from the pinned link → Save | that dashboard only | after U2 |
+| U4 | On the wall iPad: Home's bands at full width, room lines, a room tile opens its room, More boards four across, other views as before; then the same on the iPhone. Look only: no One tap button, siren, switch or helper is pressed | no | after U3 |
+
+**Rollback (exact, restart-free):** the same Raw configuration editor → select all → paste the
+U2 text file, or the `8f1ec337…` file → Save. The backup is the last resort only.
 
 ## Browser-only path (chosen 01/11/26: the laptop cannot run Claude Code)
 
