@@ -13,7 +13,7 @@ Authority: `docs/live/states_export_2026-09-05.txt` — proves an ID **exists**.
 | `binary_sensor.bedroom_motion_sensor_main_sensor` | Parents Room Motion Sensor Main sensor | Parents Room | ok | parents-room |
 | `binary_sensor.bedroom_motion_sensor_motion` | Parents Room Motion Sensor Motion | Parents Room | ok | rooms, parents-room, security, house-health |
 | `binary_sensor.bedroom_parents_room_ac_filter_clean_required` | Parents Room AC Filter clean required | Parents Room | ok | home, parents-room, climate, alerts |
-| `binary_sensor.bedroom_parents_room_ac_room_occupied` | Parents Room AC Room occupied | Parents Room | ok | parents-room, climate |
+| `binary_sensor.bedroom_parents_room_ac_room_occupied` | Parents Room AC Room occupied | Parents Room | ok | home, parents-room, climate |
 | `binary_sensor.casa_solar_online` | Casa Solar Online | - | ok | energy |
 | `binary_sensor.eero_wan_status` | eero Gateway WAN status | Network | ok | home, rooms, guest-room, security, house-health, network, alerts |
 | `binary_sensor.emergency_button_dad_cloud_connection` | Emergency Button Dad Cloud connection | Parents Room | ok | parents-room, network, alerts |
@@ -26,12 +26,12 @@ Authority: `docs/live/states_export_2026-09-05.txt` — proves an ID **exists**.
 | `binary_sensor.k_bot_p100_cloud_connection` | K/Bot P100 Cloud connection | Kitchen | ok | network |
 | `binary_sensor.k_coffee_p100_cloud_connection` | K/Coffee P100 Cloud connection | Kitchen | ok | network |
 | `binary_sensor.k_motion_sensor_cloud_connection` | K/Motion Sensor Cloud connection | Kitchen | ok | network |
-| `binary_sensor.k_motion_sensor_motion` | K/Motion Sensor Motion | Kitchen | ok | rooms, kitchen, security, house-health |
+| `binary_sensor.k_motion_sensor_motion` | K/Motion Sensor Motion | Kitchen | ok | home, rooms, kitchen, security, house-health |
 | `binary_sensor.k_motion_sensor_occupancy` | K/Motion Sensor Occupancy | Kitchen | ok | kitchen |
 | `binary_sensor.k_smart_button_cloud_connection` | K/Smart Button Cloud connection | Kitchen | ok | network |
 | `binary_sensor.k_top_p100_cloud_connection` | K/Top P100 Cloud connection | Kitchen | ok | network |
 | `binary_sensor.lg_fridge_door` | LG-Fridge Door | Kitchen | ok | home, kitchen, alerts |
-| `binary_sensor.living_room_living_hue_hue_sensor_motion` | Living Room Motion Sensor Motion | Living Room | ok | rooms, living-room, security, house-health |
+| `binary_sensor.living_room_living_hue_hue_sensor_motion` | Living Room Motion Sensor Motion | Living Room | ok | home, rooms, living-room, security, house-health |
 | `binary_sensor.living_room_living_room_motion` | Dining Room Motion Sensor Motion | Dining | ok | dining |
 | `binary_sensor.living_room_living_room_motion_2` | Living room Motion | Living Room | ok | living-room |
 | `binary_sensor.living_room_ringring_motion` | RingRing Motion | Living Room | ok | living-room |
@@ -45,7 +45,7 @@ Authority: `docs/live/states_export_2026-09-05.txt` — proves an ID **exists**.
 | `binary_sensor.r_energy_monitor_p110m_cloud_connection` | R/Energy Monitor P110M Cloud connection | Ray Bedroom | ok | network |
 | `binary_sensor.r_energy_monitor_p110m_overloaded` | R/Energy Monitor P110M Overloaded | Ray Bedroom | ok | ray-bedroom |
 | `binary_sensor.remote_ui` | Remote UI | - | ok | house-health, network |
-| `binary_sensor.sensor_group_motion` | Sensor group Motion | Dining | ok | rooms, dining, security, house-health |
+| `binary_sensor.sensor_group_motion` | Sensor group Motion | Dining | ok | home, rooms, dining, security, house-health |
 | `button.bedroom_parents_room_ac_reset_filter` | Parents Room AC Reset filter | Parents Room | unknown | parents-room |
 | `camera.front_door_live_view` | Front Door Live view | Living Room | ok | home, living-room, security, cameras, network |
 | `camera.smart_pet_feeder` | Smart Pet Feeder | Dining | ok | home, dining, security, cameras, network |
@@ -54,7 +54,7 @@ Authority: `docs/live/states_export_2026-09-05.txt` — proves an ID **exists**.
 | `camera.tapo_c420_south_wall_hd_stream_direct` | Tapo C420 - South Wall HD Stream (Direct) | Network | unavailable | home, security, cameras, house-health, network |
 | `camera.tapo_c425_north_wall_hd_stream_direct` | Tapo C425 - North Wall HD Stream (Direct) | Network | ok | home, security, cameras, network |
 | `climate.bedroom_parents_room_ac` | Parents Room AC | Parents Room | ok | home, rooms, parents-room, climate |
-| `cover.aqara_roller_shade_driver_e1` | Aqara Roller Shade Driver E1 | Ray Bedroom | ok | ray-bedroom |
+| `cover.aqara_roller_shade_driver_e1` | Aqara Roller Shade Driver E1 | Ray Bedroom | ok | home, ray-bedroom |
 | `fan.living_room_air_purifier` | Air purifier | Living Room | ok | living-room |
 | `input_boolean.car_insurance_paid` |     car_insurance_paid | - | ok | home |
 | `input_boolean.council_rate_paid` |     council_rate_paid | - | ok | home |
@@ -145,9 +145,9 @@ Authority: `docs/live/states_export_2026-09-05.txt` — proves an ID **exists**.
 | `sensor.bedroom_parents_room_ac_filter_last_reset` | Parents Room AC Filter last reset | Parents Room | ok | parents-room, climate |
 | `sensor.bedroom_parents_room_ac_timer_end_time` | Parents Room AC Timer end time | Parents Room | ok | parents-room |
 | `sensor.bills_unpaid_count` | Bills Unpaid Count | - | ok | home |
-| `sensor.casa_monitored_power` | Casa Monitored Power | - | ok | energy |
+| `sensor.casa_monitored_power` | Casa Monitored Power | - | ok | home, energy |
 | `sensor.casa_offline_devices` | Casa Offline Devices | - | ok | house-health |
-| `sensor.casa_solar_expected_today` | Casa Solar Expected Today | - | ok | energy |
+| `sensor.casa_solar_expected_today` | Casa Solar Expected Today | - | ok | home, energy |
 | `sensor.deez_ssid` | Deez SSID | - | ok | network |
 | `sensor.eero_external_ip` | eero Gateway External IP | Network | ok | network |
 | `sensor.electricity_maps_co2_intensity` | Electricity Maps CO2 intensity | Energy | ok | energy |
@@ -163,7 +163,7 @@ Authority: `docs/live/states_export_2026-09-05.txt` — proves an ID **exists**.
 | `sensor.front_door_battery` | Front Door Battery | Living Room | ok | home, living-room, cameras, house-health, alerts |
 | `sensor.front_door_last_activity` | Front Door Last activity | Living Room | ok | cameras |
 | `sensor.g_monitor_freezer_p110m_current` | G/Monitor Freezer P110M Current | Garage | ok | garage |
-| `sensor.g_monitor_freezer_p110m_current_consumption` | G/Monitor Freezer P110M Current consumption | Garage | ok | garage, energy |
+| `sensor.g_monitor_freezer_p110m_current_consumption` | G/Monitor Freezer P110M Current consumption | Garage | ok | home, garage, energy |
 | `sensor.g_monitor_freezer_p110m_signal_level` | G/Monitor Freezer P110M Signal level | Garage | ok | network |
 | `sensor.g_monitor_freezer_p110m_this_month_s_consumption` | G/Monitor Freezer P110M This month's consumption | Garage | ok | garage |
 | `sensor.g_monitor_freezer_p110m_today_s_consumption` | G/Monitor Freezer P110M Today's consumption | Garage | ok | garage, energy |
@@ -193,7 +193,7 @@ Authority: `docs/live/states_export_2026-09-05.txt` — proves an ID **exists**.
 | `sensor.living_room_living_room_battery` | Dining Room Motion Sensor Battery | Dining | ok | house-health |
 | `sensor.living_room_living_room_illuminance` | Dining Room Motion Sensor Illuminance | Dining | ok | dining |
 | `sensor.living_room_living_room_illuminance_2` | Living room Illuminance | Living Room | ok | living-room |
-| `sensor.living_room_living_room_temperature` | Dining Room Motion Sensor Temperature | Dining | ok | rooms, dining, climate |
+| `sensor.living_room_living_room_temperature` | Dining Room Motion Sensor Temperature | Dining | ok | home, rooms, dining, climate |
 | `sensor.living_room_livingroomswitch_battery` | Living Room Switch Battery | Living Room | ok | house-health |
 | `sensor.living_room_ringring_battery` | RingRing Battery | Living Room | ok | living-room, cameras, house-health, alerts |
 | `sensor.m_contact_sensor_signal_level` | M/Contact Sensor Signal level | Parents Room | unavailable | network |
@@ -224,7 +224,7 @@ Authority: `docs/live/states_export_2026-09-05.txt` — proves an ID **exists**.
 | `sensor.primo_5_0_1_1_status_message` | Primo 5.0-1 (1) Status message | Energy | ok | energy |
 | `sensor.primo_5_0_1_1_total_energy` | Primo 5.0-1 (1) Total energy | Energy | ok | energy |
 | `sensor.r_energy_monitor_p110m_current` | R/Energy Monitor P110M Current | Ray Bedroom | ok | ray-bedroom |
-| `sensor.r_energy_monitor_p110m_current_consumption` | R/Energy Monitor P110M Current consumption | Ray Bedroom | ok | ray-bedroom, energy |
+| `sensor.r_energy_monitor_p110m_current_consumption` | R/Energy Monitor P110M Current consumption | Ray Bedroom | ok | home, ray-bedroom, energy |
 | `sensor.r_energy_monitor_p110m_signal_level` | R/Energy Monitor P110M Signal level | Ray Bedroom | ok | network |
 | `sensor.r_energy_monitor_p110m_this_month_s_consumption` | R/Energy Monitor P110M This month's consumption | Ray Bedroom | ok | ray-bedroom |
 | `sensor.r_energy_monitor_p110m_today_s_consumption` | R/Energy Monitor P110M Today's consumption | Ray Bedroom | ok | ray-bedroom, energy |
@@ -258,7 +258,7 @@ Authority: `docs/live/states_export_2026-09-05.txt` — proves an ID **exists**.
 | `switch.g_monitor_freezer_p110m` | G/Monitor Freezer P110M | Garage | ok | rooms, garage, network |
 | `switch.g_monitor_freezer_p110m_auto_off_enabled` | G/Monitor Freezer P110M Auto-off enabled | Garage | ok | garage |
 | `switch.g_monitor_freezer_p110m_led` | G/Monitor Freezer P110M LED | Garage | ok | garage |
-| `switch.g_printer_p100` | G/Printer P100 | Guest Room | ok | rooms, guest-room, network |
+| `switch.g_printer_p100` | G/Printer P100 | Guest Room | ok | home, rooms, guest-room, network |
 | `switch.g_printer_p100_auto_off_enabled` | G/Printer P100 Auto-off enabled | Guest Room | ok | guest-room |
 | `switch.g_printer_p100_auto_update_enabled` | G/Printer P100 Auto-update enabled | Guest Room | ok | guest-room |
 | `switch.g_printer_p100_led` | G/Printer P100 LED | Guest Room | ok | guest-room |

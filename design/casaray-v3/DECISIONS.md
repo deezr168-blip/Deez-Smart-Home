@@ -6,6 +6,109 @@ and `ha-deploy` are unaffected by everything here.
 
 ---
 
+## V3-013 · 14/11/26 · Home against the 14/09 wall render; two-column bands sized for the grid Home Assistant draws
+
+**Status:** owner request (14/11/26), implemented on
+`feature/casaray-v3-home-mockup`, branched from `feature/casaray-v3-build` at
+`7aaff9e`. DEVELOPMENT ONLY — NOT DEPLOYED. Waiting for the owner's review of
+the side-by-side preview; nothing goes to the Green without that approval.
+
+1. **Home follows the wall render.** `docs/mockups/2026-09-14_wall_home.png`,
+   which is page 1 of *CasaRay Wall Panel.pdf*, is the reference. It was drawn
+   for the wall iPad in landscape, in the language V3 uses: sentence case,
+   amber for active, and cards that say one interpreted line. *Casa Ray
+   Dashboard.pdf* (`2026-09-14_dash_home.png`) is not used for Home. Its
+   uppercase section titles break the owner's sentence-case rule (14/09), and
+   its content already exists on Home: room status and the camera row. Its
+   three columns fold into two (DR-013).
+2. **Finding: the installed frontend sizes two-column bands on 24 units.**
+   This was read from home-assistant/frontend at `20260826.7`, the version
+   Core 2026.9.2 pins; it was not seen on a device.
+   - `hui-sections-view.ts` hands each section `--column-span`, clamped to the
+     columns that resolve.
+   - `hui-grid-section.ts` gives the section 12 × that span units.
+   - On the wall iPad a `column_span: 2` band therefore has 24 units, and V3's
+     `columns: 12` cards fill half of it.
+   - `hui-card.ts` merges a card's own minimums under the YAML. A tile asked
+     for 3 columns draws 6, and a button with an icon and a name asked for 1
+     row draws 2.
+   - Before this change, Home's chip strip filled half its band. The Needs
+     attention, One tap and Security headings sat beside their cards. The
+     Security band left 48 empty cells.
+   - The finding is consistent with DR-012's live observation: a "3/12" pill
+     drew as a circle, and `columns: 1` broke "CasaRay" vertically. On 24
+     units those cells are about 120 px and 35 px wide.
+   - It applies to every V3 native view, and to V2.
+3. **What changed on Home** (`src/casaray_v3/views/home.yaml`, opted in with
+   `band_grid: 24`):
+   - **Chip strip:** the render's four pills — Outside (the weather entity's
+     temperature), Inside (living-room sensor), Home (three people, what
+     answered), **Two monitored plugs**. These are the four V2 Home showed.
+     The plug total is shown only while both plugs it adds up answer;
+     otherwise it says No data and "1 of 2 reporting". Lights on, Cameras
+     online, House now and Solar now left the strip. Each is still on Home
+     below: in the room lines, the Security summary and the Energy band.
+   - **Bands at full width:** the chip strip, Needs attention, One tap (four
+     across on the wall, two by two on a phone), Security and More boards
+     (four across, at the two rows a named button really takes).
+   - **Room tiles:** each room is one markdown card. It shows the name over
+     one line of what its sensors say, and a tap opens the room. These are V2
+     Home's room cards, ported with V2's Simplified Chinese vocabulary. A dark
+     reading is counted ("1 not reporting"), never shown. A room where
+     nothing answers says No data.
+   - **Right now** carries the render's left column: the weather, sunrise and
+     sunset, the two-plug card ("garage freezer and Ray's desk"), Solar
+     expected today, and the footnote on what monitored means.
+   - **Who's home** carries the people and the Parents' room occupancy card
+     (state and time since change), as V2 and the render do.
+   - Eleven of the sixteen V2-Home entities that V3 had moved elsewhere are
+     on Home again. Their migration rows are removed. They stay on the boards
+     they moved to.
+4. **Kept as they were:**
+   - Every entity ID, navigation path and view path.
+   - The three lighting actions, byte for byte.
+   - The air-con as navigation (V3-007), and every tile read-only.
+   - The four-language build.
+   - Recent activity stays on House health (V3-007). Neither render shows it
+     on Home.
+   - Whole-house scenes stay on Lighting (V3-007, CR-233).
+   - The shared top bar is not changed.
+   - Every other view is unchanged: none opts in to `band_grid`, and a test
+     says so.
+5. **Gate:**
+   - `scripts/v3/ha_layout.py` holds the frontend's rules.
+   - For a `band_grid: 24` view, `validate_dashboard.py` fails a band heading
+     that is not full width, a band that leaves empty cells on the 24-unit or
+     the 12-unit grid, and a card drawn at another size than its YAML says.
+   - Every other native view gets a note giving its count of half-width and
+     clamped cards.
+   - The dark-state reassurance check now keys on the longest literal part of
+     each reassurance string. Its first word, "All", matched any "All rooms"
+     label. A test pins that the check still sees the real sentence.
+6. **Preview, not device:**
+   - `scripts/v3/preview_view.py` lays a view out with the frontend's
+     sections CSS at 1180 × 820 and 390 × 844. It draws approximate card
+     interiors with fixture values.
+   - Measured there, Home's page height went from 2,340 to 2,492 px on the
+     wall iPad and from 3,568 to 4,454 px on a phone. The room lines and full
+     band headings account for it.
+   - Nothing in this entry was seen on the wall iPad or a phone.
+7. **Left for a second pass:**
+   - The shared top bar: the current destination's button is named, so it
+     draws two rows tall, and the clock is not at the right edge.
+   - The other native views' bands (their gate notes count the cards).
+   - Room icons: there is no verified way to draw one in a markdown card.
+   - Amber emphasis on the active part of a room line.
+   - Tinted alert cards: the native card cannot, and V3 has no card_mod.
+   - "Home 2 of 3" wording: V3 says "Home 2" and adds a reporting count.
+   - The forecast row, which is on Climate (V3-007).
+   - The render's Evening, Goodnight and Movie scenes, which still need
+     owner-defined scripts (CR-233).
+   - The yue and km strings for the room lines are new and want a native
+     speaker's read.
+
+---
+
 ## V3-012 · 01/11/26 · House health, Alerts and People rebuilt natively; presence never inferred
 
 **Status:** owner instruction CR-V3-19 (01/11/26), implemented on

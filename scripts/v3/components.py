@@ -30,12 +30,14 @@ def grid(columns, rows="auto"):
     return {"columns": columns, "rows": rows}
 
 
-def heading(ctx, key, style="title"):
+def heading(ctx, key, style="title", columns=12):
     return {"type": "heading", "heading": ctx.t(key), "heading_style": style,
-            "grid_options": grid(12)}
+            "grid_options": grid(columns)}
 
 
 def nav_button(ctx, label_key, icon, target, columns=3, rows=1, show_name=True, current=False):
+    # NB Home Assistant gives a button showing an icon AND a name at least two
+    # rows (hui-button-card getGridOptions); rows=1 here draws two (ha_layout.py).
     btn = {"type": "button", "name": ctx.t(label_key), "icon": icon,
            "show_name": show_name, "show_icon": True,
            "tap_action": {"action": "none"} if current else
@@ -86,7 +88,7 @@ def light_tile(ctx, entity, name=None, columns=6, brightness=True):
     return t
 
 
-def readonly_tile(ctx, entity, name=None, columns=6, nav=None):
+def readonly_tile(ctx, entity, name=None, columns=6, nav=None, state_content=None, vertical=False):
     """State shown, nothing toggled: neither tap nor icon tap can act."""
     ctx.use(entity)
     t = {"type": "tile", "entity": entity,
@@ -97,6 +99,11 @@ def readonly_tile(ctx, entity, name=None, columns=6, nav=None):
          "grid_options": grid(columns)}
     if name:
         t["name"] = name
+    if state_content:
+        t["state_content"] = state_content
+    if vertical:   # a vertical tile is two rows at least (hui-tile-card getGridOptions)
+        t["vertical"] = True
+        t["grid_options"] = grid(columns, 2)
     return t
 
 
@@ -104,19 +111,21 @@ def readonly_tile(ctx, entity, name=None, columns=6, nav=None):
 READ_ONLY_DOMAINS = {"sensor", "binary_sensor", "weather", "sun", "person", "device_tracker", "zone"}
 
 
-def sensor_tile(ctx, entity, name=None, columns=6, nav=None):
+def sensor_tile(ctx, entity, name=None, columns=6, nav=None, state_content=None, vertical=False, rows=None):
     """A reading. Without `nav`, a tap opens its details (history), as a V2
     tile does; only for read-only domains, whose dialog has no control."""
-    t = readonly_tile(ctx, entity, name, columns, nav)
+    t = readonly_tile(ctx, entity, name, columns, nav, state_content, vertical)
+    if rows:
+        t["grid_options"]["rows"] = rows
     if not nav and entity.split(".")[0] in READ_ONLY_DOMAINS:
         t["tap_action"] = {"action": "more-info"}
     return t
 
 
-def person_tile(ctx, entity, nav="people", columns=4):
+def person_tile(ctx, entity, nav="people", columns=4, rows=2):
     t = readonly_tile(ctx, entity, None, columns, nav)
     t["vertical"] = True
-    t["grid_options"] = grid(columns, 2)
+    t["grid_options"] = grid(columns, rows)
     return t
 
 
@@ -151,14 +160,19 @@ def topbar(ctx, view_path, title_key):
     return {"type": "grid", "column_span": 2, "cards": cards}
 
 
-def more_boards(ctx, items, classic_of=None):
-    """Named index of every board, four across (12 = 4 x 3, no reflow)."""
-    cards = [heading(ctx, "h.more")]
+def more_boards(ctx, items, classic_of=None, band24=False):
+    """Named index of every board, four across (12 = 4 x 3, no reflow).
+
+    band24: sized for the 24-unit grid Home Assistant gives a two-column band
+    (ha_layout.py): a full-width heading, then four across at 6 units and the
+    two rows a named button really takes — two across on a phone."""
+    cols, rows = (6, 2) if band24 else (3, 1)
+    cards = [heading(ctx, "h.more", columns="full" if band24 else 12)]
     for path, key, icon in items:
-        cards.append(nav_button(ctx, key, icon, path, columns=3, rows=1))
+        cards.append(nav_button(ctx, key, icon, path, columns=cols, rows=rows))
     if classic_of:
         cards.append(nav_button(ctx, "nav.classic", "mdi:history", "v2-" + classic_of,
-                                columns=3, rows=1))
+                                columns=cols, rows=rows))
     # pad to a multiple of four with nothing: the gate checks the sum instead
     return {"type": "grid", "column_span": 2, "cards": cards}
 
@@ -204,16 +218,110 @@ def chip_value(ctx, label_key, entity, digits=0):
     return ctx.t(label_key) + " **{{ " + value_expr(ctx, entity, digits) + " }}**"
 
 
-def chips(ctx, parts):
+def chips(ctx, parts, columns=12):
     """One full-width markdown strip; parts joined with ' · '."""
     # The separator is an expression, not literal text: each part's `-%}`
     # trims would otherwise eat the spaces around a literal " · ".
-    return markdown("{{ ' · ' }}".join(parts))
+    return markdown("{{ ' · ' }}".join(parts), columns)
+
+
+def deg_expr(ctx, entity, digits=1, attr=None):
+    """Jinja expression: a temperature as '19.7°' (the mockups' form), or "No
+    data". With `attr`, the reading is that attribute (a weather entity's
+    temperature), which is None while the entity is dark."""
+    ctx.use(entity)
+    v = ("state_attr('" + entity + "','" + attr + "')") if attr else ("states('" + entity + "')")
+    rnd = "| round(0) | int" if digits == 0 else "| round(" + str(digits) + ")"
+    return "(((" + v + " | float) " + rnd + ") ~ '°') if " + v + " | is_number else " + jstr(ctx.t("s.no_data"))
+
+
+def chip_temp(ctx, label_key, entity, digits=1, attr=None):
+    return ctx.t(label_key) + " **{{ " + deg_expr(ctx, entity, digits, attr) + " }}**"
+
+
+def _plugs(ctx, total, plugs, digits=1):
+    """(preamble, value expr, note expr) for a total the instance computes from
+    `plugs`. The total is shown only while every plug it sums answers: a
+    template that adds a dark plug as zero reads low without measuring
+    anything (root rule: a summary whose inputs are down is a sentinel)."""
+    ctx.use([total] + list(plugs))
+    ids = "[" + ",".join("'" + e + "'" for e in plugs) + "]"
+    pre = ("{%- set pp = namespace(ok=0) -%}{%- for e in " + ids + " -%}"
+           "{%- if states(e) | is_number -%}{%- set pp.ok = pp.ok + 1 -%}{%- endif -%}{%- endfor -%}")
+    n = str(len(plugs))
+    val = ("(" + value_expr(ctx, total, digits) + ") if pp.ok == " + n + " else " + jstr(ctx.t("s.no_data")))
+    note = ("(' <small>' ~ " + ctx.jt("chip.reporting", n="pp.ok", m=n) + " ~ '</small>') if (pp.ok > 0 and pp.ok < "
+            + n + ") else ''")
+    return pre, val, note
+
+
+def chip_plugs(ctx, label_key, total, plugs, digits=1):
+    pre, val, note = _plugs(ctx, total, plugs, digits)
+    return pre + ctx.t(label_key) + " **{{ " + val + " }}**{{ " + note + " }}"
+
+
+def plugs_card(ctx, label_key, total, plugs, detail_key, nav=None, columns=12, digits=1):
+    """The mockups' Monitored power card: the two-plug total, which plugs, and
+    how many answered; a tap opens the board that shows each plug."""
+    pre, val, note = _plugs(ctx, total, plugs, digits)
+    card = markdown(pre + "**" + ctx.t(label_key) + "**\n{{ " + val + " }} · " + ctx.t(detail_key)
+                    + "{{ " + note + " }}", columns)
+    if nav:
+        card["tap_action"] = {"action": "navigate", "navigation_path": ctx.link(nav)}
+    return card
+
+
+def room_tile(ctx, name_key, target, parts, columns=6, rows="auto"):
+    """A room as the wall render draws it: its name, one line of what its
+    sensors say, and a tap that opens the room (V2 Home's room cards, ported).
+
+    parts, each one reading:
+      {entity, words: {state: key}}  the state in words; any other live state raw
+      {entity, deg: digits}          a temperature, '19.7°'
+      {entity, value: digits, key?}  a number with its own unit, optionally in
+                                     a phrase ('Freezer {v}')
+      {entity, ac: true}             the air-con's reported mode ('Air-con cool')
+    A reading that does not answer is counted, never shown as a value: the line
+    ends 'n not reporting', and says No data when nothing answered."""
+    if not parts:   # an index tile (All rooms): its name and the tap, nothing to read
+        card = markdown("**" + ctx.t(name_key) + "**", columns, rows)
+        card["tap_action"] = {"action": "navigate", "navigation_path": ctx.link(target)}
+        return card
+    nd = jstr(ctx.t("s.no_data"))
+    pre = ["{%- set ns = namespace(p=[], d=0) -%}"]
+    for p in parts:
+        e = p["entity"]
+        ctx.use(e)
+        s = "states('" + e + "')"
+        dark = "{%- else -%}{%- set ns.d = ns.d + 1 -%}{%- endif -%}"
+        if "words" in p:
+            m = "{" + ",".join(jstr(k) + ":" + jstr(ctx.t(v)) for k, v in p["words"].items()) + "}"
+            pre.append("{%- set s = " + s + " -%}{%- if s in " + m + " -%}{%- set ns.p = ns.p + [(" + m + ")[s]] -%}"
+                       "{%- elif s in " + BAD + " -%}{%- set ns.d = ns.d + 1 -%}"
+                       "{%- else -%}{%- set ns.p = ns.p + [s] -%}{%- endif -%}")
+        elif p.get("ac"):
+            pre.append("{%- if " + s + " not in " + BAD + " -%}{%- set ns.p = ns.p + [" +
+                       ctx.jt("rs.ac", mode="(" + ac_mode_expr(ctx, e) + ") | lower") + "] -%}" + dark)
+        elif "deg" in p:
+            pre.append("{%- if " + s + " | is_number -%}{%- set ns.p = ns.p + [" +
+                       deg_expr(ctx, e, p["deg"]) + "] -%}" + dark)
+        elif "value" in p:
+            v = value_expr(ctx, e, p["value"])
+            if p.get("key"):
+                v = ctx.jt(p["key"], v=v)
+            pre.append("{%- if " + s + " | is_number -%}{%- set ns.p = ns.p + [" + v + "] -%}" + dark)
+        else:
+            raise SystemExit(f"room_tile: part for {e} has no kind (words / deg / value / ac)")
+    line = ("{{ (ns.p | join(' · ')) if ns.p else " + nd + " }}"
+            "{{ (' · ' ~ " + ctx.jt("s.not_reporting", n="ns.d") + ") if (ns.p and ns.d) else '' }}")
+    card = markdown("".join(pre) + "**" + ctx.t(name_key) + "**\n" + line, columns, rows)
+    card["tap_action"] = {"action": "navigate", "navigation_path": ctx.link(target)}
+    return card
 
 
 # ---------------------------------------------------------------- attention
 
-def attention(ctx, checks):
+def attention(ctx, checks, columns=12):
     """Needs attention, honestly.
 
     checks: list of dicts {entity, when: [states] | 'battery<N' | 'offline' |
@@ -298,7 +406,7 @@ def attention(ctx, checks):
         "{%- elif ns.dark > 0 -%}{{ " + ctx.jt("att.clear_partial", n="ns.ok", m="ns.dark") + " }}" +
         "{%- else -%}{{ " + ctx.jt("att.all_clear", n=str(total)) + " }}" +
         "{%- endif -%}")
-    return markdown("".join(lines))
+    return markdown("".join(lines), columns)
 
 
 # ---------------------------------------------------------------- climate
@@ -312,7 +420,7 @@ def ac_mode_expr(ctx, entity):
     return "(" + m + ").get(states('" + entity + "'), states('" + entity + "'))"
 
 
-def ac_summary(ctx, entity, nav=None, columns=12):
+def ac_summary(ctx, entity, nav=None, columns=12, rows="auto"):
     """Read-only air-con card (V3-008 R1/R7): mode as reported, room and
     target from the entity's own attributes, "No data" otherwise."""
     ctx.use(entity)
@@ -329,7 +437,7 @@ def ac_summary(ctx, entity, nav=None, columns=12):
             + ctx.t("ac.room") + " " + temp("current_temperature") + " · "
             + ctx.t("ac.target") + " " + temp("temperature")
             + "{%- endif -%}")
-    card = markdown(body, columns)
+    card = markdown(body, columns, rows)
     if nav:
         card["tap_action"] = {"action": "navigate", "navigation_path": ctx.link(nav)}
     return card
@@ -344,7 +452,7 @@ def camera_state_expr(ctx, entity):
             + jstr(ctx.t("s.online")) + "))")
 
 
-def camera_summary(ctx, cams):
+def camera_summary(ctx, cams, columns=12, rows="auto"):
     ents = [c["entity"] for c in cams]
     ctx.use(ents)
     ids = "[" + ",".join("'" + e + "'" for e in ents) + "]"
@@ -352,9 +460,9 @@ def camera_summary(ctx, cams):
             "{%- set s = states(e) -%}{%- if s == 'unavailable' -%}{%- set ns.b = ns.b + 1 -%}"
             "{%- elif s in ['unknown','none',''] -%}{%- set ns.c = ns.c + 1 -%}"
             "{%- else -%}{%- set ns.a = ns.a + 1 -%}{%- endif -%}{%- endfor -%}")
-    rows = "".join("\n- " + ctx.t(c["name_key"]) + " — **{{ " + camera_state_expr(ctx, c["entity"]) + " }}**"
-                   for c in cams)
-    return markdown(head + "**{{ " + ctx.jt("cam.summary", a="ns.a", b="ns.b", c="ns.c") + " }}**\n" + rows)
+    lines = "".join("\n- " + ctx.t(c["name_key"]) + " — **{{ " + camera_state_expr(ctx, c["entity"]) + " }}**"
+                    for c in cams)
+    return markdown(head + "**{{ " + ctx.jt("cam.summary", a="ns.a", b="ns.b", c="ns.c") + " }}**\n" + lines, columns, rows)
 
 
 def camera_card(ctx, entity, name_key, subview, columns=6, rows=4):

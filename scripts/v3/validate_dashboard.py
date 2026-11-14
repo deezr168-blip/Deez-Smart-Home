@@ -22,6 +22,7 @@ sys.path.insert(0, str(HERE))
 import build_dashboard as B  # noqa: E402
 import render_check as R  # noqa: E402
 import components as C  # noqa: E402
+import ha_layout as L  # noqa: E402
 
 ROOT = B.ROOT
 ALLOWED_CUSTOM = {"custom:webrtc-camera"}      # V2's only custom card; carried views only
@@ -84,6 +85,13 @@ SECRET_PATTERNS = [
 ]
 # Reassurances that must never appear when nothing answered.
 DARK_FORBIDDEN_KEYS = ["att.all_clear", "att.clear_partial"]
+
+
+def reassurance_stem(s):
+    """The most distinctive literal part of a reassurance string: its longest
+    run between {placeholders}. (The first run alone was 'All' in English,
+    which any 'All rooms' label matched.)"""
+    return max(re.split(r"\{\w+\}", s), key=lambda x: len(x.strip())).strip()
 
 
 class Gate:
@@ -178,6 +186,39 @@ def tile_safety(view, v2_by_path, controls, old_url, new_url):
     return bad, prot
 
 
+def band_problems(view, spec):
+    """For a `band_grid: 24` view, against the frontend's own layout rules
+    (ha_layout.py): headings in two-column bands that are not full width (they
+    would sit BESIDE their cards), bands that leave empty cells on the wall
+    iPad (24 units) or a phone (12), and cards drawn at a size other than the
+    one their grid_options state (a card minimum overriding the YAML). The
+    shared top bar is not the spec's to size and is skipped."""
+    skip = {i for i, s in enumerate(spec.get("sections", [])) if s.get("topbar")}
+    heads, holes, clamps = [], [], []
+    for i, s in enumerate(view["sections"]):
+        if i in skip:
+            continue
+        span = s.get("column_span", 1)
+        for c in s.get("cards", []):
+            if c.get("type") == "heading" and span == 2 and L.effective(c)[0] != "full":
+                heads.append(f"section {i}")
+            if L.configured(c) != L.effective(c):
+                clamps.append(f"section {i} {c['type']} {L.configured(c)} draws {L.effective(c)}")
+        for where, resolved in (("wall iPad", 2), ("phone", 1)):
+            n = L.section_holes(s, L.units(span, resolved))
+            if n:
+                holes.append(f"section {i}: {n} empty cells on the {where}")
+    return heads, holes, clamps
+
+
+def band_note(view):
+    """What a view not yet on band_grid 24 looks like on the wall iPad."""
+    half = sum(1 for i, s in enumerate(view["sections"]) if s.get("column_span", 1) == 2 and i > 0
+               for c in s.get("cards", []) if L.effective(c)[0] != "full")
+    big = sum(1 for s in view["sections"] for c in s.get("cards", []) if L.configured(c) != L.effective(c))
+    return half, big
+
+
 def validate(g: Gate):
     man = B.load_yaml(B.SRC / "manifest.yaml")
     base = man["baseline"]
@@ -255,8 +296,25 @@ def validate(g: Gate):
             g.check(all("grid_options" in c for c in cards), f"{vt} every card declares grid_options")
             g.check(v.get("max_columns", 4) <= 2, f"{vt} max_columns <= 2 (DR-013)")
             g.check(all(s.get("column_span", 1) <= 2 for s in v["sections"]), f"{vt} column_span <= 2")
-            small = [c for c in cards if c["grid_options"]["columns"] < 2]
-            g.check(not small, f"{vt} nothing below columns: 2 (DR-012)")
+            small = [c for c in cards if not (c["grid_options"]["columns"] == "full" or (
+                isinstance(c["grid_options"]["columns"], int) and c["grid_options"]["columns"] >= 2))]
+            g.check(not small, f"{vt} nothing below columns: 2 (DR-012); columns is a number or full",
+                    str([c["grid_options"]["columns"] for c in small]))
+            band = next((r.get("band_grid", 12) for r in rep["views"] if r["path"] == v["path"]), 12)
+            if band == 24:
+                spec = B.load_yaml(B.SRC / "views" / f"{v['path']}.yaml")
+                heads, holes, clamps = band_problems(v, spec)
+                g.check(not heads, f"{vt} band_grid 24: every two-column band heading is full width", str(heads))
+                g.check(not holes, f"{vt} band_grid 24: every band packs into whole rows on the wall iPad "
+                        "(24 units) and a phone (12)", str(holes))
+                g.check(not clamps, f"{vt} band_grid 24: every card draws at the size its grid_options say",
+                        str(clamps[:6]))
+            elif loc["code"] == "en":
+                half, big = band_note(v)
+                if half or big:
+                    g.note(f"[{v['path']}] not on band_grid 24: on the wall iPad {half} card(s) in its two-column "
+                           f"bands draw at half the width written, and {big} card(s) draw larger than their "
+                           "grid_options (card minimums) — V3-013 second pass")
             dump = yaml.safe_dump(v, allow_unicode=True)
             g.check(not SENTINEL.search(dump), f"{vt} no float(0/100/9999) sentinel")
             # safety boundaries
@@ -287,7 +345,7 @@ def validate(g: Gate):
                     leaks = []
                     for k in DARK_FORBIDDEN_KEYS:
                         s = str(cat.get(k, en_cat[k]))
-                        stem = re.split(r"\{\w+\}", s)[0].strip() or re.split(r"\{\w+\}", s)[-1].strip()
+                        stem = reassurance_stem(s)
                         if stem and stem in joined:
                             leaks.append(k)
                     g.check(not leaks, f"{vt} no reassurance when everything is dark", str(leaks))

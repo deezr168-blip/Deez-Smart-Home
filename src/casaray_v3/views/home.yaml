@@ -2,42 +2,47 @@
 # shorter Home, air-con is navigation). Two columns, horizontal bands.
 # Band order follows the V2 mobile-render reorder (CVA-004): the controls you
 # touch sit directly under Needs attention.
+#
+# V3-013 (14/11/26): composed against the 14/09 wall render
+# (docs/mockups/2026-09-14_wall_home.png = "CasaRay Wall Panel.pdf", page 1),
+# its three columns folded into two (DR-013). band_grid: 24 — Home Assistant
+# lays a two-column band out on 24 units on the wall iPad and 12 on a phone
+# (scripts/v3/ha_layout.py), so in every `span: 2` band below, `full` is the
+# whole band, 6 is a quarter, 12 is half. The gate checks each band packs
+# into whole rows on both.
 path: home
 title: nav.home
 icon: mdi:home-variant-outline
+band_grid: 24
 sections:
-  # BAND 1 — wordmark, clock (DD/MM/YY), in-page rail
+  # BAND 1 — wordmark, clock (DD/MM/YY), in-page rail (shared chrome, unchanged)
   - topbar: true
 
-  # BAND 2 — chip strip: what answered, never the list length
+  # BAND 2 — the render's four pills: Outside, Inside, Home, Monitored.
+  # What answered, never the list length; the two-plug total only while both
+  # plugs it adds up answer.
   - span: 2
     cards:
       - c: chips
+        columns: full
         parts:
+          - {c: chip_temp, label_key: chip.outside, entity: weather.forecast_home, attr: temperature, digits: 0}
+          - {c: chip_temp, label_key: chip.inside, entity: sensor.living_room_living_hue_hue_sensor_temperature, digits: 1}
           - c: chip_count
             label_key: chip.people
             entities: [person.raymond_du, person.vinh_du, person.ai_q_huang]
             on_states: [home]
-          - c: chip_count
-            label_key: chip.lights
-            entities: [light.living_room, light.dining, light.bedroom_bedroom]
-            on_states: ["on"]
-          - c: chip_cameras
-            ents: [camera.front_door_live_view, camera.smart_pet_feeder,
-                   camera.tapo_c200_stockroom_hd_stream_direct, camera.tapo_c425_north_wall_hd_stream_direct,
-                   camera.tapo_c420_east_wall_hd_stream_direct, camera.tapo_c420_south_wall_hd_stream_direct]
-          - c: chip_value
-            label_key: chip.house
-            entity: sensor.powerpal_gateway_powerpal_power
-          - c: chip_value
-            label_key: chip.solar
-            entity: sensor.primo_5_0_1_1_ac_power
+          - c: chip_plugs
+            label_key: chip.monitored_plugs
+            total: sensor.casa_monitored_power
+            plugs: [sensor.g_monitor_freezer_p110m_current_consumption, sensor.r_energy_monitor_p110m_current_consumption]
 
   # BAND 3 — needs attention (one honest list, not twelve conditionals)
   - span: 2
     heading: h.attention
     cards:
       - c: attention
+        columns: full
         checks:
           - {entity: binary_sensor.eero_wan_status, when: ["off"], key: att.wan_down}
           - {entity: binary_sensor.g_monitor_freezer_p110m_overloaded, when: ["on"], key: att.freezer_overload}
@@ -65,7 +70,8 @@ sections:
             requires: [input_boolean.elec_bill_paid, input_boolean.gas_bill_paid, input_boolean.water_bill_paid,
                        input_boolean.council_rate_paid, input_boolean.rego_paid, input_boolean.car_insurance_paid]
 
-  # BAND 4 — one tap: three whole-house lighting actions + air-con NAVIGATION
+  # BAND 4 — one tap: three whole-house lighting actions + air-con NAVIGATION.
+  # Four across on the wall (4 x 6 = 24), two by two on a phone.
   - span: 2
     heading: h.one_tap
     cards:
@@ -75,58 +81,118 @@ sections:
         action: light.turn_on
         target: light.living_room
         data: {brightness_pct: 55}
+        columns: 6
       - c: action_button
         label_key: act.night
         icon: mdi:weather-night
         action: light.turn_on
         target: [light.living_room, light.bedroom_bedroom, light.dining]
         data: {brightness_pct: 10}
+        columns: 6
       - c: action_button
         label_key: act.all_off
         icon: mdi:lightbulb-group-off-outline
         action: light.turn_off
         target: [light.living_room, light.dining, light.bedroom_bedroom]
-      - c: ac_summary
-        entity: climate.bedroom_parents_room_ac
-        nav: climate
-        columns: 3
+        columns: 6
+      - {c: ac_summary, entity: climate.bedroom_parents_room_ac, nav: climate, columns: 6, rows: 2}
 
-  # BAND 5 — rooms | shopping list
+  # BAND 5 — rooms | shopping list. Each room says what its sensors say, as
+  # the render's room rows and V2 Home's room cards do; a tap opens the room.
   - span: 1
     heading: h.rooms
     cards:
-      - {c: nav_button, label_key: room.living, icon: mdi:sofa-outline, target: living-room, columns: 6}
-      - {c: nav_button, label_key: room.dining, icon: mdi:table-chair, target: dining, columns: 6}
-      - {c: nav_button, label_key: room.kitchen, icon: mdi:countertop-outline, target: kitchen, columns: 6}
-      - {c: nav_button, label_key: room.parents, icon: mdi:bed-outline, target: parents-room, columns: 6}
-      - {c: nav_button, label_key: room.ray, icon: mdi:bed-king-outline, target: ray-bedroom, columns: 6}
-      - {c: nav_button, label_key: room.garage, icon: mdi:garage-variant, target: garage, columns: 6}
-      - {c: nav_button, label_key: room.guest, icon: mdi:bed-single-outline, target: guest-room, columns: 6}
-      - {c: nav_button, label_key: nav.all_rooms, icon: mdi:floor-plan, target: rooms, columns: 6}
+      - c: room_tile
+        name_key: room.living
+        target: living-room
+        parts:
+          - {entity: light.living_room, words: {"on": rs.lights_on, "off": rs.lights_off}}
+          - {entity: sensor.living_room_living_hue_hue_sensor_temperature, deg: 1}
+          - {entity: binary_sensor.living_room_living_hue_hue_sensor_motion, words: {"on": rc.movement_word, "off": rc.quiet_word}}
+      - c: room_tile
+        name_key: room.dining
+        target: dining
+        parts:
+          - {entity: light.dining, words: {"on": rs.lights_on, "off": rs.lights_off}}
+          # export: "Dining Room Motion Sensor Temperature", area Dining
+          - {entity: sensor.living_room_living_room_temperature, deg: 1}
+          - {entity: binary_sensor.sensor_group_motion, words: {"on": rc.movement_word, "off": rc.quiet_word}}
+      - c: room_tile
+        name_key: room.kitchen
+        target: kitchen
+        parts:
+          - {entity: binary_sensor.k_motion_sensor_motion, words: {"on": rc.movement_word, "off": rc.quiet_word}}
+          - {entity: binary_sensor.lg_fridge_door, words: {"on": rs.fridge_open, "off": rs.fridge_closed}}
+      - c: room_tile
+        name_key: room.parents
+        target: parents-room
+        parts:
+          - {entity: binary_sensor.bedroom_parents_room_ac_room_occupied, words: {"on": rc.occupied, "off": rc.not_occupied}}
+          - {entity: sensor.bedroom_motion_sensor_temperature, deg: 1}
+          - {entity: climate.bedroom_parents_room_ac, ac: true}
+      - c: room_tile
+        name_key: room.ray
+        target: ray-bedroom
+        parts:
+          - {entity: light.bedroom_bedroom, words: {"on": rs.lights_on, "off": rs.lights_off}}
+          - entity: cover.aqara_roller_shade_driver_e1
+            words: {open: rs.blind_open, closed: rs.blind_closed, opening: rs.blind_opening, closing: rs.blind_closing}
+      - c: room_tile
+        name_key: room.garage
+        target: garage
+        parts:
+          - {entity: sensor.g_monitor_freezer_p110m_current_consumption, value: 0, key: rs.freezer}
+          - {entity: binary_sensor.g_monitor_freezer_p110m_overloaded, words: {"on": s.overloaded, "off": s.normal}}
+      - c: room_tile
+        name_key: room.guest
+        target: guest-room
+        parts:
+          - {entity: switch.g_printer_p100, words: {"on": rs.printer_on, "off": rs.printer_off}}
+      - {c: room_tile, name_key: nav.all_rooms, target: rooms, parts: []}
   - span: 1
     heading: h.shopping
     cards:
       - {c: todo, entity: todo.shopping_list, rows: 6}
 
-  # BAND 6 — right now | who's home
+  # BAND 6 — right now | who's home. The render's left column: the weather,
+  # then the two monitored plugs and the solar forecast with the footnote
+  # that says what "monitored" means. Its middle column: the people, then the
+  # Parents' room occupancy card.
   - span: 1
     heading: h.right_now
     cards:
       - {c: weather, entity: weather.forecast_home}
       - {c: sensor_tile, entity: sensor.sun_next_rising, name: {t: weather.sunrise}}
       - {c: sensor_tile, entity: sensor.sun_next_setting, name: {t: weather.sunset}}
+      - c: plugs_card
+        label_key: chip.monitored_plugs
+        total: sensor.casa_monitored_power
+        plugs: [sensor.g_monitor_freezer_p110m_current_consumption, sensor.r_energy_monitor_p110m_current_consumption]
+        detail_key: energy.plugs_which
+        nav: energy
+      - {c: sensor_tile, entity: sensor.casa_solar_expected_today, name: {t: energy.solar_expected}, columns: 12, nav: energy}
+      - {c: note, key: energy.monitored_note}
   - span: 1
     heading: h.whos_home
     cards:
-      - {c: person_tile, entity: person.raymond_du}
-      - {c: person_tile, entity: person.vinh_du}
-      - {c: person_tile, entity: person.ai_q_huang}
+      - {c: person_tile, entity: person.raymond_du, rows: 3}
+      - {c: person_tile, entity: person.vinh_du, rows: 3}
+      - {c: person_tile, entity: person.ai_q_huang, rows: 3}
+      - c: sensor_tile
+        entity: binary_sensor.bedroom_parents_room_ac_room_occupied
+        name: {t: room.parents}
+        columns: 12
+        rows: 2      # V2's size; pairs Who's home with Right now's height
+        state_content: [state, last_changed]
 
-  # BAND 7 — security, full width
+  # BAND 7 — security, full width: what each camera says beside the front
+  # door's picture, then the three doors and every camera, a quarter each.
   - span: 2
     heading: h.security
     cards:
       - c: camera_summary
+        columns: 12
+        rows: 4      # as tall as the picture beside it, so the band has no hole
         cams:
           - {entity: camera.front_door_live_view, name_key: room.front_door}
           - {entity: camera.tapo_c425_north_wall_hd_stream_direct, name_key: room.north_wall}
@@ -134,11 +200,11 @@ sections:
           - {entity: camera.tapo_c420_south_wall_hd_stream_direct, name_key: room.south_wall}
           - {entity: camera.tapo_c200_stockroom_hd_stream_direct, name_key: room.stockroom}
           - {entity: camera.smart_pet_feeder, name_key: room.pet_feeder}
-      - {c: camera_card, entity: camera.front_door_live_view, name_key: room.front_door, subview: camera-front-door}
-      - {c: sensor_tile, entity: binary_sensor.f_contact_sensor_door, name: {t: room.front_door}, columns: 3, nav: security}
-      - {c: sensor_tile, entity: binary_sensor.m_contact_sensor_door, name: {t: room.parents}, columns: 3, nav: security}
-      - {c: sensor_tile, entity: binary_sensor.b_contact_sensor_door, name: {t: room.backyard}, columns: 3, nav: security}
-      - {c: nav_button, label_key: act.all_cameras, icon: mdi:cctv, target: cameras, columns: 3}
+      - {c: camera_card, entity: camera.front_door_live_view, name_key: room.front_door, subview: camera-front-door, columns: 12}
+      - {c: sensor_tile, entity: binary_sensor.f_contact_sensor_door, name: {t: room.front_door}, columns: 6, nav: security, vertical: true}
+      - {c: sensor_tile, entity: binary_sensor.m_contact_sensor_door, name: {t: room.parents}, columns: 6, nav: security, vertical: true}
+      - {c: sensor_tile, entity: binary_sensor.b_contact_sensor_door, name: {t: room.backyard}, columns: 6, nav: security, vertical: true}
+      - {c: nav_button, label_key: act.all_cameras, icon: mdi:cctv, target: cameras, columns: 6, rows: 2}
 
   # BAND 8 — energy now | climate now
   - span: 1
@@ -156,9 +222,10 @@ sections:
       - {c: sensor_tile, entity: sensor.living_room_living_hue_hue_sensor_temperature, name: {t: room.living}, nav: climate}
       - {c: sensor_tile, entity: sensor.bedroom_motion_sensor_temperature, name: {t: room.parents}, nav: climate}
 
-  # BAND 9 — every board by name (rail is six glyphs)
+  # BAND 9 — every board by name (rail is six glyphs); four across on the wall
   - c: more_boards
     classic_of: home
+    band24: true
     items:
       - [bills, nav.bills, mdi:receipt-text-outline]
       - [people, nav.people, mdi:account-group-outline]

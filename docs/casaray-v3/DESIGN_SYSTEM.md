@@ -39,12 +39,36 @@ Fonts: Inter / system for text; CJK (`Noto Sans HK`, `Noto Sans SC`) and Khmer
 - Rows of buttons sum to 12 (4 × 3) so they cannot reflow.
 - No `badges:` (DR-011). Chip strip = one full-width markdown card.
 
+**What the installed frontend actually draws (V3-013, read from frontend
+20260826.7 — `scripts/v3/ha_layout.py`).** Two rules above assume a 12-unit
+grid everywhere, and on the wall iPad they are wrong for two-column bands:
+
+- A `column_span: 2` section lays its cards out on **24 units** when two
+  columns resolve (the wall iPad) and on 12 when one does (a phone). In such a
+  band `columns: 12` is half the band and only `columns: full` spans it; a
+  12-column heading sits *beside* its first card.
+- A card's own minimum overrides the YAML: a horizontal tile is at least 6
+  columns, a vertical tile 3 columns × 2 rows, a button showing an icon and a
+  name at least 2 rows.
+- A view opts in with `band_grid: 24` in its spec. Its band headings are then
+  emitted full width, and the gate fails a band that leaves empty cells on
+  either grid or a card drawn at another size than its `grid_options` say.
+  Home is the first (V3-013); every other native view gets a gate note
+  instead, until it is reviewed on its own.
+- `python3 scripts/v3/preview_view.py <view> --out DIR --shots` lays a view
+  out with that CSS for the wall iPad (1180 × 820) and a phone (390 × 844).
+  The geometry is the frontend's; what is drawn inside each card is an
+  approximation, and the values are the fixture's. It is not a screenshot of
+  Home Assistant.
+
 ## Components (`scripts/v3/components.py`)
 
 | Component | Card | Notes |
 |---|---|---|
 | `topbar` | 2 × markdown + 6 × button | title + dev banner, clock `HH:MM` over `DD/MM/YY`, six-glyph rail; current destination shown named and inert |
 | `chips` + `chip_count` / `chip_value` / `chip_cameras` | markdown | `n of m reporting`; "No data" when nothing answered |
+| `chip_temp`, `chip_plugs`, `plugs_card` | markdown | `19.7°` from a sensor or a weather attribute; a plug total shown only while every plug it adds up answers |
+| `room_tile` | markdown, tap navigates | room name over one line of readings in words; a dark reading is counted ("1 not reporting"), never shown; "No data" when none answer |
 | `attention` | markdown | one honest list; all-clear only when every check answered |
 | `action_button` | button | one action per button; hold does nothing |
 | `nav_button`, `more_boards` | button | named index, 4 across |

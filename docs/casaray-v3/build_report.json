@@ -80,6 +80,7 @@
         "chip.lights",
         "chip.motion",
         "chip.occupancy",
+        "chip.outside",
         "chip.people",
         "chip.power_now",
         "chip.remote",
@@ -345,11 +346,15 @@
       "entities": [
         "binary_sensor.b_contact_sensor_door",
         "binary_sensor.bedroom_parents_room_ac_filter_clean_required",
+        "binary_sensor.bedroom_parents_room_ac_room_occupied",
         "binary_sensor.eero_wan_status",
         "binary_sensor.f_contact_sensor_door",
         "binary_sensor.g_monitor_freezer_p110m_overloaded",
+        "binary_sensor.k_motion_sensor_motion",
         "binary_sensor.lg_fridge_door",
+        "binary_sensor.living_room_living_hue_hue_sensor_motion",
         "binary_sensor.m_contact_sensor_door",
+        "binary_sensor.sensor_group_motion",
         "camera.front_door_live_view",
         "camera.smart_pet_feeder",
         "camera.tapo_c200_stockroom_hd_stream_direct",
@@ -357,6 +362,7 @@
         "camera.tapo_c420_south_wall_hd_stream_direct",
         "camera.tapo_c425_north_wall_hd_stream_direct",
         "climate.bedroom_parents_room_ac",
+        "cover.aqara_roller_shade_driver_e1",
         "input_boolean.car_insurance_paid",
         "input_boolean.council_rate_paid",
         "input_boolean.elec_bill_paid",
@@ -372,19 +378,26 @@
         "sensor.aqara_roller_shade_driver_e1_battery",
         "sensor.bedroom_motion_sensor_temperature",
         "sensor.bills_unpaid_count",
+        "sensor.casa_monitored_power",
+        "sensor.casa_solar_expected_today",
         "sensor.front_door_battery",
+        "sensor.g_monitor_freezer_p110m_current_consumption",
         "sensor.living_room_living_hue_hue_sensor_temperature",
+        "sensor.living_room_living_room_temperature",
         "sensor.powerpal_gateway_powerpal_daily_energy",
         "sensor.powerpal_gateway_powerpal_power",
         "sensor.primo_5_0_1_1_ac_power",
         "sensor.primo_5_0_1_1_energy_day",
+        "sensor.r_energy_monitor_p110m_current_consumption",
         "sensor.sun_next_rising",
         "sensor.sun_next_setting",
         "sensor.tapo_c420_south_wall_battery",
         "sensor.tapo_c425_north_wall_battery",
+        "switch.g_printer_p100",
         "todo.shopping_list",
         "weather.forecast_home"
       ],
+      "band_grid": 24,
       "unverified": [],
       "dark_at_export": [
         "binary_sensor.b_contact_sensor_door",
@@ -394,34 +407,12 @@
         "camera.tapo_c420_south_wall_hd_stream_direct"
       ],
       "v2_entities_not_on_native": [
-        "binary_sensor.bedroom_parents_room_ac_room_occupied",
         "binary_sensor.g_printer_p100_cloud_connection",
-        "binary_sensor.k_motion_sensor_motion",
-        "binary_sensor.living_room_living_hue_hue_sensor_motion",
-        "binary_sensor.sensor_group_motion",
-        "cover.aqara_roller_shade_driver_e1",
-        "sensor.casa_monitored_power",
-        "sensor.casa_solar_expected_today",
-        "sensor.g_monitor_freezer_p110m_current_consumption",
-        "sensor.living_room_living_room_temperature",
         "sensor.living_room_ringring_battery",
-        "sensor.r_energy_monitor_p110m_current_consumption",
         "sensor.tapo_camera_bcca_battery",
-        "switch.g_printer_p100",
         "switch.mainroomlight_switch_1"
       ],
       "migration": [
-        {
-          "entity": "binary_sensor.bedroom_parents_room_ac_room_occupied",
-          "name": "Parents Room AC Room occupied",
-          "to": "climate",
-          "destination": "Climate",
-          "status": "native",
-          "also_on": [
-            "parents-room"
-          ],
-          "note": "Parents' room occupancy beside the air-con it serves"
-        },
         {
           "entity": "binary_sensor.g_printer_p100_cloud_connection",
           "name": "G/Printer P100 Cloud connection",
@@ -432,54 +423,6 @@
           "note": "printer plug's cloud link, in device connectivity"
         },
         {
-          "entity": "binary_sensor.k_motion_sensor_motion",
-          "name": "K/Motion Sensor Motion",
-          "to": "security",
-          "destination": "Security",
-          "status": "native",
-          "also_on": [
-            "house-health",
-            "kitchen",
-            "rooms"
-          ],
-          "note": "kitchen motion"
-        },
-        {
-          "entity": "binary_sensor.living_room_living_hue_hue_sensor_motion",
-          "name": "Living Room Motion Sensor Motion",
-          "to": "security",
-          "destination": "Security",
-          "status": "native",
-          "also_on": [
-            "house-health",
-            "living-room",
-            "rooms"
-          ],
-          "note": "living-room motion"
-        },
-        {
-          "entity": "binary_sensor.sensor_group_motion",
-          "name": "Sensor group Motion",
-          "to": "security",
-          "destination": "Security",
-          "status": "native",
-          "also_on": [
-            "dining",
-            "house-health",
-            "rooms"
-          ],
-          "note": "dining motion (sensor group)"
-        },
-        {
-          "entity": "cover.aqara_roller_shade_driver_e1",
-          "name": "Aqara Roller Shade Driver E1",
-          "to": "ray-bedroom",
-          "destination": "Rooms",
-          "status": "native",
-          "also_on": [],
-          "note": "roller shade, V2's open/close and position features"
-        },
-        {
           "entity": "sensor.bills_unpaid_count",
           "name": "Bills Unpaid Count",
           "to": "home",
@@ -487,47 +430,6 @@
           "status": "native",
           "also_on": [],
           "note": "Needs attention; a zero counts only while the six paid flags answer"
-        },
-        {
-          "entity": "sensor.casa_monitored_power",
-          "name": "Casa Monitored Power",
-          "to": "energy",
-          "destination": "Energy",
-          "status": "native",
-          "also_on": [],
-          "note": "monitored-circuit total beside its two circuits (V3-007)"
-        },
-        {
-          "entity": "sensor.casa_solar_expected_today",
-          "name": "Casa Solar Expected Today",
-          "to": "energy",
-          "destination": "Energy",
-          "status": "native",
-          "also_on": [],
-          "note": "solar forecast group"
-        },
-        {
-          "entity": "sensor.g_monitor_freezer_p110m_current_consumption",
-          "name": "G/Monitor Freezer P110M Current consumption",
-          "to": "energy",
-          "destination": "Energy",
-          "status": "native",
-          "also_on": [
-            "garage"
-          ],
-          "note": "monitored circuits (no Appliances board exists)"
-        },
-        {
-          "entity": "sensor.living_room_living_room_temperature",
-          "name": "Dining Room Motion Sensor Temperature",
-          "to": "climate",
-          "destination": "Climate",
-          "status": "native",
-          "also_on": [
-            "dining",
-            "rooms"
-          ],
-          "note": "dining temperature (export: Dining Room Motion Sensor Temperature)"
         },
         {
           "entity": "sensor.living_room_ringring_battery",
@@ -543,17 +445,6 @@
           "note": "doorbell battery; also on House health"
         },
         {
-          "entity": "sensor.r_energy_monitor_p110m_current_consumption",
-          "name": "R/Energy Monitor P110M Current consumption",
-          "to": "energy",
-          "destination": "Energy",
-          "status": "native",
-          "also_on": [
-            "ray-bedroom"
-          ],
-          "note": "monitored circuits"
-        },
-        {
           "entity": "sensor.tapo_camera_bcca_battery",
           "name": "Tapo C420 - East Wall Battery",
           "to": "cameras",
@@ -564,18 +455,6 @@
             "house-health"
           ],
           "note": "east-wall camera battery; also on House health"
-        },
-        {
-          "entity": "switch.g_printer_p100",
-          "name": "G/Printer P100",
-          "to": "guest-room",
-          "destination": "Rooms",
-          "status": "native",
-          "also_on": [
-            "network",
-            "rooms"
-          ],
-          "note": "printer plug, V2 tile behaviour (manifest controls)"
         },
         {
           "entity": "switch.mainroomlight_switch_1",
@@ -615,6 +494,7 @@
         "switch.g_monitor_freezer_p110m",
         "switch.g_printer_p100"
       ],
+      "band_grid": 12,
       "unverified": [],
       "dark_at_export": [
         "binary_sensor.b_contact_sensor_door"
@@ -687,6 +567,7 @@
         "switch.living_room_living_hue_hue_sensor_light_sensor_enabled",
         "switch.living_room_living_hue_hue_sensor_motion_sensor_enabled"
       ],
+      "band_grid": 12,
       "unverified": [],
       "dark_at_export": [
         "binary_sensor.f_contact_sensor_door",
@@ -732,6 +613,7 @@
         "switch.lg_fridge_express_mode",
         "todo.shopping_list"
       ],
+      "band_grid": 12,
       "unverified": [],
       "dark_at_export": [],
       "v2_entities_not_on_native": [],
@@ -771,6 +653,7 @@
         "switch.smart_pet_feeder_privacy_mode",
         "switch.smart_pet_feeder_time_watermark"
       ],
+      "band_grid": 12,
       "unverified": [],
       "dark_at_export": [
         "scene.dining_dining_concentrate",
@@ -823,6 +706,7 @@
         "switch.master_bedroom_power_point_socket_5",
         "update.bedroom_parents_room_ac_firmware"
       ],
+      "band_grid": 12,
       "unverified": [],
       "dark_at_export": [
         "binary_sensor.m_contact_sensor_door",
@@ -868,6 +752,7 @@
         "switch.r_energy_monitor_p110m_auto_off_enabled",
         "switch.r_energy_monitor_p110m_led"
       ],
+      "band_grid": 12,
       "unverified": [],
       "dark_at_export": [
         "binary_sensor.lph_se_dcd9_pump",
@@ -900,6 +785,7 @@
         "switch.g_monitor_freezer_p110m_auto_off_enabled",
         "switch.g_monitor_freezer_p110m_led"
       ],
+      "band_grid": 12,
       "unverified": [],
       "dark_at_export": [],
       "v2_entities_not_on_native": [],
@@ -921,6 +807,7 @@
         "switch.g_printer_p100_auto_update_enabled",
         "switch.g_printer_p100_led"
       ],
+      "band_grid": 12,
       "unverified": [],
       "dark_at_export": [
         "light.kogan_tv",
@@ -983,6 +870,7 @@
         "switch.dinning_light_switch_1",
         "switch.mainroomlight_switch_1"
       ],
+      "band_grid": 12,
       "unverified": [],
       "dark_at_export": [
         "light.kogan_tv",
@@ -1030,6 +918,7 @@
         "switch.bedroom_parents_room_ac_timer",
         "weather.forecast_home"
       ],
+      "band_grid": 12,
       "unverified": [],
       "dark_at_export": [],
       "v2_entities_not_on_native": [],
@@ -1069,6 +958,7 @@
         "sensor.r_energy_monitor_p110m_current_consumption",
         "sensor.r_energy_monitor_p110m_today_s_consumption"
       ],
+      "band_grid": 12,
       "unverified": [],
       "dark_at_export": [],
       "v2_entities_not_on_native": [],
@@ -1293,6 +1183,7 @@
         "switch.tapo_camera_bcca_motion_detection",
         "switch.tapo_camera_bcca_person_detection"
       ],
+      "band_grid": 12,
       "unverified": [],
       "dark_at_export": [
         "binary_sensor.b_contact_sensor_door",
@@ -1329,6 +1220,7 @@
         "switch.tapo_c420_south_wall_privacy",
         "switch.tapo_c425_north_wall_privacy"
       ],
+      "band_grid": 12,
       "unverified": [],
       "dark_at_export": [
         "camera.tapo_c420_east_wall_hd_stream_direct",
@@ -1463,6 +1355,7 @@
         "sensor.vine_s_phone_battery_state",
         "zone.home"
       ],
+      "band_grid": 12,
       "unverified": [],
       "dark_at_export": [],
       "v2_entities_not_on_native": [],
@@ -1557,6 +1450,7 @@
         "update.home_assistant_operating_system_update",
         "update.home_assistant_supervisor_update"
       ],
+      "band_grid": 12,
       "unverified": [],
       "dark_at_export": [
         "camera.tapo_c420_east_wall_hd_stream_direct",
@@ -1666,6 +1560,7 @@
         "switch.k_top_p100",
         "switch.r_energy_monitor_p110m"
       ],
+      "band_grid": 12,
       "unverified": [],
       "dark_at_export": [
         "binary_sensor.b_contact_sensor_cloud_connection",
@@ -1704,6 +1599,7 @@
         "sensor.primo_5_0_1_1_ac_power",
         "sensor.tapo_c425_north_wall_battery"
       ],
+      "band_grid": 12,
       "unverified": [],
       "dark_at_export": [
         "binary_sensor.b_contact_sensor_door",

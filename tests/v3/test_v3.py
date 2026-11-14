@@ -241,8 +241,17 @@ class MigratedEntities(unittest.TestCase):
         _, rep, _ = B.build(write=False)
         rows = {r["path"]: r for r in rep["views"]}
         home = {m["entity"]: m for m in rows["home"]["migration"]}
-        self.assertEqual(len(home), 16)
-        # CR-V3-17: the six that were carried are native now, so all 16 are.
+        # V3-013: eleven of the sixteen came back to native Home with the wall
+        # render's room lines, Right now and Who's home; five still live elsewhere.
+        returned = {"binary_sensor.bedroom_parents_room_ac_room_occupied", "binary_sensor.k_motion_sensor_motion",
+                    "binary_sensor.living_room_living_hue_hue_sensor_motion", "binary_sensor.sensor_group_motion",
+                    "cover.aqara_roller_shade_driver_e1", "sensor.casa_monitored_power",
+                    "sensor.casa_solar_expected_today", "sensor.g_monitor_freezer_p110m_current_consumption",
+                    "sensor.living_room_living_room_temperature",
+                    "sensor.r_energy_monitor_p110m_current_consumption", "switch.g_printer_p100"}
+        self.assertLessEqual(returned, set(rows["home"]["entities"]))
+        self.assertEqual(len(home) + len(returned), 16)
+        # CR-V3-17: the six that were carried are native now, so all are.
         self.assertEqual({m["status"] for m in home.values()}, {"native"})
         for e, m in home.items():
             self.assertIn(e, rows[m["to"]]["entities"], e)
@@ -265,12 +274,15 @@ class MigratedEntities(unittest.TestCase):
 
     def test_false_or_missing_migration_rows_stop_the_build(self):
         bad = {
-            "row removed": lambda m: m["home"].pop("sensor.casa_monitored_power"),
-            "wrong view": lambda m: m["home"]["sensor.casa_monitored_power"].update(to="climate"),
-            "wrong kind": lambda m: m["home"]["switch.g_printer_p100"].update(status="carried"),
-            "unknown view": lambda m: m["home"]["switch.g_printer_p100"].update(to="appliances"),
-            "stray key": lambda m: m["home"]["switch.g_printer_p100"].update({"read-only": None}),
-            "retained, no reason": lambda m: m["home"]["switch.g_printer_p100"].update(status="retained", note=""),
+            # (V3-013 brought casa_monitored_power and g_printer_p100 back to Home,
+            # so the mutations use two rows that still describe a move.)
+            "row removed": lambda m: m["home"].pop("sensor.living_room_ringring_battery"),
+            "wrong view": lambda m: m["home"]["sensor.living_room_ringring_battery"].update(to="climate"),
+            "wrong kind": lambda m: m["home"]["switch.mainroomlight_switch_1"].update(status="carried"),
+            "unknown view": lambda m: m["home"]["switch.mainroomlight_switch_1"].update(to="appliances"),
+            "stray key": lambda m: m["home"]["switch.mainroomlight_switch_1"].update({"read-only": None}),
+            "retained, no reason": lambda m: m["home"]["switch.mainroomlight_switch_1"].update(status="retained",
+                                                                                               note=""),
             "stale row": lambda m: m["home"].update({"sensor.not_on_v2_home": {"to": "home", "status": "native"}}),
         }
         for name, mutate in bad.items():

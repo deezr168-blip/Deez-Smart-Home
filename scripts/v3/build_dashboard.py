@@ -188,11 +188,24 @@ def resolve(node, ctx):
     return node
 
 
+BAND_GRIDS = (12, 24)
+
+
 def build_native(spec, ctx):
+    """One native view from its spec.
+
+    `band_grid: 24` (opt-in per view) says the spec's two-column bands are
+    written for the grid Home Assistant actually gives them on the wall iPad:
+    24 units, where 12 is half the band (ha_layout.py). Their headings are then
+    emitted full width, and the gate checks that every band packs into whole
+    rows on that grid and on a phone's 12. Views without it are unchanged."""
     view = {"title": ctx.t(spec["title"]), "path": spec["path"], "icon": spec["icon"],
             "type": "sections", "max_columns": 2, "theme": ctx.theme}
     if spec.get("subview"):
         view["subview"] = True
+    band = spec.get("band_grid", 12)
+    if band not in BAND_GRIDS:
+        raise SystemExit(f"{spec['path']}: band_grid must be one of {BAND_GRIDS}, not {band!r}")
     sections = []
     for sec in spec["sections"]:
         if sec.get("topbar"):
@@ -203,7 +216,8 @@ def build_native(spec, ctx):
             continue
         cards = []
         if sec.get("heading"):
-            cards.append(C.heading(ctx, sec["heading"]))
+            wide = band == 24 and sec.get("span", 1) == 2
+            cards.append(C.heading(ctx, sec["heading"], columns="full" if wide else 12))
         cards.extend(resolve(sec.get("cards", []), ctx))
         sections.append({"type": "grid", "column_span": sec.get("span", 1), "cards": cards})
     view["sections"] = sections
@@ -273,7 +287,8 @@ def build(write=True):
                 nv = build_native(specs[p], ctx)
                 views.append(nv)
                 rows.append({"path": p, "kind": "native", "source": f"views/{p}.yaml",
-                             "v2_equivalent": p, "entities": sorted(entities_in(nv))})
+                             "v2_equivalent": p, "entities": sorted(entities_in(nv)),
+                             "band_grid": specs[p].get("band_grid", 12)})
             else:
                 cv = rewrite_links(copy.deepcopy(v), base["url_base"], loc["url_base"])
                 cv["theme"] = man["classic_theme"]
