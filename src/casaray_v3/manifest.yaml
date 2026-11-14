@@ -111,36 +111,14 @@ controls:
 # An entity left out while missing from its native rebuild fails the build.
 migration:
   home:
-    binary_sensor.bedroom_parents_room_ac_room_occupied:
-      {to: climate, status: native, note: Parents' room occupancy beside the air-con it serves}
     binary_sensor.g_printer_p100_cloud_connection:
       {to: network, status: native, note: "printer plug's cloud link, in device connectivity"}
-    binary_sensor.k_motion_sensor_motion:
-      {to: security, status: native, note: kitchen motion}
-    binary_sensor.living_room_living_hue_hue_sensor_motion:
-      {to: security, status: native, note: living-room motion}
-    binary_sensor.sensor_group_motion:
-      {to: security, status: native, note: dining motion (sensor group)}
-    cover.aqara_roller_shade_driver_e1:
-      {to: ray-bedroom, status: native, note: "roller shade, V2's open/close and position features"}
     sensor.bills_unpaid_count:
       {to: home, status: native, note: "Needs attention; a zero counts only while the six paid flags answer"}
-    sensor.casa_monitored_power:
-      {to: energy, status: native, note: monitored-circuit total beside its two circuits (V3-007)}
-    sensor.casa_solar_expected_today:
-      {to: energy, status: native, note: solar forecast group}
-    sensor.g_monitor_freezer_p110m_current_consumption:
-      {to: energy, status: native, note: monitored circuits (no Appliances board exists)}
-    sensor.living_room_living_room_temperature:
-      {to: climate, status: native, note: "dining temperature (export: Dining Room Motion Sensor Temperature)"}
     sensor.living_room_ringring_battery:
       {to: cameras, status: native, note: doorbell battery; also on House health}
-    sensor.r_energy_monitor_p110m_current_consumption:
-      {to: energy, status: native, note: monitored circuits}
     sensor.tapo_camera_bcca_battery:
       {to: cameras, status: native, note: east-wall camera battery; also on House health}
-    switch.g_printer_p100:
-      {to: guest-room, status: native, note: "printer plug, V2 tile behaviour (manifest controls)"}
     switch.mainroomlight_switch_1:
       {to: lighting, status: native, note: "bulb-power switch, read-only (owner rule on bulb power)"}
   rooms:

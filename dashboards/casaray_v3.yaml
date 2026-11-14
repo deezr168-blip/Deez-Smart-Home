@@ -100,9 +100,9 @@ views:
         column_span: 2
         cards:
           - type: markdown
-            content: '{%- set ns = namespace(ok=0, on=0) -%}{%- for e in [''person.raymond_du'',''person.vinh_du'',''person.ai_q_huang''] -%}{%- set s = states(e) -%}{%- if s not in [''unavailable'',''unknown'',''none'',''''] -%}{%- set ns.ok = ns.ok + 1 -%}{%- if s in [''home''] -%}{%- set ns.on = ns.on + 1 -%}{%- endif -%}{%- endif -%}{%- endfor -%}{%- if ns.ok == 0 -%}Home **No data**{%- else -%}Home **{{ ns.on }}**{%- if ns.ok < 3 %} <small>{{ (ns.ok) ~ " of " ~ (3) ~ " reporting" }}</small>{% endif -%}{%- endif -%}{{ '' · '' }}{%- set ns = namespace(ok=0, on=0) -%}{%- for e in [''light.living_room'',''light.dining'',''light.bedroom_bedroom''] -%}{%- set s = states(e) -%}{%- if s not in [''unavailable'',''unknown'',''none'',''''] -%}{%- set ns.ok = ns.ok + 1 -%}{%- if s in [''on''] -%}{%- set ns.on = ns.on + 1 -%}{%- endif -%}{%- endif -%}{%- endfor -%}{%- if ns.ok == 0 -%}Lights on **No data**{%- else -%}Lights on **{{ ns.on }}**{%- if ns.ok < 3 %} <small>{{ (ns.ok) ~ " of " ~ (3) ~ " reporting" }}</small>{% endif -%}{%- endif -%}{{ '' · '' }}{%- set ns = namespace(ok=0, on=0) -%}{%- for e in [''camera.front_door_live_view'',''camera.smart_pet_feeder'',''camera.tapo_c200_stockroom_hd_stream_direct'',''camera.tapo_c425_north_wall_hd_stream_direct'',''camera.tapo_c420_east_wall_hd_stream_direct'',''camera.tapo_c420_south_wall_hd_stream_direct''] -%}{%- set s = states(e) -%}{%- if s not in [''unavailable'',''unknown'',''none'',''''] -%}{%- set ns.ok = ns.ok + 1 -%}{%- if s in [''idle'',''streaming'',''recording''] -%}{%- set ns.on = ns.on + 1 -%}{%- endif -%}{%- endif -%}{%- endfor -%}{%- if ns.ok == 0 -%}Cameras online **No data**{%- else -%}Cameras online **{{ ns.on }}**{%- if ns.ok < 6 %} <small>{{ (ns.ok) ~ " of " ~ (6) ~ " reporting" }}</small>{% endif -%}{%- endif -%}{{ '' · '' }}House now **{{ ((states(''sensor.powerpal_gateway_powerpal_power'') | float) | round(0) | int ~ (('' '' ~ state_attr(''sensor.powerpal_gateway_powerpal_power'',''unit_of_measurement'')) if state_attr(''sensor.powerpal_gateway_powerpal_power'',''unit_of_measurement'') else '''')) if states(''sensor.powerpal_gateway_powerpal_power'') | is_number else "No data" }}**{{ '' · '' }}Solar now **{{ ((states(''sensor.primo_5_0_1_1_ac_power'') | float) | round(0) | int ~ (('' '' ~ state_attr(''sensor.primo_5_0_1_1_ac_power'',''unit_of_measurement'')) if state_attr(''sensor.primo_5_0_1_1_ac_power'',''unit_of_measurement'') else '''')) if states(''sensor.primo_5_0_1_1_ac_power'') | is_number else "No data" }}**'
+            content: Outside **{{ (((state_attr('weather.forecast_home','temperature') | float) | round(0) | int) ~ '°') if state_attr('weather.forecast_home','temperature') | is_number else "No data" }}**{{ ' · ' }}Inside **{{ (((states('sensor.living_room_living_hue_hue_sensor_temperature') | float) | round(1)) ~ '°') if states('sensor.living_room_living_hue_hue_sensor_temperature') | is_number else "No data" }}**{{ ' · ' }}{%- set ns = namespace(ok=0, on=0) -%}{%- for e in ['person.raymond_du','person.vinh_du','person.ai_q_huang'] -%}{%- set s = states(e) -%}{%- if s not in ['unavailable','unknown','none',''] -%}{%- set ns.ok = ns.ok + 1 -%}{%- if s in ['home'] -%}{%- set ns.on = ns.on + 1 -%}{%- endif -%}{%- endif -%}{%- endfor -%}{%- if ns.ok == 0 -%}Home **No data**{%- else -%}Home **{{ ns.on }}**{%- if ns.ok < 3 %} <small>{{ (ns.ok) ~ " of " ~ (3) ~ " reporting" }}</small>{% endif -%}{%- endif -%}{{ ' · ' }}{%- set pp = namespace(ok=0) -%}{%- for e in ['sensor.g_monitor_freezer_p110m_current_consumption','sensor.r_energy_monitor_p110m_current_consumption'] -%}{%- if states(e) | is_number -%}{%- set pp.ok = pp.ok + 1 -%}{%- endif -%}{%- endfor -%}Two monitored plugs **{{ (((states('sensor.casa_monitored_power') | float) | round(1) ~ ((' ' ~ state_attr('sensor.casa_monitored_power','unit_of_measurement')) if state_attr('sensor.casa_monitored_power','unit_of_measurement') else '')) if states('sensor.casa_monitored_power') | is_number else "No data") if pp.ok == 2 else "No data" }}**{{ (' <small>' ~ (pp.ok) ~ " of " ~ (2) ~ " reporting" ~ '</small>') if (pp.ok > 0 and pp.ok < 2) else '' }}
             grid_options:
-              columns: 12
+              columns: full
               rows: auto
       - type: grid
         column_span: 2
@@ -111,7 +111,7 @@ views:
             heading: Needs attention
             heading_style: title
             grid_options:
-              columns: 12
+              columns: full
               rows: auto
           - type: markdown
             content: |-
@@ -120,7 +120,7 @@ views:
 
               <small>{{ (ns.dark) ~ " not reporting" }}</small>{% endif -%}{%- elif ns.ok == 0 -%}No check is answering, so nothing can be said about the house.{%- elif ns.dark > 0 -%}{{ "Nothing flagged among " ~ (ns.ok) ~ " checks that answered · " ~ (ns.dark) ~ " not reporting." }}{%- else -%}{{ "All " ~ (17) ~ " checks answered — nothing needs attention." }}{%- endif -%}
             grid_options:
-              columns: 12
+              columns: full
               rows: auto
       - type: grid
         column_span: 2
@@ -129,7 +129,7 @@ views:
             heading: One tap
             heading_style: title
             grid_options:
-              columns: 12
+              columns: full
               rows: auto
           - type: button
             name: Evening
@@ -146,7 +146,7 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 3
+              columns: 6
               rows: 2
           - type: button
             name: Night
@@ -166,7 +166,7 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 3
+              columns: 6
               rows: 2
           - type: button
             name: All lights off
@@ -184,7 +184,7 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 3
+              columns: 6
               rows: 2
           - type: markdown
             content: |-
@@ -192,8 +192,8 @@ views:
 
               Room {{ ((state_attr('climate.bedroom_parents_room_ac','current_temperature') | float) | round(1) ~ '°') if state_attr('climate.bedroom_parents_room_ac','current_temperature') is number or (state_attr('climate.bedroom_parents_room_ac','current_temperature') | is_number) else "No data" }} · Target {{ ((state_attr('climate.bedroom_parents_room_ac','temperature') | float) | round(1) ~ '°') if state_attr('climate.bedroom_parents_room_ac','temperature') is number or (state_attr('climate.bedroom_parents_room_ac','temperature') | is_number) else "No data" }}{%- endif -%}
             grid_options:
-              columns: 3
-              rows: auto
+              columns: 6
+              rows: 2
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/climate
@@ -206,94 +206,84 @@ views:
             grid_options:
               columns: 12
               rows: auto
-          - type: button
-            name: Living room
-            icon: mdi:sofa-outline
-            show_name: true
-            show_icon: true
+          - type: markdown
+            content: |-
+              {%- set ns = namespace(p=[], d=0) -%}{%- set s = states('light.living_room') -%}{%- if s in {"on":"Lights on","off":"Lights off"} -%}{%- set ns.p = ns.p + [({"on":"Lights on","off":"Lights off"})[s]] -%}{%- elif s in ['unavailable','unknown','none',''] -%}{%- set ns.d = ns.d + 1 -%}{%- else -%}{%- set ns.p = ns.p + [s] -%}{%- endif -%}{%- if states('sensor.living_room_living_hue_hue_sensor_temperature') | is_number -%}{%- set ns.p = ns.p + [(((states('sensor.living_room_living_hue_hue_sensor_temperature') | float) | round(1)) ~ '°') if states('sensor.living_room_living_hue_hue_sensor_temperature') | is_number else "No data"] -%}{%- else -%}{%- set ns.d = ns.d + 1 -%}{%- endif -%}{%- set s = states('binary_sensor.living_room_living_hue_hue_sensor_motion') -%}{%- if s in {"on":"Movement","off":"Quiet"} -%}{%- set ns.p = ns.p + [({"on":"Movement","off":"Quiet"})[s]] -%}{%- elif s in ['unavailable','unknown','none',''] -%}{%- set ns.d = ns.d + 1 -%}{%- else -%}{%- set ns.p = ns.p + [s] -%}{%- endif -%}**Living room**
+              {{ (ns.p | join(' · ')) if ns.p else "No data" }}{{ (' · ' ~ (ns.d) ~ " not reporting") if (ns.p and ns.d) else '' }}
+            grid_options:
+              columns: 6
+              rows: auto
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/living-room
+          - type: markdown
+            content: |-
+              {%- set ns = namespace(p=[], d=0) -%}{%- set s = states('light.dining') -%}{%- if s in {"on":"Lights on","off":"Lights off"} -%}{%- set ns.p = ns.p + [({"on":"Lights on","off":"Lights off"})[s]] -%}{%- elif s in ['unavailable','unknown','none',''] -%}{%- set ns.d = ns.d + 1 -%}{%- else -%}{%- set ns.p = ns.p + [s] -%}{%- endif -%}{%- if states('sensor.living_room_living_room_temperature') | is_number -%}{%- set ns.p = ns.p + [(((states('sensor.living_room_living_room_temperature') | float) | round(1)) ~ '°') if states('sensor.living_room_living_room_temperature') | is_number else "No data"] -%}{%- else -%}{%- set ns.d = ns.d + 1 -%}{%- endif -%}{%- set s = states('binary_sensor.sensor_group_motion') -%}{%- if s in {"on":"Movement","off":"Quiet"} -%}{%- set ns.p = ns.p + [({"on":"Movement","off":"Quiet"})[s]] -%}{%- elif s in ['unavailable','unknown','none',''] -%}{%- set ns.d = ns.d + 1 -%}{%- else -%}{%- set ns.p = ns.p + [s] -%}{%- endif -%}**Dining**
+              {{ (ns.p | join(' · ')) if ns.p else "No data" }}{{ (' · ' ~ (ns.d) ~ " not reporting") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: 1
-          - type: button
-            name: Dining
-            icon: mdi:table-chair
-            show_name: true
-            show_icon: true
+              rows: auto
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/dining
+          - type: markdown
+            content: |-
+              {%- set ns = namespace(p=[], d=0) -%}{%- set s = states('binary_sensor.k_motion_sensor_motion') -%}{%- if s in {"on":"Movement","off":"Quiet"} -%}{%- set ns.p = ns.p + [({"on":"Movement","off":"Quiet"})[s]] -%}{%- elif s in ['unavailable','unknown','none',''] -%}{%- set ns.d = ns.d + 1 -%}{%- else -%}{%- set ns.p = ns.p + [s] -%}{%- endif -%}{%- set s = states('binary_sensor.lg_fridge_door') -%}{%- if s in {"on":"Fridge open","off":"Fridge closed"} -%}{%- set ns.p = ns.p + [({"on":"Fridge open","off":"Fridge closed"})[s]] -%}{%- elif s in ['unavailable','unknown','none',''] -%}{%- set ns.d = ns.d + 1 -%}{%- else -%}{%- set ns.p = ns.p + [s] -%}{%- endif -%}**Kitchen**
+              {{ (ns.p | join(' · ')) if ns.p else "No data" }}{{ (' · ' ~ (ns.d) ~ " not reporting") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: 1
-          - type: button
-            name: Kitchen
-            icon: mdi:countertop-outline
-            show_name: true
-            show_icon: true
+              rows: auto
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/kitchen
+          - type: markdown
+            content: |-
+              {%- set ns = namespace(p=[], d=0) -%}{%- set s = states('binary_sensor.bedroom_parents_room_ac_room_occupied') -%}{%- if s in {"on":"Occupied","off":"Not occupied"} -%}{%- set ns.p = ns.p + [({"on":"Occupied","off":"Not occupied"})[s]] -%}{%- elif s in ['unavailable','unknown','none',''] -%}{%- set ns.d = ns.d + 1 -%}{%- else -%}{%- set ns.p = ns.p + [s] -%}{%- endif -%}{%- if states('sensor.bedroom_motion_sensor_temperature') | is_number -%}{%- set ns.p = ns.p + [(((states('sensor.bedroom_motion_sensor_temperature') | float) | round(1)) ~ '°') if states('sensor.bedroom_motion_sensor_temperature') | is_number else "No data"] -%}{%- else -%}{%- set ns.d = ns.d + 1 -%}{%- endif -%}{%- if states('climate.bedroom_parents_room_ac') not in ['unavailable','unknown','none',''] -%}{%- set ns.p = ns.p + ["Air-con " ~ ((({'off':"Off",'cool':"Cool",'heat':"Heat",'fan_only':"Fan only",'dry':"Dry",'auto':"Auto",'heat_cool':"Heat/cool"}).get(states('climate.bedroom_parents_room_ac'), states('climate.bedroom_parents_room_ac'))) | lower)] -%}{%- else -%}{%- set ns.d = ns.d + 1 -%}{%- endif -%}**Parents' room**
+              {{ (ns.p | join(' · ')) if ns.p else "No data" }}{{ (' · ' ~ (ns.d) ~ " not reporting") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: 1
-          - type: button
-            name: Parents' room
-            icon: mdi:bed-outline
-            show_name: true
-            show_icon: true
+              rows: auto
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/parents-room
+          - type: markdown
+            content: |-
+              {%- set ns = namespace(p=[], d=0) -%}{%- set s = states('light.bedroom_bedroom') -%}{%- if s in {"on":"Lights on","off":"Lights off"} -%}{%- set ns.p = ns.p + [({"on":"Lights on","off":"Lights off"})[s]] -%}{%- elif s in ['unavailable','unknown','none',''] -%}{%- set ns.d = ns.d + 1 -%}{%- else -%}{%- set ns.p = ns.p + [s] -%}{%- endif -%}{%- set s = states('cover.aqara_roller_shade_driver_e1') -%}{%- if s in {"open":"Blind open","closed":"Blind closed","opening":"Blind opening","closing":"Blind closing"} -%}{%- set ns.p = ns.p + [({"open":"Blind open","closed":"Blind closed","opening":"Blind opening","closing":"Blind closing"})[s]] -%}{%- elif s in ['unavailable','unknown','none',''] -%}{%- set ns.d = ns.d + 1 -%}{%- else -%}{%- set ns.p = ns.p + [s] -%}{%- endif -%}**Ray's room**
+              {{ (ns.p | join(' · ')) if ns.p else "No data" }}{{ (' · ' ~ (ns.d) ~ " not reporting") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: 1
-          - type: button
-            name: Ray's room
-            icon: mdi:bed-king-outline
-            show_name: true
-            show_icon: true
+              rows: auto
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/ray-bedroom
+          - type: markdown
+            content: |-
+              {%- set ns = namespace(p=[], d=0) -%}{%- if states('sensor.g_monitor_freezer_p110m_current_consumption') | is_number -%}{%- set ns.p = ns.p + ["Freezer " ~ (((states('sensor.g_monitor_freezer_p110m_current_consumption') | float) | round(0) | int ~ ((' ' ~ state_attr('sensor.g_monitor_freezer_p110m_current_consumption','unit_of_measurement')) if state_attr('sensor.g_monitor_freezer_p110m_current_consumption','unit_of_measurement') else '')) if states('sensor.g_monitor_freezer_p110m_current_consumption') | is_number else "No data")] -%}{%- else -%}{%- set ns.d = ns.d + 1 -%}{%- endif -%}{%- set s = states('binary_sensor.g_monitor_freezer_p110m_overloaded') -%}{%- if s in {"on":"Overloaded","off":"Normal"} -%}{%- set ns.p = ns.p + [({"on":"Overloaded","off":"Normal"})[s]] -%}{%- elif s in ['unavailable','unknown','none',''] -%}{%- set ns.d = ns.d + 1 -%}{%- else -%}{%- set ns.p = ns.p + [s] -%}{%- endif -%}**Garage**
+              {{ (ns.p | join(' · ')) if ns.p else "No data" }}{{ (' · ' ~ (ns.d) ~ " not reporting") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: 1
-          - type: button
-            name: Garage
-            icon: mdi:garage-variant
-            show_name: true
-            show_icon: true
+              rows: auto
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/garage
+          - type: markdown
+            content: |-
+              {%- set ns = namespace(p=[], d=0) -%}{%- set s = states('switch.g_printer_p100') -%}{%- if s in {"on":"Printer on","off":"Printer off"} -%}{%- set ns.p = ns.p + [({"on":"Printer on","off":"Printer off"})[s]] -%}{%- elif s in ['unavailable','unknown','none',''] -%}{%- set ns.d = ns.d + 1 -%}{%- else -%}{%- set ns.p = ns.p + [s] -%}{%- endif -%}**Guest room**
+              {{ (ns.p | join(' · ')) if ns.p else "No data" }}{{ (' · ' ~ (ns.d) ~ " not reporting") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: 1
-          - type: button
-            name: Guest room
-            icon: mdi:bed-single-outline
-            show_name: true
-            show_icon: true
+              rows: auto
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/guest-room
+          - type: markdown
+            content: '**All rooms**'
             grid_options:
               columns: 6
-              rows: 1
-          - type: button
-            name: All rooms
-            icon: mdi:floor-plan
-            show_name: true
-            show_icon: true
+              rows: auto
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/rooms
-            grid_options:
-              columns: 6
-              rows: 1
       - type: grid
         column_span: 1
         cards:
@@ -348,6 +338,34 @@ views:
               columns: 6
               rows: auto
             name: Sunset
+          - type: markdown
+            content: |-
+              {%- set pp = namespace(ok=0) -%}{%- for e in ['sensor.g_monitor_freezer_p110m_current_consumption','sensor.r_energy_monitor_p110m_current_consumption'] -%}{%- if states(e) | is_number -%}{%- set pp.ok = pp.ok + 1 -%}{%- endif -%}{%- endfor -%}**Two monitored plugs**
+              {{ (((states('sensor.casa_monitored_power') | float) | round(1) ~ ((' ' ~ state_attr('sensor.casa_monitored_power','unit_of_measurement')) if state_attr('sensor.casa_monitored_power','unit_of_measurement') else '')) if states('sensor.casa_monitored_power') | is_number else "No data") if pp.ok == 2 else "No data" }} · garage freezer and Ray's desk{{ (' <small>' ~ (pp.ok) ~ " of " ~ (2) ~ " reporting" ~ '</small>') if (pp.ok > 0 and pp.ok < 2) else '' }}
+            grid_options:
+              columns: 12
+              rows: auto
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3/energy
+          - type: tile
+            entity: sensor.casa_solar_expected_today
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3/energy
+            icon_tap_action:
+              action: none
+            hold_action:
+              action: none
+            grid_options:
+              columns: 12
+              rows: auto
+            name: Solar expected today
+          - type: markdown
+            content: <small>Two circuits are metered, so this is monitored load — not the whole house.</small>
+            grid_options:
+              columns: 12
+              rows: auto
       - type: grid
         column_span: 1
         cards:
@@ -368,7 +386,7 @@ views:
               action: none
             grid_options:
               columns: 4
-              rows: 2
+              rows: 3
             vertical: true
           - type: tile
             entity: person.vinh_du
@@ -381,7 +399,7 @@ views:
               action: none
             grid_options:
               columns: 4
-              rows: 2
+              rows: 3
             vertical: true
           - type: tile
             entity: person.ai_q_huang
@@ -394,8 +412,23 @@ views:
               action: none
             grid_options:
               columns: 4
-              rows: 2
+              rows: 3
             vertical: true
+          - type: tile
+            entity: binary_sensor.bedroom_parents_room_ac_room_occupied
+            tap_action:
+              action: more-info
+            icon_tap_action:
+              action: none
+            hold_action:
+              action: none
+            grid_options:
+              columns: 12
+              rows: 2
+            name: Parents' room
+            state_content:
+              - state
+              - last_changed
       - type: grid
         column_span: 2
         cards:
@@ -403,7 +436,7 @@ views:
             heading: Security
             heading_style: title
             grid_options:
-              columns: 12
+              columns: full
               rows: auto
           - type: markdown
             content: |-
@@ -417,7 +450,7 @@ views:
               - Pet feeder — **{{ ("Offline" if states('camera.smart_pet_feeder') == 'unavailable' else ("State unknown" if states('camera.smart_pet_feeder') in ['unknown','none',''] else "Online")) }}**
             grid_options:
               columns: 12
-              rows: auto
+              rows: 4
           - type: picture-entity
             entity: camera.front_door_live_view
             name: Front door
@@ -430,7 +463,7 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: 4
           - type: tile
             entity: binary_sensor.f_contact_sensor_door
@@ -442,9 +475,10 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 3
-              rows: auto
+              columns: 6
+              rows: 2
             name: Front door
+            vertical: true
           - type: tile
             entity: binary_sensor.m_contact_sensor_door
             tap_action:
@@ -455,9 +489,10 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 3
-              rows: auto
+              columns: 6
+              rows: 2
             name: Parents' room
+            vertical: true
           - type: tile
             entity: binary_sensor.b_contact_sensor_door
             tap_action:
@@ -468,9 +503,10 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 3
-              rows: auto
+              columns: 6
+              rows: 2
             name: Backyard
+            vertical: true
           - type: button
             name: All cameras
             icon: mdi:cctv
@@ -480,8 +516,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3/cameras
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 6
+              rows: 2
       - type: grid
         column_span: 1
         cards:
@@ -601,7 +637,7 @@ views:
             heading: More boards
             heading_style: title
             grid_options:
-              columns: 12
+              columns: full
               rows: auto
           - type: button
             name: Bills
@@ -612,8 +648,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3/bills
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 6
+              rows: 2
           - type: button
             name: People
             icon: mdi:account-group-outline
@@ -623,8 +659,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3/people
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 6
+              rows: 2
           - type: button
             name: House health
             icon: mdi:home-heart
@@ -634,8 +670,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3/house-health
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 6
+              rows: 2
           - type: button
             name: Network
             icon: mdi:router-wireless
@@ -645,8 +681,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3/network
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 6
+              rows: 2
           - type: button
             name: Alerts
             icon: mdi:bell-outline
@@ -656,8 +692,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3/alerts
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 6
+              rows: 2
           - type: button
             name: Entertainment
             icon: mdi:television-classic
@@ -667,8 +703,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3/entertainment
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 6
+              rows: 2
           - type: button
             name: Automations
             icon: mdi:robot-outline
@@ -678,8 +714,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3/automations
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 6
+              rows: 2
           - type: button
             name: Classic V2 view
             icon: mdi:history
@@ -689,8 +725,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3/v2-home
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 6
+              rows: 2
   - title: Rooms
     path: rooms
     icon: mdi:floor-plan

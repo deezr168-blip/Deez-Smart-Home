@@ -8,7 +8,7 @@ Baseline: `dashboards/casaray_v2.yaml` ha-deploy@18a4e5d sha256 `77a4991626d6f8a
 
 | # | Path | Kind | Source | Entities | Not in export | Dark at 05/09 export |
 |---|---|---|---|---|---|---|
-| 1 | `home` | native | `views/home.yaml` | 41 | — | 5 |
+| 1 | `home` | native | `views/home.yaml` | 52 | — | 5 |
 | 2 | `rooms` | native | `views/rooms.yaml` | 18 | — | 1 |
 | 3 | `living-room` | native | `views/living-room.yaml` | 46 | — | 10 |
 | 4 | `kitchen` | native | `views/kitchen.yaml` | 22 | — | — |
@@ -59,25 +59,14 @@ Baseline: `dashboards/casaray_v2.yaml` ha-deploy@18a4e5d sha256 `77a4991626d6f8a
 
 For each rebuilt view, every V2 entity that is not on the rebuild itself, or that the migration moved onto it, with its destination and coverage. Source: `src/casaray_v3/manifest.yaml` `migration`; the build checks every row against the generated dashboard and refuses to run on a false or missing one. `native` = on a V3-native view; `carried` = on a carried V2 board, so it still renders as V2 until that board is rebuilt; `retained` / `blocked` = only on the classic `v2-<path>` subview, for the reason given. Every entity also stays on its classic subview, linked from the native view's More boards band, until native parity is verified on a device.
 
-### home (16: 16 native)
+### home (5: 5 native)
 
 | Entity | Friendly name (export) | Destination | Coverage | Also on | Note |
 |---|---|---|---|---|---|
-| `binary_sensor.bedroom_parents_room_ac_room_occupied` | Parents Room AC Room occupied | Climate · `climate` | native | `parents-room` | Parents' room occupancy beside the air-con it serves |
 | `binary_sensor.g_printer_p100_cloud_connection` | G/Printer P100 Cloud connection | Network · `network` | native | — | printer plug's cloud link, in device connectivity |
-| `binary_sensor.k_motion_sensor_motion` | K/Motion Sensor Motion | Security · `security` | native | `house-health`, `kitchen`, `rooms` | kitchen motion |
-| `binary_sensor.living_room_living_hue_hue_sensor_motion` | Living Room Motion Sensor Motion | Security · `security` | native | `house-health`, `living-room`, `rooms` | living-room motion |
-| `binary_sensor.sensor_group_motion` | Sensor group Motion | Security · `security` | native | `dining`, `house-health`, `rooms` | dining motion (sensor group) |
-| `cover.aqara_roller_shade_driver_e1` | Aqara Roller Shade Driver E1 | Rooms · `ray-bedroom` | native | — | roller shade, V2's open/close and position features |
 | `sensor.bills_unpaid_count` | Bills Unpaid Count | Home · `home` | native | — | Needs attention; a zero counts only while the six paid flags answer |
-| `sensor.casa_monitored_power` | Casa Monitored Power | Energy · `energy` | native | — | monitored-circuit total beside its two circuits (V3-007) |
-| `sensor.casa_solar_expected_today` | Casa Solar Expected Today | Energy · `energy` | native | — | solar forecast group |
-| `sensor.g_monitor_freezer_p110m_current_consumption` | G/Monitor Freezer P110M Current consumption | Energy · `energy` | native | `garage` | monitored circuits (no Appliances board exists) |
-| `sensor.living_room_living_room_temperature` | Dining Room Motion Sensor Temperature | Climate · `climate` | native | `dining`, `rooms` | dining temperature (export: Dining Room Motion Sensor Temperature) |
 | `sensor.living_room_ringring_battery` | RingRing Battery | Cameras · `cameras` | native | `alerts`, `house-health`, `living-room` | doorbell battery; also on House health |
-| `sensor.r_energy_monitor_p110m_current_consumption` | R/Energy Monitor P110M Current consumption | Energy · `energy` | native | `ray-bedroom` | monitored circuits |
 | `sensor.tapo_camera_bcca_battery` | Tapo C420 - East Wall Battery | Cameras · `cameras` | native | `camera-east-wall`, `house-health` | east-wall camera battery; also on House health |
-| `switch.g_printer_p100` | G/Printer P100 | Rooms · `guest-room` | native | `network`, `rooms` | printer plug, V2 tile behaviour (manifest controls) |
 | `switch.mainroomlight_switch_1` | MainRoomLight Switch 1 | Lighting · `lighting` | native | `parents-room` | bulb-power switch, read-only (owner rule on bulb power) |
 
 ### rooms (1: 1 native)
@@ -165,4 +154,4 @@ Every V2 entity of this view is on its native rebuild.
 | en | `dashboards/casaray_v3.yaml` | `/casaray-v3` | 46 | 0 | 0 |
 | yue | `dashboards/casaray_v3/dist/casaray_v3_yue.yaml` | `/casaray-v3-yue` | 46 | 0 | 0 |
 | km | `dashboards/casaray_v3/dist/casaray_v3_km.yaml` | `/casaray-v3-km` | 46 | 0 | 0 |
-| zh-Hans | `dashboards/casaray_v3/dist/casaray_v3_zh-hans.yaml` | `/casaray-v3-zh` | 46 | 301 | 0 |
+| zh-Hans | `dashboards/casaray_v3/dist/casaray_v3_zh-hans.yaml` | `/casaray-v3-zh` | 46 | 302 | 0 |
