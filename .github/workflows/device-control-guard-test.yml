@@ -1,0 +1,34 @@
+name: CR-T02 offline device-control guard tests
+
+on:
+  push:
+    branches:
+      - casaray-v3/agent-cr-t02-guard-20261116
+  pull_request:
+    paths:
+      - '.claude/settings.json'
+      - 'scripts/deny_device_control.py'
+      - 'tests/test_device_control_guard.py'
+      - '.github/workflows/device-control-guard-test.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-guard:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate Python and JSON syntax
+        run: |
+          python3 -m py_compile scripts/deny_device_control.py tests/test_device_control_guard.py
+          python3 -m json.tool .claude/settings.json > /dev/null
+      - name: Run offline guard regression (no HA connector)
+        run: python3 -m unittest discover -s tests -p 'test_device_control_guard.py' -v
