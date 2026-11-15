@@ -378,6 +378,7 @@ async function main() {
       check('10x-h cleanup handoff says it is not an execution decision', /OWNER REVIEW, NOT A TASK DECISION/.test(handoff) && /Never merge, deploy/.test(handoff));
       check('10x-i pause is explicitly preserved', /TASK-003.*REVALIDATE/.test(handoff) && /paused true/.test(handoff));
       check('10x-j cleanup cannot approve normal task', await page.textContent('#decisionCount') === '0 selected');
+      check('10x-k stale and dependent tasks cannot be individually approved', await page.evaluate(() => ['TASK-005','TASK-006'].every(id => window.__TCC.approveBlockers(window.__TCC.model.byId[id]).length > 0)));
       await ctx.close();
     }
 
