@@ -16,7 +16,7 @@ const fs = require('fs'), os = require('os'), path = require('path'), cp = requi
 
 const HERE = __dirname, ROOT = path.resolve(HERE, '..', '..', '..');
 const SRC = fs.readFileSync(path.join(HERE, 'index.html'), 'utf8');
-const TODAY = '2026-11-15';
+const TODAY = '2026-11-16';
 const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'tcc-test-'));
 let failures = 0, passes = 0; const PAGE_ERRORS = [];
 function check(name, ok, detail) { if (ok) { passes++; console.log('  PASS ' + name); } else { failures++; console.log('  FAIL ' + name + (detail ? '\n       ' + String(detail).slice(0, 600).replace(/\n/g, '\n       ') : '')); } }
@@ -197,7 +197,7 @@ async function main() {
       const sel = await page.evaluate(() => window.__TCC.store.selections);
       check('4b only the ungated, fresh, unpaused, unblocked task is selected', JSON.stringify(Object.keys(sel)) === '["TASK-001"]', JSON.stringify(sel));
       check('4c and only for read-only review / preparation', sel['TASK-001'] && sel['TASK-001'].kind === 'review' && sel['TASK-001'].bulk === true);
-      const skipped = ['TASK-002: protected-gated', 'TASK-014: safety-gated', 'TASK-003: paused by the owner', 'TASK-004: paused in CR-T02', 'TASK-005: evidence is 45 days old', 'TASK-006: depends on TASK-007 (OPEN)'];
+      const skipped = ['TASK-002: protected-gated', 'TASK-014: safety-gated', 'TASK-003: paused by the owner', 'TASK-004: paused in CR-T02', 'TASK-005: evidence is 46 days old', 'TASK-006: depends on TASK-007 (OPEN)'];
       check('4d the confirmation names every skipped task and its reason', skipped.every(s => msg.includes(s)), msg);
       check('4e the confirmation says it never deploys, merges or lifts a pause', /never deployment, a merge, device control or lifting a pause/.test(msg));
       const status = await page.textContent('#bulkStatus');
