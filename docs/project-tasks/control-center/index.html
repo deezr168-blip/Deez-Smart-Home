@@ -151,15 +151,15 @@ function approveBlockers(t) {
   if (t.Status === 'PAUSED') r.push(`paused by the owner${t.pauseRow ? ' (' + t.pauseRow.ID + ')' : ''}: an approval never lifts a pause; the owner resumes it by name first`);
   else if (t.extPauses.length) r.push(`paused in ${t.extPauses.map(l => l.From + ' (' + l.Source + ')').join(', ')}: an approval never lifts a pause`);
   if (!t.completed && t.Status !== 'PAUSED' && t.Status !== 'AWAITING_DECISION') r.push(`${t.Status}: there is no decision to approve`);
+  if (t.staleEvidence) r.push(`evidence is ${t.evAge ?? 'of unknown'} days old: re-verify first`);
+  if (t.stalePR) r.push(t.stalePR);
+  if (t.unresolved.length) r.push('depends on ' + t.unresolved.map(d => d.id + ' (' + d.status + ')').join(', '));
   return r;
 }
 function bulkBlockers(t) {
   const r = approveBlockers(t);
   if (!t) return r;
   if (t.gated) r.push(`${t.Gate}-gated: needs its own exact, single-use scope`);
-  if (t.staleEvidence) r.push(`evidence is ${t.evAge ?? 'of unknown'} days old: re-verify first`);
-  if (t.stalePR) r.push(t.stalePR);
-  if (t.unresolved.length) r.push('depends on ' + t.unresolved.map(d => d.id + ' (' + d.status + ')').join(', '));
   return r;
 }
 const canDeny = t => !!t && ['AWAITING_DECISION', 'OPEN', 'APPROVED', 'IN_PROGRESS', 'BLOCKED', 'PAUSED'].includes(t.Status) && !model.dupIds.includes(t.ID);
