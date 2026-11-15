@@ -257,7 +257,7 @@ async function main() {
     console.log('8. GitHub refresh');
     {
       const {page, ctx, log, state} = await open(browser, {gh: ghBase()});
-      check('8a the page reads GitHub on open and says which commit', /GitHub casaray-v3\/agent-task-conflicts @ aaaaaaa/.test(await page.textContent('#sync')), await page.textContent('#sync'));
+      check('8a the page reads GitHub on open and says which commit', /GitHub feature\/casaray-v3-build @ aaaaaaa/.test(await page.textContent('#sync')), await page.textContent('#sync'));
       check('8b the two files are read at that commit, not at a moving branch', log.requests.filter(u => u.includes('raw.githubusercontent.com')).every(u => u.includes('/' + 'a'.repeat(40) + '/')));
       const tasks = baseTasks(); tasks.find(t => t.ID === 'TASK-013').Status = 'AWAITING_DECISION';
       Object.assign(state, md({tasks}), {sha: 'c'.repeat(40)});
@@ -325,7 +325,7 @@ async function main() {
       check('10e deny and pause carry their reason as context', json.answers[2].context === 'Superseded by the V3 rebuild' && json.answers[1].context === 'Keep the branch; resume after PR 16');
       check('10f the held-back approval of a paused task is listed as not in the handoff', /NOT IN THIS HANDOFF \(1\)\n- TASK-003 APPROVE: paused by the owner/.test(text), text);
       check('10g it says plainly that nothing is recorded yet', /STATUS: NOT RECORDED/.test(text) && /Handoff ready — not recorded/.test(await page.textContent('#handoff')));
-      check('10h it names the register commit it was prepared against', /@ casaray-v3\/agent-task-conflicts \(aaaaaaa\)/.test(text));
+      check('10h it names the register commit it was prepared against', /@ feature\/casaray-v3-build \(aaaaaaa\)/.test(text));
       check('10i each decision states what it does NOT authorise', /Not authorised: deployment, merge, Home Assistant or device operations, lifting any pause/.test(text));
       check('10j blockers and the last history row are carried per task', /TASK-014 · APPROVE · P0 · gate safety · was AWAITING_DECISION \(last history row DEC-014\)/.test(text));
       check('10k the command is the owner-decisions tool, as the owner, via chat', /tasks\.py decide --batch - --by owner --via chat --basis "Owner's Task Control Center handoff H-\d{12}/.test(text));
