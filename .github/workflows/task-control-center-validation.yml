@@ -6,6 +6,7 @@ on:
       - casaray-v3/backlog-revalidation-20261116
       - casaray-v3/agent-task-conflicts
       - casaray-v3/agent-task-tracking
+      - feature/casaray-v3-build
   pull_request:
     paths:
       - '.github/workflows/task-control-center-validation.yml'
