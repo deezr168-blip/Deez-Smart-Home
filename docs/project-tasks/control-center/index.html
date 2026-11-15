@@ -321,7 +321,7 @@ const cleanupAge = t => {
 function cleanupReview(t) {
   const recommended = CLEANUP_RECOMMENDATIONS[t.ID];
   const age = cleanupAge(t);
-  const needsRevalidation = !t.completed && (age === null || age > STALE_DAYS || !!t.stalePR || t.Status === 'BLOCKED');
+  const needsRevalidation = !t.completed && (t.paused || age === null || age > STALE_DAYS || !!t.stalePR || t.Status === 'BLOCKED');
   let suggestion = recommended ? recommended[0] : (needsRevalidation ? 'revalidate' : 'keep');
   let why = recommended ? recommended[1] : (needsRevalidation ? 'Missing, stale or blocked evidence; independently re-check before execution.' : 'No retirement evidence found; keep in the normal queue.');
   if (t.paused) { suggestion = 'revalidate'; why = 'Owner pause remains binding. Review relevance without resuming or approving this task. ' + why; }
@@ -348,13 +348,14 @@ function renderCleanup() {
       <small>Evidence age: ${age === null ? 'unknown' : age+' days'} · Gate: ${esc(t.Gate)} · Updated: ${esc(t.Updated)}</small>
       ${t.paused ? '<p class="pause-marker">⏸ Paused by owner — selection never resumes it.</p>' : ''}
       <div class="cleanup-options" role="group" aria-label="${esc(t.ID)} cleanup review">
-      ${['keep','complete','retire','revalidate'].map(v=>`<button type="button" data-cleanup-choice="${v}" aria-pressed="${selected===v}">${selected===v?'✓ ':''}${v==='retire'?'Retire':v==='complete'?'Complete':v==='keep'?'Keep':'Revalidate'}</button>`).join('')}
+      ${['keep','complete','retire','revalidate'].map(v=>`<button type="button" data-cleanup-choice="${v}" aria-pressed="${selected===v}" ${t.paused && (v==='complete'||v==='retire') ? 'disabled title="Owner pause cannot be bypassed"' : ''}>${selected===v?'✓ ':''}${v==='retire'?'Retire':v==='complete'?'Complete':v==='keep'?'Keep':'Revalidate'}</button>`).join('')}
       </div></div>`;
   }).join('') : '<div class="empty">No records match this review filter.</div>';
   $('cleanupCount').textContent = rows.length ? `Page ${cleanupPage+1} of ${maxPage} · ${rows.length} review items` : '0 review items';
   $('cleanupPrev').disabled = cleanupPage===0; $('cleanupNext').disabled = (cleanupPage+1)*PAGE>=rows.length;
   $('cleanupList').querySelectorAll('[data-cleanup-choice]').forEach(b=>b.onclick=()=>{
     const id=b.closest('[data-cleanup]').dataset.cleanup;
+    if (model.byId[id]?.paused && ['complete','retire'].includes(b.dataset.cleanupChoice)) return;
     cleanupSelections[id]=b.dataset.cleanupChoice;
     cleanupHandoff='';
     $('cleanupOutput').classList.add('hidden'); $('cleanupCopy').disabled=true;
@@ -373,7 +374,7 @@ function makeCleanupHandoff() {
     '',
     ...ids.map(id=>{
       const t=model.byId[id]; if(!t) return id+': no longer in register — REVALIDATE';
-      const p=cleanupReview(t), requested=cleanupSelections[id];
+      const p=cleanupReview(t), requested=t.paused && !['keep','revalidate'].includes(cleanupSelections[id]) ? 'revalidate' : cleanupSelections[id];
       return id+' — '+requested.toUpperCase()+' (suggested '+p.suggestion.toUpperCase()+') | '+t.Task+
       '\n  Status '+t.Status+'; paused '+t.paused+'; last updated '+t.Updated+
       '\n  Evidence: '+t.Evidence+
