@@ -43,8 +43,10 @@ Everything runs through one script:
    Decide / Work / Resume / Another project, and the top tasks). Pass its
    `questions` to AskUserQuestion unchanged.
 4. Act on what they pick: *Decide* goes to the next section; *Work* is
-   `tasks.py start TASK,TASK`; *Resume* is `tasks.py resume`; *Another project* is
-   `tasks.py update --project KEY`.
+   `tasks.py start TASK,TASK`; *Resume* is `tasks.py resume TASK` for the one task
+   the owner named (never a list, never "resume all"); *Another project* is
+   `tasks.py update --project KEY`. `update` shows five tasks a page; `--page N`
+   for the rest.
 
 ## Putting a decision to the owner
 
@@ -80,11 +82,40 @@ Whenever owner input is genuinely required (an approval, a choice, a go-ahead):
    - free text typed under "Other" is the owner's own words: put it in `context`
      rather than choosing a verdict for them.
 
-   Add `--blanket` only if the owner gave one general answer ("approve all").
-   The tool then skips every gated task and says so.
+   Add `--blanket` only if the owner gave one general answer ("approve all"),
+   and only after re-reading the live records: `--live-checked` must say what was
+   read and when. The tool then skips, and names, every gated task, every paused
+   task (here or in a linked record), and every task whose evidence is more than
+   14 days old.
 5. **Unanswered means undecided.** If the question was dismissed or skipped, record
    nothing. Never infer consent from silence, from "looks fine", or from approval
    of something else.
+
+## Pauses and IDs kept in another record
+
+The owner also decides outside this register (Issue #7's CR-T01 to CR-T05; the
+Task Control Center V4's own IDs). The register's **Links** table maps them:
+`tasks.py link CR-T02 alias-of TASK-009 --source issue:7 --external-status PAUSED
+--checked 2026-11-15`. Relations: `alias-of`, `duplicate-of`, `depends-on`,
+`bundled-with`, `overlaps`.
+
+- A task whose alias another record has `PAUSED` **cannot be approved**, singly or
+  in a batch. `check` fails (E22) until the pause is also recorded here, with
+  `--via github-issue` and a basis naming the issue (`#7`).
+- A pause is lifted by the owner naming the task or its alias (`resume TASK`). On
+  resume the alias row becomes `SUPERSEDED`; the history keeps both rows.
+- A link older than 14 days is a warning (W10): re-read the other record.
+
+## The Task Control Center page
+
+`docs/project-tasks/control-center/index.html` reads these two files from GitHub
+(or the snapshot `build.py` embeds) and lets the owner select Approve / Deny /
+Pause. It **records nothing**: Submit prints a handoff whose batch JSON goes to
+`decide --batch - --by owner --via chat --basis "<the handoff's basis>"`. Before
+recording, re-read both files: if a task's status or last history row no longer
+matches the handoff, record nothing for it and say so. The page marks a decision
+recorded only when it sees the owner's row on GitHub. After changing either file,
+run `build.py` so the embedded snapshot matches (`build.py --check`).
 
 ## Working a task
 
@@ -121,6 +152,8 @@ schedule, so it is a pending decision in the register and has not been applied.
 - Only the owner records an owner decision; `--by` must be `owner` and `--via` a
   channel they used. The tool refuses anything else.
 - A general approval never approves a `safety`, `external` or `protected` task.
+- An approval never lifts a pause, in this register or in any linked record. Only
+  the owner resumes, by naming the one task.
 - No purchase, payment, message, upload or share, ever, on the strength of a
   register entry. Each needs its own explicit yes at the time.
 - No live Home Assistant control, deploy, sync, reload or restart from here. The
@@ -145,10 +178,12 @@ schedule, so it is a pending decision in the register and has not been applied.
 ## Validation
 
 `python3 .claude/skills/owner-decisions/scripts/tasks.py --selftest` builds
-throwaway repositories and runs 160+ checks: Approve / Deny / Pause, resume,
+throwaway repositories and runs 190+ checks: Approve / Deny / Pause, resume,
 "Update me", filtering, ranking, multi-task selection, atomic batches, append-only
 history, persistence across a commit and a fresh clone, tamper detection, the
-refusals above, and that the repository's device-control guard is untouched. Each
+refusals above, links and external pauses, and that the repository's
+device-control guard is untouched. The page has its own browser tests:
+`node docs/project-tasks/control-center/test_control_center.cjs`. Each
 safety guard was also broken on purpose in a scratch copy to prove the self-test
 notices. `tasks.py check` lints the real files; run it before committing them.
 
