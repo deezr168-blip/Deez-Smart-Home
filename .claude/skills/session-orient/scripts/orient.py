@@ -36,12 +36,23 @@ EXIT CODES
 
 --approved is an assertion by the caller that the owner approved a path. This
 tool cannot verify it, says so in its output, and it never overrides BLOCKED.
+
+OUTSTANDING TASKS (added with the owner-decisions skill)
+
+If docs/project-tasks/TASK_REGISTER.md exists, the report gains one TASKS line: the
+counts for the project this branch identifies. It reads the register through that
+skill's summary() and nothing else. Bytecode writing is switched off while it is
+imported, so the "no write of any kind" promise above still holds. A missing
+register prints nothing; an unreadable one prints a warning and never stops the
+orientation. The ranked list, and the Approve / Deny / Pause questions, are the
+owner-decisions skill's job ("Update me").
 """
 
 from __future__ import annotations
 
 import argparse
 import fnmatch
+import importlib.util
 import json
 import os
 import re
@@ -129,6 +140,38 @@ V3_SOURCES = [
     ("design/casaray-v3/CLAUDE.md", "explicit approval from Ray"),
 ]
 
+# The V3 build (owner instruction 01/11/26, DECISIONS.md V3-009): an offline Lovelace
+# build on feature/casaray-v3-build, with these paths outside design/casaray-v3/.
+# V3-009 says that instruction is the approval the V3 hard boundaries require, and
+# that everything else in them stands.
+V3_BUILD_PATHS = ["design/casaray-v3/", "src/casaray_v3/", "scripts/v3/", "tests/v3/",
+                  "docs/casaray-v3/", "dashboards/casaray_v3"]
+V3_BUILD_GATES = [
+    "python3 scripts/v3/build_dashboard.py --check   (committed outputs equal a fresh build)",
+    "python3 scripts/v3/validate_dashboard.py        (V3 gate: structure, entities, safety, honesty)",
+    "python3 -m unittest discover -s tests/v3        (regression tests)",
+    "bash scripts/ha_validate.sh                     (repository gate)",
+]
+V3_BUILD_FORBIDDEN = [
+    "any deploy, sync, registration, reload or restart of Home Assistant, and any live write "
+    "(the owner applies a dashboard to the Green by hand, after approving it)",
+    "any commit, merge, rebase, push or pull request against ha-deploy or a recovery/* branch",
+    "claude/ha-dashboard-upgrades-wui7ig (the V2 mirror; not a V3 target)",
+    "force-push or history rewrite (denied by .claude/settings.json)",
+]
+V3_BUILD_SOURCES = [
+    ("design/casaray-v3/DECISIONS.md", "V3 becomes a Lovelace build target"),
+    ("design/casaray-v3/DECISIONS.md", "no deployment, no `ha-deploy` or recovery-branch change"),
+    ("design/casaray-v3/CLAUDE.md", "No changes to `ha-deploy`"),
+]
+V3_BUILD_NOTES = [
+    "Offline Lovelace build (V3-009). Its documents say NOT DEPLOYED: a dashboard reaches the "
+    "Green only when the owner applies it by hand, after approving it (V3-013, V3-014).",
+    "That the owner has imported V3 does not deploy any later change. Before an update, the live "
+    "dashboard is diffed against the pinned commit (docs/casaray-v3/PREVIEW_DEPLOYMENT.md).",
+    "A change outside the paths above needs explicit approval from Ray.",
+]
+
 REGIMES = [
     Regime(
         key="v3-integrator",
@@ -167,6 +210,37 @@ REGIMES = [
         must_read=["CLAUDE.md", "design/casaray-v3/CLAUDE.md",
                    "design/casaray-v3/DECISIONS.md"],
         sources=V3_SOURCES,
+    ),
+    Regime(
+        key="v3-build",
+        label="CasaRay V3 build: build branch",
+        branch_patterns=["feature/casaray-v3-build"],
+        allowed_prefixes=V3_BUILD_PATHS,
+        push_allowed=["origin feature/casaray-v3-build"],
+        push_forbidden=V3_BUILD_FORBIDDEN,
+        gates=V3_BUILD_GATES,
+        notes=V3_BUILD_NOTES + [
+            "The feature/casaray-v3-* branches come from this one; changes reach it by pull request, "
+            "on the owner's approval.",
+            "The repository does not say who may push this branch. Confirm before you push to it.",
+        ],
+        must_read=["CLAUDE.md", "design/casaray-v3/CLAUDE.md", "design/casaray-v3/DECISIONS.md",
+                   "docs/casaray-v3/BUILD_STATUS.md"],
+        sources=V3_BUILD_SOURCES,
+    ),
+    Regime(
+        key="v3-build-feature",
+        label="CasaRay V3 build: feature branch",
+        branch_patterns=["feature/casaray-v3-*"],
+        allowed_prefixes=V3_BUILD_PATHS,
+        push_allowed=["origin <this branch> (your own feature/casaray-v3-* branch only)"],
+        push_forbidden=["feature/casaray-v3-build (change it by pull request, merged on the owner's approval)"]
+                       + V3_BUILD_FORBIDDEN,
+        gates=V3_BUILD_GATES,
+        notes=V3_BUILD_NOTES,
+        must_read=["CLAUDE.md", "design/casaray-v3/CLAUDE.md", "design/casaray-v3/DECISIONS.md",
+                   "docs/casaray-v3/BUILD_STATUS.md"],
+        sources=V3_BUILD_SOURCES,
     ),
     Regime(
         key="v2-deploy",
@@ -426,7 +500,8 @@ def scan_secrets(added: dict[str, list[str]]) -> list[tuple[str, int, str]]:
 # --------------------------------------------------------------------------
 
 INSTRUCTION_FILES = ["CLAUDE.md", "design/casaray-v3/CLAUDE.md", "PROJECT_STATE.md",
-                     "MAINTENANCE.md", "design/casaray-v3/DECISIONS.md"]
+                     "MAINTENANCE.md", "design/casaray-v3/DECISIONS.md",
+                     "docs/casaray-v3/BUILD_STATUS.md", "docs/casaray-v3/PREVIEW_DEPLOYMENT.md"]
 
 
 def read_text(repo: Path, rel: str) -> str | None:
@@ -483,12 +558,50 @@ def conflicts(repo: Path, regime: Regime) -> list[dict]:
                     "text": "Root CLAUDE.md pushes to ha-deploy and a claude/ mirror; "
                             "the V3 file forbids touching ha-deploy.",
                     "status": status})
+    if regime.key.startswith("v3-build") and "exactly two kinds of branch" in v3:
+        out.append({"id": "C9", "topic": "V3 branch model and scope",
+                    "text": "design/casaray-v3/CLAUDE.md describes V3 as design-only on two kinds of "
+                            "branch; DECISIONS.md V3-009 (01/11/26) authorises a build on "
+                            "feature/casaray-v3-build, with paths outside design/casaray-v3/.",
+                    "status": "Treated as settled for these branches: V3-009 is the owner's later, "
+                              "explicit instruction and says it is the approval the rule file requires. "
+                              "The rule file itself is not amended; whether to amend it is the owner's call."})
     if (re.search(r"PROJECT_STATE\.md`? in full", root) and "selectively" in root):
         out.append({"id": "C5", "topic": "reading PROJECT_STATE.md",
                     "text": "Root step 1 says read PROJECT_STATE.md in full; step 3 and the "
                             "file's own Context Loading Strategy say load selectively.",
                     "status": "Unsettled: the owner's call. This tool reports it and does not choose."})
     return out
+
+
+TASKS_PY = Path(__file__).resolve().parents[2] / "owner-decisions" / "scripts" / "tasks.py"
+TASK_REGISTER = "docs/project-tasks/TASK_REGISTER.md"
+
+
+def outstanding(repo: Path, branch: str) -> dict | None:
+    """Counts from the owner-decisions register, or None when the repository has none.
+
+    Read-only: the module is imported with bytecode writing off, and summary() only reads.
+    Never raises: a damaged register is reported, not allowed to stop an orientation.
+    """
+    if not (repo / TASK_REGISTER).is_file():
+        return None
+    if not TASKS_PY.is_file():
+        return {"error": "the owner-decisions skill is not installed alongside this one"}
+    keep = sys.dont_write_bytecode
+    sys.dont_write_bytecode = True
+    name = "owner_decisions_tasks"
+    try:
+        spec = importlib.util.spec_from_file_location(name, TASKS_PY)
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules[name] = mod            # dataclasses need the module registered while it loads
+        spec.loader.exec_module(mod)
+        return mod.summary(repo, branch or None)
+    except Exception as e:                 # noqa: BLE001 - see docstring
+        return {"error": f"{type(e).__name__}: {e}"[:200]}
+    finally:
+        sys.modules.pop(name, None)
+        sys.dont_write_bytecode = keep
 
 
 def gather(repo: Path, branch_override: str | None) -> dict:
@@ -538,6 +651,7 @@ def gather(repo: Path, branch_override: str | None) -> dict:
         "conflicts": conflicts(repo, regime),
         "drift": drift(repo, regime),
         "device_guard_present": "deny_device_control.py" in settings,
+        "tasks": outstanding(repo, branch),
     }
 
 
@@ -584,6 +698,21 @@ def render(f: dict) -> str:
     L.append("")
     for i, item in enumerate(r["notes"]):
         L.append(("NOTES      " if i == 0 else "           ") + item)
+    tk = f.get("tasks")
+    if tk:
+        L.append("")
+        if tk.get("error"):
+            L.append(f"TASKS      the task register could not be read: {tk['error']}")
+            L.append("           python3 .claude/skills/owner-decisions/scripts/tasks.py check")
+        else:
+            c = tk["counts"]
+            where = (", ".join(tk["projects"]) if tk["resolved"]
+                     else "all projects (this branch does not identify one)")
+            L.append(f"TASKS      {where}: {c['AWAITING_DECISION']} awaiting your decision · "
+                     f"{c['IN_PROGRESS']} in progress · {c['OPEN'] + c['APPROVED']} ready · "
+                     f"{c['BLOCKED']} blocked · {c['PAUSED']} paused")
+            L.append('           Say "Update me" for the ranked list and the Approve / Deny / Pause questions.')
+            L.append("           (counted from the register, not validated: tasks.py check)")
     L.append("")
     L.append("READ       (sizes; tokens are bytes/4, an estimate)")
     for d in f["instruction_files"]:
@@ -682,13 +811,34 @@ def selftest() -> int:
     for br, want in [("casaray-v3-design", "v3-integrator"), ("casaray-v3/agent-2-visual-ux", "v3-specialist"),
                      ("ha-deploy", "v2-deploy"), ("claude/determined-thompson-abc", "v2-session"),
                      ("recovery/phase0-diagnostics", "recovery"), ("main", "unknown"),
-                     ("autonomous/casaray-dev", "unknown"), ("", "unknown")]:
+                     ("autonomous/casaray-dev", "unknown"), ("", "unknown"),
+                     ("feature/casaray-v3-build", "v3-build"),
+                     ("feature/casaray-v3-cameras-layout", "v3-build-feature"),
+                     ("feature/casaray-v3-home-mockup", "v3-build-feature"),
+                     ("feature/casaray-v3", "unknown"), ("feature/other", "unknown"),
+                     ("casaray-v3/hardening-1", "unknown")]:
         got = resolve_regime(br).key if br else UNKNOWN.key
         check(f"regime {br or '(detached)'!r} -> {want}", got == want, f"got {got}")
 
     # 2. classification
     v3 = resolve_regime("casaray-v3-design")
     v2 = resolve_regime("ha-deploy")
+    v3b = resolve_regime("feature/casaray-v3-build")
+    v3f = resolve_regime("feature/casaray-v3-cameras-layout")
+    build_cases = [("src/casaray_v3/views/cameras.yaml", "OK"), ("scripts/v3/validate_dashboard.py", "OK"),
+                   ("tests/v3/test_cameras_layout.py", "OK"), ("docs/casaray-v3/BUILD_STATUS.md", "OK"),
+                   ("design/casaray-v3/DECISIONS.md", "OK"), ("dashboards/casaray_v3.yaml", "OK"),
+                   ("dashboards/casaray_v3/dist/casaray_v3_km.yaml", "OK"),
+                   ("dashboards/casaray_v2.yaml", "OUTSIDE"), ("scripts/ha_validate.sh", "OUTSIDE"),
+                   ("scripts/v3_other.py", "OUTSIDE"), ("CLAUDE.md", "OUTSIDE"),
+                   ("docs/project-tasks/TASK_REGISTER.md", "OUTSIDE"),
+                   ("dashboards/deez_smart_home.yaml", "BLOCKED"), (".claude/settings.json", "BLOCKED"),
+                   ("scripts/deny_device_control.py", "BLOCKED"), ("configuration.yaml", "BLOCKED"),
+                   ("scripts/deploy_env.sh", "BLOCKED")]
+    for rg in (v3b, v3f):
+        for path, want in build_cases:
+            got = classify(path, rg, [])[0]
+            check(f"classify {path} under {rg.key} -> {want}", got == want, f"got {got}")
     cases = [("design/casaray-v3/README.md", v3, [], "OK"),
              ("WORKFLOW_AUDIT.md", v3, [], "OUTSIDE"),
              ("WORKFLOW_AUDIT.md", v3, ["WORKFLOW_AUDIT.md"], "APPROVED"),
@@ -831,7 +981,10 @@ def selftest() -> int:
     import contextlib
     import io
     for br, want in [("casaray-v3-design", 0), ("casaray/agent-x", 3), ("casaray-v3/agent-x", 0),
-                     ("ha-deploy", 0), ("main", 3), ("claude/abc", 3), ("recovery/x", 3)]:
+                     ("ha-deploy", 0), ("main", 3), ("claude/abc", 3), ("recovery/x", 3),
+                     ("feature/casaray-v3-build", 0), ("feature/casaray-v3-cameras-layout", 0),
+                     ("feature/casaray-v3-home-mockup", 0), ("feature/unrelated", 3),
+                     ("casaray-v3/hardening-1", 3)]:
         with contextlib.redirect_stdout(io.StringIO()):
             got = main(["--branch", br])
         check(f"exit code for branch {br!r} -> {want}", got == want, f"got {got}")
@@ -844,6 +997,97 @@ def selftest() -> int:
         check("--base=-dash value is refused by the tool's own guard (exit 2)",
               main(["--scope", "--base=--evil"]) == 2)
         check("--base naming no commit is refused (exit 2)", main(["--scope", "--base", "no-such-ref-xyz"]) == 2)
+
+    # 7b. the V3 build branches, end to end in a throwaway repository
+    with tempfile.TemporaryDirectory() as tmp:
+        repo = Path(tmp) / "r"
+        repo.mkdir()
+        _run(repo, "init", "-q", "-b", "feature/casaray-v3-cameras-layout")
+        (repo / "design/casaray-v3").mkdir(parents=True)
+        (repo / "design/casaray-v3/CLAUDE.md").write_text(
+            "Integration branch: `casaray-v3-design`\nNo changes to `ha-deploy`\ncasaray-v3/agent-*\n"
+            "explicit approval from Ray\nV3 work lives on exactly two kinds of branch\n")
+        (repo / "design/casaray-v3/DECISIONS.md").write_text(
+            "## V3-009 - V3 becomes a Lovelace build target, offline, on its own branch\n"
+            "no deployment, no `ha-deploy` or recovery-branch change, no live writes,\n")
+        (repo / "CLAUDE.md").write_text("Read `PROJECT_STATE.md` in full. Load selectively.\n")
+        _run(repo, "add", "-A")
+        _run(repo, "commit", "-q", "-m", "base")
+        f = gather(repo, None)
+        text = render(f)
+        check("v3 build feature branch resolves from the real branch name",
+              f["regime"]["key"] == "v3-build-feature", f["regime"]["key"])
+        check("v3 build: the owner's V3-009 text present means no drift warning", f["drift"] == [], str(f["drift"]))
+        check("v3 build: the branch is recognised, so nothing is 'not settled'",
+              not f["regime"]["needs_confirmation"] and "NOT SETTLED" not in text)
+        check("v3 build: C9 reports the rule file and V3-009 side by side",
+              any(c["id"] == "C9" and "V3-009" in c["text"] for c in f["conflicts"]))
+        check("v3 build: MAY WRITE lists the build paths from V3-009",
+              all(x in text for x in ("src/casaray_v3/", "scripts/v3/", "tests/v3/", "docs/casaray-v3/",
+                                      "dashboards/casaray_v3")), text[:900])
+        check("v3 build: MUST NOT names ha-deploy, recovery and live writes",
+              "ha-deploy or a recovery/* branch" in text and "live write" in text)
+        check("v3 build: the four V3 gates are listed",
+              all(x in text for x in ("build_dashboard.py --check", "validate_dashboard.py",
+                                      "unittest discover -s tests/v3", "scripts/ha_validate.sh")))
+        check("v3 build: a feature branch may not push the build branch directly",
+              "feature/casaray-v3-build (change it by pull request" in text)
+        fb = gather(repo, "feature/casaray-v3-build")
+        check("v3 build: the build branch pushes only itself",
+              fb["regime"]["key"] == "v3-build" and fb["regime"]["push_allowed"] == ["origin feature/casaray-v3-build"])
+        fi = gather(repo, "casaray-v3-design")
+        check("v3 design: C9 is not raised on the integration branch", all(c["id"] != "C9" for c in fi["conflicts"]))
+        check("v3 build: the owner-decisions-independent tasks line is absent without a register",
+              f["tasks"] is None)
+        (repo / "design/casaray-v3/DECISIONS.md").write_text("rewritten\n")
+        f2 = gather(repo, None)
+        check("v3 build: if V3-009's text is gone the rule table is flagged stale, not trusted",
+              any("no longer contains" in d for d in f2["drift"]) and "RULE TABLE MAY BE STALE" in render(f2), str(f2["drift"]))
+        f3 = gather(repo, "feature/casaray-v3-build")
+        check("v3 build: the build branch's own regime is drift-checked too",
+              f3["regime"]["key"] == "v3-build" and any("no longer contains" in d for d in f3["drift"]), str(f3["drift"]))
+
+    # 8. the outstanding-tasks line (owner-decisions): present, honest, and read-only
+    with tempfile.TemporaryDirectory() as tmp:
+        repo = Path(tmp) / "r"
+        repo.mkdir()
+        _run(repo, "init", "-q", "-b", "casaray-v3-design")
+        (repo / "CLAUDE.md").write_text("fixture\n")
+        _run(repo, "add", "-A")
+        _run(repo, "commit", "-q", "-m", "base")
+        f0 = gather(repo, None)
+        check("tasks: no register prints no TASKS line", f0["tasks"] is None and "TASKS" not in render(f0))
+
+        def tasks_cli(*a):
+            return subprocess.run([sys.executable, str(TASKS_PY), "--root", str(repo), "--today", "2026-10-12", *a],
+                                  capture_output=True, text=True)
+        tasks_cli("init")
+        for i, (st, pr) in enumerate([("AWAITING_DECISION", "casaray-v3"), ("AWAITING_DECISION", "casaray-v3"),
+                                      ("OPEN", "casaray-v3"), ("AWAITING_DECISION", "casaray-v2")], 1):
+            tasks_cli("add", "--project", pr, "--priority", "P2", "--title", f"fixture task {i}", "--status", st,
+                      "--home", "register", "--evidence-status", "REPORTED", "--source", "fixture", "--next", "n")
+        pyc = TASKS_PY.parent / "__pycache__"
+        pyc_before = pyc.exists()
+        snap, index_snap = _tree_state(repo), (repo / ".git/index").read_bytes()
+        f1 = gather(repo, None)
+        text = render(f1)
+        check("tasks: counts for the project the branch identifies",
+              f1["tasks"]["awaiting"] == 2 and "2 awaiting your decision" in text and "1 ready" in text, text[-700:])
+        check("tasks: the line points at Update me", 'Say "Update me"' in text)
+        check("tasks: another project's tasks are not counted here", "casaray-v2" not in text.split("TASKS")[1].split("READ")[0])
+        f2 = gather(repo, "claude/some-session")
+        check("tasks: a branch that identifies no project says so and counts all",
+              "does not identify one" in render(f2) and f2["tasks"]["awaiting"] == 3)
+        check("tasks: reading the register wrote nothing to the worktree", _tree_state(repo) == snap)
+        check("tasks: and left the git index untouched", (repo / ".git/index").read_bytes() == index_snap)
+        check("tasks: and created no __pycache__ in the skill", pyc.exists() == pyc_before)
+        (repo / TASK_REGISTER).write_text("| not a register\n")
+        f3 = gather(repo, None)
+        check("tasks: an unreadable register is reported, not fatal",
+              "could not be read" in render(f3) and f3["tasks"].get("error"))
+        with contextlib.redirect_stdout(io.StringIO()):
+            got = main(["--repo", str(repo)])
+        check("tasks: an unreadable register does not change the exit code", got == 0, f"got {got}")
 
     ok = all(c for _, c, _ in results)
     for name, cond, detail in results:
