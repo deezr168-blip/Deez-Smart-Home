@@ -28,7 +28,7 @@ snapshot `build.py` embedded, and says which in the header. V4's hand-written
   a task whose alias another record has paused (Issue #7's CR-T01 to CR-T05, via
   the register's Links table). The page has no Resume button: the owner resumes
   one task, by name, in Claude Code.
-- **Approve only what awaits a decision.** `OPEN`, `BLOCKED`, `IN_PROGRESS`,
+- **Approve only what awaits a decision.** Individual and bulk approvals both reject stale/unknown evidence (over 14 days), moved PR heads and unresolved dependencies. `OPEN`, `BLOCKED`, `IN_PROGRESS`,
   `APPROVED`, `DONE` and `DENIED` tasks cannot be approved. Deny and Pause follow
   the tool's own transition table.
 - **A gated task needs its own exact scope** (12+ characters, single use), and
