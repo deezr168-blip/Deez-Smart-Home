@@ -1,0 +1,66 @@
+name: CasaRay Task Control Center Validation
+
+on:
+  push:
+    branches:
+      - casaray-v3/backlog-revalidation-20261116
+      - casaray-v3/agent-task-conflicts
+      - casaray-v3/agent-task-tracking
+  pull_request:
+    paths:
+      - '.github/workflows/task-control-center-validation.yml'
+      - 'docs/project-tasks/**'
+      - '.claude/skills/owner-decisions/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: task-control-center-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Register, safeguards and browser regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout with history for append-only comparison
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Check task register
+        run: python3 .claude/skills/owner-decisions/scripts/tasks.py check
+
+      - name: Check history remains append-only against the PR 8 baseline
+        run: |
+          git fetch --no-tags origin +refs/heads/casaray-v3/agent-task-tracking:refs/remotes/origin/casaray-v3/agent-task-tracking
+          python3 .claude/skills/owner-decisions/scripts/tasks.py check --append-only-vs origin/casaray-v3/agent-task-tracking
+
+      - name: Run task-tool policy self-tests
+        run: python3 .claude/skills/owner-decisions/scripts/tasks.py --selftest
+
+      - name: Verify offline register snapshot
+        run: python3 docs/project-tasks/control-center/build.py --check
+
+      - name: Install isolated Playwright test dependency
+        run: npm install --no-save --no-package-lock --ignore-scripts playwright@1.56.1
+
+      - name: Install Chromium runtime
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Task Control Center browser regression
+        run: node docs/project-tasks/control-center/test_control_center.cjs
