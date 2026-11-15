@@ -15,8 +15,7 @@ decision recorded only when GitHub shows the owner's row in the history.
 
 The only task list is the canonical one:
 `docs/project-tasks/TASK_REGISTER.md` and `DECISION_HISTORY.md`, read from the
-branch named under **Source** (default `casaray-v3/agent-task-conflicts`, PR 17's
-pause-safe review branch). On open, and every 15 minutes while visible, it reads that branch's
+branch named under **Source** (default `feature/casaray-v3-build`, the active V3 integration branch). On open, and every 15 minutes while visible, it reads that branch's
 commit and then both files **at that commit**, plus Issue #7 and the PR list.
 If GitHub cannot be reached it keeps the last GitHub read, or falls back to the
 snapshot `build.py` embedded, and says which in the header. V4's hand-written
@@ -80,7 +79,8 @@ raw.githubusercontent.com), and the anonymous API limit is 60 an hour, so about
 twenty refreshes an hour. Past that, or if the repository is ever made private,
 the page says GitHub is unreachable and shows the last read or the snapshot.
 
-Until the Links table reaches PR 8's branch, the page applies the links in its
-snapshot (and says so under Conflicts), so Issue #7's pauses are enforced either
-way. To read PR 8's original register instead, set **Source** to
-`casaray-v3/agent-task-tracking`. The cleanup recommendations are a review layer; the register and append-only history remain authoritative. As of 16 November 2026, the browser suite is **not executed** in this GitHub-only editing session (JavaScript syntax validated), so review and the full test run are required before merging.
+The task register and append-only history on `feature/casaray-v3-build` become the
+live source of truth when PR #8 merges. The embedded snapshot is an offline fallback,
+not proof of a live Home Assistant deployment. The separate cleanup decisions are
+review preferences, not authenticated owner approvals. Full GitHub Actions checks
+must pass against the final PR head before integration.
