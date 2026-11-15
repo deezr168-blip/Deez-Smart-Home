@@ -10,10 +10,12 @@ named in the *Source* column win, and both this file and the tool need fixing.
 |---|---|---|
 | `casaray-v3-design` | `v3-integrator` | V3 design, integration branch |
 | `casaray-v3/agent-*` | `v3-specialist` | V3 design, specialist branch |
+| `feature/casaray-v3-build` | `v3-build` | V3 offline Lovelace build, build branch |
+| `feature/casaray-v3-*` (any other) | `v3-build-feature` | V3 build, feature branch (`-home-mockup`, `-cameras-layout`) |
 | `ha-deploy` | `v2-deploy` | CasaRay V2 deployment branch |
 | `claude/*` | `v2-session` | Session branch; push target **not stated** |
 | `recovery/*` | `recovery` | Owner-gated; no rule file checked out |
-| anything else (`main`, `autonomous/*`, detached) | `unknown` | **Ask.** Do not assume V2 or V3 |
+| anything else (`main`, `autonomous/*`, `casaray-v3/hardening-1`, detached) | `unknown` | **Ask.** Do not assume V2 or V3 |
 
 The first match wins, in that order. `claude/ha-dashboard-upgrades-wui7ig` is
 named in the root rules as the V2 mirror but matches `claude/*`, so a session on
@@ -36,6 +38,26 @@ are different things.
 Drift needles (text this table was written from): `Integration branch:
 `casaray-v3-design``, `No changes to `ha-deploy``, `casaray-v3/agent-*`, `explicit
 approval from Ray`. Matching ignores line wraps.
+
+## V3 build: `v3-build` and `v3-build-feature`
+
+Added 16/11/26. These branches exist because the owner directed a build
+(`DECISIONS.md` V3-009, 01/11/26). The rule file `design/casaray-v3/CLAUDE.md` was not amended and
+still describes V3 as design-only on two kinds of branch, so the tool reports that as **C9**.
+
+| Item | Rule | Source |
+|---|---|---|
+| May write | `design/casaray-v3/`, `src/casaray_v3/`, `scripts/v3/`, `tests/v3/`, `docs/casaray-v3/`, generated `dashboards/casaray_v3*.yaml`. Anything else needs explicit approval from Ray | V3-009: that instruction is the approval the hard boundaries require |
+| Never | deploy, sync, register, reload or restart; live writes; any change to `ha-deploy` or a recovery branch | V3-009: "Everything else in those boundaries stands" |
+| Never | apply a dashboard to the Green without the owner's approval; V3-013 and V3-014 each say "nothing goes to the Green without that approval" | `DECISIONS.md` V3-013, V3-014 |
+| Push | own branch only. A feature branch reaches `feature/casaray-v3-build` by pull request, on the owner's approval | V3-013, V3-014 (the merge of `7f16e79` was owner-approved) |
+| Gates | `build_dashboard.py --check`, `validate_dashboard.py`, `python3 -m unittest discover -s tests/v3`, `ha_validate.sh` | `docs/casaray-v3/VALIDATION.md` |
+| Importing is not deploying | the owner's hand import of V3 does not deploy any later change; the live dashboard is diffed against the pinned commit before an update | `docs/casaray-v3/PREVIEW_DEPLOYMENT.md` |
+
+Drift needles: `V3 becomes a Lovelace build target`, `no deployment, no `ha-deploy` or recovery-branch
+change` (both in `DECISIONS.md`), `No changes to `ha-deploy`` (V3 `CLAUDE.md`). These exist only on
+the build line, so a branch without them never resolves to these rule sets and is never checked
+against them.
 
 ## V2: `v2-deploy`
 
@@ -70,6 +92,10 @@ not only at the root.
 - **Whether `PROJECT_STATE.md` is read in full.** Root step 1 says yes; step 3 and
   the file's own *Context Loading Strategy* say selectively. The tool reports the
   contradiction as C5 and does not choose.
+- **Who may push `feature/casaray-v3-build`.** V3-009 does not say. The tool says so in its notes.
+- **Whether `casaray-v3/hardening-1` is a V3 specialist branch.** It does not match
+  `casaray-v3/agent-*`, so it is `unknown`. Its content is V3 (the HVAC contract, V3-008), but
+  the branch is unmerged and unmapped, so the tool asks instead of guessing.
 - **Anything about the live instance.** The tool reads git and text files only.
 
 ## Adding or changing a rule set

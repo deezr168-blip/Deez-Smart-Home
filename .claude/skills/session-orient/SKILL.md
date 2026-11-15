@@ -2,9 +2,9 @@
 name: session-orient
 description: Orient at the start of any session in the Deez Smart Home repository, and check scope before committing. Resolves which rule set governs the current branch (CasaRay V2 on ha-deploy, CasaRay V3 design on casaray-v3-design or casaray-v3/agent branches, a recovery branch, or unrecognised), then states where a push may and may not go, which gate to run, which paths are protected, and where the instruction files contradict each other, from one read-only command. Use at the start of every session, when the user says orient, where are we, resume a session, which rules apply, or where do I push, before the first write on a branch not yet checked, and before a commit to confirm nothing changed outside the permitted paths. Not for improving dashboards (improve-system), for faults (recovery-triage) or for finding repeated work (automate). Read-only, never fetches, commits, pushes or edits.
 metadata:
-  version: "0.2.0"
+  version: "0.3.0"
   status: pilot
-  origin: WORKFLOW_AUDIT.md W03 and W06; 0.2.0 adds the TASKS line (owner-decisions)
+  origin: WORKFLOW_AUDIT.md W03 and W06; 0.2.0 adds the TASKS line (owner-decisions); 0.3.0 adds the V3 build branches (V3-009)
 ---
 
 # Session orient
@@ -127,7 +127,7 @@ which is how the self-test and any "what would apply on X" question are answered
 ## Validation
 
 `python3 .claude/skills/session-orient/scripts/orient.py --selftest` builds a
-throwaway repository and checks 84 behaviours, including the refusals above. It
+throwaway repository and checks 142 behaviours, including the refusals above. It
 needs only Python 3 and git. Last result is in `SKILL_VALIDATION_REPORT.md`.
 
 ## Maintenance

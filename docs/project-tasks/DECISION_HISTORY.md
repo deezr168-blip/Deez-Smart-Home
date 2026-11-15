@@ -63,3 +63,12 @@ only from what the owner actually answered; no answer means no decision.
 | DEC-050 | 2026-11-08 | TASK-018 | NOTE | IN_PROGRESS | IN_PROGRESS | — | Review run after the owner approved it (DEC-048); findings recorded here, not filed in DECISIONS.md | — | — | claude |
 | DEC-051 | 2026-11-08 | TASK-025 | ADDED | — | AWAITING_DECISION | gate=none; p=P1 | Home: design/casaray-v3/DECISIONS.md#*HVAC safeguards.* Home has | Read from design/casaray-v3/DECISIONS.md#*HVAC safeguards.* Home has | — | claude |
 | DEC-052 | 2026-11-09 | TASK-023 | NOTE | BLOCKED | BLOCKED | — | Pointer corrected 2026-11-09: the newer recovery record is on recovery/phase0-diagnostics (PR 10), not PR 3's queue of 5 Oct | — | — | claude |
+| DEC-053 | 2026-11-15 | TASK-009 | NOTE | AWAITING_DECISION | AWAITING_DECISION | — | Reconciled 16/11 (owner's date): .claude/settings.json is byte-identical on feature/casaray-v3-build, so the guard gap is unchanged by the V3 build | — | — | claude |
+| DEC-054 | 2026-11-15 | TASK-018 | NOTE | IN_PROGRESS | IN_PROGRESS | — | Reconciled 16/11 (owner's date): this review duplicates V3-008 (HVAC control contract, R1-R9 and a production gate) on the unmerged branch casaray-v3/hardening-1, which was missed. Every defect recorded here is covered there. | — | — | claude |
+| DEC-055 | 2026-11-15 | TASK-025 | NOTE | AWAITING_DECISION | AWAITING_DECISION | — | Reconciled 16/11 (owner's date): superseded in substance by V3-008 on casaray-v3/hardening-1 | — | — | claude |
+| DEC-056 | 2026-11-15 | TASK-019 | NOTE | APPROVED | APPROVED | — | Reconciled 16/11 (owner's date): approved for the PROTOTYPE; the build is now Lovelace | — | — | claude |
+| DEC-057 | 2026-11-15 | TASK-020 | NOTE | OPEN | OPEN | — | Reconciled 16/11 (owner's date): Lighting is a native Lovelace view in the V3 build (BUILD_STATUS.md) | — | — | claude |
+| DEC-058 | 2026-11-15 | TASK-023 | NOTE | BLOCKED | BLOCKED | — | Reconciled 16/11 (owner's date): owner confirmed V3 is running in Home Assistant Green (hand import into the dashboard editor) | — | — | claude |
+| DEC-059 | 2026-11-15 | TASK-024 | NOTE | IN_PROGRESS | IN_PROGRESS | — | Reconciled 16/11 (owner's date): PR 8 touches 0 of the 46 files the build line changed | — | — | claude |
+| DEC-060 | 2026-11-15 | TASK-026 | ADDED | — | AWAITING_DECISION | gate=none; p=P2 | Home: register | Created here | — | claude |
+| DEC-061 | 2026-11-15 | TASK-027 | ADDED | — | BLOCKED | gate=none; p=P1 | waiting for the owner's read-only U1 check and U4 report | Created here | — | claude |

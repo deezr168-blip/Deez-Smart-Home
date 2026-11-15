@@ -2259,6 +2259,25 @@ def selftest() -> int:
                   not re.search(r"\b(HassTurn|call_service|light\.turn_on|lock\.unlock|send_message|create_draft)\b", body))
         else:
             check("U0 repository guards (skipped: not inside the repository)", True)
+
+        # ---------------------------------------------------------------- V. the real register's branch mapping
+        real_reg = real / REGISTER_REL
+        if real_reg.is_file():
+            projects = load(real).projects
+            def keys(b):
+                return resolve_projects(projects, b)
+            for b in ("casaray-v3-design", "casaray-v3/agent-2-visual-ux", "casaray-v3/hardening-1",
+                      "feature/casaray-v3-build", "feature/casaray-v3-cameras-layout",
+                      "feature/casaray-v3-home-mockup"):
+                k, ok = keys(b)
+                check(f"V1 {b} identifies the casaray-v3 project", ok and k[0] == "casaray-v3", str(k))
+            check("V2 ha-deploy and autonomous/* still identify casaray-v2",
+                  keys("ha-deploy")[0][0] == "casaray-v2" and keys("autonomous/casaray-dev")[0][0] == "casaray-v2")
+            check("V3 recovery/* still identifies recovery", keys("recovery/phase0-diagnostics")[0][0] == "recovery")
+            check("V4 an unrelated feature branch is not guessed into a project",
+                  keys("feature/unrelated")[1] is False and keys("claude/some-session")[1] is False)
+            check("V5 the cross-cutting tooling project rides along on every identified branch",
+                  all("tooling" in keys(b)[0] for b in ("casaray-v3-design", "ha-deploy", "feature/casaray-v3-build")))
     finally:
         shutil.rmtree(base, ignore_errors=True)
 
