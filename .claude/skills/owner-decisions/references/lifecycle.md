@@ -56,7 +56,8 @@ re-raised; it can only be reopened by the owner, with something new to say.
 actually answered**. Each row carries:
 
 - `By` = `owner` (or `ray`); the tool refuses any other name.
-- `Via` = the channel they used: `ask-user-question`, `chat` or `pr-review`.
+- `Via` = the channel they used: `ask-user-question`, `chat`, `pr-review` or
+  `github-issue` (an issue the owner wrote; the basis must name it, `#N`).
   Never `routine`, `agent` or `inferred`.
 - `Basis` = what they selected or said, in a few words.
 - `Scope` (approvals) = exactly what was authorised.
@@ -86,6 +87,9 @@ For a gated task:
    **single-use**: reopening a finished gated task needs a fresh decision.
 3. A **blanket** answer ("approve everything pending") skips it. The tool applies
    the ungated tasks, leaves the gated ones `AWAITING_DECISION`, and says which.
+   It also skips paused tasks (here or in a linked record) and tasks whose
+   evidence is more than 14 days old, and it is refused unless `--live-checked`
+   says which live records were re-read and when.
    Denying or pausing under a blanket answer is allowed, since both reduce risk.
 4. Only the owner can verify it is `DONE`.
 5. A gate is only ever **tightened**. Loosening one is a new owner decision.
@@ -96,6 +100,15 @@ boundaries, and `MAINTENANCE.md` still apply to whoever carries the action out.
 Approving a task in this register never authorises a deploy, a restart, a device
 action, a purchase or a message by itself; the action has to be one the rules
 let the carrying-out session do.
+
+## Pauses
+
+A pause outranks any approval. `APPROVED` is refused for a `PAUSED` task and for
+a task whose alias another record (Links table, `External status` `PAUSED`) has
+paused; a blanket batch skips both. `RESUMED` names exactly one task, and its
+basis must name that task or its alias, because "resume everything" is not an
+answer about any one task. Resuming marks the alias link `SUPERSEDED` with the
+date; the original pause row stays in the history.
 
 ## Evidence
 

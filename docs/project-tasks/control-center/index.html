@@ -1,0 +1,561 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>CasaRay · Task Control Center V5</title><style>
+:root{color-scheme:dark;--bg:#0a111c;--panel:#131e2d;--panel2:#192638;--line:#2b3c50;--txt:#e7f0fb;--muted:#9aacbf;--aqua:#5edbd4;--amber:#ffca74;--red:#fb9b9b;--violet:#d4b9f4}*{box-sizing:border-box}body{font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--txt);margin:0}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}.shell{max-width:1450px;margin:auto;padding:25px 24px 70px}header{display:flex;align-items:center;gap:18px;justify-content:space-between;flex-wrap:wrap;margin-bottom:18px}.eyebrow{font-size:11px;letter-spacing:.17em;text-transform:uppercase;color:var(--aqua);font-weight:800}h1{font-size:clamp(27px,3vw,40px);margin:4px 0 3px;letter-spacing:-.04em}p{margin:0;color:var(--muted)}.actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.button{border:1px solid var(--line);color:var(--txt);background:var(--panel2);padding:10px 14px;border-radius:11px;font-weight:650}.button.primary{background:#134f53;color:#c6fffa;border-color:#23817f}.button:focus-visible,.task:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--aqua);outline-offset:2px}.sync{font-size:12px;color:var(--muted);max-width:420px}.sync.warn{color:var(--amber)}
+.summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}.stat{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:15px}.stat strong{font-size:28px;display:block;line-height:1.2}.stat small{color:var(--muted)}.stat.green strong{color:var(--aqua)}.stat.amber strong{color:var(--amber)}.stat.violet strong{color:var(--violet)}.stat.red strong{color:var(--red)}
+.tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}.tab{border:1px solid var(--line);background:#172334;color:var(--muted);border-radius:999px;padding:9px 15px;font-weight:700}.tab.active{background:#22565c;border-color:#338b89;color:#dcfffb}.tab .count{margin-left:6px;font-size:12px;opacity:.85}.tab.has-errors .count{color:var(--red)}
+.workspace{display:grid;grid-template-columns:minmax(320px,1.08fr) minmax(360px,1fr);gap:15px}.panel{min-width:0;border:1px solid var(--line);background:var(--panel);border-radius:17px;overflow:hidden}.panel-head{padding:16px 18px;border-bottom:1px solid var(--line)}.panel-head h2{font-size:17px;margin:0 0 5px}
+.filters{display:flex;gap:8px;overflow:auto;padding:12px 15px 0}.chip{white-space:nowrap;border:1px solid var(--line);background:#172334;color:var(--muted);border-radius:999px;padding:8px 12px;font-weight:650}.chip.active{background:#22565c;border-color:#338b89;color:#dcfffb}
+.sortbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 15px 0}.sortbar label{font-size:12px;color:var(--muted);font-weight:700}.select{background:#0c1725;border:1px solid var(--line);border-radius:9px;padding:9px;color:var(--txt)}.sortbar select{min-width:120px;flex:1}
+.bulk{padding:12px 15px 0}.bulk button{width:100%;font-size:13px;border-color:#326c63;color:#bcf5e7}.bulk-note{padding:6px 15px 4px;font-size:12px;color:var(--muted)}
+.search{display:block;margin:10px 15px 8px;width:calc(100% - 30px);padding:11px 12px;background:#0c1725;border:1px solid var(--line);color:var(--txt);border-radius:10px}
+.task-list{padding-bottom:8px}.task{display:block;margin:5px 12px;border:1px solid transparent;background:#172334;border-radius:12px;padding:12px 14px;width:calc(100% - 24px);text-align:left;color:var(--txt)}.task.selected{border-color:var(--aqua);background:#1a3540}.t-top{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.task strong{font-size:14px;line-height:1.35;display:block;margin:7px 0 3px}.task small{color:var(--muted);display:block}
+.pill{font-size:11px;font-weight:800;padding:3px 8px;border-radius:6px;background:#25344a;color:#bed3e5;white-space:nowrap}.pill.decide{background:#503b23;color:#ffce81}.pill.paused{background:#3e3548;color:var(--violet)}.pill.gate{background:#4b292e;color:#ffd0d0}.pill.done{background:#19513b;color:#bdf4d5}.pill.blocked{background:#3a2d24;color:#ffcfa3}.pill.conflict{background:#5a2229;color:#ffc4c4}.pill.dep{background:#20364f;color:#a9cdff}.pill.stale{background:#4a4320;color:#ffeaa0}.pill.tick{background:#14554f;color:#defff9}
+.pagination{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 15px;border-top:1px solid var(--line)}.pagination button{padding:8px 13px}.page-count{color:var(--muted);font-size:12px;text-align:center}
+.detail{padding:22px}.detail h2{font-size:23px;letter-spacing:-.03em;margin:10px 0}.detail h3{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin:22px 0 8px}.detail p{line-height:1.6;color:#c7d6e5}.meta{display:flex;flex-wrap:wrap;gap:6px}.notice{border-left:3px solid var(--amber);padding:10px 12px;background:#32291f;color:#f7d6a0;border-radius:0 9px 9px 0;margin:14px 0}.notice.pause{border-color:var(--violet);background:#2c2638;color:#e6d8fb}.notice.err{border-color:var(--red);background:#3a2024;color:#ffd6d6}.next{border:1px solid #28565a;background:#122e33;border-radius:12px;padding:13px;color:#cbf7ef}.kv{display:grid;grid-template-columns:110px 1fr;gap:4px 10px;font-size:13px}.kv dt{color:var(--muted)}.kv dd{margin:0;overflow-wrap:anywhere}
+.decision-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}.decision-choice{background:#0d1b2b;border:1px solid #35475a;color:#c9d7e6;border-radius:12px;min-height:50px;font-weight:750}.decision-choice.chosen{background:#14554f;color:#defff9;border:2px solid #62dcd2}.decision-choice.deny.chosen{background:#4b292e;border-color:#f79b9b;color:#ffe1e1}.decision-choice.pause.chosen{background:#3e3450;border-color:#b8a0f4;color:#eee2ff}.why{font-size:12px;color:var(--amber);margin-top:6px}
+textarea.field{width:100%;min-height:62px;margin-top:8px;background:#0c1725;border:1px solid var(--line);border-radius:9px;color:var(--txt);padding:9px}.radio{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:13px;color:#cfdeec}.note{font-size:12px;color:var(--muted);margin-top:12px}
+.history{font-size:12px;color:#b9c9d9}.history li{margin:3px 0}
+.conflicts{display:grid;gap:10px;padding:16px}.conflict{border:1px solid var(--line);background:#152131;border-radius:12px;padding:12px 14px}.conflict.error{border-color:#7b3a42}.conflict.warn{border-color:#6c5a2c}.conflict b{display:block;margin-bottom:4px}.conflict small{color:var(--muted)}
+.batch{margin-top:16px;padding:19px;background:#152536;border:1px solid #365064;border-radius:16px}.batch h2{margin:0 0 6px;font-size:18px}.sel-list{margin:12px 0;display:grid;gap:6px}.sel{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px;background:#0f1d2d;border:1px solid #2c4258;border-radius:10px;padding:8px 10px}.sel.bad{border-color:#6c5a2c}.sel .grow{flex:1}.confirm{display:flex;align-items:flex-start;gap:9px;margin-top:12px;font-size:13px;color:#cfdeec}.confirm input{margin-top:3px;width:17px;height:17px}.batch-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.output{margin-top:12px;padding:13px;background:#0a1725;border:1px solid #31465b;border-radius:10px;color:#d9e7f5;white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.55 ui-monospace,monospace;max-height:380px;overflow:auto}.hidden{display:none}.small{font-size:12px}a{color:var(--aqua)}.footer{font-size:12px;color:var(--muted);margin-top:18px}details.settings{font-size:12px;color:var(--muted)}details.settings input{background:#0c1725;border:1px solid var(--line);border-radius:7px;color:var(--txt);padding:5px 7px;width:230px}
+.empty{padding:22px;color:var(--muted)}.cleanup-toolbar{display:flex;align-items:center;gap:12px;padding:14px 16px}.cleanup-list{padding:0 14px}.cleanup-entry{border:1px solid var(--line);border-radius:12px;margin:8px 0;padding:13px;background:#172334}.cleanup-entry p{font-size:13px;margin:6px 0;color:#cfdeec}.cleanup-options{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}.cleanup-options button{border:1px solid var(--line);border-radius:8px;background:#0d1b2b;color:var(--txt);padding:8px 11px}.cleanup-options button[aria-pressed=true]{background:#14554f;border-color:var(--aqua)}.cleanup-export{padding:12px 16px 18px;border-top:1px solid var(--line)}.cleanup-entry .reason{color:var(--amber)}.cleanup-entry .pause-marker{color:var(--violet)}
+@media(max-width:800px){.shell{padding:16px 12px 50px}.summary{grid-template-columns:repeat(2,1fr)}.workspace{grid-template-columns:1fr}.detail{padding:16px}}@media(max-width:420px){.stat{padding:12px}.stat strong{font-size:24px}.decision-grid{gap:5px}.decision-choice{font-size:13px}}
+</style></head><body><main class="shell">
+<header><div><div class="eyebrow">CasaRay · Project Operations · V5</div><h1>Task Control Center</h1><p>Reads the canonical task register. Decides nothing itself: it prepares a handoff for Claude Code.</p></div>
+<div class="actions"><button class="button primary" id="refresh" type="button">↻ Refresh from GitHub</button><span id="sync" class="sync" aria-live="polite">Loading…</span>
+<details class="settings"><summary>Source</summary><p class="small">Canonical register branch</p><input id="refInput" aria-label="Canonical register branch"> <button class="button" id="refSave" type="button">Use</button><p class="small" id="snapInfo"></p></details></div></header>
+<section class="summary" id="stats"></section>
+<nav class="tabs" role="tablist" aria-label="Views"><button class="tab active" data-tab="queue" role="tab">Queue<span class="count" id="countQueue"></span></button><button class="tab" data-tab="conflicts" role="tab">Conflicts<span class="count" id="countConflicts"></span></button><button class="tab" data-tab="cleanup" role="tab">Backlog Cleanup<span class="count" id="countCleanup"></span></button><button class="tab" data-tab="completed" role="tab">Completed<span class="count" id="countCompleted"></span></button></nav>
+<div class="workspace" id="workspace"><section class="panel"><div class="panel-head"><h2 id="listTitle">Task queue</h2><p id="listHint">Highest priority first. Five tasks a page.</p></div>
+<div class="filters" id="filters" role="group" aria-label="Filter tasks"><button data-filter="all" class="chip active" type="button">All open</button><button data-filter="decide" class="chip" type="button">Needs a decision</button><button data-filter="work" class="chip" type="button">No decision needed</button><button data-filter="paused" class="chip" type="button">Paused</button><button data-filter="blocked" class="chip" type="button">Blocked</button></div>
+<div class="sortbar"><label for="priorityFilter">Priority</label><select id="priorityFilter" class="select"><option value="all">All (P0–P3)</option><option>P0</option><option>P1</option><option>P2</option><option>P3</option></select><label for="sortOrder">Sort</label><select id="sortOrder" class="select"><option value="high">Highest → lowest</option><option value="low">Lowest → highest</option></select></div>
+<div class="bulk" id="bulkBox"><button class="button" id="bulkApprove" type="button">✓ Approve every eligible task in this view</button></div><p class="bulk-note" id="bulkStatus" aria-live="polite">Bulk approval covers only ungated tasks awaiting a decision with fresh evidence. Paused, gated, blocked, stale and conflicting tasks are skipped, each with its reason.</p>
+<input id="search" class="search" type="search" placeholder="Search IDs, titles, aliases…" aria-label="Search tasks">
+<div class="task-list" id="tasks"><!--STATIC:BEGIN--><!--STATIC:END--></div>
+<div class="pagination"><button class="button" id="prevPage" type="button">← Previous</button><span class="page-count" id="pageCount"></span><button class="button" id="nextPage" type="button">Next →</button></div></section>
+<section class="panel"><div class="detail" id="detail"><div class="empty">Select a task to see its brief, its gate and what it depends on.</div></div></section></div>
+<section class="panel hidden" id="cleanupView"><div class="panel-head"><h2>Backlog Cleanup — owner review</h2><p>Evidence-based recommendations only. These selections do not change task status, lift a pause or authorise execution.</p></div><div class="cleanup-toolbar"><label for="cleanupFilter">Show</label><select class="select" id="cleanupFilter"><option value="all">All flagged tasks</option><option value="revalidate">Revalidation required</option><option value="retire">Retire candidates</option><option value="complete">Decision-complete candidates</option><option value="keep">Keep active</option></select></div><div id="cleanupList" class="cleanup-list"></div><div class="pagination"><button class="button" id="cleanupPrev" type="button">← Previous</button><span class="page-count" id="cleanupCount"></span><button class="button" id="cleanupNext" type="button">Next →</button></div><div class="cleanup-export"><label class="confirm"><input id="cleanupConfirm" type="checkbox"><span>These are review instructions only. Claude must independently validate every disposition before changing GitHub.</span></label><div class="batch-actions"><button id="cleanupExport" class="button primary" type="button" disabled>Prepare cleanup handoff</button><button id="cleanupCopy" class="button" type="button" disabled>Copy handoff</button></div><div id="cleanupOutput" class="output hidden" aria-live="polite"></div></div></section><section class="panel hidden" id="conflictsView"><div class="panel-head"><h2>Conflicts</h2><p>What disagrees between the register, its history, Issue #7, GitHub and your saved selections. Nothing here is fixed automatically.</p></div><div class="conflicts" id="conflictList"></div></section>
+<section class="batch" id="decisionBatch"><h2>Decision handoff to Claude Code <span id="decisionCount" class="pill tick">0 selected</span></h2><p>Selections stay in this browser. Submitting prepares a handoff to paste into Claude Code; it records nothing. A decision counts as recorded only when GitHub shows its row in the decision history.</p>
+<div class="sel-list" id="selList"></div>
+<label class="confirm"><input id="confirmDecisions" type="checkbox"><span>I confirm these are my decisions. Each approval covers only the scope written beside it — never deployment, a merge, device control or lifting a pause.</span></label>
+<div class="batch-actions"><button class="button primary" id="submitDecisions" type="button" disabled>✓ Submit decisions</button><button class="button" id="clearDecisions" type="button">Clear selections</button></div>
+<div id="handoff" class="hidden" aria-live="polite"><h3>Handoff ready — not recorded</h3><p class="small">Copy it into your Claude Code session. This page cannot send it to Claude or write to the repository.</p><div class="batch-actions"><button class="button primary" id="copyHandoff" type="button">Copy for Claude</button><button class="button" id="downloadHandoff" type="button">Save .txt</button></div><div id="handoffOutput" class="output"></div><p id="copyStatus" class="small"></p></div>
+<div id="handoffLog" class="small"></div></section>
+<div class="footer">Source of truth: <code>docs/project-tasks/TASK_REGISTER.md</code> and <code>DECISION_HISTORY.md</code> in deezr168-blip/Deez-Smart-Home, read from GitHub (or the snapshot built into this file when GitHub cannot be reached). This page never merges, deploys, controls a device or writes to GitHub.</div>
+</main>
+<script type="application/json" id="snapshot">{"built_at": "2026-11-15", "dirty": false, "history": "# Decision history\n\nAppend-only. One row for every change to a task's status: who did it, when, on\nwhat basis, and for approvals, exactly what was authorised. A row is never edited\nor removed; a mistake is corrected with a later `NOTE` row. Denied and paused\ntasks stay here with their reasons and saved context.\n\n`tasks.py check --append-only-vs <ref>` fails if an earlier row has changed.\nOwner rows (`APPROVED`, `DENIED`, `PAUSED`, `RESUMED`, `REOPENED`) are written\nonly from what the owner actually answered; no answer means no decision.\n\n| ID | Date | Task | Event | From | To | Scope | Context | Basis | Via | By |\n|---|---|---|---|---|---|---|---|---|---|---|\n| DEC-001 | 2026-10-12 | TASK-001 | ADDED | — | AWAITING_DECISION | gate=none; p=P2 | Home: WORKFLOW_AUDIT.md#**C5:** read | Read from WORKFLOW_AUDIT.md#**C5:** read | — | claude |\n| DEC-002 | 2026-10-12 | TASK-002 | ADDED | — | AWAITING_DECISION | gate=none; p=P3 | Home: WORKFLOW_AUDIT.md#**C2:** should | Read from WORKFLOW_AUDIT.md#**C2:** should | — | claude |\n| DEC-003 | 2026-10-12 | TASK-003 | ADDED | — | AWAITING_DECISION | gate=protected; p=P3 | Home: WORKFLOW_AUDIT.md#five-line precedence note | Read from WORKFLOW_AUDIT.md#five-line precedence note | — | claude |\n| DEC-004 | 2026-10-12 | TASK-004 | ADDED | — | AWAITING_DECISION | gate=protected; p=P3 | Home: WORKFLOW_AUDIT.md#move the superseded blocks to `archive/` | Read from WORKFLOW_AUDIT.md#move the superseded blocks to `archive/` | — | claude |\n| DEC-005 | 2026-10-12 | TASK-005 | ADDED | — | AWAITING_DECISION | gate=protected; p=P2 | Home: WORKFLOW_AUDIT.md#The pilot skills exist on | Read from WORKFLOW_AUDIT.md#The pilot skills exist on | — | claude |\n| DEC-006 | 2026-10-12 | TASK-006 | ADDED | — | AWAITING_DECISION | gate=protected; p=P3 | Home: WORKFLOW_AUDIT.md#small, in existing files | Read from WORKFLOW_AUDIT.md#small, in existing files | — | claude |\n| DEC-007 | 2026-10-12 | TASK-007 | ADDED | — | AWAITING_DECISION | gate=none; p=P2 | Home: WORKFLOW_AUDIT.md#add a regime check to `improve-system` step 1 | Read from WORKFLOW_AUDIT.md#add a regime check to `improve-system` step 1 | — | claude |\n| DEC-008 | 2026-10-12 | TASK-008 | ADDED | — | AWAITING_DECISION | gate=protected; p=P2 | Home: SKILL_REGISTRY.md#automatically at session start | Read from SKILL_REGISTRY.md#automatically at session start | — | claude |\n| DEC-009 | 2026-10-12 | TASK-009 | ADDED | — | AWAITING_DECISION | gate=safety; p=P1 | Home: pr:5#approval-4 | Read from pr:5#approval-4 | — | claude |\n| DEC-010 | 2026-10-12 | TASK-010 | ADDED | — | AWAITING_DECISION | gate=protected; p=P2 | Home: pr:5#approval-1 | Read from pr:5#approval-1 | — | claude |\n| DEC-011 | 2026-10-12 | TASK-011 | ADDED | — | AWAITING_DECISION | gate=protected; p=P2 | Home: pr:5#approval-2 | Read from pr:5#approval-2 | — | claude |\n| DEC-012 | 2026-10-12 | TASK-012 | ADDED | — | AWAITING_DECISION | gate=protected; p=P2 | Home: .claude/skills/owner-decisions/references/weekly-routine.md#Proposed addendum to the Routine prompt | Read from .claude/skills/owner-decisions/references/weekly-routine.md#Proposed addendum to the Routine prompt | — | claude |\n| DEC-013 | 2026-10-12 | TASK-013 | ADDED | — | AWAITING_DECISION | gate=protected; p=P2 | Home: pr:5#approval-3 | Read from pr:5#approval-3 | — | claude |\n| DEC-014 | 2026-10-12 | TASK-014 | ADDED | — | AWAITING_DECISION | gate=none; p=P3 | Home: pr:5#approval-5 | Read from pr:5#approval-5 | — | claude |\n| DEC-015 | 2026-10-12 | TASK-015 | ADDED | — | AWAITING_DECISION | gate=none; p=P2 | Home: register | Created here | — | claude |\n| DEC-016 | 2026-10-12 | TASK-016 | ADDED | — | AWAITING_DECISION | gate=protected; p=P2 | Home: register | Created here | — | claude |\n| DEC-017 | 2026-10-12 | TASK-017 | ADDED | — | AWAITING_DECISION | gate=none; p=P1 | Home: design/casaray-v3/DECISIONS.md#V3-003 | Read from design/casaray-v3/DECISIONS.md#V3-003 | — | claude |\n| DEC-018 | 2026-10-12 | TASK-018 | ADDED | — | OPEN | gate=none; p=P1 | Home: design/casaray-v3/DECISIONS.md#review whether the Parents' room and Climate HVAC mode | Read from design/casaray-v3/DECISIONS.md#review whether the Parents' room and Climate HVAC mode | — | claude |\n| DEC-019 | 2026-10-12 | TASK-019 | ADDED | — | AWAITING_DECISION | gate=none; p=P2 | Home: design/casaray-v3/DECISIONS.md#latent truthfulness fallbacks | Read from design/casaray-v3/DECISIONS.md#latent truthfulness fallbacks | — | claude |\n| DEC-020 | 2026-10-12 | TASK-020 | ADDED | — | OPEN | gate=none; p=P3 | Home: design/casaray-v3/DECISIONS.md#the slight layout inconsistency of Lighting's | Read from design/casaray-v3/DECISIONS.md#the slight layout inconsistency of Lighting's | — | claude |\n| DEC-021 | 2026-10-12 | TASK-021 | ADDED | — | AWAITING_DECISION | gate=protected; p=P1 | Home: DASHBOARD_BACKLOG.md#BILL-001 | Read from DASHBOARD_BACKLOG.md#BILL-001 | — | claude |\n| DEC-022 | 2026-10-12 | TASK-022 | ADDED | — | AWAITING_DECISION | gate=protected; p=P2 | Home: DASHBOARD_BACKLOG.md#BILL-002 | Read from DASHBOARD_BACKLOG.md#BILL-002 | — | claude |\n| DEC-023 | 2026-10-12 | TASK-023 | ADDED | — | BLOCKED | gate=protected; p=P1 | PR 3 is an unmerged draft against ha-deploy, so its OWNER_ACTION_QUEUE.md and DECISION_LOG.md are not on this branch to point at | Read from branch:autonomous/casaray-dev:docs/OWNER_ACTION_QUEUE.md | — | claude |\n| DEC-024 | 2026-10-12 | TASK-024 | ADDED | — | AWAITING_DECISION | gate=protected; p=P1 | Home: register | Created here | — | claude |\n| DEC-025 | 2026-10-12 | TASK-024 | APPROVED | AWAITING_DECISION | APPROVED | Write only: root CLAUDE.md, docs/project-tasks/TASK_REGISTER.md, docs/project-tasks/DECISION_HISTORY.md and the existing skills (named in the brief); plus the new .claude/skills/owner-decisions/ directory and SKILL_REGISTRY.md, which the agent infers from 'extend existing skills, no duplicate skills' and which the owner is asked to confirm in review. Open a draft PR into casaray-v3-design. Never merge, deploy or control a device. | Approval limited to the paths and actions in Scope | owner task brief in this session, 2026-10-12, target files listed | chat | owner |\n| DEC-026 | 2026-10-12 | TASK-024 | STARTED | APPROVED | IN_PROGRESS | — | — | — | — | claude |\n| DEC-027 | 2026-11-08 | TASK-017 | APPROVED | AWAITING_DECISION | APPROVED | Proceed on the default: the Energy board shows grid export and whole-house consumption as 'no source entity' until the meter fact is supplied. Nothing is built by this. | Approval is of the default only. The fact itself (Fronius Smart Meter fitted, or Powerpal net meter) was not supplied and is still needed. | selected Approve in the AskUserQuestion prompt for TASK-017, 2026-11-08 | ask-user-question | owner |\n| DEC-028 | 2026-11-08 | TASK-017 | NOTE | APPROVED | APPROVED | — | Owner approved the default on 2026-11-08; the underlying fact was not supplied, so the task stays open (APPROVED, not DONE). | — | — | claude |\n| DEC-029 | 2026-11-08 | TASK-009 | NOTE | AWAITING_DECISION | AWAITING_DECISION | — | Proposal made concrete before asking the owner, 2026-11-08: exact edit, verified offline | — | — | claude |\n| DEC-030 | 2026-11-08 | TASK-003 | NOTE | AWAITING_DECISION | AWAITING_DECISION | — | Proposal made concrete before asking the owner, 2026-11-08: the audit never drafted the wording | — | — | claude |\n| DEC-031 | 2026-11-08 | TASK-004 | NOTE | AWAITING_DECISION | AWAITING_DECISION | — | Proposal made concrete before asking the owner, 2026-11-08: V3 rules bar editing PROJECT_STATE.md | — | — | claude |\n| DEC-032 | 2026-11-08 | TASK-008 | NOTE | AWAITING_DECISION | AWAITING_DECISION | — | Proposal made concrete before asking the owner, 2026-11-08: exact hook | — | — | claude |\n| DEC-033 | 2026-11-08 | TASK-011 | NOTE | AWAITING_DECISION | AWAITING_DECISION | — | Proposal made concrete before asking the owner, 2026-11-08: agent's recommended list | — | — | claude |\n| DEC-034 | 2026-11-08 | TASK-012 | NOTE | AWAITING_DECISION | AWAITING_DECISION | — | Proposal made concrete before asking the owner, 2026-11-08: exact action | — | — | claude |\n| DEC-035 | 2026-11-08 | TASK-013 | NOTE | AWAITING_DECISION | AWAITING_DECISION | — | Proposal made concrete before asking the owner, 2026-11-08: default named | — | — | claude |\n| DEC-036 | 2026-11-08 | TASK-009 | NOTE | AWAITING_DECISION | AWAITING_DECISION | — | Correction (2026-11-08): the previous proposal text showed the regex alternation as '/' because the register turns a pipe into '/'; reworded without a pipe | — | — | claude |\n| DEC-037 | 2026-11-08 | TASK-001 | APPROVED | AWAITING_DECISION | APPROVED | Policy adopted: sessions load PROJECT_STATE.md selectively by its own Context Loading Strategy. Does NOT authorise editing root CLAUDE.md step 1: that is a protected instruction file and needs its own specific approval. | Blanket 'Approve all': applied to ungated tasks only | owner replied 'Approve all' in chat on 2026-11-08, a blanket answer, after the Update me list of pending decisions | chat | owner |\n| DEC-038 | 2026-11-08 | TASK-002 | APPROVED | AWAITING_DECISION | APPROVED | The integration branch may open a PR to main only when the owner asks for one. Pull requests from specialist branches need no answer. | Blanket 'Approve all': applied to ungated tasks only | owner replied 'Approve all' in chat on 2026-11-08, a blanket answer, after the Update me list of pending decisions | chat | owner |\n| DEC-039 | 2026-11-08 | TASK-007 | APPROVED | AWAITING_DECISION | APPROVED | Approved in principle: add the one-line regime check to improve-system step 1. Does NOT authorise the edit itself: it is outside design/casaray-v3/ and needs its own specific go-ahead. | Blanket 'Approve all': applied to ungated tasks only | owner replied 'Approve all' in chat on 2026-11-08, a blanket answer, after the Update me list of pending decisions | chat | owner |\n| DEC-040 | 2026-11-08 | TASK-015 | APPROVED | AWAITING_DECISION | APPROVED | Adopted: the register stays an index; PR 3's queue and log stay the detailed home of recovery items; PR 5's approvals are recorded here. Nothing from PR 3 or PR 5 is copied. | Blanket 'Approve all': applied to ungated tasks only | owner replied 'Approve all' in chat on 2026-11-08, a blanket answer, after the Update me list of pending decisions | chat | owner |\n| DEC-041 | 2026-11-08 | TASK-019 | APPROVED | AWAITING_DECISION | APPROVED | Authorise the three prototype fixes (elapsed time, brightness, cover position), each with its own regression check, on a specialist branch for integrator review. Does not authorise merging. | Blanket 'Approve all': applied to ungated tasks only | owner replied 'Approve all' in chat on 2026-11-08, a blanket answer, after the Update me list of pending decisions | chat | owner |\n| DEC-042 | 2026-11-08 | TASK-001 | NOTE | APPROVED | APPROVED | — | Next action updated after the owner's blanket approval, 2026-11-08 | — | — | claude |\n| DEC-043 | 2026-11-08 | TASK-002 | NOTE | APPROVED | APPROVED | — | Next action updated after the owner's blanket approval, 2026-11-08 | — | — | claude |\n| DEC-044 | 2026-11-08 | TASK-007 | NOTE | APPROVED | APPROVED | — | Next action updated after the owner's blanket approval, 2026-11-08 | — | — | claude |\n| DEC-045 | 2026-11-08 | TASK-015 | NOTE | APPROVED | APPROVED | — | Next action updated after the owner's blanket approval, 2026-11-08 | — | — | claude |\n| DEC-046 | 2026-11-08 | TASK-019 | NOTE | APPROVED | APPROVED | — | Next action updated after the owner's blanket approval, 2026-11-08 | — | — | claude |\n| DEC-047 | 2026-11-08 | TASK-018 | RAISED | OPEN | AWAITING_DECISION | — | Run the read-only review: check the Parents' room AC card and the Climate board against Home's safeguards (V3-007, hardening 2-5, items 9-11). Report findings; change no code, no entity, no doc under design/casaray-v3/. It does not unblock any build. | — | — | claude |\n| DEC-048 | 2026-11-08 | TASK-018 | APPROVED | AWAITING_DECISION | APPROVED | Run the read-only review and report the findings. Changes no code, entity or design document; unblocks no build. | Approval is for the review only | owner replied 'Approve 018' in chat, 2026-11-08 | chat | owner |\n| DEC-049 | 2026-11-08 | TASK-018 | STARTED | APPROVED | IN_PROGRESS | — | — | — | — | claude |\n| DEC-050 | 2026-11-08 | TASK-018 | NOTE | IN_PROGRESS | IN_PROGRESS | — | Review run after the owner approved it (DEC-048); findings recorded here, not filed in DECISIONS.md | — | — | claude |\n| DEC-051 | 2026-11-08 | TASK-025 | ADDED | — | AWAITING_DECISION | gate=none; p=P1 | Home: design/casaray-v3/DECISIONS.md#*HVAC safeguards.* Home has | Read from design/casaray-v3/DECISIONS.md#*HVAC safeguards.* Home has | — | claude |\n| DEC-052 | 2026-11-09 | TASK-023 | NOTE | BLOCKED | BLOCKED | — | Pointer corrected 2026-11-09: the newer recovery record is on recovery/phase0-diagnostics (PR 10), not PR 3's queue of 5 Oct | — | — | claude |\n| DEC-053 | 2026-11-15 | TASK-009 | NOTE | AWAITING_DECISION | AWAITING_DECISION | — | Reconciled 16/11 (owner's date): .claude/settings.json is byte-identical on feature/casaray-v3-build, so the guard gap is unchanged by the V3 build | — | — | claude |\n| DEC-054 | 2026-11-15 | TASK-018 | NOTE | IN_PROGRESS | IN_PROGRESS | — | Reconciled 16/11 (owner's date): this review duplicates V3-008 (HVAC control contract, R1-R9 and a production gate) on the unmerged branch casaray-v3/hardening-1, which was missed. Every defect recorded here is covered there. | — | — | claude |\n| DEC-055 | 2026-11-15 | TASK-025 | NOTE | AWAITING_DECISION | AWAITING_DECISION | — | Reconciled 16/11 (owner's date): superseded in substance by V3-008 on casaray-v3/hardening-1 | — | — | claude |\n| DEC-056 | 2026-11-15 | TASK-019 | NOTE | APPROVED | APPROVED | — | Reconciled 16/11 (owner's date): approved for the PROTOTYPE; the build is now Lovelace | — | — | claude |\n| DEC-057 | 2026-11-15 | TASK-020 | NOTE | OPEN | OPEN | — | Reconciled 16/11 (owner's date): Lighting is a native Lovelace view in the V3 build (BUILD_STATUS.md) | — | — | claude |\n| DEC-058 | 2026-11-15 | TASK-023 | NOTE | BLOCKED | BLOCKED | — | Reconciled 16/11 (owner's date): owner confirmed V3 is running in Home Assistant Green (hand import into the dashboard editor) | — | — | claude |\n| DEC-059 | 2026-11-15 | TASK-024 | NOTE | IN_PROGRESS | IN_PROGRESS | — | Reconciled 16/11 (owner's date): PR 8 touches 0 of the 46 files the build line changed | — | — | claude |\n| DEC-060 | 2026-11-15 | TASK-026 | ADDED | — | AWAITING_DECISION | gate=none; p=P2 | Home: register | Created here | — | claude |\n| DEC-061 | 2026-11-15 | TASK-027 | ADDED | — | BLOCKED | gate=none; p=P1 | waiting for the owner's read-only U1 check and U4 report | Created here | — | claude |\n| DEC-062 | 2026-11-15 | TASK-028 | ADDED | — | AWAITING_DECISION | gate=none; p=P1 | Home: register | Created here | — | claude |\n| DEC-063 | 2026-11-15 | TASK-029 | ADDED | — | BLOCKED | gate=protected; p=P1 | needs the PR 16 merge decision (previous task), the live version check, and a read of the live dashboard to diff against 7f16e79 | Created here | — | claude |\n| DEC-064 | 2026-11-15 | TASK-030 | ADDED | — | BLOCKED | gate=none; p=P1 | needs owner-run checks on the Green: Tapo Control integration state and the HACS custom_components recovery | Created here | — | claude |\n| DEC-065 | 2026-11-15 | TASK-023 | NOTE | BLOCKED | BLOCKED | — | Dependency audit 16/11 (dashboards/casaray_v3.yaml at PR 16): the 18 native V3 views need no HACS element (the V3 gate enforces it). Needed only by carried V2 pages: custom:webrtc-camera on 6 camera subpages, and card_mod on 23 of 46 views (the v2-* copies, bills, bills-details, camera-front-door, automations, entertainment). No other custom card types, no kiosk_mode key. | — | — | claude |\n| DEC-066 | 2026-11-15 | TASK-028 | NOTE | AWAITING_DECISION | AWAITING_DECISION | — | Final gate results added 16/11: unit tests 105 OK and ha_validate PASSED; supersedes the earlier text saying they were still running | — | — | claude |\n| DEC-067 | 2026-11-15 | TASK-031 | ADDED | — | AWAITING_DECISION | gate=protected; p=P2 | Home: pr:5 | Read from pr:5 | — | claude |\n| DEC-068 | 2026-11-15 | TASK-032 | ADDED | — | AWAITING_DECISION | gate=protected; p=P2 | Home: pr:13 | Read from pr:13 | — | claude |\n| DEC-069 | 2026-11-15 | TASK-011 | NOTE | AWAITING_DECISION | AWAITING_DECISION | — | Link: CR-T01 alias-of TASK-011 (issue:7; PAUSED as read 2026-11-15) | — | — | claude |\n| DEC-070 | 2026-11-15 | TASK-009 | NOTE | AWAITING_DECISION | AWAITING_DECISION | — | Link: CR-T02 alias-of TASK-009 (issue:7; PAUSED as read 2026-11-15) | — | — | claude |\n| DEC-071 | 2026-11-15 | TASK-010 | NOTE | AWAITING_DECISION | AWAITING_DECISION | — | Link: CR-T03 alias-of TASK-010 (issue:7; PAUSED as read 2026-11-15) | — | — | claude |\n| DEC-072 | 2026-11-15 | TASK-013 | NOTE | AWAITING_DECISION | AWAITING_DECISION | — | Link: CR-T04 alias-of TASK-013 (issue:7; PAUSED as read 2026-11-15) | — | — | claude |\n| DEC-073 | 2026-11-15 | TASK-014 | NOTE | AWAITING_DECISION | AWAITING_DECISION | — | Link: CR-T04 alias-of TASK-014 (issue:7; PAUSED as read 2026-11-15) | — | — | claude |\n| DEC-074 | 2026-11-15 | TASK-031 | NOTE | AWAITING_DECISION | AWAITING_DECISION | — | Link: CR-T05 alias-of TASK-031 (issue:7; PAUSED as read 2026-11-15) | — | — | claude |\n| DEC-075 | 2026-11-15 | TASK-011 | PAUSED | AWAITING_DECISION | PAUSED | resume when: the owner names CR-T01 or TASK-011 | CR-T01 was approved, then paused the same day; that approval is history, not authority. On resume: inspect the Routine's current integrations, restrict unnecessary Home Assistant, Gmail and Drive access, verify permissions, and ask for fresh confirmation before any change. Kept for that confirmation: this task's list (remove Gmail, Google-Calendar, Google-Drive, Home-Assistant, Spotify, Todoist; keep Claude-Docs, Context7, visualize). | Issue #7 (owner-authored, 12/10/2026 Australia/Melbourne) records CR-T01 as PAUSED: do not perform any task until the owner explicitly resumes the relevant ID | github-issue | owner |\n| DEC-076 | 2026-11-15 | TASK-009 | PAUSED | AWAITING_DECISION | PAUSED | resume when: the owner names CR-T02 or TASK-009 | CR-T02 was approved, then paused the same day; that approval is history, not authority. On resume its scope is wider than this task's two one-line edits: inspect scripts/deny_device_control.py and .claude/settings.json, test play_media and every other side-effecting tool name on offline fixtures on an isolated branch, and open a draft PR only with renewed confirmation. The guard files stay untouched until then. | Issue #7 (owner-authored, 12/10/2026 Australia/Melbourne) records CR-T02 as PAUSED: do not perform any task until the owner explicitly resumes the relevant ID | github-issue | owner |\n| DEC-077 | 2026-11-15 | TASK-010 | PAUSED | AWAITING_DECISION | PAUSED | resume when: the owner names CR-T03 or TASK-010 | Do not change the Routine Setup script. Kept: the proposed Setup line python3 -m pip install -r requirements-dev.txt (PR 5 approval 1). | Issue #7 (owner-authored, 12/10/2026 Australia/Melbourne) records CR-T03 as PAUSED: do not change the Routine Setup script; resume only on new owner instruction | github-issue | owner |\n| DEC-078 | 2026-11-15 | TASK-013 | PAUSED | AWAITING_DECISION | PAUSED | resume when: the owner names CR-T04 or TASK-013 | Do not edit the weekly Routine's schedule or branch settings. Kept: the proposal to use casaray-v3-design as the audit PR base, sent in the same single update call as TASK-012. | Issue #7 (owner-authored, 12/10/2026 Australia/Melbourne) records CR-T04 as PAUSED: do not edit schedule or branch settings; resume only on new owner instruction | github-issue | owner |\n| DEC-079 | 2026-11-15 | TASK-014 | PAUSED | AWAITING_DECISION | PAUSED | resume when: the owner names CR-T04 or TASK-014 | The timezone half of CR-T04. Issue #7 dates the owner's decisions in Australia/Melbourne, which may answer it: confirm on resume. The V2-tooling half concerns PR 5's files (stamp_sha.py, requirements-dev.txt), whose review is paused too (CR-T05). | Issue #7 (owner-authored, 12/10/2026 Australia/Melbourne) records CR-T04 as PAUSED: do not edit schedule or branch settings; resume only on new owner instruction | github-issue | owner |\n| DEC-080 | 2026-11-15 | TASK-031 | PAUSED | AWAITING_DECISION | PAUSED | resume when: the owner names CR-T05 or TASK-031 | Keep PR 5 draft and unmerged. Resume the review only on a new owner instruction naming CR-T05. No merge is authorised. | Issue #7 (owner-authored, 12/10/2026 Australia/Melbourne) records CR-T05 as PAUSED: keep PR #5 draft and unmerged; resume review only on new owner instruction; no merge is authorised | github-issue | owner |\n| DEC-081 | 2026-11-15 | TASK-009 | NOTE | PAUSED | PAUSED | — | Link: V4:TASK-009 duplicate-of TASK-009 (control-center:v4; no external status as read 2026-11-15) | — | — | claude |\n| DEC-082 | 2026-11-15 | TASK-009 | NOTE | PAUSED | PAUSED | — | Link: V4:TASK-009-APPROVE duplicate-of TASK-009 (control-center:v4; no external status as read 2026-11-15) | — | — | claude |\n| DEC-083 | 2026-11-15 | TASK-029 | NOTE | BLOCKED | BLOCKED | — | Link: V4:V3-DEPLOY duplicate-of TASK-029 (control-center:v4; no external status as read 2026-11-15) | — | — | claude |\n| DEC-084 | 2026-11-15 | TASK-028 | NOTE | AWAITING_DECISION | AWAITING_DECISION | — | Link: V4:TASK-016 duplicate-of TASK-028 (control-center:v4; no external status as read 2026-11-15) | — | — | claude |\n| DEC-085 | 2026-11-15 | TASK-023 | NOTE | BLOCKED | BLOCKED | — | Link: V4:CFG-005-LIVE duplicate-of TASK-023 (control-center:v4; no external status as read 2026-11-15) | — | — | claude |\n| DEC-086 | 2026-11-15 | TASK-024 | NOTE | IN_PROGRESS | IN_PROGRESS | — | Link: V4:TASK-REGISTER duplicate-of TASK-024 (control-center:v4; no external status as read 2026-11-15) | — | — | claude |\n| DEC-087 | 2026-11-15 | TASK-032 | NOTE | AWAITING_DECISION | AWAITING_DECISION | — | Link: V4:PR-13 duplicate-of TASK-032 (control-center:v4; no external status as read 2026-11-15) | — | — | claude |\n| DEC-088 | 2026-11-15 | TASK-026 | NOTE | AWAITING_DECISION | AWAITING_DECISION | — | Link: V4:TASK-026 duplicate-of TASK-026 (control-center:v4; no external status as read 2026-11-15) | — | — | claude |\n| DEC-089 | 2026-11-15 | TASK-023 | NOTE | BLOCKED | BLOCKED | — | Link: V4:CFG-005 overlaps TASK-023 (control-center:v4; no external status as read 2026-11-15) | — | — | claude |\n| DEC-090 | 2026-11-15 | TASK-029 | NOTE | BLOCKED | BLOCKED | — | Link: TASK-029 depends-on TASK-028 (register; no external status as read 2026-11-15) | — | — | claude |\n| DEC-091 | 2026-11-15 | TASK-028 | NOTE | AWAITING_DECISION | AWAITING_DECISION | — | Link: TASK-029 depends-on TASK-028 (register; no external status as read 2026-11-15) | — | — | claude |\n| DEC-092 | 2026-11-15 | TASK-029 | NOTE | BLOCKED | BLOCKED | — | Link: TASK-029 depends-on TASK-027 (register; no external status as read 2026-11-15) | — | — | claude |\n| DEC-093 | 2026-11-15 | TASK-027 | NOTE | BLOCKED | BLOCKED | — | Link: TASK-029 depends-on TASK-027 (register; no external status as read 2026-11-15) | — | — | claude |\n| DEC-094 | 2026-11-15 | TASK-016 | NOTE | AWAITING_DECISION | AWAITING_DECISION | — | Link: TASK-026 depends-on TASK-016 (register; no external status as read 2026-11-15) | — | — | claude |\n| DEC-095 | 2026-11-15 | TASK-026 | NOTE | AWAITING_DECISION | AWAITING_DECISION | — | Link: TASK-026 depends-on TASK-016 (register; no external status as read 2026-11-15) | — | — | claude |\n| DEC-096 | 2026-11-15 | TASK-013 | NOTE | PAUSED | PAUSED | — | Link: TASK-013 bundled-with TASK-012 (register; no external status as read 2026-11-15) | — | — | claude |\n| DEC-097 | 2026-11-15 | TASK-012 | NOTE | AWAITING_DECISION | AWAITING_DECISION | — | Link: TASK-013 bundled-with TASK-012 (register; no external status as read 2026-11-15) | — | — | claude |\n| DEC-098 | 2026-11-15 | TASK-031 | NOTE | PAUSED | PAUSED | — | Link: TASK-006 overlaps TASK-031 (pr:5 (one of TASK-006's routes is PR 5 commit 3eff5e0); no external status as read 2026-11-15) | — | — | claude |\n| DEC-099 | 2026-11-15 | TASK-006 | NOTE | AWAITING_DECISION | AWAITING_DECISION | — | Link: TASK-006 overlaps TASK-031 (pr:5 (one of TASK-006's routes is PR 5 commit 3eff5e0); no external status as read 2026-11-15) | — | — | claude |\n| DEC-100 | 2026-11-15 | TASK-023 | NOTE | BLOCKED | BLOCKED | — | Link: TASK-023 overlaps TASK-032 (pr:10 and pr:13 (both recovery work into ha-deploy; both change PROJECT_STATE.md); no external status as read 2026-11-15) | — | — | claude |\n| DEC-101 | 2026-11-15 | TASK-032 | NOTE | AWAITING_DECISION | AWAITING_DECISION | — | Link: TASK-023 overlaps TASK-032 (pr:10 and pr:13 (both recovery work into ha-deploy; both change PROJECT_STATE.md); no external status as read 2026-11-15) | — | — | claude |\n| DEC-102 | 2026-11-15 | TASK-012 | NOTE | AWAITING_DECISION | AWAITING_DECISION | — | Append the addendum in weekly-routine.md (as of commit 44e8f71) to the weekly Routine's prompt with one update_trigger call; nothing else on the Routine changes. Approve authorises that one call, once. While TASK-013 (CR-T04) is paused, that call must not carry TASK-013's branch line. | — | — | claude |\n| DEC-103 | 2026-11-15 | TASK-024 | NOTE | IN_PROGRESS | IN_PROGRESS | — | Conflict audit of Task Control Center V4, 15/11: 15 findings, corrections proposed on casaray-v3/agent-task-conflicts (not merged) | — | — | claude |\n", "ref": "casaray-v3/agent-task-conflicts", "register": "# Task register\n\nThe current state of every tracked task and owner decision, across projects.\nOne row per task. **This is an index, not a second backlog:** a task that already\nhas a home record (a backlog item, a V3 decision, an audit finding) keeps its\ndetail there, and the row says where (`Home`) and what state the decision is in.\n\n- Every change is logged in [DECISION_HISTORY.md](DECISION_HISTORY.md), which\n  only grows. `tasks.py check` fails if the two files disagree.\n- Edit with `python3 .claude/skills/owner-decisions/scripts/tasks.py` (the\n  `owner-decisions` skill). Say **\"Update me\"** for the ranked list.\n- Status, gates, evidence and the transition rules:\n  `.claude/skills/owner-decisions/references/lifecycle.md`.\n- Evidence reads `STATUS · source · date · by`. A task is DONE only on VERIFIED\n  evidence. Statuses written here from another record are REPORTED: read from\n  that record, not independently re-checked.\n\n## Projects\n\n| Key | Branches | Shown | Name |\n|---|---|---|---|\n| casaray-v3 | casaray-v3-design, casaray-v3/*, feature/casaray-v3-* | branch | CasaRay V3 (design, prototype and the offline Lovelace build) |\n| casaray-v2 | ha-deploy, autonomous/* | branch | CasaRay V2 dashboards and deployment |\n| recovery | recovery/* | branch | Recovery and live-system owner actions |\n| tooling | — | all | Skills, audits and workflow tooling (shown on every branch) |\n\n## Tasks\n\n| ID | Project | P | Status | Gate | Task | Home | Evidence | Decision | Next action | Updated |\n|---|---|---|---|---|---|---|---|---|---|---|\n| TASK-001 | tooling | P2 | APPROVED | none | Decide how sessions read PROJECT_STATE.md (C5) | WORKFLOW_AUDIT.md#**C5:** read | REPORTED · WORKFLOW_AUDIT.md section 9 item 1 · 2026-10-12 | DEC-037 APPROVED | Approved in principle. Root CLAUDE.md step 1 is a protected file: the edit to align it needs its own specific approval. Not made. | 2026-11-08 |\n| TASK-002 | tooling | P3 | APPROVED | none | Decide whether the integration branch may open a PR to main (C2) | WORKFLOW_AUDIT.md#**C2:** should | REPORTED · WORKFLOW_AUDIT.md section 9 item 2 · 2026-10-12 | DEC-038 APPROVED | Approved. Nothing to build: the integration branch opens a PR to main only when the owner asks for one. | 2026-11-08 |\n| TASK-003 | tooling | P3 | AWAITING_DECISION | protected | Add a precedence note to root CLAUDE.md (W08) | WORKFLOW_AUDIT.md#five-line precedence note | REPORTED · WORKFLOW_AUDIT.md W08 and section 9 item 3 · 2026-10-12 | PENDING | Draft the five-line precedence note for your review (the audit never wrote the wording). Approve authorises the draft only, not any edit to root CLAUDE.md; the wording comes back to you first. | 2026-11-08 |\n| TASK-004 | tooling | P3 | AWAITING_DECISION | protected | Archive the superseded blocks of PROJECT_STATE.md (W09) | WORKFLOW_AUDIT.md#move the superseded blocks to `archive/` | REPORTED · WORKFLOW_AUDIT.md W09 and section 9 item 4 · 2026-10-12 | PENDING | Move the 8 superseded blocks (PROJECT_STATE.md from line 2582) to archive/. V3 rules bar editing it from a V3 branch, so Approve means: prepare it for the V2 line once you name that route (TASK-005). Nothing is edited here. | 2026-11-08 |\n| TASK-005 | tooling | P2 | AWAITING_DECISION | protected | Decide whether the skills built so far are copied to the V2 line or stay V3-only | WORKFLOW_AUDIT.md#The pilot skills exist on | REPORTED · WORKFLOW_AUDIT.md section 9 item 5 · 2026-10-12 | PENDING | Proposal: stay V3-only until the owner names a route to ha-deploy (V3 rules forbid merging V3 branches there). Approving a copy needs the exact route. Applies equally to owner-decisions. | 2026-10-12 |\n| TASK-006 | tooling | P3 | AWAITING_DECISION | protected | Fix tooling defects D1-D3 (registry header, validator dead tail, next_id help) | WORKFLOW_AUDIT.md#small, in existing files | REPORTED · WORKFLOW_AUDIT.md section 5 and section 9 item 6 · 2026-10-12 | PENDING | The validator defect (D2) is also PR 3 OWNER_ACTION_QUEUE B1 and is fixed in PR 5 commit 3eff5e0, droppable: decide it once. Proposal: approve one route. The validator is a protected gate. | 2026-11-15 |\n| TASK-007 | tooling | P2 | APPROVED | none | Add a regime check to improve-system step 1 (D5) | WORKFLOW_AUDIT.md#add a regime check to `improve-system` step 1 | REPORTED · WORKFLOW_AUDIT.md D5 and section 9 item 7 · 2026-10-12 | DEC-039 APPROVED | Approved in principle. The edit to improve-system step 1 is outside design/casaray-v3/ and needs its own specific go-ahead. Not made. Until then run session-orient first. | 2026-11-08 |\n| TASK-008 | tooling | P2 | AWAITING_DECISION | protected | Run session-orient automatically at session start (SessionStart hook) | SKILL_REGISTRY.md#automatically at session start | REPORTED · SKILL_REGISTRY.md section 5 · 2026-10-12 | PENDING | Add one SessionStart hook to .claude/settings.json (a guarded file) running python3 .claude/skills/session-orient/scripts/orient.py, 15 s timeout, same path style as the existing hook, nothing else. Approve authorises exactly that edit, once, on a separate branch for your review. | 2026-11-08 |\n| TASK-009 | tooling | P1 | PAUSED | safety | Add media_player play_media to the device-control guard | pr:5#approval-4 | VERIFIED · offline regex check of the settings.json matcher and deny_device_control.py against mcp__Home_Assistant__media_player__play_media: neither matches · 2026-10-12 · claude | DEC-076 PAUSED | Two one-line edits, once, on a separate branch for your review: (1) settings.json hook matcher '.*Hass.*' is extended with a regex alternation so it also matches play_media; (2) deny_device_control.py: add play_media to the BLOCKED alternation. Offline test: blocks play_media only. The 21 deny entries are untouched. | 2026-11-15 |\n| TASK-010 | tooling | P2 | PAUSED | protected | Add pip install of requirements-dev.txt to the cloud environment Setup script | pr:5#approval-1 | REPORTED · PR 5 description, approval 1 · 2026-10-12 | DEC-077 PAUSED | Owner action in the environment settings, which this session cannot change: add python3 -m pip install -r requirements-dev.txt. Otherwise the next routine run fails ha_validate.sh section 2, per PR 5. | 2026-11-15 |\n| TASK-011 | tooling | P2 | PAUSED | protected | Detach unneeded connectors from the weekly Routine | pr:5#approval-2 | VERIFIED · list_triggers read of trig_01F4irXHwaazWvbsKKZLhWdr: 9 connectors attached, none with a tool restriction · 2026-10-12 · claude | DEC-075 PAUSED | Owner action in the Routine settings (this session cannot change connectors). Agent's view: remove Gmail, Google-Calendar, Google-Drive, Home-Assistant, Spotify and Todoist; keep Claude-Docs, Context7 and visualize. Approve to adopt that list, or type yours under Other. | 2026-11-15 |\n| TASK-012 | tooling | P2 | AWAITING_DECISION | protected | Apply the pending-decisions addendum to the weekly Routine prompt | .claude/skills/owner-decisions/references/weekly-routine.md#Proposed addendum to the Routine prompt | VERIFIED · list_triggers read of the Routine prompt on 2026-10-12: it has no register or pending-decision instruction · 2026-10-12 · claude | PENDING | Append the addendum in weekly-routine.md (as of commit 44e8f71) to the weekly Routine's prompt with one update_trigger call; nothing else on the Routine changes. Approve authorises that one call, once. While TASK-013 (CR-T04) is paused, that call must not carry TASK-013's branch line. | 2026-11-15 |\n| TASK-013 | tooling | P2 | PAUSED | protected | Name the base branch for the weekly audit PRs | pr:5#approval-3 | REPORTED · PR 5 description, approval 3 · 2026-10-12 | DEC-078 PAUSED | Proposal: casaray-v3-design (where PR 5 was retargeted by hand). Approve to adopt it, or type another branch under Other. One line is added to the Routine prompt in the same single update call as TASK-012. | 2026-11-15 |\n| TASK-014 | tooling | P3 | PAUSED | none | Confirm the household timezone and where the V2 tooling should live | pr:5#approval-5 | REPORTED · PR 5 description, approval 5 · 2026-10-12 | DEC-079 PAUSED | Owner states the timezone, which is recorded nowhere, and whether stamp_sha.py and requirements-dev.txt belong on the V2 line, since V3 does not use SHA stamping. | 2026-11-15 |\n| TASK-015 | tooling | P2 | APPROVED | none | Settle one home for owner decisions: this register, PR 3's queue and log, PR 5's report | register | VERIFIED · read OWNER_ACTION_QUEUE.md and DECISION_LOG.md on autonomous/casaray-dev at ac10385 and the PR 5 description via the GitHub API · 2026-10-12 · claude | DEC-040 APPROVED | Adopted. Nothing to build: PR 3 and PR 5 records are pointed at, not copied. Revisit when PR 3 merges (TASK-023). | 2026-11-08 |\n| TASK-016 | tooling | P2 | AWAITING_DECISION | protected | Allow docs/project-tasks/ as a standing permitted path on V3 branches | register | VERIFIED · design/casaray-v3/CLAUDE.md requires Ray's approval for any change outside design/casaray-v3/; session-orient's V3 rules allow only that tree · 2026-10-12 · claude | PENDING | Without this, every V3 session needs the owner's approval in so many words to record a decision. Proposal: approve the register and history only as a standing exception. orient.py's V3 allowed prefixes then need the same one-line change. | 2026-11-15 |\n| TASK-017 | casaray-v3 | P1 | APPROVED | none | Energy: is a Fronius Smart Meter fitted, or does Powerpal read a net meter? (V3-003) | design/casaray-v3/DECISIONS.md#V3-003 | REPORTED · design/casaray-v3/DECISIONS.md V3-003, open finding · 2026-10-12 | DEC-027 APPROVED | Approved default stands: Energy draws export and consumption as no source entity. No build work now (V3 builds one destination at a time, when asked). STILL OPEN: whether a Fronius Smart Meter is fitted or Powerpal reads a net meter. Supply it to unlock export. | 2026-11-08 |\n| TASK-018 | casaray-v3 | P1 | IN_PROGRESS | none | Review whether Parents room and Climate HVAC mode controls need Home's safeguards | design/casaray-v3/DECISIONS.md#review whether the Parents' room and Climate HVAC mode | VERIFIED · headless-browser probe of the V3 prototype AC card, in-page state only, no repo file changed · 2026-11-08 · claude | DEC-048 APPROVED | REVIEW DELIVERED 08/11, then found DUPLICATED by V3-008 on the unmerged casaray-v3/hardening-1 (11/10/26): R4/R6 no invented limits, R6 missing setpoint is No data with steps disabled, R7 missing attributes, R6 no stepping while Off. The V3 Lovelace build keeps HVAC read-only (V3-009 item 4). Nothing further to do; recommend closing on the owner's word. | 2026-11-15 |\n| TASK-019 | casaray-v3 | P2 | APPROVED | none | Fix three latent truthfulness fallbacks in the prototype (elapsed time, brightness, cover position) | design/casaray-v3/DECISIONS.md#latent truthfulness fallbacks | REPORTED · design/casaray-v3/DECISIONS.md V3 backlog items 9 to 11 · 2026-10-12 | DEC-041 APPROVED | Approved 08/11 for the prototype (design/casaray-v3/prototype). Not started. Recommend re-scoping: V3 is now built in Lovelace, whose gate already refuses float(0) sentinels and zeros claimed from nothing, and V3-008 on hardening-1 does not cover these three items. Needs the owner's word: retire it, or re-scope it to the Lovelace views (brightness, cover position, elapsed time). | 2026-11-15 |\n| TASK-020 | casaray-v3 | P3 | OPEN | none | Align the Lighting All lights off card layout | design/casaray-v3/DECISIONS.md#the slight layout inconsistency of Lighting's | REPORTED · design/casaray-v3/DECISIONS.md V3-007 hardening item 6 · 2026-10-12 | — | Likely superseded: the prototype card is no longer the build target, because Lighting is native in the Lovelace build. Recommend the owner deny it as superseded, or say it still matters in the prototype. Not started. | 2026-11-15 |\n| TASK-021 | casaray-v2 | P1 | AWAITING_DECISION | protected | BILL-001: remove hardcoded NMI and MIRN from the bill-electricity and bill-gas cards | DASHBOARD_BACKLOG.md#BILL-001 | REPORTED · DASHBOARD_BACKLOG.md BILL-001, the snapshot on this branch; ha-deploy may be newer · 2026-10-12 | PENDING | The record says the owner must either (a) create input_text helpers for the NMI and MIRN so cards can reference them, or (b) approve removing that text from the two cards. Proposal (agent's, not in the record): (b), which needs no live change. Not done: a V3 session may not edit V2 files. | 2026-10-12 |\n| TASK-022 | casaray-v2 | P2 | AWAITING_DECISION | protected | BILL-002: choose how bill data is exposed to Home Assistant for the history view | DASHBOARD_BACKLOG.md#BILL-002 | REPORTED · DASHBOARD_BACKLOG.md BILL-002 and billing/README.md point 2, the snapshot on this branch · 2026-10-12 | PENDING | Owner picks one exposure mechanism before any bills-history dashboard work starts. BILL-003 waits behind this and BILL-001. | 2026-10-12 |\n| TASK-023 | recovery | P1 | BLOCKED | protected | Recovery owner actions in PR 3 (A1-A7, B1-B3, C) | branch:autonomous/casaray-dev:docs/OWNER_ACTION_QUEUE.md | VERIFIED · read ASSESSMENT_2026-10-18, RUNBOOK_2026-10-30 and FILES_RECOVERY_PLAN_2026-11 on recovery/phase0-diagnostics via the GitHub API · 2026-11-09 · claude | — | Updated 16/11: owner confirmed V3 is running, so dashboard access is restored. Still open per the 3 Nov plan: HACS and custom_components (not verifiable from here, the connector does not expose HACS) and Tapo streams (verified 16/11: 2 of 5 camera streams idle, 3 unavailable). Registering V2 is a separate, optional track. Detail: recovery branch (PR 10). | 2026-11-15 |\n| TASK-024 | tooling | P1 | IN_PROGRESS | protected | Owner decision and task tracking workflow (this change) | register | VERIFIED · owner task brief in this session, 2026-10-12 · 2026-10-12 · claude | DEC-025 APPROVED | Draft PR 8 awaits owner review. Extended 16/11 with session-orient 0.3.0 for the V3 build branches and the project mapping. Proposed on top of it, in a separate draft PR from casaray-v3/agent-task-conflicts: approvals never lift a pause (register or Issue #7), the Links table, and Task Control Center V5 reading this register (docs/project-tasks/CONFLICT_AUDIT_2026-11-15.md). Where it lands is TASK-026. Merge is the owner's call; on merge the owner confirms and this is marked DONE on their word. | 2026-11-15 |\n| TASK-025 | casaray-v3 | P1 | AWAITING_DECISION | none | Harden the prototype AC card: null setpoint steps to 16, no-attributes state throws | design/casaray-v3/DECISIONS.md#*HVAC safeguards.* Home has | VERIFIED · headless-browser probe 2026-11-08, TASK-018 review defects 1 and 2 · 2026-11-08 · claude | PENDING | Proposal: fix the two AC-card defects (null setpoint steps to 16; no-attributes state throws) on a specialist branch, a regression check each. Agent's recommendation: DENY, superseded: V3-008 on casaray-v3/hardening-1 already fixes both, and the V3 build keeps HVAC read-only. | 2026-11-15 |\n| TASK-026 | tooling | P2 | AWAITING_DECISION | none | Decide where PR 8 lands: casaray-v3-design or feature/casaray-v3-build | register | VERIFIED · GitHub compare 16/11: feature/casaray-v3-build is 17 ahead and 0 behind casaray-v3-design (27f3fed); PR 8 touches 0 of the build's 46 files · 2026-11-15 · claude | PENDING | Proposal: re-target PR 8 to feature/casaray-v3-build, where V3 work now happens; casaray-v3-design has not moved. It merges cleanly either way. Note the build's approved paths (V3-009) do not include .claude/skills, CLAUDE.md or docs/project-tasks, so landing there needs the same path approval as TASK-016. Nothing is merged or re-targeted yet. | 2026-11-15 |\n| TASK-027 | casaray-v3 | P1 | BLOCKED | none | Confirm which V3 dashboard version is live, and report U4 if the Home upgrade was applied | register | REPORTED · owner, 16/11: V3 is up and running after copying the YAML into the dashboard editor; which version was not stated · 2026-11-15 | — | Owner action. Run U1 in docs/casaray-v3/PREVIEW_DEPLOYMENT.md (read-only): is CasaRay V3 Preview listed at casaray-v3, which dashboard is default. Then say which Home layout is live: the 02/11 import (8f1ec33) or the 14/11 Home upgrade (7f16e79). Until then V3 counts as imported, version unknown, and no later change counts as deployed. | 2026-11-15 |\n| TASK-028 | casaray-v3 | P1 | AWAITING_DECISION | none | PR 16 (V3 cameras and layout): approve merging into feature/casaray-v3-build | register | VERIFIED · all four V3 gates run offline in a scratch worktree of PR 16 head 97e9bce on 16/11: build --check up to date; validate_dashboard 1437 passed 0 failed; tests/v3 105 OK; ha_validate PASSED, 470 warnings vs 466 on the build tip (same class, a new Camera health heading); camera views use only navigate, more-info, none · 2026-11-15 · claude | PENDING | Proposal: merge PR 16 into feature/casaray-v3-build after your review. All four offline gates pass. Repository-only: it does NOT approve deploying. V3-014 says nothing goes to the Green until you approve, and the live dashboard must first be diffed against 7f16e79 (not readable from here). Applying it is TASK-029. | 2026-11-15 |\n| TASK-029 | casaray-v3 | P1 | BLOCKED | protected | PR 16: apply the camera and layout changes to the live /casaray-v3 dashboard | register | REPORTED · DECISIONS V3-014 and docs/casaray-v3/PREVIEW_DEPLOYMENT.md: nothing goes to the Green without the owner's approval · 2026-11-15 | — | Owner action by hand in the dashboard editor, after approving. This session cannot deploy and cannot read the live dashboard. The 14/11 Home approval (7f16e79) does not cover PR 16. Streams stay degraded whatever the dashboard does until the Tapo fault is fixed. | 2026-11-15 |\n| TASK-030 | recovery | P1 | BLOCKED | none | Establish why 3 of 5 Tapo camera streams are unavailable while the cameras answer | register | VERIFIED · connector read 16/11: Front door and Stockroom idle; South wall, East wall, North wall unavailable. PR 16's note says North wall was idle on 15/11 · 2026-11-15 · claude | — | Cause not established from here. The cameras answer (battery and detection switches respond) but Tapo Control's streams do not. The 3 Nov plan (FILES_RECOVERY_PLAN_2026-11 on recovery/phase0-diagnostics) lists the read-only checks. North wall flapping suggests an unstable integration, not a dashboard fault. | 2026-11-15 |\n| TASK-031 | tooling | P2 | PAUSED | protected | Review PR 5 for merging (CR-T05) | pr:5 | VERIFIED · Issue 7 and PR 5 read via the GitHub API · 2026-11-15 · claude | DEC-080 PAUSED | Paused by the owner in Issue #7 as CR-T05: keep PR 5 draft and unmerged. Resume only when the owner names CR-T05 or this task. No approval here authorises a merge. | 2026-11-15 |\n| TASK-032 | recovery | P2 | AWAITING_DECISION | protected | PR 13: keep or close the V2 recovery continuation into ha-deploy | pr:13 | VERIFIED · GitHub API read of PR 13: draft, mergeable clean, last updated 29/10, its own description says deploy NO-GO · 2026-11-15 · claude | PENDING | Owner decides: keep PR 13 as the V2 recovery candidate, or close it as superseded by the V3 preview and the PR 10 plan. Merging is production (the 03:30 auto-deploy) and needs its own scoped approval after the B1-B3 host checks; no general approval covers it. Overlaps PR 10: both are recovery work into ha-deploy and both change PROJECT_STATE.md. | 2026-11-15 |\n\n## Links\n\nHow a task relates to another record. `alias-of`: the same work under another register's ID\n(Issue #7's CR-T02 is TASK-009). `duplicate-of`: a superseded local ID that now means this task.\n`depends-on`, `bundled-with`, `overlaps`: what to look at before deciding. `External status` is what\nthe other record said when `Checked`. A task whose alias the other record has PAUSED cannot be\napproved here: the owner resumes it by name first. Edit with `tasks.py link`.\n\n| From | Relation | To | Source | External status | Checked |\n|---|---|---|---|---|---|\n| CR-T01 | alias-of | TASK-011 | issue:7 | PAUSED | 2026-11-15 |\n| CR-T02 | alias-of | TASK-009 | issue:7 | PAUSED | 2026-11-15 |\n| CR-T03 | alias-of | TASK-010 | issue:7 | PAUSED | 2026-11-15 |\n| CR-T04 | alias-of | TASK-013 | issue:7 | PAUSED | 2026-11-15 |\n| CR-T04 | alias-of | TASK-014 | issue:7 | PAUSED | 2026-11-15 |\n| CR-T05 | alias-of | TASK-031 | issue:7 | PAUSED | 2026-11-15 |\n| V4:TASK-009 | duplicate-of | TASK-009 | control-center:v4 | — | 2026-11-15 |\n| V4:TASK-009-APPROVE | duplicate-of | TASK-009 | control-center:v4 | — | 2026-11-15 |\n| V4:V3-DEPLOY | duplicate-of | TASK-029 | control-center:v4 | — | 2026-11-15 |\n| V4:TASK-016 | duplicate-of | TASK-028 | control-center:v4 | — | 2026-11-15 |\n| V4:CFG-005-LIVE | duplicate-of | TASK-023 | control-center:v4 | — | 2026-11-15 |\n| V4:TASK-REGISTER | duplicate-of | TASK-024 | control-center:v4 | — | 2026-11-15 |\n| V4:PR-13 | duplicate-of | TASK-032 | control-center:v4 | — | 2026-11-15 |\n| V4:TASK-026 | duplicate-of | TASK-026 | control-center:v4 | — | 2026-11-15 |\n| V4:CFG-005 | overlaps | TASK-023 | control-center:v4 | — | 2026-11-15 |\n| TASK-029 | depends-on | TASK-028 | register | — | 2026-11-15 |\n| TASK-029 | depends-on | TASK-027 | register | — | 2026-11-15 |\n| TASK-026 | depends-on | TASK-016 | register | — | 2026-11-15 |\n| TASK-013 | bundled-with | TASK-012 | register | — | 2026-11-15 |\n| TASK-006 | overlaps | TASK-031 | pr:5 (one of TASK-006's routes is PR 5 commit 3eff5e0) | — | 2026-11-15 |\n| TASK-023 | overlaps | TASK-032 | pr:10 and pr:13 (both recovery work into ha-deploy; both change PROJECT_STATE.md) | — | 2026-11-15 |\n", "sha": "62d15256429100d1a696eb2a4954647490f2a2f6"}</script>
+<script>
+'use strict';
+const REPO = 'deezr168-blip/Deez-Smart-Home';
+const DEFAULT_REF = 'casaray-v3/agent-task-conflicts';
+const PAGE = 5, STALE_DAYS = 14;
+const PRI = ['P0', 'P1', 'P2', 'P3'];
+const RANK = ['AWAITING_DECISION', 'IN_PROGRESS', 'APPROVED', 'OPEN', 'BLOCKED', 'PAUSED'];
+const TASK_COLS = ['ID', 'Project', 'P', 'Status', 'Gate', 'Task', 'Home', 'Evidence', 'Decision', 'Next action', 'Updated'];
+const HIST_COLS = ['ID', 'Date', 'Task', 'Event', 'From', 'To', 'Scope', 'Context', 'Basis', 'Via', 'By'];
+const LINK_COLS = ['From', 'Relation', 'To', 'Source', 'External status', 'Checked'];
+const STORE_KEY = 'casaray-tcc-v5', LEGACY_KEY = 'casaray-decisions-v2';
+const OWNER_EVENT = {approve: 'APPROVED', deny: 'DENIED', pause: 'PAUSED'};
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
+const today = () => window.__TCC_NOW || new Date().toISOString().slice(0, 10);
+const daysBetween = (a, b) => (a && b) ? Math.round((Date.parse(b) - Date.parse(a)) / 864e5) : null;
+const decNum = id => Number(String(id || '').replace(/^DEC-/, '')) || 0;
+
+/* ---------- Markdown tables, read exactly as tasks.py reads them ---------- */
+function splitRow(line) { let s = line.trim(); if (s.startsWith('|')) s = s.slice(1); if (s.endsWith('|')) s = s.slice(0, -1); return s.split('|').map(c => c.trim()); }
+function tableOf(md, cols) {
+  const lines = String(md || '').split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    if (!lines[i].trim().startsWith('|')) continue;
+    let j = i; while (j < lines.length && lines[j].trim().startsWith('|')) j++;
+    const header = splitRow(lines[i]);
+    if (header.join('|') === cols.join('|')) {
+      const rows = [], bad = [];
+      for (let k = i + 1; k < j; k++) {
+        const cells = splitRow(lines[k]);
+        if (k === i + 1 && cells.every(c => /^:?-{2,}:?$/.test(c))) continue;
+        if (cells.length !== cols.length) { bad.push(k + 1); continue; }
+        const o = {_line: k + 1}; cols.forEach((c, n) => o[c] = cells[n]); rows.push(o);
+      }
+      return {rows, bad};
+    }
+    i = j;
+  }
+  return null;
+}
+function parseEvidence(cell) {
+  const p = String(cell || '').split('·').map(x => x.trim());
+  if (p.length < 3 || !/^\d{4}-\d{2}-\d{2}$/.test(p[2])) return null;
+  return {status: p[0], source: p[1], date: p[2], by: p[3] || ''};
+}
+/* Issue #7: rows like "| CR-T02 | Fix ... | **PAUSED** (previously APPROVED ...) | ... |" */
+function parseIssue(body) {
+  const out = {};
+  for (const line of String(body || '').split('\n')) {
+    const m = line.match(/^\|\s*(CR-T\d{2})\s*\|([^|]*)\|([^|]*)\|/);
+    if (!m) continue;
+    const said = m[3].replace(/\*/g, '').trim();
+    out[m[1]] = {id: m[1], task: m[2].trim(), said, status: (said.match(/\b(PAUSED|APPROVED|DENIED|RESUMED)\b/) || [])[1] || 'UNKNOWN'};
+  }
+  return out;
+}
+
+/* ---------- state ---------- */
+let SNAP = {}; try { SNAP = JSON.parse($('snapshot').textContent || '{}'); } catch (e) { SNAP = {}; }
+const snapName = () => `${(SNAP.sha || '?').slice(0, 7)}${SNAP.dirty ? ' (+uncommitted)' : ''} of ${SNAP.built_at || '?'}`;
+const SNAP_LINKS = (tableOf(SNAP.register, LINK_COLS) || {rows: []}).rows;
+let store = {selections: {}, handoffs: [], ref: DEFAULT_REF, legacyDone: false, legacyNotes: []};
+try { store = Object.assign(store, JSON.parse(localStorage.getItem(STORE_KEY) || '{}')); } catch (e) { /* private mode */ }
+const saveStore = () => { try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); } catch (e) { /* not persisted */ } };
+let model = null, view = {tab: 'queue', filter: 'all', priority: 'all', sort: 'high', q: '', page: 0, selected: null};
+
+function buildModel(src) {
+  const T = tableOf(src.register, TASK_COLS), H = tableOf(src.history, HIST_COLS);
+  if (!T || !H) throw new Error('the register or the decision history has no readable table');
+  const L = tableOf(src.register, LINK_COLS);
+  const links = L ? L.rows : SNAP_LINKS;
+  const m = {origin: src.origin, tasks: T.rows, events: H.rows, links, linksFrom: L ? 'register' : (SNAP_LINKS.length ? 'snapshot' : 'none'),
+    badRows: [...T.bad, ...H.bad, ...(L ? L.bad : [])], issue: src.issue ? parseIssue(src.issue.body) : null, issueAt: src.issue ? src.issue.updated_at : null,
+    prs: src.prs || null, byId: {}, dupIds: [], maxDec: 0};
+  for (const e of m.events) m.maxDec = Math.max(m.maxDec, decNum(e.ID));
+  const lastDec = {}; for (const e of m.events) lastDec[e.Task] = e.ID;
+  for (const t of m.tasks) { if (m.byId[t.ID]) m.dupIds.push(t.ID); else m.byId[t.ID] = t; }
+  const prHead = {}; for (const p of (m.prs || [])) prHead[p.number] = p;
+  for (const t of m.tasks) {
+    t.aliases = m.links.filter(l => l.Relation === 'alias-of' && l.To === t.ID);
+    t.legacy = m.links.filter(l => l.Relation === 'duplicate-of' && l.To === t.ID).map(l => l.From);
+    t.extPauses = t.aliases.filter(l => l['External status'].toUpperCase() === 'PAUSED' || (m.issue && m.issue[l.From] && m.issue[l.From].status === 'PAUSED' && l['External status'].toUpperCase() !== 'SUPERSEDED'));
+    t.completed = t.Status === 'DONE' || t.Status === 'DENIED';
+    t.paused = t.Status === 'PAUSED' || t.extPauses.length > 0;
+    t.gated = t.Gate !== 'none';
+    const ev = parseEvidence(t.Evidence); t.evAge = ev ? daysBetween(ev.date, today()) : null;
+    t.staleEvidence = t.evAge === null || t.evAge > STALE_DAYS;
+    t.deps = m.links.filter(l => l.Relation === 'depends-on' && l.From === t.ID).map(l => ({id: l.To, status: (m.byId[l.To] || {}).Status || 'NOT IN REGISTER'}));
+    t.unresolved = t.deps.filter(d => d.status !== 'DONE');
+    t.related = m.links.filter(l => (l.Relation === 'bundled-with' || l.Relation === 'overlaps') && (l.From === t.ID || l.To === t.ID));
+    t.lastDec = lastDec[t.ID] || '';
+    t.fp = [t.Status, t.Updated, t.Decision, t.Gate, t.P, t.lastDec].join('|');
+    t.pauseRow = [...m.events].reverse().find(e => e.Task === t.ID && e.Event === 'PAUSED') || null;
+    t.stalePR = null;
+    const mm = String(t.Evidence).match(/PR (\d+) head ([0-9a-f]{7,40})/);
+    if (mm && prHead[mm[1]] && prHead[mm[1]].head && !prHead[mm[1]].head.sha.startsWith(mm[2])) t.stalePR = `PR ${mm[1]} has moved since this was verified (${mm[2]} → ${prHead[mm[1]].head.sha.slice(0, 7)})`;
+  }
+  return m;
+}
+
+/* ---------- rules: one place, used by the buttons, bulk, submission and tests ---------- */
+function approveBlockers(t) {
+  if (!t) return ['not in the canonical register: an unknown task is never approved'];
+  const r = [];
+  if (model.dupIds.includes(t.ID)) r.push('its ID appears twice in the register: resolve the duplicate first');
+  if (t.completed) r.push(`${t.Status}: closed`);
+  if (t.Status === 'PAUSED') r.push(`paused by the owner${t.pauseRow ? ' (' + t.pauseRow.ID + ')' : ''}: an approval never lifts a pause; the owner resumes it by name first`);
+  else if (t.extPauses.length) r.push(`paused in ${t.extPauses.map(l => l.From + ' (' + l.Source + ')').join(', ')}: an approval never lifts a pause`);
+  if (!t.completed && t.Status !== 'PAUSED' && t.Status !== 'AWAITING_DECISION') r.push(`${t.Status}: there is no decision to approve`);
+  if (t.staleEvidence) r.push(`evidence is ${t.evAge ?? 'of unknown'} days old: re-verify first`);
+  if (t.stalePR) r.push(t.stalePR);
+  if (t.unresolved.length) r.push('depends on ' + t.unresolved.map(d => d.id + ' (' + d.status + ')').join(', '));
+  return r;
+}
+function bulkBlockers(t) {
+  const r = approveBlockers(t);
+  if (!t) return r;
+  if (t.gated) r.push(`${t.Gate}-gated: needs its own exact, single-use scope`);
+  return r;
+}
+const canDeny = t => !!t && ['AWAITING_DECISION', 'OPEN', 'APPROVED', 'IN_PROGRESS', 'BLOCKED', 'PAUSED'].includes(t.Status) && !model.dupIds.includes(t.ID);
+const canPause = t => !!t && ['AWAITING_DECISION', 'OPEN', 'APPROVED', 'IN_PROGRESS', 'BLOCKED'].includes(t.Status) && !model.dupIds.includes(t.ID);
+
+/* A selection is usable only while the task is unchanged since it was chosen, the verdict is
+   still allowed, and what the verdict needs (a scope, a reason) has been written. */
+function selectionProblem(id, s) {
+  const t = model.byId[id];
+  if (!t) return 'not in the canonical register';
+  if (s.migrated && !s.fp) return 'carried over from V4: confirm it again';
+  if (s.fp && s.fp !== t.fp) return `the task changed since you chose (${s.status || '?'} → ${t.Status}): revalidate`;
+  if (s.verdict === 'approve') { const b = approveBlockers(t); if (b.length) return b[0]; if (t.gated && (s.scope || '').trim().length < 12) return `${t.Gate}-gated: write the exact scope (12+ characters)`; }
+  if (s.verdict === 'deny' && !canDeny(t)) return `cannot be denied from ${t.Status}`;
+  if (s.verdict === 'pause' && !canPause(t)) return `cannot be paused from ${t.Status}`;
+  if ((s.verdict === 'deny' || s.verdict === 'pause') && (s.reason || '').trim().length < 8) return s.verdict === 'deny' ? 'write the reason (8+ characters)' : 'write what to keep for resuming (8+ characters)';
+  return '';
+}
+
+function conflictList() {
+  const c = [], m = model;
+  for (const id of new Set(m.dupIds)) c.push({sev: 'error', kind: 'Duplicate task ID', msg: `${id} appears ${m.tasks.filter(t => t.ID === id).length} times in the register. Approval of ${id} is disabled until one record remains.`});
+  if (m.badRows.length) c.push({sev: 'error', kind: 'Unreadable rows', msg: `Rows ${m.badRows.join(', ')} have the wrong number of cells and were skipped.`});
+  const seen = new Set();
+  for (const l of m.links) {
+    const k = l.From + ' ' + l.Relation + ' ' + l.To;
+    if (seen.has(k)) c.push({sev: 'error', kind: 'Duplicate link', msg: k}); seen.add(k);
+    for (const side of [l.From, l.To]) if (/^TASK-\d{3,}$/.test(side) && !m.byId[side]) c.push({sev: 'error', kind: 'Link to an unknown task', msg: `${k}: ${side} is not in the register`});
+  }
+  for (const t of m.tasks) {
+    for (const l of t.aliases) {
+      const live = m.issue && m.issue[l.From];
+      const linkSays = l['External status'].toUpperCase();
+      if ((linkSays === 'PAUSED' || (live && live.status === 'PAUSED')) && !['PAUSED', 'DONE', 'DENIED'].includes(t.Status))
+        c.push({sev: 'error', kind: 'Pause not recorded in the register', msg: `${l.Source} has ${l.From} paused, but ${t.ID} is ${t.Status} in the register. Approval of ${t.ID} is disabled here; the register needs the pause recorded, or the owner resumes it by name.`, task: t.ID});
+      if (live && linkSays !== 'SUPERSEDED' && live.status !== linkSays)
+        c.push({sev: 'warn', kind: 'Issue #7 changed since it was checked', msg: `Issue #7 now says ${l.From} is ${live.status}; the register's link says ${linkSays} (read ${l.Checked}). Not applied automatically: a pause is lifted only by the owner naming the task.`, task: t.ID});
+    }
+    if (t.stalePR) c.push({sev: 'warn', kind: 'Stale evidence', msg: `${t.ID}: ${t.stalePR}`, task: t.ID});
+  }
+  if (m.issue) for (const id of Object.keys(m.issue)) if (!m.links.some(l => l.Relation === 'alias-of' && l.From === id))
+    c.push({sev: 'error', kind: 'Issue #7 ID with no task', msg: `${id} (${m.issue[id].status}) has no canonical task in the register's Links.`});
+  const titles = {};
+  for (const t of m.tasks) (titles[t.Task.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()] ||= []).push(t.ID);
+  for (const ids of Object.values(titles)) if (ids.length > 1) c.push({sev: 'warn', kind: 'Possible duplicate tasks', msg: ids.join(', ') + ' have the same title.'});
+  for (const l of m.links.filter(l => l.Relation === 'overlaps' || l.Relation === 'bundled-with'))
+    c.push({sev: 'info', kind: l.Relation === 'overlaps' ? 'Overlapping responsibilities' : 'Bundled action', msg: `${l.From} ${l.Relation} ${l.To} — ${l.Source}`});
+  if (m.prs) {
+    const text = JSON.stringify(m.tasks.map(t => [t.Home, t.Task, t.Evidence, t['Next action']])) + JSON.stringify(m.links.map(l => [l.Source, l.From]));
+    for (const p of m.prs.filter(p => p.state === 'open'))
+      if (!new RegExp(`(pr:${p.number}\\b|PR ${p.number}\\b|PR #${p.number}\\b|PR-${p.number}\\b)`).test(text))
+        c.push({sev: 'warn', kind: 'Open PR with no task', msg: `PR #${p.number} "${p.title}" is not in the register. It cannot be approved here until a task is added for it.`});
+  }
+  for (const n of store.legacyNotes || []) c.push({sev: 'warn', kind: 'V4 selection', msg: n});
+  for (const [id, s] of Object.entries(store.selections)) { const p = selectionProblem(id, s); if (p) c.push({sev: 'warn', kind: 'Selection needs attention', msg: `${id} ${s.verdict.toUpperCase()}: ${p}.`, task: id}); }
+  if (m.linksFrom === 'snapshot') c.push({sev: 'warn', kind: 'Register has no Links table', msg: 'The branch read has no Links table, so the aliases and pauses built into this file are applied. Approvals of linked paused tasks stay disabled.'});
+  return c;
+}
+
+/* ---------- V4 selections: mapped, never trusted ---------- */
+function migrateLegacy() {
+  if (store.legacyDone) return;
+  let old = null; try { old = JSON.parse(localStorage.getItem(LEGACY_KEY) || 'null'); } catch (e) { old = null; }
+  store.legacyDone = true;
+  if (!old || typeof old !== 'object') { saveStore(); return; }
+  for (const [legacyId, verdict] of Object.entries(old)) {
+    const link = model.links.find(l => l.Relation === 'duplicate-of' && l.From === 'V4:' + legacyId) || model.links.find(l => l.Relation === 'alias-of' && l.From === legacyId);
+    const target = link ? link.To : null;
+    if (!target || !model.byId[target]) { store.legacyNotes.push(`V4 had ${String(verdict).toUpperCase()} on ${legacyId}, which has no canonical task. Not carried over.`); continue; }
+    if (store.selections[target]) { store.legacyNotes.push(`V4 ${legacyId} → ${target}: you already have a V5 selection for ${target}; V4's was ignored.`); continue; }
+    store.selections[target] = {verdict: String(verdict), kind: 'review', scope: '', reason: '', fp: '', migrated: legacyId, at: new Date().toISOString(), status: ''};
+    store.legacyNotes.push(`V4 ${String(verdict).toUpperCase()} on ${legacyId} is now on ${target}. It needs confirming before it can be submitted.`);
+  }
+  saveStore();
+}
+
+/* ---------- handoffs: recorded only when GitHub shows the row ---------- */
+function markRecorded() {
+  if (!model || model.origin.kind !== 'github') return;
+  for (const h of store.handoffs) for (const it of h.items) {
+    if (it.recorded) continue;
+    const e = model.events.find(e => e.Task === it.task && e.Event === OWNER_EVENT[it.verdict] && decNum(e.ID) > h.maxDec && /^(owner|ray)$/i.test(e.By));
+    if (e) { it.recorded = e.ID; const s = store.selections[it.task]; if (s && s.verdict === it.verdict) delete store.selections[it.task]; }
+  }
+  saveStore();
+}
+
+/* ---------- loading ---------- */
+async function getJSON(url) { const r = await fetch(url, {headers: {Accept: 'application/vnd.github+json'}}); if (!r.ok) throw new Error(url.split('/').slice(3, 7).join('/') + ' ' + r.status); return r.json(); }
+async function getText(url) { const r = await fetch(url); if (!r.ok) throw new Error('raw ' + r.status); return r.text(); }
+function load(src) { model = buildModel(src); migrateLegacy(); markRecorded(); render(); }
+async function refresh() {
+  const btn = $('refresh'); btn.disabled = true; $('sync').textContent = 'Reading GitHub…'; $('sync').className = 'sync';
+  const ref = store.ref || DEFAULT_REF, notes = [];
+  try {
+    const head = await getJSON(`https://api.github.com/repos/${REPO}/commits/${encodeURIComponent(ref)}`);
+    const sha = head.sha;
+    const [register, history] = await Promise.all([
+      getText(`https://raw.githubusercontent.com/${REPO}/${sha}/docs/project-tasks/TASK_REGISTER.md`),
+      getText(`https://raw.githubusercontent.com/${REPO}/${sha}/docs/project-tasks/DECISION_HISTORY.md`)]);
+    let issue = null, prs = null;
+    try { issue = await getJSON(`https://api.github.com/repos/${REPO}/issues/7`); } catch (e) { notes.push('Issue #7 unreadable'); }
+    try { prs = await getJSON(`https://api.github.com/repos/${REPO}/pulls?state=all&per_page=50`); } catch (e) { notes.push('PR states unreadable'); }
+    load({register, history, issue, prs, origin: {kind: 'github', ref, sha, at: new Date().toISOString()}});
+    $('sync').textContent = `GitHub ${ref} @ ${sha.slice(0, 7)}, read ${new Date().toLocaleTimeString('en-AU', {hour: '2-digit', minute: '2-digit'})}` + (notes.length ? ' · ' + notes.join(', ') : '');
+    if (notes.length) $('sync').className = 'sync warn';
+  } catch (e) {
+    if (!model) loadSnapshot();
+    $('sync').textContent = `GitHub unreachable (${e.message}). Showing ${model.origin.kind === 'github' ? 'the last GitHub read' : 'the snapshot ' + snapName()}.`;
+    $('sync').className = 'sync warn';
+  } finally { btn.disabled = false; }
+}
+function loadSnapshot() { load({register: SNAP.register || '', history: SNAP.history || '', issue: null, prs: null, origin: {kind: 'snapshot', ref: SNAP.ref, sha: SNAP.sha, at: SNAP.built_at}}); }
+
+/* ---------- rendering ---------- */
+function statusPill(t) {
+  if (t.completed) return `<span class="pill done">✓ ${esc(t.Status)}</span>`;
+  if (t.paused) return `<span class="pill paused">⏸ ${t.Status === 'PAUSED' ? 'Paused' : 'Paused elsewhere'}</span>`;
+  if (t.Status === 'AWAITING_DECISION') return '<span class="pill decide">Needs a decision</span>';
+  if (t.Status === 'BLOCKED') return '<span class="pill blocked">Blocked</span>';
+  return `<span class="pill">${esc(t.Status.replace(/_/g, ' ').toLowerCase())}</span>`;
+}
+function indicators(t) {
+  let h = '';
+  if (t.gated) h += `<span class="pill gate">${esc(t.Gate)}</span>`;
+  if (t.unresolved.length) h += `<span class="pill dep" title="depends on ${esc(t.unresolved.map(d => d.id).join(', '))}">⛓ ${t.unresolved.length}</span>`;
+  if (t.related.length) h += `<span class="pill dep" title="overlaps or is bundled">↔ ${t.related.length}</span>`;
+  if (conflictsFor(t.ID).length) h += '<span class="pill conflict">⚠ conflict</span>';
+  if (t.stalePR || (t.Status === 'AWAITING_DECISION' && t.staleEvidence)) h += '<span class="pill stale">stale</span>';
+  return h;
+}
+let conflictsCache = [];
+const conflictsFor = id => conflictsCache.filter(c => c.task === id && c.sev !== 'info');
+
+/* Backlog cleanup is a separate, non-mutating review workflow. No state transition
+   ever happens here; official decisions still require tasks.py and owner evidence. */
+const CLEANUP_RECOMMENDATIONS = Object.freeze({
+  'TASK-002': ['complete', 'The approved integration-branch decision has no implementation action.'],
+  'TASK-015': ['complete', 'The single decision-register approach is already adopted.'],
+  'TASK-018': ['retire', 'Review was delivered; verify overlapping V3 safeguards before closing.'],
+  'TASK-025': ['retire', 'Prototype AC fixes reportedly exist on an unmerged hardening branch.'],
+  'TASK-020': ['retire', 'Old prototype Lighting layout may no longer be relevant.'],
+  'TASK-019': ['revalidate', 'Truthfulness fixes need re-scoping to current Lovelace implementation.'],
+  'TASK-023': ['revalidate', 'October recovery tasks mix restored access with unverified missing integrations.'],
+  'TASK-027': ['revalidate', 'Live V3 version needs a read-only comparison before applying upgrades.'],
+  'TASK-030': ['keep', 'Camera-stream issue still needs fresh diagnostics.'],
+  'TASK-024': ['keep', 'Task registration and V5 safeguards are still under review.'],
+  'TASK-028': ['keep', 'PR #16 review and deployment must stay separate.'],
+  'TASK-029': ['revalidate', 'Live export and separate owner deployment approval are missing.'],
+  'TASK-032': ['revalidate', 'Legacy V2 recovery PR #13 needs re-check; never merge to clear queue.']
+});
+let cleanupPage = 0, cleanupFilter = 'all', cleanupSelections = {}, cleanupHandoff = '';
+const cleanupAge = t => {
+  const m = String(t.Evidence || '').match(/20\d{2}-\d{2}-\d{2}/g);
+  if (!m || !m.length) return null;
+  const age = daysBetween(m[m.length-1], today());
+  return age === null || age < 0 ? null : age;
+};
+function cleanupReview(t) {
+  const recommended = CLEANUP_RECOMMENDATIONS[t.ID];
+  const age = cleanupAge(t);
+  const needsRevalidation = !t.completed && (t.paused || age === null || age > STALE_DAYS || !!t.stalePR || t.Status === 'BLOCKED');
+  let suggestion = recommended ? recommended[0] : (needsRevalidation ? 'revalidate' : 'keep');
+  let why = recommended ? recommended[1] : (needsRevalidation ? 'Missing, stale or blocked evidence; independently re-check before execution.' : 'No retirement evidence found; keep in the normal queue.');
+  if (t.paused) { suggestion = 'revalidate'; why = 'Owner pause remains binding. Review relevance without resuming or approving this task. ' + why; }
+  return {suggestion, why, needsRevalidation, age};
+}
+function cleanupRows() {
+  if (!model) return [];
+  let rows = model.tasks.filter(t => !t.completed).map(t => ({t, ...cleanupReview(t)}));
+  rows = rows.filter(x => cleanupFilter === 'all' ? x.needsRevalidation || !!CLEANUP_RECOMMENDATIONS[x.t.ID] : cleanupFilter === 'revalidate' ? x.needsRevalidation || x.suggestion === 'revalidate' : x.suggestion === cleanupFilter);
+  return rows.sort((a,b) => PRI.indexOf(a.t.P)-PRI.indexOf(b.t.P) || a.t.ID.localeCompare(b.t.ID));
+}
+function renderCleanup() {
+  if (!model) return;
+  const rows = cleanupRows();
+  const maxPage = Math.max(1, Math.ceil(rows.length / PAGE));
+  cleanupPage = Math.min(cleanupPage, maxPage-1);
+  const batch = rows.slice(cleanupPage*PAGE, (cleanupPage+1)*PAGE);
+  $('countCleanup').textContent = model.tasks.filter(t => !t.completed && (cleanupReview(t).needsRevalidation || CLEANUP_RECOMMENDATIONS[t.ID])).length;
+  $('cleanupList').innerHTML = batch.length ? batch.map(({t,suggestion,why,age,needsRevalidation}) => {
+    const selected = cleanupSelections[t.ID] || '';
+    return `<div class="cleanup-entry" data-cleanup="${esc(t.ID)}">
+      <div class="t-top"><span class="pill">${esc(t.P)} · ${esc(t.ID)}</span>${statusPill(t)}<span class="pill ${needsRevalidation?'stale':'dep'}">${needsRevalidation?'REVALIDATION REQUIRED':'REVIEW'}</span></div>
+      <strong>${esc(t.Task)}</strong><p class="reason">Suggested: ${esc(suggestion.toUpperCase())}. ${esc(why)}</p>
+      <small>Evidence age: ${age === null ? 'unknown' : age+' days'} · Gate: ${esc(t.Gate)} · Updated: ${esc(t.Updated)}</small>
+      ${t.paused ? '<p class="pause-marker">⏸ Paused by owner — selection never resumes it.</p>' : ''}
+      <div class="cleanup-options" role="group" aria-label="${esc(t.ID)} cleanup review">
+      ${['keep','complete','retire','revalidate'].map(v=>`<button type="button" data-cleanup-choice="${v}" aria-pressed="${selected===v}" ${t.paused && (v==='complete'||v==='retire') ? 'disabled title="Owner pause cannot be bypassed"' : ''}>${selected===v?'✓ ':''}${v==='retire'?'Retire':v==='complete'?'Complete':v==='keep'?'Keep':'Revalidate'}</button>`).join('')}
+      </div></div>`;
+  }).join('') : '<div class="empty">No records match this review filter.</div>';
+  $('cleanupCount').textContent = rows.length ? `Page ${cleanupPage+1} of ${maxPage} · ${rows.length} review items` : '0 review items';
+  $('cleanupPrev').disabled = cleanupPage===0; $('cleanupNext').disabled = (cleanupPage+1)*PAGE>=rows.length;
+  $('cleanupList').querySelectorAll('[data-cleanup-choice]').forEach(b=>b.onclick=()=>{
+    const id=b.closest('[data-cleanup]').dataset.cleanup;
+    if (model.byId[id]?.paused && ['complete','retire'].includes(b.dataset.cleanupChoice)) return;
+    cleanupSelections[id]=b.dataset.cleanupChoice;
+    cleanupHandoff='';
+    $('cleanupOutput').classList.add('hidden'); $('cleanupCopy').disabled=true;
+    renderCleanup();
+  });
+  $('cleanupExport').disabled = !Object.keys(cleanupSelections).length || !$('cleanupConfirm').checked;
+}
+function makeCleanupHandoff() {
+  const ids=Object.keys(cleanupSelections).sort();
+  return [
+    'CASARAY BACKLOG CLEANUP — OWNER REVIEW, NOT A TASK DECISION',
+    'Prepared: '+new Date().toISOString(),
+    'Register: '+model.origin.ref+' @ '+model.origin.sha,
+    'Never merge, deploy, touch Home Assistant, or resume paused tasks from this review.',
+    'Verify current code, evidence and dependencies before recording any status.',
+    '',
+    ...ids.map(id=>{
+      const t=model.byId[id]; if(!t) return id+': no longer in register — REVALIDATE';
+      const p=cleanupReview(t), requested=t.paused && !['keep','revalidate'].includes(cleanupSelections[id]) ? 'revalidate' : cleanupSelections[id];
+      return id+' — '+requested.toUpperCase()+' (suggested '+p.suggestion.toUpperCase()+') | '+t.Task+
+      '\n  Status '+t.Status+'; paused '+t.paused+'; last updated '+t.Updated+
+      '\n  Evidence: '+t.Evidence+
+      '\n  Required: independently verify, preserve append-only history, and seek exact owner authorisation before mutation.';
+    }),
+    '',
+    'These choices are triage preferences, NOT Approve/Deny/Pause decisions for tasks.py.',
+    'A closed PR does not prove completion. No status may become DONE without verified completion.'
+  ].join('\n');
+}
+
+function visibleTasks() {
+  const m = model, q = view.q.toLowerCase();
+  let list = m.tasks.filter((t, i) => m.tasks.findIndex(x => x.ID === t.ID) === i || true);
+  list = view.tab === 'completed' ? list.filter(t => t.completed) : list.filter(t => !t.completed);
+  if (view.tab === 'queue') list = list.filter(t => view.filter === 'all' ? true : view.filter === 'decide' ? t.Status === 'AWAITING_DECISION' && !t.paused
+    : view.filter === 'paused' ? t.paused : view.filter === 'blocked' ? t.Status === 'BLOCKED' : ['APPROVED', 'IN_PROGRESS', 'OPEN'].includes(t.Status) && !t.paused && !t.gated);
+  if (view.priority !== 'all') list = list.filter(t => t.P === view.priority);
+  if (q) list = list.filter(t => [t.ID, t.Task, t.Project, t['Next action'], ...t.aliases.map(a => a.From), ...t.legacy].join(' ').toLowerCase().includes(q));
+  const dir = view.sort === 'low' ? -1 : 1;
+  return list.sort((a, b) => dir * (PRI.indexOf(a.P) - PRI.indexOf(b.P)) || (RANK.indexOf(a.paused ? 'PAUSED' : a.Status) - RANK.indexOf(b.paused ? 'PAUSED' : b.Status)) || a.ID.localeCompare(b.ID));
+}
+function render() {
+  if (!model) return;
+  conflictsCache = conflictList();
+  const open = model.tasks.filter(t => !t.completed);
+  const errs = conflictsCache.filter(c => c.sev === 'error').length, warns = conflictsCache.filter(c => c.sev === 'warn').length;
+  $('stats').innerHTML = `<div class="stat"><small>Open tasks</small><strong>${open.length}</strong><small>${model.tasks.length} in the register</small></div>`
+    + `<div class="stat amber"><small>Need your decision</small><strong>${open.filter(t => t.Status === 'AWAITING_DECISION' && !t.paused).length}</strong><small>Approve · Deny · Pause</small></div>`
+    + `<div class="stat violet"><small>Paused</small><strong>${open.filter(t => t.paused).length}</strong><small>Resumed only by name</small></div>`
+    + `<div class="stat ${errs ? 'red' : 'green'}"><small>Conflicts</small><strong>${errs}</strong><small>${warns} to check</small></div>`;
+  renderCleanup();
+  $('countQueue').textContent = open.length; $('countCompleted').textContent = model.tasks.filter(t => t.completed).length; $('countConflicts').textContent = errs + warns;
+  document.querySelector('[data-tab="conflicts"]').classList.toggle('has-errors', errs > 0);
+  document.querySelectorAll('[data-tab]').forEach(b => b.classList.toggle('active', b.dataset.tab === view.tab));
+  $('workspace').classList.toggle('hidden', view.tab === 'conflicts' || view.tab === 'cleanup'); $('conflictsView').classList.toggle('hidden', view.tab !== 'conflicts'); $('cleanupView').classList.toggle('hidden', view.tab !== 'cleanup');
+  $('filters').classList.toggle('hidden', view.tab !== 'queue'); $('bulkBox').classList.toggle('hidden', view.tab !== 'queue'); $('bulkStatus').classList.toggle('hidden', view.tab !== 'queue');
+  $('listTitle').textContent = view.tab === 'completed' ? 'Completed and denied' : 'Task queue';
+  $('listHint').textContent = view.tab === 'completed' ? 'Kept on record. Five a page.' : 'Highest priority first. Five tasks a page.';
+  document.querySelectorAll('[data-filter]').forEach(b => b.classList.toggle('active', b.dataset.filter === view.filter));
+  const list = visibleTasks(), pages = Math.max(1, Math.ceil(list.length / PAGE));
+  view.page = Math.min(view.page, pages - 1);
+  const shown = list.slice(view.page * PAGE, view.page * PAGE + PAGE);
+  $('tasks').innerHTML = shown.length ? shown.map(t => { const s = store.selections[t.ID];
+    return `<button class="task ${view.selected === t.ID ? 'selected' : ''}" data-task="${esc(t.ID)}" type="button"><div class="t-top"><span class="pill">${esc(t.P)} · ${esc(t.ID)}</span>${statusPill(t)}${indicators(t)}${s ? `<span class="pill tick">✓ ${esc(s.verdict.toUpperCase())}</span>` : ''}</div><strong>${esc(t.Task)}</strong><small>${esc(t.Project)} · updated ${esc(t.Updated)}${t.aliases.length ? ' · also ' + esc(t.aliases.map(a => a.From).join(', ')) : ''}</small></button>`; }).join('')
+    : `<div class="empty">${view.tab === 'completed' ? 'No task is DONE or DENIED in the register yet.' : 'No task matches this view.'}</div>`;
+  $('pageCount').textContent = list.length ? `Page ${view.page + 1} of ${pages} · ${list.length} tasks` : '0 tasks';
+  $('prevPage').disabled = view.page === 0; $('nextPage').disabled = (view.page + 1) * PAGE >= list.length;
+  $('tasks').querySelectorAll('[data-task]').forEach(b => b.onclick = () => { view.selected = b.dataset.task; render(); });
+  renderDetail(); renderConflicts(); renderBatch();
+  $('snapInfo').textContent = `Built-in snapshot: ${snapName()} (${SNAP.ref || '?'}). Links read from: ${model.linksFrom}.`;
+}
+function renderConflicts() {
+  const order = {error: 0, warn: 1, info: 2};
+  $('conflictList').innerHTML = conflictsCache.length ? [...conflictsCache].sort((a, b) => order[a.sev] - order[b.sev]).map(c => `<div class="conflict ${c.sev}" data-sev="${c.sev}"><b>${c.sev === 'error' ? '⛔' : c.sev === 'warn' ? '⚠' : 'ℹ'} ${esc(c.kind)}</b><span>${esc(c.msg)}</span></div>`).join('') : '<div class="empty">No conflicts.</div>';
+}
+function renderDetail() {
+  const t = model.byId[view.selected];
+  if (!t) { $('detail').innerHTML = '<div class="empty">Select a task to see its brief, its gate and what it depends on.</div>'; return; }
+  const s = store.selections[t.ID] || null, ab = approveBlockers(t);
+  const history = model.events.filter(e => e.Task === t.ID).slice(-5).reverse();
+  const deps = t.deps.map(d => `${esc(d.id)} (${esc(d.status)})`).join(', ') || 'none';
+  const rel = t.related.map(l => `${esc(l.From)} ${esc(l.Relation)} ${esc(l.To)}`).join('; ') || 'none';
+  const pauseNote = t.paused ? `<div class="notice pause">⏸ ${t.Status === 'PAUSED' ? `Paused by the owner${t.pauseRow ? ' (' + esc(t.pauseRow.ID) + ', ' + esc(t.pauseRow.Date) + ')' : ''}.` : 'Paused in another record.'} ${t.extPauses.map(l => esc(l.From) + ' — ' + esc(l.Source)).join('; ')}<br>This page cannot resume it. To resume, tell Claude to resume <b>${esc(t.ID)}</b> by name — one task at a time.${t.pauseRow ? '<br><small>Kept for resuming: ' + esc(t.pauseRow.Context) + '</small>' : ''}</div>` : '';
+  const conf = conflictsFor(t.ID).map(c => `<div class="notice err">⚠ ${esc(c.msg)}</div>`).join('');
+  const choice = v => { const on = s && s.verdict === v; const allowed = v === 'approve' ? !ab.length : v === 'deny' ? canDeny(t) : canPause(t);
+    return `<button class="decision-choice ${v} ${on ? 'chosen' : ''}" type="button" data-decision="${v}" aria-pressed="${on}" ${allowed || on ? '' : 'disabled'}><span>${on ? '✓' : '○'}</span> ${v === 'approve' ? 'Approve' : v === 'deny' ? 'Deny' : 'Pause'}</button>`; };
+  const problem = s ? selectionProblem(t.ID, s) : '';
+  let fields = '';
+  if (s && s.verdict === 'approve') fields = `<div class="radio" role="radiogroup" aria-label="What the approval covers"><label><input type="radio" name="kind" value="review" ${s.kind !== 'implement' ? 'checked' : ''}> Read-only review / preparation</label><label><input type="radio" name="kind" value="implement" ${s.kind === 'implement' ? 'checked' : ''}> Implement on a branch (no merge, no deploy)</label></div>`
+    + `<textarea class="field" id="scopeField" placeholder="${t.gated ? 'Exact scope — required for a ' + esc(t.Gate) + '-gated task, single use' : 'Optional: limits on the approval'}">${esc(s.scope || '')}</textarea>`;
+  if (s && (s.verdict === 'deny' || s.verdict === 'pause')) fields = `<textarea class="field" id="reasonField" placeholder="${s.verdict === 'deny' ? 'Reason — so it is not raised again unchanged' : 'What to keep so it can be resumed'}">${esc(s.reason || '')}</textarea>`;
+  $('detail').innerHTML = `<div class="eyebrow">Task brief</div><h2>${esc(t.Task)}</h2><div class="meta"><span class="pill">${esc(t.ID)}</span>${statusPill(t)}<span class="pill">${esc(t.P)}</span>${indicators(t)}</div>${pauseNote}${conf}
+    <h3>Record</h3><dl class="kv"><dt>Project</dt><dd>${esc(t.Project)}</dd><dt>Gate</dt><dd>${esc(t.Gate)}${t.gated ? ' — needs its own exact approval' : ''}</dd><dt>Decision</dt><dd>${esc(t.Decision)}</dd><dt>Evidence</dt><dd>${esc(t.Evidence)}${t.evAge !== null ? ' (' + t.evAge + ' days old)' : ''}</dd><dt>Home</dt><dd>${esc(t.Home)}</dd><dt>Depends on</dt><dd>${deps}</dd><dt>Related</dt><dd>${rel}</dd><dt>Also known as</dt><dd>${esc([...t.aliases.map(a => a.From), ...t.legacy].join(', ') || '—')}</dd></dl>
+    <h3>Next action</h3><div class="next">${esc(t['Next action'])}</div>
+    <h3>Your decision · select one</h3><div class="decision-grid" role="group" aria-label="Decision for ${esc(t.ID)}">${choice('approve')}${choice('deny')}${choice('pause')}</div>
+    ${ab.length ? `<p class="why" id="approveWhy">Approve is off: ${esc(ab[0])}.</p>` : ''}${fields}${problem ? `<p class="why" id="selProblem">${esc(problem)}${s && (s.migrated || problem.includes('revalidate')) ? ' <button class="button small" id="revalidate" type="button">Confirm again</button>' : ''}</p>` : ''}
+    <p class="note">Approve never authorises deployment, a merge, device control, or a protected action beyond the exact scope. Choose again to remove the tick.</p>
+    <h3>Recent history</h3><ul class="history">${history.map(e => `<li>${esc(e.ID)} ${esc(e.Date)} ${esc(e.Event)} ${esc(e.From)} → ${esc(e.To)} · ${esc(e.By)}</li>`).join('') || '<li>none</li>'}</ul>`;
+  $('detail').querySelectorAll('[data-decision]').forEach(b => b.onclick = () => choose(t, b.dataset.decision));
+  const sf = $('scopeField'); if (sf) sf.oninput = e => { store.selections[t.ID].scope = e.target.value; saveStore(); renderBatch(); };
+  const rf = $('reasonField'); if (rf) rf.oninput = e => { store.selections[t.ID].reason = e.target.value; saveStore(); renderBatch(); };
+  $('detail').querySelectorAll('input[name="kind"]').forEach(r => r.onchange = e => { store.selections[t.ID].kind = e.target.value; saveStore(); renderBatch(); });
+  const rv = $('revalidate'); if (rv) rv.onclick = () => { const x = store.selections[t.ID]; x.fp = t.fp; x.status = t.Status; delete x.migrated; saveStore(); render(); };
+}
+function choose(t, v) {
+  const cur = store.selections[t.ID];
+  if (cur && cur.verdict === v) delete store.selections[t.ID];
+  else store.selections[t.ID] = {verdict: v, kind: 'review', scope: '', reason: '', fp: t.fp, status: t.Status, at: new Date().toISOString()};
+  saveStore(); render();
+}
+function bulkApprove() {
+  const list = visibleTasks().filter(t => t.Status === 'AWAITING_DECISION' || t.paused);
+  const ok = [], skipped = [];
+  for (const t of list) { const r = bulkBlockers(t); if (r.length) skipped.push(`${t.ID}: ${r[0]}`); else if (!store.selections[t.ID]) ok.push(t); }
+  if (!ok.length) { $('bulkStatus').textContent = 'No task in this view is eligible for a general approval.' + (skipped.length ? ' Skipped: ' + skipped.join(' · ') : ''); return; }
+  if (!window.confirm(`Approve ${ok.length} task(s) for read-only review / preparation?\n\n${ok.map(t => t.ID + ' ' + t.P + ': ' + t.Task).join('\n')}\n\nSkipped (${skipped.length}):\n${skipped.join('\n') || 'none'}\n\nThis approves review and preparation only — never deployment, a merge, device control or lifting a pause.`)) return;
+  for (const t of ok) store.selections[t.ID] = {verdict: 'approve', kind: 'review', scope: '', reason: '', fp: t.fp, status: t.Status, at: new Date().toISOString(), bulk: true};
+  saveStore(); $('bulkStatus').textContent = `✓ ${ok.length} selected. ${skipped.length} skipped: ${skipped.join(' · ') || 'none'}`; render();
+}
+
+/* ---------- submission ---------- */
+function partition() {
+  const good = [], bad = [];
+  for (const [id, s] of Object.entries(store.selections)) { const p = selectionProblem(id, s); (p ? bad : good).push({id, s, p}); }
+  const pri = id => { const t = model.byId[id]; return t ? PRI.indexOf(t.P) : 9; };
+  good.sort((a, b) => pri(a.id) - pri(b.id) || a.id.localeCompare(b.id));
+  return {good, bad};
+}
+function renderBatch() {
+  const {good, bad} = partition();
+  $('decisionCount').textContent = `${good.length} ready${bad.length ? ' · ' + bad.length + ' need attention' : ''}`;
+  $('selList').innerHTML = [...good, ...bad].map(({id, s, p}) => `<div class="sel ${p ? 'bad' : ''}" data-sel="${esc(id)}"><span class="pill tick">✓ ${esc(s.verdict.toUpperCase())}</span><span class="grow">${esc(id)} — ${esc((model.byId[id] || {}).Task || 'not in the register')}</span>${p ? `<span class="pill stale">${esc(p)}</span>` : ''}</div>`).join('');
+  $('submitDecisions').disabled = !good.length || !$('confirmDecisions').checked;
+  $('handoffLog').innerHTML = store.handoffs.slice(-3).reverse().map(h => `<p>Handoff ${esc(h.id)} (${esc(h.at.slice(0, 16).replace('T', ' '))}): ${h.items.map(i => esc(i.task) + ' ' + (i.recorded ? '<b>recorded ' + esc(i.recorded) + '</b>' : 'not recorded yet')).join(' · ')}</p>`).join('');
+}
+function scopeText(t, s) {
+  const kind = s.kind === 'implement' ? 'Implement on an isolated branch; no merge, no deployment' : 'Read-only review and preparation only';
+  return (s.scope || '').trim() ? `${kind}. Exact scope: ${s.scope.trim()}` : `${kind}, as the task's next action describes`;
+}
+function makeHandoff() {
+  const {good, bad} = partition();
+  const now = new Date(), id = 'H-' + now.toISOString().replace(/\D/g, '').slice(0, 12);
+  const o = model.origin;
+  const items = good.map(({id: tid, s}) => { const t = model.byId[tid]; return {task: tid, verdict: s.verdict, title: t.Task, P: t.P, gate: t.Gate, status: t.Status, fp: t.fp, lastDec: t.lastDec,
+    scope: s.verdict === 'approve' ? scopeText(t, s) : '', reason: (s.reason || '').trim(), blockers: [...t.unresolved.map(d => 'depends on ' + d.id + ' (' + d.status + ')'), ...conflictsFor(tid).map(c => c.msg)]}; });
+  const answers = items.map(i => i.verdict === 'approve' ? {task: i.task, verdict: 'approve', scope: i.scope} : {task: i.task, verdict: i.verdict, context: i.reason});
+  const basis = `Owner's Task Control Center handoff ${id}, ${now.toISOString().slice(0, 16)}Z, pasted in chat`;
+  const text = [`CASARAY OWNER DECISIONS — HANDOFF FOR CLAUDE CODE`,
+    `Handoff ${id} · prepared ${now.toISOString().slice(0, 16).replace('T', ' ')} UTC`,
+    `STATUS: NOT RECORDED. Prepared in the Task Control Center in this browser only; nothing here has reached GitHub or Claude.`,
+    o.kind === 'github' ? `Register read: ${REPO} @ ${o.ref} (${o.sha.slice(0, 7)}) from GitHub at ${o.at.slice(11, 16)} UTC.` : `Register read: BUILT-IN SNAPSHOT ${String(o.sha || '').slice(0, 7)} of ${o.at} — GitHub was not reachable. Re-verify every task below before recording anything.`,
+    ``, `DECISIONS (${items.length})`,
+    ...items.map((i, n) => [`${n + 1}. ${i.task} · ${i.verdict.toUpperCase()} · ${i.P} · gate ${i.gate} · was ${i.status} (last history row ${i.lastDec || 'none'})`, `   ${i.title}`,
+      i.verdict === 'approve' ? `   Scope: ${i.scope}` : `   ${i.verdict === 'deny' ? 'Reason' : 'Keep for resuming'}: ${i.reason}`,
+      i.verdict === 'approve' ? `   Not authorised: deployment, merge, Home Assistant or device operations, lifting any pause, or any protected action outside the scope above.` : '',
+      `   Blockers: ${i.blockers.length ? i.blockers.join('; ') : 'none'}`].filter(Boolean).join('\n')),
+    ``, `NOT IN THIS HANDOFF (${bad.length})`, ...(bad.length ? bad.map(b => `- ${b.id} ${b.s.verdict.toUpperCase()}: ${b.p}`) : ['- none']),
+    ``, `FOR CLAUDE CODE`,
+    `1. Re-read docs/project-tasks/TASK_REGISTER.md and DECISION_HISTORY.md on the active branch. If a task above no longer shows the status and last history row written here, record nothing for it and report the change.`,
+    `2. Record exactly these decisions and nothing else, as one batch. The tool writes nothing if any answer is refused:`,
+    `   python3 .claude/skills/owner-decisions/scripts/tasks.py decide --batch - --by owner --via chat --basis "${basis}"`,
+    `3. Paused tasks stay paused: this handoff resumes nothing. An approval is the narrow scope written above, never a deployment, merge, schedule change or device operation.`,
+    `4. Reply with the DEC IDs recorded, or the refusal. This page marks a decision recorded only when it sees that row on GitHub.`,
+    ``, `BATCH JSON`, JSON.stringify({answers}, null, 1)].join('\n');
+  return {record: {id, at: now.toISOString(), ref: o.ref, sha: o.sha, origin: o.kind, maxDec: model.maxDec, items: items.map(i => ({task: i.task, verdict: i.verdict, fp: i.fp, recorded: null}))}, text, answers};
+}
+function submit() {
+  const {good, bad} = partition();
+  if (!good.length || !$('confirmDecisions').checked) return;
+  if (!window.confirm(`Prepare a handoff with ${good.length} decision(s)?\n\n${good.map(g => g.id + ' ' + g.s.verdict.toUpperCase()).join('\n')}${bad.length ? `\n\nLeft out (${bad.length}): ${bad.map(b => b.id).join(', ')}` : ''}\n\nNothing is recorded until Claude records it and GitHub shows the row.`)) return;
+  const h = makeHandoff(); store.handoffs.push(h.record); saveStore();
+  $('handoffOutput').textContent = h.text; window.__lastHandoff = h; $('handoff').classList.remove('hidden');
+  $('copyStatus').textContent = 'Prepared locally. Not sent, not recorded.'; renderBatch();
+}
+function copyText(text) { if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text); const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); const ok = document.execCommand('copy'); ta.remove(); return ok ? Promise.resolve() : Promise.reject(new Error('copy unavailable')); }
+
+/* ---------- wiring ---------- */
+$('cleanupFilter').onchange = e => { cleanupFilter=e.target.value; cleanupPage=0; renderCleanup(); };
+$('cleanupPrev').onclick = () => {cleanupPage=Math.max(0,cleanupPage-1);renderCleanup();};
+$('cleanupNext').onclick = () => {cleanupPage++;renderCleanup();};
+$('cleanupConfirm').onchange = () => renderCleanup();
+$('cleanupExport').onclick = () => {if (!$('cleanupConfirm').checked || !Object.keys(cleanupSelections).length)return; cleanupHandoff=makeCleanupHandoff();$('cleanupOutput').textContent=cleanupHandoff;$('cleanupOutput').classList.remove('hidden');$('cleanupCopy').disabled=false;};
+$('cleanupCopy').onclick = () => {if(cleanupHandoff)copyText(cleanupHandoff);};
+document.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { view.tab = b.dataset.tab; view.page = 0; render(); });
+document.querySelectorAll('[data-filter]').forEach(b => b.onclick = () => { view.filter = b.dataset.filter; view.page = 0; render(); });
+$('priorityFilter').onchange = e => { view.priority = e.target.value; view.page = 0; render(); };
+$('sortOrder').onchange = e => { view.sort = e.target.value; view.page = 0; render(); };
+$('search').oninput = e => { view.q = e.target.value; view.page = 0; render(); };
+$('prevPage').onclick = () => { view.page = Math.max(0, view.page - 1); render(); };
+$('nextPage').onclick = () => { view.page++; render(); };
+$('bulkApprove').onclick = bulkApprove; $('refresh').onclick = refresh;
+$('confirmDecisions').onchange = renderBatch; $('submitDecisions').onclick = submit;
+$('clearDecisions').onclick = () => { store.selections = {}; saveStore(); $('confirmDecisions').checked = false; $('handoff').classList.add('hidden'); render(); };
+$('copyHandoff').onclick = () => copyText($('handoffOutput').textContent).then(() => $('copyStatus').textContent = '✓ Copied. Paste it into Claude Code. Still not recorded.').catch(() => $('copyStatus').textContent = 'Copy blocked here: use Save .txt.');
+$('downloadHandoff').onclick = () => { const b = new Blob([$('handoffOutput').textContent], {type: 'text/plain;charset=utf-8'}), a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'casaray-owner-decisions-' + today() + '.txt'; document.body.appendChild(a); a.click(); a.remove(); };
+$('refInput').value = store.ref || DEFAULT_REF;
+$('refSave').onclick = () => { store.ref = $('refInput').value.trim() || DEFAULT_REF; saveStore(); refresh(); };
+window.__TCC = {get model() { return model; }, store, approveBlockers, bulkBlockers, selectionProblem, conflictList: () => conflictList(), visibleTasks, parseIssue, tableOf};
+loadSnapshot();
+$('sync').textContent = `Snapshot ${snapName()} — reading GitHub…`;
+if (!window.__TCC_NO_AUTO) refresh();
+setInterval(() => { if (!document.hidden) refresh(); }, 15 * 60 * 1000);
+</script></body></html>
