@@ -29,6 +29,13 @@ WHAT IT WILL NOT DO, AND THE SELF-TEST PROVES EACH
     channel the owner actually used, --basis what they said)
   * let a blanket "approve everything" approve a gated task (safety, external,
     protected): those need a task-specific scope
+  * approve a task the owner paused, here or in another record linked to it
+    (an `alias-of` link whose External status is PAUSED, e.g. Issue #7's
+    CR-T02): an approval never lifts a pause
+  * lift more than one pause at a time: `resume` takes one task, named by the
+    owner in --basis
+  * apply a blanket approval without --live-checked (what was re-read, when),
+    or to a task whose evidence is older than 14 days
   * mark a task DONE without VERIFIED evidence it could check or an owner's word
   * delete a task, or edit a past history row (a denied task stays on record)
   * write when the two files already disagree
@@ -47,8 +54,10 @@ USAGE
   tasks.py add --project K --priority P1 --title T --home H --evidence-status S --source SRC --next N
   tasks.py raise TASK --next PROPOSAL                                needs an owner decision
   tasks.py decide TASK approve|deny|pause --by owner --via ask-user-question --basis "..."
-  tasks.py decide --batch FILE.json|-  [--blanket]                   several answers, atomically
-  tasks.py resume TASK[,TASK] --by owner --via chat --basis "..."
+  tasks.py decide --batch FILE.json|-  [--blanket --live-checked "what was re-read, when"]
+  tasks.py resume TASK --by owner --via chat --basis "... TASK ..."   one at a time, named
+  tasks.py link FROM RELATION TO --source SRC [--external-status S] [--checked DATE]
+  tasks.py update --page N                                           five tasks a page
   tasks.py start TASK[,TASK] | block TASK --reason R | unblock TASK
   tasks.py complete TASK --source "commit abc1234" --verified-by claude --evidence "..."
   tasks.py reopen TASK --by owner --via chat --basis "..." --new-evidence "..."
@@ -86,7 +95,14 @@ PRIORITIES = ("P0", "P1", "P2", "P3")
 GATES = ("none", "safety", "external", "protected")
 EVIDENCE_STATUS = ("VERIFIED", "REPORTED", "ASSUMED", "UNKNOWN")
 OWNER = {"owner", "ray"}
-VIA = ("ask-user-question", "chat", "pr-review")
+VIA = ("ask-user-question", "chat", "pr-review", "github-issue")
+# Links: how a task relates to another record. `alias-of` = the same work under
+# another register's ID (Issue #7's CR-T02 is TASK-009); `duplicate-of` = a
+# superseded local ID (the V4 control centre's TASK-009-APPROVE).
+LINK_COLS = ["From", "Relation", "To", "Source", "External status", "Checked"]
+RELATIONS = ("alias-of", "duplicate-of", "depends-on", "bundled-with", "overlaps")
+STALE_DAYS = 14
+UPDATE_PAGE = 5
 OWNER_EVENTS = ("APPROVED", "DENIED", "PAUSED", "RESUMED", "REOPENED")
 EVENTS = ("ADDED", "RAISED", "APPROVED", "DENIED", "PAUSED", "RESUMED", "STARTED",
           "BLOCKED", "UNBLOCKED", "COMPLETED", "REOPENED", "NOTE")
@@ -289,6 +305,8 @@ class Store:
     tasks: list                 # list[dict] with TASK_COLS keys
     events: list                # list[dict] with HIST_COLS keys
     problems: list = field(default_factory=list)
+    links: list = field(default_factory=list)       # list[dict] with LINK_COLS keys
+    links_present: bool = False
 
     def task(self, tid: str) -> dict | None:
         return next((t for t in self.tasks if t["ID"] == tid), None)
@@ -303,6 +321,12 @@ def load(root: Path, register: Path | None = None, history: Path | None = None) 
     tasks, p2 = reg_doc.table(TASK_COLS)
     events, p3 = hist_doc.table(HIST_COLS)
     problems += p1 + p2 + p3
+    try:                        # optional: registers written before V5 have no Links table
+        links, p4 = reg_doc.table(LINK_COLS)
+        links_present = True
+    except Unreadable:
+        links, p4, links_present = [], [], False
+    problems += p4
     projects = []
     for r in prow:
         pats = [] if r["Branches"] in (NONE, "") else [x.strip() for x in r["Branches"].split(",") if x.strip()]
@@ -315,7 +339,8 @@ def load(root: Path, register: Path | None = None, history: Path | None = None) 
             since[e["Task"]] = e["Date"]
     for t in tasks:
         t["_since"] = since.get(t["ID"], t["Updated"])
-    return Store(root, reg_path, hist_path, reg_doc, hist_doc, projects, tasks, events, problems)
+    return Store(root, reg_path, hist_path, reg_doc, hist_doc, projects, tasks, events, problems,
+                 links, links_present)
 
 
 def resolve_projects(projects: list[Project], branch: str | None) -> tuple[list[str], bool]:
@@ -682,7 +707,50 @@ def lint(store: Store, *, today: str, stale_days: int = 14, verify_commits: bool
             until = paused_until(store, tid)
             if until and until <= today:
                 rep.warn("W2", f"{where}: {tid} was paused until {until}; that date has come")
+    lint_links(store, rep, today, stale_days)
     return rep
+
+
+def lint_links(store: Store, rep: Report, today: str, stale_days: int) -> None:
+    known = {t["ID"]: t for t in store.tasks}
+    seen = set()
+    for l in store.links:
+        where = f"{store.reg_path.name}:{l.get('_line', 'new')}"
+        key = (l["From"], l["Relation"], l["To"])
+        if key in seen:
+            rep.err("E20", f"{where}: the link {' '.join(key)} appears twice")
+        seen.add(key)
+        if l["Relation"] not in RELATIONS:
+            rep.err("E05", f"{where}: relation {l['Relation']!r} is not one of {', '.join(RELATIONS)}")
+            continue
+        for side in ("From", "To"):
+            if ID_RE["TASK"].match(l[side]) and l[side] not in known:
+                rep.err("E21", f"{where}: the link names {l[side]}, which is not in the register")
+        if l["Relation"] in ("alias-of", "duplicate-of"):
+            if l["To"] not in known:
+                rep.err("E21", f"{where}: {l['From']} is an alias of {l['To']}, which is not in the register")
+            if l["From"] in known:
+                rep.err("E21", f"{where}: {l['From']} is a task here; an alias is another record's ID")
+        if not parse_date(l["Checked"]):
+            rep.err("E15", f"{where}: Checked {l['Checked']!r} is not YYYY-MM-DD")
+        else:
+            age = age_days(l["Checked"], today)
+            if age is not None and age > stale_days:
+                rep.warn("W10", f"{where}: {l['From']} was last read from {l['Source']} {age} days ago; re-read it")
+        if l["Relation"] == "alias-of" and l["External status"].upper() == "PAUSED":
+            t = known.get(l["To"])
+            if t and t["Status"] not in ("PAUSED", "DONE", "DENIED"):
+                rep.err("E22", f"{where}: {l['Source']} has {l['From']} PAUSED, but {l['To']} is {t['Status']} here. "
+                               f"Approvals of {l['To']} are refused until the owner's pause is recorded on it "
+                               "(decide ... pause) or the owner resumes it by name")
+        if l["Relation"] == "alias-of" and l["External status"].upper() == "SUPERSEDED":
+            rep.note("I2", f"{where}: the owner resumed {l['To']} here; {l['Source']} still says {l['From']} is paused")
+    titles = {}
+    for t in store.tasks:
+        titles.setdefault(re.sub(r"[^a-z0-9]+", " ", t["Task"].lower()).strip(), []).append(t["ID"])
+    for ids in titles.values():
+        if len(ids) > 1:
+            rep.warn("W11", f"possible duplicate tasks {', '.join(ids)}: the same title")
 
 
 def commit_exists(root: Path, sha: str) -> bool:
@@ -744,8 +812,10 @@ def next_id(prefix: str, existing: list[str]) -> str:
 
 def ensure_consistent(store: Store, today: str) -> None:
     rep = lint(store, today=today, verify_commits=False)
-    # A dead Home link (E07) does not make the state untrustworthy, so it does not block a write.
-    errs = [(c, m) for c, m in rep.errors if c != "E07"]
+    # A dead Home link (E07) does not make the state untrustworthy, so it does not block a write;
+    # nor does an unrecorded external pause (E22): the write that records it must not be blocked,
+    # and approvals of that task are refused on their own.
+    errs = [(c, m) for c, m in rep.errors if c not in ("E07", "E22")]
     if errs:
         shown = "; ".join(f"{c} {m}" for c, m in errs[:3])
         raise Refused(f"the register and history already disagree ({len(errs)} errors, "
@@ -772,10 +842,27 @@ def set_task(store: Store, tid: str, **cells) -> None:
         t[k] = clean(v)
 
 
+LINKS_INTRO = [
+    "", "## Links", "",
+    "How a task relates to another record. `alias-of`: the same work under another register's ID",
+    "(Issue #7's CR-T02 is TASK-009). `duplicate-of`: a superseded local ID that now means this task.",
+    "`depends-on`, `bundled-with`, `overlaps`: what to look at before deciding. `External status` is what",
+    "the other record said when `Checked`. A task whose alias the other record has PAUSED cannot be",
+    "approved here: the owner resumes it by name first. Edit with `tasks.py link`.", ""]
+
+
 def save(store: Store) -> None:
     """Write history first (it is the record), then the register."""
     store.hist_doc.set_table(HIST_COLS, store.events)
     store.reg_doc.set_table(TASK_COLS, store.tasks)
+    if store.links and not store.links_present:
+        while store.reg_doc.lines and store.reg_doc.lines[-1] == "":
+            store.reg_doc.lines.pop()
+        store.reg_doc.lines += LINKS_INTRO + render_table(LINK_COLS, []) + [""]
+        store.reg_doc.text = "\n".join(store.reg_doc.lines)
+        store.links_present = True
+    if store.links_present:
+        store.reg_doc.set_table(LINK_COLS, store.links)
     atomic_write(store.hist_path, store.hist_doc.text)
     atomic_write(store.reg_path, store.reg_doc.text)
 
@@ -795,6 +882,50 @@ def apply_event(store: Store, tid: str, event: str, *, date: str, by: str, to: s
     t["Status"], t["Updated"] = new, date
     t["Decision"] = expected_decision_cell(ns)
     return row
+
+
+def external_pauses(store: Store, tid: str) -> list[dict]:
+    """alias-of links whose other record has this task's work PAUSED."""
+    return [l for l in store.links if l["Relation"] == "alias-of" and l["To"] == tid
+            and l["External status"].strip().upper() == "PAUSED"]
+
+
+def names_of(store: Store, tid: str) -> set[str]:
+    """The task's own ID and every ID another record uses for the same work."""
+    return {tid} | {l["From"] for l in store.links
+                    if l["Relation"] in ("alias-of", "duplicate-of") and l["To"] == tid}
+
+
+def op_link(store: Store, frm: str, rel: str, to: str, *, source: str, ext_status: str, checked: str,
+            by: str, date: str) -> str:
+    """Record (or refresh) how a task relates to another record. Not an owner decision: it
+    states where the same work lives, and a NOTE row on each register task involved keeps it."""
+    frm, to, rel = frm.strip(), to.strip(), rel.strip()
+    if rel not in RELATIONS:
+        raise Refused(f"relation must be one of {', '.join(RELATIONS)}")
+    if len((source or "").strip()) < 3:
+        raise Refused("--source must name the other record (issue:7, pr:13, control-center:v4, register)")
+    if not parse_date(checked) or checked > date:
+        raise Refused("--checked must be a YYYY-MM-DD date, not in the future")
+    known = {t["ID"] for t in store.tasks}
+    if rel in ("alias-of", "duplicate-of"):
+        if to not in known:
+            raise Refused(f"{to} is not in the register: an alias points at a task that exists")
+        if frm in known:
+            raise Refused(f"{frm} is a task here; an alias is another record's ID for the same work")
+    for side in (frm, to):
+        if ID_RE["TASK"].match(side) and side not in known:
+            raise Refused(f"{side} is not in the register")
+    ext = clean(ext_status or NONE).upper() if (ext_status or NONE) != NONE else NONE
+    row = next((l for l in store.links if (l["From"], l["Relation"], l["To"]) == (frm, rel, to)), None)
+    if row is None:
+        row = {"From": clean(frm), "Relation": rel, "To": clean(to)}
+        store.links.append(row)
+    row.update({"Source": clean(source), "External status": ext, "Checked": checked})
+    text = f"Link: {frm} {rel} {to} ({source}; {ext if ext != NONE else 'no external status'} as read {checked})"
+    for tid in {frm, to} & known:
+        apply_event(store, tid, "NOTE", date=date, by=by, context=text)
+    return text
 
 
 # ---- public operations -----------------------------------------------------
@@ -846,7 +977,7 @@ class Answer:
 
 
 def op_decide(store: Store, answers: list[Answer], *, by: str, via: str, basis: str, date: str,
-              blanket: bool = False) -> dict:
+              blanket: bool = False, live_checked: str = "") -> dict:
     """Record the owner's answers atomically. Returns {applied, skipped}."""
     if by.lower() not in OWNER:
         raise Refused(f"only the owner records a decision (--by owner); {by!r} cannot. An agent "
@@ -855,6 +986,11 @@ def op_decide(store: Store, answers: list[Answer], *, by: str, via: str, basis: 
         raise Refused(f"--via must be a channel the owner used: {', '.join(VIA)}")
     if len((basis or "").strip()) < 8:
         raise Refused("--basis must say what the owner actually answered or selected")
+    if via == "github-issue" and not re.search(r"#\d+", basis):
+        raise Refused("--via github-issue needs --basis naming the owner's issue (#N) and what it records")
+    if blanket and len((live_checked or "").strip()) < 12:
+        raise Refused("a general approval is applied only after the live records were re-read: "
+                      "--live-checked must say what was read and when (at least 12 characters)")
     applied, skipped = [], []
     seen = set()
     for a in answers:
@@ -869,9 +1005,31 @@ def op_decide(store: Store, answers: list[Answer], *, by: str, via: str, basis: 
             raise Refused(f"{a.task}: verdict must be approve, deny or pause")
         gated = t["Gate"] != "none"
         if v == "approve":
+            ext = external_pauses(store, a.task)
+            if ext:
+                why = ("paused in another record: " + ", ".join(
+                    f"{l['From']} ({l['Source']}, read {l['Checked']})" for l in ext)
+                    + ". An approval never lifts a pause; the owner resumes it by name first")
+                if blanket:
+                    skipped.append((a.task, why))
+                    continue
+                raise Refused(f"{a.task} is {why}")
             if t["Status"] != "AWAITING_DECISION":
+                if blanket:
+                    skipped.append((a.task, "PAUSED: a general approval never lifts a pause; the owner "
+                                            "resumes it by name first" if t["Status"] == "PAUSED"
+                                    else f"{t['Status']}: there is nothing to approve"))
+                    continue
                 raise Refused(f"{a.task} is {t['Status']}, not AWAITING_DECISION; there is nothing to approve"
-                              + (" (a denied task needs `reopen` with new evidence)" if t["Status"] == "DENIED" else ""))
+                              + (" (a denied task needs `reopen` with new evidence)" if t["Status"] == "DENIED" else "")
+                              + (" (a paused task is resumed by name first)" if t["Status"] == "PAUSED" else ""))
+            if blanket:
+                ev = parse_evidence(t["Evidence"])
+                age = age_days(ev["date"], date) if ev else None
+                if age is None or age > STALE_DAYS:
+                    skipped.append((a.task, f"its evidence is {age if age is not None else 'of unknown'} days old: "
+                                            "re-verify it before a general approval covers it"))
+                    continue
             if gated and blanket:
                 skipped.append((a.task, f"{t['Gate']}-gated: a general approval does not cover it; "
                                         "it needs a specific scope"))
@@ -895,7 +1053,8 @@ def op_decide(store: Store, answers: list[Answer], *, by: str, via: str, basis: 
                 bits.append(f"until:{a.until}")
             scope = "; ".join(bits) or NONE
         row = apply_event(store, a.task, event, date=date, by="owner", scope=scope,
-                          context=a.context or NONE, basis=basis, via=via)
+                          context=a.context or NONE, via=via,
+                          basis=basis + (f" · live-checked: {live_checked}" if blanket else ""))
         applied.append((a.task, row["ID"], event))
     return {"applied": applied, "skipped": skipped}
 
@@ -916,9 +1075,22 @@ def op_owner_event(store: Store, ids: list[str], event: str, *, by: str, via: st
         raise Refused(f"--via must be a channel the owner used: {', '.join(VIA)}")
     if len((basis or "").strip()) < 8:
         raise Refused("--basis must say what the owner actually answered or selected")
+    if via == "github-issue" and not re.search(r"#\d+", basis):
+        raise Refused("--via github-issue needs --basis naming the owner's issue (#N) and what it records")
+    if event == "RESUMED":
+        if len(ids) != 1:
+            raise Refused(f"a pause is lifted one task at a time, by name: resume TASK-nnn (got {len(ids)})")
+        names = names_of(store, ids[0])
+        if not any(n in basis for n in names):
+            raise Refused(f"--basis must quote the owner naming {ids[0]}"
+                          + (f" (or {', '.join(sorted(names - {ids[0]}))})" if len(names) > 1 else "")
+                          + ": a general 'resume' or 'approve all' does not lift a pause")
     done = []
     for tid in ids:
         apply_event(store, tid, event, date=date, by="owner", via=via, basis=basis, **kw)
+        if event == "RESUMED":       # the owner's word here supersedes the other record's pause
+            for l in external_pauses(store, tid):
+                l["External status"], l["Checked"] = "SUPERSEDED", date
         done.append(tid)
     return done
 
@@ -980,7 +1152,8 @@ def last_blocker(store: Store, tid: str) -> str:
 
 def build_update(store: Store, branch: str | None, project: str | None, show_all: bool,
                  today: str, statuses: list[str] | None = None, include_closed: bool = False,
-                 gate: str | None = None, limit: int | None = None) -> dict:
+                 gate: str | None = None, limit: int | None = None, page: int | None = None,
+                 per_page: int = UPDATE_PAGE) -> dict:
     if show_all:
         keys, resolved = [p.key for p in store.projects], True
     elif project:
@@ -1005,7 +1178,12 @@ def build_update(store: Store, branch: str | None, project: str | None, show_all
     ranked_open = ranked              # the whole list: actions are counted from this, never from a --limit view
     if limit:
         ranked = ranked[:limit]
+    pages = max(1, -(-len(ranked) // per_page))
+    if page:
+        page = max(1, min(page, pages))
+        ranked = ranked[(page - 1) * per_page: page * per_page]
     return {"today": today, "branch": branch, "projects": keys, "resolved": resolved,
+            "page": page, "pages": pages if page else None,
             "counts": counts, "ranked": ranked, "ranked_all": ranked_open, "paused": paused, "closed": closed_sel,
             "other_projects": other,
             "blockers": [t for t in ranked_all if t["Status"] in ("AWAITING_DECISION", "BLOCKED")],
@@ -1069,8 +1247,9 @@ def next_actions(u: dict, store: Store) -> list[dict]:
                                     + ", ".join(t["ID"] for t in work[:4]) + (" …" if len(work) > 4 else ""),
                      "tasks": [t["ID"] for t in work]})
     if u["paused"]:
-        acts.append({"key": "resume", "label": f"Resume ({len(u['paused'])})",
-                     "description": "Resume paused tasks with their saved context: "
+        acts.append({"key": "resume", "label": f"Resume one ({len(u['paused'])} paused)",
+                     "description": "A pause is lifted one task at a time: name it, e.g. 'resume "
+                                    + u["paused"][0]["ID"] + "'. Paused: "
                                     + ", ".join(t["ID"] for t in u["paused"][:4]),
                      "tasks": [t["ID"] for t in u["paused"]]})
     if u["other_projects"]:
@@ -1120,6 +1299,12 @@ def render_update(u: dict, store: Store, detail: bool = False) -> str:
     L.append(f"OUTSTANDING {out}   awaiting your decision {c['AWAITING_DECISION']} · in progress {c['IN_PROGRESS']} · "
              f"approved {c['APPROVED']} · open {c['OPEN']} · blocked {c['BLOCKED']} · paused {c['PAUSED']}")
     L.append(f"ON RECORD   done {c['DONE']} · denied {c['DENIED']}   (kept; --include-closed lists them)")
+    if u.get("page"):
+        L.append(f"PAGE        {u['page']} of {u['pages']} ({UPDATE_PAGE} a page; counts and next actions cover every task)")
+    xp = [l for l in store.links if l["Relation"] == "alias-of" and l["External status"].upper() == "PAUSED"]
+    if xp:
+        L.append("PAUSED ELSEWHERE  " + ", ".join(f"{l['From']}={l['To']}" for l in xp)
+                 + "  (approval refused here until the owner resumes it by name)")
     L.append("")
     if not u["ranked"] and not u["paused"]:
         L.append("Nothing outstanding for this selection.")
@@ -1195,7 +1380,8 @@ def lookup(store: Store, words: list[str]) -> dict:
     def hit(*cells):
         blob = " ".join(cells).lower()
         return ws and all(w in blob for w in ws)
-    tasks = [t for t in store.tasks if hit(t["ID"], t["Task"], t["Home"], t["Next action"])]
+    via_link = {l["To"] for l in store.links if hit(l["From"], l["Source"])}
+    tasks = [t for t in store.tasks if hit(t["ID"], t["Task"], t["Home"], t["Next action"]) or t["ID"] in via_link]
     events = [e for e in store.events if hit(e["Task"], e["Scope"], e["Context"], e["Basis"])]
     out = []
     for t in tasks:
@@ -1275,6 +1461,10 @@ def render_handover(store: Store, keys: list[str], today: str, branch: str | Non
             lambda t: f"{t['ID']} {t['P']} {t['Task']} (waiting {age_days(t.get('_since', t['Updated']), today)}d)")
     section("PAUSED (resume context saved)", sorted([t for t in mine if t["Status"] == "PAUSED"], key=rank_key),
             lambda t: f"{t['ID']} {t['Task']} — {pause_info(store, t['ID']).get('context', '?')}")
+    section("PAUSED ELSEWHERE (an approval here is refused until the owner resumes it by name)",
+            [l for l in store.links if l["Relation"] == "alias-of" and l["External status"].upper() == "PAUSED"
+             and l["To"] in {t["ID"] for t in mine}],
+            lambda l: f"{l['From']} = {l['To']} — {l['Source']}, read {l['Checked']}")
     section("BLOCKED", [t for t in mine if t["Status"] == "BLOCKED"],
             lambda t: f"{t['ID']} {t['Task']} — {last_blocker(store, t['ID']) or 'reason not recorded'}")
     section(f"RECORDED TODAY ({today})", [e for e in store.events if e["Date"] == today and e["Task"] in {t["ID"] for t in mine}],
@@ -1410,6 +1600,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--detail", action="store_true", help="full evidence and next action for every task")
     p.add_argument("--all", action="store_true"); p.add_argument("--status")
     p.add_argument("--gate"); p.add_argument("--include-closed", action="store_true")
+    p.add_argument("--page", type=int, help=f"show page N, {UPDATE_PAGE} tasks a page")
     p.add_argument("--limit", type=int); p.add_argument("--select", action="store_true",
                                                          help="emit the AskUserQuestion payload as JSON")
     p = sub.add_parser("show"); p.add_argument("task")
@@ -1434,8 +1625,12 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--by", default="claude")
     p = sub.add_parser("decide"); p.add_argument("task", nargs="?"); p.add_argument("verdict", nargs="?")
     p.add_argument("--batch"); p.add_argument("--blanket", action="store_true")
+    p.add_argument("--live-checked", help="with --blanket: what was re-read from the live records, and when")
     for a in ("by", "via", "basis", "scope", "context", "resume-when", "until"):
         p.add_argument("--" + a)
+    p = sub.add_parser("link"); p.add_argument("frm"); p.add_argument("relation"); p.add_argument("to")
+    p.add_argument("--source", required=True); p.add_argument("--external-status", default=NONE)
+    p.add_argument("--checked"); p.add_argument("--by", default="claude")
     p = sub.add_parser("resume"); p.add_argument("tasks")
     for a in ("by", "via", "basis", "next"):
         p.add_argument("--" + a)
@@ -1495,10 +1690,13 @@ def write_cmd(args, root: Path, today: str) -> int:
             answers = [Answer(args.task, args.verdict, args.scope or "", args.context or "",
                               args.resume_when or "", args.until or "")]
         res = op_decide(store, answers, by=args.by or "", via=args.via or "", basis=args.basis or "",
-                        date=today, blanket=args.blanket)
+                        date=today, blanket=args.blanket, live_checked=args.live_checked or "")
         msg = "; ".join(f"{t} {e} ({d})" for t, d, e in res["applied"]) or "nothing applied"
         for t, why in res["skipped"]:
             msg += f"\nNOT APPLIED {t}: {why}"
+    elif c == "link":
+        msg = op_link(store, args.frm, args.relation, args.to, source=args.source,
+                      ext_status=args.external_status, checked=args.checked or today, by=args.by, date=today)
     elif c == "resume":
         ids = [x.strip() for x in args.tasks.split(",") if x.strip()]
         op_owner_event(store, ids, "RESUMED", by=args.by or "", via=args.via or "", basis=args.basis or "", date=today)
@@ -1594,14 +1792,14 @@ def main(argv: list[str] | None = None) -> int:
             print("created the register and the history")
             return 0
         if args.cmd in ("add", "raise", "decide", "resume", "reopen", "start", "block", "unblock",
-                        "complete", "edit"):
+                        "complete", "edit", "link"):
             return write_cmd(args, root, today)
         store = load(root, reg, hist)
         branch = current_branch(root, getattr(args, "branch", None))
         if args.cmd == "update":
             u = build_update(store, branch, args.project, args.all, today,
                              [s.strip().upper() for s in args.status.split(",")] if args.status else None,
-                             args.include_closed, args.gate, args.limit)
+                             args.include_closed, args.gate, args.limit, args.page)
             if args.select:
                 out_json(selection_payload(u, store))
             elif args.json:
@@ -1720,6 +1918,10 @@ def selftest() -> int:
         subprocess.run(["git", "commit", "-q", "-m", msg], cwd=str(root), capture_output=True, text=True)
 
     OWN = ["--by", "owner", "--via", "ask-user-question", "--basis", "selected in the AskUserQuestion prompt"]
+
+    def RES(tid):
+        """A resume the owner gave for one named task."""
+        return ["--by", "owner", "--via", "ask-user-question", "--basis", f"owner selected Resume {tid}"]
     class _Ids(dict):
         """Task ids by fixture key; a missing one yields a name that fails its check, not a crash."""
         def __missing__(self, key):
@@ -1867,7 +2069,8 @@ def selftest() -> int:
              {"task": ids["G"], "verdict": "approve"}]))
         check("E1 a batch with one invalid answer writes nothing (atomic)",
               rc == 1 and snap(r) == before and row(r, ids["D"])["Status"] == "AWAITING_DECISION", e)
-        rc, o, e = cli(r, "decide", "--batch", "-", "--blanket", *OWN, today=D5, stdin=json.dumps(
+        rc, o, e = cli(r, "decide", "--batch", "-", "--blanket", "--live-checked", "fixture register re-read 2026-10-05",
+                       *OWN, today=D5, stdin=json.dumps(
             [{"task": ids["D"], "verdict": "approve"},
              {"task": ids["G"], "verdict": "approve"}]))
         check("E2 a blanket approval applies to the ungated task", rc == 0 and row(r, ids["D"])["Status"] == "APPROVED", o + e)
@@ -1899,16 +2102,16 @@ def selftest() -> int:
         check("F2 Update me shows the saved pause context and the resume condition",
               "Waiting on the Powerpal meter reading" in o and "the owner has checked the meter" in o
               and "date reached" in o, o)
-        rc, o, e = cli(r, "resume", ids["H"], *OWN, today="2026-10-12")
+        rc, o, e = cli(r, "resume", ids["H"], *RES(ids["H"]), today="2026-10-12")
         h = row(r, ids["H"])
         check("F3 resume returns the task to the status it was paused from (AWAITING_DECISION)",
               rc == 0 and h["Status"] == "AWAITING_DECISION" and h["Decision"] == "PENDING", e)
-        rc, o, e = cli(r, "resume", ids["H"], *OWN, today="2026-10-12")
+        rc, o, e = cli(r, "resume", ids["H"], *RES(ids["H"]), today="2026-10-12")
         check("F4 resuming a task that is not paused is refused", rc == 1 and "PAUSED" in e, e)
         rc, o, e = cli(r, "decide", ids["D"], "pause", *OWN, "--context", "Hold until the hardware arrives", today="2026-10-12")
         d = row(r, ids["D"])
         check("F5 an IN_PROGRESS task can be paused", rc == 0 and d["Status"] == "PAUSED", e)
-        rc, o, e = cli(r, "resume", ids["D"], *OWN, today="2026-10-12")
+        rc, o, e = cli(r, "resume", ids["D"], *RES(ids["D"]), today="2026-10-12")
         d = row(r, ids["D"])
         check("F6 resume restores IN_PROGRESS and the approval that governed it",
               rc == 0 and d["Status"] == "IN_PROGRESS" and re.fullmatch(r"DEC-\d+ APPROVED", d["Decision"]) is not None, d["Decision"])
@@ -2094,8 +2297,8 @@ def selftest() -> int:
               and f"{ids['U3a']}  P1  waiting on the owner" in o)
         check("L7 the counts line states what is outstanding by status",
               "awaiting your decision 6 · in progress 1 · approved 1 · open 2 · blocked 1 · paused 1" in o, o.split("\n")[3])
-        check("L8 NEXT ACTIONS offers Decide, Work, Resume and Another project",
-              all(k in o for k in ("Decide (6)", "Work (", "Resume (1)", "Another project")))
+        check("L8 NEXT ACTIONS offers Decide, Work, Resume one (named) and Another project",
+              all(k in o for k in ("Decide (6)", "Work (", "Resume one (1 paused)", "Another project")))
         rc, o2, e = cli(u, "update", "--branch", "claude/some-session", today="2026-10-12")
         check("L9 a branch that identifies no project shows everything and says so",
               "did not identify a project" in o2 and ids["U9"] in o2)
@@ -2278,6 +2481,101 @@ def selftest() -> int:
                   keys("feature/unrelated")[1] is False and keys("claude/some-session")[1] is False)
             check("V5 the cross-cutting tooling project rides along on every identified branch",
                   all("tooling" in keys(b)[0] for b in ("casaray-v3-design", "ha-deploy", "feature/casaray-v3-build")))
+        # ---------------------------------------------------------------- W. V5: pauses elsewhere, links, paging
+        w = mkrepo("links")
+        rc, o, e = cli(w, "init", today="2026-09-30")
+        TD = "2026-11-15"
+        for key, title, gate, p in (("OLD", "Decide an old question", "none", "P2"),
+                                    ("G2", "Add play_media to the device guard", "safety", "P1"),
+                                    ("TZ", "Confirm the household timezone", "none", "P3"),
+                                    ("OK", "Pick the shade colour", "none", "P2")):
+            add(w, key, title, gate=gate, p=p, status="AWAITING_DECISION",
+                today="2026-10-01" if key == "OLD" else TD)
+        for i in range(9):
+            add(w, f"N{i}", f"Filler task {i}", p=f"P{i % 4}", today=TD)
+        rc, o, e = cli(w, "link", "CR-T02", "alias-of", ids["G2"], "--source", "issue:7",
+                       "--external-status", "PAUSED", "--checked", TD, today=TD)
+        check("W1 an alias is recorded, with a NOTE on the task", rc == 0 and "Link: CR-T02 alias-of" in
+              (w / HISTORY_REL).read_text(), o + e)
+        rc, o, e = cli(w, "link", "CR-T04", "alias-of", ids["TZ"], "--source", "issue:7",
+                       "--external-status", "PAUSED", "--checked", TD, today=TD)
+        rc, o, e = cli(w, "check", today=TD)
+        check("W2 check reports an external pause not mirrored here (E22)", rc == 1 and "E22" in o and "CR-T04" in o, o)
+        before = snap(w)
+        rc, o, e = cli(w, "decide", ids["G2"], "approve", *OWN, "--scope", "Two one-line guard edits, on a branch", today=TD)
+        check("W3 a specific approval of a task paused elsewhere is refused and writes nothing",
+              rc == 1 and "paused in another record" in e and snap(w) == before, e)
+        rc, o, e = cli(w, "decide", "--batch", "-", "--blanket", *OWN, today=TD, stdin=json.dumps(
+            [{"task": ids["OK"], "verdict": "approve"}]))
+        check("W4 a blanket approval without --live-checked is refused", rc == 1 and "live-checked" in e, e)
+        rc, o, e = cli(w, "decide", "--batch", "-", "--blanket", "--live-checked", "issue 7 and PRs re-read 2026-11-15",
+                       *OWN, today=TD, stdin=json.dumps(
+            [{"task": ids["OK"], "verdict": "approve"}, {"task": ids["TZ"], "verdict": "approve"},
+             {"task": ids["G2"], "verdict": "approve"}, {"task": ids["OLD"], "verdict": "approve"}]))
+        check("W5 a blanket approval applies only to the fresh, ungated, unpaused task",
+              rc == 0 and row(w, ids["OK"])["Status"] == "APPROVED"
+              and row(w, ids["TZ"])["Status"] == "AWAITING_DECISION"
+              and row(w, ids["G2"])["Status"] == "AWAITING_DECISION"
+              and row(w, ids["OLD"])["Status"] == "AWAITING_DECISION", o + e)
+        check("W6 each skipped task says why: paused elsewhere, stale evidence",
+              "CR-T04" in o and "paused in another record" in o and "days old" in o, o)
+        check("W7 the applied row records what was live-checked",
+              "live-checked: issue 7 and PRs re-read" in (w / HISTORY_REL).read_text())
+        GI = ["--by", "owner", "--via", "github-issue"]
+        rc, o, e = cli(w, "decide", ids["TZ"], "pause", *GI, "--basis", "the owner's issue says it is paused",
+                       "--context", "Do not edit the Routine schedule or branch", today=TD)
+        check("W8 --via github-issue needs the issue number in --basis", rc == 1 and "#N" in e, e)
+        rc, o, e = cli(w, "decide", ids["TZ"], "pause", *GI, "--basis", "Issue #7 (owner) records CR-T04 as PAUSED",
+                       "--context", "Do not edit the Routine schedule or branch", today=TD)
+        rc2, o2, e2 = cli(w, "check", today=TD)
+        check("W9 recording the pause from the owner's issue clears that E22",
+              rc == 0 and row(w, ids["TZ"])["Status"] == "PAUSED" and "CR-T04" not in o2, o + e + o2)
+        rc, o, e = cli(w, "decide", ids["G2"], "pause", *GI, "--basis", "Issue #7 (owner) records CR-T02 as PAUSED",
+                       "--context", "On resume: test play_media and every side-effecting name offline", today=TD)
+        rc, o, e = cli(w, "resume", f"{ids['G2']},{ids['TZ']}", *GI, "--basis", "Issue #7 says resume all", today=TD)
+        check("W10 two pauses cannot be lifted in one resume", rc == 1 and "one task at a time" in e, e)
+        rc, o, e = cli(w, "resume", ids["G2"], "--by", "owner", "--via", "chat", "--basis", "owner said resume everything",
+                       today=TD)
+        check("W11 a resume whose basis does not name the task is refused", rc == 1 and "naming" in e, e)
+        rc, o, e = cli(w, "resume", ids["G2"], "--by", "owner", "--via", "chat", "--basis", "owner wrote 'resume CR-T02'",
+                       today=TD)
+        g2 = row(w, ids["G2"])
+        reg_txt = (w / REGISTER_REL).read_text()
+        check("W12 the owner naming the alias resumes it; the link reads SUPERSEDED; approval needs a fresh decision",
+              rc == 0 and g2["Status"] == "AWAITING_DECISION" and g2["Decision"] == "PENDING"
+              and "| CR-T02 | alias-of |" in reg_txt and "SUPERSEDED" in reg_txt, o + e)
+        rc, o, e = cli(w, "lookup", "CR-T04", today=TD)
+        check("W13 lookup finds the task by its alias", ids["TZ"] in o, o)
+        rc, o, e = cli(w, "update", "--all", "--json", today=TD)
+        n_open = len(json.loads(o)["ranked"])
+        rc, o, e = cli(w, "update", "--all", "--page", "1", "--json", today=TD)
+        u1 = json.loads(o)
+        rc, o, e = cli(w, "update", "--all", "--page", "3", "--json", today=TD)
+        u3 = json.loads(o)
+        check("W14 update pages five tasks at a time, counts unchanged",
+              n_open > 10 and len(u1["ranked"]) == 5 and u1["pages"] == -(-n_open // 5)
+              and len(u3["ranked"]) == n_open - 10 and u1["counts"] == u3["counts"],
+              f"{n_open} {len(u1['ranked'])} {u1.get('pages')} {len(u3['ranked'])}")
+        order = [t["P"] for t in u1["ranked"]]
+        check("W15 pages keep highest-to-lowest priority", order == sorted(order), str(order))
+        rc, o, e = cli(w, "link", "CR-T09", "alias-of", "TASK-999", "--source", "issue:7", today=TD)
+        check("W16 an alias to an unknown task is refused", rc == 1 and "not in the register" in e, e)
+        rc, o, e = cli(w, "link", ids["OK"], "alias-of", ids["TZ"], "--source", "issue:7", today=TD)
+        check("W17 a register task cannot be made an alias", rc == 1 and "a task here" in e, e)
+        rc, o, e = cli(w, "add", "--project", "casaray-v3", "--priority", "P2", "--title", "Pick the shade colour",
+                       "--home", "register", "--evidence-status", "REPORTED", "--source", "fixture", "--next", "x",
+                       "--status", "OPEN", today=TD)
+        check("W18a an exact duplicate title is refused at add", rc == 1, o + e)
+        rc, o, e = cli(w, "add", "--project", "casaray-v3", "--priority", "P2", "--title", "Pick the shade-colour",
+                       "--home", "register", "--evidence-status", "REPORTED", "--source", "fixture", "--next", "x",
+                       "--status", "OPEN", today=TD)
+        rc, o, e = cli(w, "check", today=TD)
+        check("W18 a near-duplicate title that add let through is flagged by check (W11)", "W11" in o, o)
+        rc, o, e = cli(w, "handover", "--project", "casaray-v3", today=TD)
+        check("W19 the handover has a section for pauses held in another record", "PAUSED ELSEWHERE" in o, o)
+        rc, o, e = cli(w, "update", "--all", "--select", today=TD)
+        check("W20 the next-action menu offers resuming one named task, never all",
+              "Resume one" in o and "name it" in o and "Resume (" not in o, o)
     finally:
         shutil.rmtree(base, ignore_errors=True)
 
