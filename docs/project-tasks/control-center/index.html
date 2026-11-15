@@ -16,14 +16,14 @@ textarea.field{width:100%;min-height:62px;margin-top:8px;background:#0c1725;bord
 .history{font-size:12px;color:#b9c9d9}.history li{margin:3px 0}
 .conflicts{display:grid;gap:10px;padding:16px}.conflict{border:1px solid var(--line);background:#152131;border-radius:12px;padding:12px 14px}.conflict.error{border-color:#7b3a42}.conflict.warn{border-color:#6c5a2c}.conflict b{display:block;margin-bottom:4px}.conflict small{color:var(--muted)}
 .batch{margin-top:16px;padding:19px;background:#152536;border:1px solid #365064;border-radius:16px}.batch h2{margin:0 0 6px;font-size:18px}.sel-list{margin:12px 0;display:grid;gap:6px}.sel{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px;background:#0f1d2d;border:1px solid #2c4258;border-radius:10px;padding:8px 10px}.sel.bad{border-color:#6c5a2c}.sel .grow{flex:1}.confirm{display:flex;align-items:flex-start;gap:9px;margin-top:12px;font-size:13px;color:#cfdeec}.confirm input{margin-top:3px;width:17px;height:17px}.batch-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.output{margin-top:12px;padding:13px;background:#0a1725;border:1px solid #31465b;border-radius:10px;color:#d9e7f5;white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.55 ui-monospace,monospace;max-height:380px;overflow:auto}.hidden{display:none}.small{font-size:12px}a{color:var(--aqua)}.footer{font-size:12px;color:var(--muted);margin-top:18px}details.settings{font-size:12px;color:var(--muted)}details.settings input{background:#0c1725;border:1px solid var(--line);border-radius:7px;color:var(--txt);padding:5px 7px;width:230px}
-.empty{padding:22px;color:var(--muted)}
+.empty{padding:22px;color:var(--muted)}.cleanup-toolbar{display:flex;align-items:center;gap:12px;padding:14px 16px}.cleanup-list{padding:0 14px}.cleanup-entry{border:1px solid var(--line);border-radius:12px;margin:8px 0;padding:13px;background:#172334}.cleanup-entry p{font-size:13px;margin:6px 0;color:#cfdeec}.cleanup-options{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}.cleanup-options button{border:1px solid var(--line);border-radius:8px;background:#0d1b2b;color:var(--txt);padding:8px 11px}.cleanup-options button[aria-pressed=true]{background:#14554f;border-color:var(--aqua)}.cleanup-export{padding:12px 16px 18px;border-top:1px solid var(--line)}.cleanup-entry .reason{color:var(--amber)}.cleanup-entry .pause-marker{color:var(--violet)}
 @media(max-width:800px){.shell{padding:16px 12px 50px}.summary{grid-template-columns:repeat(2,1fr)}.workspace{grid-template-columns:1fr}.detail{padding:16px}}@media(max-width:420px){.stat{padding:12px}.stat strong{font-size:24px}.decision-grid{gap:5px}.decision-choice{font-size:13px}}
 </style></head><body><main class="shell">
 <header><div><div class="eyebrow">CasaRay · Project Operations · V5</div><h1>Task Control Center</h1><p>Reads the canonical task register. Decides nothing itself: it prepares a handoff for Claude Code.</p></div>
 <div class="actions"><button class="button primary" id="refresh" type="button">↻ Refresh from GitHub</button><span id="sync" class="sync" aria-live="polite">Loading…</span>
 <details class="settings"><summary>Source</summary><p class="small">Canonical register branch</p><input id="refInput" aria-label="Canonical register branch"> <button class="button" id="refSave" type="button">Use</button><p class="small" id="snapInfo"></p></details></div></header>
 <section class="summary" id="stats"></section>
-<nav class="tabs" role="tablist" aria-label="Views"><button class="tab active" data-tab="queue" role="tab">Queue<span class="count" id="countQueue"></span></button><button class="tab" data-tab="conflicts" role="tab">Conflicts<span class="count" id="countConflicts"></span></button><button class="tab" data-tab="completed" role="tab">Completed<span class="count" id="countCompleted"></span></button></nav>
+<nav class="tabs" role="tablist" aria-label="Views"><button class="tab active" data-tab="queue" role="tab">Queue<span class="count" id="countQueue"></span></button><button class="tab" data-tab="conflicts" role="tab">Conflicts<span class="count" id="countConflicts"></span></button><button class="tab" data-tab="cleanup" role="tab">Backlog Cleanup<span class="count" id="countCleanup"></span></button><button class="tab" data-tab="completed" role="tab">Completed<span class="count" id="countCompleted"></span></button></nav>
 <div class="workspace" id="workspace"><section class="panel"><div class="panel-head"><h2 id="listTitle">Task queue</h2><p id="listHint">Highest priority first. Five tasks a page.</p></div>
 <div class="filters" id="filters" role="group" aria-label="Filter tasks"><button data-filter="all" class="chip active" type="button">All open</button><button data-filter="decide" class="chip" type="button">Needs a decision</button><button data-filter="work" class="chip" type="button">No decision needed</button><button data-filter="paused" class="chip" type="button">Paused</button><button data-filter="blocked" class="chip" type="button">Blocked</button></div>
 <div class="sortbar"><label for="priorityFilter">Priority</label><select id="priorityFilter" class="select"><option value="all">All (P0–P3)</option><option>P0</option><option>P1</option><option>P2</option><option>P3</option></select><label for="sortOrder">Sort</label><select id="sortOrder" class="select"><option value="high">Highest → lowest</option><option value="low">Lowest → highest</option></select></div>
@@ -32,7 +32,7 @@ textarea.field{width:100%;min-height:62px;margin-top:8px;background:#0c1725;bord
 <div class="task-list" id="tasks"><!--STATIC:BEGIN--><!--STATIC:END--></div>
 <div class="pagination"><button class="button" id="prevPage" type="button">← Previous</button><span class="page-count" id="pageCount"></span><button class="button" id="nextPage" type="button">Next →</button></div></section>
 <section class="panel"><div class="detail" id="detail"><div class="empty">Select a task to see its brief, its gate and what it depends on.</div></div></section></div>
-<section class="panel hidden" id="conflictsView"><div class="panel-head"><h2>Conflicts</h2><p>What disagrees between the register, its history, Issue #7, GitHub and your saved selections. Nothing here is fixed automatically.</p></div><div class="conflicts" id="conflictList"></div></section>
+<section class="panel hidden" id="cleanupView"><div class="panel-head"><h2>Backlog Cleanup — owner review</h2><p>Evidence-based recommendations only. These selections do not change task status, lift a pause or authorise execution.</p></div><div class="cleanup-toolbar"><label for="cleanupFilter">Show</label><select class="select" id="cleanupFilter"><option value="all">All flagged tasks</option><option value="revalidate">Revalidation required</option><option value="retire">Retire candidates</option><option value="complete">Decision-complete candidates</option><option value="keep">Keep active</option></select></div><div id="cleanupList" class="cleanup-list"></div><div class="pagination"><button class="button" id="cleanupPrev" type="button">← Previous</button><span class="page-count" id="cleanupCount"></span><button class="button" id="cleanupNext" type="button">Next →</button></div><div class="cleanup-export"><label class="confirm"><input id="cleanupConfirm" type="checkbox"><span>These are review instructions only. Claude must independently validate every disposition before changing GitHub.</span></label><div class="batch-actions"><button id="cleanupExport" class="button primary" type="button" disabled>Prepare cleanup handoff</button><button id="cleanupCopy" class="button" type="button" disabled>Copy handoff</button></div><div id="cleanupOutput" class="output hidden" aria-live="polite"></div></div></section><section class="panel hidden" id="conflictsView"><div class="panel-head"><h2>Conflicts</h2><p>What disagrees between the register, its history, Issue #7, GitHub and your saved selections. Nothing here is fixed automatically.</p></div><div class="conflicts" id="conflictList"></div></section>
 <section class="batch" id="decisionBatch"><h2>Decision handoff to Claude Code <span id="decisionCount" class="pill tick">0 selected</span></h2><p>Selections stay in this browser. Submitting prepares a handoff to paste into Claude Code; it records nothing. A decision counts as recorded only when GitHub shows its row in the decision history.</p>
 <div class="sel-list" id="selList"></div>
 <label class="confirm"><input id="confirmDecisions" type="checkbox"><span>I confirm these are my decisions. Each approval covers only the scope written beside it — never deployment, a merge, device control or lifting a pause.</span></label>
@@ -293,6 +293,98 @@ function indicators(t) {
 }
 let conflictsCache = [];
 const conflictsFor = id => conflictsCache.filter(c => c.task === id && c.sev !== 'info');
+
+/* Backlog cleanup is a separate, non-mutating review workflow. No state transition
+   ever happens here; official decisions still require tasks.py and owner evidence. */
+const CLEANUP_RECOMMENDATIONS = Object.freeze({
+  'TASK-002': ['complete', 'The approved integration-branch decision has no implementation action.'],
+  'TASK-015': ['complete', 'The single decision-register approach is already adopted.'],
+  'TASK-018': ['retire', 'Review was delivered; verify overlapping V3 safeguards before closing.'],
+  'TASK-025': ['retire', 'Prototype AC fixes reportedly exist on an unmerged hardening branch.'],
+  'TASK-020': ['retire', 'Old prototype Lighting layout may no longer be relevant.'],
+  'TASK-019': ['revalidate', 'Truthfulness fixes need re-scoping to current Lovelace implementation.'],
+  'TASK-023': ['revalidate', 'October recovery tasks mix restored access with unverified missing integrations.'],
+  'TASK-027': ['revalidate', 'Live V3 version needs a read-only comparison before applying upgrades.'],
+  'TASK-030': ['keep', 'Camera-stream issue still needs fresh diagnostics.'],
+  'TASK-024': ['keep', 'Task registration and V5 safeguards are still under review.'],
+  'TASK-028': ['keep', 'PR #16 review and deployment must stay separate.'],
+  'TASK-029': ['revalidate', 'Live export and separate owner deployment approval are missing.'],
+  'TASK-032': ['revalidate', 'Legacy V2 recovery PR #13 needs re-check; never merge to clear queue.']
+});
+let cleanupPage = 0, cleanupFilter = 'all', cleanupSelections = {}, cleanupHandoff = '';
+const cleanupAge = t => {
+  const m = String(t.Evidence || '').match(/20\d{2}-\d{2}-\d{2}/g);
+  if (!m || !m.length) return null;
+  const age = daysBetween(m[m.length-1], today());
+  return age === null || age < 0 ? null : age;
+};
+function cleanupReview(t) {
+  const recommended = CLEANUP_RECOMMENDATIONS[t.ID];
+  const age = cleanupAge(t);
+  const needsRevalidation = !t.completed && (age === null || age > STALE_DAYS || !!t.stalePR || t.Status === 'BLOCKED');
+  let suggestion = recommended ? recommended[0] : (needsRevalidation ? 'revalidate' : 'keep');
+  let why = recommended ? recommended[1] : (needsRevalidation ? 'Missing, stale or blocked evidence; independently re-check before execution.' : 'No retirement evidence found; keep in the normal queue.');
+  if (t.paused) { suggestion = 'revalidate'; why = 'Owner pause remains binding. Review relevance without resuming or approving this task. ' + why; }
+  return {suggestion, why, needsRevalidation, age};
+}
+function cleanupRows() {
+  if (!model) return [];
+  let rows = model.tasks.filter(t => !t.completed).map(t => ({t, ...cleanupReview(t)}));
+  rows = rows.filter(x => cleanupFilter === 'all' ? x.needsRevalidation || !!CLEANUP_RECOMMENDATIONS[x.t.ID] : cleanupFilter === 'revalidate' ? x.needsRevalidation || x.suggestion === 'revalidate' : x.suggestion === cleanupFilter);
+  return rows.sort((a,b) => PRI.indexOf(a.t.P)-PRI.indexOf(b.t.P) || a.t.ID.localeCompare(b.t.ID));
+}
+function renderCleanup() {
+  if (!model) return;
+  const rows = cleanupRows();
+  const maxPage = Math.max(1, Math.ceil(rows.length / PAGE));
+  cleanupPage = Math.min(cleanupPage, maxPage-1);
+  const batch = rows.slice(cleanupPage*PAGE, (cleanupPage+1)*PAGE);
+  $('countCleanup').textContent = model.tasks.filter(t => !t.completed && (cleanupReview(t).needsRevalidation || CLEANUP_RECOMMENDATIONS[t.ID])).length;
+  $('cleanupList').innerHTML = batch.length ? batch.map(({t,suggestion,why,age,needsRevalidation}) => {
+    const selected = cleanupSelections[t.ID] || '';
+    return `<div class="cleanup-entry" data-cleanup="${esc(t.ID)}">
+      <div class="t-top"><span class="pill">${esc(t.P)} · ${esc(t.ID)}</span>${statusPill(t)}<span class="pill ${needsRevalidation?'stale':'dep'}">${needsRevalidation?'REVALIDATION REQUIRED':'REVIEW'}</span></div>
+      <strong>${esc(t.Task)}</strong><p class="reason">Suggested: ${esc(suggestion.toUpperCase())}. ${esc(why)}</p>
+      <small>Evidence age: ${age === null ? 'unknown' : age+' days'} · Gate: ${esc(t.Gate)} · Updated: ${esc(t.Updated)}</small>
+      ${t.paused ? '<p class="pause-marker">⏸ Paused by owner — selection never resumes it.</p>' : ''}
+      <div class="cleanup-options" role="group" aria-label="${esc(t.ID)} cleanup review">
+      ${['keep','complete','retire','revalidate'].map(v=>`<button type="button" data-cleanup-choice="${v}" aria-pressed="${selected===v}">${selected===v?'✓ ':''}${v==='retire'?'Retire':v==='complete'?'Complete':v==='keep'?'Keep':'Revalidate'}</button>`).join('')}
+      </div></div>`;
+  }).join('') : '<div class="empty">No records match this review filter.</div>';
+  $('cleanupCount').textContent = rows.length ? `Page ${cleanupPage+1} of ${maxPage} · ${rows.length} review items` : '0 review items';
+  $('cleanupPrev').disabled = cleanupPage===0; $('cleanupNext').disabled = (cleanupPage+1)*PAGE>=rows.length;
+  $('cleanupList').querySelectorAll('[data-cleanup-choice]').forEach(b=>b.onclick=()=>{
+    const id=b.closest('[data-cleanup]').dataset.cleanup;
+    cleanupSelections[id]=b.dataset.cleanupChoice;
+    cleanupHandoff='';
+    $('cleanupOutput').classList.add('hidden'); $('cleanupCopy').disabled=true;
+    renderCleanup();
+  });
+  $('cleanupExport').disabled = !Object.keys(cleanupSelections).length || !$('cleanupConfirm').checked;
+}
+function makeCleanupHandoff() {
+  const ids=Object.keys(cleanupSelections).sort();
+  return [
+    'CASARAY BACKLOG CLEANUP — OWNER REVIEW, NOT A TASK DECISION',
+    'Prepared: '+new Date().toISOString(),
+    'Register: '+model.origin.ref+' @ '+model.origin.sha,
+    'Never merge, deploy, touch Home Assistant, or resume paused tasks from this review.',
+    'Verify current code, evidence and dependencies before recording any status.',
+    '',
+    ...ids.map(id=>{
+      const t=model.byId[id]; if(!t) return id+': no longer in register — REVALIDATE';
+      const p=cleanupReview(t), requested=cleanupSelections[id];
+      return id+' — '+requested.toUpperCase()+' (suggested '+p.suggestion.toUpperCase()+') | '+t.Task+
+      '\\n  Status '+t.Status+'; paused '+t.paused+'; last updated '+t.Updated+
+      '\\n  Evidence: '+t.Evidence+
+      '\\n  Required: independently verify, preserve append-only history, and seek exact owner authorisation before mutation.';
+    }),
+    '',
+    'These choices are triage preferences, NOT Approve/Deny/Pause decisions for tasks.py.',
+    'A closed PR does not prove completion. No status may become DONE without verified completion.'
+  ].join('\\n');
+}
+
 function visibleTasks() {
   const m = model, q = view.q.toLowerCase();
   let list = m.tasks.filter((t, i) => m.tasks.findIndex(x => x.ID === t.ID) === i || true);
@@ -313,10 +405,11 @@ function render() {
     + `<div class="stat amber"><small>Need your decision</small><strong>${open.filter(t => t.Status === 'AWAITING_DECISION' && !t.paused).length}</strong><small>Approve · Deny · Pause</small></div>`
     + `<div class="stat violet"><small>Paused</small><strong>${open.filter(t => t.paused).length}</strong><small>Resumed only by name</small></div>`
     + `<div class="stat ${errs ? 'red' : 'green'}"><small>Conflicts</small><strong>${errs}</strong><small>${warns} to check</small></div>`;
+  renderCleanup();
   $('countQueue').textContent = open.length; $('countCompleted').textContent = model.tasks.filter(t => t.completed).length; $('countConflicts').textContent = errs + warns;
   document.querySelector('[data-tab="conflicts"]').classList.toggle('has-errors', errs > 0);
   document.querySelectorAll('[data-tab]').forEach(b => b.classList.toggle('active', b.dataset.tab === view.tab));
-  $('workspace').classList.toggle('hidden', view.tab === 'conflicts'); $('conflictsView').classList.toggle('hidden', view.tab !== 'conflicts');
+  $('workspace').classList.toggle('hidden', view.tab === 'conflicts' || view.tab === 'cleanup'); $('conflictsView').classList.toggle('hidden', view.tab !== 'conflicts'); $('cleanupView').classList.toggle('hidden', view.tab !== 'cleanup');
   $('filters').classList.toggle('hidden', view.tab !== 'queue'); $('bulkBox').classList.toggle('hidden', view.tab !== 'queue'); $('bulkStatus').classList.toggle('hidden', view.tab !== 'queue');
   $('listTitle').textContent = view.tab === 'completed' ? 'Completed and denied' : 'Task queue';
   $('listHint').textContent = view.tab === 'completed' ? 'Kept on record. Five a page.' : 'Highest priority first. Five tasks a page.';
@@ -439,6 +532,12 @@ function submit() {
 function copyText(text) { if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text); const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); const ok = document.execCommand('copy'); ta.remove(); return ok ? Promise.resolve() : Promise.reject(new Error('copy unavailable')); }
 
 /* ---------- wiring ---------- */
+$('cleanupFilter').onchange = e => { cleanupFilter=e.target.value; cleanupPage=0; renderCleanup(); };
+$('cleanupPrev').onclick = () => {cleanupPage=Math.max(0,cleanupPage-1);renderCleanup();};
+$('cleanupNext').onclick = () => {cleanupPage++;renderCleanup();};
+$('cleanupConfirm').onchange = () => renderCleanup();
+$('cleanupExport').onclick = () => {if (!$('cleanupConfirm').checked || !Object.keys(cleanupSelections).length)return; cleanupHandoff=makeCleanupHandoff();$('cleanupOutput').textContent=cleanupHandoff;$('cleanupOutput').classList.remove('hidden');$('cleanupCopy').disabled=false;};
+$('cleanupCopy').onclick = () => {if(cleanupHandoff)copyText(cleanupHandoff);};
 document.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { view.tab = b.dataset.tab; view.page = 0; render(); });
 document.querySelectorAll('[data-filter]').forEach(b => b.onclick = () => { view.filter = b.dataset.filter; view.page = 0; render(); });
 $('priorityFilter').onchange = e => { view.priority = e.target.value; view.page = 0; render(); };
