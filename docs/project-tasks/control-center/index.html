@@ -45,7 +45,7 @@ textarea.field{width:100%;min-height:62px;margin-top:8px;background:#0c1725;bord
 <script>
 'use strict';
 const REPO = 'deezr168-blip/Deez-Smart-Home';
-const DEFAULT_REF = 'casaray-v3/agent-task-tracking';
+const DEFAULT_REF = 'casaray-v3/agent-task-conflicts';
 const PAGE = 5, STALE_DAYS = 14;
 const PRI = ['P0', 'P1', 'P2', 'P3'];
 const RANK = ['AWAITING_DECISION', 'IN_PROGRESS', 'APPROVED', 'OPEN', 'BLOCKED', 'PAUSED'];
@@ -375,14 +375,14 @@ function makeCleanupHandoff() {
       const t=model.byId[id]; if(!t) return id+': no longer in register — REVALIDATE';
       const p=cleanupReview(t), requested=cleanupSelections[id];
       return id+' — '+requested.toUpperCase()+' (suggested '+p.suggestion.toUpperCase()+') | '+t.Task+
-      '\\n  Status '+t.Status+'; paused '+t.paused+'; last updated '+t.Updated+
-      '\\n  Evidence: '+t.Evidence+
-      '\\n  Required: independently verify, preserve append-only history, and seek exact owner authorisation before mutation.';
+      '\n  Status '+t.Status+'; paused '+t.paused+'; last updated '+t.Updated+
+      '\n  Evidence: '+t.Evidence+
+      '\n  Required: independently verify, preserve append-only history, and seek exact owner authorisation before mutation.';
     }),
     '',
     'These choices are triage preferences, NOT Approve/Deny/Pause decisions for tasks.py.',
     'A closed PR does not prove completion. No status may become DONE without verified completion.'
-  ].join('\\n');
+  ].join('\n');
 }
 
 function visibleTasks() {
