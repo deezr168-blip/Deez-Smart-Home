@@ -343,6 +343,44 @@ async function main() {
       await ctx.close();
     }
 
+    console.log('10x. Backlog Cleanup review is isolated from task approvals');
+    {
+      const {page, ctx} = await open(browser, {gh: ghBase()});
+      await page.click('[data-tab="cleanup"]');
+      check('10x-a cleanup opens as a separate tab', await page.isVisible('#cleanupView') && !await page.isVisible('#workspace'));
+      check('10x-b five flagged tasks per page', await page.locator('#cleanupList .cleanup-entry').count() <= 5);
+      check('10x-c normal approval handoff remains empty', await page.textContent('#decisionCount') === '0 selected');
+      await page.selectOption('#cleanupFilter', 'revalidate');
+      check('10x-d filter finds evidence/paused records', await page.locator('#cleanupList .cleanup-entry').count() > 0);
+      await page.selectOption('#cleanupFilter', 'all');
+      const allIds = [];
+      while (true) {
+        allIds.push(...await page.locator('#cleanupList [data-cleanup]').evaluateAll(els => els.map(e => e.dataset.cleanup)));
+        if (await page.isDisabled('#cleanupNext')) break;
+        await page.click('#cleanupNext');
+      }
+      check('10x-e paused task is visible for review', allIds.includes('TASK-003'));
+      await page.selectOption('#cleanupFilter', 'all');
+      while (!await page.isDisabled('#cleanupPrev')) await page.click('#cleanupPrev');
+      // Locate paused task by navigating pages, without relying on its position.
+      for (let n=0; n<allIds.length; n+=5) {
+        if (await page.locator('#cleanupList [data-cleanup="TASK-003"]').count()) break;
+        if (await page.isDisabled('#cleanupNext')) break;
+        await page.click('#cleanupNext');
+      }
+      const paused = page.locator('#cleanupList [data-cleanup="TASK-003"]');
+      check('10x-f paused task cannot be retired or completed', await paused.locator('[data-cleanup-choice="retire"]').isDisabled() && await paused.locator('[data-cleanup-choice="complete"]').isDisabled());
+      await paused.locator('[data-cleanup-choice="revalidate"]').click();
+      check('10x-g selection ticks but cannot submit without confirmation', await paused.locator('[data-cleanup-choice="revalidate"]').getAttribute('aria-pressed') === 'true' && await page.isDisabled('#cleanupExport'));
+      await page.check('#cleanupConfirm');
+      await page.click('#cleanupExport');
+      const handoff = await page.textContent('#cleanupOutput');
+      check('10x-h cleanup handoff says it is not an execution decision', /OWNER REVIEW, NOT A TASK DECISION/.test(handoff) && /Never merge, deploy/.test(handoff));
+      check('10x-i pause is explicitly preserved', /TASK-003.*REVALIDATE/.test(handoff) && /paused true/.test(handoff));
+      check('10x-j cleanup cannot approve normal task', await page.textContent('#decisionCount') === '0 selected');
+      await ctx.close();
+    }
+
     console.log('11. The real register, and the real tool');
     {
       const real = JSON.parse(/<script type="application\/json" id="snapshot">([\s\S]*?)<\/script>/.exec(SRC)[1]);
