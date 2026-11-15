@@ -15,8 +15,8 @@ decision recorded only when GitHub shows the owner's row in the history.
 
 The only task list is the canonical one:
 `docs/project-tasks/TASK_REGISTER.md` and `DECISION_HISTORY.md`, read from the
-branch named under **Source** (default `casaray-v3/agent-task-tracking`, PR 8's
-branch). On open, and every 15 minutes while visible, it reads that branch's
+branch named under **Source** (default `casaray-v3/agent-task-conflicts`, PR 17's
+pause-safe review branch). On open, and every 15 minutes while visible, it reads that branch's
 commit and then both files **at that commit**, plus Issue #7 and the PR list.
 If GitHub cannot be reached it keeps the last GitHub read, or falls back to the
 snapshot `build.py` embedded, and says which in the header. V4's hand-written
@@ -28,7 +28,7 @@ snapshot `build.py` embedded, and says which in the header. V4's hand-written
   a task whose alias another record has paused (Issue #7's CR-T01 to CR-T05, via
   the register's Links table). The page has no Resume button: the owner resumes
   one task, by name, in Claude Code.
-- **Approve only what awaits a decision.** `OPEN`, `BLOCKED`, `IN_PROGRESS`,
+- **Approve only what awaits a decision.** Individual and bulk approvals both reject stale/unknown evidence (over 14 days), moved PR heads and unresolved dependencies. `OPEN`, `BLOCKED`, `IN_PROGRESS`,
   `APPROVED`, `DONE` and `DENIED` tasks cannot be approved. Deny and Pause follow
   the tool's own transition table.
 - **A gated task needs its own exact scope** (12+ characters, single use), and
@@ -62,13 +62,14 @@ snapshot `build.py` embedded, and says which in the header. V4's hand-written
   covers, tasks with the same title, overlaps and bundles, stale evidence, V4
   selections, and any selection that needs revalidating.
 - **Completed**: `DONE` and `DENIED` tasks, kept on record.
+- **Backlog Cleanup**: five flagged records per page, priority-ordered. Uses age of the recorded evidence (14-day warning), blocked/paused state, and explicit review recommendations to propose Keep, Complete, Retire, or Revalidate. This is a **non-mutating triage surface**: it does not change Approve/Deny/Pause selections, mutate GitHub, or authorise execution. Paused tasks can only be marked Keep or Revalidate; never Complete or Retire through this tab. A confirmation prepares a separate plain-English owner-review handoff that still requires validation via tasks.py before any status change. The recommendations are dated hypotheses, not proof of completion.
 
 ## Maintaining it
 
 After changing the register or history, run
 `python3 docs/project-tasks/control-center/build.py` so the offline snapshot
 matches, and `--check` to confirm. Then
-`node docs/project-tasks/control-center/test_control_center.cjs` (83 checks;
+`node docs/project-tasks/control-center/test_control_center.cjs` (existing 83 checks plus cleanup regression cases;
 the last group runs the page's handoff through the real `tasks.py` on a
 throwaway copy of the tree).
 
@@ -81,5 +82,5 @@ the page says GitHub is unreachable and shows the last read or the snapshot.
 
 Until the Links table reaches PR 8's branch, the page applies the links in its
 snapshot (and says so under Conflicts), so Issue #7's pauses are enforced either
-way. To read this proposal's register instead, set **Source** to
-`casaray-v3/agent-task-conflicts`.
+way. To read PR 8's original register instead, set **Source** to
+`casaray-v3/agent-task-tracking`. The cleanup recommendations are a review layer; the register and append-only history remain authoritative. As of 16 November 2026, the browser suite is **not executed** in this GitHub-only editing session (JavaScript syntax validated), so review and the full test run are required before merging.
