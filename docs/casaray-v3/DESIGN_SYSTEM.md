@@ -65,17 +65,18 @@ grid everywhere, and on the wall iPad they are wrong for two-column bands:
 
 | Component | Card | Notes |
 |---|---|---|
-| `topbar` | 2 × markdown + 6 × button | title + dev banner, clock `HH:MM` over `DD/MM/YY`, six-glyph rail; current destination shown named and inert |
+| `topbar` | markdown header (6 × 2) + 6 × named button (3 × 2) | every native view (V3-023, V3-024): title, time over `DD/MM/YY` · Preview; one row on the wall iPad, two on a phone, every cell one height; current destination inert and tinted `accent`. Gated by `topbar_problems()` |
 | `chips` + `chip_count` / `chip_value` / `chip_cameras` | markdown | `n of m reporting`; "No data" when nothing answered |
 | `chip_temp`, `chip_plugs`, `plugs_card` | markdown | `19.7°` from a sensor or a weather attribute; a plug total shown only while every plug it adds up answers |
+| `camera_card(…, offline=True, full_screen="more-info")` | picture-entity + markdown twin | the twin, same size, shows only while the camera is `unavailable` (says Offline) or `unknown` (says State unknown), with the battery reading; a tap opens Home Assistant's own live view (V3-014, V3-024) |
 | `room_tile` | markdown, tap navigates | room name over one line of readings in words; a dark reading is counted ("1 not reporting"), never shown; "No data" when none answer |
 | `attention` | markdown | one honest list; all-clear only when every check answered |
 | `action_button` | button | one action per button; hold does nothing |
-| `nav_button`, `more_boards` | button | named index, 4 across |
+| `nav_button`, `more_boards` | button | named index, 4 across; on `band_grid: 24` views 6 units each (four across on the wall, two on a phone) |
 | `light_tile` | tile + `light-brightness` feature | |
 | `readonly_tile`, `sensor_tile`, `person_tile` | tile | tap / icon-tap / hold cannot act |
-| `ac_summary` | markdown | V3-008 R1/R7 wording; read-only |
-| `camera_summary`, `camera_card` | markdown, picture-entity | state in words; tap opens the V2 webrtc subview |
+| `ac_summary` | markdown | V3-008 R1/R7 wording; read-only. `name_key` adds which air-con; `compact` puts mode and room temperature on one line for a button-sized slot (V3-023) |
+| `camera_summary`, `camera_card` | markdown, picture-entity | state in words; on Home and Cameras a tap opens the native camera dialog, elsewhere the V2 webrtc subview |
 | `weather`, `todo`, `scene_buttons`, `note`, `heading` | native | scene labels from the export's friendly names |
 
 ## State language

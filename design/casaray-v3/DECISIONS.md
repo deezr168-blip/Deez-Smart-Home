@@ -6,6 +6,207 @@ and `ha-deploy` are unaffected by everything here.
 
 ---
 
+## V3-024 · 18/11/26 · Preview release candidate: PR #16's cameras with PR #21's navigation and Home, integrated and measured
+
+**Status:** owner brief (18/11/26): prepare one tested CasaRay V3 preview
+release candidate. Prepared on `feature/casaray-v3-preview-rc1`, branched from
+`feature/casaray-v3-build` at `116c043`. DEVELOPMENT ONLY — NOT DEPLOYED. No
+merge without a separate owner approval, and no deploy without the preflight
+in `docs/casaray-v3/RELEASE_CANDIDATE_RC1.md`. Neither PR #16 nor PR #21 is
+merged on its own. The Task Control Center is untouched.
+
+1. **What came in.**
+   - **PR #16** (`97e9bce`, V3-014), merged with `--no-ff`. Cameras two
+     across on the wall iPad and one on a phone, Front door first. Every
+     slot is a picture or a same-size card that says Offline in words. A
+     tap opens Home Assistant's own camera dialog, which can go full screen.
+     The privacy and detection tiles are named by camera and read-only. The
+     band gate checks packing with visibility applied. No camera is
+     remapped.
+   - **PR #21, selected parts only, ported by hand** (V3-022, V3-023). Its
+     branch was not merged, so nothing else of it can arrive by accident.
+     Ported:
+     - the named top bar on every native view, and its `topbar_problems()`
+       gate and tests;
+     - the preview tool's frontend metrics and measurements;
+     - Home: the One tap air-con names its device, people at two rows, the
+       monitored footnote inside the plugs card, Solar expected today in
+       Energy now, Climate now names the air-con and shows all four room
+       temperatures, Shopping list at five rows;
+     - Cantonese 氣候 for Climate (was 冷氣同天氣), and `ac.parents_name`
+       in all four catalogues;
+     - the Alerts tests' `past_top_bar()`.
+2. **Deferred, and pinned out by tests** (`tests/v3/test_preview_rc_v3_024.py`):
+   - the Weather and Rubbish collection pages (V3-020);
+   - the `new_views` generator key and `header_title`, which only those
+     pages use;
+   - their More boards links;
+   - the draft rubbish reminder automation. It is not in this branch at
+     all, and no `packages/` file mentions it.
+3. **Overlaps resolved.**
+   - **Rail.** PR #16 made it six icon-only buttons on the two band-grid
+     views. PR #21 named all six on every view. The brief asks for readable,
+     labelled navigation, so PR #21's bar is used everywhere and PR #16's
+     `compact` option is removed. PR #23's design review of the combined
+     rail is still owed on a device.
+   - **Marker in the header.** PR #16 wrote "Preview"; PR #21 wrote "Not
+     deployed". This candidate is built for the `/casaray-v3` preview
+     dashboard, where "Not deployed" would become untrue the moment it is
+     applied. "Preview" (`app.preview_banner`) is true either way.
+     `app.dev_banner` stays in the catalogues, unused.
+   - **Markdown CSS in the preview tool.** The two PRs disagreed on lists
+     and bold. This was settled from `ha-markdown.ts` at frontend
+     `20260826.7`: lists keep the UA indent (`padding-inline-start: revert`)
+     and strong is not overridden. PR #16's values are the correct ones.
+   - **Home heights, measured** with `preview_view.py --shots` at 1180 × 820
+     and 390 × 844 in all four locales (simulated geometry, not a device):
+
+     | Variant | Wall holes yue (rooms · right now · energy) | Wall page yue / en | Phone page yue / en |
+     |---|---|---|---|
+     | PR #16: rooms 2 rows, list 8, occupancy 3 | 0 · 33 · 4 px | 2,599 / 2,620 | 4,769 / 4,769 |
+     | PR #21: auto rooms, list 5, occupancy 2 (**chosen**) | 21 · 31 · 11 px | 2,396 / 2,439 | 4,357 / 4,401 |
+
+     PR #16's equal heights close the Rooms | Shopping hole. They cost
+     ~200 px on the wall and ~410 px on a phone, which is scroll the V3 rule
+     asks Home to avoid, and the brief selects PR #21's spacing. PR #16's
+     fixed two-row Climate-now air-con was also dropped (auto height): with
+     PR #21's name line it overflowed its card in Khmer on a phone. These
+     are one-line changes in `home.yaml` if the wall iPad says otherwise.
+   - **More boards** stays at eight cards of 6 units: four across on the
+     wall, two on a phone, whole rows on both. PR #21's 4-unit, six-across
+     band needed twelve cards, two of them the deferred pages. PR #21 said
+     Lighting had no Home link; it does, in the rail.
+4. **Added here.** The camera's same-size card also covers `unknown`, and
+   says "State unknown" (狀態未知 / 状态未知) rather than Offline.
+   - `hui-image.ts` still fetches an unknown camera's image and draws a
+     broken frame with no word.
+   - `validate-condition.ts` evaluates a camera entity that does not exist
+     as `unknown`, so a removed or renamed camera now says so instead of
+     drawing an empty frame.
+   - Exactly one of the picture and the card shows in every state (tested).
+5. **Measured across every native view** (20 views × 4 locales × 2 devices):
+   - Every view resolves two columns on the wall iPad and one on a phone.
+   - Home and Cameras have no clipped label and no overflowing card in any
+     locale. Cameras' bands are within 1 px, except 23 px in Cantonese
+     (Camera health beside the batteries).
+   - Fixed by the named rail: "Lighting" in the old rail clipped on an
+     English phone, and Khmer "Energy" in the old rail clipped too.
+   - Already on the baseline (`116c043`) and unchanged here: "Concentrate"
+     ×3 on Lighting, "Entertainment" on three room pages, and Khmer "Bills"
+     on Energy, all on a phone.
+   - New, Khmer draft only: on a phone, the Living room and Parents' room
+     titles wrap the header cell. PR #21 reported the same two. Khmer awaits
+     a native speaker, so no new Khmer wording was invented.
+6. **Entity audit against `116c043`** (all four locales):
+   - The same 46 views in the same order.
+   - No entity removed or substituted.
+   - One entity added, on Home: `sensor.presence_multi_sensor_fp300_temperature`
+     (Ray's room). It is in the export, `unavailable` on 05/09, and drawn as
+     No data.
+   - The services referenced are identical. The 28 carried and classic
+     views are byte-identical.
+   - The 16 other native views differ only in the top bar, apart from the
+     approved Cantonese rename, which reaches four Cantonese pages.
+7. **Gates on the candidate:** `build_dashboard.py --check` current;
+   `validate_dashboard.py` 1509 passed / 0 failed (baseline 1425 / 0);
+   `ha_validate.sh` passed, 8 sections. It has 4 warnings more than the
+   baseline, all "Camera health" in the per-locale heading class PR #16
+   reported. `python3 -m unittest discover -s tests/v3`: **123 tests,
+   0 failures** at `edad5e0` (625 s; baseline `116c043`: 93 tests, 0
+   failures).
+8. **Not done, needs the Green or the owner:**
+   - the live `/casaray-v3` is not read;
+   - the PR #23 preflight;
+   - any device check;
+   - the Khmer native review;
+   - a design review of the combined rail on the wall iPad.
+
+---
+
+## V3-014 · 15/11/26 · Camera slots that say Offline, a native full-screen tap, and a one-height top bar
+
+**Status:** owner request (15/11/26), prepared on `feature/casaray-v3-cameras-layout`, branched
+from `feature/casaray-v3-build` at `1a669a3`. DEVELOPMENT ONLY — NOT DEPLOYED. Waiting for the
+owner's approval before anything goes to the Green.
+
+1. **Baseline.** The live dashboard configuration could not be read from this session. No
+   computer is connected through Remote Control, and the Home Assistant connector reads entity
+   states, not dashboards. Neither the live export nor `casaray-v3-before-home-upgrade.yaml`
+   reached the session. The baseline is the repo at `7f16e79`. Before any deploy, the live
+   export is diffed against it, so edits made on the Green are not overwritten.
+2. **Camera audit.** Entity IDs and names come from the 05/09 export. "Live" means read
+   through the connector on 15/11; that gives state only, never playback.
+
+   | Slot | Entity (unchanged) | 05/09 export | Live 15/11 |
+   |---|---|---|---|
+   | Front door | `camera.front_door_live_view` (Ring) | ok | idle; battery 66 % |
+   | North wall | `camera.tapo_c425_north_wall_hd_stream_direct` (Tapo Control) | ok | idle; its battery and privacy entities unavailable |
+   | East wall | `camera.tapo_c420_east_wall_hd_stream_direct` (Tapo Control) | unavailable | unavailable |
+   | South wall | `camera.tapo_c420_south_wall_hd_stream_direct` (Tapo Control) | unavailable | unavailable |
+   | Stockroom | `camera.tapo_c200_stockroom_hd_stream_direct` (Tapo Control) | ok | idle |
+   | Pet feeder | `camera.smart_pet_feeder` | ok | not exposed to the connector, so unread |
+
+   - **No camera is remapped. No replacement entity exists.**
+   - Each C420 has a second device record. For East wall it is `tapo_camera_bcca_*`; for
+     South wall it uses the same name prefix.
+   - That record answers live: its battery reads 100 %, and its detection switches respond.
+   - In the export it has **no camera entity**, so there is nothing to stream from.
+   - The cameras answer, but Tapo Control's streams do not. The cause is not established
+     from here.
+3. **Full screen.**
+   - Every camera tap used to open its V2 page, which streams through `custom:webrtc-camera`.
+     That needs the WebRTC Camera integration from HACS and its front-end resource. On 02/11
+     Ray reported `/config/custom_components` missing and the Resources list empty.
+   - Tapo Control's cameras answer live now, so some custom components are back; whether
+     WebRTC Camera is among them is unknown.
+   - A tap now opens Home Assistant's own camera dialog. Its live view needs no custom card,
+     and its video can go full screen.
+   - The six V2 camera pages stay one tap away under More boards, with a note saying what
+     they need.
+4. **Offline in words, same size.**
+   - The installed frontend draws an unavailable camera as a broken image or a spinner, with
+     no state word (`hui-image.ts`, 20260826.7).
+   - Each camera slot is now a picture shown while the camera is not `unavailable`, plus a
+     same-size card shown only while it is. The card reads "*Name* · Offline", "No stream
+     from Home Assistant" and the camera's battery reading, or "No battery reading".
+   - An idle camera shows its picture.
+5. **Compact top bar** (views on `band_grid: 24`: Home, Cameras).
+   - A button showing an icon and a name is at least two rows. The current page's named rail
+     button was twice the height of the rest, which made the iPhone's oversized Home tile
+     and the gap before the chip strip.
+   - Now the rail is six icon-only buttons; the current one is inert, and the title names the
+     page.
+   - The title and clock are text-only markdown, each one heading split by a line break, so
+     no margin overflows the row.
+   - The result is one 56 px row on the wall iPad and two on a phone, every cell the same
+     height.
+   - The clock keeps the time above `DD/MM/YY`.
+   - The banner reads "Preview": it is the V3 Preview on the Green.
+   - Other views keep their top bar until they are reviewed.
+6. **Tightened against the preview**, measured on the frontend's own grid:
+   - Rooms are all two rows, and the shopping list is eight rows to match.
+   - Parents' room occupancy is three rows, and the air-con summary in Climate now is two,
+     closing the gaps beside Right now and Energy now.
+   - Cameras: two across on the wall iPad, one on a phone, Front door first.
+   - Camera health sits beside the batteries, and the privacy tiles are named by camera (the
+     friendly names were cut off).
+   - In the preview, with no horizontal scroll, clipped label or overflowing card on either
+     size: Home's paired sections end within 0, 12 and 25 px of each other, and Cameras'
+     within 1 px.
+7. **Gate.** On `band_grid: 24` views, packing is now checked with visibility applied, in
+   three states: the fixture, everything answering and everything dark. The compact top bar
+   is checked too. A test proves a half-size Offline card is caught.
+8. **Needs action on the Green** (not done from here):
+   - **East and South wall streams:** in Settings → Devices & services → Tapo Control, read
+     each C420 entry's error. That decides re-authentication, a new address, or re-adding the
+     camera through its hub.
+   - **The V2 camera pages:** they need the WebRTC Camera integration (HACS) and its resource.
+     Install it only if the owner wants those pages back.
+   - **North wall:** its battery and privacy entities went unavailable after 05/09 while its
+     camera still answers.
+
+---
+
 ## V3-013 · 14/11/26 · Home against the 14/09 wall render; two-column bands sized for the grid Home Assistant draws
 
 **Status:** owner request (14/11/26), implemented on

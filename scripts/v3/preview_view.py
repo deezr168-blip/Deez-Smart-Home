@@ -189,28 +189,7 @@ class Icons:
 # ------------------------------------------------------------------ cards
 
 def shown(card, states):
-    def ok(c):
-        k = c.get("condition")
-        if k == "state":
-            s = states.get(c["entity"], "unknown")
-            if "state" in c:
-                want = c["state"] if isinstance(c["state"], list) else [c["state"]]
-                return s in [str(x) for x in want]
-            if "state_not" in c:
-                no = c["state_not"] if isinstance(c["state_not"], list) else [c["state_not"]]
-                return s not in [str(x) for x in no]
-        if k == "numeric_state":
-            s = states.get(c["entity"])
-            if not R._is_number(s):
-                return False
-            v = float(s)
-            return (c.get("above") is None or v > c["above"]) and (c.get("below") is None or v < c["below"])
-        if k == "and":
-            return all(ok(x) for x in c["conditions"])
-        if k == "or":
-            return any(ok(x) for x in c["conditions"])
-        return True   # screen, user, ...: shown in a preview
-    return all(ok(c) for c in card.get("visibility") or [])
+    return L.visible(card, states)
 
 
 def render_card(card, ctx):
@@ -241,7 +220,8 @@ def render_card(card, ctx):
         name = html.escape(str(card.get("name", ""))) if card.get("show_name", True) else ""
         ic = icons.svg(card["icon"].split(":", 1)[1], "bic") if card.get("icon") and card.get("show_icon", True) else ""
         nm = f'<div class="bn">{name}</div>' if name else ""
-        return f'<div class="ha-card btn{tappable}">{ic}{nm}</div>'
+        tint = " accent" if card.get("color") in ("accent", "primary", "amber") else ""
+        return f'<div class="ha-card btn{tint}{tappable}">{ic}{nm}</div>'
     if t == "weather-forecast":
         e = card["entity"]
         s = states.get(e, "unknown")
@@ -254,7 +234,10 @@ def render_card(card, ctx):
         e = card["entity"]
         s = states.get(e, "unknown")
         off = s in ("unavailable", "unknown")
-        badge = "Unavailable" if off else "camera image — not rendered offline"
+        # Home Assistant draws a dark camera as a broken image or a spinner,
+        # with no state word (hui-image.ts, 20260826.7): the annotation is the
+        # preview's, not the card's.
+        badge = "preview note: HA shows a broken image, no word" if off else "camera image — not rendered offline"
         return (f'<div class="ha-card cam{" camoff" if off else ""}{tappable}">{icons.svg("cctv", "cic")}'
                 f'<div class="cbadge">{badge}</div><div class="cname">{html.escape(str(card.get("name", "")))}</div></div>')
     if t == "todo-list":
@@ -288,9 +271,12 @@ grid-auto-rows:auto;row-gap:8px;column-gap:8px}
 .ha-card{background:var(--v3-card);border:1px solid var(--v3-border);border-radius:18px;box-sizing:border-box;height:100%;overflow:hidden}
 .md{padding:16px;overflow-y:auto;word-wrap:break-word}
 .md>*:first-child{margin-top:0}.md>*:last-child{margin-bottom:0}
-.md p{margin:0 0 .5em}.md h2{font-size:22px;font-weight:600;line-height:1.25;margin:0 0 .2em}
-.md h3{font-size:17px;font-weight:600;margin:0 0 .2em}.md ul{margin:.3em 0;padding-left:1.3em}
-.md small{color:var(--v3-text-2)}.md strong{font-weight:600}
+/* ha-markdown at 20260826.7: h2 = --ha-font-size-xl bold, headings line-height initial, the UA's own
+   block margins (only the first and last child are reset); lists keep the UA indent
+   (padding-inline-start: revert) and strong keeps the UA bold — ha-markdown overrides neither */
+.md p{margin:1em 0}.md h2{font-size:20px;font-weight:700;line-height:normal;margin:.83em 0}
+.md h3{font-size:1.17em;font-weight:700;line-height:normal;margin:1em 0}.md ul{margin:1em 0;padding-left:40px}
+.md small{color:var(--v3-text-2)}.md strong{font-weight:700}
 .heading{display:flex;align-items:flex-end;min-height:24px;height:100%;padding:0 4px;font-size:16px}
 .heading.sub{font-size:14px;color:var(--v3-text-2)}
 .tile{display:flex;flex-direction:column;justify-content:center}
@@ -302,8 +288,11 @@ background:rgba(169,180,195,.12);fill:var(--v3-text-2)}
 .ic{width:22px;height:22px}.tx{min-width:0}.nm{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .st{font-size:12px;color:var(--v3-text-2);line-height:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .feature{padding:0 10px 10px}.bar{height:34px;border-radius:12px;background:rgba(232,163,61,.18)}
-.btn{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4% 0;font-size:16px;line-height:1.2;fill:var(--v3-text-2)}
-.bic{width:40%;max-width:48px;max-height:50%;height:auto;aspect-ratio:1}.bn{margin-top:6px;text-align:center;padding:0 6px;font-size:14px}
+/* hui-button-card at 20260826.7: label --ha-font-size-l at line-height 1.2, no padding and no ellipsis
+   (ha-card clips it); icon 40% of the card's width, at most 80% of its height; `color` tints the icon */
+.btn{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4% 0;font-size:16px;line-height:1.2;
+fill:var(--v3-text-2);position:relative}.btn.accent{fill:var(--v3-accent)}
+.bic{width:40%;max-height:80%;height:auto;aspect-ratio:1}.bn{margin-top:8px;text-align:center}
 .weather{display:flex;align-items:center;gap:16px;padding:16px}.wic{width:64px;height:64px;fill:var(--v3-text-2)}
 .wt{font-size:28px;line-height:1.2}.ws{color:var(--v3-text-2)}
 .cam{display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#25313b,#10161b);position:relative}
@@ -379,8 +368,23 @@ const {chromium} = require('playwright');
   await p.goto('file://' + file);
   await p.evaluate(() => document.fonts.ready);
   await p.screenshot({path: out, fullPage: true});
-  const info = await p.evaluate(() => ({cols: document.body.dataset.columns,
-                                        height: document.documentElement.scrollHeight}));
+  const info = await p.evaluate(() => {
+    // Measured in the simulated layout only: sections sharing a row (a band) and how much
+    // shorter each is than the tallest beside it; button labels wider than their card (the
+    // button card clips, it never ellipsises); fixed-height cards whose content overruns.
+    const secs = [...document.querySelectorAll('.section')].map((s, i) => {
+      const r = s.getBoundingClientRect(); return {i, top: Math.round(r.top), h: Math.round(r.height)}; });
+    const rows = {}; secs.forEach(s => (rows[s.top] = rows[s.top] || []).push(s));
+    const holes = Object.values(rows).filter(g => g.length > 1).map(g => ({sections: g.map(s => s.i),
+      heights: g.map(s => s.h), hole: Math.max(...g.map(s => s.h)) - Math.min(...g.map(s => s.h))}))
+      .filter(b => b.hole > 0);
+    const clipped = [...document.querySelectorAll('.btn .bn')].filter(n =>
+      n.scrollWidth > n.parentElement.clientWidth).map(n => n.textContent);
+    const overflow = [...document.querySelectorAll('.card.fit-rows .ha-card')].filter(c =>
+      c.scrollHeight > c.clientHeight + 1).map(c => c.textContent.trim().slice(0, 40));
+    return {cols: document.body.dataset.columns, height: document.documentElement.scrollHeight,
+            holes, clipped, overflow};
+  });
   console.log(JSON.stringify(info));
   await b.close();
 })();
@@ -469,6 +473,9 @@ def main():
             png = a.out / f"{a.view}_{dev}.png"
             info = shoot(out.resolve(), png, size)
             print(f"wrote {png}  {size[0]}x{size[1]} viewport: {info['cols']} column(s), page {info['height']} px tall")
+            print("  measured (simulated): band holes " + json.dumps(info["holes"], ensure_ascii=False)
+                  + " | clipped labels " + json.dumps(info["clipped"], ensure_ascii=False)
+                  + " | overflowing fixed-height cards " + json.dumps(info["overflow"], ensure_ascii=False))
     return 0
 
 

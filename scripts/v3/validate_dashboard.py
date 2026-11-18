@@ -186,29 +186,81 @@ def tile_safety(view, v2_by_path, controls, old_url, new_url):
     return bad, prot
 
 
+def band_scenarios():
+    """State sets a band must pack under: the fixture, everything answering,
+    everything dark. Cards hidden by their visibility take no space."""
+    normal, _ = R.scenarios()["normal"]
+    return {"fixture": normal,
+            "answering": {e: ("idle" if e.startswith("camera.") else "on") for e in normal},
+            "dark": R.scenarios()["dark"][0]}
+
+
 def band_problems(view, spec):
     """For a `band_grid: 24` view, against the frontend's own layout rules
     (ha_layout.py): headings in two-column bands that are not full width (they
     would sit BESIDE their cards), bands that leave empty cells on the wall
-    iPad (24 units) or a phone (12), and cards drawn at a size other than the
-    one their grid_options state (a card minimum overriding the YAML). The
-    shared top bar is not the spec's to size and is skipped."""
-    skip = {i for i, s in enumerate(spec.get("sections", [])) if s.get("topbar")}
+    iPad (24 units) or a phone (12) in any band scenario, and cards drawn at a
+    size other than the one their grid_options state (a card minimum
+    overriding the YAML). The compact top bar these views get is included."""
     heads, holes, clamps = [], [], []
+    scen = band_scenarios()
     for i, s in enumerate(view["sections"]):
-        if i in skip:
-            continue
         span = s.get("column_span", 1)
         for c in s.get("cards", []):
             if c.get("type") == "heading" and span == 2 and L.effective(c)[0] != "full":
                 heads.append(f"section {i}")
             if L.configured(c) != L.effective(c):
                 clamps.append(f"section {i} {c['type']} {L.configured(c)} draws {L.effective(c)}")
-        for where, resolved in (("wall iPad", 2), ("phone", 1)):
-            n = L.section_holes(s, L.units(span, resolved))
-            if n:
-                holes.append(f"section {i}: {n} empty cells on the {where}")
+        for name, states in scen.items():
+            for where, resolved in (("wall iPad", 2), ("phone", 1)):
+                n = L.section_holes(s, L.units(span, resolved), states)
+                if n:
+                    holes.append(f"section {i}: {n} empty cells on the {where} ({name})")
     return heads, holes, clamps
+
+
+def topbar_problems(view, spec, rail_paths):
+    """The shared top bar (components.topbar), which band_problems() skips
+    because no spec sizes it. V3-023, against the frontend's own rules
+    (ha_layout.py):
+
+      * it packs into whole rows on the wall iPad (24 units) and a phone (12);
+      * every cell draws ONE height, so the row is not two heights at once (a
+        named button can never be under two rows — the V3-013 / V3-022 fault);
+      * every rail button is named and at least 3 units wide: a 2-unit button
+        is ~55 px on a phone, narrower than "Cameras" at the label's 16 px;
+      * the current destination is marked (V3 CLAUDE.md): on a rail view
+        exactly one button is inert and tinted, on any other view none is,
+        and every other button navigates.
+    Returns a list of problems; empty means the bar passes."""
+    idx = [i for i, s in enumerate(spec.get("sections", [])) if s.get("topbar")]
+    if not idx:
+        return ["no top bar (Home and the rail must be on every view)"]
+    bar = view["sections"][idx[0]]
+    cards = bar.get("cards", [])
+    out = []
+    for where, n in (("wall iPad", 24), ("phone", 12)):
+        holes = L.section_holes(bar, n)
+        if holes:
+            out.append(f"{holes} empty cells on the {where}")
+    heights = {L.effective(c)[1] for c in cards}
+    if len(heights) != 1 or not all(isinstance(h, int) for h in heights):
+        out.append(f"cells draw at more than one height: {sorted(map(str, heights))}")
+    buttons = [c for c in cards if c.get("type") == "button"]
+    for b in buttons:
+        cols = L.effective(b)[0]
+        if not b.get("show_name", True):
+            out.append(f"rail button {b.get('icon')} has no name")
+        if cols != "full" and cols < 3:
+            out.append(f"rail button {b.get('name')!r} is {cols} units (labels need 3)")
+    current = [b for b in buttons if (b.get("tap_action") or {}).get("action") == "none"]
+    marked = [b for b in buttons if b.get("color")]
+    want = 1 if view["path"] in rail_paths else 0
+    if len(current) != want or current != marked:
+        out.append(f"{len(current)} inert and {len(marked)} tinted rail buttons, want {want} of each, the same one")
+    if any((b.get("tap_action") or {}).get("action") not in ("none", "navigate") for b in buttons):
+        out.append("a rail button does something other than navigate")
+    return out
 
 
 def band_note(view):
@@ -301,8 +353,11 @@ def validate(g: Gate):
             g.check(not small, f"{vt} nothing below columns: 2 (DR-012); columns is a number or full",
                     str([c["grid_options"]["columns"] for c in small]))
             band = next((r.get("band_grid", 12) for r in rep["views"] if r["path"] == v["path"]), 12)
+            spec = B.load_yaml(B.SRC / "views" / f"{v['path']}.yaml")
+            bar = topbar_problems(v, spec, {p for p, _, _ in C.RAIL})
+            g.check(not bar, f"{vt} top bar: whole rows, one height, named rail buttons >= 3 units, "
+                    "current destination marked (V3-023)", str(bar[:4]))
             if band == 24:
-                spec = B.load_yaml(B.SRC / "views" / f"{v['path']}.yaml")
                 heads, holes, clamps = band_problems(v, spec)
                 g.check(not heads, f"{vt} band_grid 24: every two-column band heading is full width", str(heads))
                 g.check(not holes, f"{vt} band_grid 24: every band packs into whole rows on the wall iPad "

@@ -121,6 +121,7 @@ ac.mode_heat_cool: កំដៅ/ត្រជាក់
 ac.room: បន្ទប់
 ac.target: គោលដៅ
 ac.current: "បច្ចុប្បន្ន៖ {mode}"
+ac.parents_name: ម៉ាស៊ីនត្រជាក់ បន្ទប់ឪពុកម្ដាយ
 ac.readonly_note: "V3 បង្ហាញម៉ាស៊ីនត្រជាក់តែសម្រាប់មើល រហូតដល់កិច្ចសន្យាបញ្ជា V3-008 ត្រូវបានអនុម័ត។ ការបញ្ជានៅលើទិដ្ឋភាពបន្ទប់ឪពុកម្ដាយចាស់។"
 ac.open_controls: ការបញ្ជាម៉ាស៊ីនត្រជាក់ (ចាស់)
 
@@ -493,3 +494,12 @@ rs.printer_on: "ម៉ាស៊ីនបោះពុម្ពបើក"
 rs.printer_off: "ម៉ាស៊ីនបោះពុម្ពបិទ"
 rs.freezer: "ទូកក {v}"
 rs.ac: "ម៉ាស៊ីនត្រជាក់ {mode}"
+
+# Cameras and the compact top bar (V3-014)
+app.preview_banner: "កំណែមើលជាមុន"
+cam.no_stream: "Home Assistant មិនទទួលបានវីដេអូទេ"
+cam.battery: "ថ្ម {v}%"
+cam.no_battery: "គ្មានការអានថ្ម"
+cam.privacy_of: "ឯកជនភាព {name}"
+cam.motion_of: "ការចាប់សញ្ញាចលនា {name}"
+cam.live_note: "ចុចលើកាមេរ៉ាដើម្បីមើលផ្ទាល់ក្នុង Home Assistant ដែលអាចពង្រីកពេញអេក្រង់។ ទំព័រកាមេរ៉ានៅក្រោម «ទំព័រផ្សេងទៀត» ប្រើកាត WebRTC Camera ដែលត្រូវការការដំឡើង HACS នោះនៅលើ Green។"

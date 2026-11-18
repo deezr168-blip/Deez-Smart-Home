@@ -10,12 +10,18 @@
 # (scripts/v3/ha_layout.py), so in every `span: 2` band below, `full` is the
 # whole band, 6 is a quarter, 12 is half. The gate checks each band packs
 # into whole rows on both.
+#
+# V3-014 (15/11/26): the front-door camera with a native full-screen tap
+# and a same-size Offline card.
+# V3-024 (preview release candidate): V3-023's named top bar and Home
+# spacing; V3-014's compact bar and equal room heights are superseded.
 path: home
 title: nav.home
 icon: mdi:home-variant-outline
 band_grid: 24
 sections:
-  # BAND 1 — wordmark, clock (DD/MM/YY), in-page rail (shared chrome, unchanged)
+  # BAND 1 — header (title, time above DD/MM/YY, preview marker) and the six
+  # named rail buttons (shared chrome, components.topbar; V3-023, V3-024)
   - topbar: true
 
   # BAND 2 — the render's four pills: Outside, Inside, Home, Monitored.
@@ -95,7 +101,10 @@ sections:
         action: light.turn_off
         target: [light.living_room, light.dining, light.bedroom_bedroom]
         columns: 6
-      - {c: ac_summary, entity: climate.bedroom_parents_room_ac, nav: climate, columns: 6, rows: 2}
+      # V3-023: names WHICH air-con (it read only "Current: Cool") and fits a
+      # button's slot in every locale: the name, then mode and room temperature.
+      - {c: ac_summary, entity: climate.bedroom_parents_room_ac, nav: climate, columns: 6, rows: 2,
+         name_key: ac.parents_name, compact: true}
 
   # BAND 5 — rooms | shopping list. Each room says what its sensors say, as
   # the render's room rows and V2 Home's room cards do; a tap opens the room.
@@ -152,12 +161,16 @@ sections:
   - span: 1
     heading: h.shopping
     cards:
-      - {c: todo, entity: todo.shopping_list, rows: 6}
+      # V3-023: five rows sits level with the Rooms column in Cantonese, the
+      # priority locale. V3-024 measured V3-014's alternative (every room two
+      # rows, the list eight): no hole here, but Home ~200 px taller on the wall
+      # iPad and ~410 px on a phone, so the room lines stay auto-height.
+      - {c: todo, entity: todo.shopping_list, rows: 5}
 
   # BAND 6 — right now | who's home. The render's left column: the weather,
-  # then the two monitored plugs and the solar forecast with the footnote
-  # that says what "monitored" means. Its middle column: the people, then the
-  # Parents' room occupancy card.
+  # then the two monitored plugs with the footnote that says what "monitored"
+  # means inside the card. Its middle column: the people, then the Parents'
+  # room occupancy card. (Solar expected today moved to Energy now, V3-023.)
   - span: 1
     heading: h.right_now
     cards:
@@ -169,20 +182,21 @@ sections:
         total: sensor.casa_monitored_power
         plugs: [sensor.g_monitor_freezer_p110m_current_consumption, sensor.r_energy_monitor_p110m_current_consumption]
         detail_key: energy.plugs_which
+        note_key: energy.monitored_note   # V3-023: the footnote, inside the card it qualifies
         nav: energy
-      - {c: sensor_tile, entity: sensor.casa_solar_expected_today, name: {t: energy.solar_expected}, columns: 12, nav: energy}
-      - {c: note, key: energy.monitored_note}
   - span: 1
     heading: h.whos_home
     cards:
-      - {c: person_tile, entity: person.raymond_du, rows: 3}
-      - {c: person_tile, entity: person.vinh_du, rows: 3}
-      - {c: person_tile, entity: person.ai_q_huang, rows: 3}
+      # V3-023: two rows, a vertical tile's own minimum and the render's size;
+      # three rows left each card about half empty.
+      - {c: person_tile, entity: person.raymond_du, rows: 2}
+      - {c: person_tile, entity: person.vinh_du, rows: 2}
+      - {c: person_tile, entity: person.ai_q_huang, rows: 2}
       - c: sensor_tile
         entity: binary_sensor.bedroom_parents_room_ac_room_occupied
         name: {t: room.parents}
         columns: 12
-        rows: 2      # V2's size; pairs Who's home with Right now's height
+        rows: 2      # V2's size; three rows (V3-014) over-fills now people are two rows (V3-024)
         state_content: [state, last_changed]
 
   # BAND 7 — security, full width: what each camera says beside the front
@@ -200,7 +214,10 @@ sections:
           - {entity: camera.tapo_c420_south_wall_hd_stream_direct, name_key: room.south_wall}
           - {entity: camera.tapo_c200_stockroom_hd_stream_direct, name_key: room.stockroom}
           - {entity: camera.smart_pet_feeder, name_key: room.pet_feeder}
-      - {c: camera_card, entity: camera.front_door_live_view, name_key: room.front_door, subview: camera-front-door, columns: 12}
+      # A tap opens Home Assistant's own live view (no custom card needed); a
+      # same-size Offline card replaces the picture while the camera is dark.
+      - {c: camera_card, entity: camera.front_door_live_view, name_key: room.front_door, columns: 12,
+         full_screen: more-info, offline: true, battery: sensor.front_door_battery}
       - {c: sensor_tile, entity: binary_sensor.f_contact_sensor_door, name: {t: room.front_door}, columns: 6, nav: security, vertical: true}
       - {c: sensor_tile, entity: binary_sensor.m_contact_sensor_door, name: {t: room.parents}, columns: 6, nav: security, vertical: true}
       - {c: sensor_tile, entity: binary_sensor.b_contact_sensor_door, name: {t: room.backyard}, columns: 6, nav: security, vertical: true}
@@ -214,15 +231,29 @@ sections:
       - {c: sensor_tile, entity: sensor.powerpal_gateway_powerpal_daily_energy, name: {t: energy.used_today}, nav: energy}
       - {c: sensor_tile, entity: sensor.primo_5_0_1_1_ac_power, name: {t: energy.solar_now}, nav: energy}
       - {c: sensor_tile, entity: sensor.primo_5_0_1_1_energy_day, name: {t: energy.solar_today}, nav: energy}
+      # V3-023: beside Solar now and Solar today, where it reads as the day's
+      # forecast; in Right now it made that column ~100 px taller than Who's home.
+      - {c: sensor_tile, entity: sensor.casa_solar_expected_today, name: {t: energy.solar_expected}, columns: 12, nav: energy}
       - {c: note, key: energy.two_circuits}
   - span: 1
     heading: h.climate_now
     cards:
-      - {c: ac_summary, entity: climate.bedroom_parents_room_ac, nav: climate}
+      # V3-023 names which air-con. Auto height (V3-024): with the name line,
+      # V3-014's fixed two rows overflowed in Khmer on a phone.
+      - {c: ac_summary, entity: climate.bedroom_parents_room_ac, nav: climate, name_key: ac.parents_name}
       - {c: sensor_tile, entity: sensor.living_room_living_hue_hue_sensor_temperature, name: {t: room.living}, nav: climate}
       - {c: sensor_tile, entity: sensor.bedroom_motion_sensor_temperature, name: {t: room.parents}, nav: climate}
+      # V3-022: every room temperature the house has, so the tiles fill two whole
+      # rows (a tile cannot be under 6 units). Dining's sensor is exported as
+      # "Dining Room Motion Sensor Temperature" (area Dining); Ray's room's
+      # FP300 was unavailable in the 05/09 export and draws No data, not hidden.
+      - {c: sensor_tile, entity: sensor.living_room_living_room_temperature, name: {t: room.dining}, nav: climate}
+      - {c: sensor_tile, entity: sensor.presence_multi_sensor_fp300_temperature, name: {t: room.ray}, nav: climate}
 
-  # BAND 9 — every board by name (rail is six glyphs); four across on the wall
+  # BAND 9 — every board by name; four across on the wall, two on a phone.
+  # Eight cards at 6 units fill whole rows on both. (PR #21's 4-unit, six-across
+  # band needed twelve cards, two of them Weather and Rubbish collection, which
+  # this release defers — V3-024.)
   - c: more_boards
     classic_of: home
     band24: true
