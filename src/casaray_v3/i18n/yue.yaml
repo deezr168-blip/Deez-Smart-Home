@@ -160,13 +160,13 @@ weather.cond.snowy-rainy: 雨夾雪
 weather.cond.sunny: 天晴
 weather.cond.windy: 大風
 weather.cond.windy-variant: 大風
-weather.unverified_note: "weather.forecast_home 而家仲answering唔answering、同埋佢支援嗰啲預報類型，最後一次確認係05/09/26嗰份匯出，呢個session未有喺live嘅系統上再核實過。呢版暫時當未核實，等核實咗先當準。"
+weather.unverified_note: "天氣資料仲未同實際系統核實過。"
 
 # Rubbish Collection page (CR-V3-20) — draft translation, pending owner/native-speaker review.
 nav.rubbish: 垃圾收集
 h.rubbish_collection: 收垃圾時間表
-rubbish.not_configured: "收垃圾時間表未設定 — 呢部機暫時冇任何實體可以話到你知垃圾、回收或者綠色垃圾嘅收集日期。"
-rubbish.setup_path: "一旦加咗同核實咗議會或者人手維護嘅下次收垃圾日期來源，呢版就會顯示出嚟，Home版都可以喺收垃圾前一晚同埋當日朝早提你。而家仲未有，所以乜都唔會靠估。"
+rubbish.not_configured: "收垃圾時間表未連接或未核實。"
+rubbish.setup_path: "設定同核實之後，呢版就會顯示實際日期。"
 
 lang.label: 語言
 

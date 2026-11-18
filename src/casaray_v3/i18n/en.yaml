@@ -159,15 +159,15 @@ weather.cond.snowy-rainy: Snow and rain
 weather.cond.sunny: Sunny
 weather.cond.windy: Windy
 weather.cond.windy-variant: Windy
-weather.unverified_note: "weather.forecast_home's current availability and which forecast types it supports were last confirmed historically, in the 05/09/26 export, and have not been re-verified live from this session. Treat this page as provisional until checked against the running instance."
+weather.unverified_note: "Weather readings haven't been checked against the live system yet."
 
 # Rubbish Collection page (CR-V3-20) — no collection-schedule entity exists
 # on this instance (checked against docs/live/states_export_2026-09-05.txt),
 # so this page states that plainly rather than guessing a bin or a weekday.
 nav.rubbish: Rubbish collection
 h.rubbish_collection: Collection schedule
-rubbish.not_configured: "Collection schedule not configured — no entity on this instance reports a rubbish, recycling or green-waste collection date yet."
-rubbish.setup_path: "Once a council or manually-kept source for the next collection date is added and verified, this page shows it, and Home can carry a reminder the evening before and the morning of collection. Nothing is guessed in the meantime."
+rubbish.not_configured: "Collection schedule not connected or verified."
+rubbish.setup_path: "This will show the real dates once it's set up and checked."
 
 lang.label: Language
 

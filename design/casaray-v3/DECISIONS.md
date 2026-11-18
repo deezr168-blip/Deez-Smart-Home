@@ -6,6 +6,88 @@ and `ha-deploy` are unaffected by everything here.
 
 ---
 
+## V3-021 · 18/11/26 · PR #21 review fixes (ChatGPT review on the V3-020 diff)
+
+**Status:** owner-relayed review, implemented on the same
+`feature/casaray-v3/weather-rubbish` branch, same PR #21 (still draft, no
+merge). DEVELOPMENT ONLY — NOT DEPLOYED.
+
+1. **Automation schema correction.** `docs/casaray-v3/proposals/rubbish_reminder_automation.yaml`
+   used `enabled: false` on both automations. That is not a key the
+   automation schema reads — Home Assistant does not reject an unknown key
+   on an automation item, so this would have been silently ignored rather
+   than erroring, and neither automation would actually have started off.
+   Replaced with `initial_state: false`, the schema's real supported
+   mechanism for a default-off YAML automation's startup/reload state. The
+   header's explanation was rewritten to describe what that key actually
+   does (startup/reload state only) versus the separate, independent
+   `input_boolean` condition gate, rather than conflating the two.
+   **Not covered by an actual HA schema validator** — this environment has
+   no `hass` CLI and no reachable instance (`ha_validate.sh` section 8 is a
+   standing SKIP for exactly this reason), so the correction rests on
+   documented Home Assistant automation-config behaviour, not a live or
+   CLI-run schema check. That check still needs to happen once there is a
+   reachable instance, before this file is ever installed.
+2. **Exact-equality rewrite of the "unchanged when unconfigured" test.**
+   The original `test_empty_new_views_yields_unchanged_output` checked that
+   every line of a `new_views`-stripped build appeared, in order, somewhere
+   in the real build — a subsequence check. That passes even when a card
+   was duplicated or an extra one silently inserted into an existing view,
+   because every original line is still present, just with extras
+   interleaved. Rewritten to parse both builds and compare per-view dict
+   structures for exact equality, plus an independently-derived expected
+   view count (from `len(v2_views) + len(native)` computed directly off
+   `dashboards/casaray_v2.yaml` and the manifest, not from running the
+   generator a second time). A new test,
+   `test_exact_comparison_rejects_duplicated_or_inserted_card`, proves the
+   new check has teeth: it duplicates one card in a cloned `home` view and
+   confirms the same comparison helper raises, rather than merely asserting
+   `!=` on hand-built dicts.
+3. **Cantonese correction.** `weather.unverified_note` in `yue.yaml` had an
+   actual bug — two English words ("answering") left embedded mid-sentence
+   from an earlier draft — not a style issue. Fixed, and all three
+   family-facing strings (`weather.unverified_note`, `rubbish.not_configured`,
+   `rubbish.setup_path`) shortened across en/yue/km: what the household sees
+   on the dashboard is now a short, plain sentence with no entity IDs, dates
+   or technical reasoning in it. That detail — `weather.forecast_home`, the
+   05/09/26 export, the entity contract — stays in this file, the view
+   source comments and the automation proposal's header, which is where an
+   implementer needs it and a family member reading the dashboard does not.
+4. **Rubbish wording.** `rubbish.not_configured` changed to "Collection
+   schedule not connected or verified." (and the matching yue/km
+   translations), replacing a sentence that stated — in the user-facing
+   string — that no entity exists, which is an inference from a single
+   stale export, not a current fact a family-facing card should assert.
+   The page's source-file comments still state plainly, as documentation,
+   that no such entity was found in the 05/09/26 export; only the
+   dashboard string itself was softened to not overclaim from that.
+5. **`weather_detail()` no longer trusts a dark entity's leftover
+   attributes.** It read `state_attr(entity, 'temperature')` /
+   `...'humidity')` and showed them whenever the ATTRIBUTE value itself
+   was numeric, on the documented assumption (`deg_expr()`'s own docstring)
+   that Home Assistant always clears attributes once an entity goes
+   unavailable/unknown. That is not guaranteed, and the condition word
+   (`word_expr()`) was already gated on the entity's own state first,
+   which temperature/humidity were not — an inconsistency between two
+   readings on the same card. Both readings now check
+   `states(entity) not in ['unavailable','unknown','none','']` before ever
+   looking at the attribute, matching the pattern `word_expr()` already
+   uses. Two new regression tests
+   (`test_weather_detail_suppresses_stale_attributes_when_entity_dark` and
+   its positive control) render the card with the entity `unavailable` but
+   the attributes still carrying plausible numbers (21.3°, 55%) and confirm
+   "No data" is shown for both — this is an offline Jinja render
+   (`scripts/v3/render_check.py`), proof of what the template says, not
+   proof of how the live card draws.
+
+None of this changes scope, the entity contract, the more_boards padding
+reasoning, or the task-register scope conflict recorded under V3-020 above —
+those stand as written. Build/validate/test run again clean after these
+fixes: `build_dashboard.py` (48 views × 4 locales, 0 missing), 
+`validate_dashboard.py` (1569 passed, 0 failed), `python3 -m unittest
+discover -s tests/v3` (full suite, including the rewritten and two new
+cases), `ha_validate.sh` (VALIDATION PASSED, 8 sections).
+
 ## V3-020 · 18/11/26 · Generator extended for pages with no V2 equivalent; Weather and Rubbish Collection added
 
 **Status:** owner instruction (18/11/26), implemented on

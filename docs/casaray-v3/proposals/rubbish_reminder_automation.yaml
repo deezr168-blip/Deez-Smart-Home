@@ -24,13 +24,22 @@
 #      never flipped on from a commit.
 #
 # WHY IT IS SAFE TO COMMIT AS-IS
-#   - the helper below defaults OFF, and the automations' own first condition
-#     re-checks it every run (belt-and-braces alongside the `enabled` key, in
-#     case this file is ever copied without reading this header);
-#   - `enabled: false` is set explicitly on both automations — Home
-#     Assistant's automation schema honours this, so even once copied into
-#     packages/ and reloaded, neither fires until an owner flips it (in the
-#     UI, which writes its own config entry — not by editing this file);
+#   - CORRECTED (CR-V3-20, ChatGPT review on PR #21): `enabled:` is not a key
+#     the automation schema reads; the earlier draft of this file used it and
+#     it would have been silently ignored (HA does not reject an unknown key
+#     on an automation item, so this would NOT have raised a config error —
+#     it just wouldn't have done anything). The actual supported mechanism is
+#     `initial_state: false`, used below: it sets the automation's on/off
+#     state at Home Assistant startup and at a config reload. From then, the
+#     automation's own on/off switch is an ordinary entity, toggled the same
+#     way as any other automation (the UI, or automation.turn_on/turn_off) —
+#     independently of anything in this file, so re-reading this file later
+#     does not reset a switch someone has already turned on;
+#   - the `input_boolean` below is a SECOND, independent gate: even if the
+#     automation's own switch were ever on, the condition still requires
+#     casaray_rubbish_reminders to be "on" before the action runs. Two
+#     separate things have to agree before either automation can fire, and
+#     this file only sets one of them to a starting state, never flips it;
 #   - every condition that reads the hypothetical entity treats
 #     unavailable/unknown as "do nothing", never as "yes, it's collection
 #     day" — a missing entity fails closed;
@@ -60,7 +69,7 @@ automation:
       sensor.rubbish_collection_next_date (or whatever verified entity
       replaces it) to exist and report tomorrow's date; otherwise the
       condition below is false and nothing happens.
-    enabled: false   # CR-V3-20 — do not flip in a commit; see header
+    initial_state: false   # CR-V3-20 — the startup state only; see header above
     mode: single
     trigger:
       - platform: time
@@ -92,7 +101,7 @@ automation:
     description: >-
       Morning-of nudge, same entity contract and fail-closed condition as the
       evening-before automation above.
-    enabled: false   # CR-V3-20 — do not flip in a commit; see header
+    initial_state: false   # CR-V3-20 — the startup state only; see header above
     mode: single
     trigger:
       - platform: time
