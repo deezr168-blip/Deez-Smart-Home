@@ -95,7 +95,15 @@ still draft. DEVELOPMENT ONLY — NOT DEPLOYED; no merge, no live change.
    (four 120 px rows against ~85 px auto lines) they would add roughly
    140 px on a phone, for alignment the Shopping list already gives in
    Cantonese. An estimate, not a measurement.
-8. **Still open — needs a device or the owner:**
+8. **Gated, so it cannot regress silently.** `band_problems()` skips the
+   top bar by design ("not the spec's to size"), which is how V3-022's row
+   passed. `validate_dashboard.py` now runs `topbar_problems()` on every
+   native page in every locale (+80 checks, 1649 passed): whole rows on the
+   wall and a phone, one cell height, every rail button named and at least
+   3 units, and on a rail page exactly one inert, tinted button (none
+   elsewhere). `tests/v3/test_topbar_home_v3_023.py` (12 tests) pins it,
+   including a test that the gate rejects V3-022's bar on all three counts.
+9. **Still open — needs a device or the owner:**
    - Nothing here was seen in Home Assistant. Typography, the amber icon,
      the header fit and every height above are from the pinned source and a
      simulation.
