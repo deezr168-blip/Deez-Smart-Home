@@ -6,6 +6,133 @@ and `ha-deploy` are unaffected by everything here.
 
 ---
 
+## V3-020 · 18/11/26 · Generator extended for pages with no V2 equivalent; Weather and Rubbish Collection added
+
+**Status:** owner instruction (18/11/26), implemented on
+`feature/casaray-v3/weather-rubbish`, branched from `feature/casaray-v3-build`
+at `777f836`. DEVELOPMENT ONLY — NOT DEPLOYED.
+
+**Evidence-handling correction, carried forward from this point on.** The
+owner corrected two framings in an earlier reply this same session: repository
+deployment notes (e.g. `docs/casaray-v3/BUILD_STATUS.md` saying V3 "is not
+registered, synced, reloaded or seen on any device") cannot disprove the
+owner's own report that a V3 dashboard is live on a device — both are stated
+as independently unverified from this offline session, never as one
+disproving the other. Likewise `weather.forecast_home`'s presence, with
+availability `ok`, in `docs/live/states_export_2026-09-05.txt` proves only
+that it existed on 05/09/26; it is not evidence of today's availability or of
+which forecast types it serves. Both caveats are written into
+`src/casaray_v3/i18n/en.yaml`'s `weather.unverified_note` (and its yue/km
+drafts) and onto the Weather page itself, not only here.
+
+1. **Generator extended with a `new_views:` manifest key.** Until now
+   `scripts/v3/build_dashboard.py` could only ever rebuild a path that already
+   existed in `dashboards/casaray_v2.yaml` — a `native:` entry for a
+   non-existent V2 path would silently never be emitted; there was no code
+   path for a genuinely new page. `new_views:` (manifest.yaml) lists paths
+   with no V2 equivalent; the build validates each one up front (must have a
+   source file, must not collide with an existing V2 path, must not also be
+   in `native:`, must not start with the reserved `v2-` prefix, no
+   duplicates) and appends them last, per locale, so existing output is
+   byte-identical when the key is empty or absent — proved by
+   `tests/v3/test_new_views.py::test_empty_new_views_yields_unchanged_output`,
+   which rebuilds with the key stripped and checks every line of the
+   unconfigured build appears, in order, in the real one.
+   `scripts/v3/validate_dashboard.py`'s safety/geometry/honesty gate filter
+   (`native = [...]`) was broadened to include `new_views` paths too — a new
+   page is not a lower-trust path through that gate; missing this would have
+   silently excluded Weather and Rubbish Collection from every HVAC,
+   protected-switch, native-card-type and band-packing check the existing
+   boards get.
+2. **Weather page** (`src/casaray_v3/views/weather.yaml`): current
+   conditions and daily forecast only, both from `weather.forecast_home`
+   (provisional — see the evidence-handling note above). HA core's fixed
+   `ATTR_CONDITION_*` vocabulary is translated (`weather.cond.*`, 15 keys),
+   not invented; `weather_detail()` (new in `scripts/v3/components.py`) reads
+   unavailable/unknown as explicit branches rather than trusting the native
+   `weather-forecast` card's own rendering. No radar, UV or any other reading
+   — no entity exists for them. A build-time bug in this component double
+   translated every condition word (pre-resolving the key, then passing the
+   resolved text back into `word_expr()`, which translates its own values) —
+   harmless in the rendered output but it logged 15 false "missing" keys per
+   locale in the build report; fixed by passing the keys through untouched.
+3. **Rubbish Collection page** (`src/casaray_v3/views/rubbish-collection.yaml`):
+   no entity of any kind exists in the states export for a bin, a collection
+   day or a council schedule, so the page states "not configured" and nothing
+   else — no invented sensor ID, date, bin service or weekday. The future
+   entity contract (one entity reporting the next collection date, optionally
+   which bin) is documented on the page itself and is the same contract the
+   proposed Home reminder (below) is written against.
+4. **No conditional Home reminder was wired in.** `shown_when()` already
+   exists and is the right component for "a card that appears only when valid
+   data exists," but wiring it needs a real entity, and none exists. Rather
+   than invent one or leave the requirement half-done, the entity contract is
+   documented (point 3) and a reminder automation is drafted but not
+   installed: `docs/casaray-v3/proposals/rubbish_reminder_automation.yaml`,
+   two `time`-triggered automations (18:00 the evening before, 07:00 the
+   collection morning, both evaluated in Home Assistant's own configured
+   Australia/Melbourne timezone) gated by a default-off `input_boolean` and
+   `enabled: false`, both reading the hypothetical
+   `sensor.rubbish_collection_next_date` with unavailable/unknown treated as
+   "do nothing." It lives under `docs/casaray-v3/`, not `design/casaray-v3/`
+   or `packages/` — the latter is auto-included by Home Assistant's own
+   `packages: !include_dir_named packages`, and a drafted-not-installed file
+   has no business sitting in a directory that loads itself.
+5. **Translations.** `en.yaml` is the reference catalogue (all keys land
+   there). `yue.yaml` (priority — Traditional, HK Cantonese) and `km.yaml`
+   got full draft translations for every new key, pending owner or
+   native-speaker review — flagged here rather than presented as verified.
+   `zh-Hans.yaml` was deliberately left to its existing English-fallback
+   convention: that file's own header says it is "partial on purpose,"
+   reusing only vocabulary already established in
+   `dashboards/casaray_v2.yaml`, and V2 has no weather or rubbish-collection
+   page to borrow a Simplified term from — inventing one would depart from
+   the file's own stated convention, not follow it.
+6. **Home's `more_boards` band needed four real links, not two, to stay
+   valid — this was a real gate, not a style note.** Linking only the two new
+   pages took the band from 8 items (7 existing + the V2 classic-copy link, a
+   clean multiple of four) to 10, and `validate_dashboard.py`'s band-packing
+   check — a literal simulation of Home Assistant's own CSS grid packing
+   (`scripts/v3/ha_layout.py`, read from the pinned frontend source, the same
+   method behind V3-013) — failed on all four locales with a genuine 24-cell
+   hole in the last row. Rather than pad with an invented filler tile (a
+   blank clickable-to-nothing button would itself be dishonest content), two
+   more *real, already-existing* boards were added: `lighting` (which turned
+   out to have no other Home navigation target at all — One tap only fires
+   lighting scenes, it never opens the Lighting board itself, a genuine
+   pre-existing gap this surfaced) and `rooms` (duplicates the "All rooms"
+   room_tile the same way `alerts.yaml`'s own `more_boards` already duplicates
+   links — security, energy, network — that Home also reaches elsewhere; an
+   established pattern in this codebase, not an invented one). 11 items +
+   classic_of = 12, a clean multiple of four; the validation gate now passes
+   with 0 failures on all four locales.
+7. **`entity_matrix()` left native-only, deliberately.** It is not extended
+   to cover `kind: "new"` rows; Weather and Rubbish Collection have no V2
+   migration to track (there is nothing to migrate from), so there is nothing
+   for that report to usefully say about them. `view_inventory()` and the
+   `unverified`/`dark_at_export` reporting, which are generic, do cover the
+   two new pages correctly.
+8. **Scope conflict surfaced, not resolved.** The owner's standing
+   instruction to "update the established task register" names
+   `docs/project-tasks/TASK_REGISTER.md` / `DECISION_HISTORY.md`, but
+   `session-orient --scope` on this branch reports those paths outside
+   `feature/casaray-v3/weather-rubbish`'s `MAY WRITE` scope. Per the root
+   `CLAUDE.md`'s own Standing Rule ("a conflict between two governing
+   instructions is not a safe ambiguity to resolve unilaterally"), this is
+   reported to the owner rather than silently written to or silently
+   skipped.
+
+Build and validation, this batch: `python3 scripts/v3/build_dashboard.py`
+(48 views × 4 locales, 0 fallback for en/yue/km, 0 missing keys for every
+locale); `python3 scripts/v3/validate_dashboard.py` (1569 passed, 0 failed,
+33 notes — all pre-existing `band_grid`-24 and dark-at-export notes, in the
+same shape every other non-Home native view already carries);
+`python3 -m unittest discover -s tests/v3` (full suite, including nine new
+`tests/v3/test_new_views.py` cases); `bash scripts/ha_validate.sh`
+(VALIDATION PASSED, 8 sections — the zh-Hans bilingual-heading warnings on
+the two new pages are the same pre-existing WARN class every other zh-Hans
+view already carries from its English-fallback convention, not a new one).
+
 ## V3-013 · 14/11/26 · Home against the 14/09 wall render; two-column bands sized for the grid Home Assistant draws
 
 **Status:** owner request (14/11/26), implemented on

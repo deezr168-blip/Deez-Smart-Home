@@ -1,0 +1,116 @@
+# CasaRay rubbish-collection reminder — PROPOSED, NOT INSTALLED (CR-V3-20,
+# 18/11/26). This file is NOT under packages/ and configuration.yaml does not
+# include this directory, so nothing here loads into the live instance just
+# by existing in the repository. It is a drafted, reviewable automation, not
+# a deployed one.
+#
+# WHY IT CANNOT BE COMPLETE YET
+# docs/live/states_export_2026-09-05.txt has no rubbish, recycling, bin or
+# council-collection entity of any kind, and the owner's standing rule is
+# never to invent one. So the trigger/condition below point at
+# `sensor.rubbish_collection_next_date` — a HYPOTHETICAL entity, not a
+# verified one — exactly the contract documented on the Weather/Rubbish
+# Collection pages (src/casaray_v3/views/rubbish-collection.yaml) and in
+# design/casaray-v3/DECISIONS.md CR-V3-20. Before this file is installed
+# anywhere:
+#   1. a real entity reporting the next collection date must exist and be
+#      verified live (GetLiveContext or a fresh states export) — correct the
+#      entity_id below to match it, it will not be this placeholder;
+#   2. the Rubbish Collection page's "not configured" card is replaced with
+#      the real reading first, so the dashboard and the reminder agree;
+#   3. this file is copied into packages/ (or merged into
+#      packages/casaray_automation.yaml) and `casaray_rubbish_reminders`
+#      below is switched on by the owner, in the dashboard or in the HA UI —
+#      never flipped on from a commit.
+#
+# WHY IT IS SAFE TO COMMIT AS-IS
+#   - the helper below defaults OFF, and the automations' own first condition
+#     re-checks it every run (belt-and-braces alongside the `enabled` key, in
+#     case this file is ever copied without reading this header);
+#   - `enabled: false` is set explicitly on both automations — Home
+#     Assistant's automation schema honours this, so even once copied into
+#     packages/ and reloaded, neither fires until an owner flips it (in the
+#     UI, which writes its own config entry — not by editing this file);
+#   - every condition that reads the hypothetical entity treats
+#     unavailable/unknown as "do nothing", never as "yes, it's collection
+#     day" — a missing entity fails closed;
+#   - neither automation controls a device, light, switch, climate entity or
+#     anything else — persistent_notification and (optionally) the existing
+#     notify path only.
+#
+# Mode: Melbourne is UTC+10/UTC+11 (AEST/AEDT) with Home Assistant's own
+# daylight-saving handling; "18:00" and "07:00" below are local time via the
+# `time` trigger, which Home Assistant always evaluates in its configured
+# timezone (Australia/Melbourne, confirmed in CLAUDE.md), not UTC — so no
+# separate DST adjustment is written here.
+
+input_boolean:
+  casaray_rubbish_reminders:
+    name: CasaRay rubbish collection reminders
+    icon: mdi:trash-can-clock
+    # Default OFF (CR-V3-20): stays off until a verified collection-date
+    # entity exists, is wired into rubbish-collection.yaml, and the owner
+    # turns this on deliberately. Never flip this in a commit.
+
+automation:
+  - id: casaray_rubbish_reminder_evening_before
+    alias: "CasaRay — rubbish reminder (evening before)"
+    description: >-
+      Evening-before nudge for the next day's collection. Needs
+      sensor.rubbish_collection_next_date (or whatever verified entity
+      replaces it) to exist and report tomorrow's date; otherwise the
+      condition below is false and nothing happens.
+    enabled: false   # CR-V3-20 — do not flip in a commit; see header
+    mode: single
+    trigger:
+      - platform: time
+        at: "18:00:00"
+    condition:
+      - condition: state
+        entity_id: input_boolean.casaray_rubbish_reminders
+        state: "on"
+      # Fails closed: unknown/unavailable/missing entity is never read as
+      # "yes, collection is tomorrow."
+      - condition: template
+        value_template: >-
+          {{ states('sensor.rubbish_collection_next_date') not in
+             ['unknown', 'unavailable', 'none', ''] and
+             states('sensor.rubbish_collection_next_date') is not none and
+             (as_datetime(states('sensor.rubbish_collection_next_date')).date()
+              == (now() + timedelta(days=1)).date()) }}
+    action:
+      - service: persistent_notification.create
+        data:
+          notification_id: casaray_rubbish_reminder
+          title: "Rubbish collection tomorrow"
+          message: >-
+            Bins go out tonight — collection is tomorrow
+            ({{ states('sensor.rubbish_collection_next_date') }}).
+
+  - id: casaray_rubbish_reminder_collection_morning
+    alias: "CasaRay — rubbish reminder (collection morning)"
+    description: >-
+      Morning-of nudge, same entity contract and fail-closed condition as the
+      evening-before automation above.
+    enabled: false   # CR-V3-20 — do not flip in a commit; see header
+    mode: single
+    trigger:
+      - platform: time
+        at: "07:00:00"
+    condition:
+      - condition: state
+        entity_id: input_boolean.casaray_rubbish_reminders
+        state: "on"
+      - condition: template
+        value_template: >-
+          {{ states('sensor.rubbish_collection_next_date') not in
+             ['unknown', 'unavailable', 'none', ''] and
+             states('sensor.rubbish_collection_next_date') is not none and
+             (as_datetime(states('sensor.rubbish_collection_next_date')).date()
+              == now().date()) }}
+    action:
+      - service: persistent_notification.create
+        data:
+          notification_id: casaray_rubbish_reminder
+          title: "Rubbish collection today"
+          message: "Collection is today — bins out if they aren't already."
