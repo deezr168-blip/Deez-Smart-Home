@@ -5,6 +5,12 @@ on any device. Live Home Assistant was not used to build or validate V3.
 
 Branch: `feature/casaray-v3-build` (from `casaray-v3-design` `27f3fed`).
 
+**Preview release candidate 1 (18/11/26, NOT DEPLOYED):** PR #16's cameras and
+PR #21's named navigation and Home refinements, integrated on
+`feature/casaray-v3-preview-rc1`. Weather, Rubbish collection and the rubbish
+reminder are deferred. Record, hashes and preflight:
+`RELEASE_CANDIDATE_RC1.md`; decisions: `design/casaray-v3/DECISIONS.md` V3-024.
+
 ## View status (priority order)
 
 | # | View | Status | Notes |

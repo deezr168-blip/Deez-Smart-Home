@@ -21,6 +21,11 @@ imported. It counts as deployed only after F verifies it.
   on `recovery/phase0-diagnostics`.
 Live state and the restart answer are in the two sections after the browser-only path.
 
+**Candidate prepared, not approved (18/11/26):** preview release candidate 1
+(V3-024). Its hashes, the preflight before it and its U3/U4 checks are in
+`RELEASE_CANDIDATE_RC1.md`. It uses this runbook's restart-free update and rollback
+unchanged; nothing below is altered by it.
+
 **Update approved, not yet applied (14/11/26):** the V3-013 Home upgrade. The owner approved
 the design, the merge (`7f16e79`) and deploying it. Steps U1–U4 are in the next section. It
 counts as deployed only after Ray reports U4 from the wall iPad.
