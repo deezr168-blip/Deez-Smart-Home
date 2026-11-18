@@ -91,8 +91,9 @@ class HomeBands(unittest.TestCase):
         self.assertTrue(V.band_problems(v, SPEC)[2], "a silently clamped button went unseen")
 
     def test_other_views_are_untouched_by_the_option(self):
+        reviewed = {"home": "V3-013", "cameras": "V3-014"}   # each opted in with its own review
         for p in MAN["native"]:
-            if p == "home":
+            if p in reviewed:
                 continue
             spec = B.load_yaml(B.SRC / "views" / f"{p}.yaml")
             self.assertNotIn("band_grid", spec, f"{p} opted in without a review of its own")

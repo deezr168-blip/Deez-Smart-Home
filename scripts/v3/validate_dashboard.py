@@ -186,29 +186,91 @@ def tile_safety(view, v2_by_path, controls, old_url, new_url):
     return bad, prot
 
 
+def band_scenarios():
+    """State sets a band must pack under: the fixture, everything answering,
+    everything dark. Cards hidden by their visibility take no space."""
+    normal, _ = R.scenarios()["normal"]
+    return {"fixture": normal,
+            "answering": {e: ("idle" if e.startswith("camera.") else "on") for e in normal},
+            "dark": R.scenarios()["dark"][0]}
+
+
 def band_problems(view, spec):
     """For a `band_grid: 24` view, against the frontend's own layout rules
     (ha_layout.py): headings in two-column bands that are not full width (they
     would sit BESIDE their cards), bands that leave empty cells on the wall
-    iPad (24 units) or a phone (12), and cards drawn at a size other than the
-    one their grid_options state (a card minimum overriding the YAML). The
-    shared top bar is not the spec's to size and is skipped."""
-    skip = {i for i, s in enumerate(spec.get("sections", [])) if s.get("topbar")}
+    iPad (24 units) or a phone (12) in any band scenario, and cards drawn at a
+    size other than the one their grid_options state (a card minimum
+    overriding the YAML). The shared top bar is included (and has its own
+    gate, topbar_problems, on every native view)."""
     heads, holes, clamps = [], [], []
+    scen = band_scenarios()
     for i, s in enumerate(view["sections"]):
-        if i in skip:
-            continue
         span = s.get("column_span", 1)
         for c in s.get("cards", []):
             if c.get("type") == "heading" and span == 2 and L.effective(c)[0] != "full":
                 heads.append(f"section {i}")
             if L.configured(c) != L.effective(c):
                 clamps.append(f"section {i} {c['type']} {L.configured(c)} draws {L.effective(c)}")
-        for where, resolved in (("wall iPad", 2), ("phone", 1)):
-            n = L.section_holes(s, L.units(span, resolved))
-            if n:
-                holes.append(f"section {i}: {n} empty cells on the {where}")
+        for name, states in scen.items():
+            for where, resolved in (("wall iPad", 2), ("phone", 1)):
+                n = L.section_holes(s, L.units(span, resolved), states)
+                if n:
+                    holes.append(f"section {i}: {n} empty cells on the {where} ({name})")
     return heads, holes, clamps
+
+
+def topbar_problems(view):
+    """V3-024: the shared top bar on a native view, against the frontend's own
+    layout rules (ha_layout.py). Kiosk mode hides Home Assistant's chrome, so
+    this bar is the way around the dashboard; a regression here strands a page.
+
+    Checks: the header holds the time above a DD/MM/YY date; the six rail
+    destinations, in order, each NAMED and at least 3 units wide (2 units
+    clipped labels on a phone); every cell one height; whole rows on the wall
+    iPad (24 units) and a phone (12); on a rail destination exactly one button
+    inert and tinted (the current page), elsewhere none; every other button
+    navigates to its own page."""
+    bad = []
+    if not view.get("sections"):
+        return ["no sections"]
+    top = view["sections"][0]
+    cards = top.get("cards", [])
+    if top.get("column_span") != 2:
+        bad.append("top bar is not a two-column band")
+    head = cards[0] if cards else {}
+    body = head.get("content", "")
+    if head.get("type") != "markdown" or not head.get("text_only"):
+        bad.append("first card is not the text-only header")
+    t, d = body.find("%H:%M"), body.find("%d/%m/%y")
+    if t < 0 or d < 0 or t > d or "%Y" in body:
+        bad.append("header lacks the time above a DD/MM/YY date")
+    btns = [c for c in cards if c.get("type") == "button"]
+    paths = [p for p, _, _ in C.RAIL]
+    if len(btns) != len(paths) or len(cards) != len(btns) + 1:
+        bad.append(f"expected the header and {len(paths)} rail buttons, got {len(cards)} cards")
+        return bad
+    for p, b in zip(paths, btns):
+        if b.get("show_name") is False or not str(b.get("name", "")).strip() or b.get("show_icon") is False:
+            bad.append(f"rail {p}: not named, or no icon")
+        cols = L.effective(b)[0]
+        if not isinstance(cols, int) or cols < 3:
+            bad.append(f"rail {p}: {cols} units, under 3")
+        tap = b.get("tap_action") or {}
+        cur = p == view["path"]
+        if cur and (tap != {"action": "none"} or b.get("color") != "accent"):
+            bad.append(f"rail {p}: the current page is not inert and tinted")
+        if not cur and (tap.get("action") != "navigate" or not str(tap.get("navigation_path", "")).endswith("/" + p)
+                        or "color" in b):
+            bad.append(f"rail {p}: does not navigate to its own page, or is tinted")
+    heights = {L.effective(c)[1] for c in cards}
+    if len(heights) != 1:
+        bad.append(f"cells of different heights {sorted(map(str, heights))}")
+    for units, where in ((24, "wall iPad"), (12, "phone")):
+        holes = L.place([L.effective(c) for c in cards], units)[2]
+        if holes:
+            bad.append(f"{holes} empty cells on the {where}")
+    return bad
 
 
 def band_note(view):
@@ -300,6 +362,9 @@ def validate(g: Gate):
                 isinstance(c["grid_options"]["columns"], int) and c["grid_options"]["columns"] >= 2))]
             g.check(not small, f"{vt} nothing below columns: 2 (DR-012); columns is a number or full",
                     str([c["grid_options"]["columns"] for c in small]))
+            tb = topbar_problems(v)
+            g.check(not tb, f"{vt} shared top bar: time over DD/MM/YY, six named rail buttons (>= 3 units), "
+                    "one height, whole rows on wall and phone, current page inert and tinted", str(tb))
             band = next((r.get("band_grid", 12) for r in rep["views"] if r["path"] == v["path"]), 12)
             if band == 24:
                 spec = B.load_yaml(B.SRC / "views" / f"{v['path']}.yaml")

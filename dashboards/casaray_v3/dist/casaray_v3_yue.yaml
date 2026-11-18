@@ -18,19 +18,13 @@ views:
         column_span: 2
         cards:
           - type: markdown
+            text_only: true
             content: |-
               ## CasaRay
-              <small>開發版本 — 未部署</small>
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · 預覽版</small>
             grid_options:
               columns: 6
-              rows: auto
-          - type: markdown
-            content: |-
-              ## {{ now().strftime('%H:%M') }}
-              {{ now().strftime('%d/%m/%y') }}
-            grid_options:
-              columns: 6
-              rows: auto
+              rows: 2
           - type: button
             name: 主頁
             icon: mdi:home-variant-outline
@@ -39,63 +33,64 @@ views:
             tap_action:
               action: none
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
+            color: accent
           - type: button
             name: 燈光
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/lighting
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 冷氣同天氣
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/climate
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 鏡頭
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/cameras
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 用電
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/energy
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 保安
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/security
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -212,7 +207,7 @@ views:
               {{ (ns.p | join(' · ')) if ns.p else "冇數據" }}{{ (' · ' ~ (ns.d) ~ " 個冇回應") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: auto
+              rows: 2
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/living-room
@@ -222,7 +217,7 @@ views:
               {{ (ns.p | join(' · ')) if ns.p else "冇數據" }}{{ (' · ' ~ (ns.d) ~ " 個冇回應") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: auto
+              rows: 2
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/dining
@@ -232,7 +227,7 @@ views:
               {{ (ns.p | join(' · ')) if ns.p else "冇數據" }}{{ (' · ' ~ (ns.d) ~ " 個冇回應") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: auto
+              rows: 2
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/kitchen
@@ -242,7 +237,7 @@ views:
               {{ (ns.p | join(' · ')) if ns.p else "冇數據" }}{{ (' · ' ~ (ns.d) ~ " 個冇回應") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: auto
+              rows: 2
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/parents-room
@@ -252,7 +247,7 @@ views:
               {{ (ns.p | join(' · ')) if ns.p else "冇數據" }}{{ (' · ' ~ (ns.d) ~ " 個冇回應") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: auto
+              rows: 2
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/ray-bedroom
@@ -262,7 +257,7 @@ views:
               {{ (ns.p | join(' · ')) if ns.p else "冇數據" }}{{ (' · ' ~ (ns.d) ~ " 個冇回應") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: auto
+              rows: 2
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/garage
@@ -272,7 +267,7 @@ views:
               {{ (ns.p | join(' · ')) if ns.p else "冇數據" }}{{ (' · ' ~ (ns.d) ~ " 個冇回應") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: auto
+              rows: 2
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/guest-room
@@ -280,7 +275,7 @@ views:
             content: '**所有房間**'
             grid_options:
               columns: 6
-              rows: auto
+              rows: 2
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/rooms
@@ -297,7 +292,7 @@ views:
             entity: todo.shopping_list
             grid_options:
               columns: 12
-              rows: 6
+              rows: 8
       - type: grid
         column_span: 1
         cards:
@@ -424,7 +419,7 @@ views:
               action: none
             grid_options:
               columns: 12
-              rows: 2
+              rows: 3
             name: 爸媽房
             state_content:
               - state
@@ -458,13 +453,27 @@ views:
             show_state: false
             show_name: true
             tap_action:
-              action: navigate
-              navigation_path: /casaray-v3-yue/camera-front-door
+              action: more-info
             hold_action:
               action: none
             grid_options:
               columns: 12
               rows: 4
+            visibility:
+              - condition: state
+                entity: camera.front_door_live_view
+                state_not: unavailable
+          - type: markdown
+            content: |-
+              **前門** · **離線**
+              Home Assistant 收唔到影像 · {{ ("電量 " ~ ((states('sensor.front_door_battery') | float) | round(0) | int) ~ "%") if states('sensor.front_door_battery') | is_number else "冇電量讀數" }}
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.front_door_live_view
+                state: unavailable
           - type: tile
             entity: binary_sensor.f_contact_sensor_door
             tap_action:
@@ -600,7 +609,7 @@ views:
               室溫 {{ ((state_attr('climate.bedroom_parents_room_ac','current_temperature') | float) | round(1) ~ '°') if state_attr('climate.bedroom_parents_room_ac','current_temperature') is number or (state_attr('climate.bedroom_parents_room_ac','current_temperature') | is_number) else "冇數據" }} · 設定溫度 {{ ((state_attr('climate.bedroom_parents_room_ac','temperature') | float) | round(1) ~ '°') if state_attr('climate.bedroom_parents_room_ac','temperature') is number or (state_attr('climate.bedroom_parents_room_ac','temperature') | is_number) else "冇數據" }}{%- endif -%}
             grid_options:
               columns: 12
-              rows: auto
+              rows: 2
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/climate
@@ -738,85 +747,79 @@ views:
         column_span: 2
         cards:
           - type: markdown
+            text_only: true
             content: |-
               ## 房間
-              <small>開發版本 — 未部署</small>
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · 預覽版</small>
             grid_options:
               columns: 6
-              rows: auto
-          - type: markdown
-            content: |-
-              ## {{ now().strftime('%H:%M') }}
-              {{ now().strftime('%d/%m/%y') }}
-            grid_options:
-              columns: 6
-              rows: auto
+              rows: 2
           - type: button
             name: 主頁
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/home
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 燈光
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/lighting
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 冷氣同天氣
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/climate
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 鏡頭
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/cameras
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 用電
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/energy
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 保安
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/security
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -976,8 +979,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/home
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 燈光
             icon: mdi:lightbulb-group-outline
@@ -987,8 +990,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/lighting
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 冷氣同天氣
             icon: mdi:thermometer
@@ -998,8 +1001,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/climate
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 保安
             icon: mdi:shield-home-outline
@@ -1009,8 +1012,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/security
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 用電
             icon: mdi:lightning-bolt-outline
@@ -1020,8 +1023,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/energy
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 屋企狀況
             icon: mdi:home-heart
@@ -1031,8 +1034,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/house-health
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 家人
             icon: mdi:account-group-outline
@@ -1042,8 +1045,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/people
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 舊版 V2 畫面
             icon: mdi:history
@@ -1053,8 +1056,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/v2-rooms
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
   - title: 客廳
     path: living-room
     icon: mdi:sofa-outline
@@ -1066,85 +1069,79 @@ views:
         column_span: 2
         cards:
           - type: markdown
+            text_only: true
             content: |-
               ## 客廳
-              <small>開發版本 — 未部署</small>
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · 預覽版</small>
             grid_options:
               columns: 6
-              rows: auto
-          - type: markdown
-            content: |-
-              ## {{ now().strftime('%H:%M') }}
-              {{ now().strftime('%d/%m/%y') }}
-            grid_options:
-              columns: 6
-              rows: auto
+              rows: 2
           - type: button
             name: 主頁
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/home
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 燈光
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/lighting
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 冷氣同天氣
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/climate
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 鏡頭
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/cameras
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 用電
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/energy
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 保安
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/security
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -1823,8 +1820,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/rooms
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 燈光
             icon: mdi:lightbulb-group-outline
@@ -1834,8 +1831,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/lighting
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 鏡頭
             icon: mdi:cctv
@@ -1845,8 +1842,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/cameras
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 主頁
             icon: mdi:home-variant-outline
@@ -1856,8 +1853,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/home
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 飯廳
             icon: mdi:table-chair
@@ -1867,8 +1864,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/dining
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 廚房
             icon: mdi:countertop-outline
@@ -1878,8 +1875,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/kitchen
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 娛樂
             icon: mdi:television-classic
@@ -1889,8 +1886,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/entertainment
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 舊版 V2 畫面
             icon: mdi:history
@@ -1900,8 +1897,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/v2-living-room
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
   - title: 廚房
     path: kitchen
     icon: mdi:countertop-outline
@@ -1913,85 +1910,79 @@ views:
         column_span: 2
         cards:
           - type: markdown
+            text_only: true
             content: |-
               ## 廚房
-              <small>開發版本 — 未部署</small>
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · 預覽版</small>
             grid_options:
               columns: 6
-              rows: auto
-          - type: markdown
-            content: |-
-              ## {{ now().strftime('%H:%M') }}
-              {{ now().strftime('%d/%m/%y') }}
-            grid_options:
-              columns: 6
-              rows: auto
+              rows: 2
           - type: button
             name: 主頁
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/home
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 燈光
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/lighting
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 冷氣同天氣
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/climate
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 鏡頭
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/cameras
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 用電
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/energy
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 保安
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/security
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -2352,8 +2343,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/rooms
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 飯廳
             icon: mdi:table-chair
@@ -2363,8 +2354,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/dining
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 客廳
             icon: mdi:sofa-outline
@@ -2374,8 +2365,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/living-room
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 主頁
             icon: mdi:home-variant-outline
@@ -2385,8 +2376,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/home
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 用電
             icon: mdi:lightning-bolt-outline
@@ -2396,8 +2387,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/energy
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 保安
             icon: mdi:shield-home-outline
@@ -2407,8 +2398,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/security
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 網絡
             icon: mdi:router-wireless
@@ -2418,8 +2409,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/network
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 舊版 V2 畫面
             icon: mdi:history
@@ -2429,8 +2420,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/v2-kitchen
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
   - title: 飯廳
     path: dining
     icon: mdi:table-chair
@@ -2442,85 +2433,79 @@ views:
         column_span: 2
         cards:
           - type: markdown
+            text_only: true
             content: |-
               ## 飯廳
-              <small>開發版本 — 未部署</small>
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · 預覽版</small>
             grid_options:
               columns: 6
-              rows: auto
-          - type: markdown
-            content: |-
-              ## {{ now().strftime('%H:%M') }}
-              {{ now().strftime('%d/%m/%y') }}
-            grid_options:
-              columns: 6
-              rows: auto
+              rows: 2
           - type: button
             name: 主頁
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/home
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 燈光
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/lighting
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 冷氣同天氣
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/climate
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 鏡頭
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/cameras
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 用電
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/energy
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 保安
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/security
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -2957,8 +2942,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/rooms
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 燈光
             icon: mdi:lightbulb-group-outline
@@ -2968,8 +2953,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/lighting
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 廚房
             icon: mdi:countertop-outline
@@ -2979,8 +2964,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/kitchen
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 客廳
             icon: mdi:sofa-outline
@@ -2990,8 +2975,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/living-room
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 鏡頭
             icon: mdi:cctv
@@ -3001,8 +2986,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/cameras
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 主頁
             icon: mdi:home-variant-outline
@@ -3012,8 +2997,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/home
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 保安
             icon: mdi:shield-home-outline
@@ -3023,8 +3008,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/security
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 舊版 V2 畫面
             icon: mdi:history
@@ -3034,8 +3019,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/v2-dining
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
   - title: 爸媽房
     path: parents-room
     icon: mdi:bed-outline
@@ -3047,85 +3032,79 @@ views:
         column_span: 2
         cards:
           - type: markdown
+            text_only: true
             content: |-
               ## 爸媽房
-              <small>開發版本 — 未部署</small>
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · 預覽版</small>
             grid_options:
               columns: 6
-              rows: auto
-          - type: markdown
-            content: |-
-              ## {{ now().strftime('%H:%M') }}
-              {{ now().strftime('%d/%m/%y') }}
-            grid_options:
-              columns: 6
-              rows: auto
+              rows: 2
           - type: button
             name: 主頁
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/home
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 燈光
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/lighting
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 冷氣同天氣
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/climate
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 鏡頭
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/cameras
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 用電
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/energy
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 保安
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/security
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -3679,8 +3658,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/rooms
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 冷氣同天氣
             icon: mdi:thermometer
@@ -3690,8 +3669,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/climate
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 主頁
             icon: mdi:home-variant-outline
@@ -3701,8 +3680,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/home
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 保安
             icon: mdi:shield-home-outline
@@ -3712,8 +3691,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/security
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 家人
             icon: mdi:account-group-outline
@@ -3723,8 +3702,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/people
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 娛樂
             icon: mdi:television-classic
@@ -3734,8 +3713,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/entertainment
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: Ray 間房
             icon: mdi:bed-king-outline
@@ -3745,8 +3724,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/ray-bedroom
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 舊版 V2 畫面
             icon: mdi:history
@@ -3756,8 +3735,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/v2-parents-room
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
   - title: Ray 間房
     path: ray-bedroom
     icon: mdi:bed-king-outline
@@ -3769,85 +3748,79 @@ views:
         column_span: 2
         cards:
           - type: markdown
+            text_only: true
             content: |-
               ## Ray 間房
-              <small>開發版本 — 未部署</small>
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · 預覽版</small>
             grid_options:
               columns: 6
-              rows: auto
-          - type: markdown
-            content: |-
-              ## {{ now().strftime('%H:%M') }}
-              {{ now().strftime('%d/%m/%y') }}
-            grid_options:
-              columns: 6
-              rows: auto
+              rows: 2
           - type: button
             name: 主頁
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/home
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 燈光
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/lighting
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 冷氣同天氣
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/climate
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 鏡頭
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/cameras
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 用電
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/energy
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 保安
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/security
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -4307,8 +4280,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/rooms
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 燈光
             icon: mdi:lightbulb-group-outline
@@ -4318,8 +4291,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/lighting
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 用電
             icon: mdi:lightning-bolt-outline
@@ -4329,8 +4302,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/energy
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 主頁
             icon: mdi:home-variant-outline
@@ -4340,8 +4313,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/home
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 客房
             icon: mdi:bed-single-outline
@@ -4351,8 +4324,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/guest-room
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 爸媽房
             icon: mdi:bed-outline
@@ -4362,8 +4335,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/parents-room
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 保安
             icon: mdi:shield-home-outline
@@ -4373,8 +4346,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/security
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 舊版 V2 畫面
             icon: mdi:history
@@ -4384,8 +4357,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/v2-ray-bedroom
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
   - title: 車房
     path: garage
     icon: mdi:garage-variant
@@ -4397,85 +4370,79 @@ views:
         column_span: 2
         cards:
           - type: markdown
+            text_only: true
             content: |-
               ## 車房
-              <small>開發版本 — 未部署</small>
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · 預覽版</small>
             grid_options:
               columns: 6
-              rows: auto
-          - type: markdown
-            content: |-
-              ## {{ now().strftime('%H:%M') }}
-              {{ now().strftime('%d/%m/%y') }}
-            grid_options:
-              columns: 6
-              rows: auto
+              rows: 2
           - type: button
             name: 主頁
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/home
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 燈光
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/lighting
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 冷氣同天氣
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/climate
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 鏡頭
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/cameras
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 用電
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/energy
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 保安
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/security
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -4702,8 +4669,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/rooms
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 用電
             icon: mdi:lightning-bolt-outline
@@ -4713,8 +4680,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/energy
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 主頁
             icon: mdi:home-variant-outline
@@ -4724,8 +4691,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/home
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 網絡
             icon: mdi:router-wireless
@@ -4735,8 +4702,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/network
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 屋企狀況
             icon: mdi:home-heart
@@ -4746,8 +4713,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/house-health
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 廚房
             icon: mdi:countertop-outline
@@ -4757,8 +4724,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/kitchen
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 保安
             icon: mdi:shield-home-outline
@@ -4768,8 +4735,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/security
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 舊版 V2 畫面
             icon: mdi:history
@@ -4779,8 +4746,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/v2-garage
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
   - title: 客房
     path: guest-room
     icon: mdi:bed-single-outline
@@ -4792,85 +4759,79 @@ views:
         column_span: 2
         cards:
           - type: markdown
+            text_only: true
             content: |-
               ## 客房
-              <small>開發版本 — 未部署</small>
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · 預覽版</small>
             grid_options:
               columns: 6
-              rows: auto
-          - type: markdown
-            content: |-
-              ## {{ now().strftime('%H:%M') }}
-              {{ now().strftime('%d/%m/%y') }}
-            grid_options:
-              columns: 6
-              rows: auto
+              rows: 2
           - type: button
             name: 主頁
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/home
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 燈光
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/lighting
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 冷氣同天氣
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/climate
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 鏡頭
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/cameras
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 用電
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/energy
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 保安
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/security
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -5020,8 +4981,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/rooms
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 網絡
             icon: mdi:router-wireless
@@ -5031,8 +4992,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/network
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 娛樂
             icon: mdi:television-classic
@@ -5042,8 +5003,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/entertainment
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 主頁
             icon: mdi:home-variant-outline
@@ -5053,8 +5014,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/home
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: Ray 間房
             icon: mdi:bed-king-outline
@@ -5064,8 +5025,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/ray-bedroom
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 用電
             icon: mdi:lightning-bolt-outline
@@ -5075,8 +5036,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/energy
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 保安
             icon: mdi:shield-home-outline
@@ -5086,8 +5047,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/security
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 舊版 V2 畫面
             icon: mdi:history
@@ -5097,8 +5058,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/v2-guest-room
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
   - title: 燈光
     path: lighting
     icon: mdi:lightbulb-group-outline
@@ -5110,30 +5071,24 @@ views:
         column_span: 2
         cards:
           - type: markdown
+            text_only: true
             content: |-
               ## 燈光
-              <small>開發版本 — 未部署</small>
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · 預覽版</small>
             grid_options:
               columns: 6
-              rows: auto
-          - type: markdown
-            content: |-
-              ## {{ now().strftime('%H:%M') }}
-              {{ now().strftime('%d/%m/%y') }}
-            grid_options:
-              columns: 6
-              rows: auto
+              rows: 2
           - type: button
             name: 主頁
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/home
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 燈光
             icon: mdi:lightbulb-group-outline
@@ -5142,52 +5097,53 @@ views:
             tap_action:
               action: none
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
+            color: accent
           - type: button
             name: 冷氣同天氣
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/climate
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 鏡頭
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/cameras
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 用電
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/energy
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 保安
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/security
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -5944,8 +5900,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/rooms
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 客廳
             icon: mdi:sofa-outline
@@ -5955,8 +5911,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/living-room
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 飯廳
             icon: mdi:table-chair
@@ -5966,8 +5922,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/dining
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 爸媽房
             icon: mdi:bed-outline
@@ -5977,8 +5933,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/parents-room
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: Ray 間房
             icon: mdi:bed-king-outline
@@ -5988,8 +5944,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/ray-bedroom
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 客房
             icon: mdi:bed-single-outline
@@ -5999,8 +5955,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/guest-room
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 車房
             icon: mdi:garage-variant
@@ -6010,8 +5966,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/garage
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 舊版 V2 畫面
             icon: mdi:history
@@ -6021,8 +5977,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/v2-lighting
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
   - title: 冷氣同天氣
     path: climate
     icon: mdi:thermometer
@@ -6034,41 +5990,35 @@ views:
         column_span: 2
         cards:
           - type: markdown
+            text_only: true
             content: |-
               ## 冷氣同天氣
-              <small>開發版本 — 未部署</small>
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · 預覽版</small>
             grid_options:
               columns: 6
-              rows: auto
-          - type: markdown
-            content: |-
-              ## {{ now().strftime('%H:%M') }}
-              {{ now().strftime('%d/%m/%y') }}
-            grid_options:
-              columns: 6
-              rows: auto
+              rows: 2
           - type: button
             name: 主頁
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/home
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 燈光
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/lighting
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 冷氣同天氣
             icon: mdi:thermometer
@@ -6077,41 +6027,42 @@ views:
             tap_action:
               action: none
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
+            color: accent
           - type: button
             name: 鏡頭
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/cameras
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 用電
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/energy
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 保安
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/security
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -6309,8 +6260,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/parents-room
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 客廳
             icon: mdi:sofa-outline
@@ -6320,8 +6271,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/living-room
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 飯廳
             icon: mdi:table-chair
@@ -6331,8 +6282,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/dining
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 用電
             icon: mdi:lightning-bolt-outline
@@ -6342,8 +6293,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/energy
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 屋企狀況
             icon: mdi:home-heart
@@ -6353,8 +6304,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/house-health
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 房間
             icon: mdi:floor-plan
@@ -6364,8 +6315,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/rooms
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 主頁
             icon: mdi:home-variant-outline
@@ -6375,8 +6326,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/home
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 舊版 V2 畫面
             icon: mdi:history
@@ -6386,8 +6337,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/v2-climate
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
   - title: 用電
     path: energy
     icon: mdi:lightning-bolt-outline
@@ -6399,63 +6350,57 @@ views:
         column_span: 2
         cards:
           - type: markdown
+            text_only: true
             content: |-
               ## 用電
-              <small>開發版本 — 未部署</small>
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · 預覽版</small>
             grid_options:
               columns: 6
-              rows: auto
-          - type: markdown
-            content: |-
-              ## {{ now().strftime('%H:%M') }}
-              {{ now().strftime('%d/%m/%y') }}
-            grid_options:
-              columns: 6
-              rows: auto
+              rows: 2
           - type: button
             name: 主頁
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/home
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 燈光
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/lighting
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 冷氣同天氣
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/climate
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 鏡頭
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/cameras
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 用電
             icon: mdi:lightning-bolt-outline
@@ -6464,19 +6409,20 @@ views:
             tap_action:
               action: none
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
+            color: accent
           - type: button
             name: 保安
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/security
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -6894,8 +6840,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/bills
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 屋企狀況
             icon: mdi:home-heart
@@ -6905,8 +6851,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/house-health
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 冷氣同天氣
             icon: mdi:thermometer
@@ -6916,8 +6862,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/climate
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 車房
             icon: mdi:garage-variant
@@ -6927,8 +6873,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/garage
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: Ray 間房
             icon: mdi:bed-king-outline
@@ -6938,8 +6884,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/ray-bedroom
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 主頁
             icon: mdi:home-variant-outline
@@ -6949,8 +6895,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/home
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 通知
             icon: mdi:bell-outline
@@ -6960,8 +6906,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/alerts
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 舊版 V2 畫面
             icon: mdi:history
@@ -6971,8 +6917,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/v2-energy
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
   - type: sections
     title: Bills
     path: bills
@@ -8826,74 +8772,68 @@ views:
         column_span: 2
         cards:
           - type: markdown
+            text_only: true
             content: |-
               ## 保安
-              <small>開發版本 — 未部署</small>
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · 預覽版</small>
             grid_options:
               columns: 6
-              rows: auto
-          - type: markdown
-            content: |-
-              ## {{ now().strftime('%H:%M') }}
-              {{ now().strftime('%d/%m/%y') }}
-            grid_options:
-              columns: 6
-              rows: auto
+              rows: 2
           - type: button
             name: 主頁
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/home
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 燈光
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/lighting
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 冷氣同天氣
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/climate
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 鏡頭
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/cameras
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 用電
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/energy
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 保安
             icon: mdi:shield-home-outline
@@ -8902,8 +8842,9 @@ views:
             tap_action:
               action: none
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
+            color: accent
       - type: grid
         column_span: 2
         cards:
@@ -9380,8 +9321,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/cameras
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 網絡
             icon: mdi:router-wireless
@@ -9391,8 +9332,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/network
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 屋企狀況
             icon: mdi:home-heart
@@ -9402,8 +9343,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/house-health
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 通知
             icon: mdi:bell-outline
@@ -9413,8 +9354,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/alerts
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 房間
             icon: mdi:floor-plan
@@ -9424,8 +9365,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/rooms
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 主頁
             icon: mdi:home-variant-outline
@@ -9435,8 +9376,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/home
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 家人
             icon: mdi:account-group-outline
@@ -9446,8 +9387,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/people
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 舊版 V2 畫面
             icon: mdi:history
@@ -9457,8 +9398,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/v2-security
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
   - title: 鏡頭
     path: cameras
     icon: mdi:cctv
@@ -9470,52 +9411,46 @@ views:
         column_span: 2
         cards:
           - type: markdown
+            text_only: true
             content: |-
               ## 鏡頭
-              <small>開發版本 — 未部署</small>
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · 預覽版</small>
             grid_options:
               columns: 6
-              rows: auto
-          - type: markdown
-            content: |-
-              ## {{ now().strftime('%H:%M') }}
-              {{ now().strftime('%d/%m/%y') }}
-            grid_options:
-              columns: 6
-              rows: auto
+              rows: 2
           - type: button
             name: 主頁
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/home
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 燈光
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/lighting
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 冷氣同天氣
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/climate
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 鏡頭
             icon: mdi:cctv
@@ -9524,43 +9459,226 @@ views:
             tap_action:
               action: none
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
+            color: accent
           - type: button
             name: 用電
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/energy
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 保安
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/security
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
       - type: grid
         column_span: 2
         cards:
           - type: markdown
             content: '{%- set ns = namespace(ok=0, on=0) -%}{%- for e in [''camera.front_door_live_view'',''camera.smart_pet_feeder'',''camera.tapo_c200_stockroom_hd_stream_direct'',''camera.tapo_c425_north_wall_hd_stream_direct'',''camera.tapo_c420_east_wall_hd_stream_direct'',''camera.tapo_c420_south_wall_hd_stream_direct''] -%}{%- set s = states(e) -%}{%- if s not in [''unavailable'',''unknown'',''none'',''''] -%}{%- set ns.ok = ns.ok + 1 -%}{%- if s in [''idle'',''streaming'',''recording''] -%}{%- set ns.on = ns.on + 1 -%}{%- endif -%}{%- endif -%}{%- endfor -%}{%- if ns.ok == 0 -%}鏡頭在線 **冇數據**{%- else -%}鏡頭在線 **{{ ns.on }}**{%- if ns.ok < 6 %} <small>{{ (6) ~ " 個之中 " ~ (ns.ok) ~ " 個有回應" }}</small>{% endif -%}{%- endif -%}'
             grid_options:
-              columns: 12
+              columns: full
               rows: auto
       - type: grid
         column_span: 2
         cards:
           - type: heading
             heading: 鏡頭
+            heading_style: title
+            grid_options:
+              columns: full
+              rows: auto
+          - type: picture-entity
+            entity: camera.front_door_live_view
+            name: 前門
+            camera_view: auto
+            show_state: false
+            show_name: true
+            tap_action:
+              action: more-info
+            hold_action:
+              action: none
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.front_door_live_view
+                state_not: unavailable
+          - type: markdown
+            content: |-
+              **前門** · **離線**
+              Home Assistant 收唔到影像 · {{ ("電量 " ~ ((states('sensor.front_door_battery') | float) | round(0) | int) ~ "%") if states('sensor.front_door_battery') | is_number else "冇電量讀數" }}
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.front_door_live_view
+                state: unavailable
+          - type: picture-entity
+            entity: camera.tapo_c425_north_wall_hd_stream_direct
+            name: 北牆
+            camera_view: auto
+            show_state: false
+            show_name: true
+            tap_action:
+              action: more-info
+            hold_action:
+              action: none
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.tapo_c425_north_wall_hd_stream_direct
+                state_not: unavailable
+          - type: markdown
+            content: |-
+              **北牆** · **離線**
+              Home Assistant 收唔到影像 · {{ ("電量 " ~ ((states('sensor.tapo_c425_north_wall_battery') | float) | round(0) | int) ~ "%") if states('sensor.tapo_c425_north_wall_battery') | is_number else "冇電量讀數" }}
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.tapo_c425_north_wall_hd_stream_direct
+                state: unavailable
+          - type: picture-entity
+            entity: camera.tapo_c420_east_wall_hd_stream_direct
+            name: 東牆
+            camera_view: auto
+            show_state: false
+            show_name: true
+            tap_action:
+              action: more-info
+            hold_action:
+              action: none
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.tapo_c420_east_wall_hd_stream_direct
+                state_not: unavailable
+          - type: markdown
+            content: |-
+              **東牆** · **離線**
+              Home Assistant 收唔到影像 · {{ ("電量 " ~ ((states('sensor.tapo_camera_bcca_battery') | float) | round(0) | int) ~ "%") if states('sensor.tapo_camera_bcca_battery') | is_number else "冇電量讀數" }}
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.tapo_c420_east_wall_hd_stream_direct
+                state: unavailable
+          - type: picture-entity
+            entity: camera.tapo_c420_south_wall_hd_stream_direct
+            name: 南牆
+            camera_view: auto
+            show_state: false
+            show_name: true
+            tap_action:
+              action: more-info
+            hold_action:
+              action: none
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.tapo_c420_south_wall_hd_stream_direct
+                state_not: unavailable
+          - type: markdown
+            content: |-
+              **南牆** · **離線**
+              Home Assistant 收唔到影像 · {{ ("電量 " ~ ((states('sensor.tapo_c420_south_wall_battery') | float) | round(0) | int) ~ "%") if states('sensor.tapo_c420_south_wall_battery') | is_number else "冇電量讀數" }}
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.tapo_c420_south_wall_hd_stream_direct
+                state: unavailable
+          - type: picture-entity
+            entity: camera.tapo_c200_stockroom_hd_stream_direct
+            name: 雜物房
+            camera_view: auto
+            show_state: false
+            show_name: true
+            tap_action:
+              action: more-info
+            hold_action:
+              action: none
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.tapo_c200_stockroom_hd_stream_direct
+                state_not: unavailable
+          - type: markdown
+            content: |-
+              **雜物房** · **離線**
+              Home Assistant 收唔到影像
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.tapo_c200_stockroom_hd_stream_direct
+                state: unavailable
+          - type: picture-entity
+            entity: camera.smart_pet_feeder
+            name: 寵物餵食器
+            camera_view: auto
+            show_state: false
+            show_name: true
+            tap_action:
+              action: more-info
+            hold_action:
+              action: none
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.smart_pet_feeder
+                state_not: unavailable
+          - type: markdown
+            content: |-
+              **寵物餵食器** · **離線**
+              Home Assistant 收唔到影像
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.smart_pet_feeder
+                state: unavailable
+          - type: markdown
+            content: <small>㩒鏡頭睇 Home Assistant 嘅即時畫面，可以全螢幕。「更多畫面」入面嘅鏡頭頁用 WebRTC Camera 卡，要喺 Green 裝咗嗰個 HACS 整合先用得。</small>
+            grid_options:
+              columns: full
+              rows: auto
+      - type: grid
+        column_span: 1
+        cards:
+          - type: heading
+            heading: 鏡頭狀態
             heading_style: title
             grid_options:
               columns: 12
@@ -9577,96 +9695,12 @@ views:
               - 寵物餵食器 — **{{ ("離線" if states('camera.smart_pet_feeder') == 'unavailable' else ("狀態未知" if states('camera.smart_pet_feeder') in ['unknown','none',''] else "在線")) }}**
             grid_options:
               columns: 12
-              rows: auto
+              rows: 5
           - type: markdown
             content: <small>暫時未有鏡頭配對到已核實嘅移動感應，所以 V3 唔顯示個別鏡頭警報。</small>
             grid_options:
               columns: 12
               rows: auto
-          - type: picture-entity
-            entity: camera.front_door_live_view
-            name: 前門
-            camera_view: auto
-            show_state: false
-            show_name: true
-            tap_action:
-              action: navigate
-              navigation_path: /casaray-v3-yue/camera-front-door
-            hold_action:
-              action: none
-            grid_options:
-              columns: 6
-              rows: 4
-          - type: picture-entity
-            entity: camera.tapo_c425_north_wall_hd_stream_direct
-            name: 北牆
-            camera_view: auto
-            show_state: false
-            show_name: true
-            tap_action:
-              action: navigate
-              navigation_path: /casaray-v3-yue/camera-north-wall
-            hold_action:
-              action: none
-            grid_options:
-              columns: 6
-              rows: 4
-          - type: picture-entity
-            entity: camera.tapo_c420_east_wall_hd_stream_direct
-            name: 東牆
-            camera_view: auto
-            show_state: false
-            show_name: true
-            tap_action:
-              action: navigate
-              navigation_path: /casaray-v3-yue/camera-east-wall
-            hold_action:
-              action: none
-            grid_options:
-              columns: 6
-              rows: 4
-          - type: picture-entity
-            entity: camera.tapo_c420_south_wall_hd_stream_direct
-            name: 南牆
-            camera_view: auto
-            show_state: false
-            show_name: true
-            tap_action:
-              action: navigate
-              navigation_path: /casaray-v3-yue/camera-south-wall
-            hold_action:
-              action: none
-            grid_options:
-              columns: 6
-              rows: 4
-          - type: picture-entity
-            entity: camera.tapo_c200_stockroom_hd_stream_direct
-            name: 雜物房
-            camera_view: auto
-            show_state: false
-            show_name: true
-            tap_action:
-              action: navigate
-              navigation_path: /casaray-v3-yue/camera-stockroom
-            hold_action:
-              action: none
-            grid_options:
-              columns: 6
-              rows: 4
-          - type: picture-entity
-            entity: camera.smart_pet_feeder
-            name: 寵物餵食器
-            camera_view: auto
-            show_state: false
-            show_name: true
-            tap_action:
-              action: navigate
-              navigation_path: /casaray-v3-yue/camera-pet-feeder
-            hold_action:
-              action: none
-            grid_options:
-              columns: 6
-              rows: 4
       - type: grid
         column_span: 1
         cards:
@@ -9685,7 +9719,7 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
             name: 前門
           - type: tile
@@ -9697,7 +9731,7 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
           - type: tile
             entity: sensor.tapo_c425_north_wall_battery
@@ -9708,7 +9742,7 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
             name: 北牆
           - type: tile
@@ -9720,7 +9754,7 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
             name: 東牆
           - type: tile
@@ -9732,7 +9766,7 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
             name: 南牆
           - type: tile
@@ -9744,16 +9778,16 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
       - type: grid
-        column_span: 1
+        column_span: 2
         cards:
           - type: heading
             heading: 私隱同偵測
             heading_style: title
             grid_options:
-              columns: 12
+              columns: full
               rows: auto
           - type: tile
             entity: switch.front_door_motion_detection
@@ -9764,8 +9798,9 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
+            name: 前門移動偵測
           - type: tile
             entity: switch.smart_pet_feeder_privacy_mode
             tap_action:
@@ -9775,8 +9810,9 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
+            name: 寵物餵食器私隱模式
           - type: tile
             entity: switch.tapo_c200_stockroom_privacy
             tap_action:
@@ -9786,8 +9822,9 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
+            name: 雜物房私隱模式
           - type: tile
             entity: switch.tapo_c425_north_wall_privacy
             tap_action:
@@ -9797,8 +9834,9 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
+            name: 北牆私隱模式
           - type: tile
             entity: switch.tapo_c420_east_wall_privacy
             tap_action:
@@ -9808,8 +9846,9 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
+            name: 東牆私隱模式
           - type: tile
             entity: switch.tapo_c420_south_wall_privacy
             tap_action:
@@ -9819,12 +9858,13 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
+            name: 南牆私隱模式
           - type: markdown
             content: <small>呢度只可以睇。私隱同偵測開關要喺舊版鏡頭畫面改。</small>
             grid_options:
-              columns: 12
+              columns: full
               rows: auto
       - type: grid
         column_span: 2
@@ -9833,7 +9873,7 @@ views:
             heading: 更多畫面
             heading_style: title
             grid_options:
-              columns: 12
+              columns: full
               rows: auto
           - type: button
             name: 保安
@@ -9844,8 +9884,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/security
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 6
+              rows: 2
           - type: button
             name: 前門
             icon: mdi:doorbell-video
@@ -9855,8 +9895,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/camera-front-door
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 6
+              rows: 2
           - type: button
             name: 北牆
             icon: mdi:cctv
@@ -9866,8 +9906,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/camera-north-wall
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 6
+              rows: 2
           - type: button
             name: 東牆
             icon: mdi:cctv
@@ -9877,8 +9917,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/camera-east-wall
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 6
+              rows: 2
           - type: button
             name: 南牆
             icon: mdi:cctv
@@ -9888,8 +9928,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/camera-south-wall
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 6
+              rows: 2
           - type: button
             name: 雜物房
             icon: mdi:cctv
@@ -9899,8 +9939,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/camera-stockroom
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 6
+              rows: 2
           - type: button
             name: 寵物餵食器
             icon: mdi:paw
@@ -9910,8 +9950,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/camera-pet-feeder
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 6
+              rows: 2
           - type: button
             name: 舊版 V2 畫面
             icon: mdi:history
@@ -9921,8 +9961,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/v2-cameras
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 6
+              rows: 2
   - type: sections
     title: Front Door
     path: camera-front-door
@@ -10154,85 +10194,79 @@ views:
         column_span: 2
         cards:
           - type: markdown
+            text_only: true
             content: |-
               ## 家人
-              <small>開發版本 — 未部署</small>
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · 預覽版</small>
             grid_options:
               columns: 6
-              rows: auto
-          - type: markdown
-            content: |-
-              ## {{ now().strftime('%H:%M') }}
-              {{ now().strftime('%d/%m/%y') }}
-            grid_options:
-              columns: 6
-              rows: auto
+              rows: 2
           - type: button
             name: 主頁
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/home
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 燈光
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/lighting
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 冷氣同天氣
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/climate
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 鏡頭
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/cameras
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 用電
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/energy
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 保安
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/security
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -10496,8 +10530,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/home
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 房間
             icon: mdi:floor-plan
@@ -10507,8 +10541,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/rooms
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 保安
             icon: mdi:shield-home-outline
@@ -10518,8 +10552,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/security
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 網絡
             icon: mdi:router-wireless
@@ -10529,8 +10563,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/network
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 屋企狀況
             icon: mdi:home-heart
@@ -10540,8 +10574,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/house-health
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 通知
             icon: mdi:bell-outline
@@ -10551,8 +10585,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/alerts
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 爸媽房
             icon: mdi:bed-outline
@@ -10562,8 +10596,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/parents-room
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 舊版 V2 畫面
             icon: mdi:history
@@ -10573,8 +10607,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/v2-people
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
   - type: sections
     title: Automations
     path: automations
@@ -11468,85 +11502,79 @@ views:
         column_span: 2
         cards:
           - type: markdown
+            text_only: true
             content: |-
               ## 屋企狀況
-              <small>開發版本 — 未部署</small>
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · 預覽版</small>
             grid_options:
               columns: 6
-              rows: auto
-          - type: markdown
-            content: |-
-              ## {{ now().strftime('%H:%M') }}
-              {{ now().strftime('%d/%m/%y') }}
-            grid_options:
-              columns: 6
-              rows: auto
+              rows: 2
           - type: button
             name: 主頁
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/home
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 燈光
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/lighting
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 冷氣同天氣
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/climate
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 鏡頭
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/cameras
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 用電
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/energy
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 保安
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/security
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -11976,8 +12004,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/home
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 通知
             icon: mdi:bell-outline
@@ -11987,8 +12015,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/alerts
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 網絡
             icon: mdi:router-wireless
@@ -11998,8 +12026,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/network
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 用電
             icon: mdi:lightning-bolt-outline
@@ -12009,8 +12037,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/energy
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 保安
             icon: mdi:shield-home-outline
@@ -12020,8 +12048,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/security
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 房間
             icon: mdi:floor-plan
@@ -12031,8 +12059,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/rooms
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 家人
             icon: mdi:account-group-outline
@@ -12042,8 +12070,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/people
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 舊版 V2 畫面
             icon: mdi:history
@@ -12053,8 +12081,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/v2-house-health
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
   - title: 網絡
     path: network
     icon: mdi:router-wireless
@@ -12066,85 +12094,79 @@ views:
         column_span: 2
         cards:
           - type: markdown
+            text_only: true
             content: |-
               ## 網絡
-              <small>開發版本 — 未部署</small>
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · 預覽版</small>
             grid_options:
               columns: 6
-              rows: auto
-          - type: markdown
-            content: |-
-              ## {{ now().strftime('%H:%M') }}
-              {{ now().strftime('%d/%m/%y') }}
-            grid_options:
-              columns: 6
-              rows: auto
+              rows: 2
           - type: button
             name: 主頁
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/home
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 燈光
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/lighting
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 冷氣同天氣
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/climate
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 鏡頭
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/cameras
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 用電
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/energy
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 保安
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/security
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -12351,8 +12373,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/house-health
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 保安
             icon: mdi:shield-home-outline
@@ -12362,8 +12384,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/security
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 鏡頭
             icon: mdi:cctv
@@ -12373,8 +12395,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/cameras
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 通知
             icon: mdi:bell-outline
@@ -12384,8 +12406,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/alerts
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 用電
             icon: mdi:lightning-bolt-outline
@@ -12395,8 +12417,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/energy
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 房間
             icon: mdi:floor-plan
@@ -12406,8 +12428,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/rooms
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 主頁
             icon: mdi:home-variant-outline
@@ -12417,8 +12439,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/home
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 舊版 V2 畫面
             icon: mdi:history
@@ -12428,8 +12450,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/v2-network
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
   - title: 通知
     path: alerts
     icon: mdi:bell-outline
@@ -12441,85 +12463,79 @@ views:
         column_span: 2
         cards:
           - type: markdown
+            text_only: true
             content: |-
               ## 通知
-              <small>開發版本 — 未部署</small>
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · 預覽版</small>
             grid_options:
               columns: 6
-              rows: auto
-          - type: markdown
-            content: |-
-              ## {{ now().strftime('%H:%M') }}
-              {{ now().strftime('%d/%m/%y') }}
-            grid_options:
-              columns: 6
-              rows: auto
+              rows: 2
           - type: button
             name: 主頁
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/home
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 燈光
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/lighting
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 冷氣同天氣
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/climate
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 鏡頭
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/cameras
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 用電
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/energy
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: 保安
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/security
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -12609,8 +12625,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/home
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 屋企狀況
             icon: mdi:home-heart
@@ -12620,8 +12636,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/house-health
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 保安
             icon: mdi:shield-home-outline
@@ -12631,8 +12647,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/security
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 網絡
             icon: mdi:router-wireless
@@ -12642,8 +12658,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/network
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 爸媽房
             icon: mdi:bed-outline
@@ -12653,8 +12669,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/parents-room
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 車房
             icon: mdi:garage-variant
@@ -12664,8 +12680,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/garage
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 用電
             icon: mdi:lightning-bolt-outline
@@ -12675,8 +12691,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/energy
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: 舊版 V2 畫面
             icon: mdi:history
@@ -12686,8 +12702,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-yue/v2-alerts
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
   - type: sections
     title: CasaRay (V2)
     path: v2-home

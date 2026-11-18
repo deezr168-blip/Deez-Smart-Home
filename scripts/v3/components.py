@@ -43,6 +43,13 @@ def nav_button(ctx, label_key, icon, target, columns=3, rows=1, show_name=True, 
            "tap_action": {"action": "none"} if current else
            {"action": "navigate", "navigation_path": ctx.link(target)},
            "grid_options": grid(columns, rows)}
+    if current:
+        # The current destination is marked, not only inert (V3 CLAUDE.md: "always marked in
+        # the navigation"). Read from the pinned frontend (20260826.7, hui-button-card.ts
+        # _computeColor): with no entity, `color` sets --state-color, which tints the icon;
+        # computeCssColor("accent") is var(--accent-color), which the CasaRay V3 theme maps to
+        # --v3-accent — amber, "selected" in the semantic colours. No theme change needed.
+        btn["color"] = "accent"
     return btn
 
 
@@ -131,7 +138,7 @@ def person_tile(ctx, entity, nav="people", columns=4, rows=2):
 
 # ---------------------------------------------------------------- chrome
 
-RAIL = [  # (view path, label key, icon) — six glyphs, 2 columns each = 12
+RAIL = [  # (view path, label key, icon) — six named buttons, 3 units each (V3-024)
     ("home", "nav.home", "mdi:home-variant-outline"),
     ("lighting", "nav.lighting", "mdi:lightbulb-group-outline"),
     ("climate", "nav.climate", "mdi:thermometer"),
@@ -141,32 +148,51 @@ RAIL = [  # (view path, label key, icon) — six glyphs, 2 columns each = 12
 ]
 
 
-def topbar(ctx, view_path, title_key):
-    """Wordmark/title + clock, then the in-page rail (kiosk hides HA chrome).
+TOPBAR_HEADER = (6, 2)   # header cell: units, rows
+TOPBAR_BUTTON = (3, 2)   # each rail button: units, rows (a named button is never under 2 rows)
 
-    Home and the rail are on every V3 view; the current destination is marked
-    by showing its name and making it inert. History-back has no native
-    Lovelace action, so Back on a top-level view IS Home (documented)."""
+
+def topbar(ctx, view_path, title_key):
+    """Header cell, then the in-page rail (kiosk hides HA chrome). One bar on
+    every native view, so Home sits in the same place on every page.
+
+    History-back has no native Lovelace action, so Back on a top-level view IS
+    Home (documented).
+
+    V3-024 (release preview): readable, named navigation on both devices,
+    sized from the pinned frontend's grid (ha_layout.py) so every cell has ONE
+    height — a button showing an icon and a name is never under two rows:
+      * wall iPad, 24 units: header 6 + six buttons x 3 = one 120 px row;
+      * phone, 12 units: header 6 + 3 + 3, then 3 x 4 = two 120 px rows.
+    It replaces V3-014's icon-only rail (no word on any button) and the older
+    bar where only the current button was named and twice the height of the
+    rest. The header holds the title, then the time above the DD/MM/YY date
+    and "Preview" — text only, so it reads as a title, not a card. The current
+    destination is inert and its icon amber (nav_button)."""
     title = ctx.t("app.name") if view_path == "home" else ctx.t(title_key)
-    wordmark = markdown(
-        "## " + title + "\n<small>" + ctx.t("app.dev_banner") + "</small>", 6)
-    clock = markdown(
-        "## {{ now().strftime('%H:%M') }}\n{{ now().strftime('%d/%m/%y') }}", 6)
-    cards = [wordmark, clock]
+    header = {"type": "markdown", "text_only": True,
+              "content": "## " + title + "\n**{{ now().strftime('%H:%M') }}**<br><small>"
+                         "{{ now().strftime('%d/%m/%y') }} · " + ctx.t("app.preview_banner") + "</small>",
+              "grid_options": grid(*TOPBAR_HEADER)}
+    cards = [header]
     for path, key, icon in RAIL:
-        cur = path == view_path
-        cards.append(nav_button(ctx, key, icon, path, columns=2, rows=1,
-                                show_name=cur, current=cur))
+        cards.append(nav_button(ctx, key, icon, path, columns=TOPBAR_BUTTON[0], rows=TOPBAR_BUTTON[1],
+                                current=path == view_path))
     return {"type": "grid", "column_span": 2, "cards": cards}
 
 
 def more_boards(ctx, items, classic_of=None, band24=False):
-    """Named index of every board, four across (12 = 4 x 3, no reflow).
+    """Named index of every board.
 
     band24: sized for the 24-unit grid Home Assistant gives a two-column band
     (ha_layout.py): a full-width heading, then four across at 6 units and the
-    two rows a named button really takes — two across on a phone."""
-    cols, rows = (6, 2) if band24 else (3, 1)
+    two rows a named button really takes — two across on a phone.
+
+    Otherwise (V3-024) 4 units and the 2 rows the button draws anyway: six
+    across on the wall iPad, three on a phone (~119 px). At 3 units a phone
+    label had ~87 px, which clipped "Entertainment" (a button clips, it never
+    ellipsises)."""
+    cols, rows = (6, 2) if band24 else (4, 2)
     cards = [heading(ctx, "h.more", columns="full" if band24 else 12)]
     for path, key, icon in items:
         cards.append(nav_button(ctx, key, icon, path, columns=cols, rows=rows))
@@ -465,13 +491,38 @@ def camera_summary(ctx, cams, columns=12, rows="auto"):
     return markdown(head + "**{{ " + ctx.jt("cam.summary", a="ns.a", b="ns.b", c="ns.c") + " }}**\n" + lines, columns, rows)
 
 
-def camera_card(ctx, entity, name_key, subview, columns=6, rows=4):
+def camera_card(ctx, entity, name_key, subview=None, columns=6, rows=4, full_screen="subview",
+                offline=False, battery=None):
+    """A camera's picture. full_screen: 'subview' opens its V2 page (the
+    custom:webrtc-camera card); 'more-info' opens Home Assistant's own camera
+    dialog, whose live stream needs no custom card.
+
+    offline: Home Assistant draws a dark camera as a broken image with no word
+    (hui-image.ts), so the slot gets a twin of the same size that says Offline
+    in words, and shows instead of the picture while the camera entity is
+    unavailable. Exactly one of the two is visible, so the grid keeps its
+    shape. `battery` adds the camera's battery reading to that card: a camera
+    whose battery answers while its stream does not is a stream problem, not
+    a dead camera."""
     ctx.use(entity)
-    return {"type": "picture-entity", "entity": entity, "name": ctx.t(name_key),
-            "camera_view": "auto", "show_state": False, "show_name": True,
-            "tap_action": {"action": "navigate", "navigation_path": ctx.link(subview)},
-            "hold_action": {"action": "none"},
-            "grid_options": grid(columns, rows)}
+    tap = ({"action": "more-info"} if full_screen == "more-info" else
+           {"action": "navigate", "navigation_path": ctx.link(subview)})
+    pic = {"type": "picture-entity", "entity": entity, "name": ctx.t(name_key),
+           "camera_view": "auto", "show_state": False, "show_name": True,
+           "tap_action": tap, "hold_action": {"action": "none"},
+           "grid_options": grid(columns, rows)}
+    if not offline:
+        return pic
+    pic["visibility"] = [{"condition": "state", "entity": entity, "state_not": "unavailable"}]
+    body = "**" + ctx.t(name_key) + "** · **" + ctx.t("s.offline") + "**\n" + ctx.t("cam.no_stream")
+    if battery:
+        ctx.use(battery)
+        b = "states('" + battery + "')"
+        body += (" · {{ (" + ctx.jt("cam.battery", v="(" + b + " | float) | round(0) | int") + ") if "
+                 + b + " | is_number else " + jstr(ctx.t("cam.no_battery")) + " }}")
+    twin = markdown(body, columns, rows)
+    twin["visibility"] = [{"condition": "state", "entity": entity, "state": "unavailable"}]
+    return [pic, twin]
 
 
 def chip_cameras(ctx, ents):

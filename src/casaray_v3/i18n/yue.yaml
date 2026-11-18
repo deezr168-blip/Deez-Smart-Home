@@ -492,3 +492,12 @@ rs.printer_on: "打印機開咗"
 rs.printer_off: "打印機閂咗"
 rs.freezer: "冰櫃 {v}"
 rs.ac: "冷氣機：{mode}"
+
+# Cameras and the compact top bar (V3-014)
+app.preview_banner: "預覽版"
+cam.no_stream: "Home Assistant 收唔到影像"
+cam.battery: "電量 {v}%"
+cam.no_battery: "冇電量讀數"
+cam.privacy_of: "{name}私隱模式"
+cam.motion_of: "{name}移動偵測"
+cam.live_note: "㩒鏡頭睇 Home Assistant 嘅即時畫面，可以全螢幕。「更多畫面」入面嘅鏡頭頁用 WebRTC Camera 卡，要喺 Green 裝咗嗰個 HACS 整合先用得。"
