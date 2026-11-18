@@ -9,7 +9,7 @@ app.dev_banner: 開發版本 — 未部署
 nav.home: 主頁
 nav.rooms: 房間
 nav.lighting: 燈光
-nav.climate: 冷氣同天氣
+nav.climate: 氣候
 nav.cameras: 鏡頭
 nav.energy: 用電
 nav.security: 保安

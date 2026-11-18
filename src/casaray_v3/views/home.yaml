@@ -218,9 +218,32 @@ sections:
   - span: 1
     heading: h.climate_now
     cards:
+      # CR-V3-20 (Home visual review): Climate now packed visibly shorter
+      # than Energy now beside it (1 markdown + 2 tiles vs 4 tiles + a note)
+      # — a real, measured gap in the offline preview, not a style nit;
+      # CLAUDE.md's "a lone short section leaves a hole beside it" rule
+      # applies between two paired sections here, not only within one. A
+      # first attempt sized the tiles to columns: 4 to fit three per row —
+      # validate_dashboard.py correctly failed that: the native tile card's
+      # own minimum is columns: 6 (ha_layout.py element_grid), so it always
+      # draws 6 wide regardless of what is asked, leaving the same hole with
+      # an extra "draws larger than grid_options" failure on top. A tile
+      # card only packs cleanly at 6-wide multiples of 2 or 4 within a
+      # 12-unit half-band, so the fix is a 4th REAL reading, not a narrower
+      # one: every room temperature sensor the house actually has, the same
+      # four already used across the Rooms band above — Living, Parents',
+      # Dining (sensor.living_room_living_room_temperature — exported as
+      # "Dining Room Motion Sensor Temperature", area Dining) and Ray's
+      # (sensor.presence_multi_sensor_fp300_temperature — exported as
+      # "unavailable", Ray Bedroom device is down per docs/entity_inventory.md;
+      # drawn honestly as "no data" rather than hidden, same as any other
+      # offline reading). Four tiles at columns: 6 fill two full rows (two
+      # 6+6 rows, no orphan), matching Energy now's own 2x2 tile grid.
       - {c: ac_summary, entity: climate.bedroom_parents_room_ac, nav: climate}
       - {c: sensor_tile, entity: sensor.living_room_living_hue_hue_sensor_temperature, name: {t: room.living}, nav: climate}
       - {c: sensor_tile, entity: sensor.bedroom_motion_sensor_temperature, name: {t: room.parents}, nav: climate}
+      - {c: sensor_tile, entity: sensor.living_room_living_room_temperature, name: {t: room.dining}, nav: climate}
+      - {c: sensor_tile, entity: sensor.presence_multi_sensor_fp300_temperature, name: {t: room.ray}, nav: climate}
 
   # BAND 9 — every board by name (rail is six glyphs); four across on the wall
   - c: more_boards

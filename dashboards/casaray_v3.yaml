@@ -40,62 +40,62 @@ views:
               action: none
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Lighting
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/lighting
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Climate
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/climate
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Cameras
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/cameras
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Energy
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/energy
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Security
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/security
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -630,6 +630,32 @@ views:
               columns: 6
               rows: auto
             name: Parents' room
+          - type: tile
+            entity: sensor.living_room_living_room_temperature
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3/climate
+            icon_tap_action:
+              action: none
+            hold_action:
+              action: none
+            grid_options:
+              columns: 6
+              rows: auto
+            name: Dining
+          - type: tile
+            entity: sensor.presence_multi_sensor_fp300_temperature
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3/climate
+            icon_tap_action:
+              action: none
+            hold_action:
+              action: none
+            grid_options:
+              columns: 6
+              rows: auto
+            name: Ray's room
       - type: grid
         column_span: 2
         cards:
@@ -798,69 +824,69 @@ views:
           - type: button
             name: Home
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/home
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Lighting
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/lighting
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Climate
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/climate
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Cameras
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/cameras
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Energy
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/energy
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Security
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/security
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -1126,69 +1152,69 @@ views:
           - type: button
             name: Home
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/home
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Lighting
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/lighting
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Climate
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/climate
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Cameras
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/cameras
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Energy
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/energy
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Security
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/security
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -1973,69 +1999,69 @@ views:
           - type: button
             name: Home
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/home
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Lighting
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/lighting
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Climate
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/climate
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Cameras
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/cameras
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Energy
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/energy
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Security
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/security
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -2502,69 +2528,69 @@ views:
           - type: button
             name: Home
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/home
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Lighting
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/lighting
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Climate
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/climate
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Cameras
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/cameras
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Energy
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/energy
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Security
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/security
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -3107,69 +3133,69 @@ views:
           - type: button
             name: Home
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/home
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Lighting
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/lighting
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Climate
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/climate
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Cameras
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/cameras
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Energy
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/energy
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Security
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/security
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -3829,69 +3855,69 @@ views:
           - type: button
             name: Home
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/home
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Lighting
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/lighting
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Climate
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/climate
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Cameras
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/cameras
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Energy
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/energy
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Security
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/security
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -4457,69 +4483,69 @@ views:
           - type: button
             name: Home
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/home
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Lighting
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/lighting
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Climate
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/climate
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Cameras
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/cameras
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Energy
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/energy
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Security
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/security
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -4852,69 +4878,69 @@ views:
           - type: button
             name: Home
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/home
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Lighting
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/lighting
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Climate
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/climate
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Cameras
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/cameras
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Energy
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/energy
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Security
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/security
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -5170,14 +5196,14 @@ views:
           - type: button
             name: Home
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/home
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Lighting
             icon: mdi:lightbulb-group-outline
@@ -5187,51 +5213,51 @@ views:
               action: none
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Climate
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/climate
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Cameras
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/cameras
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Energy
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/energy
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Security
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/security
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -6094,25 +6120,25 @@ views:
           - type: button
             name: Home
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/home
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Lighting
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/lighting
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Climate
             icon: mdi:thermometer
@@ -6122,40 +6148,40 @@ views:
               action: none
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Cameras
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/cameras
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Energy
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/energy
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Security
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/security
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -6459,47 +6485,47 @@ views:
           - type: button
             name: Home
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/home
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Lighting
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/lighting
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Climate
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/climate
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Cameras
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/cameras
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Energy
             icon: mdi:lightning-bolt-outline
@@ -6509,18 +6535,18 @@ views:
               action: none
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Security
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/security
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -8886,58 +8912,58 @@ views:
           - type: button
             name: Home
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/home
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Lighting
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/lighting
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Climate
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/climate
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Cameras
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/cameras
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Energy
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/energy
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Security
             icon: mdi:shield-home-outline
@@ -8947,7 +8973,7 @@ views:
               action: none
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -9530,36 +9556,36 @@ views:
           - type: button
             name: Home
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/home
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Lighting
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/lighting
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Climate
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/climate
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Cameras
             icon: mdi:cctv
@@ -9569,29 +9595,29 @@ views:
               action: none
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Energy
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/energy
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Security
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/security
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -10214,69 +10240,69 @@ views:
           - type: button
             name: Home
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/home
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Lighting
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/lighting
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Climate
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/climate
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Cameras
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/cameras
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Energy
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/energy
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Security
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/security
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -11528,69 +11554,69 @@ views:
           - type: button
             name: Home
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/home
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Lighting
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/lighting
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Climate
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/climate
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Cameras
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/cameras
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Energy
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/energy
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Security
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/security
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -12126,69 +12152,69 @@ views:
           - type: button
             name: Home
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/home
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Lighting
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/lighting
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Climate
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/climate
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Cameras
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/cameras
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Energy
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/energy
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Security
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/security
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -12501,69 +12527,69 @@ views:
           - type: button
             name: Home
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/home
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Lighting
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/lighting
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Climate
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/climate
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Cameras
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/cameras
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Energy
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/energy
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Security
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/security
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -25062,69 +25088,69 @@ views:
           - type: button
             name: Home
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/home
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Lighting
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/lighting
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Climate
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/climate
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Cameras
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/cameras
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Energy
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/energy
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Security
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/security
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -25236,69 +25262,69 @@ views:
           - type: button
             name: Home
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/home
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Lighting
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/lighting
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Climate
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/climate
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Cameras
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/cameras
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Energy
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/energy
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
           - type: button
             name: Security
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/security
             grid_options:
               columns: 2
-              rows: 1
+              rows: 2
       - type: grid
         column_span: 2
         cards:

@@ -6,6 +6,98 @@ and `ha-deploy` are unaffected by everything here.
 
 ---
 
+## V3-022 · 18/11/26 · PR #21 full-suite validation; Home visual pass against the 14/09 wall render
+
+**Status:** owner-relayed round, implemented on the same
+`feature/casaray-v3/weather-rubbish` branch, same PR #21 (still draft, no
+merge, no live changes). DEVELOPMENT ONLY — NOT DEPLOYED.
+
+1. **Full-suite regression, run to completion.** `python3 -m unittest
+   discover -s tests/v3` — **105 tests, 0 failures, exit 0, 679.990s**,
+   against commit `56c0405` (the V3-021 review-fix commit). No file edits
+   occurred between launching that run and `56c0405` landing, so the tree the
+   suite tested is exactly that commit's tree. Not re-run a second time for
+   this round's own changes below — a *targeted* `unittest discover` was run
+   instead (same command, full `tests/v3` package, just not re-described as
+   "the full-suite round" a second time) after the Home edits, and is logged
+   under point 4.
+2. **Home compared against the established mockup.** `docs/mockups/2026-09-14_wall_home.png`
+   (= "CasaRay Wall Panel.pdf" p.1), the reference V3-013 already built Home
+   against — no new mockup was supplied this round. Rendered the current
+   build offline with `scripts/v3/preview_view.py` (real Home Assistant
+   sections-view grid geometry at frontend 20260826.7, hand-approximated
+   card interiors, fixture data — **not a Home Assistant screenshot**) at
+   iPad landscape (1180×820) and iPhone (390×844) before any change, to
+   compare against like for like rather than from memory.
+3. **Four visual fixes, each tied to something the offline render actually
+   showed, not a stylistic guess:**
+   - **Large, labelled navigation.** The in-page rail (`topbar()`,
+     `scripts/v3/components.py`) showed a name only on the current page's
+     icon; the other five were unlabelled dots, and — because a
+     `button` card draws one row icon-only and two rows once it shows a
+     name (`ha_layout.py` `element_grid`) — the row was two different
+     heights at once. Changed to `show_name=True` for every rail button, not
+     just the current page's. Same six `columns: 2` slots (2×6=12, plus the
+     12 the wordmark and clock already take = the full 24-unit band), now
+     all two rows tall and all labelled.
+   - **Cantonese-first label correction.** `nav.climate` in `yue.yaml` read
+     "冷氣同天氣" ("air-con and weather", 5 characters) — materially longer
+     than every sibling rail label (2–4 characters) and not what
+     `climate.yaml`'s page actually is (climate/AC control; weather is its
+     own separate page, CR-V3-20). Replaced with "氣候", the Traditional
+     form of the term `zh-Hans.yaml` already uses for the same destination
+     ("气候") — grepped the existing vocabulary first per `CLAUDE.md`, not
+     invented.
+   - **Climate now vs. Energy now, an oversized empty area.** The paired
+     Band 8 sections packed to visibly different heights in the offline
+     render — Energy now: 4 tiles + a note; Climate now: 1 markdown card +
+     2 tiles — leaving a real gap under Climate now, the same "a lone short
+     section leaves a hole beside it" failure mode `CLAUDE.md` documents for
+     Home's own bands, just between two paired sections instead of within
+     one. First attempt sized the two existing tiles to `columns: 4` to fit
+     a third in one row; `validate_dashboard.py` correctly failed it — a
+     native `tile` card's own minimum is `columns: 6`
+     (`ha_layout.py` `element_grid`), so it always draws 6 wide regardless
+     of what is asked, which would have shipped the same hole plus a
+     "draws larger than grid_options" fault. Fixed instead with two more
+     REAL readings at the tile's real minimum width: Dining
+     (`sensor.living_room_living_room_temperature`, already used by the
+     Dining room_tile above) and Ray's room
+     (`sensor.presence_multi_sensor_fp300_temperature`, Ray Bedroom —
+     reported `unavailable` in the 05/09 export per
+     `docs/entity_inventory.md`'s "device is down" note, drawn honestly as
+     "No data" rather than hidden or omitted). Four tiles at `columns: 6`
+     now fill two full rows, matching Energy now's own 2×2 grid, with no
+     invented filler.
+   - **Consistent alignment**, largely a side effect of the nav-rail fix
+     above (one row height instead of two) — no other card-alignment fault
+     was found in the offline render; the "One tap" row's three action
+     buttons and the `ac_summary` tile already draw at the same `rows: 2`.
+4. **Re-validated after the change, not re-run blind.** `python3 scripts/v3/build_dashboard.py`
+   (0 missing, 0 unexpected fallback deltas) → `python3 scripts/v3/validate_dashboard.py`
+   (first attempt: 8 failures, exactly the `columns: 4` mistake above, on
+   `home` in all 4 locales; after the fix: **1569 passed, 0 failed**, same 33
+   pre-existing NOTEs) → `python3 -m unittest discover -s tests/v3` (targeted
+   re-run, warranted by an actual change, not a blind repeat of point 1).
+5. **Before/after previews delivered**, iPad landscape and iPhone, each
+   pair composited side by side with `preview_view.py --side-by-side` and
+   captioned in the image itself: *"Offline preview, not a Home Assistant
+   screenshot: layout from Home Assistant's sections-view CSS (frontend
+   20260826.7); card interiors approximated; fixture states, not live
+   readings."* Icons render as plain dots in every shot — the preview's
+   Material Design Icons folder (`--icons`) was not supplied this round;
+   that is a limitation of this offline tool, not evidence about the
+   dashboard, and is said so to the owner rather than left to look like a
+   missing-icon bug.
+6. **Outstanding, restated:** the rubbish reminder automation proposal
+   (`docs/casaray-v3/proposals/rubbish_reminder_automation.yaml`, corrected
+   in V3-021) is still **not** covered by an actual Home Assistant schema
+   validator — no `hass` CLI, no reachable instance in this environment. It
+   rests on documented HA automation-config behaviour only, and that gap
+   does not close until there is a real instance to check it against.
+
+---
+
 ## V3-021 · 18/11/26 · PR #21 review fixes (ChatGPT review on the V3-020 diff)
 
 **Status:** owner-relayed review, implemented on the same

@@ -145,8 +145,15 @@ def topbar(ctx, view_path, title_key):
     """Wordmark/title + clock, then the in-page rail (kiosk hides HA chrome).
 
     Home and the rail are on every V3 view; the current destination is marked
-    by showing its name and making it inert. History-back has no native
-    Lovelace action, so Back on a top-level view IS Home (documented)."""
+    by making it inert (tap_action: none). Every rail glyph shows its name —
+    CR-V3-20 (Home visual review): a rail of five unlabelled icon dots beside
+    one labelled "Home" read as an inconsistent, unclear row (confirmed in
+    preview_view.py's offline render) rather than "large, labelled
+    navigation." Every button type draws two rows once it shows a name
+    (hui-button-card getGridOptions, ha_layout.py), so this also makes the
+    whole topbar row one consistent height instead of a 1-row/2-row mix.
+    History-back has no native Lovelace action, so Back on a top-level view
+    IS Home (documented)."""
     title = ctx.t("app.name") if view_path == "home" else ctx.t(title_key)
     wordmark = markdown(
         "## " + title + "\n<small>" + ctx.t("app.dev_banner") + "</small>", 6)
@@ -155,8 +162,8 @@ def topbar(ctx, view_path, title_key):
     cards = [wordmark, clock]
     for path, key, icon in RAIL:
         cur = path == view_path
-        cards.append(nav_button(ctx, key, icon, path, columns=2, rows=1,
-                                show_name=cur, current=cur))
+        cards.append(nav_button(ctx, key, icon, path, columns=2, rows=2,
+                                show_name=True, current=cur))
     return {"type": "grid", "column_span": 2, "cards": cards}
 
 

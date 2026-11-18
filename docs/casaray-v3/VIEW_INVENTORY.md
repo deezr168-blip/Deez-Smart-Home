@@ -8,7 +8,7 @@ Baseline: `dashboards/casaray_v2.yaml` ha-deploy@18a4e5d sha256 `77a4991626d6f8a
 
 | # | Path | Kind | Source | Entities | Not in export | Dark at 05/09 export |
 |---|---|---|---|---|---|---|
-| 1 | `home` | native | `views/home.yaml` | 52 | — | 5 |
+| 1 | `home` | native | `views/home.yaml` | 53 | — | 6 |
 | 2 | `rooms` | native | `views/rooms.yaml` | 18 | — | 1 |
 | 3 | `living-room` | native | `views/living-room.yaml` | 46 | — | 10 |
 | 4 | `kitchen` | native | `views/kitchen.yaml` | 22 | — | — |
