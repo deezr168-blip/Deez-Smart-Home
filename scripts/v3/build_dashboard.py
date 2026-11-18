@@ -209,7 +209,10 @@ def build_native(spec, ctx):
     sections = []
     for sec in spec["sections"]:
         if sec.get("topbar"):
-            sections.append(C.topbar(ctx, spec["path"], spec["title"]))
+            # `header_title` (optional): a shorter key for the top bar's header
+            # cell, for a title too long for it on a phone (V3-023). Absent,
+            # the view title is used and the output is unchanged.
+            sections.append(C.topbar(ctx, spec["path"], spec.get("header_title", spec["title"])))
             continue
         if "c" in sec:
             sections.append(resolve(sec, ctx))
