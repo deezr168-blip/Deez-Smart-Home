@@ -286,7 +286,11 @@ def validate(g: Gate):
         unknown = sorted(e for e in ents if e not in export)
         g.check(not unknown, f"{tag} every referenced entity exists in the states export", str(unknown[:10]))
 
-        native = [v for v in views if v["path"] in man["native"]]
+        # CR-V3-20: pages with no V2 equivalent (`new_views`) get every safety,
+        # geometry and honesty check a V2 rebuild gets — a new page is not a
+        # lower-trust path through this gate.
+        new_view_paths = set(man.get("new_views", []) or [])
+        native = [v for v in views if v["path"] in man["native"] or v["path"] in new_view_paths]
         for v in native:
             vt = f"{tag}[{v['path']}]"
             cards = list(walk_cards(v))
