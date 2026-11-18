@@ -234,3 +234,19 @@ sections:
       - [alerts, nav.alerts, mdi:bell-outline]
       - [entertainment, nav.entertainment, mdi:television-classic]
       - [automations, nav.automations, mdi:robot-outline]
+      # CR-V3-20: this band must sum to a multiple of four — confirmed a real,
+      # measured gate (section_holes against ha_layout.py's own packing
+      # arithmetic), not a style note; an unpadded 9+classic=10 failed
+      # validation on every locale with a genuine 24-empty-cell hole. Adding
+      # only the two new pages (no V2 equivalent) landed on 10, so two more
+      # real, already-existing boards are added rather than an invented
+      # filler tile: `lighting` has no other Home nav target at all (One tap
+      # only fires lighting scenes, never opens the Lighting board itself —
+      # a genuine pre-existing gap), and `rooms` duplicates the "All rooms"
+      # room_tile the way alerts.yaml's more_boards already duplicates
+      # security/energy/network links that Home also reaches elsewhere —
+      # an established, not invented, pattern. 11 items + classic_of = 12.
+      - [lighting, nav.lighting, mdi:lightbulb-group-outline]
+      - [weather, nav.weather, mdi:weather-partly-cloudy]
+      - [rubbish-collection, nav.rubbish, mdi:trash-can-outline]
+      - [rooms, nav.rooms, mdi:floor-plan]

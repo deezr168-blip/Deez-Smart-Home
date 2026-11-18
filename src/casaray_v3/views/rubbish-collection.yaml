@@ -1,0 +1,39 @@
+# V3 Rubbish Collection — new page (CR-V3-20, 18/11/26). No V2 equivalent and
+# no live entity either: nothing in docs/live/states_export_2026-09-05.txt
+# names a bin, a collection day, a council schedule or any waste-domain
+# sensor, and the owner's instruction is explicit that this page must not
+# invent one. So the whole page is a single honest "not configured" state —
+# no fabricated next-collection date, bin colour or weekday — plus the exact
+# contract a future integration would need to fill in, so wiring it up later
+# is a one-entity change here, not a redesign.
+#
+# What a real setup needs, recorded rather than guessed (see
+# design/casaray-v3/DECISIONS.md CR-V3-20 for the same contract):
+#   - one entity reporting the next collection date (e.g. a `sensor` with a
+#     date/datetime state, from a council open-data integration or a
+#     manually kept input_datetime) — verified via the live export or
+#     GetLiveContext before any card is built against it, never assumed.
+#   - optionally, which bin(s) are due that collection (general waste,
+#     recycling, green waste), as an attribute or a second entity.
+# Once that entity exists and is verified, this page's "not configured"
+# card is replaced with the real reading, and the Home reminder described
+# below can be wired with `shown_when()` — not before.
+path: rubbish-collection
+title: nav.rubbish
+icon: mdi:trash-can-outline
+sections:
+  - topbar: true
+
+  - span: 2
+    heading: h.rubbish_collection
+    cards:
+      - {c: note, key: rubbish.not_configured}
+
+  - span: 2
+    cards:
+      - {c: note, key: rubbish.setup_path}
+
+  - c: more_boards
+    items:
+      - [home, nav.home, mdi:home-variant-outline]
+      - [weather, nav.weather, mdi:weather-partly-cloudy]

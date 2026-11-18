@@ -717,6 +717,50 @@ views:
               columns: 6
               rows: 2
           - type: button
+            name: 燈光
+            icon: mdi:lightbulb-group-outline
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-yue/lighting
+            grid_options:
+              columns: 6
+              rows: 2
+          - type: button
+            name: 天氣
+            icon: mdi:weather-partly-cloudy
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-yue/weather
+            grid_options:
+              columns: 6
+              rows: 2
+          - type: button
+            name: 垃圾收集
+            icon: mdi:trash-can-outline
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-yue/rubbish-collection
+            grid_options:
+              columns: 6
+              rows: 2
+          - type: button
+            name: 房間
+            icon: mdi:floor-plan
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-yue/rooms
+            grid_options:
+              columns: 6
+              rows: 2
+          - type: button
             name: 舊版 V2 畫面
             icon: mdi:history
             show_name: true
@@ -24991,3 +25035,320 @@ views:
                 ha-card span { font-size: 0.9em; }
     subview: true
     theme: CasaRay
+  - title: 天氣
+    path: weather
+    icon: mdi:weather-partly-cloudy
+    type: sections
+    max_columns: 2
+    theme: CasaRay V3
+    sections:
+      - type: grid
+        column_span: 2
+        cards:
+          - type: markdown
+            content: |-
+              ## 天氣
+              <small>開發版本 — 未部署</small>
+            grid_options:
+              columns: 6
+              rows: auto
+          - type: markdown
+            content: |-
+              ## {{ now().strftime('%H:%M') }}
+              {{ now().strftime('%d/%m/%y') }}
+            grid_options:
+              columns: 6
+              rows: auto
+          - type: button
+            name: 主頁
+            icon: mdi:home-variant-outline
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-yue/home
+            grid_options:
+              columns: 2
+              rows: 1
+          - type: button
+            name: 燈光
+            icon: mdi:lightbulb-group-outline
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-yue/lighting
+            grid_options:
+              columns: 2
+              rows: 1
+          - type: button
+            name: 冷氣同天氣
+            icon: mdi:thermometer
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-yue/climate
+            grid_options:
+              columns: 2
+              rows: 1
+          - type: button
+            name: 鏡頭
+            icon: mdi:cctv
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-yue/cameras
+            grid_options:
+              columns: 2
+              rows: 1
+          - type: button
+            name: 用電
+            icon: mdi:lightning-bolt-outline
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-yue/energy
+            grid_options:
+              columns: 2
+              rows: 1
+          - type: button
+            name: 保安
+            icon: mdi:shield-home-outline
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-yue/security
+            grid_options:
+              columns: 2
+              rows: 1
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: 而家
+            heading_style: title
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: markdown
+            content: |-
+              ## {{ ("離線" if states('weather.forecast_home') == 'unavailable' else ("狀態未知" if states('weather.forecast_home') in ['unknown','none',''] else ({"clear-night":"天晴","cloudy":"多雲","exceptional":"異常天氣","fog":"有霧","hail":"落冰粒","lightning":"打雷","lightning-rainy":"雷暴","partlycloudy":"多雲時晴","pouring":"落大雨","rainy":"落雨","snowy":"落雪","snowy-rainy":"雨夾雪","sunny":"天晴","windy":"大風","windy-variant":"大風"}).get(states('weather.forecast_home'), states('weather.forecast_home')))) }}
+              ### {{ (((state_attr('weather.forecast_home','temperature') | float) | round(1)) ~ '°') if state_attr('weather.forecast_home','temperature') | is_number else "冇數據" }}
+              濕度: {{ ((state_attr('weather.forecast_home','humidity') | round(0) | int) ~ '%') if state_attr('weather.forecast_home','humidity') | is_number else "冇數據" }}
+            grid_options:
+              columns: 12
+              rows: auto
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: 天氣預報
+            heading_style: title
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: weather-forecast
+            entity: weather.forecast_home
+            show_current: true
+            show_forecast: true
+            grid_options:
+              columns: 12
+              rows: auto
+            forecast_type: daily
+      - type: grid
+        column_span: 2
+        cards:
+          - type: markdown
+            content: <small>weather.forecast_home 而家仲answering唔answering、同埋佢支援嗰啲預報類型，最後一次確認係05/09/26嗰份匯出，呢個session未有喺live嘅系統上再核實過。呢版暫時當未核實，等核實咗先當準。</small>
+            grid_options:
+              columns: 12
+              rows: auto
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: 更多畫面
+            heading_style: title
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: button
+            name: 主頁
+            icon: mdi:home-variant-outline
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-yue/home
+            grid_options:
+              columns: 3
+              rows: 1
+          - type: button
+            name: 用電
+            icon: mdi:lightning-bolt-outline
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-yue/energy
+            grid_options:
+              columns: 3
+              rows: 1
+          - type: button
+            name: 冷氣同天氣
+            icon: mdi:thermometer
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-yue/climate
+            grid_options:
+              columns: 3
+              rows: 1
+  - title: 垃圾收集
+    path: rubbish-collection
+    icon: mdi:trash-can-outline
+    type: sections
+    max_columns: 2
+    theme: CasaRay V3
+    sections:
+      - type: grid
+        column_span: 2
+        cards:
+          - type: markdown
+            content: |-
+              ## 垃圾收集
+              <small>開發版本 — 未部署</small>
+            grid_options:
+              columns: 6
+              rows: auto
+          - type: markdown
+            content: |-
+              ## {{ now().strftime('%H:%M') }}
+              {{ now().strftime('%d/%m/%y') }}
+            grid_options:
+              columns: 6
+              rows: auto
+          - type: button
+            name: 主頁
+            icon: mdi:home-variant-outline
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-yue/home
+            grid_options:
+              columns: 2
+              rows: 1
+          - type: button
+            name: 燈光
+            icon: mdi:lightbulb-group-outline
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-yue/lighting
+            grid_options:
+              columns: 2
+              rows: 1
+          - type: button
+            name: 冷氣同天氣
+            icon: mdi:thermometer
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-yue/climate
+            grid_options:
+              columns: 2
+              rows: 1
+          - type: button
+            name: 鏡頭
+            icon: mdi:cctv
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-yue/cameras
+            grid_options:
+              columns: 2
+              rows: 1
+          - type: button
+            name: 用電
+            icon: mdi:lightning-bolt-outline
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-yue/energy
+            grid_options:
+              columns: 2
+              rows: 1
+          - type: button
+            name: 保安
+            icon: mdi:shield-home-outline
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-yue/security
+            grid_options:
+              columns: 2
+              rows: 1
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: 收垃圾時間表
+            heading_style: title
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: markdown
+            content: <small>收垃圾時間表未設定 — 呢部機暫時冇任何實體可以話到你知垃圾、回收或者綠色垃圾嘅收集日期。</small>
+            grid_options:
+              columns: 12
+              rows: auto
+      - type: grid
+        column_span: 2
+        cards:
+          - type: markdown
+            content: <small>一旦加咗同核實咗議會或者人手維護嘅下次收垃圾日期來源，呢版就會顯示出嚟，Home版都可以喺收垃圾前一晚同埋當日朝早提你。而家仲未有，所以乜都唔會靠估。</small>
+            grid_options:
+              columns: 12
+              rows: auto
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: 更多畫面
+            heading_style: title
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: button
+            name: 主頁
+            icon: mdi:home-variant-outline
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-yue/home
+            grid_options:
+              columns: 3
+              rows: 1
+          - type: button
+            name: 天氣
+            icon: mdi:weather-partly-cloudy
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-yue/weather
+            grid_options:
+              columns: 3
+              rows: 1

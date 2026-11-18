@@ -490,6 +490,40 @@ def weather(ctx, entity, forecast=False, columns=12):
     return c
 
 
+# HA core's fixed weather-domain condition vocabulary (homeassistant/const.py
+# ATTR_CONDITION_*), not house-specific data: a `weather` entity's `state` is
+# always one of these or unavailable/unknown, so this is a translation table,
+# not an invented value.
+WEATHER_CONDITIONS = [
+    "clear-night", "cloudy", "exceptional", "fog", "hail", "lightning",
+    "lightning-rainy", "partlycloudy", "pouring", "rainy", "snowy",
+    "snowy-rainy", "sunny", "windy", "windy-variant",
+]
+
+
+def weather_detail(ctx, entity, columns=12):
+    """Current condition in words, temperature and humidity, each reading its
+    own branch for unavailable/unknown rather than trusting the native card's
+    own rendering alone (CR-V3-20)."""
+    ctx.use(entity)
+    # `word_expr` translates its own values (it takes state -> translation
+    # KEY, not resolved text) — pass the keys through untouched or every
+    # condition word gets looked up twice, which (harmlessly) renders right
+    # but logs 15 false "missing" keys per locale (CR-V3-20 build fix).
+    words = {c: f"weather.cond.{c}" for c in WEATHER_CONDITIONS}
+    cond = word_expr(ctx, entity, words)
+    temp = deg_expr(ctx, entity, digits=1, attr="temperature")
+    hum_attr = "state_attr('" + entity + "','humidity')"
+    hum = ("((" + hum_attr + " | round(0) | int) ~ '%') if " + hum_attr
+           + " | is_number else " + jstr(ctx.t("s.no_data")))
+    content = (
+        "## {{ " + cond + " }}\n"
+        "### {{ " + temp + " }}\n"
+        + ctx.t("weather.humidity") + ": {{ " + hum + " }}"
+    )
+    return markdown(content, columns)
+
+
 def history(ctx, entities, hours=24, rows=4):
     """Native history-graph; HA itself draws gaps where an entity was dark."""
     ctx.use(entities)

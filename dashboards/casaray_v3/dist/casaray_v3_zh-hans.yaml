@@ -717,6 +717,50 @@ views:
               columns: 6
               rows: 2
           - type: button
+            name: 灯光
+            icon: mdi:lightbulb-group-outline
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-zh/lighting
+            grid_options:
+              columns: 6
+              rows: 2
+          - type: button
+            name: Weather
+            icon: mdi:weather-partly-cloudy
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-zh/weather
+            grid_options:
+              columns: 6
+              rows: 2
+          - type: button
+            name: Rubbish collection
+            icon: mdi:trash-can-outline
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-zh/rubbish-collection
+            grid_options:
+              columns: 6
+              rows: 2
+          - type: button
+            name: 房间
+            icon: mdi:floor-plan
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-zh/rooms
+            grid_options:
+              columns: 6
+              rows: 2
+          - type: button
             name: Classic V2 view
             icon: mdi:history
             show_name: true
@@ -24991,3 +25035,320 @@ views:
                 ha-card span { font-size: 0.9em; }
     subview: true
     theme: CasaRay
+  - title: Weather
+    path: weather
+    icon: mdi:weather-partly-cloudy
+    type: sections
+    max_columns: 2
+    theme: CasaRay V3
+    sections:
+      - type: grid
+        column_span: 2
+        cards:
+          - type: markdown
+            content: |-
+              ## Weather
+              <small>开发版本 — 未部署</small>
+            grid_options:
+              columns: 6
+              rows: auto
+          - type: markdown
+            content: |-
+              ## {{ now().strftime('%H:%M') }}
+              {{ now().strftime('%d/%m/%y') }}
+            grid_options:
+              columns: 6
+              rows: auto
+          - type: button
+            name: 首页
+            icon: mdi:home-variant-outline
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-zh/home
+            grid_options:
+              columns: 2
+              rows: 1
+          - type: button
+            name: 灯光
+            icon: mdi:lightbulb-group-outline
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-zh/lighting
+            grid_options:
+              columns: 2
+              rows: 1
+          - type: button
+            name: 气候
+            icon: mdi:thermometer
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-zh/climate
+            grid_options:
+              columns: 2
+              rows: 1
+          - type: button
+            name: 摄像头
+            icon: mdi:cctv
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-zh/cameras
+            grid_options:
+              columns: 2
+              rows: 1
+          - type: button
+            name: 能源
+            icon: mdi:lightning-bolt-outline
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-zh/energy
+            grid_options:
+              columns: 2
+              rows: 1
+          - type: button
+            name: 安防
+            icon: mdi:shield-home-outline
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-zh/security
+            grid_options:
+              columns: 2
+              rows: 1
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: Right now
+            heading_style: title
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: markdown
+            content: |-
+              ## {{ ("离线" if states('weather.forecast_home') == 'unavailable' else ("状态未知" if states('weather.forecast_home') in ['unknown','none',''] else ({"clear-night":"Clear","cloudy":"Cloudy","exceptional":"Exceptional conditions","fog":"Foggy","hail":"Hail","lightning":"Lightning","lightning-rainy":"Thunderstorms","partlycloudy":"Partly cloudy","pouring":"Pouring rain","rainy":"Rainy","snowy":"Snowy","snowy-rainy":"Snow and rain","sunny":"Sunny","windy":"Windy","windy-variant":"Windy"}).get(states('weather.forecast_home'), states('weather.forecast_home')))) }}
+              ### {{ (((state_attr('weather.forecast_home','temperature') | float) | round(1)) ~ '°') if state_attr('weather.forecast_home','temperature') | is_number else "无数据" }}
+              Humidity: {{ ((state_attr('weather.forecast_home','humidity') | round(0) | int) ~ '%') if state_attr('weather.forecast_home','humidity') | is_number else "无数据" }}
+            grid_options:
+              columns: 12
+              rows: auto
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: Forecast
+            heading_style: title
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: weather-forecast
+            entity: weather.forecast_home
+            show_current: true
+            show_forecast: true
+            grid_options:
+              columns: 12
+              rows: auto
+            forecast_type: daily
+      - type: grid
+        column_span: 2
+        cards:
+          - type: markdown
+            content: <small>weather.forecast_home's current availability and which forecast types it supports were last confirmed historically, in the 05/09/26 export, and have not been re-verified live from this session. Treat this page as provisional until checked against the running instance.</small>
+            grid_options:
+              columns: 12
+              rows: auto
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: 更多面板
+            heading_style: title
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: button
+            name: 首页
+            icon: mdi:home-variant-outline
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-zh/home
+            grid_options:
+              columns: 3
+              rows: 1
+          - type: button
+            name: 能源
+            icon: mdi:lightning-bolt-outline
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-zh/energy
+            grid_options:
+              columns: 3
+              rows: 1
+          - type: button
+            name: 气候
+            icon: mdi:thermometer
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-zh/climate
+            grid_options:
+              columns: 3
+              rows: 1
+  - title: Rubbish collection
+    path: rubbish-collection
+    icon: mdi:trash-can-outline
+    type: sections
+    max_columns: 2
+    theme: CasaRay V3
+    sections:
+      - type: grid
+        column_span: 2
+        cards:
+          - type: markdown
+            content: |-
+              ## Rubbish collection
+              <small>开发版本 — 未部署</small>
+            grid_options:
+              columns: 6
+              rows: auto
+          - type: markdown
+            content: |-
+              ## {{ now().strftime('%H:%M') }}
+              {{ now().strftime('%d/%m/%y') }}
+            grid_options:
+              columns: 6
+              rows: auto
+          - type: button
+            name: 首页
+            icon: mdi:home-variant-outline
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-zh/home
+            grid_options:
+              columns: 2
+              rows: 1
+          - type: button
+            name: 灯光
+            icon: mdi:lightbulb-group-outline
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-zh/lighting
+            grid_options:
+              columns: 2
+              rows: 1
+          - type: button
+            name: 气候
+            icon: mdi:thermometer
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-zh/climate
+            grid_options:
+              columns: 2
+              rows: 1
+          - type: button
+            name: 摄像头
+            icon: mdi:cctv
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-zh/cameras
+            grid_options:
+              columns: 2
+              rows: 1
+          - type: button
+            name: 能源
+            icon: mdi:lightning-bolt-outline
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-zh/energy
+            grid_options:
+              columns: 2
+              rows: 1
+          - type: button
+            name: 安防
+            icon: mdi:shield-home-outline
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-zh/security
+            grid_options:
+              columns: 2
+              rows: 1
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: Collection schedule
+            heading_style: title
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: markdown
+            content: <small>Collection schedule not configured — no entity on this instance reports a rubbish, recycling or green-waste collection date yet.</small>
+            grid_options:
+              columns: 12
+              rows: auto
+      - type: grid
+        column_span: 2
+        cards:
+          - type: markdown
+            content: <small>Once a council or manually-kept source for the next collection date is added and verified, this page shows it, and Home can carry a reminder the evening before and the morning of collection. Nothing is guessed in the meantime.</small>
+            grid_options:
+              columns: 12
+              rows: auto
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: 更多面板
+            heading_style: title
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: button
+            name: 首页
+            icon: mdi:home-variant-outline
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-zh/home
+            grid_options:
+              columns: 3
+              rows: 1
+          - type: button
+            name: Weather
+            icon: mdi:weather-partly-cloudy
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-zh/weather
+            grid_options:
+              columns: 3
+              rows: 1

@@ -54,6 +54,8 @@ Baseline: `dashboards/casaray_v2.yaml` ha-deploy@18a4e5d sha256 `77a4991626d6f8a
 | 44 | `v2-house-health` | classic | `dashboards/casaray_v2.yaml#house-health` | 38 | — | 8 |
 | 45 | `v2-alerts` | classic | `dashboards/casaray_v2.yaml#alerts` | 15 | — | 3 |
 | 46 | `v2-people` | classic | `dashboards/casaray_v2.yaml#people` | 16 | — | — |
+| 47 | `weather` | new | `views/weather.yaml` | 1 | — | — |
+| 48 | `rubbish-collection` | new | `views/rubbish-collection.yaml` | 0 | — | — |
 
 ## Native rebuilds: where every V2 entity now lives
 
@@ -151,7 +153,7 @@ Every V2 entity of this view is on its native rebuild.
 
 | Locale | Output | url_path | Views | Keys on fallback | Missing keys |
 |---|---|---|---|---|---|
-| en | `dashboards/casaray_v3.yaml` | `/casaray-v3` | 46 | 0 | 0 |
-| yue | `dashboards/casaray_v3/dist/casaray_v3_yue.yaml` | `/casaray-v3-yue` | 46 | 0 | 0 |
-| km | `dashboards/casaray_v3/dist/casaray_v3_km.yaml` | `/casaray-v3-km` | 46 | 0 | 0 |
-| zh-Hans | `dashboards/casaray_v3/dist/casaray_v3_zh-hans.yaml` | `/casaray-v3-zh` | 46 | 302 | 0 |
+| en | `dashboards/casaray_v3.yaml` | `/casaray-v3` | 48 | 0 | 0 |
+| yue | `dashboards/casaray_v3/dist/casaray_v3_yue.yaml` | `/casaray-v3-yue` | 48 | 0 | 0 |
+| km | `dashboards/casaray_v3/dist/casaray_v3_km.yaml` | `/casaray-v3-km` | 48 | 0 | 0 |
+| zh-Hans | `dashboards/casaray_v3/dist/casaray_v3_zh-hans.yaml` | `/casaray-v3-zh` | 48 | 325 | 0 |

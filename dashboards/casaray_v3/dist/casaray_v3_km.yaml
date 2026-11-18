@@ -717,6 +717,50 @@ views:
               columns: 6
               rows: 2
           - type: button
+            name: ភ្លើង
+            icon: mdi:lightbulb-group-outline
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/lighting
+            grid_options:
+              columns: 6
+              rows: 2
+          - type: button
+            name: អាកាសធាតុ
+            icon: mdi:weather-partly-cloudy
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/weather
+            grid_options:
+              columns: 6
+              rows: 2
+          - type: button
+            name: ការប្រមូលសំរាម
+            icon: mdi:trash-can-outline
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/rubbish-collection
+            grid_options:
+              columns: 6
+              rows: 2
+          - type: button
+            name: បន្ទប់
+            icon: mdi:floor-plan
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/rooms
+            grid_options:
+              columns: 6
+              rows: 2
+          - type: button
             name: ទិដ្ឋភាព V2 ចាស់
             icon: mdi:history
             show_name: true
@@ -24991,3 +25035,320 @@ views:
                 ha-card span { font-size: 0.9em; }
     subview: true
     theme: CasaRay
+  - title: អាកាសធាតុ
+    path: weather
+    icon: mdi:weather-partly-cloudy
+    type: sections
+    max_columns: 2
+    theme: CasaRay V3
+    sections:
+      - type: grid
+        column_span: 2
+        cards:
+          - type: markdown
+            content: |-
+              ## អាកាសធាតុ
+              <small>កំណែអភិវឌ្ឍន៍ — មិនទាន់ដាក់ឱ្យប្រើ</small>
+            grid_options:
+              columns: 6
+              rows: auto
+          - type: markdown
+            content: |-
+              ## {{ now().strftime('%H:%M') }}
+              {{ now().strftime('%d/%m/%y') }}
+            grid_options:
+              columns: 6
+              rows: auto
+          - type: button
+            name: ទំព័រដើម
+            icon: mdi:home-variant-outline
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/home
+            grid_options:
+              columns: 2
+              rows: 1
+          - type: button
+            name: ភ្លើង
+            icon: mdi:lightbulb-group-outline
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/lighting
+            grid_options:
+              columns: 2
+              rows: 1
+          - type: button
+            name: អាកាសធាតុ
+            icon: mdi:thermometer
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/climate
+            grid_options:
+              columns: 2
+              rows: 1
+          - type: button
+            name: កាមេរ៉ា
+            icon: mdi:cctv
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/cameras
+            grid_options:
+              columns: 2
+              rows: 1
+          - type: button
+            name: ថាមពល
+            icon: mdi:lightning-bolt-outline
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/energy
+            grid_options:
+              columns: 2
+              rows: 1
+          - type: button
+            name: សន្តិសុខ
+            icon: mdi:shield-home-outline
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/security
+            grid_options:
+              columns: 2
+              rows: 1
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: ឥឡូវនេះ
+            heading_style: title
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: markdown
+            content: |-
+              ## {{ ("ដាច់បណ្ដាញ" if states('weather.forecast_home') == 'unavailable' else ("មិនដឹងស្ថានភាព" if states('weather.forecast_home') in ['unknown','none',''] else ({"clear-night":"ស្រឡះ","cloudy":"មានពពក","exceptional":"អាកាសធាតុខុសពីធម្មតា","fog":"មានអ័ព្ទ","hail":"ព្រិល​ត្រជាក់","lightning":"រន្ទះ","lightning-rainy":"ព្យុះផ្គរលាន់","partlycloudy":"មានពពកខ្លះ","pouring":"ភ្លៀងខ្លាំង","rainy":"មានភ្លៀង","snowy":"មានព្រិល","snowy-rainy":"ព្រិលចុះភ្លៀង","sunny":"ថ្ងៃចែង","windy":"ខ្យល់ខ្លាំង","windy-variant":"ខ្យល់ខ្លាំង"}).get(states('weather.forecast_home'), states('weather.forecast_home')))) }}
+              ### {{ (((state_attr('weather.forecast_home','temperature') | float) | round(1)) ~ '°') if state_attr('weather.forecast_home','temperature') | is_number else "គ្មានទិន្នន័យ" }}
+              សំណើម: {{ ((state_attr('weather.forecast_home','humidity') | round(0) | int) ~ '%') if state_attr('weather.forecast_home','humidity') | is_number else "គ្មានទិន្នន័យ" }}
+            grid_options:
+              columns: 12
+              rows: auto
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: ព្យាករណ៍អាកាសធាតុ
+            heading_style: title
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: weather-forecast
+            entity: weather.forecast_home
+            show_current: true
+            show_forecast: true
+            grid_options:
+              columns: 12
+              rows: auto
+            forecast_type: daily
+      - type: grid
+        column_span: 2
+        cards:
+          - type: markdown
+            content: <small>ភាពមានជាក់ស្តែងនាពេលបច្ចុប្បន្ន និងប្រភេទការព្យាករណ៍ដែល weather.forecast_home គាំទ្រ ត្រូវបានផ្ទៀងផ្ទាត់ចុងក្រោយតាមទិន្នន័យថ្ងៃទី ០៥/០៩/២៦ ប៉ុណ្ណោះ ហើយមិនទាន់ត្រូវបានផ្ទៀងផ្ទាត់ផ្ទាល់ពីវគ្គនេះទេ។ សូមចាត់ទុកទំព័រនេះជាព័ត៌មានបណ្តោះអាសន្ន រហូតដល់មានការផ្ទៀងផ្ទាត់។</small>
+            grid_options:
+              columns: 12
+              rows: auto
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: ទំព័រផ្សេងទៀត
+            heading_style: title
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: button
+            name: ទំព័រដើម
+            icon: mdi:home-variant-outline
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/home
+            grid_options:
+              columns: 3
+              rows: 1
+          - type: button
+            name: ថាមពល
+            icon: mdi:lightning-bolt-outline
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/energy
+            grid_options:
+              columns: 3
+              rows: 1
+          - type: button
+            name: អាកាសធាតុ
+            icon: mdi:thermometer
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/climate
+            grid_options:
+              columns: 3
+              rows: 1
+  - title: ការប្រមូលសំរាម
+    path: rubbish-collection
+    icon: mdi:trash-can-outline
+    type: sections
+    max_columns: 2
+    theme: CasaRay V3
+    sections:
+      - type: grid
+        column_span: 2
+        cards:
+          - type: markdown
+            content: |-
+              ## ការប្រមូលសំរាម
+              <small>កំណែអភិវឌ្ឍន៍ — មិនទាន់ដាក់ឱ្យប្រើ</small>
+            grid_options:
+              columns: 6
+              rows: auto
+          - type: markdown
+            content: |-
+              ## {{ now().strftime('%H:%M') }}
+              {{ now().strftime('%d/%m/%y') }}
+            grid_options:
+              columns: 6
+              rows: auto
+          - type: button
+            name: ទំព័រដើម
+            icon: mdi:home-variant-outline
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/home
+            grid_options:
+              columns: 2
+              rows: 1
+          - type: button
+            name: ភ្លើង
+            icon: mdi:lightbulb-group-outline
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/lighting
+            grid_options:
+              columns: 2
+              rows: 1
+          - type: button
+            name: អាកាសធាតុ
+            icon: mdi:thermometer
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/climate
+            grid_options:
+              columns: 2
+              rows: 1
+          - type: button
+            name: កាមេរ៉ា
+            icon: mdi:cctv
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/cameras
+            grid_options:
+              columns: 2
+              rows: 1
+          - type: button
+            name: ថាមពល
+            icon: mdi:lightning-bolt-outline
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/energy
+            grid_options:
+              columns: 2
+              rows: 1
+          - type: button
+            name: សន្តិសុខ
+            icon: mdi:shield-home-outline
+            show_name: false
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/security
+            grid_options:
+              columns: 2
+              rows: 1
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: កាលវិភាគប្រមូលសំរាម
+            heading_style: title
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: markdown
+            content: <small>កាលវិភាគប្រមូលសំរាមមិនទាន់បានកំណត់ទេ — មិនមានធាតុណាមួយលើឧបករណ៍នេះរាយការណ៍អំពីកាលបរិច្ឆេទប្រមូលសំរាម សំណល់កែច្នៃ ឬសំណល់បៃតងនៅឡើយ។</small>
+            grid_options:
+              columns: 12
+              rows: auto
+      - type: grid
+        column_span: 2
+        cards:
+          - type: markdown
+            content: <small>នៅពេលមានប្រភពកាលបរិច្ឆេទប្រមូលសំរាមបន្ទាប់ដែលមកពីក្រុមប្រឹក្សា ឬបញ្ចូលដោយដៃ ហើយត្រូវបានផ្ទៀងផ្ទាត់ ទំព័រនេះនឹងបង្ហាញវា ហើយទំព័រ Home អាចរំលឹកអ្នកមួយយប់មុន និងនៅព្រឹកថ្ងៃប្រមូល។ រហូតដល់ពេលនោះ គ្មានអ្វីត្រូវបានស្មានឡើយ។</small>
+            grid_options:
+              columns: 12
+              rows: auto
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: ទំព័រផ្សេងទៀត
+            heading_style: title
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: button
+            name: ទំព័រដើម
+            icon: mdi:home-variant-outline
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/home
+            grid_options:
+              columns: 3
+              rows: 1
+          - type: button
+            name: អាកាសធាតុ
+            icon: mdi:weather-partly-cloudy
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-km/weather
+            grid_options:
+              columns: 3
+              rows: 1

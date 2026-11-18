@@ -10,21 +10,21 @@
       "url_base": "casaray-v3",
       "fallback_keys": [],
       "missing_keys": [],
-      "views": 46
+      "views": 48
     },
     "yue": {
       "output": "dashboards/casaray_v3/dist/casaray_v3_yue.yaml",
       "url_base": "casaray-v3-yue",
       "fallback_keys": [],
       "missing_keys": [],
-      "views": 46
+      "views": 48
     },
     "km": {
       "output": "dashboards/casaray_v3/dist/casaray_v3_km.yaml",
       "url_base": "casaray-v3-km",
       "fallback_keys": [],
       "missing_keys": [],
-      "views": 46
+      "views": 48
     },
     "zh-Hans": {
       "output": "dashboards/casaray_v3/dist/casaray_v3_zh-hans.yaml",
@@ -176,11 +176,13 @@
         "h.indicators",
         "h.outdoor_lights",
         "h.room_lights",
+        "h.rubbish_collection",
         "h.scenes_bedroom",
         "h.scenes_dining",
         "h.scenes_living",
         "h.temperatures",
         "h.wall_switches",
+        "h.weather_now",
         "h.whole_house",
         "hh.core",
         "hh.device_offline",
@@ -239,6 +241,8 @@
         "lr.spots_on",
         "nav.all_rooms",
         "nav.classic",
+        "nav.rubbish",
+        "nav.weather",
         "net.none_reporting",
         "net.north_signal",
         "net.not_measured",
@@ -319,6 +323,8 @@
         "room.south_wall",
         "room.stockroom",
         "room.switch_note",
+        "rubbish.not_configured",
+        "rubbish.setup_path",
         "s.closed",
         "s.closing",
         "s.connected",
@@ -330,11 +336,28 @@
         "s.problem",
         "sec.detection_note",
         "sec.hub",
+        "weather.cond.clear-night",
+        "weather.cond.cloudy",
+        "weather.cond.exceptional",
+        "weather.cond.fog",
+        "weather.cond.hail",
+        "weather.cond.lightning",
+        "weather.cond.lightning-rainy",
+        "weather.cond.partlycloudy",
+        "weather.cond.pouring",
+        "weather.cond.rainy",
+        "weather.cond.snowy",
+        "weather.cond.snowy-rainy",
+        "weather.cond.sunny",
+        "weather.cond.windy",
+        "weather.cond.windy-variant",
+        "weather.humidity",
         "weather.sunrise",
-        "weather.sunset"
+        "weather.sunset",
+        "weather.unverified_note"
       ],
       "missing_keys": [],
-      "views": 46
+      "views": 48
     }
   },
   "views": [
@@ -2404,6 +2427,26 @@
         "sensor.vine_s_phone_battery_state",
         "zone.home"
       ],
+      "unverified": [],
+      "dark_at_export": []
+    },
+    {
+      "path": "weather",
+      "kind": "new",
+      "source": "views/weather.yaml",
+      "v2_equivalent": null,
+      "entities": [
+        "weather.forecast_home"
+      ],
+      "unverified": [],
+      "dark_at_export": []
+    },
+    {
+      "path": "rubbish-collection",
+      "kind": "new",
+      "source": "views/rubbish-collection.yaml",
+      "v2_equivalent": null,
+      "entities": [],
       "unverified": [],
       "dark_at_export": []
     }
