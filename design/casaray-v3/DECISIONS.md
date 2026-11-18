@@ -86,6 +86,9 @@ owner approval. Numbered after PR #21's V3-020–023 so both logs stay unique.
      the top bar emits, with every assertion unchanged.
    - `preview_view.py` now also reports wrapped labels, tap targets under 44 px, the top
      bar's height and the rail widths.
+   - At `c97db94`: `tests/v3` **114 tests, 0 failures** (533 s); `ha_validate.sh` PASSED with
+     the same 470 warnings as the merge; a fresh build in a clean worktree is byte-identical
+     to the committed outputs in all four locales.
 6. **Found, not changed here (outside navigation):**
    - Lighting's scene buttons on a phone: "Concentrate" clips, and five two-word scene names
      wrap.
