@@ -103,6 +103,13 @@ still draft. DEVELOPMENT ONLY — NOT DEPLOYED; no merge, no live change.
    3 units, and on a rail page exactly one inert, tinted button (none
    elsewhere). `tests/v3/test_topbar_home_v3_023.py` (12 tests) pins it,
    including a test that the gate rejects V3-022's bar on all three counts.
+   The full suite on the gated commit (`7fbc394`) then failed two Alerts
+   tests (117 run, 2 failures): they picked rendered cards by position
+   (`outs[2]` the strip, `outs[3:6]` the lists) and the top bar now emits one
+   markdown card where it emitted two. The Alerts board is byte-identical
+   apart from its top bar. Fixed in the tests, not the board: they skip past
+   however many cards the top bar emits (`past_top_bar`), every assertion
+   unchanged, and pass against both V3-022's bar and this one.
 9. **Still open — needs a device or the owner:**
    - Nothing here was seen in Home Assistant. Typography, the amber icon,
      the header fit and every height above are from the pinned source and a
