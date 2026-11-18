@@ -381,8 +381,21 @@ const {chromium} = require('playwright');
       n.scrollWidth > n.parentElement.clientWidth).map(n => n.textContent);
     const overflow = [...document.querySelectorAll('.card.fit-rows .ha-card')].filter(c =>
       c.scrollHeight > c.clientHeight + 1).map(c => c.textContent.trim().slice(0, 40));
+    // A label that breaks onto a second line is not clipped sideways but is still hard to read
+    // (Han and Khmer break inside a word): more than one line box tall at the label's own line height.
+    const wrapped = [...document.querySelectorAll('.btn .bn')].filter(n => {
+      const lh = parseFloat(getComputedStyle(n).lineHeight) || 19.2;
+      return n.getBoundingClientRect().height > lh * 1.5; }).map(n => n.textContent);
+    // Anything that acts on a tap under 44 x 44 CSS px (V3 CLAUDE.md: touch targets >= 44 px).
+    const small = [...document.querySelectorAll('.ha-card.tap')].filter(c => {
+      const r = c.getBoundingClientRect(); return r.width < 44 || r.height < 44; })
+      .map(c => c.textContent.trim().slice(0, 30) || '(icon)');
+    // Top bar (the first section): its height and each rail button's width, for the release record.
+    const top = document.querySelector('.section');
+    const rail = top ? [...top.querySelectorAll('.btn')].map(bn => Math.round(bn.getBoundingClientRect().width)) : [];
     return {cols: document.body.dataset.columns, height: document.documentElement.scrollHeight,
-            holes, clipped, overflow};
+            holes, clipped, overflow, wrapped, small,
+            topbar: top ? Math.round(top.getBoundingClientRect().height) : 0, rail};
   });
   console.log(JSON.stringify(info));
   await b.close();
@@ -474,7 +487,10 @@ def main():
             print(f"wrote {png}  {size[0]}x{size[1]} viewport: {info['cols']} column(s), page {info['height']} px tall")
             print("  measured (simulated): band holes " + json.dumps(info["holes"], ensure_ascii=False)
                   + " | clipped labels " + json.dumps(info["clipped"], ensure_ascii=False)
-                  + " | overflowing fixed-height cards " + json.dumps(info["overflow"], ensure_ascii=False))
+                  + " | overflowing fixed-height cards " + json.dumps(info["overflow"], ensure_ascii=False)
+                  + " | wrapped labels " + json.dumps(info["wrapped"], ensure_ascii=False)
+                  + " | tap targets under 44 px " + json.dumps(info["small"], ensure_ascii=False)
+                  + f" | top bar {info['topbar']} px, rail buttons {info['rail']} px wide")
     return 0
 
 

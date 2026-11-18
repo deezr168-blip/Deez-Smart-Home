@@ -6,6 +6,98 @@ and `ha-deploy` are unaffected by everything here.
 
 ---
 
+## V3-024 · 18/11/26 · Release preview integration: PR #16's cameras with one named, readable top bar
+
+**Status:** owner brief (18/11/26, "CasaRay V3 release preparation"), against the gate
+document of PR #23 (`docs/casaray-v3/RELEASE_PREVIEW_GATE_2026-11-19.md`). Built on the isolated
+branch `feature/casaray-v3-release-preview`, from `feature/casaray-v3-build` at `116c043`.
+DEVELOPMENT ONLY — NOT DEPLOYED. Not merged; merging and any deployment each need a separate
+owner approval. Numbered after PR #21's V3-020–023 so both logs stay unique.
+
+1. **What was integrated, and how.**
+   - PR #16 (`97e9bce`, V3-014) merged whole: the camera slots, the same-size Offline cards,
+     the native full-screen tap, the Cameras `band_grid: 24` layout and the Home sizing. No
+     file it touches had changed on the build since its base, so the merge was clean, and
+     all four gates passed at the merge (`5407cd2`): build `--check` current,
+     `validate_dashboard.py` 1437 / 0, `tests/v3` 105 OK, `ha_validate.sh` PASSED.
+   - PR #23 (`e413aaa`) merged: the gate document only.
+   - From PR #21, **one tooling commit only**, cherry-picked with provenance: `fd0b3df`, the
+     preview's button and markdown metrics read from the pinned frontend. Without it the
+     preview drew labels at 14 px with padding and under-reported clipping. Its markdown
+     hunk conflicted with PR #16's identical correction; PR #16's side was kept.
+   - **Not integrated:** PR #21's Weather and Rubbish pages, its reminder proposal, its
+     `header_title` key, its Home changes (V3-023 4), and its new-page generator.
+2. **Navigation: the conflict between PR #16 and PR #21, settled for this release.**
+   PR #16's bar was six icon-only buttons, so no destination had a word. Every other native
+   view still had the older bar, where only the current page was named and was twice the
+   height of the rest. Measured before the change (offline preview, all four locales):
+   "Lighting" clipped on a phone in its own rail, and the Khmer header overflowed its
+   56 px cell on Home and Cameras.
+   - **One bar on every native view** (`components.topbar`), re-implemented here from
+     V3-023's measured geometry, not copied. A text-only header (6 units × 2 rows: title,
+     then the time over `DD/MM/YY`, then "Preview"), then six named buttons at 3 units ×
+     2 rows. On the wall iPad that is one 120 px row; on a phone, two 120 px rows. Every
+     cell is one height, so Home sits in the same place on every page.
+   - **The current page is marked**, not only inert: `color: accent` on its button. Read
+     from the pinned frontend (`20260826.7`, `hui-button-card.ts` `_computeColor`; and
+     `compute-color.ts`): with no entity, `color` sets `--state-color`, which tints the
+     icon, and `accent` resolves to `var(--accent-color)`. The V3 theme maps that to
+     `--v3-accent`, amber, "selected". No theme or card_mod change.
+   - **More boards** on the 16 views not on `band_grid: 24`: 4 units (it was 3) and the 2
+     rows a named button draws anyway. Six across on the wall, three on a phone at about
+     119 px. At 3 units, "Entertainment" clipped on a phone. Home and Cameras keep PR #16's
+     6 units.
+3. **Measured** (`preview_view.py --shots`: the frontend's grid, approximated card
+   interiors, fixture states, Khmer OS for Khmer, WenQuanYi for Han; **not a device**):
+
+   | | PR #16 (before) | V3-024 (after) |
+   |---|---|---|
+   | Rail labels on Home and Cameras | none (icons only) | all six named, every locale |
+   | Rail button width, wall / phone | 79 / 56 px | 122 / 88 px |
+   | Top bar height on the 18 native views, wall | 56 px (Home, Cameras), 96–120 px elsewhere | 120 px everywhere |
+   | Top bar height, phone | 120 px (Home, Cameras), 160–262 px elsewhere | 248 px everywhere |
+   | Rail labels clipped or wrapped, 18 views × 4 locales × 2 devices | "Lighting" (en, phone); km "ថាមពល" (phone) | **none** |
+   | Header overflow | km Home and Cameras | **none** |
+   | Tap targets under 44 px | none | none |
+   | Home page height, en, wall / phone | 2,566 / 4,679 px | 2,630 / 4,807 px |
+   | Cameras page height, en, wall / phone | 2,161 / 3,971 px | 2,225 / 4,099 px |
+   | Band holes under the bar (Home, Cameras) | unchanged | unchanged |
+
+   The cost is the labels' height: +64 px on the wall and +128 px on a phone for Home and
+   Cameras. Elsewhere the bar was 96–120 px on the wall (now up to 24 px taller) and
+   160–262 px on a phone (now 248 px: shorter on Lighting and Energy in km, taller on Rooms).
+4. **Scope, checked by script against the integration head:** in all four locales 28 views
+   are byte-identical; on the 18 native views only section 0 (the top bar) changed, plus
+   the More boards buttons' `grid_options` on 16 of them — nothing else in those cards.
+   No camera card, entity ID, navigation path, safety rule or locale string changed.
+5. **Gate and tests.**
+   - `validate_dashboard.topbar_problems` runs on every native view in every locale (+72
+     checks, 1509 passed). It checks the time over `DD/MM/YY`, six rail buttons in order,
+     each named and at least 3 units, one cell height, whole rows on 24 and 12 units,
+     exactly one inert amber button on a rail destination and none elsewhere, and every
+     other button navigating to its own page.
+   - `tests/v3/test_topbar_v3_024.py` (12 tests): the gate on every view, one bar shape
+     everywhere, labels from each locale's own catalogue, the marked page, the row
+     arithmetic, the header, More boards sizing. It also plants PR #16's icon-only bar,
+     the older named-current-only bar, an unmarked current page, a wrong link and a
+     four-digit year, and checks that the gate rejects each one.
+   - PR #16's `CompactTopBar` tests asserted the icon-only design and were retired with it.
+     Two Alerts tests picked rendered cards by position; they now skip however many cards
+     the top bar emits, with every assertion unchanged.
+   - `preview_view.py` now also reports wrapped labels, tap targets under 44 px, the top
+     bar's height and the rail widths.
+6. **Found, not changed here (outside navigation):**
+   - Lighting's scene buttons on a phone: "Concentrate" clips, and five two-word scene names
+     wrap.
+   - "Classic V2 view" wraps at a word boundary on a phone (en, zh-Hans, km). It is
+     readable, but not a single line.
+   - The km strings remain a draft awaiting a native reader.
+7. **Still needs a device:** label fit with Home Assistant's own fonts, the amber icon on the
+   current page, and the header at the frontend's real type sizes. Each is from the pinned
+   source and a simulation, not a screenshot. See the gate document's preflight.
+
+---
+
 ## V3-014 · 15/11/26 · Camera slots that say Offline, a native full-screen tap, and a one-height top bar
 
 **Status:** owner request (15/11/26), prepared on `feature/casaray-v3-cameras-layout`, branched

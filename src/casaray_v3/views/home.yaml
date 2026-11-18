@@ -11,15 +11,16 @@
 # whole band, 6 is a quarter, 12 is half. The gate checks each band packs
 # into whole rows on both.
 #
-# V3-014 (15/11/26): the compact top bar (one row on the wall, two on a
-# phone, every cell one height), rooms of equal height, and the front-door
-# camera with a native full-screen tap and a same-size Offline card.
+# V3-014 (15/11/26): rooms of equal height, and the front-door camera with a
+# native full-screen tap and a same-size Offline card. Its icon-only compact
+# top bar was replaced by the shared named bar in V3-024 (release preview).
 path: home
 title: nav.home
 icon: mdi:home-variant-outline
 band_grid: 24
 sections:
-  # BAND 1 — wordmark, clock (DD/MM/YY), in-page rail (shared chrome, unchanged)
+  # BAND 1 — the shared top bar (V3-024): header with title, time over DD/MM/YY
+  # and "Preview", then six named rail buttons, current one inert and amber
   - topbar: true
 
   # BAND 2 — the render's four pills: Outside, Inside, Home, Monitored.
@@ -236,7 +237,7 @@ sections:
       - {c: sensor_tile, entity: sensor.living_room_living_hue_hue_sensor_temperature, name: {t: room.living}, nav: climate}
       - {c: sensor_tile, entity: sensor.bedroom_motion_sensor_temperature, name: {t: room.parents}, nav: climate}
 
-  # BAND 9 — every board by name (rail is six glyphs); four across on the wall
+  # BAND 9 — every board by name; four across on the wall
   - c: more_boards
     classic_of: home
     band24: true
