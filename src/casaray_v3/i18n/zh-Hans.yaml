@@ -175,3 +175,12 @@ rs.printer_on: "打印机已开"
 rs.printer_off: "打印机已关"
 rs.freezer: "冰柜 {v}"
 rs.ac: "空调{mode}"
+
+# Cameras and the compact top bar (V3-014) — V2 vocabulary
+app.preview_banner: "预览版"
+cam.no_stream: "Home Assistant 没有收到视频流"
+cam.battery: "电量 {v}%"
+cam.no_battery: "没有电量读数"
+cam.privacy_of: "{name}隐私模式"
+cam.motion_of: "{name}动作检测"
+cam.live_note: "点击摄像头可打开 Home Assistant 的实时画面，并可全屏。“更多面板”中的摄像头页面使用 WebRTC Camera 卡片，需要在 Green 上安装该 HACS 集成。"

@@ -1220,7 +1220,7 @@
         "switch.tapo_c420_south_wall_privacy",
         "switch.tapo_c425_north_wall_privacy"
       ],
-      "band_grid": 12,
+      "band_grid": 24,
       "unverified": [],
       "dark_at_export": [
         "camera.tapo_c420_east_wall_hd_stream_direct",

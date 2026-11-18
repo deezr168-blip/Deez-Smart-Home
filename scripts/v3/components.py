@@ -141,13 +141,32 @@ RAIL = [  # (view path, label key, icon) — six glyphs, 2 columns each = 12
 ]
 
 
-def topbar(ctx, view_path, title_key):
+def topbar(ctx, view_path, title_key, compact=False):
     """Wordmark/title + clock, then the in-page rail (kiosk hides HA chrome).
 
     Home and the rail are on every V3 view; the current destination is marked
     by showing its name and making it inert. History-back has no native
-    Lovelace action, so Back on a top-level view IS Home (documented)."""
+    Lovelace action, so Back on a top-level view IS Home (documented).
+
+    compact (V3-014, the band_grid 24 views): one 56 px row on the wall iPad
+    and two on a phone, every cell the same height. The title and clock are
+    text-only markdown, each one heading split by a line break so there is
+    no margin to overflow the row; the rail is six icon-only buttons (a named
+    button cannot be under two rows, which is what made the current one twice
+    as tall as the rest). The current page is inert and named by the title."""
     title = ctx.t("app.name") if view_path == "home" else ctx.t(title_key)
+    if compact:
+        wordmark = {"type": "markdown", "text_only": True,
+                    "content": "## " + title + "<br><small>" + ctx.t("app.preview_banner") + "</small>",
+                    "grid_options": grid(8, 1)}
+        clock = {"type": "markdown", "text_only": True,
+                 "content": "## {{ now().strftime('%H:%M') }}<br><small>{{ now().strftime('%d/%m/%y') }}</small>",
+                 "grid_options": grid(4, 1)}
+        cards = [wordmark, clock]
+        for path, key, icon in RAIL:
+            cards.append(nav_button(ctx, key, icon, path, columns=2, rows=1,
+                                    show_name=False, current=path == view_path))
+        return {"type": "grid", "column_span": 2, "cards": cards}
     wordmark = markdown(
         "## " + title + "\n<small>" + ctx.t("app.dev_banner") + "</small>", 6)
     clock = markdown(
@@ -465,13 +484,38 @@ def camera_summary(ctx, cams, columns=12, rows="auto"):
     return markdown(head + "**{{ " + ctx.jt("cam.summary", a="ns.a", b="ns.b", c="ns.c") + " }}**\n" + lines, columns, rows)
 
 
-def camera_card(ctx, entity, name_key, subview, columns=6, rows=4):
+def camera_card(ctx, entity, name_key, subview=None, columns=6, rows=4, full_screen="subview",
+                offline=False, battery=None):
+    """A camera's picture. full_screen: 'subview' opens its V2 page (the
+    custom:webrtc-camera card); 'more-info' opens Home Assistant's own camera
+    dialog, whose live stream needs no custom card.
+
+    offline: Home Assistant draws a dark camera as a broken image with no word
+    (hui-image.ts), so the slot gets a twin of the same size that says Offline
+    in words, and shows instead of the picture while the camera entity is
+    unavailable. Exactly one of the two is visible, so the grid keeps its
+    shape. `battery` adds the camera's battery reading to that card: a camera
+    whose battery answers while its stream does not is a stream problem, not
+    a dead camera."""
     ctx.use(entity)
-    return {"type": "picture-entity", "entity": entity, "name": ctx.t(name_key),
-            "camera_view": "auto", "show_state": False, "show_name": True,
-            "tap_action": {"action": "navigate", "navigation_path": ctx.link(subview)},
-            "hold_action": {"action": "none"},
-            "grid_options": grid(columns, rows)}
+    tap = ({"action": "more-info"} if full_screen == "more-info" else
+           {"action": "navigate", "navigation_path": ctx.link(subview)})
+    pic = {"type": "picture-entity", "entity": entity, "name": ctx.t(name_key),
+           "camera_view": "auto", "show_state": False, "show_name": True,
+           "tap_action": tap, "hold_action": {"action": "none"},
+           "grid_options": grid(columns, rows)}
+    if not offline:
+        return pic
+    pic["visibility"] = [{"condition": "state", "entity": entity, "state_not": "unavailable"}]
+    body = "**" + ctx.t(name_key) + "** · **" + ctx.t("s.offline") + "**\n" + ctx.t("cam.no_stream")
+    if battery:
+        ctx.use(battery)
+        b = "states('" + battery + "')"
+        body += (" · {{ (" + ctx.jt("cam.battery", v="(" + b + " | float) | round(0) | int") + ") if "
+                 + b + " | is_number else " + jstr(ctx.t("cam.no_battery")) + " }}")
+    twin = markdown(body, columns, rows)
+    twin["visibility"] = [{"condition": "state", "entity": entity, "state": "unavailable"}]
+    return [pic, twin]
 
 
 def chip_cameras(ctx, ents):
