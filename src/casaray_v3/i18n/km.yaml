@@ -6,6 +6,7 @@
 # theme sets that; no V3 card fixes a text width.
 app.name: CasaRay
 app.dev_banner: កំណែអភិវឌ្ឍន៍ — មិនទាន់ដាក់ឱ្យប្រើ
+app.dev_short: កំណែអភិវឌ្ឍន៍   # first half of app.dev_banner; the second half wraps in the header (V3-023)
 
 nav.home: ទំព័រដើម
 nav.rooms: បន្ទប់
@@ -121,6 +122,7 @@ ac.mode_heat_cool: កំដៅ/ត្រជាក់
 ac.room: បន្ទប់
 ac.target: គោលដៅ
 ac.current: "បច្ចុប្បន្ន៖ {mode}"
+ac.parents_name: ម៉ាស៊ីនត្រជាក់ បន្ទប់ឪពុកម្ដាយ
 ac.readonly_note: "V3 បង្ហាញម៉ាស៊ីនត្រជាក់តែសម្រាប់មើល រហូតដល់កិច្ចសន្យាបញ្ជា V3-008 ត្រូវបានអនុម័ត។ ការបញ្ជានៅលើទិដ្ឋភាពបន្ទប់ឪពុកម្ដាយចាស់។"
 ac.open_controls: ការបញ្ជាម៉ាស៊ីនត្រជាក់ (ចាស់)
 
@@ -165,6 +167,7 @@ weather.unverified_note: "ទិន្នន័យអាកាសធាតុម
 
 # Rubbish Collection page (CR-V3-20) — draft translation, pending owner/native-speaker review.
 nav.rubbish: ការប្រមូលសំរាម
+nav.rubbish_short: សំរាម
 h.rubbish_collection: កាលវិភាគប្រមូលសំរាម
 rubbish.not_configured: "កាលវិភាគប្រមូលសំរាមមិនទាន់ត្រូវបានភ្ជាប់ ឬផ្ទៀងផ្ទាត់ទេ។"
 rubbish.setup_path: "នៅពេលបានតម្លើង និងផ្ទៀងផ្ទាត់ ទំព័រនេះនឹងបង្ហាញកាលបរិច្ឆេទជាក់ស្តែង។"

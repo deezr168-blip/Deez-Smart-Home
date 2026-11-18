@@ -43,6 +43,13 @@ def nav_button(ctx, label_key, icon, target, columns=3, rows=1, show_name=True, 
            "tap_action": {"action": "none"} if current else
            {"action": "navigate", "navigation_path": ctx.link(target)},
            "grid_options": grid(columns, rows)}
+    if current:
+        # The current destination, marked (V3 CLAUDE.md: "always marked in the
+        # navigation") now that every rail button is named: the button card's
+        # own `color` tints its icon even with no entity, and `accent` resolves
+        # to var(--accent-color), which the installed CasaRay V3 theme maps to
+        # --v3-accent — amber, "selected" in the semantic colours (V3-023).
+        btn["color"] = "accent"
     return btn
 
 
@@ -131,7 +138,7 @@ def person_tile(ctx, entity, nav="people", columns=4, rows=2):
 
 # ---------------------------------------------------------------- chrome
 
-RAIL = [  # (view path, label key, icon) — six glyphs, 2 columns each = 12
+RAIL = [  # (view path, label key, icon) — six named buttons, 3 units each (V3-023)
     ("home", "nav.home", "mdi:home-variant-outline"),
     ("lighting", "nav.lighting", "mdi:lightbulb-group-outline"),
     ("climate", "nav.climate", "mdi:thermometer"),
@@ -142,38 +149,40 @@ RAIL = [  # (view path, label key, icon) — six glyphs, 2 columns each = 12
 
 
 def topbar(ctx, view_path, title_key):
-    """Wordmark/title + clock, then the in-page rail (kiosk hides HA chrome).
+    """Header cell, then the in-page rail (kiosk hides HA chrome).
 
-    Home and the rail are on every V3 view; the current destination is marked
-    by making it inert (tap_action: none). Every rail glyph shows its name —
-    CR-V3-20 (Home visual review): a rail of five unlabelled icon dots beside
-    one labelled "Home" read as an inconsistent, unclear row (confirmed in
-    preview_view.py's offline render) rather than "large, labelled
-    navigation." Every button type draws two rows once it shows a name
-    (hui-button-card getGridOptions, ha_layout.py), so this also makes the
-    whole topbar row one consistent height instead of a 1-row/2-row mix.
-    History-back has no native Lovelace action, so Back on a top-level view
-    IS Home (documented)."""
+    Home and the rail are on every V3 view. History-back has no native
+    Lovelace action, so Back on a top-level view IS Home (documented).
+
+    V3-023, sized from the pinned frontend (ha_layout.py) so the row has ONE
+    height on both devices — a named button can never be under two rows:
+      * wall iPad, 24 units: header 6 + six buttons x 3 = one row, 120 px;
+      * phone, 12 units: header 6 + 3 + 3, then 3 x 4 = two rows of 120 px.
+    Every button is named (V3-022) and at least 3 units wide, so a label is
+    ~87 px on a phone, not 55 px (V3-022's 2 units clipped four of six English
+    labels). The current destination is inert and tinted (nav_button).
+    The header holds the title, then the time above the date (DD/MM/YY) and
+    the short development marker — one heading and one paragraph, which fit
+    the two-row cell at the frontend's own type sizes (h2 20 px)."""
     title = ctx.t("app.name") if view_path == "home" else ctx.t(title_key)
-    wordmark = markdown(
-        "## " + title + "\n<small>" + ctx.t("app.dev_banner") + "</small>", 6)
-    clock = markdown(
-        "## {{ now().strftime('%H:%M') }}\n{{ now().strftime('%d/%m/%y') }}", 6)
-    cards = [wordmark, clock]
+    header = markdown(
+        "## " + title + "\n**{{ now().strftime('%H:%M') }}**<br>"
+        "<small>{{ now().strftime('%d/%m/%y') }} · " + ctx.t("app.dev_short") + "</small>", 6, 2)
+    cards = [header]
     for path, key, icon in RAIL:
-        cur = path == view_path
-        cards.append(nav_button(ctx, key, icon, path, columns=2, rows=2,
-                                show_name=True, current=cur))
+        cards.append(nav_button(ctx, key, icon, path, columns=3, rows=2, current=path == view_path))
     return {"type": "grid", "column_span": 2, "cards": cards}
 
 
-def more_boards(ctx, items, classic_of=None, band24=False):
+def more_boards(ctx, items, classic_of=None, band24=False, columns=None):
     """Named index of every board, four across (12 = 4 x 3, no reflow).
 
     band24: sized for the 24-unit grid Home Assistant gives a two-column band
     (ha_layout.py): a full-width heading, then four across at 6 units and the
     two rows a named button really takes — two across on a phone."""
     cols, rows = (6, 2) if band24 else (3, 1)
+    if columns:   # V3-023: Home asks for 4 — six across on the wall, three on a phone
+        cols = columns
     cards = [heading(ctx, "h.more", columns="full" if band24 else 12)]
     for path, key, icon in items:
         cards.append(nav_button(ctx, key, icon, path, columns=cols, rows=rows))
@@ -267,12 +276,16 @@ def chip_plugs(ctx, label_key, total, plugs, digits=1):
     return pre + ctx.t(label_key) + " **{{ " + val + " }}**{{ " + note + " }}"
 
 
-def plugs_card(ctx, label_key, total, plugs, detail_key, nav=None, columns=12, digits=1):
+def plugs_card(ctx, label_key, total, plugs, detail_key, nav=None, columns=12, digits=1, note_key=None):
     """The mockups' Monitored power card: the two-plug total, which plugs, and
-    how many answered; a tap opens the board that shows each plug."""
+    how many answered; a tap opens the board that shows each plug.
+
+    note_key (V3-023): the footnote that qualifies the figure, inside the card
+    it qualifies, as the render draws it, rather than as a card of its own."""
     pre, val, note = _plugs(ctx, total, plugs, digits)
+    foot = ("\n<small>" + ctx.t(note_key) + "</small>") if note_key else ""
     card = markdown(pre + "**" + ctx.t(label_key) + "**\n{{ " + val + " }} · " + ctx.t(detail_key)
-                    + "{{ " + note + " }}", columns)
+                    + "{{ " + note + " }}" + foot, columns)
     if nav:
         card["tap_action"] = {"action": "navigate", "navigation_path": ctx.link(nav)}
     return card
@@ -427,9 +440,14 @@ def ac_mode_expr(ctx, entity):
     return "(" + m + ").get(states('" + entity + "'), states('" + entity + "'))"
 
 
-def ac_summary(ctx, entity, nav=None, columns=12, rows="auto"):
+def ac_summary(ctx, entity, nav=None, columns=12, rows="auto", name_key=None, compact=False):
     """Read-only air-con card (V3-008 R1/R7): mode as reported, room and
-    target from the entity's own attributes, "No data" otherwise."""
+    target from the entity's own attributes, "No data" otherwise.
+
+    name_key (V3-023): a first line naming which air-con this is — the card
+    otherwise reads only "Current: Cool". compact: the name, then the mode and
+    the room temperature on one line (V3-007's own "Off · room 23.3°" form),
+    for a slot the size of a button. Without either, the card is unchanged."""
     ctx.use(entity)
     nd = jstr(ctx.t("s.no_data"))
 
@@ -437,6 +455,23 @@ def ac_summary(ctx, entity, nav=None, columns=12, rows="auto"):
         v = "state_attr('" + entity + "','" + attr + "')"
         return ("{{ ((" + v + " | float) | round(1) ~ '°') if " + v + " is number or ("
                 + v + " | is_number) else " + nd + " }}")
+    if name_key or compact:
+        head = ("**" + ctx.t(name_key) + "**<br>") if name_key else ""
+        if compact:
+            live = ("{{ " + ac_mode_expr(ctx, entity) + " }} · " + ctx.t("ac.room") + " "
+                    + temp("current_temperature"))
+        else:
+            live = ("{{ " + ctx.jt("ac.current", mode=ac_mode_expr(ctx, entity)) + " }}\n\n"
+                    + ctx.t("ac.room") + " " + temp("current_temperature") + " · "
+                    + ctx.t("ac.target") + " " + temp("temperature"))
+        body = ("{%- set s = states('" + entity + "') -%}" + head
+                + "{%- if s == 'unavailable' -%}" + ctx.t("s.offline") + " · " + ctx.t("s.no_data")
+                + "{%- elif s in ['unknown','none',''] -%}" + ctx.t("s.state_unknown") + " · " + ctx.t("s.no_data")
+                + "{%- else -%}" + live + "{%- endif -%}")
+        card = markdown(body, columns, rows)
+        if nav:
+            card["tap_action"] = {"action": "navigate", "navigation_path": ctx.link(nav)}
+        return card
     body = ("{%- set s = states('" + entity + "') -%}"
             "{%- if s == 'unavailable' -%}**" + ctx.t("s.offline") + "** · " + ctx.t("s.no_data")
             + "{%- elif s in ['unknown','none',''] -%}**" + ctx.t("s.state_unknown") + "** · " + ctx.t("s.no_data")

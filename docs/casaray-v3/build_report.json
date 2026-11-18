@@ -242,6 +242,7 @@
         "nav.all_rooms",
         "nav.classic",
         "nav.rubbish",
+        "nav.rubbish_short",
         "nav.weather",
         "net.none_reporting",
         "net.north_signal",

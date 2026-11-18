@@ -15,7 +15,8 @@ title: nav.home
 icon: mdi:home-variant-outline
 band_grid: 24
 sections:
-  # BAND 1 — wordmark, clock (DD/MM/YY), in-page rail (shared chrome, unchanged)
+  # BAND 1 — header (title, time above DD/MM/YY) and the six named rail buttons
+  # (shared chrome, components.topbar; V3-023)
   - topbar: true
 
   # BAND 2 — the render's four pills: Outside, Inside, Home, Monitored.
@@ -95,7 +96,10 @@ sections:
         action: light.turn_off
         target: [light.living_room, light.dining, light.bedroom_bedroom]
         columns: 6
-      - {c: ac_summary, entity: climate.bedroom_parents_room_ac, nav: climate, columns: 6, rows: 2}
+      # V3-023: names WHICH air-con (it read only "Current: Cool") and fits a
+      # button's slot in every locale: the name, then mode and room temperature.
+      - {c: ac_summary, entity: climate.bedroom_parents_room_ac, nav: climate, columns: 6, rows: 2,
+         name_key: ac.parents_name, compact: true}
 
   # BAND 5 — rooms | shopping list. Each room says what its sensors say, as
   # the render's room rows and V2 Home's room cards do; a tap opens the room.
@@ -152,7 +156,9 @@ sections:
   - span: 1
     heading: h.shopping
     cards:
-      - {c: todo, entity: todo.shopping_list, rows: 6}
+      # V3-023: five rows sits level with the Rooms column in Cantonese, the
+      # priority locale (a six-row list left a 43 px gap under Rooms there).
+      - {c: todo, entity: todo.shopping_list, rows: 5}
 
   # BAND 6 — right now | who's home. The render's left column: the weather,
   # then the two monitored plugs and the solar forecast with the footnote
@@ -169,15 +175,16 @@ sections:
         total: sensor.casa_monitored_power
         plugs: [sensor.g_monitor_freezer_p110m_current_consumption, sensor.r_energy_monitor_p110m_current_consumption]
         detail_key: energy.plugs_which
+        note_key: energy.monitored_note   # V3-023: the footnote, inside the card it qualifies
         nav: energy
-      - {c: sensor_tile, entity: sensor.casa_solar_expected_today, name: {t: energy.solar_expected}, columns: 12, nav: energy}
-      - {c: note, key: energy.monitored_note}
   - span: 1
     heading: h.whos_home
     cards:
-      - {c: person_tile, entity: person.raymond_du, rows: 3}
-      - {c: person_tile, entity: person.vinh_du, rows: 3}
-      - {c: person_tile, entity: person.ai_q_huang, rows: 3}
+      # V3-023: two rows, a vertical tile's own minimum and the render's size;
+      # three rows left each card about half empty.
+      - {c: person_tile, entity: person.raymond_du, rows: 2}
+      - {c: person_tile, entity: person.vinh_du, rows: 2}
+      - {c: person_tile, entity: person.ai_q_huang, rows: 2}
       - c: sensor_tile
         entity: binary_sensor.bedroom_parents_room_ac_room_occupied
         name: {t: room.parents}
@@ -214,6 +221,9 @@ sections:
       - {c: sensor_tile, entity: sensor.powerpal_gateway_powerpal_daily_energy, name: {t: energy.used_today}, nav: energy}
       - {c: sensor_tile, entity: sensor.primo_5_0_1_1_ac_power, name: {t: energy.solar_now}, nav: energy}
       - {c: sensor_tile, entity: sensor.primo_5_0_1_1_energy_day, name: {t: energy.solar_today}, nav: energy}
+      # V3-023: beside Solar now and Solar today, where it reads as the day's
+      # forecast; in Right now it made that column ~100 px taller than Who's home.
+      - {c: sensor_tile, entity: sensor.casa_solar_expected_today, name: {t: energy.solar_expected}, columns: 12, nav: energy}
       - {c: note, key: energy.two_circuits}
   - span: 1
     heading: h.climate_now
@@ -239,16 +249,19 @@ sections:
       # drawn honestly as "no data" rather than hidden, same as any other
       # offline reading). Four tiles at columns: 6 fill two full rows (two
       # 6+6 rows, no orphan), matching Energy now's own 2x2 tile grid.
-      - {c: ac_summary, entity: climate.bedroom_parents_room_ac, nav: climate}
+      - {c: ac_summary, entity: climate.bedroom_parents_room_ac, nav: climate, name_key: ac.parents_name}
       - {c: sensor_tile, entity: sensor.living_room_living_hue_hue_sensor_temperature, name: {t: room.living}, nav: climate}
       - {c: sensor_tile, entity: sensor.bedroom_motion_sensor_temperature, name: {t: room.parents}, nav: climate}
       - {c: sensor_tile, entity: sensor.living_room_living_room_temperature, name: {t: room.dining}, nav: climate}
       - {c: sensor_tile, entity: sensor.presence_multi_sensor_fp300_temperature, name: {t: room.ray}, nav: climate}
 
-  # BAND 9 — every board by name (rail is six glyphs); four across on the wall
+  # BAND 9 — every board by name; six across on the wall, three on a phone
   - c: more_boards
     classic_of: home
     band24: true
+    # V3-023: 4 units — six across on the wall (two rows, not three) and three
+    # on a phone (four rows, not six); at 6 units each icon drew ~100 px.
+    columns: 4
     items:
       - [bills, nav.bills, mdi:receipt-text-outline]
       - [people, nav.people, mdi:account-group-outline]

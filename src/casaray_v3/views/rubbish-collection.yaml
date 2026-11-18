@@ -20,6 +20,7 @@
 # below can be wired with `shown_when()` — not before.
 path: rubbish-collection
 title: nav.rubbish
+header_title: nav.rubbish_short   # the full title is wider than the header cell on a phone (V3-023)
 icon: mdi:trash-can-outline
 sections:
   - topbar: true

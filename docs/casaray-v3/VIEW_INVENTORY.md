@@ -156,4 +156,4 @@ Every V2 entity of this view is on its native rebuild.
 | en | `dashboards/casaray_v3.yaml` | `/casaray-v3` | 48 | 0 | 0 |
 | yue | `dashboards/casaray_v3/dist/casaray_v3_yue.yaml` | `/casaray-v3-yue` | 48 | 0 | 0 |
 | km | `dashboards/casaray_v3/dist/casaray_v3_km.yaml` | `/casaray-v3-km` | 48 | 0 | 0 |
-| zh-Hans | `dashboards/casaray_v3/dist/casaray_v3_zh-hans.yaml` | `/casaray-v3-zh` | 48 | 325 | 0 |
+| zh-Hans | `dashboards/casaray_v3/dist/casaray_v3_zh-hans.yaml` | `/casaray-v3-zh` | 48 | 326 | 0 |

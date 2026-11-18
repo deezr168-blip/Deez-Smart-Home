@@ -5,6 +5,7 @@
 # Proper nouns and device names stay Latin (CasaRay, Hue, Fronius, eero, Ray).
 app.name: CasaRay
 app.dev_banner: 開發版本 — 未部署
+app.dev_short: 未部署
 
 nav.home: 主頁
 nav.rooms: 房間
@@ -120,6 +121,7 @@ ac.mode_heat_cool: 冷暖自動
 ac.room: 室溫
 ac.target: 設定溫度
 ac.current: "而家：{mode}"
+ac.parents_name: 爸媽房冷氣機
 ac.readonly_note: "V3-008 控制規則未批准之前，V3 只顯示冷氣狀態。控制仍然喺舊版爸媽房畫面。"
 ac.open_controls: 冷氣控制（舊版）
 
@@ -164,6 +166,7 @@ weather.unverified_note: "天氣資料仲未同實際系統核實過。"
 
 # Rubbish Collection page (CR-V3-20) — draft translation, pending owner/native-speaker review.
 nav.rubbish: 垃圾收集
+nav.rubbish_short: 垃圾收集
 h.rubbish_collection: 收垃圾時間表
 rubbish.not_configured: "收垃圾時間表未連接或未核實。"
 rubbish.setup_path: "設定同核實之後，呢版就會顯示實際日期。"

@@ -4,6 +4,7 @@
 # fall back to English and are listed in the build report.
 app.name: CasaRay
 app.dev_banner: 开发版本 — 未部署
+app.dev_short: 未部署
 
 nav.home: 首页
 nav.rooms: 房间
@@ -52,6 +53,7 @@ ac.mode_cool: 制冷
 ac.mode_heat: 制热
 ac.mode_fan_only: 仅送风
 ac.current: "当前：{mode}"
+ac.parents_name: 父母房空调
 
 # Energy (added with the native Energy view)
 h.solar: "太阳能"

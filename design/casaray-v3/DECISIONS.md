@@ -6,6 +6,111 @@ and `ha-deploy` are unaffected by everything here.
 
 ---
 
+## V3-023 · 18/11/26 · PR #21: regression on the new head; top bar and Home, measured against the frontend's own rules
+
+**Status:** owner brief (18/11/26): finish PR #21's validation round, then
+the already-authorised Home visual items — large labelled navigation,
+consistent alignment and spacing, readable Cantonese-first labels, compact
+everyday controls. Same `feature/casaray-v3/weather-rubbish` branch, PR #21
+still draft. DEVELOPMENT ONLY — NOT DEPLOYED; no merge, no live change.
+
+1. **Regression, both heads, run here.** The earlier session's background
+   result was not reachable from this container, so the full suite was run
+   again: `56c0405` — **105 tests, 0 failures, exit 0** (512.7 s), clean tree.
+   While it ran, a parallel session pushed `69b5164` (V3-022). That head was
+   re-run in a clean worktree pinned to exactly `69b5164`: **105 tests,
+   0 failures, exit 0** (604.5 s); `build_dashboard.py --check` current;
+   `validate_dashboard.py` 1569 passed / 0 failed; `ha_validate.sh` PASSED.
+2. **Built on V3-022, not redone.** V3-022 had already named every rail
+   button, corrected `nav.climate` (氣候) and balanced Climate now. The
+   preview it was judged in drew button labels at 14 px with side padding;
+   the pinned frontend (20260826.7) draws them at `--ha-font-size-l`, 16 px,
+   unpadded and clipped, never ellipsised. Corrected (`fd0b3df`, tooling
+   only), the same build measured: four of six English rail labels clipped
+   on a phone (2-unit buttons, ~55 px), "Cameras" clipped on the wall, the
+   wall row two heights again (auto wordmark and clock, ~87 px, beside
+   120 px buttons), and — with every button named — no visible mark on the
+   current destination (V3 CLAUDE.md: "always marked in the navigation").
+3. **Shared top bar** (`components.topbar`, every native view):
+   - Header cell (6 units, 2 rows) + six named buttons at 3 units, 2 rows:
+     one 120 px row on the wall (buttons ~132 px wide, up from ~77), two
+     equal rows on a phone (~87 px, up from 55). Every cell one height.
+   - Header: title, then the time above the `DD/MM/YY` date, then a short
+     development marker, `app.dev_short` — in each locale an exact part of
+     its own `app.dev_banner` (en "Not deployed", yue/zh-Hans 未部署,
+     km កំណែអភិវឌ្ឍន៍), so no new vocabulary. Khmer uses the banner's
+     first half because its second half wraps the line on a phone.
+   - Current destination: inert, as before, and its icon tinted with the
+     button card's own `color: accent` — read from the pinned source: it
+     applies with no entity, and `accent` resolves to `var(--accent-color)`,
+     which the installed CasaRay V3 theme maps to `--v3-accent` (amber,
+     "selected"). No theme file change, so nothing to re-install.
+   - `header_title` (optional view key, generator commit on its own): a
+     shorter key for the header only. Used once, Rubbish collection (181 px
+     of title in a 151 px cell); the page keeps its full name everywhere
+     else. Without the key the output is unchanged.
+4. **Home** (`src/casaray_v3/views/home.yaml`):
+   - One tap's air-con slot keeps V3-007's role (state in words, a tap opens
+     Climate) and now says which air-con it is: 「爸媽房冷氣機」 / "Parents'
+     air-con", then mode and room temperature on one line, V3-007's own
+     "Off · room 23.3°" form. It read only 「而家：冷氣」 before, and it
+     overran its cell in Khmer. Climate now gets the same name line. The
+     name reuses each catalogue's own words (爸媽房 + 冷氣機; V2's 父母房空调).
+   - People at two rows, the vertical tile's minimum and the render's
+     ~115 px; three rows left each card about half empty.
+   - The "monitored" footnote moves inside the plugs card it qualifies.
+   - Solar expected today moves from Right now to Energy now, beside Solar
+     now and Solar today. **Departs from the 14/09 render**, which keeps it in
+     its left column: with people compacted, it made Right now ~100 px
+     taller than Who's home beside it. Still on Home (the V3-013 migration
+     test only pins presence).
+   - Shopping list at five rows: level with Rooms in Cantonese, the priority
+     locale. Room lines are auto-height, so the list can only trade the gap
+     between locales: English now has 43 px under Shopping, Cantonese 21 px.
+   - More boards at 4 units: six across on the wall (two rows, not three),
+     three on a phone (four rows, not six). At 6 units each icon drew
+     ~100 px, the largest glyph on the page.
+5. **Measured, simulated** (`preview_view.py --shots`, frontend geometry,
+   approximated card interiors, fixture states; not a device):
+
+   | | 69b5164 | V3-023 |
+   |---|---|---|
+   | Wall band holes, yue (rooms · right now · energy) | 43 · 77 · 36 px | 21 · 31 · 11 px |
+   | Wall band holes, en | 21 · 77 · 14 px | 43 · 31 · 32 px |
+   | Wall page height, yue / en | 2,644 / 2,644 px | 2,396 / 2,439 px |
+   | Phone page height, yue / en | 4,738 / 4,803 px | 4,357 / 4,401 px |
+   | Clipped labels on a phone, en / yue | 4 / 0 | 0 / 0 |
+   | Top bar on all 20 native pages × 3 locales | not measured | wall: no fault; phone: only km Living room and Parents' room (title wraps) |
+
+6. **Scope, checked:** in all four locales 28 views are byte-identical to
+   `69b5164`, 19 native views differ only in the top bar section, and Home.
+   Every changed card was rendered against the normal and the fully dark
+   fixture in English and Cantonese: dark reads 「離線 · 冇數據」 / "Offline ·
+   No data", never a stale temperature.
+7. **Overlap with PR #16 (open, awaiting the owner, TASK-028):** PR #16 made
+   the top bar icon-only to hold one row; this brief asks for named
+   buttons, and V3-022 already named them. The two conflict in
+   `components.topbar`; whichever merges second must choose. PR #16's equal
+   room heights (rows 2) were not copied: by the frontend's row arithmetic
+   (four 120 px rows against ~85 px auto lines) they would add roughly
+   140 px on a phone, for alignment the Shopping list already gives in
+   Cantonese. An estimate, not a measurement.
+8. **Still open — needs a device or the owner:**
+   - Nothing here was seen in Home Assistant. Typography, the amber icon,
+     the header fit and every height above are from the pinned source and a
+     simulation.
+   - Khmer (draft, awaiting native review): the Living room and Parents'
+     room titles wrap the header on a phone; "Automations" may clip in More
+     boards on a phone; កំណែអភិវឌ្ឍន៍ fits by 4 px.
+   - Tile states, the to-do card's "Add item" and the weather words are
+     Home Assistant's own text, in the HA user's profile language, not this
+     catalogue's. A Cantonese wall needs that user set to Chinese.
+   - From the pinned sanitiser: markdown accepts `<ha-icon icon=…>`, so the
+     room lines could carry the render's room icons (V3-013 listed this as
+     unverified). Not done here.
+   - The rubbish reminder automation proposal (V3-021) is still **not**
+     checked by a Home Assistant schema validator.
+
 ## V3-022 · 18/11/26 · PR #21 full-suite validation; Home visual pass against the 14/09 wall render
 
 **Status:** owner-relayed round, implemented on the same
