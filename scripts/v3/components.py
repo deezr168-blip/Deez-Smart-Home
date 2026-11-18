@@ -43,6 +43,13 @@ def nav_button(ctx, label_key, icon, target, columns=3, rows=1, show_name=True, 
            "tap_action": {"action": "none"} if current else
            {"action": "navigate", "navigation_path": ctx.link(target)},
            "grid_options": grid(columns, rows)}
+    if current:
+        # The current destination, marked (V3 CLAUDE.md: "always marked in the
+        # navigation") now that every rail button is named: the button card's
+        # own `color` tints its icon even with no entity, and `accent` resolves
+        # to var(--accent-color), which the installed CasaRay V3 theme maps to
+        # --v3-accent — amber, "selected" in the semantic colours (V3-023).
+        btn["color"] = "accent"
     return btn
 
 
@@ -131,7 +138,7 @@ def person_tile(ctx, entity, nav="people", columns=4, rows=2):
 
 # ---------------------------------------------------------------- chrome
 
-RAIL = [  # (view path, label key, icon) — six glyphs, 2 columns each = 12
+RAIL = [  # (view path, label key, icon) — six named buttons, 3 units each (V3-023)
     ("home", "nav.home", "mdi:home-variant-outline"),
     ("lighting", "nav.lighting", "mdi:lightbulb-group-outline"),
     ("climate", "nav.climate", "mdi:thermometer"),
@@ -141,41 +148,34 @@ RAIL = [  # (view path, label key, icon) — six glyphs, 2 columns each = 12
 ]
 
 
-def topbar(ctx, view_path, title_key, compact=False):
-    """Wordmark/title + clock, then the in-page rail (kiosk hides HA chrome).
+def topbar(ctx, view_path, title_key):
+    """Header cell, then the in-page rail (kiosk hides HA chrome).
 
-    Home and the rail are on every V3 view; the current destination is marked
-    by showing its name and making it inert. History-back has no native
+    Home and the rail are on every V3 view. History-back has no native
     Lovelace action, so Back on a top-level view IS Home (documented).
 
-    compact (V3-014, the band_grid 24 views): one 56 px row on the wall iPad
-    and two on a phone, every cell the same height. The title and clock are
-    text-only markdown, each one heading split by a line break so there is
-    no margin to overflow the row; the rail is six icon-only buttons (a named
-    button cannot be under two rows, which is what made the current one twice
-    as tall as the rest). The current page is inert and named by the title."""
+    V3-023, sized from the pinned frontend (ha_layout.py) so the row has ONE
+    height on both devices — a named button can never be under two rows:
+      * wall iPad, 24 units: header 6 + six buttons x 3 = one row, 120 px;
+      * phone, 12 units: header 6 + 3 + 3, then 3 x 4 = two rows of 120 px.
+    Every button is named and at least 3 units wide, so a label is ~87 px on
+    a phone, not 55 px. The current destination is inert and tinted
+    (nav_button). The header holds the title, then the time above the date
+    (DD/MM/YY) and the preview marker — one heading and one paragraph, which
+    fit the two-row cell at the frontend's own type sizes (h2 20 px).
+
+    V3-024 (preview release candidate): this bar replaces V3-014's compact,
+    icon-only rail on the band-grid views too, so every view has the same
+    named navigation. The marker is V3-014's "Preview" (app.preview_banner):
+    the candidate is built for the /casaray-v3 preview dashboard, where a
+    "Not deployed" marker would become untrue the moment it is applied."""
     title = ctx.t("app.name") if view_path == "home" else ctx.t(title_key)
-    if compact:
-        wordmark = {"type": "markdown", "text_only": True,
-                    "content": "## " + title + "<br><small>" + ctx.t("app.preview_banner") + "</small>",
-                    "grid_options": grid(8, 1)}
-        clock = {"type": "markdown", "text_only": True,
-                 "content": "## {{ now().strftime('%H:%M') }}<br><small>{{ now().strftime('%d/%m/%y') }}</small>",
-                 "grid_options": grid(4, 1)}
-        cards = [wordmark, clock]
-        for path, key, icon in RAIL:
-            cards.append(nav_button(ctx, key, icon, path, columns=2, rows=1,
-                                    show_name=False, current=path == view_path))
-        return {"type": "grid", "column_span": 2, "cards": cards}
-    wordmark = markdown(
-        "## " + title + "\n<small>" + ctx.t("app.dev_banner") + "</small>", 6)
-    clock = markdown(
-        "## {{ now().strftime('%H:%M') }}\n{{ now().strftime('%d/%m/%y') }}", 6)
-    cards = [wordmark, clock]
+    header = markdown(
+        "## " + title + "\n**{{ now().strftime('%H:%M') }}**<br>"
+        "<small>{{ now().strftime('%d/%m/%y') }} · " + ctx.t("app.preview_banner") + "</small>", 6, 2)
+    cards = [header]
     for path, key, icon in RAIL:
-        cur = path == view_path
-        cards.append(nav_button(ctx, key, icon, path, columns=2, rows=1,
-                                show_name=cur, current=cur))
+        cards.append(nav_button(ctx, key, icon, path, columns=3, rows=2, current=path == view_path))
     return {"type": "grid", "column_span": 2, "cards": cards}
 
 
@@ -279,12 +279,16 @@ def chip_plugs(ctx, label_key, total, plugs, digits=1):
     return pre + ctx.t(label_key) + " **{{ " + val + " }}**{{ " + note + " }}"
 
 
-def plugs_card(ctx, label_key, total, plugs, detail_key, nav=None, columns=12, digits=1):
+def plugs_card(ctx, label_key, total, plugs, detail_key, nav=None, columns=12, digits=1, note_key=None):
     """The mockups' Monitored power card: the two-plug total, which plugs, and
-    how many answered; a tap opens the board that shows each plug."""
+    how many answered; a tap opens the board that shows each plug.
+
+    note_key (V3-023): the footnote that qualifies the figure, inside the card
+    it qualifies, as the render draws it, rather than as a card of its own."""
     pre, val, note = _plugs(ctx, total, plugs, digits)
+    foot = ("\n<small>" + ctx.t(note_key) + "</small>") if note_key else ""
     card = markdown(pre + "**" + ctx.t(label_key) + "**\n{{ " + val + " }} · " + ctx.t(detail_key)
-                    + "{{ " + note + " }}", columns)
+                    + "{{ " + note + " }}" + foot, columns)
     if nav:
         card["tap_action"] = {"action": "navigate", "navigation_path": ctx.link(nav)}
     return card
@@ -439,9 +443,14 @@ def ac_mode_expr(ctx, entity):
     return "(" + m + ").get(states('" + entity + "'), states('" + entity + "'))"
 
 
-def ac_summary(ctx, entity, nav=None, columns=12, rows="auto"):
+def ac_summary(ctx, entity, nav=None, columns=12, rows="auto", name_key=None, compact=False):
     """Read-only air-con card (V3-008 R1/R7): mode as reported, room and
-    target from the entity's own attributes, "No data" otherwise."""
+    target from the entity's own attributes, "No data" otherwise.
+
+    name_key (V3-023): a first line naming which air-con this is — the card
+    otherwise reads only "Current: Cool". compact: the name, then the mode and
+    the room temperature on one line (V3-007's own "Off · room 23.3°" form),
+    for a slot the size of a button. Without either, the card is unchanged."""
     ctx.use(entity)
     nd = jstr(ctx.t("s.no_data"))
 
@@ -449,6 +458,23 @@ def ac_summary(ctx, entity, nav=None, columns=12, rows="auto"):
         v = "state_attr('" + entity + "','" + attr + "')"
         return ("{{ ((" + v + " | float) | round(1) ~ '°') if " + v + " is number or ("
                 + v + " | is_number) else " + nd + " }}")
+    if name_key or compact:
+        head = ("**" + ctx.t(name_key) + "**<br>") if name_key else ""
+        if compact:
+            live = ("{{ " + ac_mode_expr(ctx, entity) + " }} · " + ctx.t("ac.room") + " "
+                    + temp("current_temperature"))
+        else:
+            live = ("{{ " + ctx.jt("ac.current", mode=ac_mode_expr(ctx, entity)) + " }}\n\n"
+                    + ctx.t("ac.room") + " " + temp("current_temperature") + " · "
+                    + ctx.t("ac.target") + " " + temp("temperature"))
+        body = ("{%- set s = states('" + entity + "') -%}" + head
+                + "{%- if s == 'unavailable' -%}" + ctx.t("s.offline") + " · " + ctx.t("s.no_data")
+                + "{%- elif s in ['unknown','none',''] -%}" + ctx.t("s.state_unknown") + " · " + ctx.t("s.no_data")
+                + "{%- else -%}" + live + "{%- endif -%}")
+        card = markdown(body, columns, rows)
+        if nav:
+            card["tap_action"] = {"action": "navigate", "navigation_path": ctx.link(nav)}
+        return card
     body = ("{%- set s = states('" + entity + "') -%}"
             "{%- if s == 'unavailable' -%}**" + ctx.t("s.offline") + "** · " + ctx.t("s.no_data")
             + "{%- elif s in ['unknown','none',''] -%}**" + ctx.t("s.state_unknown") + "** · " + ctx.t("s.no_data")
@@ -496,7 +522,15 @@ def camera_card(ctx, entity, name_key, subview=None, columns=6, rows=4, full_scr
     unavailable. Exactly one of the two is visible, so the grid keeps its
     shape. `battery` adds the camera's battery reading to that card: a camera
     whose battery answers while its stream does not is a stream problem, not
-    a dead camera."""
+    a dead camera.
+
+    V3-024: the twin also covers `unknown`, and says "State unknown" there
+    rather than Offline. hui-image still fetches an unknown camera's image
+    (a broken image, no word), and the frontend evaluates a camera entity that
+    does not exist at all as `unknown` (validate-condition.ts), so without this
+    a removed or renamed camera would draw an empty frame. Offline and unknown
+    are different states and say different words (V3 rule: four camera states,
+    never colour alone)."""
     ctx.use(entity)
     tap = ({"action": "more-info"} if full_screen == "more-info" else
            {"action": "navigate", "navigation_path": ctx.link(subview)})
@@ -506,15 +540,18 @@ def camera_card(ctx, entity, name_key, subview=None, columns=6, rows=4, full_scr
            "grid_options": grid(columns, rows)}
     if not offline:
         return pic
-    pic["visibility"] = [{"condition": "state", "entity": entity, "state_not": "unavailable"}]
-    body = "**" + ctx.t(name_key) + "** · **" + ctx.t("s.offline") + "**\n" + ctx.t("cam.no_stream")
+    dark = ["unavailable", "unknown"]
+    pic["visibility"] = [{"condition": "state", "entity": entity, "state_not": list(dark)}]
+    word = ("{{ " + jstr(ctx.t("s.offline")) + " if states('" + entity + "') == 'unavailable' else "
+            + jstr(ctx.t("s.state_unknown")) + " }}")
+    body = "**" + ctx.t(name_key) + "** · **" + word + "**\n" + ctx.t("cam.no_stream")
     if battery:
         ctx.use(battery)
         b = "states('" + battery + "')"
         body += (" · {{ (" + ctx.jt("cam.battery", v="(" + b + " | float) | round(0) | int") + ") if "
                  + b + " | is_number else " + jstr(ctx.t("cam.no_battery")) + " }}")
     twin = markdown(body, columns, rows)
-    twin["visibility"] = [{"condition": "state", "entity": entity, "state": "unavailable"}]
+    twin["visibility"] = [{"condition": "state", "entity": entity, "state": list(dark)}]
     return [pic, twin]
 
 

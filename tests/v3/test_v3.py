@@ -34,6 +34,13 @@ def view(d, path):
     return next(v for v in d["views"] if v["path"] == path)
 
 
+def past_top_bar(v, outs):
+    """A view's rendered markdown past the shared top bar. Its card count is
+    the top bar's business (V3-023 made the wordmark and clock one header
+    cell), so positional checks start after it rather than at a fixed index."""
+    return outs[sum(1 for c in v["sections"][0]["cards"] if c.get("type") == "markdown"):]
+
+
 def render(d, path, states, attrs=None):
     return "\n".join(R.render_view(view(d, path), states, attrs or {}))
 
@@ -717,8 +724,8 @@ class CoreBoards(unittest.TestCase):
 
     # ---- Alerts
     def alerts(self, **st):
-        outs = R.render_view(view(dash("en"), "alerts"), dict(self.states, **st), self.attrs)
-        return outs
+        v = view(dash("en"), "alerts")
+        return past_top_bar(v, R.render_view(v, dict(self.states, **st), self.attrs))   # [0] strip, [1:4] lists
 
     def test_strip_and_lists_agree(self):
         W, D, M = ("binary_sensor.eero_wan_status", "binary_sensor.emergency_button_dad_cloud_connection",
@@ -726,8 +733,9 @@ class CoreBoards(unittest.TestCase):
         scenarios = [{}, {W: "off", D: "weird", M: "unavailable", "sensor.front_door_battery": "9"},
                      {"binary_sensor.lph_se_dcd9_pump": "on", "binary_sensor.lg_fridge_door": "on"}]
         for st in scenarios + [None]:
-            outs = R.render_view(view(dash("en"), "alerts"), self.dark if st is None else dict(self.states, **st), self.attrs)
-            strip, lists = outs[2], outs[3:6]
+            v = view(dash("en"), "alerts")
+            outs = past_top_bar(v, R.render_view(v, self.dark if st is None else dict(self.states, **st), self.attrs))
+            strip, lists = outs[0], outs[1:4]
             counts = [int(x) if x.isdigit() else None for x in re.findall(r"\*\*(\d+|No data)\*\*", strip)]
             self.assertEqual(len(counts), 3, strip)
             for n, body in zip(counts, lists):
@@ -736,7 +744,7 @@ class CoreBoards(unittest.TestCase):
 
     def test_emergency_buttons_are_never_cleared_by_silence_or_an_odd_state(self):
         D, M = "binary_sensor.emergency_button_dad_cloud_connection", "binary_sensor.emergency_button_mum_cloud_connection"
-        crit = lambda **st: self.alerts(**st)[3]
+        crit = lambda **st: self.alerts(**st)[1]
         self.assertIn("Dad's emergency button cannot be confirmed", crit(**{D: "unavailable"}))
         self.assertIn("Dad's emergency button cannot be confirmed", crit(**{D: "weird"}))
         self.assertIn("Mum's emergency button is not connected", crit(**{M: "off"}))

@@ -117,6 +117,7 @@ ac.mode_heat_cool: Heat/cool
 ac.room: Room
 ac.target: Target
 ac.current: "Current: {mode}"
+ac.parents_name: Parents' air-con   # names which air-con (V3-023)
 ac.readonly_note: "V3 shows the air-con read-only until the V3-008 control contract is approved. Controls stay on the classic Parents' room view."
 ac.open_controls: Air-con controls (classic)
 

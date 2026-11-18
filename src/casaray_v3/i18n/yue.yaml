@@ -9,7 +9,7 @@ app.dev_banner: 開發版本 — 未部署
 nav.home: 主頁
 nav.rooms: 房間
 nav.lighting: 燈光
-nav.climate: 冷氣同天氣
+nav.climate: 氣候   # was 冷氣同天氣 (air-con and weather); the page is Climate (V3-022)
 nav.cameras: 鏡頭
 nav.energy: 用電
 nav.security: 保安
@@ -120,6 +120,7 @@ ac.mode_heat_cool: 冷暖自動
 ac.room: 室溫
 ac.target: 設定溫度
 ac.current: "而家：{mode}"
+ac.parents_name: 爸媽房冷氣機
 ac.readonly_note: "V3-008 控制規則未批准之前，V3 只顯示冷氣狀態。控制仍然喺舊版爸媽房畫面。"
 ac.open_controls: 冷氣控制（舊版）
 

@@ -1,5 +1,10 @@
-"""V3-014: camera slots, the compact top bar, and bands that pack with
-visibility applied.  DEVELOPMENT ONLY.
+"""V3-014: camera slots and bands that pack with visibility applied; the top
+bar on the band-grid views.  DEVELOPMENT ONLY.
+
+V3-024 (preview release candidate): V3-014's compact, icon-only top bar is
+superseded by V3-023's named bar on every view, so CompactTopBar became
+SharedTopBar; and the Offline card also covers `unknown`, where it says
+"State unknown" instead.
 
     python3 -m unittest discover -s tests/v3 -v
 
@@ -54,8 +59,10 @@ class CameraSlots(unittest.TestCase):
                 i = sec["cards"].index(pic)
                 twin = sec["cards"][i + 1]
                 self.assertEqual(twin["type"], "markdown", e)
-                self.assertEqual(pic["visibility"], [{"condition": "state", "entity": e, "state_not": "unavailable"}])
-                self.assertEqual(twin["visibility"], [{"condition": "state", "entity": e, "state": "unavailable"}])
+                self.assertEqual(pic["visibility"], [{"condition": "state", "entity": e,
+                                                      "state_not": ["unavailable", "unknown"]}])
+                self.assertEqual(twin["visibility"], [{"condition": "state", "entity": e,
+                                                       "state": ["unavailable", "unknown"]}])
                 self.assertEqual(L.effective(pic), L.effective(twin), e)
 
     def test_exactly_one_of_each_pair_shows(self):
@@ -67,6 +74,29 @@ class CameraSlots(unittest.TestCase):
         idle = {e: "idle" for e in CAMS}
         self.assertTrue(all(c["type"] == "picture-entity" for c in sec["cards"]
                             if c.get("visibility") and L.visible(c, idle)), "an idle camera is available")
+        for st in ("unavailable", "unknown"):
+            dark = {e: st for e in CAMS}
+            self.assertTrue(all(c["type"] == "markdown" for c in sec["cards"]
+                                if c.get("visibility") and L.visible(c, dark)), f"a {st} camera shows words")
+        # a camera entity that does not exist reads `unknown` in the frontend
+        # (validate-condition.ts): its slot shows words, not an empty frame
+        shown = [c for c in sec["cards"] if c.get("visibility") and L.visible(c, {})]
+        self.assertEqual(len(shown), 6)
+        self.assertTrue(all(c["type"] == "markdown" for c in shown))
+
+    def test_unknown_camera_says_state_unknown_not_offline(self):
+        """V3-024: offline and unknown are different states with different
+        words (V3 rule: four camera states, never colour alone)."""
+        E = "camera.tapo_c200_stockroom_hd_stream_direct"
+        for code, word, wrong in (("en", "State unknown", "Offline"), ("yue", "狀態未知", "離線"),
+                                  ("zh-Hans", "状态未知", "离线"), ("km", "មិនដឹងស្ថានភាព", "ដាច់បណ្ដាញ")):
+            twin = next(c for c in grid_section(view("cameras", code))["cards"]
+                        if c["type"] == "markdown" and c.get("visibility") and E in str(c["visibility"]))
+            out = R.env_for(dict(self.states, **{E: "unknown"}), {}).from_string(twin["content"]).render()
+            self.assertIn("· **" + word + "**", out, code)
+            self.assertNotIn(wrong, out, code)
+            out = R.env_for(dict(self.states, **{E: "unavailable"}), {}).from_string(twin["content"]).render()
+            self.assertIn("· **" + wrong + "**", out, code)
 
     def test_a_tap_opens_the_native_live_view(self):
         for path in ("cameras", "home"):
@@ -99,31 +129,35 @@ class CameraSlots(unittest.TestCase):
             self.assertEqual(V.C.effective_tile_actions(t)[1], "none", t["entity"])
 
 
-class CompactTopBar(unittest.TestCase):
-    def test_band_views_get_one_height_top_bar(self):
+class SharedTopBar(unittest.TestCase):
+    """V3-024: the band-grid views (Home, Cameras) carry the same named top bar
+    as every other view: one row on the wall iPad, two on a phone, every cell
+    one height, the current page inert and tinted."""
+
+    def test_band_views_get_the_named_one_height_top_bar(self):
         for path in ("home", "cameras"):
             top = view(path)["sections"][0]
-            md = [c for c in top["cards"] if c["type"] == "markdown"]
             btn = [c for c in top["cards"] if c["type"] == "button"]
-            self.assertTrue(all(c.get("text_only") for c in md))
             self.assertEqual(len(btn), 6)
-            self.assertTrue(all(c["show_name"] is False for c in btn))
-            self.assertEqual({L.effective(c)[1] for c in top["cards"]}, {1}, path)
+            self.assertTrue(all(c.get("show_name", True) for c in btn), path)
+            self.assertEqual({L.effective(c)[1] for c in top["cards"]}, {2}, path)
             current = [c for c in btn if c["tap_action"] == {"action": "none"}]
             self.assertEqual(len(current), 1, "the current page is inert")
+            self.assertEqual(current[0].get("color"), "accent", "and marked")
             for units in (24, 12):
                 self.assertEqual(L.place([L.effective(c) for c in top["cards"]], units)[2], 0, (path, units))
 
-    def test_other_views_keep_their_top_bar(self):
-        top = view("lighting")["sections"][0]
-        self.assertFalse(any(c.get("text_only") for c in top["cards"]))
-        self.assertTrue(any(c.get("show_name") for c in top["cards"] if c["type"] == "button"))
+    def test_every_view_has_the_same_bar_shape(self):
+        shape = lambda p: [(c["type"], L.effective(c)) for c in view(p)["sections"][0]["cards"]]
+        for p in MAN["native"]:
+            self.assertEqual(shape(p), shape("home"), p)
+        self.assertFalse(any(c.get("text_only") for p in MAN["native"] for c in view(p)["sections"][0]["cards"]))
 
     def test_clock_keeps_dd_mm_yy_under_the_time(self):
-        clock = view("home")["sections"][0]["cards"][1]["content"]
-        self.assertIn("%H:%M') }}<br>", clock)
-        self.assertIn("%d/%m/%y", clock)
-        self.assertNotIn("%Y", clock)
+        head = view("home")["sections"][0]["cards"][0]["content"]
+        self.assertIn("%H:%M') }}**<br>", head)
+        self.assertIn("%d/%m/%y", head)
+        self.assertNotIn("%Y", head)
 
 
 class BandsWithVisibility(unittest.TestCase):
