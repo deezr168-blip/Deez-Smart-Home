@@ -512,10 +512,23 @@ def weather_detail(ctx, entity, columns=12):
     # but logs 15 false "missing" keys per locale (CR-V3-20 build fix).
     words = {c: f"weather.cond.{c}" for c in WEATHER_CONDITIONS}
     cond = word_expr(ctx, entity, words)
-    temp = deg_expr(ctx, entity, digits=1, attr="temperature")
+    # CR-V3-20 (ChatGPT review on PR #21): deg_expr()'s own `attr` form only
+    # checks whether the ATTRIBUTE is numeric, on the assumption that Home
+    # Assistant always clears an entity's attributes while it is dark. That
+    # is not guaranteed — an integration can leave a stale numeric attribute
+    # behind on an entity whose overall state has gone unavailable/unknown.
+    # Reading from the entity's own state here, not deg_expr(), so both
+    # readings are gated on overall availability FIRST, the same way
+    # word_expr() already gates the condition word above: a retained-looking
+    # number must never survive the entity itself going dark.
+    s = "states('" + entity + "')"
+    avail = s + " not in ['unavailable', 'unknown', 'none', '']"
+    temp_attr = "state_attr('" + entity + "','temperature')"
+    temp = ("(((" + temp_attr + " | float) | round(1)) ~ '°') if (" + avail + ") and ("
+            + temp_attr + " | is_number) else " + jstr(ctx.t("s.no_data")))
     hum_attr = "state_attr('" + entity + "','humidity')"
-    hum = ("((" + hum_attr + " | round(0) | int) ~ '%') if " + hum_attr
-           + " | is_number else " + jstr(ctx.t("s.no_data")))
+    hum = ("((" + hum_attr + " | round(0) | int) ~ '%') if (" + avail + ") and ("
+           + hum_attr + " | is_number) else " + jstr(ctx.t("s.no_data")))
     content = (
         "## {{ " + cond + " }}\n"
         "### {{ " + temp + " }}\n"

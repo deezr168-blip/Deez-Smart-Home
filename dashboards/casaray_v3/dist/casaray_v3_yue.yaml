@@ -25137,8 +25137,8 @@ views:
           - type: markdown
             content: |-
               ## {{ ("離線" if states('weather.forecast_home') == 'unavailable' else ("狀態未知" if states('weather.forecast_home') in ['unknown','none',''] else ({"clear-night":"天晴","cloudy":"多雲","exceptional":"異常天氣","fog":"有霧","hail":"落冰粒","lightning":"打雷","lightning-rainy":"雷暴","partlycloudy":"多雲時晴","pouring":"落大雨","rainy":"落雨","snowy":"落雪","snowy-rainy":"雨夾雪","sunny":"天晴","windy":"大風","windy-variant":"大風"}).get(states('weather.forecast_home'), states('weather.forecast_home')))) }}
-              ### {{ (((state_attr('weather.forecast_home','temperature') | float) | round(1)) ~ '°') if state_attr('weather.forecast_home','temperature') | is_number else "冇數據" }}
-              濕度: {{ ((state_attr('weather.forecast_home','humidity') | round(0) | int) ~ '%') if state_attr('weather.forecast_home','humidity') | is_number else "冇數據" }}
+              ### {{ (((state_attr('weather.forecast_home','temperature') | float) | round(1)) ~ '°') if (states('weather.forecast_home') not in ['unavailable', 'unknown', 'none', '']) and (state_attr('weather.forecast_home','temperature') | is_number) else "冇數據" }}
+              濕度: {{ ((state_attr('weather.forecast_home','humidity') | round(0) | int) ~ '%') if (states('weather.forecast_home') not in ['unavailable', 'unknown', 'none', '']) and (state_attr('weather.forecast_home','humidity') | is_number) else "冇數據" }}
             grid_options:
               columns: 12
               rows: auto
@@ -25163,7 +25163,7 @@ views:
         column_span: 2
         cards:
           - type: markdown
-            content: <small>weather.forecast_home 而家仲answering唔answering、同埋佢支援嗰啲預報類型，最後一次確認係05/09/26嗰份匯出，呢個session未有喺live嘅系統上再核實過。呢版暫時當未核實，等核實咗先當準。</small>
+            content: <small>天氣資料仲未同實際系統核實過。</small>
             grid_options:
               columns: 12
               rows: auto
@@ -25309,7 +25309,7 @@ views:
               columns: 12
               rows: auto
           - type: markdown
-            content: <small>收垃圾時間表未設定 — 呢部機暫時冇任何實體可以話到你知垃圾、回收或者綠色垃圾嘅收集日期。</small>
+            content: <small>收垃圾時間表未連接或未核實。</small>
             grid_options:
               columns: 12
               rows: auto
@@ -25317,7 +25317,7 @@ views:
         column_span: 2
         cards:
           - type: markdown
-            content: <small>一旦加咗同核實咗議會或者人手維護嘅下次收垃圾日期來源，呢版就會顯示出嚟，Home版都可以喺收垃圾前一晚同埋當日朝早提你。而家仲未有，所以乜都唔會靠估。</small>
+            content: <small>設定同核實之後，呢版就會顯示實際日期。</small>
             grid_options:
               columns: 12
               rows: auto

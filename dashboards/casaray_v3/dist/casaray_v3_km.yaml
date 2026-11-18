@@ -25137,8 +25137,8 @@ views:
           - type: markdown
             content: |-
               ## {{ ("ដាច់បណ្ដាញ" if states('weather.forecast_home') == 'unavailable' else ("មិនដឹងស្ថានភាព" if states('weather.forecast_home') in ['unknown','none',''] else ({"clear-night":"ស្រឡះ","cloudy":"មានពពក","exceptional":"អាកាសធាតុខុសពីធម្មតា","fog":"មានអ័ព្ទ","hail":"ព្រិល​ត្រជាក់","lightning":"រន្ទះ","lightning-rainy":"ព្យុះផ្គរលាន់","partlycloudy":"មានពពកខ្លះ","pouring":"ភ្លៀងខ្លាំង","rainy":"មានភ្លៀង","snowy":"មានព្រិល","snowy-rainy":"ព្រិលចុះភ្លៀង","sunny":"ថ្ងៃចែង","windy":"ខ្យល់ខ្លាំង","windy-variant":"ខ្យល់ខ្លាំង"}).get(states('weather.forecast_home'), states('weather.forecast_home')))) }}
-              ### {{ (((state_attr('weather.forecast_home','temperature') | float) | round(1)) ~ '°') if state_attr('weather.forecast_home','temperature') | is_number else "គ្មានទិន្នន័យ" }}
-              សំណើម: {{ ((state_attr('weather.forecast_home','humidity') | round(0) | int) ~ '%') if state_attr('weather.forecast_home','humidity') | is_number else "គ្មានទិន្នន័យ" }}
+              ### {{ (((state_attr('weather.forecast_home','temperature') | float) | round(1)) ~ '°') if (states('weather.forecast_home') not in ['unavailable', 'unknown', 'none', '']) and (state_attr('weather.forecast_home','temperature') | is_number) else "គ្មានទិន្នន័យ" }}
+              សំណើម: {{ ((state_attr('weather.forecast_home','humidity') | round(0) | int) ~ '%') if (states('weather.forecast_home') not in ['unavailable', 'unknown', 'none', '']) and (state_attr('weather.forecast_home','humidity') | is_number) else "គ្មានទិន្នន័យ" }}
             grid_options:
               columns: 12
               rows: auto
@@ -25163,7 +25163,7 @@ views:
         column_span: 2
         cards:
           - type: markdown
-            content: <small>ភាពមានជាក់ស្តែងនាពេលបច្ចុប្បន្ន និងប្រភេទការព្យាករណ៍ដែល weather.forecast_home គាំទ្រ ត្រូវបានផ្ទៀងផ្ទាត់ចុងក្រោយតាមទិន្នន័យថ្ងៃទី ០៥/០៩/២៦ ប៉ុណ្ណោះ ហើយមិនទាន់ត្រូវបានផ្ទៀងផ្ទាត់ផ្ទាល់ពីវគ្គនេះទេ។ សូមចាត់ទុកទំព័រនេះជាព័ត៌មានបណ្តោះអាសន្ន រហូតដល់មានការផ្ទៀងផ្ទាត់។</small>
+            content: <small>ទិន្នន័យអាកាសធាតុមិនទាន់ត្រូវបានផ្ទៀងផ្ទាត់ជាមួយប្រព័ន្ធផ្ទាល់នៅឡើយទេ។</small>
             grid_options:
               columns: 12
               rows: auto
@@ -25309,7 +25309,7 @@ views:
               columns: 12
               rows: auto
           - type: markdown
-            content: <small>កាលវិភាគប្រមូលសំរាមមិនទាន់បានកំណត់ទេ — មិនមានធាតុណាមួយលើឧបករណ៍នេះរាយការណ៍អំពីកាលបរិច្ឆេទប្រមូលសំរាម សំណល់កែច្នៃ ឬសំណល់បៃតងនៅឡើយ។</small>
+            content: <small>កាលវិភាគប្រមូលសំរាមមិនទាន់ត្រូវបានភ្ជាប់ ឬផ្ទៀងផ្ទាត់ទេ។</small>
             grid_options:
               columns: 12
               rows: auto
@@ -25317,7 +25317,7 @@ views:
         column_span: 2
         cards:
           - type: markdown
-            content: <small>នៅពេលមានប្រភពកាលបរិច្ឆេទប្រមូលសំរាមបន្ទាប់ដែលមកពីក្រុមប្រឹក្សា ឬបញ្ចូលដោយដៃ ហើយត្រូវបានផ្ទៀងផ្ទាត់ ទំព័រនេះនឹងបង្ហាញវា ហើយទំព័រ Home អាចរំលឹកអ្នកមួយយប់មុន និងនៅព្រឹកថ្ងៃប្រមូល។ រហូតដល់ពេលនោះ គ្មានអ្វីត្រូវបានស្មានឡើយ។</small>
+            content: <small>នៅពេលបានតម្លើង និងផ្ទៀងផ្ទាត់ ទំព័រនេះនឹងបង្ហាញកាលបរិច្ឆេទជាក់ស្តែង។</small>
             grid_options:
               columns: 12
               rows: auto
