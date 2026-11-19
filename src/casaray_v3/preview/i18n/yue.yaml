@@ -88,3 +88,8 @@ pv.cond.windy: 大風
 pv.cond.windy-variant: 大風
 pv.pet_cam: 寵物鏡頭
 pv.tab_cameras: 鏡頭
+# 20/11/26 live trial: named No data cards and the camera slot (V3-025 item 12)
+pv.weather: 天氣
+pv.unconfirmed: 未能確認
+pv.cam_unreadable: Home Assistant 讀唔到呢部鏡頭
+pv.living_temp: 客廳溫度

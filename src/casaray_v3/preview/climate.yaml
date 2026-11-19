@@ -24,5 +24,6 @@ sections:
          end: sensor.bedroom_parents_room_ac_timer_end_time}
   - span: 2
     cards:
-      - {c: sensor_tile, entity: sensor.living_room_living_hue_hue_sensor_temperature,
-         name: {t: pv.living_sensor}, columns: full}
+      # live 20/11: "Living Room Motion Sensor Temperature" read unknown — the named No data card
+      - {c: preview_tile, kind: sensor, entity: sensor.living_room_living_hue_hue_sensor_temperature,
+         name_key: pv.living_sensor, nodata_key: pv.living_temp, icon: mdi:thermometer, columns: full}

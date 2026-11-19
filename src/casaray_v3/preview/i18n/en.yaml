@@ -88,3 +88,8 @@ pv.cond.windy: Windy
 pv.cond.windy-variant: Windy
 pv.pet_cam: Pet feeder
 pv.tab_cameras: Camera
+# 20/11/26 live trial: named No data cards and the camera slot (V3-025 item 12)
+pv.weather: Weather
+pv.unconfirmed: Can't be confirmed
+pv.cam_unreadable: Home Assistant can't read this camera
+pv.living_temp: Living room temperature

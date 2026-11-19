@@ -1001,13 +1001,22 @@ def preview_greeting(ctx, columns=12, rows=2):
 
 def preview_weather(ctx, entity="weather.forecast_home", columns=12, rows=2):
     """The mockups' weather card: the temperature large, the condition in both
-    languages; dark is No data in both, never a stale reading."""
+    languages. While the entity does not answer (or the instance has no such
+    entity) it is the named No data card: 天氣 Weather · 無資料 No data."""
     ctx.use(entity)
     conds = {c: f"pv.cond.{c}" for c in WEATHER_ICONS}
+    wa, wb = _pair(ctx, "pv.weather")
+    da, db = _pair(ctx, "s.no_data")
+    s = "states('" + entity + "')"
     return markdown(
+        "{%- if " + s + " in " + BAD + " -%}"
+        '## <ha-icon icon="mdi:weather-cloudy-alert"></ha-icon> ' + wa + " " + wb + "\n"
+        "**" + da + "** <small>" + db + "</small>"
+        "{%- else -%}"
         '## <ha-icon icon="{{ ' + _weather_icon(entity) + ' }}"></ha-icon> {{ '
         + _attr_deg(ctx, entity, "temperature") + " }}\n"
-        "**{{ " + _words(ctx, entity, conds, 0) + " }}**<br><small>{{ " + _words(ctx, entity, conds, 1) + " }}</small>",
+        "**{{ " + _words(ctx, entity, conds, 0) + " }}**<br><small>{{ " + _words(ctx, entity, conds, 1) + " }}</small>"
+        "{%- endif -%}",
         columns, rows)
 
 
@@ -1152,19 +1161,96 @@ def preview_timer(ctx, switch, end, columns=12):
                     "{%- else -%}**" + da + "**<br><small>" + db + "</small>{%- endif -%}", columns)
 
 
-def preview_camera(ctx, entity, name_key, battery=None):
-    """One camera cell of the mockups' overview: its name and state in words
-    (never colour alone), then the picture — or, while the camera is
-    unavailable, the same-size Offline card (PR #16). A tap on the picture
-    opens Home Assistant's own camera dialog."""
+DARK = ["unavailable", "unknown"]   # also an entity the instance lacks: the frontend reads it as 'unknown'
+
+
+def preview_nodata(ctx, entity, name_key, icon, columns=12, rows=1):
+    """The named No data card that stands in a reading's place, at the same size,
+    while Home Assistant cannot confirm it: unavailable, unknown, or an entity ID
+    the instance does not have. The frontend reads a missing entity as 'unknown'
+    in visibility conditions (validate-condition.ts, 20260826.7), and a tile for
+    one draws an empty warning card whose text only admins see (hui-error-card)
+    — the "missing tiles" of the 20/11/26 trial. One row holds one line, so the
+    one-row card carries no icon (an icon outgrows a 56 px row) and sets its
+    English small, so the line fits a phone's 56 px row."""
     ctx.use(entity)
     na, nb = _pair(ctx, name_key)
-    name = markdown('<ha-icon icon="mdi:video-outline"></ha-icon> **' + na + "**<br><small>" + nb + "</small>\n\n"
-                    "{{ " + camera_state_expr(ctx, entity) + " }}", 4, 2)
-    pic = camera_card(ctx, entity, name_key, columns=8, rows=2, full_screen="more-info",
-                      offline=True, battery=battery)
-    pic[0]["name"] = ctx.t("pv.tap_to_view")
-    return [name] + pic
+    da, db = _pair(ctx, "s.no_data")
+    if rows == 1:
+        return markdown("**" + na + "** <small>" + nb + "</small> · **" + da + "** <small>" + db + "</small>",
+                        columns, rows)
+    line = "**" + na + "** " + nb + " · **" + da + "** " + db
+    s = "states('" + entity + "')"
+    why = ("{{ (" + jstr(ctx.t("s.offline")) + " if " + s + " == 'unavailable' else "
+           + jstr(ctx.t("pv.unconfirmed")) + ") }}")
+    return markdown('<ha-icon icon="' + icon + '"></ha-icon> ' + line + "<br><small>" + why + "</small>",
+                    columns, rows)
+
+
+def preview_tile(ctx, entity, name_key, kind="readonly", icon="mdi:lightbulb-outline", columns=12, nav=None,
+                 nodata_key=None):
+    """A tile while its entity answers, the named No data card of the same size
+    while it does not; exactly one shows, so the grid keeps its shape.
+    kind: light    V3 Lighting's own controls (details, icon toggle, brightness bar)
+          readonly state only; a tap navigates (`nav`), nothing else acts
+          sensor   a reading; a tap opens its history (read-only dialog)
+    nodata_key: a shorter name for the No data card, where the tile's own name
+    (which the tile ellipsises) would not fit one line on a phone."""
+    name = ctx.t(name_key)
+    if kind == "light":
+        t, rows = light_tile(ctx, entity, name, columns), 2
+    elif kind == "sensor":
+        t, rows = sensor_tile(ctx, entity, name, columns, nav=nav, rows=1), 1
+    else:
+        t, rows = readonly_tile(ctx, entity, name, columns, nav=nav), 1
+        t["grid_options"]["rows"] = 1
+    t["visibility"] = [{"condition": "state", "entity": entity, "state_not": list(DARK)}]
+    nd = preview_nodata(ctx, entity, nodata_key or name_key, icon, columns, rows)
+    nd["visibility"] = [{"condition": "state", "entity": entity, "state": list(DARK)}]
+    if nav:
+        nd["tap_action"] = {"action": "navigate", "navigation_path": ctx.link(nav)}
+    return [t, nd]
+
+
+def preview_cam_slot(ctx, entity, name_key, battery=None, columns=12, rows=3):
+    """One camera, one slot of one size whatever its state: the picture while
+    the camera entity answers (a tap opens Home Assistant's camera dialog, where
+    the live stream plays), otherwise a named card in words — Offline, or State
+    unknown, which also covers a camera ID the instance does not have. The
+    picture card claims no state: an idle entity is not proof that its stream
+    plays, which only the dialog shows. Replaces the 2914b09 pair (a 4-unit name
+    cell beside an 8-unit picture) whose two halves read as uneven slots."""
+    ctx.use(entity)
+    na, nb = _pair(ctx, name_key)
+    ta, tb = _pair(ctx, "pv.tap_to_view")
+    pic = {"type": "picture-entity", "entity": entity, "name": na + " " + nb + " · " + ta + " " + tb,
+           "camera_view": "auto", "show_state": False, "show_name": True,
+           "tap_action": {"action": "more-info"}, "hold_action": {"action": "none"},
+           "grid_options": grid(columns, rows),
+           "visibility": [{"condition": "state", "entity": entity, "state_not": list(DARK)}]}
+    s = "states('" + entity + "')"
+    bat = ""
+    if battery:
+        ctx.use(battery)
+        b = "states('" + battery + "')"
+        bat = (" · {{ (" + ctx.jt("cam.battery", v="(" + b + " | float) | round(0) | int") + ") if "
+               + b + " | is_number else " + jstr(ctx.t("cam.no_battery")) + " }}")
+    xa, xb = _pair(ctx, "s.offline")
+    ua, ub = _pair(ctx, "s.state_unknown")
+    head = '<ha-icon icon="mdi:video-off-outline"></ha-icon> **' + na + "** " + nb + " · "
+    body = ("{%- if " + s + " == 'unavailable' -%}" + head + "**" + xa + "** " + xb
+            + "<br><small>" + ctx.t("cam.no_stream") + bat + "</small>"
+            "{%- else -%}" + head + "**" + ua + "** " + ub
+            + "<br><small>" + ctx.t("pv.cam_unreadable") + bat + "</small>{%- endif -%}")
+    twin = markdown(body, columns, rows)
+    twin["visibility"] = [{"condition": "state", "entity": entity, "state": list(DARK)}]
+    return [pic, twin]
+
+
+def preview_camera(ctx, entity, name_key, battery=None):
+    """One cell of the Cameras overview: a full slot (12 units, 3 rows; two
+    across on the wall iPad, one on a phone)."""
+    return preview_cam_slot(ctx, entity, name_key, battery, columns=12, rows=3)
 
 
 def preview_link(ctx, label_key, target, icon=None, columns=12, rows=1):

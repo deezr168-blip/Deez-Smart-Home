@@ -18,16 +18,19 @@ sections:
   - span: 1
     heading: pv.room_lights
     cards:
-      - {c: readonly_tile, entity: light.living_room, name: {t: room.living}, columns: 12, nav: lighting}
-      - {c: readonly_tile, entity: light.dining, name: {t: room.dining}, columns: 12, nav: lighting}
-      - {c: readonly_tile, entity: light.bedroom_bedroom, name: {t: pv.room_ray}, columns: 12, nav: lighting}
+      # a tile while the light answers; the named No data card of the same size while it
+      # does not, or while the instance has no such entity (the 20/11 trial's missing tiles)
+      - {c: preview_tile, entity: light.living_room, name_key: room.living, nav: lighting}
+      - {c: preview_tile, entity: light.dining, name_key: room.dining, nav: lighting}
+      - {c: preview_tile, entity: light.bedroom_bedroom, name_key: pv.room_ray, nav: lighting}
   - span: 1
     heading: pv.front_door_cam
     cards:
-      - {c: camera_card, entity: camera.front_door_live_view, name_key: room.front_door, columns: 12, rows: 2,
-         full_screen: more-info, offline: true, battery: sensor.front_door_battery}
+      # one slot: the picture, or Offline / State unknown in words (same size)
+      - {c: preview_cam_slot, entity: camera.front_door_live_view, name_key: room.front_door, rows: 2,
+         battery: sensor.front_door_battery}
       - {c: preview_link, label_key: pv.view_front_door, target: cameras, icon: mdi:cctv}
   - span: 2
     cards:
-      - {c: sensor_tile, entity: sensor.bedroom_motion_sensor_temperature, name: {t: pv.parents_temp},
-         columns: full, nav: climate}
+      - {c: preview_tile, kind: sensor, entity: sensor.bedroom_motion_sensor_temperature, name_key: pv.parents_temp,
+         icon: mdi:thermometer, columns: full, nav: climate}

@@ -1,7 +1,7 @@
 # Bilingual preview — Cameras overview (V3-025). The six cameras of V3 in the
-# mockup's two-across grid: name and state in words, then the picture or, while
-# the camera is unavailable, the same-size Offline card (PR #16). The mockup's
-# photos are illustrations; Home Assistant shows each camera's own picture.
+# mockup's two-across grid, ONE slot each, one size in every state (20/11 trial):
+# the picture while the camera answers, else Offline / State unknown in words.
+# The mockup's photos are illustrations; Home Assistant shows each camera's own picture.
 path: cameras
 title: nav.cameras
 icon: mdi:video-outline

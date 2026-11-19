@@ -2,6 +2,7 @@
 # controls (tap: details, icon: toggle, brightness bar). Of the mockup's three
 # scene modes only Night has a verified action (the existing, owner-approved
 # Night: three lights to 10%); Normal and Daytime have no scene entity and say so.
+# Night's three targets stay as they are until their live IDs are confirmed (20/11 trial).
 path: lighting
 title: nav.lighting
 icon: mdi:lamp-outline
@@ -11,11 +12,12 @@ sections:
   - span: 1
     heading: pv.lights_control
     cards:
-      - {c: light_tile, entity: light.living_room, name: {t: pv.light_living}, columns: 12}
-      - {c: light_tile, entity: light.dining, name: {t: pv.light_dining}, columns: 12}
-      - {c: light_tile, entity: light.bedroom_bedroom, name: {t: pv.light_ray}, columns: 12}
+      # each light: its tile while it answers, else the named No data card of the same size
+      - {c: preview_tile, kind: light, entity: light.living_room, name_key: pv.light_living}
+      - {c: preview_tile, kind: light, entity: light.dining, name_key: pv.light_dining}
+      - {c: preview_tile, kind: light, entity: light.bedroom_bedroom, name_key: pv.light_ray}
       # Ray's room NightLight (export "NightLight", ok); light.master_bedroom_nightlight is a dead duplicate
-      - {c: light_tile, entity: light.bedroom_nightlight, name: {t: pv.light_night}, columns: 12}
+      - {c: preview_tile, kind: light, entity: light.bedroom_nightlight, name_key: pv.light_night}
   - span: 1
     heading: pv.scenes
     cards:
