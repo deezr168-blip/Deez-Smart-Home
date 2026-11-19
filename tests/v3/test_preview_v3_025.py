@@ -59,6 +59,26 @@ def render(content, states, attrs=None):
     return R.env_for(states, attrs or {}).from_string(content).render()
 
 
+# How a visibility condition on an entity the instance lacks is evaluated: in
+# Home Assistant Core by newer frontends (the card is hidden — seen on the Green,
+# 20/11/26), in the browser as 'unknown' by 20260826.7. Both must hold.
+MODES = ("hide", "unknown")
+
+
+def missing(states, *ents):
+    """A state set without these entities: the instance does not have them."""
+    return {k: v for k, v in states.items() if k not in ents}
+
+
+def pairs(view, entity):
+    """[the card shown while `entity` answers (its visibility condition names it),
+    its self-hiding twin (show_empty: false; its template reads the entity)]."""
+    main = [c for c in cards(view) if c.get("visibility") and c["visibility"][0].get("entity") == entity]
+    twin = [c for c in cards(view) if c.get("show_empty") is False and f"states('{entity}')" in c.get("content", "")]
+    assert len(main) == 1 and len(twin) == 1, (entity, len(main), len(twin))
+    return main + twin
+
+
 class Separate(unittest.TestCase):
     def test_working_dashboards_do_not_depend_on_the_preview(self):
         with_pv, _, _ = B.build(write=False)
@@ -144,21 +164,20 @@ class Honest(unittest.TestCase):
     dark = R.scenarios()["dark"][0]
 
     def test_door_banner_open_silent_closed(self):
-        opened, silent = [c for c in cards(page("home")) if c.get("visibility")
-                          and c["visibility"][0].get("entity") == DOOR]
-        for state, want in (("on", (True, False)), ("off", (False, False)),
-                            ("unavailable", (False, True)), ("unknown", (False, True))):
-            st = dict(self.normal, **{DOOR: state})
-            self.assertEqual((L.visible(opened, st), L.visible(silent, st)), want, state)
+        opened, silent = pairs(page("home"), DOOR)
+        for mode in MODES:
+            for state, want in (("on", (True, False)), ("off", (False, False)),
+                                ("unavailable", (False, True)), ("unknown", (False, True)), (None, (False, True))):
+                st = missing(self.normal, DOOR) if state is None else dict(self.normal, **{DOOR: state})
+                self.assertEqual((L.visible(opened, st, mode), L.visible(silent, st, mode)), want, (mode, state))
         self.assertIn("[!WARNING]", opened["content"])        # amber, the theme's warning colour
         self.assertIn("前門感應器無回應", silent["content"])
 
     def test_unavailable_camera_gives_its_slot_to_an_offline_card(self):
         cam = cards(page("cameras"))
         for e in CAMS:
-            pic = next(c for c in cam if c["type"] == "picture-entity" and c["entity"] == e)
-            twin = next(c for c in cam if c["type"] == "markdown" and c.get("visibility")
-                        and c["visibility"][0]["entity"] == e)
+            pic, twin = pairs(page("cameras"), e)
+            self.assertEqual(pic, next(c for c in cam if c["type"] == "picture-entity" and c["entity"] == e))
             st = dict(self.normal, **{e: "unavailable"})
             self.assertEqual((L.visible(pic, st), L.visible(twin, st)), (False, True), e)
             self.assertEqual((L.visible(pic, dict(st, **{e: "idle"})), L.visible(twin, dict(st, **{e: "idle"}))),
@@ -245,14 +264,6 @@ class SampleData(unittest.TestCase):
         self.assertTrue((ROOT / sm["pictures"]["source"]).is_file())
 
 
-def missing(states, *ents):
-    """A state set without these entities: the instance does not have them."""
-    return {k: v for k, v in states.items() if k not in ents}
-
-
-def pairs(view, entity):
-    """The cards bound to one entity by a visibility condition, in order."""
-    return [c for c in cards(view) if c.get("visibility") and c["visibility"][0].get("entity") == entity]
 
 
 class Trial(unittest.TestCase):
@@ -264,8 +275,24 @@ class Trial(unittest.TestCase):
     READINGS = {"home": "sensor.bedroom_motion_sensor_temperature",
                 "climate": "sensor.living_room_living_hue_hue_sensor_temperature"}
 
-    def _one_shows(self, a, b, st):
-        return (L.visible(a, st), L.visible(b, st))
+    def _one_shows(self, a, b, st, mode="hide"):
+        return (L.visible(a, st, mode), L.visible(b, st, mode))
+
+    def test_no_data_offline_and_silent_cards_never_hang_on_a_condition(self):
+        """The 20/11 photos: Core hides a card whose condition names an entity it
+        does not have, so a card that must say No data / Offline / not reporting
+        cannot be gated by one. It hides itself while its template is empty."""
+        for path in PV["views"]:
+            for c in cards(page(path)):
+                for cond in c.get("visibility") or []:
+                    want = cond.get("state")
+                    want = want if isinstance(want, list) else [want]
+                    self.assertFalse({"unknown", "unavailable"} & {str(w) for w in want}, (path, c.get("type")))
+                    self.assertNotIn("state_not", cond if c.get("type") == "markdown" else {}, path)
+            hiding = [c for c in cards(page(path)) if c.get("show_empty") is False]
+            for c in hiding:
+                self.assertNotIn("visibility", c, path)
+                self.assertTrue(c["content"].startswith("{%- if"), path)   # empty unless the case holds
 
     def test_every_camera_one_slot_one_size_in_every_state(self):
         slots = [(page("cameras"), e) for e in CAMS] + [(page("home"), CAMS[0])]
@@ -273,11 +300,14 @@ class Trial(unittest.TestCase):
             pic, twin = pairs(view, e)
             self.assertEqual((pic["type"], twin["type"]), ("picture-entity", "markdown"), e)
             self.assertEqual(L.effective(pic), L.effective(twin), e)
-            for state, want in (("idle", (True, False)), ("streaming", (True, False)), ("recording", (True, False)),
-                                ("unavailable", (False, True)), ("unknown", (False, True))):
-                self.assertEqual(self._one_shows(pic, twin, dict(self.normal, **{e: state})), want, (e, state))
-            gone = missing(self.normal, e)
-            self.assertEqual(self._one_shows(pic, twin, gone), (False, True), e)   # never HA's empty warning card
+            for mode in MODES:
+                for state, want in (("idle", (True, False)), ("streaming", (True, False)),
+                                    ("recording", (True, False)), ("unavailable", (False, True)),
+                                    ("unknown", (False, True))):
+                    self.assertEqual(self._one_shows(pic, twin, dict(self.normal, **{e: state}), mode), want,
+                                     (e, state, mode))
+                gone = missing(self.normal, e)
+                self.assertEqual(self._one_shows(pic, twin, gone, mode), (False, True), (e, mode))   # never vanishes
             off = render(twin["content"], dict(self.normal, **{e: "unavailable"}))
             unk = render(twin["content"], dict(self.normal, **{e: "unknown"}))
             self.assertEqual(unk, render(twin["content"], gone))
@@ -285,6 +315,7 @@ class Trial(unittest.TestCase):
                 self.assertIn(word, off)
             for word in ("狀態未知", "State unknown"):
                 self.assertIn(word, unk)
+            self.assertEqual(render(twin["content"], dict(self.normal, **{e: "idle"})), "")   # hides itself
             for text in (off, unk, pic["name"]):   # an idle entity is not proof its stream plays
                 self.assertNotIn("Online", text)
                 self.assertNotIn("在線", text)
@@ -294,7 +325,8 @@ class Trial(unittest.TestCase):
     def test_mixed_camera_states_pack_with_no_holes(self):
         cam = next(s for s in page("cameras")["sections"] if any(c.get("type") == "picture-entity" for c in s["cards"]))
         mix = dict(self.normal, **dict(zip(CAMS, ["idle", "unavailable", "unknown", "streaming", "idle", "unavailable"])))
-        for st in (mix, missing(mix, CAMS[1], CAMS[3]), R.scenarios()["dark"][0]):
+        photo = missing(mix, *CAMS[1:4], CAMS[5])   # the 20/11 photos: four camera IDs not on the instance
+        for st in (mix, missing(mix, CAMS[1], CAMS[3]), photo, R.scenarios()["dark"][0]):
             shown = [c for c in cam["cards"] if L.visible(c, st)]
             self.assertEqual(len(shown), len(CAMS))
             self.assertEqual({L.effective(c) for c in shown}, {(12, 3)})
@@ -313,7 +345,8 @@ class Trial(unittest.TestCase):
             self.assertEqual(self._one_shows(tile, nd, dict(self.normal, **{e: ok})), (True, False), (path, e))
             for st in (dict(self.normal, **{e: "unavailable"}), dict(self.normal, **{e: "unknown"}),
                        missing(self.normal, e)):
-                self.assertEqual(self._one_shows(tile, nd, st), (False, True), (path, e))
+                for mode in MODES:
+                    self.assertEqual(self._one_shows(tile, nd, st, mode), (False, True), (path, e, mode))
                 out = render(nd["content"], st)
                 for word in ("無資料", "No data"):
                     self.assertIn(word, out, (path, e))
