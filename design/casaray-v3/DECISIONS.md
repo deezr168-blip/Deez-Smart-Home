@@ -82,6 +82,17 @@ own scope. Branch `casaray-v3/agent-mockup-preview-20261119`, from draft PR #24
 10. **Not verified:** nothing was seen in Home Assistant. Typography, the sticky
     footer's look, the amber tab and every height come from the pinned source
     and a simulation. The yue wording of the new strings wants a native read.
+11. **Live trial approved (owner, 19/11/26).** Import as a separate dashboard,
+    title *CasaRay V3 Mockup Preview*, url_path `casaray-v3-mockup`, for visual checks
+    only: no GitHub merge, no restart, no activation of device controls; the default
+    dashboard and `/casaray-v3` stay as they are. The file supplied for import is
+    `2914b09`'s output with one edit: the header badge reads 設計預覽 / Design preview
+    instead of 設計預覽 · 未部署 · Design preview · not deployed, on all six pages (six
+    lines; everything else byte-identical). The repository still builds the 2914b09
+    wording until the trial's result says which to keep. Import and device checks
+    are the owner's: this session has no route to the instance. Live controls in the
+    file: the four Lighting tiles (icon toggles, brightness slider) and the Night card
+    (one tap, no confirmation), the same lights and action as the working dashboard.
 
 ## V3-024 · 18/11/26 · Release preview integration: PR #16's cameras with one named, readable top bar
 
