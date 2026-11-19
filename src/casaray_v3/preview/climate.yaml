@@ -11,7 +11,7 @@ sections:
   - span: 1
     heading: pv.ac_title
     cards:
-      - {c: preview_ac_status, entity: climate.bedroom_parents_room_ac, nav: parents-room, rows: 2}
+      - {c: preview_ac_status, entity: climate.bedroom_parents_room_ac, nav: parents-room, rows: 3}   # level with the filter and timer column
       - {c: preview_reading, label_key: pv.room_temp, entity: climate.bedroom_parents_room_ac, attr: current_temperature, rows: auto}
       - {c: preview_reading, label_key: pv.target_temp, entity: climate.bedroom_parents_room_ac, attr: temperature, rows: auto}
       - {c: preview_reading, label_key: pv.humidity, entity: sensor.bedroom_motion_sensor_humidity, rows: auto}

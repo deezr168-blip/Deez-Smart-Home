@@ -628,7 +628,7 @@ views:
               Running: {{ ("No data" if states('climate.bedroom_parents_room_ac') in ['unavailable','unknown','none',''] else ({"off":"Off","cool":"Cool","heat":"Heat","fan_only":"Fan only","dry":"Dry","auto":"Auto","heat_cool":"Heat/cool"}).get(states('climate.bedroom_parents_room_ac'), states('climate.bedroom_parents_room_ac'))) }} (view only){%- endif -%}
             grid_options:
               columns: 12
-              rows: 2
+              rows: 3
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/parents-room
