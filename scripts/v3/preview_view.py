@@ -42,7 +42,10 @@ import ha_layout as L  # noqa: E402
 import render_check as R  # noqa: E402
 
 ROOT = HERE.parents[1]
-VIEWPORTS = {"ipad": (1180, 820), "phone": (390, 844)}
+# ipad: the wall iPad in kiosk (no Home Assistant chrome). ipad_chrome: the same iPad with Home
+# Assistant's 56 px header and docked 256 px sidebar showing, as on a dashboard with no kiosk_mode
+# (the 20/11/26 live trial of casaray-v3-mockup). phone: an iPhone in portrait.
+VIEWPORTS = {"ipad": (1180, 820), "ipad_chrome": (924, 764), "phone": (390, 844)}
 
 # Demo attributes for the preview only, shown where the fixture has no
 # attribute; never read from a device. Values are illustrative.
@@ -232,6 +235,10 @@ def render_card(card, ctx):
     if t == "heading":
         cls = "heading sub" if card.get("heading_style") == "subtitle" else "heading"
         return f'<div class="{cls}"><span>{html.escape(card.get("heading", ""))}</span></div>'
+    if t in ("tile", "picture-entity") and card.get("entity") in ctx.get("missing", ()):
+        return ('<div class="ha-card warn"><svg class="wic" viewBox="0 0 24 24"><path d="M13 14h-2V9h2m0 9h-2v-2h2'
+                'M1 21h22L12 2 1 21z"/></svg><div class="cbadge">preview note: entity not found — HA draws this '
+                'warning card; its text shows to admins only</div></div>')
     if t == "tile":
         e = card["entity"]
         s = states.get(e, "unknown")
@@ -347,6 +354,8 @@ border-radius:999px;padding:2px 8px;background:rgba(0,0,0,.25)}
 .alert.success{background:rgba(95,211,154,.14);border-left:4px solid var(--v3-ok)}
 /* grid CARD and the sections-view footer (hui-view-footer.ts: sticky, max_width, card shadow) */
 .gridcard{display:grid;gap:8px}.gridcard .btn{height:auto;min-height:64px}
+.ha-card.warn{background:rgba(255,166,0,.10);display:flex;align-items:flex-start;padding:12px}
+.ha-card.warn .wic{width:24px;height:24px;fill:#ffa600}
 .vfooter{position:sticky;bottom:24px;z-index:4;padding:0 var(--column-gap)}
 .vfooter .fwrap{max-width:var(--footer-max-width,600px);margin:0 auto;padding:8px 0}
 .vfooter .gridcard .ha-card{box-shadow:0 4px 18px rgba(0,0,0,.45)}   /* hui-view-footer: --ha-view-footer-box-shadow; the grid card itself draws nothing */
@@ -374,10 +383,10 @@ JS = """
 """
 
 
-def page(view, states, attrs, names, icons, label, samples=None, sample_badge=None):
+def page(view, states, attrs, names, icons, label, samples=None, sample_badge=None, missing=()):
     env = R.env_for(states, attrs)
     ctx = {"states": states, "attrs": attrs, "names": names, "icons": icons, "env": env,
-           "samples": samples or {}, "sample_badge": sample_badge}
+           "samples": samples or {}, "sample_badge": sample_badge, "missing": set(missing)}
     secs = []
     spans = []
     for s in view["sections"]:
@@ -449,8 +458,24 @@ const {chromium} = require('playwright');
     // Top bar (the first section): its height and each rail button's width, for the release record.
     const top = document.querySelector('.section');
     const rail = top ? [...top.querySelectorAll('.btn')].map(bn => Math.round(bn.getBoundingClientRect().width)) : [];
+    // The sticky footer (hui-view-footer: in the page's flow, sticky at the bottom): which cards it
+    // covers with the page at rest, and the clearance under the last card at the end of the scroll.
+    const foot = document.querySelector('.vfooter .gridcard');
+    const cardsEls = [...document.querySelectorAll('.container .ha-card')];
+    let covered = [], clearance = null;
+    if (foot) {
+      const f = foot.getBoundingClientRect();
+      covered = cardsEls.map(c => [c, c.getBoundingClientRect()]).filter(([c, r]) => r.bottom > f.top && r.top < f.bottom)
+        .map(([c, r]) => ({card: c.textContent.trim().replace(/\s+/g, ' ').slice(0, 30) || '(picture)',
+                           hidden_px: Math.round(Math.min(r.bottom, f.bottom) - Math.max(r.top, f.top))}));
+      window.scrollTo(0, document.documentElement.scrollHeight);
+      const f2 = foot.getBoundingClientRect();
+      const last = Math.max(...cardsEls.map(c => c.getBoundingClientRect().bottom));
+      clearance = Math.round(f2.top - last);
+      window.scrollTo(0, 0);
+    }
     return {cols: document.body.dataset.columns, height: document.documentElement.scrollHeight,
-            holes, clipped, overflow, wrapped, small,
+            holes, clipped, overflow, wrapped, small, covered, clearance,
             topbar: top ? Math.round(top.getBoundingClientRect().height) : 0, rail};
   });
   console.log(JSON.stringify(info));
@@ -535,11 +560,18 @@ def main():
     if a.scenario == "normal":
         attrs = {**{k: dict(v) for k, v in DEMO_ATTRS.items()}, **attrs}
     names = json.loads((ROOT / "docs/live/fixture_states.json").read_text(encoding="utf-8"))["_meta"]["names"]
-    samples, badge = {}, None
+    samples, badge, missing = {}, None, []
     if a.sample:
         sm = yaml.safe_load(a.sample.read_text(encoding="utf-8"))
         states = {**states, **{k: str(v) for k, v in (sm.get("states") or {}).items()}}
         attrs = {**attrs, **{k: dict(v) for k, v in (sm.get("attrs") or {}).items()}}
+        # entities the instance does not have (an ID that changed, or never existed): Home
+        # Assistant reads them as 'unknown' in templates and conditions, and a tile or picture
+        # card for one draws its warning card
+        missing = list(sm.get("missing") or [])
+        for e in missing:
+            states.pop(e, None)
+            attrs.pop(e, None)
         if sm.get("now"):
             R.FIXED_NOW = dt.datetime.fromisoformat(sm["now"])
         pics = sm.get("pictures") or {}
@@ -554,7 +586,8 @@ def main():
             badge = pics.get("badge", "Sample image")
     a.out.mkdir(parents=True, exist_ok=True)
     out = a.out / f"{a.view}.html"
-    out.write_text(page(view, states, attrs, names, Icons(a.icons), a.label, samples, badge), encoding="utf-8")
+    out.write_text(page(view, states, attrs, names, Icons(a.icons), a.label, samples, badge, missing),
+                   encoding="utf-8")
     print(f"wrote {out}")
     if a.shots:
         for dev, size in VIEWPORTS.items():
@@ -566,7 +599,9 @@ def main():
                   + " | overflowing fixed-height cards " + json.dumps(info["overflow"], ensure_ascii=False)
                   + " | wrapped labels " + json.dumps(info["wrapped"], ensure_ascii=False)
                   + " | tap targets under 44 px " + json.dumps(info["small"], ensure_ascii=False)
-                  + f" | top bar {info['topbar']} px, rail buttons {info['rail']} px wide")
+                  + f" | top bar {info['topbar']} px, rail buttons {info['rail']} px wide"
+                  + " | footer covers at rest " + json.dumps(info["covered"], ensure_ascii=False)
+                  + f" | clearance under the last card at the end of the scroll {info['clearance']} px")
     return 0
 
 

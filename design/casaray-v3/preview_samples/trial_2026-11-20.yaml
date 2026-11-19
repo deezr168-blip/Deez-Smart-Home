@@ -1,0 +1,48 @@
+# SAMPLE DATA — shaped on the 20/11/26 live trial of casaray-v3-mockup, for the
+# OFFLINE preview renders only (scripts/v3/preview_view.py --sample). Never read
+# by the dashboard build and never a live reading. Every render made with this
+# file is captioned as simulated.
+#
+# Purpose: the cases the trial raised, all at once — a light whose entity ID the
+# instance may not have, a reading that answers "unknown", and each camera state
+# side by side (online, offline, unknown, not found). Where a value below matches
+# a read-only connector read of 19-20/11 it says so; everything else is chosen to
+# exercise a branch, not observed.
+label: 試行模擬 Trial-shaped sample — SIMULATED, not Home Assistant
+now: "2026-11-20T19:45:00"
+# entities the instance is taken NOT to have: Home Assistant reads them as
+# 'unknown', and a tile or picture card for one draws its warning card
+missing:
+  - weather.forecast_home                         # not exposed to the connector; unconfirmed
+  - light.living_room                             # the trial's missing tiles: IDs unconfirmed live
+  - light.dining
+  - camera.tapo_c425_north_wall_hd_stream_direct  # its power switch read unavailable on 19/11
+states:
+  binary_sensor.f_contact_sensor_door: "off"                  # connector, 19/11
+  light.bedroom_bedroom: "on"                                 # connector, 19/11 (80%)
+  light.bedroom_nightlight: "off"                             # connector, 20/11
+  sensor.bedroom_motion_sensor_temperature: "24"
+  climate.bedroom_parents_room_ac: "off"                      # connector, 19/11
+  binary_sensor.bedroom_parents_room_ac_filter_clean_required: "off"   # connector, 19/11
+  switch.bedroom_parents_room_ac_timer: "off"                 # connector, 19/11
+  sensor.bedroom_parents_room_ac_timer_end_time: unknown
+  sensor.living_room_living_hue_hue_sensor_temperature: unknown   # connector, 20/11 ("Living Room Motion Sensor Temperature")
+  camera.front_door_live_view: idle                           # connector, 19/11 — state only; the stream is unverified
+  camera.tapo_c420_east_wall_hd_stream_direct: unavailable    # chosen: the offline branch
+  camera.tapo_c420_south_wall_hd_stream_direct: unknown       # chosen: the unknown branch
+  camera.tapo_c200_stockroom_hd_stream_direct: idle
+  camera.smart_pet_feeder: idle
+  sensor.front_door_battery: "65"                             # connector, 20/11
+  sensor.tapo_camera_bcca_battery: "80"
+  sensor.tapo_c420_south_wall_battery: unavailable
+attrs:
+  light.bedroom_bedroom: {brightness: 204}
+  climate.bedroom_parents_room_ac: {current_temperature: 23.8}   # connector, 19/11
+  sensor.bedroom_motion_sensor_temperature: {unit_of_measurement: "°C"}
+pictures:
+  badge: 示例圖片 Sample image (mockup)
+  source: docs/mockups/2026-11-19_bilingual_2_cameras.png
+  crops:   # [left, top, right, bottom] in the sheet's pixels; the illustration only
+    camera.front_door_live_view: [156, 80, 350, 154]
+    camera.tapo_c200_stockroom_hd_stream_direct: [156, 325, 350, 399]
+    camera.smart_pet_feeder: [505, 325, 700, 399]
