@@ -1031,8 +1031,9 @@ def preview_door_banner(ctx, entity, open_key, dark_key, target):
     opened = markdown("> [!WARNING]\n> **" + oa + "** " + ob + " · **" + va + "** " + vb + " ›", "full")
     opened["visibility"] = [{"condition": "state", "entity": entity, "state": "on"}]
     opened["tap_action"] = {"action": "navigate", "navigation_path": ctx.link(target)}
-    dark = markdown("**" + da + "** <small>" + db + "</small>", "full")
-    dark["visibility"] = [{"condition": "state", "entity": entity, "state_not": ["on", "off"]}]
+    # self-hiding, not a condition: a sensor the instance lacks must still say so
+    dark = _self_hiding("{%- if states('" + entity + "') not in ['on', 'off'] -%}**" + da + "** <small>" + db
+                        + "</small>{%- endif -%}", "full", "auto")
     return [opened, dark]
 
 
@@ -1161,36 +1162,52 @@ def preview_timer(ctx, switch, end, columns=12):
                     "{%- else -%}**" + da + "**<br><small>" + db + "</small>{%- endif -%}", columns)
 
 
-DARK = ["unavailable", "unknown"]   # also an entity the instance lacks: the frontend reads it as 'unknown'
+DARK = ["unavailable", "unknown"]   # states() reads an entity the instance lacks as 'unknown'
+
+
+def _self_hiding(body, columns, rows):
+    """A markdown card that hides itself while `body` renders to nothing
+    (`show_empty: false`, hui-markdown-card.ts). Used instead of a visibility
+    condition wherever the card must appear for an entity the instance may
+    not have: newer frontends evaluate visibility in Home Assistant Core,
+    which errors on an unknown entity, and the card is then hidden whatever
+    the condition says (the 20/11/26 trial). A template reads that entity as
+    'unknown', so the card still shows."""
+    card = markdown(body, columns, rows)
+    card["show_empty"] = False
+    return card
 
 
 def preview_nodata(ctx, entity, name_key, icon, columns=12, rows=1):
     """The named No data card that stands in a reading's place, at the same size,
     while Home Assistant cannot confirm it: unavailable, unknown, or an entity ID
-    the instance does not have. The frontend reads a missing entity as 'unknown'
-    in visibility conditions (validate-condition.ts, 20260826.7), and a tile for
-    one draws an empty warning card whose text only admins see (hui-error-card)
-    — the "missing tiles" of the 20/11/26 trial. One row holds one line, so the
-    one-row card carries no icon (an icon outgrows a 56 px row) and sets its
+    the instance does not have. Self-hiding (no visibility condition: see
+    _self_hiding). A tile for a missing entity draws an empty warning card whose
+    text only admins see (hui-error-card) — the trial's "missing tiles"; its own
+    visibility condition hides it in both frontends. One row holds one line, so
+    the one-row card carries no icon (an icon outgrows a 56 px row) and sets its
     English small, so the line fits a phone's 56 px row."""
     ctx.use(entity)
     na, nb = _pair(ctx, name_key)
     da, db = _pair(ctx, "s.no_data")
-    if rows == 1:
-        return markdown("**" + na + "** <small>" + nb + "</small> · **" + da + "** <small>" + db + "</small>",
-                        columns, rows)
-    line = "**" + na + "** " + nb + " · **" + da + "** " + db
     s = "states('" + entity + "')"
-    why = ("{{ (" + jstr(ctx.t("s.offline")) + " if " + s + " == 'unavailable' else "
-           + jstr(ctx.t("pv.unconfirmed")) + ") }}")
-    return markdown('<ha-icon icon="' + icon + '"></ha-icon> ' + line + "<br><small>" + why + "</small>",
-                    columns, rows)
+    gate = "{%- if " + s + " in " + str(DARK).replace('"', "'") + " -%}"
+    if rows == 1:
+        body = "**" + na + "** <small>" + nb + "</small> · **" + da + "** <small>" + db + "</small>"
+    else:
+        why = ("{{ (" + jstr(ctx.t("s.offline")) + " if " + s + " == 'unavailable' else "
+               + jstr(ctx.t("pv.unconfirmed")) + ") }}")
+        body = ('<ha-icon icon="' + icon + '"></ha-icon> **' + na + "** " + nb + " · **" + da + "** " + db
+                + "<br><small>" + why + "</small>")
+    return _self_hiding(gate + body + "{%- endif -%}", columns, rows)
 
 
 def preview_tile(ctx, entity, name_key, kind="readonly", icon="mdi:lightbulb-outline", columns=12, nav=None,
                  nodata_key=None):
     """A tile while its entity answers, the named No data card of the same size
-    while it does not; exactly one shows, so the grid keeps its shape.
+    while it does not; exactly one shows, so the grid keeps its shape — in both
+    frontends: the tile's condition hides it for a dark or missing entity, and
+    the No data card hides itself while the entity answers.
     kind: light    V3 Lighting's own controls (details, icon toggle, brightness bar)
           readonly state only; a tap navigates (`nav`), nothing else acts
           sensor   a reading; a tap opens its history (read-only dialog)
@@ -1206,7 +1223,6 @@ def preview_tile(ctx, entity, name_key, kind="readonly", icon="mdi:lightbulb-out
         t["grid_options"]["rows"] = 1
     t["visibility"] = [{"condition": "state", "entity": entity, "state_not": list(DARK)}]
     nd = preview_nodata(ctx, entity, nodata_key or name_key, icon, columns, rows)
-    nd["visibility"] = [{"condition": "state", "entity": entity, "state": list(DARK)}]
     if nav:
         nd["tap_action"] = {"action": "navigate", "navigation_path": ctx.link(nav)}
     return [t, nd]
@@ -1216,14 +1232,14 @@ def preview_cam_slot(ctx, entity, name_key, battery=None, columns=12, rows=3):
     """One camera, one slot of one size whatever its state: the picture while
     the camera entity answers (a tap opens Home Assistant's camera dialog, where
     the live stream plays), otherwise a named card in words — Offline, or State
-    unknown, which also covers a camera ID the instance does not have. The
-    picture card claims no state: an idle entity is not proof that its stream
+    unknown, which also covers a camera ID the instance does not have (a
+    self-hiding card: see _self_hiding). The picture card claims no state: an idle entity is not proof that its stream
     plays, which only the dialog shows. Replaces the 2914b09 pair (a 4-unit name
     cell beside an 8-unit picture) whose two halves read as uneven slots."""
     ctx.use(entity)
     na, nb = _pair(ctx, name_key)
-    ta, tb = _pair(ctx, "pv.tap_to_view")
-    pic = {"type": "picture-entity", "entity": entity, "name": na + " " + nb + " · " + ta + " " + tb,
+    # name and a chevron: "· 點擊查看畫面 Tap to view" was cut off on the trial iPad
+    pic = {"type": "picture-entity", "entity": entity, "name": na + " " + nb + " ›",
            "camera_view": "auto", "show_state": False, "show_name": True,
            "tap_action": {"action": "more-info"}, "hold_action": {"action": "none"},
            "grid_options": grid(columns, rows),
@@ -1240,11 +1256,9 @@ def preview_cam_slot(ctx, entity, name_key, battery=None, columns=12, rows=3):
     head = '<ha-icon icon="mdi:video-off-outline"></ha-icon> **' + na + "** " + nb + " · "
     body = ("{%- if " + s + " == 'unavailable' -%}" + head + "**" + xa + "** " + xb
             + "<br><small>" + ctx.t("cam.no_stream") + bat + "</small>"
-            "{%- else -%}" + head + "**" + ua + "** " + ub
+            "{%- elif " + s + " == 'unknown' -%}" + head + "**" + ua + "** " + ub
             + "<br><small>" + ctx.t("pv.cam_unreadable") + bat + "</small>{%- endif -%}")
-    twin = markdown(body, columns, rows)
-    twin["visibility"] = [{"condition": "state", "entity": entity, "state": list(DARK)}]
-    return [pic, twin]
+    return [pic, _self_hiding(body, columns, rows)]
 
 
 def preview_camera(ctx, entity, name_key, battery=None):

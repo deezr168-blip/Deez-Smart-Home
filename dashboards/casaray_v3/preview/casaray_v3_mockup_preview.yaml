@@ -56,16 +56,11 @@ views:
               action: navigate
               navigation_path: /casaray-v3-mockup/cameras
           - type: markdown
-            content: '**前門感應器無回應** <small>Front door sensor is not reporting</small>'
+            content: '{%- if states(''binary_sensor.f_contact_sensor_door'') not in [''on'', ''off''] -%}**前門感應器無回應** <small>Front door sensor is not reporting</small>{%- endif -%}'
             grid_options:
               columns: full
               rows: auto
-            visibility:
-              - condition: state
-                entity: binary_sensor.f_contact_sensor_door
-                state_not:
-                  - 'on'
-                  - 'off'
+            show_empty: false
       - type: grid
         column_span: 1
         cards:
@@ -95,16 +90,11 @@ views:
                   - unavailable
                   - unknown
           - type: markdown
-            content: '**客廳** <small>Living room</small> · **無資料** <small>No data</small>'
+            content: '{%- if states(''light.living_room'') in [''unavailable'', ''unknown''] -%}**客廳** <small>Living room</small> · **無資料** <small>No data</small>{%- endif -%}'
             grid_options:
               columns: 12
               rows: 1
-            visibility:
-              - condition: state
-                entity: light.living_room
-                state:
-                  - unavailable
-                  - unknown
+            show_empty: false
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-mockup/lighting
@@ -128,16 +118,11 @@ views:
                   - unavailable
                   - unknown
           - type: markdown
-            content: '**飯廳** <small>Dining</small> · **無資料** <small>No data</small>'
+            content: '{%- if states(''light.dining'') in [''unavailable'', ''unknown''] -%}**飯廳** <small>Dining</small> · **無資料** <small>No data</small>{%- endif -%}'
             grid_options:
               columns: 12
               rows: 1
-            visibility:
-              - condition: state
-                entity: light.dining
-                state:
-                  - unavailable
-                  - unknown
+            show_empty: false
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-mockup/lighting
@@ -161,16 +146,11 @@ views:
                   - unavailable
                   - unknown
           - type: markdown
-            content: '**Ray 房** <small>Ray room</small> · **無資料** <small>No data</small>'
+            content: '{%- if states(''light.bedroom_bedroom'') in [''unavailable'', ''unknown''] -%}**Ray 房** <small>Ray room</small> · **無資料** <small>No data</small>{%- endif -%}'
             grid_options:
               columns: 12
               rows: 1
-            visibility:
-              - condition: state
-                entity: light.bedroom_bedroom
-                state:
-                  - unavailable
-                  - unknown
+            show_empty: false
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-mockup/lighting
@@ -185,7 +165,7 @@ views:
               rows: auto
           - type: picture-entity
             entity: camera.front_door_live_view
-            name: 前門 Front door · 點擊查看畫面 Tap to view
+            name: 前門 Front door ›
             camera_view: auto
             show_state: false
             show_name: true
@@ -203,16 +183,11 @@ views:
                   - unavailable
                   - unknown
           - type: markdown
-            content: '{%- if states(''camera.front_door_live_view'') == ''unavailable'' -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **前門** Front door · **離線** Offline<br><small>Home Assistant 收唔到影像 No stream from Home Assistant · {{ (("電量 " ~ ((states(''sensor.front_door_battery'') | float) | round(0) | int) ~ "%") ~ '' '' ~ ("Battery " ~ ((states(''sensor.front_door_battery'') | float) | round(0) | int) ~ "%")) if states(''sensor.front_door_battery'') | is_number else "冇電量讀數 No battery reading" }}</small>{%- else -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **前門** Front door · **狀態未知** State unknown<br><small>Home Assistant 讀唔到呢部鏡頭 Home Assistant can''t read this camera · {{ (("電量 " ~ ((states(''sensor.front_door_battery'') | float) | round(0) | int) ~ "%") ~ '' '' ~ ("Battery " ~ ((states(''sensor.front_door_battery'') | float) | round(0) | int) ~ "%")) if states(''sensor.front_door_battery'') | is_number else "冇電量讀數 No battery reading" }}</small>{%- endif -%}'
+            content: '{%- if states(''camera.front_door_live_view'') == ''unavailable'' -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **前門** Front door · **離線** Offline<br><small>Home Assistant 收唔到影像 No stream from Home Assistant · {{ (("電量 " ~ ((states(''sensor.front_door_battery'') | float) | round(0) | int) ~ "%") ~ '' '' ~ ("Battery " ~ ((states(''sensor.front_door_battery'') | float) | round(0) | int) ~ "%")) if states(''sensor.front_door_battery'') | is_number else "冇電量讀數 No battery reading" }}</small>{%- elif states(''camera.front_door_live_view'') == ''unknown'' -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **前門** Front door · **狀態未知** State unknown<br><small>Home Assistant 讀唔到呢部鏡頭 Home Assistant can''t read this camera · {{ (("電量 " ~ ((states(''sensor.front_door_battery'') | float) | round(0) | int) ~ "%") ~ '' '' ~ ("Battery " ~ ((states(''sensor.front_door_battery'') | float) | round(0) | int) ~ "%")) if states(''sensor.front_door_battery'') | is_number else "冇電量讀數 No battery reading" }}</small>{%- endif -%}'
             grid_options:
               columns: 12
               rows: 2
-            visibility:
-              - condition: state
-                entity: camera.front_door_live_view
-                state:
-                  - unavailable
-                  - unknown
+            show_empty: false
           - type: markdown
             content: '**睇門口** View front door ›'
             grid_options:
@@ -244,16 +219,11 @@ views:
                   - unavailable
                   - unknown
           - type: markdown
-            content: '**爸媽房溫度** <small>Parents room temperature</small> · **無資料** <small>No data</small>'
+            content: '{%- if states(''sensor.bedroom_motion_sensor_temperature'') in [''unavailable'', ''unknown''] -%}**爸媽房溫度** <small>Parents room temperature</small> · **無資料** <small>No data</small>{%- endif -%}'
             grid_options:
               columns: full
               rows: 1
-            visibility:
-              - condition: state
-                entity: sensor.bedroom_motion_sensor_temperature
-                state:
-                  - unavailable
-                  - unknown
+            show_empty: false
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-mockup/climate
@@ -532,16 +502,11 @@ views:
                   - unavailable
                   - unknown
           - type: markdown
-            content: <ha-icon icon="mdi:lightbulb-outline"></ha-icon> **客廳燈** Living room light · **無資料** No data<br><small>{{ ("離線 Offline" if states('light.living_room') == 'unavailable' else "未能確認 Can't be confirmed") }}</small>
+            content: '{%- if states(''light.living_room'') in [''unavailable'', ''unknown''] -%}<ha-icon icon="mdi:lightbulb-outline"></ha-icon> **客廳燈** Living room light · **無資料** No data<br><small>{{ ("離線 Offline" if states(''light.living_room'') == ''unavailable'' else "未能確認 Can''t be confirmed") }}</small>{%- endif -%}'
             grid_options:
               columns: 12
               rows: 2
-            visibility:
-              - condition: state
-                entity: light.living_room
-                state:
-                  - unavailable
-                  - unknown
+            show_empty: false
           - type: tile
             entity: light.dining
             vertical: false
@@ -559,16 +524,11 @@ views:
                   - unavailable
                   - unknown
           - type: markdown
-            content: <ha-icon icon="mdi:lightbulb-outline"></ha-icon> **飯廳燈** Dining light · **無資料** No data<br><small>{{ ("離線 Offline" if states('light.dining') == 'unavailable' else "未能確認 Can't be confirmed") }}</small>
+            content: '{%- if states(''light.dining'') in [''unavailable'', ''unknown''] -%}<ha-icon icon="mdi:lightbulb-outline"></ha-icon> **飯廳燈** Dining light · **無資料** No data<br><small>{{ ("離線 Offline" if states(''light.dining'') == ''unavailable'' else "未能確認 Can''t be confirmed") }}</small>{%- endif -%}'
             grid_options:
               columns: 12
               rows: 2
-            visibility:
-              - condition: state
-                entity: light.dining
-                state:
-                  - unavailable
-                  - unknown
+            show_empty: false
           - type: tile
             entity: light.bedroom_bedroom
             vertical: false
@@ -586,16 +546,11 @@ views:
                   - unavailable
                   - unknown
           - type: markdown
-            content: <ha-icon icon="mdi:lightbulb-outline"></ha-icon> **Ray 房燈** Ray room light · **無資料** No data<br><small>{{ ("離線 Offline" if states('light.bedroom_bedroom') == 'unavailable' else "未能確認 Can't be confirmed") }}</small>
+            content: '{%- if states(''light.bedroom_bedroom'') in [''unavailable'', ''unknown''] -%}<ha-icon icon="mdi:lightbulb-outline"></ha-icon> **Ray 房燈** Ray room light · **無資料** No data<br><small>{{ ("離線 Offline" if states(''light.bedroom_bedroom'') == ''unavailable'' else "未能確認 Can''t be confirmed") }}</small>{%- endif -%}'
             grid_options:
               columns: 12
               rows: 2
-            visibility:
-              - condition: state
-                entity: light.bedroom_bedroom
-                state:
-                  - unavailable
-                  - unknown
+            show_empty: false
           - type: tile
             entity: light.bedroom_nightlight
             vertical: false
@@ -613,16 +568,11 @@ views:
                   - unavailable
                   - unknown
           - type: markdown
-            content: <ha-icon icon="mdi:lightbulb-outline"></ha-icon> **夜燈** Nightlight · **無資料** No data<br><small>{{ ("離線 Offline" if states('light.bedroom_nightlight') == 'unavailable' else "未能確認 Can't be confirmed") }}</small>
+            content: '{%- if states(''light.bedroom_nightlight'') in [''unavailable'', ''unknown''] -%}<ha-icon icon="mdi:lightbulb-outline"></ha-icon> **夜燈** Nightlight · **無資料** No data<br><small>{{ ("離線 Offline" if states(''light.bedroom_nightlight'') == ''unavailable'' else "未能確認 Can''t be confirmed") }}</small>{%- endif -%}'
             grid_options:
               columns: 12
               rows: 2
-            visibility:
-              - condition: state
-                entity: light.bedroom_nightlight
-                state:
-                  - unavailable
-                  - unknown
+            show_empty: false
       - type: grid
         column_span: 1
         cards:
@@ -853,16 +803,11 @@ views:
                   - unavailable
                   - unknown
           - type: markdown
-            content: '**客廳溫度** <small>Living room temperature</small> · **無資料** <small>No data</small>'
+            content: '{%- if states(''sensor.living_room_living_hue_hue_sensor_temperature'') in [''unavailable'', ''unknown''] -%}**客廳溫度** <small>Living room temperature</small> · **無資料** <small>No data</small>{%- endif -%}'
             grid_options:
               columns: full
               rows: 1
-            visibility:
-              - condition: state
-                entity: sensor.living_room_living_hue_hue_sensor_temperature
-                state:
-                  - unavailable
-                  - unknown
+            show_empty: false
     footer:
       card:
         type: grid
@@ -961,7 +906,7 @@ views:
         cards:
           - type: picture-entity
             entity: camera.front_door_live_view
-            name: 前門 Front door · 點擊查看畫面 Tap to view
+            name: 前門 Front door ›
             camera_view: auto
             show_state: false
             show_name: true
@@ -979,19 +924,14 @@ views:
                   - unavailable
                   - unknown
           - type: markdown
-            content: '{%- if states(''camera.front_door_live_view'') == ''unavailable'' -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **前門** Front door · **離線** Offline<br><small>Home Assistant 收唔到影像 No stream from Home Assistant · {{ (("電量 " ~ ((states(''sensor.front_door_battery'') | float) | round(0) | int) ~ "%") ~ '' '' ~ ("Battery " ~ ((states(''sensor.front_door_battery'') | float) | round(0) | int) ~ "%")) if states(''sensor.front_door_battery'') | is_number else "冇電量讀數 No battery reading" }}</small>{%- else -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **前門** Front door · **狀態未知** State unknown<br><small>Home Assistant 讀唔到呢部鏡頭 Home Assistant can''t read this camera · {{ (("電量 " ~ ((states(''sensor.front_door_battery'') | float) | round(0) | int) ~ "%") ~ '' '' ~ ("Battery " ~ ((states(''sensor.front_door_battery'') | float) | round(0) | int) ~ "%")) if states(''sensor.front_door_battery'') | is_number else "冇電量讀數 No battery reading" }}</small>{%- endif -%}'
+            content: '{%- if states(''camera.front_door_live_view'') == ''unavailable'' -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **前門** Front door · **離線** Offline<br><small>Home Assistant 收唔到影像 No stream from Home Assistant · {{ (("電量 " ~ ((states(''sensor.front_door_battery'') | float) | round(0) | int) ~ "%") ~ '' '' ~ ("Battery " ~ ((states(''sensor.front_door_battery'') | float) | round(0) | int) ~ "%")) if states(''sensor.front_door_battery'') | is_number else "冇電量讀數 No battery reading" }}</small>{%- elif states(''camera.front_door_live_view'') == ''unknown'' -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **前門** Front door · **狀態未知** State unknown<br><small>Home Assistant 讀唔到呢部鏡頭 Home Assistant can''t read this camera · {{ (("電量 " ~ ((states(''sensor.front_door_battery'') | float) | round(0) | int) ~ "%") ~ '' '' ~ ("Battery " ~ ((states(''sensor.front_door_battery'') | float) | round(0) | int) ~ "%")) if states(''sensor.front_door_battery'') | is_number else "冇電量讀數 No battery reading" }}</small>{%- endif -%}'
             grid_options:
               columns: 12
               rows: 3
-            visibility:
-              - condition: state
-                entity: camera.front_door_live_view
-                state:
-                  - unavailable
-                  - unknown
+            show_empty: false
           - type: picture-entity
             entity: camera.tapo_c425_north_wall_hd_stream_direct
-            name: 北牆 North wall · 點擊查看畫面 Tap to view
+            name: 北牆 North wall ›
             camera_view: auto
             show_state: false
             show_name: true
@@ -1009,19 +949,14 @@ views:
                   - unavailable
                   - unknown
           - type: markdown
-            content: '{%- if states(''camera.tapo_c425_north_wall_hd_stream_direct'') == ''unavailable'' -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **北牆** North wall · **離線** Offline<br><small>Home Assistant 收唔到影像 No stream from Home Assistant · {{ (("電量 " ~ ((states(''sensor.tapo_c425_north_wall_battery'') | float) | round(0) | int) ~ "%") ~ '' '' ~ ("Battery " ~ ((states(''sensor.tapo_c425_north_wall_battery'') | float) | round(0) | int) ~ "%")) if states(''sensor.tapo_c425_north_wall_battery'') | is_number else "冇電量讀數 No battery reading" }}</small>{%- else -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **北牆** North wall · **狀態未知** State unknown<br><small>Home Assistant 讀唔到呢部鏡頭 Home Assistant can''t read this camera · {{ (("電量 " ~ ((states(''sensor.tapo_c425_north_wall_battery'') | float) | round(0) | int) ~ "%") ~ '' '' ~ ("Battery " ~ ((states(''sensor.tapo_c425_north_wall_battery'') | float) | round(0) | int) ~ "%")) if states(''sensor.tapo_c425_north_wall_battery'') | is_number else "冇電量讀數 No battery reading" }}</small>{%- endif -%}'
+            content: '{%- if states(''camera.tapo_c425_north_wall_hd_stream_direct'') == ''unavailable'' -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **北牆** North wall · **離線** Offline<br><small>Home Assistant 收唔到影像 No stream from Home Assistant · {{ (("電量 " ~ ((states(''sensor.tapo_c425_north_wall_battery'') | float) | round(0) | int) ~ "%") ~ '' '' ~ ("Battery " ~ ((states(''sensor.tapo_c425_north_wall_battery'') | float) | round(0) | int) ~ "%")) if states(''sensor.tapo_c425_north_wall_battery'') | is_number else "冇電量讀數 No battery reading" }}</small>{%- elif states(''camera.tapo_c425_north_wall_hd_stream_direct'') == ''unknown'' -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **北牆** North wall · **狀態未知** State unknown<br><small>Home Assistant 讀唔到呢部鏡頭 Home Assistant can''t read this camera · {{ (("電量 " ~ ((states(''sensor.tapo_c425_north_wall_battery'') | float) | round(0) | int) ~ "%") ~ '' '' ~ ("Battery " ~ ((states(''sensor.tapo_c425_north_wall_battery'') | float) | round(0) | int) ~ "%")) if states(''sensor.tapo_c425_north_wall_battery'') | is_number else "冇電量讀數 No battery reading" }}</small>{%- endif -%}'
             grid_options:
               columns: 12
               rows: 3
-            visibility:
-              - condition: state
-                entity: camera.tapo_c425_north_wall_hd_stream_direct
-                state:
-                  - unavailable
-                  - unknown
+            show_empty: false
           - type: picture-entity
             entity: camera.tapo_c420_east_wall_hd_stream_direct
-            name: 東牆 East wall · 點擊查看畫面 Tap to view
+            name: 東牆 East wall ›
             camera_view: auto
             show_state: false
             show_name: true
@@ -1039,19 +974,14 @@ views:
                   - unavailable
                   - unknown
           - type: markdown
-            content: '{%- if states(''camera.tapo_c420_east_wall_hd_stream_direct'') == ''unavailable'' -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **東牆** East wall · **離線** Offline<br><small>Home Assistant 收唔到影像 No stream from Home Assistant · {{ (("電量 " ~ ((states(''sensor.tapo_camera_bcca_battery'') | float) | round(0) | int) ~ "%") ~ '' '' ~ ("Battery " ~ ((states(''sensor.tapo_camera_bcca_battery'') | float) | round(0) | int) ~ "%")) if states(''sensor.tapo_camera_bcca_battery'') | is_number else "冇電量讀數 No battery reading" }}</small>{%- else -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **東牆** East wall · **狀態未知** State unknown<br><small>Home Assistant 讀唔到呢部鏡頭 Home Assistant can''t read this camera · {{ (("電量 " ~ ((states(''sensor.tapo_camera_bcca_battery'') | float) | round(0) | int) ~ "%") ~ '' '' ~ ("Battery " ~ ((states(''sensor.tapo_camera_bcca_battery'') | float) | round(0) | int) ~ "%")) if states(''sensor.tapo_camera_bcca_battery'') | is_number else "冇電量讀數 No battery reading" }}</small>{%- endif -%}'
+            content: '{%- if states(''camera.tapo_c420_east_wall_hd_stream_direct'') == ''unavailable'' -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **東牆** East wall · **離線** Offline<br><small>Home Assistant 收唔到影像 No stream from Home Assistant · {{ (("電量 " ~ ((states(''sensor.tapo_camera_bcca_battery'') | float) | round(0) | int) ~ "%") ~ '' '' ~ ("Battery " ~ ((states(''sensor.tapo_camera_bcca_battery'') | float) | round(0) | int) ~ "%")) if states(''sensor.tapo_camera_bcca_battery'') | is_number else "冇電量讀數 No battery reading" }}</small>{%- elif states(''camera.tapo_c420_east_wall_hd_stream_direct'') == ''unknown'' -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **東牆** East wall · **狀態未知** State unknown<br><small>Home Assistant 讀唔到呢部鏡頭 Home Assistant can''t read this camera · {{ (("電量 " ~ ((states(''sensor.tapo_camera_bcca_battery'') | float) | round(0) | int) ~ "%") ~ '' '' ~ ("Battery " ~ ((states(''sensor.tapo_camera_bcca_battery'') | float) | round(0) | int) ~ "%")) if states(''sensor.tapo_camera_bcca_battery'') | is_number else "冇電量讀數 No battery reading" }}</small>{%- endif -%}'
             grid_options:
               columns: 12
               rows: 3
-            visibility:
-              - condition: state
-                entity: camera.tapo_c420_east_wall_hd_stream_direct
-                state:
-                  - unavailable
-                  - unknown
+            show_empty: false
           - type: picture-entity
             entity: camera.tapo_c420_south_wall_hd_stream_direct
-            name: 南牆 South wall · 點擊查看畫面 Tap to view
+            name: 南牆 South wall ›
             camera_view: auto
             show_state: false
             show_name: true
@@ -1069,19 +999,14 @@ views:
                   - unavailable
                   - unknown
           - type: markdown
-            content: '{%- if states(''camera.tapo_c420_south_wall_hd_stream_direct'') == ''unavailable'' -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **南牆** South wall · **離線** Offline<br><small>Home Assistant 收唔到影像 No stream from Home Assistant · {{ (("電量 " ~ ((states(''sensor.tapo_c420_south_wall_battery'') | float) | round(0) | int) ~ "%") ~ '' '' ~ ("Battery " ~ ((states(''sensor.tapo_c420_south_wall_battery'') | float) | round(0) | int) ~ "%")) if states(''sensor.tapo_c420_south_wall_battery'') | is_number else "冇電量讀數 No battery reading" }}</small>{%- else -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **南牆** South wall · **狀態未知** State unknown<br><small>Home Assistant 讀唔到呢部鏡頭 Home Assistant can''t read this camera · {{ (("電量 " ~ ((states(''sensor.tapo_c420_south_wall_battery'') | float) | round(0) | int) ~ "%") ~ '' '' ~ ("Battery " ~ ((states(''sensor.tapo_c420_south_wall_battery'') | float) | round(0) | int) ~ "%")) if states(''sensor.tapo_c420_south_wall_battery'') | is_number else "冇電量讀數 No battery reading" }}</small>{%- endif -%}'
+            content: '{%- if states(''camera.tapo_c420_south_wall_hd_stream_direct'') == ''unavailable'' -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **南牆** South wall · **離線** Offline<br><small>Home Assistant 收唔到影像 No stream from Home Assistant · {{ (("電量 " ~ ((states(''sensor.tapo_c420_south_wall_battery'') | float) | round(0) | int) ~ "%") ~ '' '' ~ ("Battery " ~ ((states(''sensor.tapo_c420_south_wall_battery'') | float) | round(0) | int) ~ "%")) if states(''sensor.tapo_c420_south_wall_battery'') | is_number else "冇電量讀數 No battery reading" }}</small>{%- elif states(''camera.tapo_c420_south_wall_hd_stream_direct'') == ''unknown'' -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **南牆** South wall · **狀態未知** State unknown<br><small>Home Assistant 讀唔到呢部鏡頭 Home Assistant can''t read this camera · {{ (("電量 " ~ ((states(''sensor.tapo_c420_south_wall_battery'') | float) | round(0) | int) ~ "%") ~ '' '' ~ ("Battery " ~ ((states(''sensor.tapo_c420_south_wall_battery'') | float) | round(0) | int) ~ "%")) if states(''sensor.tapo_c420_south_wall_battery'') | is_number else "冇電量讀數 No battery reading" }}</small>{%- endif -%}'
             grid_options:
               columns: 12
               rows: 3
-            visibility:
-              - condition: state
-                entity: camera.tapo_c420_south_wall_hd_stream_direct
-                state:
-                  - unavailable
-                  - unknown
+            show_empty: false
           - type: picture-entity
             entity: camera.tapo_c200_stockroom_hd_stream_direct
-            name: 雜物房 Stockroom · 點擊查看畫面 Tap to view
+            name: 雜物房 Stockroom ›
             camera_view: auto
             show_state: false
             show_name: true
@@ -1099,19 +1024,14 @@ views:
                   - unavailable
                   - unknown
           - type: markdown
-            content: '{%- if states(''camera.tapo_c200_stockroom_hd_stream_direct'') == ''unavailable'' -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **雜物房** Stockroom · **離線** Offline<br><small>Home Assistant 收唔到影像 No stream from Home Assistant</small>{%- else -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **雜物房** Stockroom · **狀態未知** State unknown<br><small>Home Assistant 讀唔到呢部鏡頭 Home Assistant can''t read this camera</small>{%- endif -%}'
+            content: '{%- if states(''camera.tapo_c200_stockroom_hd_stream_direct'') == ''unavailable'' -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **雜物房** Stockroom · **離線** Offline<br><small>Home Assistant 收唔到影像 No stream from Home Assistant</small>{%- elif states(''camera.tapo_c200_stockroom_hd_stream_direct'') == ''unknown'' -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **雜物房** Stockroom · **狀態未知** State unknown<br><small>Home Assistant 讀唔到呢部鏡頭 Home Assistant can''t read this camera</small>{%- endif -%}'
             grid_options:
               columns: 12
               rows: 3
-            visibility:
-              - condition: state
-                entity: camera.tapo_c200_stockroom_hd_stream_direct
-                state:
-                  - unavailable
-                  - unknown
+            show_empty: false
           - type: picture-entity
             entity: camera.smart_pet_feeder
-            name: 寵物鏡頭 Pet feeder · 點擊查看畫面 Tap to view
+            name: 寵物鏡頭 Pet feeder ›
             camera_view: auto
             show_state: false
             show_name: true
@@ -1129,16 +1049,11 @@ views:
                   - unavailable
                   - unknown
           - type: markdown
-            content: '{%- if states(''camera.smart_pet_feeder'') == ''unavailable'' -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **寵物鏡頭** Pet feeder · **離線** Offline<br><small>Home Assistant 收唔到影像 No stream from Home Assistant</small>{%- else -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **寵物鏡頭** Pet feeder · **狀態未知** State unknown<br><small>Home Assistant 讀唔到呢部鏡頭 Home Assistant can''t read this camera</small>{%- endif -%}'
+            content: '{%- if states(''camera.smart_pet_feeder'') == ''unavailable'' -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **寵物鏡頭** Pet feeder · **離線** Offline<br><small>Home Assistant 收唔到影像 No stream from Home Assistant</small>{%- elif states(''camera.smart_pet_feeder'') == ''unknown'' -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **寵物鏡頭** Pet feeder · **狀態未知** State unknown<br><small>Home Assistant 讀唔到呢部鏡頭 Home Assistant can''t read this camera</small>{%- endif -%}'
             grid_options:
               columns: 12
               rows: 3
-            visibility:
-              - condition: state
-                entity: camera.smart_pet_feeder
-                state:
-                  - unavailable
-                  - unknown
+            show_empty: false
     footer:
       card:
         type: grid
