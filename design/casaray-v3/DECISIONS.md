@@ -124,6 +124,41 @@ own scope. Branch `casaray-v3/agent-mockup-preview-20261119`, from draft PR #24
       and the camera frame was chosen over a fit with letterboxed pictures.
     - **Unchanged:** the working dashboards and catalogues, the Night card and its
       three targets (until their live IDs are confirmed), every control.
+13. **Second trial: the owner's photos (20/11/26 07:29-07:30, `7370ad7` imported).**
+    Five wall-iPad photos (Home, Rooms, Lighting, Climate, Cameras). Most of item 12
+    held on the device: the weather card named itself, the living-room temperature
+    showed its No data card, Rooms and Climate read honestly, the tab bar sat at the
+    bottom. Two things did not:
+    - **Cards vanished instead of saying No data.** Home and Lighting lost the Living
+      room and Dining lights entirely (no tile, no No data card); Cameras showed only
+      Front door and Stockroom. **Cause:** this instance's frontend sends visibility
+      conditions to Home Assistant Core (`subscribe_condition`;
+      `condition-evaluator-controller.ts` on the frontend's dev branch). Core errors
+      on an entity it does not have, and the frontend then hides the card whichever
+      way the condition is written. 20260826.7, read for item 12, evaluated them in
+      the browser and read a missing entity as `unknown`. So every card that must
+      speak for a missing entity is now **self-hiding** instead: a markdown card with
+      `show_empty: false` whose template renders only in the dark case
+      (`_self_hiding`; templates read a missing entity as `unknown` in both
+      versions). That covers the No data cards, the camera Offline / State unknown
+      cards and the door's "not reporting" banner. Tiles and pictures keep their
+      conditions: a missing ID hides them in both versions, which is wanted.
+      `ha_layout.visible()` models both behaviours (`missing="hide"` by default, as
+      seen on the Green); the tests run both, and the trial-shaped sample now follows
+      the photos — the 7370ad7 render reproduces them.
+    - **Entity IDs not on the instance.** Rooms says 無資料 for `light.living_room` and
+      `light.dining` while the read-only connector reads lights named "Living room"
+      and "Dining" as off, and the East wall, South wall and Pet feeder cameras as
+      idle: those devices exist under other IDs. North wall is not exposed to the
+      connector. Six IDs to confirm in Settings → Entities: the two lights and four
+      cameras. The 05/09 export is still the authority for what this repository may
+      write; it is stale for these six. Night's three targets are unchanged until the
+      owner confirms them; meanwhile it reaches only Ray's room light.
+    - **Also:** picture names drop "· 點擊查看畫面 Tap to view" for a chevron (it was cut
+      off on the trial iPad).
+    - **Working dashboards, not changed here:** `components.camera_card` (PR #16's
+      Offline twin) uses the same condition pair, so on this instance a working
+      camera slot whose ID is missing vanishes the same way. Recorded for the owner.
 
 ## V3-024 · 18/11/26 · Release preview integration: PR #16's cameras with one named, readable top bar
 
