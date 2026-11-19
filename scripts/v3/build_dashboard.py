@@ -209,10 +209,6 @@ class BiCtx(Ctx):
         return a if a == b else "(" + a + ") ~ ' ' ~ (" + b + ")"
 
     def link(self, path):
-        # "working:<page>" always opens the working dashboard — for a page the
-        # preview also carries (the working Home, from the preview's More).
-        if path.startswith("working:"):
-            return f"/{self.working}/{path.split(':', 1)[1]}"
         return f"/{self.url_base if path in self.own else self.working}/{path}"
 
     @property
