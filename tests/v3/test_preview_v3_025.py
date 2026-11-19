@@ -163,7 +163,9 @@ class Honest(unittest.TestCase):
             self.assertEqual((L.visible(pic, st), L.visible(twin, st)), (False, True), e)
             self.assertEqual((L.visible(pic, dict(st, **{e: "idle"})), L.visible(twin, dict(st, **{e: "idle"}))),
                              (True, False), e)
-            self.assertIn("離線 Offline", render(twin["content"], st))
+            out = render(twin["content"], st)
+            self.assertIn("離線", out)
+            self.assertIn("Offline", out)
             self.assertEqual(L.effective(pic), L.effective(twin), e)   # same size: the grid keeps its shape
 
     def test_rooms_say_no_data_when_dark(self):
@@ -241,6 +243,120 @@ class SampleData(unittest.TestCase):
             self.assertIn(e, EXPORT, e)
         self.assertIn("示例圖片", sm["pictures"]["badge"])
         self.assertTrue((ROOT / sm["pictures"]["source"]).is_file())
+
+
+def missing(states, *ents):
+    """A state set without these entities: the instance does not have them."""
+    return {k: v for k, v in states.items() if k not in ents}
+
+
+def pairs(view, entity):
+    """The cards bound to one entity by a visibility condition, in order."""
+    return [c for c in cards(view) if c.get("visibility") and c["visibility"][0].get("entity") == entity]
+
+
+class Trial(unittest.TestCase):
+    """The 20/11/26 live trial (V3-025 item 12): missing light tiles, uneven
+    camera slots, footer clearance. Offline arithmetic and renders only."""
+    normal, attrs = R.scenarios()["normal"]
+    LIGHTS = {"home": ["light.living_room", "light.dining", "light.bedroom_bedroom"],
+              "lighting": ["light.living_room", "light.dining", "light.bedroom_bedroom", "light.bedroom_nightlight"]}
+    READINGS = {"home": "sensor.bedroom_motion_sensor_temperature",
+                "climate": "sensor.living_room_living_hue_hue_sensor_temperature"}
+
+    def _one_shows(self, a, b, st):
+        return (L.visible(a, st), L.visible(b, st))
+
+    def test_every_camera_one_slot_one_size_in_every_state(self):
+        slots = [(page("cameras"), e) for e in CAMS] + [(page("home"), CAMS[0])]
+        for view, e in slots:
+            pic, twin = pairs(view, e)
+            self.assertEqual((pic["type"], twin["type"]), ("picture-entity", "markdown"), e)
+            self.assertEqual(L.effective(pic), L.effective(twin), e)
+            for state, want in (("idle", (True, False)), ("streaming", (True, False)), ("recording", (True, False)),
+                                ("unavailable", (False, True)), ("unknown", (False, True))):
+                self.assertEqual(self._one_shows(pic, twin, dict(self.normal, **{e: state})), want, (e, state))
+            gone = missing(self.normal, e)
+            self.assertEqual(self._one_shows(pic, twin, gone), (False, True), e)   # never HA's empty warning card
+            off = render(twin["content"], dict(self.normal, **{e: "unavailable"}))
+            unk = render(twin["content"], dict(self.normal, **{e: "unknown"}))
+            self.assertEqual(unk, render(twin["content"], gone))
+            for word in ("離線", "Offline"):
+                self.assertIn(word, off)
+            for word in ("狀態未知", "State unknown"):
+                self.assertIn(word, unk)
+            for text in (off, unk, pic["name"]):   # an idle entity is not proof its stream plays
+                self.assertNotIn("Online", text)
+                self.assertNotIn("在線", text)
+        names = [c for c in cards(page("cameras")) if c["type"] == "markdown" and "mdi:video-outline" in c["content"]]
+        self.assertEqual(names, [])   # 2914b09's separate 4-unit name cells are gone
+
+    def test_mixed_camera_states_pack_with_no_holes(self):
+        cam = next(s for s in page("cameras")["sections"] if any(c.get("type") == "picture-entity" for c in s["cards"]))
+        mix = dict(self.normal, **dict(zip(CAMS, ["idle", "unavailable", "unknown", "streaming", "idle", "unavailable"])))
+        for st in (mix, missing(mix, CAMS[1], CAMS[3]), R.scenarios()["dark"][0]):
+            shown = [c for c in cam["cards"] if L.visible(c, st)]
+            self.assertEqual(len(shown), len(CAMS))
+            self.assertEqual({L.effective(c) for c in shown}, {(12, 3)})
+            for where, resolved in (("wall iPad", 2), ("phone", 1)):
+                self.assertEqual(L.section_holes(cam, L.units(cam.get("column_span", 1), resolved), st), 0, where)
+
+    def test_light_and_reading_tiles_give_way_to_a_named_no_data_card(self):
+        names = {"light.living_room": ("客廳", "Living room"), "light.dining": ("飯廳", "Dining"),
+                 "light.bedroom_bedroom": ("Ray 房", "Ray room"), "light.bedroom_nightlight": ("夜燈", "Nightlight")}
+        cases = [(p, e) for p, es in self.LIGHTS.items() for e in es] + list(self.READINGS.items())
+        for path, e in cases:
+            tile, nd = pairs(page(path), e)
+            self.assertEqual((tile["type"], nd["type"]), ("tile", "markdown"), (path, e))
+            self.assertEqual(L.effective(tile), L.effective(nd), (path, e))
+            ok = "on" if e.startswith("light.") else "23"
+            self.assertEqual(self._one_shows(tile, nd, dict(self.normal, **{e: ok})), (True, False), (path, e))
+            for st in (dict(self.normal, **{e: "unavailable"}), dict(self.normal, **{e: "unknown"}),
+                       missing(self.normal, e)):
+                self.assertEqual(self._one_shows(tile, nd, st), (False, True), (path, e))
+                out = render(nd["content"], st)
+                for word in ("無資料", "No data"):
+                    self.assertIn(word, out, (path, e))
+                if e in names:
+                    for word in names[e]:
+                        self.assertIn(word, out, (path, e))
+            if L.effective(nd)[1] == 1:   # one 56 px row: one line, no icon
+                out = render(nd["content"], missing(self.normal, e))
+                self.assertNotIn("<br>", out)
+                self.assertNotIn("\n", out)
+                self.assertNotIn("ha-icon", out)
+        # the Lighting tiles keep V3 Lighting's own controls; Home's stay read-only
+        for e in self.LIGHTS["lighting"]:
+            self.assertEqual(pairs(page("lighting"), e)[0]["features"], [{"type": "light-brightness"}])
+        for e in self.LIGHTS["home"]:
+            t = pairs(page("home"), e)[0]
+            self.assertEqual((t["icon_tap_action"], t["hold_action"]), ({"action": "none"}, {"action": "none"}))
+
+    def test_weather_card_names_itself_when_it_has_no_data(self):
+        w = "weather.forecast_home"
+        card = next(c for c in cards(page("home")) if c["type"] == "markdown" and "pv.cond" not in c["content"]
+                    and w in c["content"] and "## " in c["content"])
+        for st in (missing(self.normal, w), dict(self.normal, **{w: "unavailable"})):
+            out = render(card["content"], st)
+            for word in ("天氣", "Weather", "無資料", "No data"):
+                self.assertIn(word, out)
+        out = render(card["content"], dict(self.normal, **{w: "partlycloudy"}), {w: {"temperature": 21}})
+        self.assertIn("21°C", out)
+        self.assertIn("多雲間晴", out)
+        self.assertNotIn("無資料", out)
+
+    def test_night_targets_are_unchanged_until_verified_live(self):
+        night = next(c for c in cards(page("lighting")) if "晚間模式" in c.get("content", ""))
+        self.assertEqual(night["tap_action"]["target"]["entity_id"],
+                         ["light.living_room", "light.bedroom_bedroom", "light.dining"])
+        self.assertEqual(night["tap_action"]["data"], {"brightness_pct": 10})
+
+    def test_trial_sample_is_labelled_and_names_only_verified_ids(self):
+        sm = B.load_yaml(ROOT / "design/casaray-v3/preview_samples/trial_2026-11-20.yaml")
+        self.assertIn("SIMULATED", sm["label"])
+        for e in sm["missing"] + list(sm["states"]) + list(sm["attrs"]) + list(sm["pictures"]["crops"]):
+            self.assertIn(e, EXPORT, e)   # "missing" means absent on the instance, never an invented ID
+        self.assertFalse(set(sm["missing"]) & set(sm["states"]))
 
 
 if __name__ == "__main__":
