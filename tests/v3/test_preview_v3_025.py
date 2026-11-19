@@ -80,7 +80,7 @@ class Separate(unittest.TestCase):
 class Bilingual(unittest.TestCase):
     def ctx(self):
         locs = {l["code"]: l for l in MAN["locales"]}
-        cats = {p.stem: B.load_yaml(p) for p in (B.SRC / "i18n").glob("*.yaml")}
+        cats = B.preview_catalogues({p.stem: B.load_yaml(p) for p in (B.SRC / "i18n").glob("*.yaml")})
         return B.BiCtx(locs["yue"], locs["en"], cats, EXPORT, PV["url_base"], PV["views"],
                        PV["working_url_base"], PV.get("vocabulary"))
 
@@ -213,6 +213,23 @@ class Honest(unittest.TestCase):
         for st in ("on", "off", "unavailable"):
             out = render(timer["content"], dict(self.normal, **{sw: st}))
             self.assertIn("</small>\n\n**", out, st)    # a paragraph break, not "Timer無資料"
+
+
+class Catalogues(unittest.TestCase):
+    def test_preview_strings_stay_out_of_the_working_catalogues(self):
+        work = {c: B.load_yaml(B.SRC / "i18n" / f"{c}.yaml") for c in ("en", "yue", "km")}
+        for c in ("en", "yue"):
+            own = B.load_yaml(B.SRC / "preview" / "i18n" / f"{c}.yaml")
+            self.assertFalse(set(own) & set(work[c]), c)
+            self.assertTrue(all(k.startswith("pv.") for k in own), c)
+        self.assertEqual(set(B.load_yaml(B.SRC / "preview" / "i18n" / "en.yaml")),
+                         set(B.load_yaml(B.SRC / "preview" / "i18n" / "yue.yaml")))   # both languages, every key
+
+    def test_a_key_in_both_is_refused(self):
+        cats = {c: B.load_yaml(B.SRC / "i18n" / f"{c}.yaml") for c in ("en", "yue")}
+        cats["en"]["pv.title"] = "re-worded"
+        with self.assertRaises(SystemExit):
+            B.preview_catalogues(cats)
 
 
 class SampleData(unittest.TestCase):

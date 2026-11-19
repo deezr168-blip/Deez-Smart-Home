@@ -62,7 +62,9 @@ own scope. Branch `casaray-v3/agent-mockup-preview-20261119`, from draft PR #24
    (`input_select.lighting_scene` exists, but its options are not in git and it
    is not exposed to the read-only connector); the filter countdown.
 7. **Gate and tests.** `validate_dashboard.py` `preview_problems()` (+64
-   checks) and `tests/v3/test_preview_v3_025.py` (14). Offline renders
+   checks) and `tests/v3/test_preview_v3_025.py` (17). The preview's strings live in `src/casaray_v3/preview/i18n/` (en, yue), not the working
+   catalogues: those must hold every key in en, yue and km, and the first full run caught the
+   86 missing Khmer keys. The working catalogues are byte-identical to `0f90277`. Offline renders
    (`preview_view.py --sample design/casaray-v3/preview_samples/mockup_2026-11-19.yaml`)
    carry the mockups' values and photos, captioned 示例數據 / 示例圖片 Sample;
    the same pages rendered fully dark say 無資料 / Offline and nothing reassuring.
