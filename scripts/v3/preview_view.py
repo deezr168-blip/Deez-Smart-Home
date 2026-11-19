@@ -25,6 +25,7 @@ Material Design Icons SVGs named <icon>.svg; without one, icons are dots.
 from __future__ import annotations
 
 import argparse
+import datetime as dt
 import html
 import json
 import re
@@ -86,7 +87,26 @@ def md_to_html(text):
                                         for it in items) + "</ul>")
             items.clear()
 
+    quote = []
+
+    def flush_quote():
+        # GitHub alert blocks become ha-alert (ha-markdown-element.ts, 20260826.7):
+        # warning -> --warning-color, caution -> --error-color, tip -> --success-color.
+        if not quote:
+            return
+        m = re.match(r"^\[!(caution|important|note|tip|warning)\]\s*$", quote[0], re.I)
+        kind = {"caution": "error", "important": "info", "note": "info", "tip": "success",
+                "warning": "warning"}[m.group(1).lower()] if m else None
+        body = "<br>".join(_inline(x) for x in (quote[1:] if m else quote))
+        out.append(f'<div class="alert {kind}">{body}</div>' if kind else f"<blockquote>{body}</blockquote>")
+        quote.clear()
+
     for line in text.split("\n"):
+        if line.startswith(">"):
+            flush()
+            quote.append(line[1:].strip())
+            continue
+        flush_quote()
         if not line.strip():
             flush()
             continue
@@ -103,6 +123,7 @@ def md_to_html(text):
             items[-1].append(line)
         else:
             para.append(line)
+    flush_quote()
     flush()
     return "".join(out)
 
@@ -196,8 +217,16 @@ def render_card(card, ctx):
     t = card.get("type")
     states, attrs, names, icons, env = ctx["states"], ctx["attrs"], ctx["names"], ctx["icons"], ctx["env"]
     tappable = " tap" if (card.get("tap_action") or {}).get("action") not in (None, "none") else ""
+    if t == "grid":   # a grid CARD (the preview's footer): N fixed columns, cells sized by content
+        cells = "".join(f'<div class="gcell">{render_card(c, ctx)}</div>'
+                        for c in card.get("cards", []) if shown(c, states))
+        return (f'<div class="gridcard" style="grid-template-columns:repeat({int(card.get("columns", 3))},'
+                f'minmax(0,1fr))">{cells}</div>')
     if t == "markdown":
         body = md_to_html(env.from_string(card["content"]).render())
+        # <ha-icon icon="mdi:x"> passes ha-markdown's sanitiser; draw it from the icon set
+        body = re.sub(r'<ha-icon icon="mdi:([a-z0-9-]+)"></ha-icon>',
+                      lambda m: icons.svg(m.group(1), "hai"), body)
         plain = " text-only" if card.get("text_only") else ""
         return f'<div class="ha-card md{plain}{tappable}">{body}</div>'
     if t == "heading":
@@ -220,6 +249,8 @@ def render_card(card, ctx):
     if t == "button":
         name = html.escape(str(card.get("name", ""))) if card.get("show_name", True) else ""
         ic = icons.svg(card["icon"].split(":", 1)[1], "bic") if card.get("icon") and card.get("show_icon", True) else ""
+        if ic and card.get("icon_height"):   # hui-button-card: icon_height sets the icon's height
+            ic = ic.replace('class="bic"', f'class="bic" style="height:{card["icon_height"]};width:auto"', 1)
         nm = f'<div class="bn">{name}</div>' if name else ""
         tint = " accent" if card.get("color") in ("accent", "primary", "amber") else ""
         return f'<div class="ha-card btn{tint}{tappable}">{ic}{nm}</div>'
@@ -239,6 +270,11 @@ def render_card(card, ctx):
         # with no state word (hui-image.ts, 20260826.7): the annotation is the
         # preview's, not the card's.
         badge = "preview note: HA shows a broken image, no word" if off else "camera image — not rendered offline"
+        img = (ctx.get("samples") or {}).get(e)
+        if img and not off:   # a LABELLED sample picture (--sample); Home Assistant shows the camera's own
+            return (f'<div class="ha-card cam{tappable}"><img class="sample" src="{img}" alt="">'
+                    f'<div class="cbadge">{html.escape(ctx.get("sample_badge", "Sample image"))}</div>'
+                    f'<div class="cname">{html.escape(str(card.get("name", "")))}</div></div>')
         return (f'<div class="ha-card cam{" camoff" if off else ""}{tappable}">{icons.svg("cctv", "cic")}'
                 f'<div class="cbadge">{badge}</div><div class="cname">{html.escape(str(card.get("name", "")))}</div></div>')
     if t == "todo-list":
@@ -302,6 +338,19 @@ border-radius:999px;padding:2px 8px;background:rgba(0,0,0,.25)}
 .todo{padding:12px 16px}.add{border:1px solid var(--v3-border);border-radius:10px;padding:8px 12px;color:var(--v3-text-2);margin-bottom:8px}
 .ti{display:flex;gap:10px;align-items:center;padding:6px 0}.cb{width:16px;height:16px;border:2px solid var(--v3-text-2);border-radius:4px;flex:none}
 .ph{color:var(--v3-muted);font-style:italic}
+/* ha-markdown: table[role=presentation] is borderless and unpadded; ha-icon is 24 px */
+.md table{border-collapse:separate;border-spacing:0;width:100%}.md td{padding:0;vertical-align:middle}
+.hai{width:24px;height:24px;fill:currentColor;vertical-align:middle}
+/* ha-alert from a GitHub alert block: a tinted box in the theme's state colour */
+.alert{border-radius:10px;padding:8px 12px;margin:0}.alert.warning{background:rgba(232,163,61,.16);border-left:4px solid var(--v3-accent)}
+.alert.error{background:rgba(240,122,122,.16);border-left:4px solid var(--v3-alert)}
+.alert.success{background:rgba(95,211,154,.14);border-left:4px solid var(--v3-ok)}
+/* grid CARD and the sections-view footer (hui-view-footer.ts: sticky, max_width, card shadow) */
+.gridcard{display:grid;gap:8px}.gridcard .btn{height:auto;min-height:64px}
+.vfooter{position:sticky;bottom:24px;z-index:4;padding:0 var(--column-gap)}
+.vfooter .fwrap{max-width:var(--footer-max-width,600px);margin:0 auto;padding:8px 0}
+.vfooter .gridcard .ha-card{box-shadow:0 4px 18px rgba(0,0,0,.45)}   /* hui-view-footer: --ha-view-footer-box-shadow; the grid card itself draws nothing */
+img.sample{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .tag{position:absolute;top:6px;right:8px;z-index:9;font-size:10px;line-height:1.3;color:#ffd38a;background:rgba(40,28,8,.85);
 border:1px solid rgba(232,163,61,.5);border-radius:6px;padding:3px 6px;max-width:300px;text-align:right}
 """
@@ -325,9 +374,10 @@ JS = """
 """
 
 
-def page(view, states, attrs, names, icons, label):
+def page(view, states, attrs, names, icons, label, samples=None, sample_badge=None):
     env = R.env_for(states, attrs)
-    ctx = {"states": states, "attrs": attrs, "names": names, "icons": icons, "env": env}
+    ctx = {"states": states, "attrs": attrs, "names": names, "icons": icons, "env": env,
+           "samples": samples or {}, "sample_badge": sample_badge}
     secs = []
     spans = []
     for s in view["sections"]:
@@ -349,24 +399,30 @@ def page(view, states, attrs, names, icons, label):
             cards.append(f'<div class="{" ".join(cls)}" style="{";".join(style)}">{render_card(c, ctx)}</div>')
         secs.append(f'<div class="section" data-span="{span}" style="--column-span:{span}">'
                     f'<div class="grid">{"".join(cards)}</div></div>')
+    foot = ""
+    if (view.get("footer") or {}).get("card"):
+        f = view["footer"]
+        foot = (f'<div class="vfooter" style="--footer-max-width:{int(f.get("max_width", 600))}px">'
+                f'<div class="fwrap">{render_card(f["card"], ctx)}</div></div>')
     tag = f'<div class="tag">{html.escape(label)}</div>' if label else ""
     return ("<!doctype html><html><head><meta charset='utf-8'>"
             "<meta name='viewport' content='width=device-width,initial-scale=1'>"
             f"<title>{html.escape(view.get('title', ''))} — offline preview</title><style>{CSS}</style></head>"
             f"<body>{tag}<div class='view' data-max-columns='{view.get('max_columns', 4)}' data-spans='{json.dumps(spans)}'>"
-            f"<div class='wrapper'><div class='container'>{''.join(secs)}</div></div></div>"
+            f"<div class='wrapper'><div class='container'>{''.join(secs)}</div></div>{foot}</div>"
             f"<script>{JS}</script></body></html>")
 
 
 SHOOT = r"""
 const {chromium} = require('playwright');
 (async () => {
-  const [file, out, w, h] = process.argv.slice(1);
+  const [file, out, w, h, first] = process.argv.slice(1);
   const b = await chromium.launch();
   const p = await b.newPage({viewport: {width: +w, height: +h}, deviceScaleFactor: 2});
   await p.goto('file://' + file);
   await p.evaluate(() => document.fonts.ready);
   await p.screenshot({path: out, fullPage: true});
+  if (first) await p.screenshot({path: first, fullPage: false});   // what the screen shows, sticky footer included
   const info = await p.evaluate(() => {
     // Measured in the simulated layout only: sections sharing a row (a band) and how much
     // shorter each is than the tallest beside it; button labels wider than their card (the
@@ -403,9 +459,10 @@ const {chromium} = require('playwright');
 """
 
 
-def shoot(html_path, out_png, size):
+def shoot(html_path, out_png, size, first_png=None):
     node = shutil.which("node") or "/opt/node22/bin/node"
-    r = subprocess.run([node, "-e", SHOOT, str(html_path), str(out_png), str(size[0]), str(size[1])],
+    r = subprocess.run([node, "-e", SHOOT, str(html_path), str(out_png), str(size[0]), str(size[1])]
+                       + ([str(first_png)] if first_png else []),
                        capture_output=True, text=True, timeout=180)
     if r.returncode != 0:
         raise SystemExit(f"capture failed: {r.stderr.strip()[:400]}")
@@ -461,6 +518,8 @@ def main():
     ap.add_argument("--captions", nargs=2, default=["Before", "After"])
     ap.add_argument("--crop-height", type=int)
     ap.add_argument("--scale", type=float, default=0.5)
+    ap.add_argument("--sample", type=Path, help="YAML of LABELLED sample data: states, attrs, now, "
+                    "camera pictures cropped from a mockup (never live readings)")
     a = ap.parse_args()
     if a.side_by_side:
         size = side_by_side(*a.side_by_side, captions=a.captions, crop_height=a.crop_height, scale=a.scale)
@@ -476,14 +535,31 @@ def main():
     if a.scenario == "normal":
         attrs = {**{k: dict(v) for k, v in DEMO_ATTRS.items()}, **attrs}
     names = json.loads((ROOT / "docs/live/fixture_states.json").read_text(encoding="utf-8"))["_meta"]["names"]
+    samples, badge = {}, None
+    if a.sample:
+        sm = yaml.safe_load(a.sample.read_text(encoding="utf-8"))
+        states = {**states, **{k: str(v) for k, v in (sm.get("states") or {}).items()}}
+        attrs = {**attrs, **{k: dict(v) for k, v in (sm.get("attrs") or {}).items()}}
+        if sm.get("now"):
+            R.FIXED_NOW = dt.datetime.fromisoformat(sm["now"])
+        pics = sm.get("pictures") or {}
+        if pics:
+            from PIL import Image
+            import base64, io
+            src = Image.open(ROOT / pics["source"]).convert("RGB")
+            for ent, box in (pics.get("crops") or {}).items():
+                buf = io.BytesIO()
+                src.crop(tuple(box)).save(buf, "JPEG", quality=85)
+                samples[ent] = "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode()
+            badge = pics.get("badge", "Sample image")
     a.out.mkdir(parents=True, exist_ok=True)
     out = a.out / f"{a.view}.html"
-    out.write_text(page(view, states, attrs, names, Icons(a.icons), a.label), encoding="utf-8")
+    out.write_text(page(view, states, attrs, names, Icons(a.icons), a.label, samples, badge), encoding="utf-8")
     print(f"wrote {out}")
     if a.shots:
         for dev, size in VIEWPORTS.items():
             png = a.out / f"{a.view}_{dev}.png"
-            info = shoot(out.resolve(), png, size)
+            info = shoot(out.resolve(), png, size, a.out / f"{a.view}_{dev}_first.png")
             print(f"wrote {png}  {size[0]}x{size[1]} viewport: {info['cols']} column(s), page {info['height']} px tall")
             print("  measured (simulated): band holes " + json.dumps(info["holes"], ensure_ascii=False)
                   + " | clipped labels " + json.dumps(info["clipped"], ensure_ascii=False)
