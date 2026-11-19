@@ -514,8 +514,8 @@ def side_by_side(before, after, out, captions=("Before", "After"), crop_height=N
     small = _font(17)
     d.text((pad, 18), captions[0], fill=(238, 242, 247), font=font)
     d.text((pad * 2 + a.width, 18), captions[1], fill=(238, 242, 247), font=font)
-    d.text((pad, H - foot), "Offline preview, not a Home Assistant screenshot: layout from Home Assistant's "
-           "sections-view CSS (frontend 20260826.7); card interiors approximated; fixture states, not live readings.",
+    d.text((pad, H - foot), "Offline preview, not a Home Assistant screenshot: sections-view layout (frontend "
+           "20260826.7), visibility as the Green evaluated it on 20/11/26; card interiors approximated; sample states.",
            fill=(232, 163, 61), font=small)
     img.save(out, optimize=True)
     return img.size

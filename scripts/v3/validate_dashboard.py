@@ -363,8 +363,13 @@ def preview_problems(view, spec, export, own_paths, own_base, working_paths, wor
         except Exception as e:  # noqa: BLE001 — a template that cannot render is a broken card
             out["renders"].append(f"{type(e).__name__}: {str(e)[:60]}")
             continue
-        if not bilingual(re.sub(r"<[^>]+>", " ", txt)):
-            out["bilingual"].append(re.sub(r"\s+", " ", txt)[:50])
+        # a self-hiding card (show_empty: false) is read where it shows, and must show somewhere
+        hides = c.get("show_empty") is False
+        if hides and not txt and not dtxt:
+            out["renders"].append("self-hiding card empty in both the fixture and the dark: never shows")
+        for t in ([x for x in (txt, dtxt) if x] if hides else [txt]):
+            if not bilingual(re.sub(r"<[^>]+>", " ", t)):
+                out["bilingual"].append(re.sub(r"\s+", " ", t)[:50])
         plain = re.sub(r"<[^>]+>", " ", dtxt)
         hits = [w for w in PREVIEW_DARK_FORBIDDEN if re.search(w, plain)]
         if hits:

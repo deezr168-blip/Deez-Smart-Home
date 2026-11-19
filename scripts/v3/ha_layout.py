@@ -142,13 +142,28 @@ def place(sizes, n_units):
     return out, used, holes
 
 
-def visible(card, states):
-    """A card's `visibility` conditions, as the frontend evaluates them, against
-    a {entity: state} map (a missing entity reads 'unknown'). Screen and user
-    conditions pass: a preview has no screen size or user to test."""
+def visible(card, states, missing="hide"):
+    """Whether a card shows, against a {entity: state} map.
+
+    `visibility` conditions, as the frontend evaluates them. An entity absent
+    from `states` is one the instance does not have:
+      missing="hide"     newer frontends send state conditions to Home Assistant
+                         Core (subscribe_condition); Core errors on an unknown
+                         entity and the frontend then HIDES the card whichever
+                         way the condition is written. Seen on the Green on
+                         20/11/26 (the trial's vanished tiles and cameras).
+      missing="unknown"  frontend 20260826.7 evaluated them in the browser and
+                         read a missing entity as 'unknown' (validate-condition.ts).
+    A markdown card with `show_empty: false` also hides itself while its
+    template renders to nothing (hui-markdown-card.ts, both versions); that is
+    rendered here with the offline template shim. Screen and user conditions
+    pass: a preview has no screen size or user to test."""
     def ok(c):
         k = c.get("condition")
-        s = states.get(c.get("entity"), "unknown") if c.get("entity") else None
+        e = c.get("entity")
+        if e and e not in states and k in ("state", "numeric_state") and missing == "hide":
+            return None   # Core's error: hidden, and no `not` may invert it
+        s = states.get(e, "unknown") if e else None
         if k == "state":
             if "state" in c:
                 want = c["state"] if isinstance(c["state"], list) else [c["state"]]
@@ -163,14 +178,22 @@ def visible(card, states):
             except (TypeError, ValueError):
                 return False
             return (c.get("above") is None or v > c["above"]) and (c.get("below") is None or v < c["below"])
-        if k == "and":
-            return all(ok(x) for x in c["conditions"])
-        if k == "or":
-            return any(ok(x) for x in c["conditions"])
-        if k == "not":
-            return not all(ok(x) for x in c["conditions"])
+        if k in ("and", "or", "not"):
+            vals = [ok(x) for x in c["conditions"]]
+            if None in vals:
+                return None
+            return all(vals) if k == "and" else any(vals) if k == "or" else not all(vals)
         return True
-    return all(ok(c) for c in card.get("visibility") or [])
+    for c in card.get("visibility") or []:
+        if ok(c) is not True:
+            return False
+    if card.get("type") == "markdown" and card.get("show_empty") is False:
+        import render_check as R   # late: the template shim, only for self-hiding cards
+        try:
+            return R.env_for(states, {}).from_string(card.get("content", "")).render() != ""
+        except Exception:  # noqa: BLE001 — a template that cannot render shows its error
+            return True
+    return True
 
 
 def section_holes(section, n_units, states=None):
