@@ -8,7 +8,7 @@ Deterministic: same sources -> byte-identical outputs (no timestamps, sorted
 nothing that has meaning by order, fixed YAML dump settings). Reads only
 files in this repository; never touches Home Assistant.
 
-Inputs  src/casaray_v3/{manifest.yaml, i18n/*.yaml, views/*.yaml, preview/*.yaml}
+Inputs  src/casaray_v3/{manifest.yaml, i18n/*.yaml, views/*.yaml, preview/*.yaml, preview/i18n/*.yaml}
         (outside dashboards/ on purpose: the repo gate treats every YAML there
         as a live dashboard)
         dashboards/casaray_v2.yaml (baseline, SHA-256 pinned in the manifest)
@@ -228,6 +228,23 @@ class BiCtx(Ctx):
         pass
 
 
+def preview_catalogues(cats):
+    """The working catalogues plus the preview's own strings
+    (src/casaray_v3/preview/i18n/<code>.yaml). The two-language preview's copy
+    stays out of the working catalogues, where every key must exist in every
+    working locale (en, yue, km) and the preview shows only two of them. A key
+    may not be in both: the preview cannot silently re-word a working string."""
+    out = {k: dict(v) for k, v in cats.items()}
+    d = SRC / "preview" / "i18n"
+    for f in (sorted(d.glob("*.yaml")) if d.is_dir() else []):
+        extra = load_yaml(f) or {}
+        clash = sorted(set(extra) & set(out.get(f.stem, {})))
+        if clash:
+            raise SystemExit(f"preview/i18n/{f.name}: already in the working catalogue: {clash[:5]}")
+        out.setdefault(f.stem, {}).update(extra)
+    return out
+
+
 def build_preview(man, cats, export, ctx_theme):
     """The bilingual design preview (manifest `preview:`), or None.
 
@@ -247,7 +264,7 @@ def build_preview(man, cats, export, ctx_theme):
         specs[name] = load_yaml(f)
         if specs[name]["path"] != name:
             raise SystemExit(f"preview/{name}.yaml: path must be {name!r}")
-    ctx = BiCtx(locs[pv["primary"]], locs[pv["secondary"]], cats, export, pv["url_base"],
+    ctx = BiCtx(locs[pv["primary"]], locs[pv["secondary"]], preview_catalogues(cats), export, pv["url_base"],
                 pv["views"], pv["working_url_base"], pv.get("vocabulary"))
     ctx.theme = ctx_theme
     views, rows = [], []
