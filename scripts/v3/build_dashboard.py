@@ -183,14 +183,20 @@ class BiCtx(Ctx):
     the preview's own page, or to the working dashboard for a page the preview
     does not carry, so the preview never needs a copy of the rest."""
 
-    def __init__(self, primary, secondary, catalogues, export, url_base, own_paths, working_url_base):
+    def __init__(self, primary, secondary, catalogues, export, url_base, own_paths, working_url_base,
+                 aliases=None):
         super().__init__(primary, catalogues, export, url_base)
         self.p = Ctx(primary, catalogues, export, url_base)
         self.s = Ctx(secondary, catalogues, export, url_base)
         self.own = set(own_paths)
         self.working = working_url_base
+        # `vocabulary:` in the manifest's preview block: a catalogue key read as
+        # another key, in this dashboard only (the mockups' 無資料 for the working
+        # catalogue's 冇數據), so shared components keep one honest code path.
+        self.aliases = dict(aliases or {})
 
     def pair(self, key):
+        key = self.aliases.get(key, key)
         return self.p.t(key), self.s.t(key)
 
     def t(self, key):
@@ -198,6 +204,7 @@ class BiCtx(Ctx):
         return a if a == b else f"{a} {b}"
 
     def jt(self, key, **exprs):
+        key = self.aliases.get(key, key)
         a, b = self.p.jt(key, **exprs), self.s.jt(key, **exprs)
         return a if a == b else "(" + a + ") ~ ' ' ~ (" + b + ")"
 
@@ -241,7 +248,7 @@ def build_preview(man, cats, export, ctx_theme):
         if specs[name]["path"] != name:
             raise SystemExit(f"preview/{name}.yaml: path must be {name!r}")
     ctx = BiCtx(locs[pv["primary"]], locs[pv["secondary"]], cats, export, pv["url_base"],
-                pv["views"], pv["working_url_base"])
+                pv["views"], pv["working_url_base"], pv.get("vocabulary"))
     ctx.theme = ctx_theme
     views, rows = [], []
     for name in pv["views"]:
