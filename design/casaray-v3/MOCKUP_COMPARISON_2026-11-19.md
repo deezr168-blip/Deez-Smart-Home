@@ -86,6 +86,7 @@ left out, never faked).
 | 儲物房 Stockroom | camera slot | restyle | `camera.tapo_c200_stockroom_hd_stream_direct` (ok · idle) |
 | 寵物鏡頭 Pet Feeder | camera slot | restyle | `camera.smart_pet_feeder` (ok · idle; unavailable on 18/11) |
 | 點擊查看畫面 Tap to view | native camera dialog (PR #16) | exists | — |
+| (20/11 trial) one slot per camera | name cell + picture in 2914b09 | restyle | one 12 × 3 slot: the picture, or Offline / State unknown in words, same size (V3-025 item 12) |
 | Camera photos | live camera images | **sample only** | the photos in the mockups are illustrations: used only on the offline renders, labelled 示例圖片 Sample image. Home Assistant shows the camera's own picture |
 
 ## Mockup controls with no verified entity (report)

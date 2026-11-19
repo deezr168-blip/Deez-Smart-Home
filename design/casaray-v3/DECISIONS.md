@@ -93,6 +93,37 @@ own scope. Branch `casaray-v3/agent-mockup-preview-20261119`, from draft PR #24
     are the owner's: this session has no route to the instance. Live controls in the
     file: the four Lighting tiles (icon toggles, brightness slider) and the Night card
     (one tap, no confirmation), the same lights and action as the working dashboard.
+12. **Live trial findings (owner, 20/11/26), fixed in the preview only.** The owner
+    reported three things from the wall iPad; the photos did not reach this session, so
+    each fix rests on the pinned frontend source and a trial-shaped simulation
+    (`design/casaray-v3/preview_samples/trial_2026-11-20.yaml`), not on the photos.
+    - **Missing light tiles.** A tile whose entity ID the instance lacks draws Home
+      Assistant's warning card, and that card's text shows to admins only
+      (`hui-error-card.ts`): to the wall iPad it is an empty tinted box. The read-only
+      connector shows lights named "Living room" and "Dining" (both off, 20/11) but not
+      their IDs, so `light.living_room` and `light.dining` stay unconfirmed live. Every
+      tile on Home, Lighting and Climate is now a pair: the tile while its entity
+      answers, otherwise a named No data card of the same size (`preview_tile`,
+      `preview_nodata`). The frontend reads a missing entity as `unknown`
+      (`validate-condition.ts`), so `state_not: [unavailable, unknown]` covers it.
+      The Home weather card names itself (天氣 Weather · 無資料 No data); the live
+      Living Room temperature read `unknown` on 20/11 and now shows its No data card.
+    - **Uneven camera slots.** 2914b09 split each camera into a 4-unit name cell and an
+      8-unit picture; with mixed states the halves drew a picture, a broken image, the
+      warning card or text. Now one slot per camera (12 units × 3 rows: two across on
+      the iPad, one on a phone, about the mockup's 2.6 : 1 frame): the picture, or a
+      named card in words, Offline or State unknown (which covers a missing camera).
+      The picture claims no state — an idle entity is not proof that the stream plays;
+      only the camera dialog shows that.
+    - **Footer.** Home Assistant's footer is sticky in the page's flow, so the last cards
+      clear it at the end of the scroll (8 px simulated, 32 px where the page fits).
+      While the page is at rest it covers the bottom of the last cards on the trial's
+      iPad view (Home Assistant's header and sidebar showing): Lighting 33 / 40 px,
+      Cameras 64 px; on the kiosk iPad Lighting fits and Cameras is 11 px over.
+      Nothing changed for it: the light tiles need two rows for their brightness bar,
+      and the camera frame was chosen over a fit with letterboxed pictures.
+    - **Unchanged:** the working dashboards and catalogues, the Night card and its
+      three targets (until their live IDs are confirmed), every control.
 
 ## V3-024 · 18/11/26 · Release preview integration: PR #16's cameras with one named, readable top bar
 
