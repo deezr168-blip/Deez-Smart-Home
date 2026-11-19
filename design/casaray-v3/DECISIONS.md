@@ -6,6 +6,81 @@ and `ha-deploy` are unaffected by everything here.
 
 ---
 
+## V3-025 · 19/11/26 · The bilingual mockups as a separate preview dashboard: Home, Rooms, Lighting, Climate, Cameras
+
+**Status:** owner brief (19/11/26): use the supplied bilingual mockups as the
+design reference for native CasaRay V3; compare Home, Rooms, Lighting, Climate
+and the Cameras overview with V3; prepare a separate preview; House Map is a
+follow-up. Issue #22 and the hosted Home artifact are parked; PR #21 keeps its
+own scope. Branch `casaray-v3/agent-mockup-preview-20261119`, from draft PR #24
+(`0f90277`). DESIGN PREVIEW — NOT DEPLOYED; no live change.
+
+1. **Reference.** Five sheets, 20 screens: `docs/mockups/2026-11-19_bilingual_*.png`
+   (PNG because the repository gate allows only PNG there; re-encoded losslessly).
+   Element-by-element comparison and entity check:
+   `design/casaray-v3/MOCKUP_COMPARISON_2026-11-19.md`.
+2. **Separate, so the working dashboard stays available.** A manifest
+   `preview:` key builds one more file, `dashboards/casaray_v3/preview/casaray_v3_mockup_preview.yaml`
+   (url_path `casaray-v3-mockup`), from `src/casaray_v3/preview/`. The working
+   dashboards are byte-identical (`dashboards/casaray_v3.yaml` is still
+   `f6c9c307…`, PR #24's candidate), and a test builds them with and without the
+   preview to prove it.
+3. **Two languages on one screen**, as the mockups draw: `BiCtx` gives every
+   label as 中文 strong over English small, and a live value in both. The
+   preview uses the mockups' own words (已開 / 已關 / 無資料) through a
+   `vocabulary:` alias, so the shared honesty components keep one code path and
+   the working catalogue's words (燈開咗 / 冇數據) are untouched. Which
+   register the household keeps is the owner's call.
+4. **Native only, each trick read in the pinned frontend (20260826.7):** the
+   tab bar is the sections view's own sticky `footer` (one grid card of the five
+   tabs); the current tab is the button's `color: accent`; the header is a
+   markdown `table[role=presentation]`; the door banner is a GitHub alert block
+   (`[!WARNING]`, the theme's amber); icons are `<ha-icon>`. The HACS cards in the
+   owner's sheet (Navbar, Clock Weather, Bubble...) are not used: V3 is native by
+   gate, and the Green's HACS resources were last seen missing.
+5. **Departures from the mockups, each for a stated reason:**
+   - Badge: 設計預覽 · 未部署 / Design preview · not deployed, not 「示例數據」:
+     on a device the preview reads live entities.
+   - Date: `18/11/26`, the repository's DD/MM/YY rule; the weekday is added.
+   - Tab label 鏡頭 Camera (not Cameras): 67 px in a 66 px phone tab.
+   - Rooms: Kitchen, Garage and Guest show what they report (motion, freezer,
+     printer), because none has a light entity.
+   - Lighting: Normal and Daytime say 「未設定」; Night is the existing,
+     owner-approved action (three lights to 10%).
+   - Climate: no "clean in about 30 days" (no interval entity); the
+     needs-cleaning flag and the days since the last reset instead. The timer
+     is the air-con's own (`switch.…_timer`, end time while on).
+   - Home: the lights are read-only (a tap opens Lighting), as V3 Home's gate
+     requires. Home's chips, Needs attention, One tap, Shopping list, Who's
+     home, Security summary, Energy and More boards are not on the mockup; they
+     stay on the working dashboard, and dropping them is the owner's decision.
+   - More: Climate plus eleven working boards; the working Home is not listed,
+     because a working link that shares a preview page's name makes the
+     repository gate read every working link as internal (reverted `28799de`).
+6. **Mockup controls with no verified entity:** Kitchen, Garage and Guest
+   lights; the Normal and Daytime modes and which mode is selected
+   (`input_select.lighting_scene` exists, but its options are not in git and it
+   is not exposed to the read-only connector); the filter countdown.
+7. **Gate and tests.** `validate_dashboard.py` `preview_problems()` (+64
+   checks) and `tests/v3/test_preview_v3_025.py` (14). Offline renders
+   (`preview_view.py --sample design/casaray-v3/preview_samples/mockup_2026-11-19.yaml`)
+   carry the mockups' values and photos, captioned 示例數據 / 示例圖片 Sample;
+   the same pages rendered fully dark say 無資料 / Offline and nothing reassuring.
+8. **House Map: follow-up only.** The supplied floorplan is not committed (it
+   prints the street address). Its rooms (Bedroom 1 / 2, Laundry, two
+   bathrooms, Hallway, Closet, "Other") do not match V3's (no Dining, Garage or
+   Guest), openings beyond the scanned door swings are unconfirmed, and an area
+   says which room a device is in, not where. The owner's room mapping and
+   device positions come first; nothing interactive is placed on a map before.
+9. **Scope note.** `session-orient --scope` classes this branch under the
+   design-track rule (write only under `design/casaray-v3/`) and lists 22 paths
+   outside it: the build track's source, generator, tests and generated outputs,
+   which the brief names as targets, and the supplied mockups. No protected or
+   credential-shaped path.
+10. **Not verified:** nothing was seen in Home Assistant. Typography, the sticky
+    footer's look, the amber tab and every height come from the pinned source
+    and a simulation. The yue wording of the new strings wants a native read.
+
 ## V3-024 · 18/11/26 · Release preview integration: PR #16's cameras with one named, readable top bar
 
 **Status:** owner brief (18/11/26, "CasaRay V3 release preparation"), against the gate
