@@ -1,6 +1,6 @@
 # Bilingual mockups (19/11/26) against CasaRay V3 — comparison and entity check
 
-DEVELOPMENT ONLY — NOT DEPLOYED. Reference sheets: `docs/mockups/2026-11-19_bilingual_*.jpg`
+DEVELOPMENT ONLY — NOT DEPLOYED. Reference sheets: `docs/mockups/2026-11-19_bilingual_*.png`
 (owner-supplied, 20 screens). Scope of this round: **Home, Rooms, Lighting, Climate and the
 Cameras overview**. The other 15 screens (camera details, Energy, Bills, Bill setup, People,
 Automations, House health, Network, Alerts, Living room, Kitchen, Dining, Parents' room) are
