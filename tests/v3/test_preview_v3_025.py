@@ -207,6 +207,14 @@ class Honest(unittest.TestCase):
                 render(c["content"], self.normal, self.attrs)
 
 
+    def test_timer_label_and_state_stay_on_their_own_lines(self):
+        timer = next(c for c in cards(page("climate")) if "bedroom_parents_room_ac_timer" in c.get("content", ""))
+        sw = "switch.bedroom_parents_room_ac_timer"
+        for st in ("on", "off", "unavailable"):
+            out = render(timer["content"], dict(self.normal, **{sw: st}))
+            self.assertIn("</small>\n\n**", out, st)    # a paragraph break, not "Timer無資料"
+
+
 class SampleData(unittest.TestCase):
     def test_sample_file_is_labelled_and_reads_only_verified_entities(self):
         sm = B.load_yaml(ROOT / "design/casaray-v3/preview_samples/mockup_2026-11-19.yaml")

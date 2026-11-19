@@ -1144,8 +1144,10 @@ def preview_timer(ctx, switch, end, columns=12):
     t = "(" + ts + " | timestamp_custom('%H:%M')) if " + ts + " is not none else " + jstr(_pair(ctx, "s.no_data")[0])
     s = "states('" + switch + "')"
     da, db = _pair(ctx, "s.no_data")
+    # "{% if" (no left trim): a "{%-" here would eat the blank line and run the
+    # label into the state ("Timer無資料")
     return markdown(_two(ctx, "pv.timer") + "\n\n"
-                    "{%- if " + s + " == 'on' -%}**" + ea + " {{ " + t + " }}**<br><small>" + eb + " {{ " + t + " }}</small>"
+                    "{% if " + s + " == 'on' -%}**" + ea + " {{ " + t + " }}**<br><small>" + eb + " {{ " + t + " }}</small>"
                     "{%- elif " + s + " == 'off' -%}**" + na + "**<br><small>" + nb + "</small>"
                     "{%- else -%}**" + da + "**<br><small>" + db + "</small>{%- endif -%}", columns)
 

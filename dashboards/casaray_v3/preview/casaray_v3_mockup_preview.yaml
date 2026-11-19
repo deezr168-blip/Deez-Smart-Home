@@ -676,7 +676,7 @@ views:
             content: |-
               <b>定時設定</b><br><small>Timer</small>
 
-              {%- if states('switch.bedroom_parents_room_ac_timer') == 'on' -%}**定時中，完結時間 {{ (as_timestamp(states('sensor.bedroom_parents_room_ac_timer_end_time'), none) | timestamp_custom('%H:%M')) if as_timestamp(states('sensor.bedroom_parents_room_ac_timer_end_time'), none) is not none else "無資料" }}**<br><small>Timer on, ends {{ (as_timestamp(states('sensor.bedroom_parents_room_ac_timer_end_time'), none) | timestamp_custom('%H:%M')) if as_timestamp(states('sensor.bedroom_parents_room_ac_timer_end_time'), none) is not none else "無資料" }}</small>{%- elif states('switch.bedroom_parents_room_ac_timer') == 'off' -%}**冇設定定時**<br><small>No timer set</small>{%- else -%}**無資料**<br><small>No data</small>{%- endif -%}
+              {% if states('switch.bedroom_parents_room_ac_timer') == 'on' -%}**定時中，完結時間 {{ (as_timestamp(states('sensor.bedroom_parents_room_ac_timer_end_time'), none) | timestamp_custom('%H:%M')) if as_timestamp(states('sensor.bedroom_parents_room_ac_timer_end_time'), none) is not none else "無資料" }}**<br><small>Timer on, ends {{ (as_timestamp(states('sensor.bedroom_parents_room_ac_timer_end_time'), none) | timestamp_custom('%H:%M')) if as_timestamp(states('sensor.bedroom_parents_room_ac_timer_end_time'), none) is not none else "無資料" }}</small>{%- elif states('switch.bedroom_parents_room_ac_timer') == 'off' -%}**冇設定定時**<br><small>No timer set</small>{%- else -%}**無資料**<br><small>No data</small>{%- endif -%}
             grid_options:
               columns: 12
               rows: auto
