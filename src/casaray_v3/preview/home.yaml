@@ -1,0 +1,33 @@
+# Bilingual preview — Home (V3-025; docs/mockups/2026-11-19_bilingual_1_*.png).
+# DESIGN PREVIEW — NOT DEPLOYED. Every reading from a verified entity; the
+# lights are read-only here (a tap opens Lighting), as on V3 Home.
+path: home
+title: nav.home
+icon: mdi:home-outline
+band_grid: 24
+sections:
+  - {c: preview_header, title_key: nav.home}
+  - span: 2
+    cards:
+      - {c: preview_greeting, columns: 12, rows: 2}
+      - {c: preview_weather, entity: weather.forecast_home, columns: 12, rows: 2}
+      # amber while open; a plain line while the sensor is silent (so no banner
+      # never stands for "closed" when nothing answered)
+      - {c: preview_door_banner, entity: binary_sensor.f_contact_sensor_door, open_key: pv.door_open,
+         dark_key: pv.door_dark, target: cameras}
+  - span: 1
+    heading: pv.room_lights
+    cards:
+      - {c: readonly_tile, entity: light.living_room, name: {t: room.living}, columns: 12, nav: lighting}
+      - {c: readonly_tile, entity: light.dining, name: {t: room.dining}, columns: 12, nav: lighting}
+      - {c: readonly_tile, entity: light.bedroom_bedroom, name: {t: pv.room_ray}, columns: 12, nav: lighting}
+  - span: 1
+    heading: pv.front_door_cam
+    cards:
+      - {c: camera_card, entity: camera.front_door_live_view, name_key: room.front_door, columns: 12, rows: 2,
+         full_screen: more-info, offline: true, battery: sensor.front_door_battery}
+      - {c: preview_link, label_key: pv.view_front_door, target: cameras, icon: mdi:cctv}
+  - span: 2
+    cards:
+      - {c: sensor_tile, entity: sensor.bedroom_motion_sensor_temperature, name: {t: pv.parents_temp},
+         columns: full, nav: climate}

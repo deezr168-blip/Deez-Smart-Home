@@ -1,0 +1,27 @@
+# Bilingual preview — Rooms (V3-025). Each row says one verified reading. The
+# mockup shows lights for Kitchen, Garage and Guest, which have no light entity
+# (MOCKUP_COMPARISON_2026-11-19.md): their rows show what those rooms do report.
+# A row opens the room on the working dashboard.
+path: rooms
+title: nav.rooms
+icon: mdi:bed-outline
+band_grid: 24
+sections:
+  - {c: preview_header, title_key: nav.rooms}
+  - span: 2
+    heading: pv.all_rooms
+    cards:
+      - {c: preview_room, name_key: room.living, icon: mdi:sofa-outline, target: living-room,
+         status: {entity: light.living_room, label_key: pv.lights, words: {"on": pv.on, "off": pv.off}}}
+      - {c: preview_room, name_key: room.kitchen, icon: mdi:pot-steam-outline, target: kitchen,
+         status: {entity: binary_sensor.k_motion_sensor_motion, label_key: pv.motion, words: {"on": pv.movement, "off": pv.quiet}}}
+      - {c: preview_room, name_key: room.dining, icon: mdi:table-chair, target: dining,
+         status: {entity: light.dining, label_key: pv.lights, words: {"on": pv.on, "off": pv.off}}}
+      - {c: preview_room, name_key: pv.room_parents, icon: mdi:bed-king-outline, target: parents-room,
+         status: {entity: sensor.bedroom_motion_sensor_temperature, label_key: pv.temperature, deg: 0}}
+      - {c: preview_room, name_key: pv.room_ray, icon: mdi:bed-outline, target: ray-bedroom,
+         status: {entity: light.bedroom_bedroom, label_key: pv.lights, words: {"on": pv.on, "off": pv.off}}}
+      - {c: preview_room, name_key: room.garage, icon: mdi:garage-variant, target: garage,
+         status: {entity: sensor.g_monitor_freezer_p110m_current_consumption, label_key: pv.freezer, value: 0}}
+      - {c: preview_room, name_key: pv.room_guest, icon: mdi:bed-single-outline, target: guest-room, columns: full,
+         status: {entity: switch.g_printer_p100, label_key: pv.printer, words: {"on": pv.on, "off": pv.off}}}

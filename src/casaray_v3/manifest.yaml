@@ -136,3 +136,25 @@ migration:
       {to: lighting, status: native, note: camera floodlight}
     light.tapo_c425_north_wall_floodlight_timed:
       {to: lighting, status: native, note: camera floodlight}
+
+# Bilingual design preview (V3-025): the 19/11/26 mockups' Home, Rooms,
+# Lighting, Climate and Cameras overview, plus the More page their tab bar
+# needs. A SEPARATE dashboard — its own file and url_path. The working
+# dashboards above are built exactly as before and never read it; a page the
+# preview does not carry opens on the working English dashboard.
+preview:
+  title: pv.title
+  output: dashboards/casaray_v3/preview/casaray_v3_mockup_preview.yaml
+  url_base: casaray-v3-mockup
+  working_url_base: casaray-v3
+  primary: yue
+  secondary: en
+  views: [home, rooms, lighting, climate, cameras, more]
+  tabs:   # the mockups' five tabs; Climate lives under More, as they draw it
+    - [home, nav.home, mdi:home-outline]
+    - [rooms, nav.rooms, mdi:bed-outline]
+    - [lighting, nav.lighting, mdi:lamp-outline]
+    - [cameras, pv.tab_cameras, mdi:video-outline]   # "Camera": "Cameras" is 67 px in a 66 px phone tab
+    - [more, pv.more, mdi:dots-horizontal]
+  vocabulary:   # the mockups' words for the shared honesty components
+    s.no_data: pv.no_data

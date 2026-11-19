@@ -1,0 +1,23 @@
+# Bilingual preview — Cameras overview (V3-025). The six cameras of V3 in the
+# mockup's two-across grid: name and state in words, then the picture or, while
+# the camera is unavailable, the same-size Offline card (PR #16). The mockup's
+# photos are illustrations; Home Assistant shows each camera's own picture.
+path: cameras
+title: nav.cameras
+icon: mdi:video-outline
+band_grid: 24
+sections:
+  - {c: preview_header, title_key: nav.cameras}
+  - span: 2
+    cards:
+      - {c: preview_camera, entity: camera.front_door_live_view, name_key: room.front_door,
+         battery: sensor.front_door_battery}
+      - {c: preview_camera, entity: camera.tapo_c425_north_wall_hd_stream_direct, name_key: room.north_wall,
+         battery: sensor.tapo_c425_north_wall_battery}
+      # East wall battery: the camera's second device record (see views/cameras.yaml)
+      - {c: preview_camera, entity: camera.tapo_c420_east_wall_hd_stream_direct, name_key: room.east_wall,
+         battery: sensor.tapo_camera_bcca_battery}
+      - {c: preview_camera, entity: camera.tapo_c420_south_wall_hd_stream_direct, name_key: room.south_wall,
+         battery: sensor.tapo_c420_south_wall_battery}
+      - {c: preview_camera, entity: camera.tapo_c200_stockroom_hd_stream_direct, name_key: room.stockroom}
+      - {c: preview_camera, entity: camera.smart_pet_feeder, name_key: pv.pet_cam}   # the mockup's 寵物鏡頭: fits a phone's name cell

@@ -1,0 +1,28 @@
+# Bilingual preview — Lighting (V3-025). The four lights keep V3 Lighting's own
+# controls (tap: details, icon: toggle, brightness bar). Of the mockup's three
+# scene modes only Night has a verified action (the existing, owner-approved
+# Night: three lights to 10%); Normal and Daytime have no scene entity and say so.
+path: lighting
+title: nav.lighting
+icon: mdi:lamp-outline
+band_grid: 24
+sections:
+  - {c: preview_header, title_key: nav.lighting}
+  - span: 1
+    heading: pv.lights_control
+    cards:
+      - {c: light_tile, entity: light.living_room, name: {t: pv.light_living}, columns: 12}
+      - {c: light_tile, entity: light.dining, name: {t: pv.light_dining}, columns: 12}
+      - {c: light_tile, entity: light.bedroom_bedroom, name: {t: pv.light_ray}, columns: 12}
+      # Ray's room NightLight (export "NightLight", ok); light.master_bedroom_nightlight is a dead duplicate
+      - {c: light_tile, entity: light.bedroom_nightlight, name: {t: pv.light_night}, columns: 12}
+  - span: 1
+    heading: pv.scenes
+    cards:
+      - {c: preview_mode, label_key: pv.mode_normal, rows: 2, icon: mdi:white-balance-sunny, note_key: pv.not_set_up}
+      - {c: preview_mode, label_key: pv.mode_day, rows: 2, icon: mdi:weather-sunset-up, note_key: pv.not_set_up}
+      - {c: preview_mode, label_key: pv.mode_night, icon: mdi:weather-night, note_key: pv.night_does, rows: 2,
+         action: light.turn_on, target: [light.living_room, light.bedroom_bedroom, light.dining],
+         data: {brightness_pct: 10}}
+      - {c: preview_about, title_key: pv.about_title, body_key: pv.about_body}
+    # the three modes at 2 rows each keep the scene column level with the four light tiles

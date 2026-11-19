@@ -498,3 +498,91 @@ cam.no_battery: "No battery reading"
 cam.privacy_of: "{name} privacy"
 cam.motion_of: "{name} motion detection"
 cam.live_note: "Tap a camera for Home Assistant's live view, which can go full screen. The camera pages under More boards use the WebRTC Camera card, which needs that HACS integration on the Green."
+
+# Bilingual design preview (V3-025, 19/11/26 mockups) — shown beside the yue string.
+pv.title: CasaRay V3 design preview
+pv.badge: Design preview · not deployed
+pv.wd0: Mon
+pv.wd1: Tue
+pv.wd2: Wed
+pv.wd3: Thu
+pv.wd4: Fri
+pv.wd5: Sat
+pv.wd6: Sun
+pv.more: More
+pv.climate: Climate
+pv.boards: Other pages
+pv.bill_setup: Bill setup
+pv.morning: Good morning
+pv.afternoon: Good afternoon
+pv.evening: Good evening
+pv.how_home: how's home today?
+pv.door_open: Front door is open
+pv.door_dark: Front door sensor is not reporting
+pv.view_door: View front door
+pv.room_lights: Room lights
+pv.front_door_cam: Front door
+pv.view_front_door: View front door
+pv.parents_temp: Parents room temperature
+pv.all_rooms: All rooms
+pv.room_ray: Ray room
+pv.room_parents: Parents
+pv.room_guest: Guest
+pv.lights: Lights
+pv.temperature: Temperature
+pv.motion: Motion
+pv.freezer: Freezer
+pv.printer: Printer
+pv.on: 'On'
+pv.off: 'Off'
+pv.no_data: No data
+pv.movement: Movement
+pv.quiet: No motion
+pv.lights_control: Room lights control
+pv.light_living: Living room light
+pv.light_dining: Dining light
+pv.light_ray: Ray room light
+pv.light_night: Nightlight
+pv.scenes: Scenes
+pv.mode_normal: Normal
+pv.mode_day: Daytime
+pv.mode_night: Night
+pv.not_set_up: Not set up — no scene entity
+pv.night_does: Three lights to 10%
+pv.about_title: About "No data"
+pv.about_body: '"No data" means the light''s status cannot be read right now.'
+pv.ac_title: Parents room AC
+pv.ac_care: Filter and timer
+pv.view_only: view only
+pv.running: Running
+pv.ac_off: 'Off'
+pv.room_temp: Room temperature
+pv.target_temp: Target temperature
+pv.humidity: Humidity
+pv.filter: Filter reminder
+pv.filter_due: Filter needs cleaning
+pv.filter_ok: No cleaning needed yet
+pv.last_reset: Last reset
+pv.days_ago: '{n} days ago'
+pv.timer: Timer
+pv.timer_on: Timer on, ends
+pv.timer_off: No timer set
+pv.living_sensor: Living room temperature (sensor)
+pv.tap_to_view: Tap to view
+pv.cond.clear-night: Clear
+pv.cond.cloudy: Cloudy
+pv.cond.exceptional: Exceptional conditions
+pv.cond.fog: Foggy
+pv.cond.hail: Hail
+pv.cond.lightning: Lightning
+pv.cond.lightning-rainy: Thunderstorms
+pv.cond.partlycloudy: Partly cloudy
+pv.cond.pouring: Pouring rain
+pv.cond.rainy: Rainy
+pv.cond.snowy: Snowy
+pv.cond.snowy-rainy: Snow and rain
+pv.cond.sunny: Sunny
+pv.cond.windy: Windy
+pv.cond.windy-variant: Windy
+pv.pet_cam: Pet feeder
+pv.tab_cameras: Camera

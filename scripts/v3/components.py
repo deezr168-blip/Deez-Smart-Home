@@ -882,3 +882,293 @@ def scene_buttons(ctx, scenes, prefix, columns=3):
                                    "target": {"entity_id": sid}},
                     "hold_action": {"action": "none"}, "grid_options": grid(columns, 1)})
     return out
+
+
+# ---------------------------------------------------------------- bilingual preview (V3-025)
+# The 19/11/26 bilingual mockups, as a SEPARATE preview dashboard (build_preview).
+# Every label is two-level — 中文 strong, English small — from ctx.pair(), so
+# these components only run with the build's BiCtx. Native cards only; each
+# rendering trick below was read in the pinned frontend (20260826.7):
+#   * markdown raw HTML: table[role=presentation] is styled borderless by
+#     ha-markdown; td align/valign, b, small, big, br and <ha-icon icon> pass
+#     its sanitiser (xss default whitelist + table role + ha-icon);
+#   * GitHub alert blocks (> [!WARNING]) become ha-alert: warning uses
+#     --warning-color (the V3 theme's amber), caution --error-color (red);
+#   * the sections view's own `footer` is sticky at the bottom of the screen;
+#   * a button's `color` tints its icon with no entity (the current tab).
+
+def _pair(ctx, key):
+    if not hasattr(ctx, "pair"):
+        raise SystemExit("preview components need the build's bilingual BiCtx")
+    return ctx.pair(key)
+
+
+def _two(ctx, key, strong=True):
+    """'<b>中文</b><br><small>English</small>' — the mockups' two-level label."""
+    a, b = _pair(ctx, key)
+    return ("<b>" + a + "</b>" if strong else a) + ("<br><small>" + b + "</small>" if b != a else "")
+
+
+def _words(ctx, entity, words, which):
+    """Jinja expression: the state in words in ONE language (which: 0 or 1).
+    unavailable / unknown are their own branches, never a word from `words`."""
+    ctx.use(entity)
+    m = "{" + ",".join(jstr(k) + ":" + jstr(_pair(ctx, v)[which]) for k, v in words.items()) + "}"
+    s = "states('" + entity + "')"
+    return ("(" + jstr(_pair(ctx, "s.no_data")[which]) + " if " + s + " in " + BAD + " else "
+            "(" + m + ").get(" + s + ", " + s + "))")
+
+
+WEATHER_ICONS = {
+    "clear-night": "weather-night", "cloudy": "weather-cloudy", "exceptional": "alert-circle-outline",
+    "fog": "weather-fog", "hail": "weather-hail", "lightning": "weather-lightning",
+    "lightning-rainy": "weather-lightning-rainy", "partlycloudy": "weather-partly-cloudy",
+    "pouring": "weather-pouring", "rainy": "weather-rainy", "snowy": "weather-snowy",
+    "snowy-rainy": "weather-snowy-rainy", "sunny": "weather-sunny", "windy": "weather-windy",
+    "windy-variant": "weather-windy-variant",
+}
+
+
+def _weather_icon(entity):
+    m = "{" + ",".join("'" + k + "':'mdi:" + v + "'" for k, v in WEATHER_ICONS.items()) + "}"
+    return "(" + m + ").get(states('" + entity + "'), 'mdi:weather-cloudy-alert')"
+
+
+def _attr_deg(ctx, entity, attr, digits=0):
+    """An attribute temperature, only while the ENTITY answers (V3-021: a dark
+    entity's leftover attribute is never shown)."""
+    ctx.use(entity)
+    v = "state_attr('" + entity + "','" + attr + "')"
+    rnd = "| round(0) | int" if digits == 0 else "| round(" + str(digits) + ")"
+    return ("(((" + v + " | float) " + rnd + ") ~ '°C') if (states('" + entity + "') not in " + BAD
+            + " and " + v + " | is_number) else " + jstr(_pair(ctx, "s.no_data")[0]))
+
+
+def preview_header(ctx, title_key, weather="weather.forecast_home"):
+    """The mockups' header band: CasaRay｜page, the preview badge, the weather,
+    then the time above the date (DD/MM/YY, repository rule; the mockup's 18/11
+    drops the year) with the weekday in both languages."""
+    a, b = _pair(ctx, title_key)
+    ba, bb = _pair(ctx, "pv.badge")
+    days = "[" + ",".join(jstr(" ".join(dict.fromkeys(_pair(ctx, f"pv.wd{i}")))) for i in range(7)) + "]"
+    temp = _attr_deg(ctx, weather, "temperature")
+    content = (
+        '<table role="presentation" width="100%"><tr>'
+        '<td valign="middle"><big><b>CasaRay</b>｜<b>' + a + "</b> " + (b if b != a else "") + "</big>"
+        "<br><small>" + ba + " · " + bb + "</small></td>"
+        '<td align="right" valign="middle" width="96"><ha-icon icon="{{ ' + _weather_icon(weather) + ' }}"></ha-icon> '
+        "<b>{{ " + temp + " }}</b></td>"
+        '<td align="right" valign="middle" width="150"><big><b>{{ now().strftime(\'%H:%M\') }}</b></big>'
+        "<br><small>{{ " + days + "[now().weekday()] }} · {{ now().strftime('%d/%m/%y') }}</small></td>"
+        "</tr></table>")
+    return {"type": "grid", "column_span": 2, "cards": [markdown(content, "full")]}
+
+
+def preview_footer(ctx, tabs, current_tab, view_path, max_width=1032):
+    """Home Assistant's sticky sections-view footer holding ONE grid card of the
+    mockups' five tabs. The tab whose section this page belongs to is tinted
+    amber; it is inert only on the tab's own page (on Climate, More is tinted
+    and still opens More, as a tab bar returns to its root). Five fit a phone
+    (~68 px each); `icon_height` keeps the bar near the mockups' height."""
+    cards = []
+    for path, key, icon in tabs:
+        here = path == view_path
+        btn = {"type": "button", "name": ctx.t(key), "icon": icon, "icon_height": "28px",
+               "show_name": True, "show_icon": True,
+               "tap_action": {"action": "none"} if here else
+               {"action": "navigate", "navigation_path": ctx.link(path)},
+               "hold_action": {"action": "none"}, "grid_options": grid(12, 1)}
+        if path == current_tab:
+            btn["color"] = "accent"
+        cards.append(btn)
+    return {"card": {"type": "grid", "columns": len(tabs), "square": False, "cards": cards},
+            "max_width": max_width}
+
+
+def preview_greeting(ctx, columns=12, rows=2):
+    """早晨，今日屋企點？ by the hour, as the mockup's greeting card."""
+    parts = []
+    for key, test in (("pv.morning", "h < 12"), ("pv.afternoon", "h < 18"), ("pv.evening", None)):
+        a, b = _pair(ctx, key)
+        parts.append((test, a, b))
+    qa, qb = _pair(ctx, "pv.how_home")
+    expr = ("{%- set h = now().hour -%}"
+            "{%- if " + parts[0][0] + " -%}{%- set g = [" + jstr(parts[0][1]) + "," + jstr(parts[0][2]) + "] -%}"
+            "{%- elif " + parts[1][0] + " -%}{%- set g = [" + jstr(parts[1][1]) + "," + jstr(parts[1][2]) + "] -%}"
+            "{%- else -%}{%- set g = [" + jstr(parts[2][1]) + "," + jstr(parts[2][2]) + "] -%}{%- endif -%}")
+    return markdown(expr + "## {{ g[0] }}，" + qa + "\n{{ g[1] }}, " + qb, columns, rows)
+
+
+def preview_weather(ctx, entity="weather.forecast_home", columns=12, rows=2):
+    """The mockups' weather card: the temperature large, the condition in both
+    languages; dark is No data in both, never a stale reading."""
+    ctx.use(entity)
+    conds = {c: f"pv.cond.{c}" for c in WEATHER_ICONS}
+    return markdown(
+        '## <ha-icon icon="{{ ' + _weather_icon(entity) + ' }}"></ha-icon> {{ '
+        + _attr_deg(ctx, entity, "temperature") + " }}\n"
+        "**{{ " + _words(ctx, entity, conds, 0) + " }}**<br><small>{{ " + _words(ctx, entity, conds, 1) + " }}</small>",
+        columns, rows)
+
+
+def preview_door_banner(ctx, entity, open_key, dark_key, target):
+    """The mockups' amber banner while the door is open, and — because a missing
+    banner would read as "closed" — a plain one while the sensor is silent.
+    Nothing shows only while the door reports closed."""
+    ctx.use(entity)
+    oa, ob = _pair(ctx, open_key)
+    va, vb = _pair(ctx, "pv.view_door")
+    da, db = _pair(ctx, dark_key)
+    opened = markdown("> [!WARNING]\n> **" + oa + "** " + ob + " · **" + va + "** " + vb + " ›", "full")
+    opened["visibility"] = [{"condition": "state", "entity": entity, "state": "on"}]
+    opened["tap_action"] = {"action": "navigate", "navigation_path": ctx.link(target)}
+    dark = markdown("**" + da + "** <small>" + db + "</small>", "full")
+    dark["visibility"] = [{"condition": "state", "entity": entity, "state_not": ["on", "off"]}]
+    return [opened, dark]
+
+
+def preview_room(ctx, name_key, icon, target, status, columns=12):
+    """A row of the mockups' room list: icon, name in both languages, one
+    reading in both, a chevron; a tap opens the room. status:
+      {entity, label_key, words: {state: key}}   a state in words
+      {entity, label_key, deg: digits}           a temperature
+      {entity, label_key, value: digits}         a number with its unit"""
+    e = status["entity"]
+    ctx.use(e)
+    la, lb = _pair(ctx, status["label_key"])
+    if "words" in status:
+        va = "{{ " + _words(ctx, e, status["words"], 0) + " }}"
+        vb = ": {{ " + _words(ctx, e, status["words"], 1) + " }}"
+    elif "deg" in status:
+        va, vb = "{{ " + deg_expr(ctx, e, status["deg"]).replace(jstr(ctx.t("s.no_data")),
+                                                                  jstr(_pair(ctx, "s.no_data")[0])) + " }}", ""
+    else:
+        va, vb = "{{ " + value_expr(ctx, e, status["value"]).replace(jstr(ctx.t("s.no_data")),
+                                                                      jstr(_pair(ctx, "s.no_data")[0])) + " }}", ""
+    na, nb = _pair(ctx, name_key)
+    content = ('<table role="presentation" width="100%"><tr>'
+               '<td width="40" valign="middle"><ha-icon icon="' + icon + '"></ha-icon></td>'
+               '<td valign="middle"><b>' + na + "</b><br><small>" + nb + "</small></td>"
+               '<td align="right" valign="middle">' + la + "：<b>" + va + "</b><br><small>" + lb + vb + "</small></td>"
+               '<td width="16" align="right" valign="middle">›</td></tr></table>')
+    card = markdown(content, columns)
+    card["tap_action"] = {"action": "navigate", "navigation_path": ctx.link(target)}
+    return card
+
+
+def preview_mode(ctx, label_key, icon, note_key, action=None, target=None, data=None, columns=12, rows="auto"):
+    """A scene-mode card from the mockups. With an action it does exactly what
+    its line says (an existing, owner-approved light action); without one it is
+    inert and says it is not set up — no scene entity backs it."""
+    a, b = _pair(ctx, label_key)
+    na, nb = _pair(ctx, note_key)
+    card = markdown('<ha-icon icon="' + icon + '"></ha-icon> **' + a + "** " + b
+                    + "<br><small>" + na + " · " + nb + "</small>", columns, rows)
+    if action:
+        ctx.use(target)
+        tap = {"action": "perform-action", "perform_action": action, "target": {"entity_id": target}}
+        if data:
+            tap["data"] = data
+        card["tap_action"] = tap
+        card["hold_action"] = {"action": "none"}
+    return card
+
+
+def preview_about(ctx, title_key, body_key, columns=12, rows="auto"):
+    ta, tb = _pair(ctx, title_key)
+    ba, bb = _pair(ctx, body_key)
+    return markdown("**" + ta + "** " + tb + "\n\n" + ba + "\n\n<small>" + bb + "</small>", columns, rows)
+
+
+def preview_ac_status(ctx, entity, nav=None, columns=12, rows="auto"):
+    """The mockups' big air-con state, read-only (V3-008): running / off in
+    words with the mode, never a control; offline and unknown in their own words."""
+    ctx.use(entity)
+    va, vb = _pair(ctx, "pv.view_only")
+    ra, rb = _pair(ctx, "pv.running")
+    oa, ob = _pair(ctx, "pv.ac_off")
+    xa, xb = _pair(ctx, "s.offline")
+    ua, ub = _pair(ctx, "s.state_unknown")
+    modes = {k: "ac.mode_" + k for k in AC_MODES}
+    body = ("{%- set s = states('" + entity + "') -%}"
+            "{%- if s == 'unavailable' -%}## " + xa + "\n" + xb +
+            "{%- elif s in ['unknown','none',''] -%}## " + ua + "\n" + ub +
+            "{%- elif s == 'off' -%}## " + oa + "（" + va + "）\n" + ob + " (" + vb + ")" +
+            "{%- else -%}## " + ra + "：{{ " + _words(ctx, entity, modes, 0) + " }}（" + va + "）\n"
+            + rb + ": {{ " + _words(ctx, entity, modes, 1) + " }} (" + vb + ")" + "{%- endif -%}")
+    card = markdown(body, columns, rows)
+    if nav:
+        card["tap_action"] = {"action": "navigate", "navigation_path": ctx.link(nav)}
+    return card
+
+
+def preview_reading(ctx, label_key, entity, attr=None, columns=4, rows=2):
+    """A labelled reading: label in both languages over the value; an attribute
+    reading only while its entity answers."""
+    ctx.use(entity)
+    if attr:
+        val = _attr_deg(ctx, entity, attr, digits=0)
+    else:
+        val = value_expr(ctx, entity, 0).replace(jstr(ctx.t("s.no_data")), jstr(_pair(ctx, "s.no_data")[0]))
+    return markdown(_two(ctx, label_key) + "\n## {{ " + val + " }}", columns, rows)
+
+
+def preview_filter(ctx, flag, last_reset, columns=12):
+    """Filter reminder from what is measured: the needs-cleaning flag and the
+    last reset. The mockups' "in about 30 days" needs an interval no entity
+    gives, so it is not drawn."""
+    ctx.use([flag, last_reset])
+    words = {"on": "pv.filter_due", "off": "pv.filter_ok"}
+    ra, rb = _pair(ctx, "pv.last_reset")
+    # Days since the reset, said in both languages. Not relative_time(): Home
+    # Assistant returns that in English ("3 days") whatever the dashboard says.
+    # as_datetime() raises on a dark sensor's state unless given a default.
+    dt = "as_datetime(states('" + last_reset + "'), none)"
+    da, db = _pair(ctx, "pv.days_ago")
+    nd = _pair(ctx, "s.no_data")
+    days = "(now() - " + dt + ").days"
+    lr_a = "(" + jstr(da.split("{n}")[0]) + " ~ " + days + " ~ " + jstr(da.split("{n}")[1]) + ") if " + dt + " is not none else " + jstr(nd[0])
+    lr_b = "(" + jstr(db.split("{n}")[0]) + " ~ " + days + " ~ " + jstr(db.split("{n}")[1]) + ") if " + dt + " is not none else " + jstr(nd[1])
+    return markdown(_two(ctx, "pv.filter") + "\n\n**{{ " + _words(ctx, flag, words, 0) + " }}**<br>"
+                    "<small>{{ " + _words(ctx, flag, words, 1) + " }}</small>\n\n"
+                    "<small>" + ra + "：{{ " + lr_a + " }} · " + rb + ": {{ " + lr_b + " }}</small>", columns)
+
+
+def preview_timer(ctx, switch, end, columns=12):
+    """The air-con's own timer, read-only: off, or on with its end time. The
+    end time is read only while the timer is on (as V2 does)."""
+    ctx.use([switch, end])
+    na, nb = _pair(ctx, "pv.timer_off")
+    ea, eb = _pair(ctx, "pv.timer_on")
+    ts = "as_timestamp(states('" + end + "'), none)"   # local time; raises without the default
+    t = "(" + ts + " | timestamp_custom('%H:%M')) if " + ts + " is not none else " + jstr(_pair(ctx, "s.no_data")[0])
+    s = "states('" + switch + "')"
+    da, db = _pair(ctx, "s.no_data")
+    return markdown(_two(ctx, "pv.timer") + "\n\n"
+                    "{%- if " + s + " == 'on' -%}**" + ea + " {{ " + t + " }}**<br><small>" + eb + " {{ " + t + " }}</small>"
+                    "{%- elif " + s + " == 'off' -%}**" + na + "**<br><small>" + nb + "</small>"
+                    "{%- else -%}**" + da + "**<br><small>" + db + "</small>{%- endif -%}", columns)
+
+
+def preview_camera(ctx, entity, name_key, battery=None):
+    """One camera cell of the mockups' overview: its name and state in words
+    (never colour alone), then the picture — or, while the camera is
+    unavailable, the same-size Offline card (PR #16). A tap on the picture
+    opens Home Assistant's own camera dialog."""
+    ctx.use(entity)
+    na, nb = _pair(ctx, name_key)
+    name = markdown('<ha-icon icon="mdi:video-outline"></ha-icon> **' + na + "**<br><small>" + nb + "</small>\n\n"
+                    "{{ " + camera_state_expr(ctx, entity) + " }}", 4, 2)
+    pic = camera_card(ctx, entity, name_key, columns=8, rows=2, full_screen="more-info",
+                      offline=True, battery=battery)
+    pic[0]["name"] = ctx.t("pv.tap_to_view")
+    return [name] + pic
+
+
+def preview_link(ctx, label_key, target, icon=None, columns=12, rows=1):
+    """A one-row link in both languages (the mockups' 睇門口 View front door).
+    One heading-free line, so it fits a 56 px row."""
+    a, b = _pair(ctx, label_key)
+    card = markdown("**" + a + "** " + b + " ›", columns, rows)   # no icon: it outgrows a 56 px row
+    card["tap_action"] = {"action": "navigate", "navigation_path": ctx.link(target)}
+    return card

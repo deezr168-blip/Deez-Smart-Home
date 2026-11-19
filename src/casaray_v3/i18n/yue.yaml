@@ -501,3 +501,91 @@ cam.no_battery: "冇電量讀數"
 cam.privacy_of: "{name}私隱模式"
 cam.motion_of: "{name}移動偵測"
 cam.live_note: "㩒鏡頭睇 Home Assistant 嘅即時畫面，可以全螢幕。「更多畫面」入面嘅鏡頭頁用 WebRTC Camera 卡，要喺 Green 裝咗嗰個 HACS 整合先用得。"
+
+# 雙語設計預覽 (V3-025, 19/11/26 設計稿) — 用設計稿嘅用字；同英文一齊顯示。
+pv.title: CasaRay V3 設計預覽
+pv.badge: 設計預覽 · 未部署
+pv.wd0: 星期一
+pv.wd1: 星期二
+pv.wd2: 星期三
+pv.wd3: 星期四
+pv.wd4: 星期五
+pv.wd5: 星期六
+pv.wd6: 星期日
+pv.more: 更多
+pv.climate: 冷氣
+pv.boards: 其他頁面
+pv.bill_setup: 帳單設定
+pv.morning: 早晨
+pv.afternoon: 午安
+pv.evening: 晚上好
+pv.how_home: 今日屋企點？
+pv.door_open: 前門現正開啟
+pv.door_dark: 前門感應器無回應
+pv.view_door: 查看門口
+pv.room_lights: 房間燈光
+pv.front_door_cam: 門口鏡頭
+pv.view_front_door: 睇門口
+pv.parents_temp: 爸媽房溫度
+pv.all_rooms: 房間一覽
+pv.room_ray: Ray 房
+pv.room_parents: 爸媽房
+pv.room_guest: 客房
+pv.lights: 燈光
+pv.temperature: 溫度
+pv.motion: 動態
+pv.freezer: 雪櫃
+pv.printer: 打印機
+pv.on: 已開
+pv.off: 已關
+pv.no_data: 無資料
+pv.movement: 有動靜
+pv.quiet: 暫無動作
+pv.lights_control: 房間燈光控制
+pv.light_living: 客廳燈
+pv.light_dining: 飯廳燈
+pv.light_ray: Ray 房燈
+pv.light_night: 夜燈
+pv.scenes: 情境模式
+pv.mode_normal: 日常模式
+pv.mode_day: 日間模式
+pv.mode_night: 晚間模式
+pv.not_set_up: 未設定 — 未有情境實體
+pv.night_does: 三盞燈調暗至 10%
+pv.about_title: 關於無資料
+pv.about_body: 顯示「無資料」表示該燈光暫時無法取得狀態。
+pv.ac_title: 爸媽房冷氣
+pv.ac_care: 濾網同定時
+pv.view_only: 只供查看
+pv.running: 運行中
+pv.ac_off: 已關
+pv.room_temp: 室內溫度
+pv.target_temp: 目標溫度
+pv.humidity: 濕度
+pv.filter: 濾網提示
+pv.filter_due: 需要清潔濾網
+pv.filter_ok: 暫時唔使清潔
+pv.last_reset: 上次重設
+pv.days_ago: '{n} 日前'
+pv.timer: 定時設定
+pv.timer_on: 定時中，完結時間
+pv.timer_off: 冇設定定時
+pv.living_sensor: 客廳溫度（環境感測器）
+pv.tap_to_view: 點擊查看畫面
+pv.cond.clear-night: 天晴
+pv.cond.cloudy: 多雲
+pv.cond.exceptional: 異常天氣
+pv.cond.fog: 有霧
+pv.cond.hail: 落冰粒
+pv.cond.lightning: 打雷
+pv.cond.lightning-rainy: 雷暴
+pv.cond.partlycloudy: 多雲間晴
+pv.cond.pouring: 落大雨
+pv.cond.rainy: 落雨
+pv.cond.snowy: 落雪
+pv.cond.snowy-rainy: 雨夾雪
+pv.cond.sunny: 天晴
+pv.cond.windy: 大風
+pv.cond.windy-variant: 大風
+pv.pet_cam: 寵物鏡頭
+pv.tab_cameras: 鏡頭
