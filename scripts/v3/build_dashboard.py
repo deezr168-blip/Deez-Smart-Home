@@ -209,7 +209,7 @@ def build_native(spec, ctx):
     sections = []
     for sec in spec["sections"]:
         if sec.get("topbar"):
-            sections.append(C.topbar(ctx, spec["path"], spec["title"]))
+            sections.append(C.topbar(ctx, spec["path"], spec["title"], compact=band == 24))
             continue
         if "c" in sec:
             sections.append(resolve(sec, ctx))

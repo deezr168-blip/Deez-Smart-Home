@@ -186,28 +186,36 @@ def tile_safety(view, v2_by_path, controls, old_url, new_url):
     return bad, prot
 
 
+def band_scenarios():
+    """State sets a band must pack under: the fixture, everything answering,
+    everything dark. Cards hidden by their visibility take no space."""
+    normal, _ = R.scenarios()["normal"]
+    return {"fixture": normal,
+            "answering": {e: ("idle" if e.startswith("camera.") else "on") for e in normal},
+            "dark": R.scenarios()["dark"][0]}
+
+
 def band_problems(view, spec):
     """For a `band_grid: 24` view, against the frontend's own layout rules
     (ha_layout.py): headings in two-column bands that are not full width (they
     would sit BESIDE their cards), bands that leave empty cells on the wall
-    iPad (24 units) or a phone (12), and cards drawn at a size other than the
-    one their grid_options state (a card minimum overriding the YAML). The
-    shared top bar is not the spec's to size and is skipped."""
-    skip = {i for i, s in enumerate(spec.get("sections", [])) if s.get("topbar")}
+    iPad (24 units) or a phone (12) in any band scenario, and cards drawn at a
+    size other than the one their grid_options state (a card minimum
+    overriding the YAML). The compact top bar these views get is included."""
     heads, holes, clamps = [], [], []
+    scen = band_scenarios()
     for i, s in enumerate(view["sections"]):
-        if i in skip:
-            continue
         span = s.get("column_span", 1)
         for c in s.get("cards", []):
             if c.get("type") == "heading" and span == 2 and L.effective(c)[0] != "full":
                 heads.append(f"section {i}")
             if L.configured(c) != L.effective(c):
                 clamps.append(f"section {i} {c['type']} {L.configured(c)} draws {L.effective(c)}")
-        for where, resolved in (("wall iPad", 2), ("phone", 1)):
-            n = L.section_holes(s, L.units(span, resolved))
-            if n:
-                holes.append(f"section {i}: {n} empty cells on the {where}")
+        for name, states in scen.items():
+            for where, resolved in (("wall iPad", 2), ("phone", 1)):
+                n = L.section_holes(s, L.units(span, resolved), states)
+                if n:
+                    holes.append(f"section {i}: {n} empty cells on the {where} ({name})")
     return heads, holes, clamps
 
 
