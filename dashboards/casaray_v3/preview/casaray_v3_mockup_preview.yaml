@@ -7,6 +7,29 @@
 # Pages it does not carry open on the working dashboard: /casaray-v3/<page>
 # ============================================================================
 title: CasaRay V3 設計預覽 CasaRay V3 design preview
+kiosk_mode:
+  hide_header: true
+  hide_sidebar: true
+wallpanel:
+  enabled: true
+  hide_toolbar: false
+  hide_sidebar: false
+  fullscreen: false
+  idle_time: 120
+  image_url: media-source://media_source/
+  cards:
+    - type: markdown
+      content: |-
+        # {{ now().strftime('%H:%M') }}
+        {{ ["星期一 Mon","星期二 Tue","星期三 Wed","星期四 Thu","星期五 Fri","星期六 Sat","星期日 Sun"][now().weekday()] }} · {{ now().strftime('%d/%m/%y') }}
+    - type: markdown
+      content: |-
+        **爸媽房溫度** Parents room temperature
+        ## {{ (((states('sensor.bedroom_motion_sensor_temperature') | float) | round(1)) ~ '°') if states('sensor.bedroom_motion_sensor_temperature') | is_number else "無資料 No data" }}
+    - type: markdown
+      content: |-
+        **前門** Front door
+        ## {{ ("無資料" if states('binary_sensor.f_contact_sensor_door') in ['unavailable','unknown','none',''] else ({"on":"開啟","off":"已關"}).get(states('binary_sensor.f_contact_sensor_door'), states('binary_sensor.f_contact_sensor_door'))) }} <small>{{ ("No data" if states('binary_sensor.f_contact_sensor_door') in ['unavailable','unknown','none',''] else ({"on":"Open","off":"Closed"}).get(states('binary_sensor.f_contact_sensor_door'), states('binary_sensor.f_contact_sensor_door'))) }}</small>
 views:
   - title: 主頁 Home
     path: home
@@ -335,7 +358,7 @@ views:
               rows: auto
             tap_action:
               action: navigate
-              navigation_path: /casaray-v3/living-room
+              navigation_path: '#living-room'
           - type: markdown
             content: '<table role="presentation" width="100%"><tr><td width="40" valign="middle"><ha-icon icon="mdi:pot-steam-outline"></ha-icon></td><td valign="middle"><b>廚房</b><br><small>Kitchen</small></td><td align="right" valign="middle">動態：<b>{{ ("無資料" if states(''binary_sensor.k_motion_sensor_motion'') in [''unavailable'',''unknown'',''none'',''''] else ({"on":"有動靜","off":"暫無動作"}).get(states(''binary_sensor.k_motion_sensor_motion''), states(''binary_sensor.k_motion_sensor_motion''))) }}</b><br><small>Motion: {{ ("No data" if states(''binary_sensor.k_motion_sensor_motion'') in [''unavailable'',''unknown'',''none'',''''] else ({"on":"Movement","off":"No motion"}).get(states(''binary_sensor.k_motion_sensor_motion''), states(''binary_sensor.k_motion_sensor_motion''))) }}</small></td><td width="16" align="right" valign="middle">›</td></tr></table>'
             grid_options:
@@ -351,7 +374,7 @@ views:
               rows: auto
             tap_action:
               action: navigate
-              navigation_path: /casaray-v3/dining
+              navigation_path: '#dining'
           - type: markdown
             content: <table role="presentation" width="100%"><tr><td width="40" valign="middle"><ha-icon icon="mdi:bed-king-outline"></ha-icon></td><td valign="middle"><b>爸媽房</b><br><small>Parents</small></td><td align="right" valign="middle">溫度：<b>{{ (((states('sensor.bedroom_motion_sensor_temperature') | float) | round(0) | int) ~ '°') if states('sensor.bedroom_motion_sensor_temperature') | is_number else "無資料" }}</b><br><small>Temperature</small></td><td width="16" align="right" valign="middle">›</td></tr></table>
             grid_options:
@@ -367,7 +390,7 @@ views:
               rows: auto
             tap_action:
               action: navigate
-              navigation_path: /casaray-v3/ray-bedroom
+              navigation_path: '#ray-room'
           - type: markdown
             content: <table role="presentation" width="100%"><tr><td width="40" valign="middle"><ha-icon icon="mdi:garage-variant"></ha-icon></td><td valign="middle"><b>車房</b><br><small>Garage</small></td><td align="right" valign="middle">雪櫃：<b>{{ ((states('sensor.g_monitor_freezer_p110m_current_consumption') | float) | round(0) | int ~ ((' ' ~ state_attr('sensor.g_monitor_freezer_p110m_current_consumption','unit_of_measurement')) if state_attr('sensor.g_monitor_freezer_p110m_current_consumption','unit_of_measurement') else '')) if states('sensor.g_monitor_freezer_p110m_current_consumption') | is_number else "無資料" }}</b><br><small>Freezer</small></td><td width="16" align="right" valign="middle">›</td></tr></table>
             grid_options:
@@ -384,6 +407,100 @@ views:
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/guest-room
+      - type: grid
+        column_span: 2
+        cards:
+          - type: custom:bubble-card
+            card_type: pop-up
+            hash: '#living-room'
+            name: 客廳 Living room
+            icon: mdi:sofa-outline
+            cards:
+              - type: custom:bubble-card
+                card_type: button
+                button_type: slider
+                entity: light.living_room
+                name: 客廳燈 Living room light
+              - type: custom:bubble-card
+                card_type: button
+                button_type: state
+                entity: sensor.living_room_living_hue_hue_sensor_temperature
+                name: 溫度 Temperature
+                icon: mdi:thermometer
+                tap_action:
+                  action: more-info
+                button_action:
+                  tap_action:
+                    action: more-info
+              - type: custom:bubble-card
+                card_type: button
+                button_type: state
+                entity: binary_sensor.living_room_living_hue_hue_sensor_motion
+                name: 客廳動態 Living room motion
+                icon: mdi:motion-sensor
+                tap_action:
+                  action: more-info
+                button_action:
+                  tap_action:
+                    action: more-info
+              - type: custom:bubble-card
+                card_type: button
+                button_type: state
+                entity: binary_sensor.f_contact_sensor_door
+                name: 前門 Front door
+                icon: mdi:door
+                tap_action:
+                  action: more-info
+                button_action:
+                  tap_action:
+                    action: more-info
+            grid_options:
+              columns: full
+              rows: auto
+          - type: custom:bubble-card
+            card_type: pop-up
+            hash: '#dining'
+            name: 飯廳 Dining
+            icon: mdi:table-chair
+            cards:
+              - type: custom:bubble-card
+                card_type: button
+                button_type: slider
+                entity: light.dining
+                name: 飯廳燈 Dining light
+              - type: custom:bubble-card
+                card_type: button
+                button_type: state
+                entity: binary_sensor.living_room_living_room_motion
+                name: 飯廳動態 Dining motion
+                icon: mdi:motion-sensor
+                tap_action:
+                  action: more-info
+                button_action:
+                  tap_action:
+                    action: more-info
+            grid_options:
+              columns: full
+              rows: auto
+          - type: custom:bubble-card
+            card_type: pop-up
+            hash: '#ray-room'
+            name: Ray 房 Ray room
+            icon: mdi:bed-outline
+            cards:
+              - type: custom:bubble-card
+                card_type: button
+                button_type: slider
+                entity: light.bedroom_bedroom
+                name: Ray 房燈 Ray room light
+              - type: custom:bubble-card
+                card_type: button
+                button_type: slider
+                entity: light.bedroom_nightlight
+                name: 夜燈 Nightlight
+            grid_options:
+              columns: full
+              rows: auto
     footer:
       card:
         type: grid
@@ -904,156 +1021,33 @@ views:
       - type: grid
         column_span: 2
         cards:
-          - type: picture-entity
-            entity: camera.front_door_live_view
-            name: 前門 Front door ›
-            camera_view: auto
-            show_state: false
-            show_name: true
-            tap_action:
-              action: more-info
-            hold_action:
-              action: none
+          - type: custom:advanced-camera-card
+            cameras:
+              - camera_entity: camera.front_door_live_view
+                title: 前門 Front door
+                always_error_if_entity_unavailable: true
+              - camera_entity: camera.tapo_c425_north_wall_hd_stream_direct
+                title: 北牆 North wall
+                always_error_if_entity_unavailable: true
+              - camera_entity: camera.tapo_c420_east_wall_hd_stream_direct
+                title: 東牆 East wall
+                always_error_if_entity_unavailable: true
+              - camera_entity: camera.tapo_c420_south_wall_hd_stream_direct
+                title: 南牆 South wall
+                always_error_if_entity_unavailable: true
+              - camera_entity: camera.tapo_c200_stockroom_hd_stream_direct
+                title: 雜物房 Stockroom
+                always_error_if_entity_unavailable: true
+              - camera_entity: camera.smart_pet_feeder
+                title: 寵物鏡頭 Pet feeder
+                always_error_if_entity_unavailable: true
+            live:
+              display:
+                mode: grid
+                grid_max_columns: 3
             grid_options:
-              columns: 12
-              rows: 3
-            visibility:
-              - condition: state
-                entity: camera.front_door_live_view
-                state_not:
-                  - unavailable
-                  - unknown
-          - type: markdown
-            content: '{%- if states(''camera.front_door_live_view'') == ''unavailable'' -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **前門** Front door · **離線** Offline<br><small>Home Assistant 收唔到影像 No stream from Home Assistant · {{ (("電量 " ~ ((states(''sensor.front_door_battery'') | float) | round(0) | int) ~ "%") ~ '' '' ~ ("Battery " ~ ((states(''sensor.front_door_battery'') | float) | round(0) | int) ~ "%")) if states(''sensor.front_door_battery'') | is_number else "冇電量讀數 No battery reading" }}</small>{%- elif states(''camera.front_door_live_view'') == ''unknown'' -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **前門** Front door · **狀態未知** State unknown<br><small>Home Assistant 讀唔到呢部鏡頭 Home Assistant can''t read this camera · {{ (("電量 " ~ ((states(''sensor.front_door_battery'') | float) | round(0) | int) ~ "%") ~ '' '' ~ ("Battery " ~ ((states(''sensor.front_door_battery'') | float) | round(0) | int) ~ "%")) if states(''sensor.front_door_battery'') | is_number else "冇電量讀數 No battery reading" }}</small>{%- endif -%}'
-            grid_options:
-              columns: 12
-              rows: 3
-            show_empty: false
-          - type: picture-entity
-            entity: camera.tapo_c425_north_wall_hd_stream_direct
-            name: 北牆 North wall ›
-            camera_view: auto
-            show_state: false
-            show_name: true
-            tap_action:
-              action: more-info
-            hold_action:
-              action: none
-            grid_options:
-              columns: 12
-              rows: 3
-            visibility:
-              - condition: state
-                entity: camera.tapo_c425_north_wall_hd_stream_direct
-                state_not:
-                  - unavailable
-                  - unknown
-          - type: markdown
-            content: '{%- if states(''camera.tapo_c425_north_wall_hd_stream_direct'') == ''unavailable'' -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **北牆** North wall · **離線** Offline<br><small>Home Assistant 收唔到影像 No stream from Home Assistant · {{ (("電量 " ~ ((states(''sensor.tapo_c425_north_wall_battery'') | float) | round(0) | int) ~ "%") ~ '' '' ~ ("Battery " ~ ((states(''sensor.tapo_c425_north_wall_battery'') | float) | round(0) | int) ~ "%")) if states(''sensor.tapo_c425_north_wall_battery'') | is_number else "冇電量讀數 No battery reading" }}</small>{%- elif states(''camera.tapo_c425_north_wall_hd_stream_direct'') == ''unknown'' -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **北牆** North wall · **狀態未知** State unknown<br><small>Home Assistant 讀唔到呢部鏡頭 Home Assistant can''t read this camera · {{ (("電量 " ~ ((states(''sensor.tapo_c425_north_wall_battery'') | float) | round(0) | int) ~ "%") ~ '' '' ~ ("Battery " ~ ((states(''sensor.tapo_c425_north_wall_battery'') | float) | round(0) | int) ~ "%")) if states(''sensor.tapo_c425_north_wall_battery'') | is_number else "冇電量讀數 No battery reading" }}</small>{%- endif -%}'
-            grid_options:
-              columns: 12
-              rows: 3
-            show_empty: false
-          - type: picture-entity
-            entity: camera.tapo_c420_east_wall_hd_stream_direct
-            name: 東牆 East wall ›
-            camera_view: auto
-            show_state: false
-            show_name: true
-            tap_action:
-              action: more-info
-            hold_action:
-              action: none
-            grid_options:
-              columns: 12
-              rows: 3
-            visibility:
-              - condition: state
-                entity: camera.tapo_c420_east_wall_hd_stream_direct
-                state_not:
-                  - unavailable
-                  - unknown
-          - type: markdown
-            content: '{%- if states(''camera.tapo_c420_east_wall_hd_stream_direct'') == ''unavailable'' -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **東牆** East wall · **離線** Offline<br><small>Home Assistant 收唔到影像 No stream from Home Assistant · {{ (("電量 " ~ ((states(''sensor.tapo_camera_bcca_battery'') | float) | round(0) | int) ~ "%") ~ '' '' ~ ("Battery " ~ ((states(''sensor.tapo_camera_bcca_battery'') | float) | round(0) | int) ~ "%")) if states(''sensor.tapo_camera_bcca_battery'') | is_number else "冇電量讀數 No battery reading" }}</small>{%- elif states(''camera.tapo_c420_east_wall_hd_stream_direct'') == ''unknown'' -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **東牆** East wall · **狀態未知** State unknown<br><small>Home Assistant 讀唔到呢部鏡頭 Home Assistant can''t read this camera · {{ (("電量 " ~ ((states(''sensor.tapo_camera_bcca_battery'') | float) | round(0) | int) ~ "%") ~ '' '' ~ ("Battery " ~ ((states(''sensor.tapo_camera_bcca_battery'') | float) | round(0) | int) ~ "%")) if states(''sensor.tapo_camera_bcca_battery'') | is_number else "冇電量讀數 No battery reading" }}</small>{%- endif -%}'
-            grid_options:
-              columns: 12
-              rows: 3
-            show_empty: false
-          - type: picture-entity
-            entity: camera.tapo_c420_south_wall_hd_stream_direct
-            name: 南牆 South wall ›
-            camera_view: auto
-            show_state: false
-            show_name: true
-            tap_action:
-              action: more-info
-            hold_action:
-              action: none
-            grid_options:
-              columns: 12
-              rows: 3
-            visibility:
-              - condition: state
-                entity: camera.tapo_c420_south_wall_hd_stream_direct
-                state_not:
-                  - unavailable
-                  - unknown
-          - type: markdown
-            content: '{%- if states(''camera.tapo_c420_south_wall_hd_stream_direct'') == ''unavailable'' -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **南牆** South wall · **離線** Offline<br><small>Home Assistant 收唔到影像 No stream from Home Assistant · {{ (("電量 " ~ ((states(''sensor.tapo_c420_south_wall_battery'') | float) | round(0) | int) ~ "%") ~ '' '' ~ ("Battery " ~ ((states(''sensor.tapo_c420_south_wall_battery'') | float) | round(0) | int) ~ "%")) if states(''sensor.tapo_c420_south_wall_battery'') | is_number else "冇電量讀數 No battery reading" }}</small>{%- elif states(''camera.tapo_c420_south_wall_hd_stream_direct'') == ''unknown'' -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **南牆** South wall · **狀態未知** State unknown<br><small>Home Assistant 讀唔到呢部鏡頭 Home Assistant can''t read this camera · {{ (("電量 " ~ ((states(''sensor.tapo_c420_south_wall_battery'') | float) | round(0) | int) ~ "%") ~ '' '' ~ ("Battery " ~ ((states(''sensor.tapo_c420_south_wall_battery'') | float) | round(0) | int) ~ "%")) if states(''sensor.tapo_c420_south_wall_battery'') | is_number else "冇電量讀數 No battery reading" }}</small>{%- endif -%}'
-            grid_options:
-              columns: 12
-              rows: 3
-            show_empty: false
-          - type: picture-entity
-            entity: camera.tapo_c200_stockroom_hd_stream_direct
-            name: 雜物房 Stockroom ›
-            camera_view: auto
-            show_state: false
-            show_name: true
-            tap_action:
-              action: more-info
-            hold_action:
-              action: none
-            grid_options:
-              columns: 12
-              rows: 3
-            visibility:
-              - condition: state
-                entity: camera.tapo_c200_stockroom_hd_stream_direct
-                state_not:
-                  - unavailable
-                  - unknown
-          - type: markdown
-            content: '{%- if states(''camera.tapo_c200_stockroom_hd_stream_direct'') == ''unavailable'' -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **雜物房** Stockroom · **離線** Offline<br><small>Home Assistant 收唔到影像 No stream from Home Assistant</small>{%- elif states(''camera.tapo_c200_stockroom_hd_stream_direct'') == ''unknown'' -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **雜物房** Stockroom · **狀態未知** State unknown<br><small>Home Assistant 讀唔到呢部鏡頭 Home Assistant can''t read this camera</small>{%- endif -%}'
-            grid_options:
-              columns: 12
-              rows: 3
-            show_empty: false
-          - type: picture-entity
-            entity: camera.smart_pet_feeder
-            name: 寵物鏡頭 Pet feeder ›
-            camera_view: auto
-            show_state: false
-            show_name: true
-            tap_action:
-              action: more-info
-            hold_action:
-              action: none
-            grid_options:
-              columns: 12
-              rows: 3
-            visibility:
-              - condition: state
-                entity: camera.smart_pet_feeder
-                state_not:
-                  - unavailable
-                  - unknown
-          - type: markdown
-            content: '{%- if states(''camera.smart_pet_feeder'') == ''unavailable'' -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **寵物鏡頭** Pet feeder · **離線** Offline<br><small>Home Assistant 收唔到影像 No stream from Home Assistant</small>{%- elif states(''camera.smart_pet_feeder'') == ''unknown'' -%}<ha-icon icon="mdi:video-off-outline"></ha-icon> **寵物鏡頭** Pet feeder · **狀態未知** State unknown<br><small>Home Assistant 讀唔到呢部鏡頭 Home Assistant can''t read this camera</small>{%- endif -%}'
-            grid_options:
-              columns: 12
-              rows: 3
-            show_empty: false
+              columns: full
+              rows: auto
     footer:
       card:
         type: grid
@@ -1131,6 +1125,364 @@ views:
               columns: 12
               rows: 1
       max_width: 1032
+  - title: 用電 Energy
+    path: energy
+    icon: mdi:lightning-bolt-outline
+    type: sections
+    max_columns: 2
+    theme: CasaRay V3
+    sections:
+      - type: grid
+        column_span: 2
+        cards:
+          - type: markdown
+            content: <table role="presentation" width="100%"><tr><td valign="middle"><big><b>CasaRay</b>｜<b>用電</b> Energy</big><br><small>設計預覽 · 未部署 · Design preview · not deployed</small></td><td align="right" valign="middle" width="96"><ha-icon icon="{{ ({'clear-night':'mdi:weather-night','cloudy':'mdi:weather-cloudy','exceptional':'mdi:alert-circle-outline','fog':'mdi:weather-fog','hail':'mdi:weather-hail','lightning':'mdi:weather-lightning','lightning-rainy':'mdi:weather-lightning-rainy','partlycloudy':'mdi:weather-partly-cloudy','pouring':'mdi:weather-pouring','rainy':'mdi:weather-rainy','snowy':'mdi:weather-snowy','snowy-rainy':'mdi:weather-snowy-rainy','sunny':'mdi:weather-sunny','windy':'mdi:weather-windy','windy-variant':'mdi:weather-windy-variant'}).get(states('weather.forecast_home'), 'mdi:weather-cloudy-alert') }}"></ha-icon> <b>{{ (((state_attr('weather.forecast_home','temperature') | float) | round(0) | int) ~ '°C') if (states('weather.forecast_home') not in ['unavailable','unknown','none',''] and state_attr('weather.forecast_home','temperature') | is_number) else "無資料" }}</b></td><td align="right" valign="middle" width="150"><big><b>{{ now().strftime('%H:%M') }}</b></big><br><small>{{ ["星期一 Mon","星期二 Tue","星期三 Wed","星期四 Thu","星期五 Fri","星期六 Sat","星期日 Sun"][now().weekday()] }} · {{ now().strftime('%d/%m/%y') }}</small></td></tr></table>
+            grid_options:
+              columns: full
+              rows: auto
+      - type: grid
+        column_span: 1
+        cards:
+          - type: heading
+            heading: 而家用電 Power now
+            heading_style: title
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: custom:power-flow-card-plus
+            entities:
+              solar:
+                entity: sensor.primo_5_0_1_1_ac_power
+                name: 太陽能 Solar
+              grid:
+                entity: sensor.powerpal_gateway_powerpal_power
+                name: 電網入電 Grid import
+              home:
+                name: 屋企 Home
+            grid_options:
+              columns: 12
+              rows: auto
+      - type: grid
+        column_span: 1
+        cards:
+          - type: heading
+            heading: 今日 Today
+            heading_style: title
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: custom:apexcharts-card
+            graph_span: 24h
+            span:
+              start: day
+            header:
+              show: true
+              title: 今日 Today
+            now:
+              show: true
+            series:
+              - entity: sensor.primo_5_0_1_1_ac_power
+                name: 太陽能 Solar
+                type: area
+              - entity: sensor.powerpal_gateway_powerpal_power
+                name: 電網入電 Grid import
+                type: area
+            grid_options:
+              columns: 12
+              rows: auto
+      - type: grid
+        column_span: 2
+        cards:
+          - type: markdown
+            content: |-
+              **屋企** Home
+
+              「屋企」等於太陽能加電網入電：冇輸出感應器，所以賣電時呢個數會偏高。
+
+              <small>"Home" is solar plus grid import: with no export sensor it reads high while the panels export.</small>
+            grid_options:
+              columns: full
+              rows: auto
+    footer:
+      card:
+        type: grid
+        columns: 5
+        square: false
+        cards:
+          - type: button
+            name: 主頁 Home
+            icon: mdi:home-outline
+            icon_height: 28px
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-mockup/home
+            hold_action:
+              action: none
+            grid_options:
+              columns: 12
+              rows: 1
+          - type: button
+            name: 房間 Rooms
+            icon: mdi:bed-outline
+            icon_height: 28px
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-mockup/rooms
+            hold_action:
+              action: none
+            grid_options:
+              columns: 12
+              rows: 1
+          - type: button
+            name: 燈光 Lighting
+            icon: mdi:lamp-outline
+            icon_height: 28px
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-mockup/lighting
+            hold_action:
+              action: none
+            grid_options:
+              columns: 12
+              rows: 1
+          - type: button
+            name: 鏡頭 Camera
+            icon: mdi:video-outline
+            icon_height: 28px
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-mockup/cameras
+            hold_action:
+              action: none
+            grid_options:
+              columns: 12
+              rows: 1
+          - type: button
+            name: 更多 More
+            icon: mdi:dots-horizontal
+            icon_height: 28px
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-mockup/more
+            hold_action:
+              action: none
+            grid_options:
+              columns: 12
+              rows: 1
+            color: accent
+      max_width: 1032
+  - title: 屋企狀況 House health
+    path: house-health
+    icon: mdi:home-heart
+    type: sections
+    max_columns: 2
+    theme: CasaRay V3
+    sections:
+      - type: grid
+        column_span: 2
+        cards:
+          - type: markdown
+            content: <table role="presentation" width="100%"><tr><td valign="middle"><big><b>CasaRay</b>｜<b>屋企狀況</b> House health</big><br><small>設計預覽 · 未部署 · Design preview · not deployed</small></td><td align="right" valign="middle" width="96"><ha-icon icon="{{ ({'clear-night':'mdi:weather-night','cloudy':'mdi:weather-cloudy','exceptional':'mdi:alert-circle-outline','fog':'mdi:weather-fog','hail':'mdi:weather-hail','lightning':'mdi:weather-lightning','lightning-rainy':'mdi:weather-lightning-rainy','partlycloudy':'mdi:weather-partly-cloudy','pouring':'mdi:weather-pouring','rainy':'mdi:weather-rainy','snowy':'mdi:weather-snowy','snowy-rainy':'mdi:weather-snowy-rainy','sunny':'mdi:weather-sunny','windy':'mdi:weather-windy','windy-variant':'mdi:weather-windy-variant'}).get(states('weather.forecast_home'), 'mdi:weather-cloudy-alert') }}"></ha-icon> <b>{{ (((state_attr('weather.forecast_home','temperature') | float) | round(0) | int) ~ '°C') if (states('weather.forecast_home') not in ['unavailable','unknown','none',''] and state_attr('weather.forecast_home','temperature') | is_number) else "無資料" }}</b></td><td align="right" valign="middle" width="150"><big><b>{{ now().strftime('%H:%M') }}</b></big><br><small>{{ ["星期一 Mon","星期二 Tue","星期三 Wed","星期四 Thu","星期五 Fri","星期六 Sat","星期日 Sun"][now().weekday()] }} · {{ now().strftime('%d/%m/%y') }}</small></td></tr></table>
+            grid_options:
+              columns: full
+              rows: auto
+      - type: grid
+        column_span: 2
+        cards:
+          - type: markdown
+            content: |-
+              **屋企狀況** House health
+
+              自動列出所有冇回應嘅實體，唔使人手維護清單。
+
+              <small>Every entity that is not answering, listed automatically — no hand-kept list to go stale.</small>
+            grid_options:
+              columns: full
+              rows: auto
+      - type: grid
+        column_span: 1
+        cards:
+          - type: custom:auto-entities
+            card:
+              type: entities
+              title: 冇回應嘅燈 Lights not answering
+            filter:
+              include:
+                - domain: light
+                  state: unavailable
+            sort:
+              method: name
+            else:
+              type: markdown
+              content: |-
+                **冇回應嘅燈 Lights not answering**
+
+                呢類冇項目報告離線 <small>Nothing of this kind reports unavailable</small>
+              grid_options:
+                columns: 12
+                rows: auto
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: custom:auto-entities
+            card:
+              type: entities
+              title: 冇回應嘅鏡頭 Cameras not answering
+            filter:
+              include:
+                - domain: camera
+                  state: unavailable
+            sort:
+              method: name
+            else:
+              type: markdown
+              content: |-
+                **冇回應嘅鏡頭 Cameras not answering**
+
+                呢類冇項目報告離線 <small>Nothing of this kind reports unavailable</small>
+              grid_options:
+                columns: 12
+                rows: auto
+            grid_options:
+              columns: 12
+              rows: auto
+      - type: grid
+        column_span: 1
+        cards:
+          - type: custom:auto-entities
+            card:
+              type: entities
+              title: 冇回應嘅開關 Switches not answering
+            filter:
+              include:
+                - domain: switch
+                  state: unavailable
+            sort:
+              method: name
+            else:
+              type: markdown
+              content: |-
+                **冇回應嘅開關 Switches not answering**
+
+                呢類冇項目報告離線 <small>Nothing of this kind reports unavailable</small>
+              grid_options:
+                columns: 12
+                rows: auto
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: custom:auto-entities
+            card:
+              type: entities
+              title: 冇回應嘅感應器 Sensors not answering
+            filter:
+              include:
+                - domain: sensor
+                  state: unavailable
+                - domain: binary_sensor
+                  state: unavailable
+            sort:
+              method: name
+            else:
+              type: markdown
+              content: |-
+                **冇回應嘅感應器 Sensors not answering**
+
+                呢類冇項目報告離線 <small>Nothing of this kind reports unavailable</small>
+              grid_options:
+                columns: 12
+                rows: auto
+            grid_options:
+              columns: 12
+              rows: auto
+    footer:
+      card:
+        type: grid
+        columns: 5
+        square: false
+        cards:
+          - type: button
+            name: 主頁 Home
+            icon: mdi:home-outline
+            icon_height: 28px
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-mockup/home
+            hold_action:
+              action: none
+            grid_options:
+              columns: 12
+              rows: 1
+          - type: button
+            name: 房間 Rooms
+            icon: mdi:bed-outline
+            icon_height: 28px
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-mockup/rooms
+            hold_action:
+              action: none
+            grid_options:
+              columns: 12
+              rows: 1
+          - type: button
+            name: 燈光 Lighting
+            icon: mdi:lamp-outline
+            icon_height: 28px
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-mockup/lighting
+            hold_action:
+              action: none
+            grid_options:
+              columns: 12
+              rows: 1
+          - type: button
+            name: 鏡頭 Camera
+            icon: mdi:video-outline
+            icon_height: 28px
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-mockup/cameras
+            hold_action:
+              action: none
+            grid_options:
+              columns: 12
+              rows: 1
+          - type: button
+            name: 更多 More
+            icon: mdi:dots-horizontal
+            icon_height: 28px
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-mockup/more
+            hold_action:
+              action: none
+            grid_options:
+              columns: 12
+              rows: 1
+            color: accent
+      max_width: 1032
   - title: 更多 More
     path: more
     icon: mdi:dots-horizontal
@@ -1173,7 +1525,7 @@ views:
             show_icon: true
             tap_action:
               action: navigate
-              navigation_path: /casaray-v3/energy
+              navigation_path: /casaray-v3-mockup/energy
             grid_options:
               columns: 4
               rows: 2
@@ -1217,7 +1569,7 @@ views:
             show_icon: true
             tap_action:
               action: navigate
-              navigation_path: /casaray-v3/house-health
+              navigation_path: /casaray-v3-mockup/house-health
             grid_options:
               columns: 4
               rows: 2

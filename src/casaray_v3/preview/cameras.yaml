@@ -1,7 +1,9 @@
-# Bilingual preview — Cameras overview (V3-025). The six cameras of V3 in the
-# mockup's two-across grid, ONE slot each, one size in every state (20/11 trial):
-# the picture while the camera answers, else Offline / State unknown in words.
-# The mockup's photos are illustrations; Home Assistant shows each camera's own picture.
+# Bilingual preview — Cameras overview (V3-025, V3-026). One Advanced Camera Card
+# (owner-approved 20/11/26): every camera live in one fixed grid, three across at most;
+# a camera whose entity is unavailable errors in its own cell. Until the card is
+# installed on the Green, Home Assistant draws "Custom element doesn't exist" here.
+# Four of these camera IDs were not on the instance on 20/11 (V3-025 item 13): they
+# show the card's error until the owner confirms the new IDs.
 path: cameras
 title: nav.cameras
 icon: mdi:video-outline
@@ -10,14 +12,9 @@ sections:
   - {c: preview_header, title_key: nav.cameras}
   - span: 2
     cards:
-      - {c: preview_camera, entity: camera.front_door_live_view, name_key: room.front_door,
-         battery: sensor.front_door_battery}
-      - {c: preview_camera, entity: camera.tapo_c425_north_wall_hd_stream_direct, name_key: room.north_wall,
-         battery: sensor.tapo_c425_north_wall_battery}
-      # East wall battery: the camera's second device record (see views/cameras.yaml)
-      - {c: preview_camera, entity: camera.tapo_c420_east_wall_hd_stream_direct, name_key: room.east_wall,
-         battery: sensor.tapo_camera_bcca_battery}
-      - {c: preview_camera, entity: camera.tapo_c420_south_wall_hd_stream_direct, name_key: room.south_wall,
-         battery: sensor.tapo_c420_south_wall_battery}
-      - {c: preview_camera, entity: camera.tapo_c200_stockroom_hd_stream_direct, name_key: room.stockroom}
-      - {c: preview_camera, entity: camera.smart_pet_feeder, name_key: pv.pet_cam}   # the mockup's 寵物鏡頭: fits a phone's name cell
+      - {c: preview_acc, cameras: [[camera.front_door_live_view, room.front_door],
+                                   [camera.tapo_c425_north_wall_hd_stream_direct, room.north_wall],
+                                   [camera.tapo_c420_east_wall_hd_stream_direct, room.east_wall],
+                                   [camera.tapo_c420_south_wall_hd_stream_direct, room.south_wall],
+                                   [camera.tapo_c200_stockroom_hd_stream_direct, room.stockroom],
+                                   [camera.smart_pet_feeder, pv.pet_cam]]}

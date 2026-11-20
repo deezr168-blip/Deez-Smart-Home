@@ -2434,16 +2434,23 @@
         "path": "rooms",
         "source": "preview/rooms.yaml",
         "entities": [
+          "binary_sensor.f_contact_sensor_door",
           "binary_sensor.k_motion_sensor_motion",
+          "binary_sensor.living_room_living_hue_hue_sensor_motion",
+          "binary_sensor.living_room_living_room_motion",
           "light.bedroom_bedroom",
+          "light.bedroom_nightlight",
           "light.dining",
           "light.living_room",
           "sensor.bedroom_motion_sensor_temperature",
           "sensor.g_monitor_freezer_p110m_current_consumption",
+          "sensor.living_room_living_hue_hue_sensor_temperature",
           "switch.g_printer_p100",
           "weather.forecast_home"
         ],
-        "dark_at_export": [],
+        "dark_at_export": [
+          "binary_sensor.f_contact_sensor_door"
+        ],
         "unverified": []
       },
       {
@@ -2485,16 +2492,32 @@
           "camera.tapo_c420_east_wall_hd_stream_direct",
           "camera.tapo_c420_south_wall_hd_stream_direct",
           "camera.tapo_c425_north_wall_hd_stream_direct",
-          "sensor.front_door_battery",
-          "sensor.tapo_c420_south_wall_battery",
-          "sensor.tapo_c425_north_wall_battery",
-          "sensor.tapo_camera_bcca_battery",
           "weather.forecast_home"
         ],
         "dark_at_export": [
           "camera.tapo_c420_east_wall_hd_stream_direct",
           "camera.tapo_c420_south_wall_hd_stream_direct"
         ],
+        "unverified": []
+      },
+      {
+        "path": "energy",
+        "source": "preview/energy.yaml",
+        "entities": [
+          "sensor.powerpal_gateway_powerpal_power",
+          "sensor.primo_5_0_1_1_ac_power",
+          "weather.forecast_home"
+        ],
+        "dark_at_export": [],
+        "unverified": []
+      },
+      {
+        "path": "house-health",
+        "source": "preview/house-health.yaml",
+        "entities": [
+          "weather.forecast_home"
+        ],
+        "dark_at_export": [],
         "unverified": []
       },
       {

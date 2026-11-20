@@ -93,3 +93,20 @@ pv.weather: Weather
 pv.unconfirmed: Can't be confirmed
 pv.cam_unreadable: Home Assistant can't read this camera
 pv.living_temp: Living room temperature
+# V3-026 (20/11/26): the owner-approved custom cards
+pv.solar: Solar
+pv.grid_import: Grid import
+pv.home_power: Home
+pv.power_now: Power now
+pv.today: Today
+pv.home_caveat: '"Home" is solar plus grid import: with no export sensor it reads high while the panels export.'
+pv.hh_intro: Every entity that is not answering, listed automatically — no hand-kept list to go stale.
+pv.hh_lights: Lights not answering
+pv.hh_switches: Switches not answering
+pv.hh_cameras: Cameras not answering
+pv.hh_sensors: Sensors not answering
+pv.hh_none: Nothing of this kind reports unavailable
+pv.wp_open: Open
+pv.wp_closed: Closed
+pv.dining_motion: Dining motion
+pv.living_motion: Living room motion

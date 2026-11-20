@@ -93,3 +93,20 @@ pv.weather: 天氣
 pv.unconfirmed: 未能確認
 pv.cam_unreadable: Home Assistant 讀唔到呢部鏡頭
 pv.living_temp: 客廳溫度
+# V3-026 (20/11/26): the owner-approved custom cards
+pv.solar: 太陽能
+pv.grid_import: 電網入電
+pv.home_power: 屋企
+pv.power_now: 而家用電
+pv.today: 今日
+pv.home_caveat: 「屋企」等於太陽能加電網入電：冇輸出感應器，所以賣電時呢個數會偏高。
+pv.hh_intro: 自動列出所有冇回應嘅實體，唔使人手維護清單。
+pv.hh_lights: 冇回應嘅燈
+pv.hh_switches: 冇回應嘅開關
+pv.hh_cameras: 冇回應嘅鏡頭
+pv.hh_sensors: 冇回應嘅感應器
+pv.hh_none: 呢類冇項目報告離線
+pv.wp_open: 開啟
+pv.wp_closed: 已關
+pv.dining_motion: 飯廳動態
+pv.living_motion: 客廳動態
