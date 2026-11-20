@@ -6,6 +6,220 @@ and `ha-deploy` are unaffected by everything here.
 
 ---
 
+## V3-026 · 20/11/26 · Seven custom cards approved for the preview, and built into it
+
+**Status: owner decision (20/11/26).** Asked what "Approve" covered, the owner chose
+**Adopt cards in V3** and **Merge PR #27**, and for the cards **"Six plus WallPanel"**:
+Kiosk Mode, Bubble Card, Advanced Camera Card, auto-entities, ApexCharts, Power Flow Card
+Plus and WallPanel. PR #27 (the verified recommendation,
+`hacs/HACS_RECOMMENDATIONS_2026-11-20.md`) was merged into `casaray-v3-design` as
+`de983d9`. Built on the preview branch only; the working dashboards stay native and
+byte-identical.
+
+1. **What the preview now uses, and where:**
+   - **Kiosk Mode** (dashboard level): `kiosk_mode: {hide_header: true, hide_sidebar: true}`,
+     the legacy dashboard's settings. Add `?disable_km` to the URL to get the chrome back.
+   - **WallPanel** (dashboard level): after 120 s idle, the photos in Home Assistant's
+     media folder (`media-source://media_source/`) with an info box: time over DD/MM/YY,
+     the parents' room temperature, the front door. `hide_toolbar`/`hide_sidebar` false,
+     so chrome is Kiosk Mode's job alone.
+   - **Bubble Card** (Rooms): Living room, Dining and Ray room open as pop-ups
+     (`#living-room`, `#dining`, `#ray-room`) over the page. Lights are sliders, the same
+     light controls as Lighting. Readings are `button_type: state` with more-info taps.
+     The other four rooms still open their working pages.
+   - **Advanced Camera Card** (Cameras): one card, the same six cameras in the same order,
+     live in a grid three across at most. A camera whose entity is unavailable errors in its
+     own cell (`always_error_if_entity_unavailable`). It replaces V3-025's six native slots;
+     Home's front-door slot stays native.
+   - **Power Flow Card Plus + ApexCharts** (new Energy page, under More): solar
+     (`sensor.primo_5_0_1_1_ac_power`) and grid import
+     (`sensor.powerpal_gateway_powerpal_power`). The flow card's Home is the card's sum; the
+     caveat sits under it in both languages.
+   - **auto-entities** (new House health page, under More): lights, switches, cameras and
+     sensors whose state is `unavailable`, each with an `else` card when none is.
+2. **Gate:** `validate_dashboard.py` allows exactly these five custom types plus the native
+   `entities` card that auto-entities fills (`PREVIEW_TYPES`). `custom_problems()` holds each
+   to what was reviewed:
+   - sliders only on lights; readings only read;
+   - every pop-up linked from its page and every `#` link to a pop-up;
+   - bilingual labels;
+   - auto-entities filters on domain and state only.
+
+   `root_problems()` holds Kiosk Mode and WallPanel to the reviewed options. The layout
+   model counts a closed pop-up as taking no space.
+3. **Tests:** `tests/v3/test_preview_hacs_v3_026.py` (15); V3-025's camera tests now cover
+   Home's front-door slot, plus one that pins the camera card to the same six cameras.
+4. **What makes it work on the Green (the owner's, not done here):**
+   - Install the seven through HACS: NemesisRE/kiosk-mode, Clooos/Bubble-Card,
+     dermotduffy/advanced-camera-card, thomasloven/lovelace-auto-entities,
+     RomRider/apexcharts-card, flixlix/power-flow-card-plus, j-a-n/lovelace-wallpanel. Then
+     reload the browser.
+   - On 02/11 the Resources list was empty. Until each card is installed, Home Assistant draws
+     "Custom element doesn't exist" in its place. Kiosk Mode and WallPanel are simply ignored.
+   - WallPanel needs photos in Media → My media.
+   - The six entity IDs of V3-025 item 13 must be confirmed: the Living room and Dining
+     sliders and four camera cells depend on them.
+5. **Not verified:** nothing was seen on a device; every option is from the cards' own docs
+   (PR #27).
+6. **Task register:** the owner-decisions register (`docs/project-tasks/`) is outside
+   `design/casaray-v3/` and was not written. This entry is the record.
+
+---
+
+## V3-025 · 19/11/26 · The bilingual mockups as a separate preview dashboard: Home, Rooms, Lighting, Climate, Cameras
+
+**Status:** owner brief (19/11/26): use the supplied bilingual mockups as the
+design reference for native CasaRay V3; compare Home, Rooms, Lighting, Climate
+and the Cameras overview with V3; prepare a separate preview; House Map is a
+follow-up. Issue #22 and the hosted Home artifact are parked; PR #21 keeps its
+own scope. Branch `casaray-v3/agent-mockup-preview-20261119`, from draft PR #24
+(`0f90277`). DESIGN PREVIEW — NOT DEPLOYED; no live change.
+
+1. **Reference.** Five sheets, 20 screens: `docs/mockups/2026-11-19_bilingual_*.png`
+   (PNG because the repository gate allows only PNG there; re-encoded losslessly).
+   Element-by-element comparison and entity check:
+   `design/casaray-v3/MOCKUP_COMPARISON_2026-11-19.md`.
+2. **Separate, so the working dashboard stays available.** A manifest
+   `preview:` key builds one more file, `dashboards/casaray_v3/preview/casaray_v3_mockup_preview.yaml`
+   (url_path `casaray-v3-mockup`), from `src/casaray_v3/preview/`. The working
+   dashboards are byte-identical (`dashboards/casaray_v3.yaml` is still
+   `f6c9c307…`, PR #24's candidate), and a test builds them with and without the
+   preview to prove it.
+3. **Two languages on one screen**, as the mockups draw: `BiCtx` gives every
+   label as 中文 strong over English small, and a live value in both. The
+   preview uses the mockups' own words (已開 / 已關 / 無資料) through a
+   `vocabulary:` alias, so the shared honesty components keep one code path and
+   the working catalogue's words (燈開咗 / 冇數據) are untouched. Which
+   register the household keeps is the owner's call.
+4. **Native only, each trick read in the pinned frontend (20260826.7):** the
+   tab bar is the sections view's own sticky `footer` (one grid card of the five
+   tabs); the current tab is the button's `color: accent`; the header is a
+   markdown `table[role=presentation]`; the door banner is a GitHub alert block
+   (`[!WARNING]`, the theme's amber); icons are `<ha-icon>`. The HACS cards in the
+   owner's sheet (Navbar, Clock Weather, Bubble...) are not used: V3 is native by
+   gate, and the Green's HACS resources were last seen missing.
+5. **Departures from the mockups, each for a stated reason:**
+   - Badge: 設計預覽 · 未部署 / Design preview · not deployed, not 「示例數據」:
+     on a device the preview reads live entities.
+   - Date: `18/11/26`, the repository's DD/MM/YY rule; the weekday is added.
+   - Tab label 鏡頭 Camera (not Cameras): 67 px in a 66 px phone tab.
+   - Rooms: Kitchen, Garage and Guest show what they report (motion, freezer,
+     printer), because none has a light entity.
+   - Lighting: Normal and Daytime say 「未設定」; Night is the existing,
+     owner-approved action (three lights to 10%).
+   - Climate: no "clean in about 30 days" (no interval entity); the
+     needs-cleaning flag and the days since the last reset instead. The timer
+     is the air-con's own (`switch.…_timer`, end time while on).
+   - Home: the lights are read-only (a tap opens Lighting), as V3 Home's gate
+     requires. Home's chips, Needs attention, One tap, Shopping list, Who's
+     home, Security summary, Energy and More boards are not on the mockup; they
+     stay on the working dashboard, and dropping them is the owner's decision.
+   - More: Climate plus eleven working boards; the working Home is not listed,
+     because a working link that shares a preview page's name makes the
+     repository gate read every working link as internal (reverted `28799de`).
+6. **Mockup controls with no verified entity:** Kitchen, Garage and Guest
+   lights; the Normal and Daytime modes and which mode is selected
+   (`input_select.lighting_scene` exists, but its options are not in git and it
+   is not exposed to the read-only connector); the filter countdown.
+7. **Gate and tests.** `validate_dashboard.py` `preview_problems()` (+64
+   checks) and `tests/v3/test_preview_v3_025.py` (17). The preview's strings live in `src/casaray_v3/preview/i18n/` (en, yue), not the working
+   catalogues: those must hold every key in en, yue and km, and the first full run caught the
+   86 missing Khmer keys. The working catalogues are byte-identical to `0f90277`. Offline renders
+   (`preview_view.py --sample design/casaray-v3/preview_samples/mockup_2026-11-19.yaml`)
+   carry the mockups' values and photos, captioned 示例數據 / 示例圖片 Sample;
+   the same pages rendered fully dark say 無資料 / Offline and nothing reassuring.
+8. **House Map: follow-up only.** The supplied floorplan is not committed (it
+   prints the street address). Its rooms (Bedroom 1 / 2, Laundry, two
+   bathrooms, Hallway, Closet, "Other") do not match V3's (no Dining, Garage or
+   Guest), openings beyond the scanned door swings are unconfirmed, and an area
+   says which room a device is in, not where. The owner's room mapping and
+   device positions come first; nothing interactive is placed on a map before.
+9. **Scope note.** `session-orient --scope` classes this branch under the
+   design-track rule (write only under `design/casaray-v3/`) and lists 22 paths
+   outside it: the build track's source, generator, tests and generated outputs,
+   which the brief names as targets, and the supplied mockups. No protected or
+   credential-shaped path.
+10. **Not verified:** nothing was seen in Home Assistant. Typography, the sticky
+    footer's look, the amber tab and every height come from the pinned source
+    and a simulation. The yue wording of the new strings wants a native read.
+11. **Live trial approved (owner, 19/11/26).** Import as a separate dashboard,
+    title *CasaRay V3 Mockup Preview*, url_path `casaray-v3-mockup`, for visual checks
+    only: no GitHub merge, no restart, no activation of device controls; the default
+    dashboard and `/casaray-v3` stay as they are. The file supplied for import is
+    `2914b09`'s output with one edit: the header badge reads 設計預覽 / Design preview
+    instead of 設計預覽 · 未部署 · Design preview · not deployed, on all six pages (six
+    lines; everything else byte-identical). The repository still builds the 2914b09
+    wording until the trial's result says which to keep. Import and device checks
+    are the owner's: this session has no route to the instance. Live controls in the
+    file: the four Lighting tiles (icon toggles, brightness slider) and the Night card
+    (one tap, no confirmation), the same lights and action as the working dashboard.
+12. **Live trial findings (owner, 20/11/26), fixed in the preview only.** The owner
+    reported three things from the wall iPad; the photos did not reach this session, so
+    each fix rests on the pinned frontend source and a trial-shaped simulation
+    (`design/casaray-v3/preview_samples/trial_2026-11-20.yaml`), not on the photos.
+    - **Missing light tiles.** A tile whose entity ID the instance lacks draws Home
+      Assistant's warning card, and that card's text shows to admins only
+      (`hui-error-card.ts`): to the wall iPad it is an empty tinted box. The read-only
+      connector shows lights named "Living room" and "Dining" (both off, 20/11) but not
+      their IDs, so `light.living_room` and `light.dining` stay unconfirmed live. Every
+      tile on Home, Lighting and Climate is now a pair: the tile while its entity
+      answers, otherwise a named No data card of the same size (`preview_tile`,
+      `preview_nodata`). The frontend reads a missing entity as `unknown`
+      (`validate-condition.ts`), so `state_not: [unavailable, unknown]` covers it.
+      The Home weather card names itself (天氣 Weather · 無資料 No data); the live
+      Living Room temperature read `unknown` on 20/11 and now shows its No data card.
+    - **Uneven camera slots.** 2914b09 split each camera into a 4-unit name cell and an
+      8-unit picture; with mixed states the halves drew a picture, a broken image, the
+      warning card or text. Now one slot per camera (12 units × 3 rows: two across on
+      the iPad, one on a phone, about the mockup's 2.6 : 1 frame): the picture, or a
+      named card in words, Offline or State unknown (which covers a missing camera).
+      The picture claims no state — an idle entity is not proof that the stream plays;
+      only the camera dialog shows that.
+    - **Footer.** Home Assistant's footer is sticky in the page's flow, so the last cards
+      clear it at the end of the scroll (8 px simulated, 32 px where the page fits).
+      While the page is at rest it covers the bottom of the last cards on the trial's
+      iPad view (Home Assistant's header and sidebar showing): Lighting 33 / 40 px,
+      Cameras 64 px; on the kiosk iPad Lighting fits and Cameras is 11 px over.
+      Nothing changed for it: the light tiles need two rows for their brightness bar,
+      and the camera frame was chosen over a fit with letterboxed pictures.
+    - **Unchanged:** the working dashboards and catalogues, the Night card and its
+      three targets (until their live IDs are confirmed), every control.
+13. **Second trial: the owner's photos (20/11/26 07:29-07:30, `7370ad7` imported).**
+    Five wall-iPad photos (Home, Rooms, Lighting, Climate, Cameras). Most of item 12
+    held on the device: the weather card named itself, the living-room temperature
+    showed its No data card, Rooms and Climate read honestly, the tab bar sat at the
+    bottom. Two things did not:
+    - **Cards vanished instead of saying No data.** Home and Lighting lost the Living
+      room and Dining lights entirely (no tile, no No data card); Cameras showed only
+      Front door and Stockroom. **Cause:** this instance's frontend sends visibility
+      conditions to Home Assistant Core (`subscribe_condition`;
+      `condition-evaluator-controller.ts` on the frontend's dev branch). Core errors
+      on an entity it does not have, and the frontend then hides the card whichever
+      way the condition is written. 20260826.7, read for item 12, evaluated them in
+      the browser and read a missing entity as `unknown`. So every card that must
+      speak for a missing entity is now **self-hiding** instead: a markdown card with
+      `show_empty: false` whose template renders only in the dark case
+      (`_self_hiding`; templates read a missing entity as `unknown` in both
+      versions). That covers the No data cards, the camera Offline / State unknown
+      cards and the door's "not reporting" banner. Tiles and pictures keep their
+      conditions: a missing ID hides them in both versions, which is wanted.
+      `ha_layout.visible()` models both behaviours (`missing="hide"` by default, as
+      seen on the Green); the tests run both, and the trial-shaped sample now follows
+      the photos — the 7370ad7 render reproduces them.
+    - **Entity IDs not on the instance.** Rooms says 無資料 for `light.living_room` and
+      `light.dining` while the read-only connector reads lights named "Living room"
+      and "Dining" as off, and the East wall, South wall and Pet feeder cameras as
+      idle: those devices exist under other IDs. North wall is not exposed to the
+      connector. Six IDs to confirm in Settings → Entities: the two lights and four
+      cameras. The 05/09 export is still the authority for what this repository may
+      write; it is stale for these six. Night's three targets are unchanged until the
+      owner confirms them; meanwhile it reaches only Ray's room light.
+    - **Also:** picture names drop "· 點擊查看畫面 Tap to view" for a chevron (it was cut
+      off on the trial iPad).
+    - **Working dashboards, not changed here:** `components.camera_card` (PR #16's
+      Offline twin) uses the same condition pair, so on this instance a working
+      camera slot whose ID is missing vanishes the same way. Recorded for the owner.
+
 ## V3-024 · 18/11/26 · Release preview integration: PR #16's cameras with one named, readable top bar
 
 **Status:** owner brief (18/11/26, "CasaRay V3 release preparation"), against the gate

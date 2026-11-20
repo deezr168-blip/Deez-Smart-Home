@@ -281,6 +281,210 @@ def band_note(view):
     return half, big
 
 
+CJK = re.compile(r"[㐀-鿿]")
+LATIN = re.compile(r"[A-Za-z]")
+# What the preview's own words claim. None may appear when nothing answered.
+PREVIEW_DARK_FORBIDDEN = ["已開", "已關", "在線", "有動靜", "暫無動作", "需要清潔濾網", "暫時唔使清潔",
+                          "冇設定定時", "運行中", r"\bOn\b", r"\bOff\b", r"\bOnline\b", "Movement", "No motion",
+                          "needs cleaning", "No cleaning needed", "No timer set", "Running"]
+PREVIEW_ACTIONS = {"light.turn_on", "light.turn_off"}   # the existing, owner-approved light actions only
+# V3-026 (owner, 20/11/26): the preview may also use these custom cards, and the
+# native entities card that auto-entities fills; nothing else.
+PREVIEW_TYPES = NATIVE_TYPES | {"entities"} | C.PREVIEW_CUSTOM
+PREVIEW_ROOT = {"kiosk_mode": {"hide_header", "hide_sidebar"},
+                "wallpanel": {"enabled", "hide_toolbar", "hide_sidebar", "fullscreen", "idle_time",
+                              "image_url", "cards"}}
+READ_ACTIONS = {None, "none", "more-info", "navigate"}
+
+
+def custom_problems(view):
+    """V3-026: what each owner-approved custom card on a page may do."""
+    bad = []
+    cards = list(walk_cards(view))
+    hashes = {c["hash"] for c in cards if c.get("type") == "custom:bubble-card" and c.get("card_type") == "pop-up"}
+    links = {n for n in nav_paths(view) if n.startswith("#")}
+    if hashes != links:
+        bad.append(f"pop-ups {sorted(hashes)} vs '#' links {sorted(links)}")
+    for c in cards:
+        t = c.get("type")
+        if t == "custom:bubble-card":
+            label = c.get("name", "")
+            if not bilingual(str(label)):
+                bad.append(f"bubble name not bilingual: {label!r}")
+            if c.get("card_type") == "pop-up":
+                continue
+            if c.get("card_type") != "button":
+                bad.append(f"bubble card_type {c.get('card_type')!r}")
+                continue
+            e = str(c.get("entity", ""))
+            kind = c.get("button_type", "switch")          # Bubble's default is a switch: it toggles
+            if kind == "slider":
+                if not e.startswith("light."):
+                    bad.append(f"slider on a non-light: {e}")
+            elif kind in ("state", "name"):
+                acts = [(c.get("tap_action") or {}).get("action"),
+                        ((c.get("button_action") or {}).get("tap_action") or {}).get("action")]
+                if any(a not in READ_ACTIONS for a in acts):
+                    bad.append(f"reading {e} acts: {acts}")
+            else:
+                bad.append(f"bubble {e}: button_type {kind!r} acts")
+            if c.get("sub_button"):
+                bad.append(f"bubble {e}: sub-buttons are not reviewed")
+        elif t == "custom:advanced-camera-card":
+            for cam in c.get("cameras", []):
+                if not str(cam.get("camera_entity", "")).startswith("camera."):
+                    bad.append(f"acc camera without a camera_entity: {cam}")
+                if not bilingual(str(cam.get("title", ""))):
+                    bad.append(f"acc title not bilingual: {cam.get('title')!r}")
+            if "menu" in c or "ptz" in str(c):
+                bad.append("acc menu or PTZ settings are not reviewed")
+        elif t == "custom:power-flow-card-plus":
+            for k, ent in (c.get("entities") or {}).items():
+                if not bilingual(str(ent.get("name", ""))):
+                    bad.append(f"power flow {k} name not bilingual")
+        elif t == "custom:apexcharts-card":
+            for se in c.get("series", []):
+                if not bilingual(str(se.get("name", ""))):
+                    bad.append(f"apex series name not bilingual: {se.get('name')!r}")
+        elif t == "custom:auto-entities":
+            for rule in (c.get("filter") or {}).get("include", []):
+                if set(rule) - {"domain", "state"}:
+                    bad.append(f"auto-entities filter beyond domain/state: {rule}")
+            if not bilingual(str((c.get("card") or {}).get("title", ""))):
+                bad.append("auto-entities title not bilingual")
+            if not c.get("else"):
+                bad.append("auto-entities with no else card: an empty list would say nothing")
+    return bad
+
+
+def root_problems(dash, export):
+    """V3-026: the preview's dashboard-level settings of Kiosk Mode and WallPanel."""
+    bad = []
+    for key, allowed in PREVIEW_ROOT.items():
+        if key in dash and set(dash[key]) - allowed:
+            bad.append(f"{key}: unreviewed options {sorted(set(dash[key]) - allowed)}")
+    km = dash.get("kiosk_mode") or {}
+    if km and km != {"hide_header": True, "hide_sidebar": True}:
+        bad.append(f"kiosk_mode is not the legacy dashboard's settings: {km}")
+    wp = dash.get("wallpanel") or {}
+    if wp.get("hide_toolbar") or wp.get("hide_sidebar"):
+        bad.append("wallpanel hides chrome too: leave that to Kiosk Mode")
+    normal, attrs = R.scenarios()["normal"]
+    dark = R.scenarios()["dark"][0]
+    for c in wp.get("cards", []):
+        if c.get("type") != "markdown":
+            bad.append(f"wallpanel info card {c.get('type')!r} is not reviewed")
+            continue
+        for e in B.entities_in(c):
+            if e not in export:
+                bad.append(f"wallpanel: {e} not in the export")
+        try:
+            txt = R.env_for(normal, attrs).from_string(c["content"]).render()
+            dtxt = R.env_for(dark, {}).from_string(c["content"]).render()
+        except Exception as e:  # noqa: BLE001
+            bad.append(f"wallpanel template: {type(e).__name__}")
+            continue
+        if not bilingual(re.sub(r"<[^>]+>", " ", txt)):
+            bad.append(f"wallpanel card not bilingual: {txt[:40]!r}")
+        hits = [w for w in PREVIEW_DARK_FORBIDDEN if re.search(w, re.sub(r"<[^>]+>", " ", dtxt))]
+        if hits:
+            bad.append(f"wallpanel dark says {hits}")
+    return bad
+
+
+def bilingual(text):
+    return bool(CJK.search(text) and LATIN.search(text))
+
+
+def preview_problems(view, spec, export, own_paths, own_base, working_paths, working_base, tabs):
+    """The bilingual design preview (V3-025), one page. Returns {check: [problems]}."""
+    foot = (view.get("footer") or {}).get("card")
+    cards = list(walk_cards(view)) + (list(walk_cards(foot, True)) if foot else [])
+    out = {k: [] for k in ("types", "entities", "links", "actions", "tiles", "tabs", "bilingual",
+                           "bands", "dark", "renders", "custom")}
+    out["types"] = sorted({c["type"] for c in cards} - PREVIEW_TYPES)
+    out["custom"] = custom_problems(view)
+    popups = {c["hash"] for c in cards if c.get("type") == "custom:bubble-card" and c.get("card_type") == "pop-up"}
+    out["entities"] = sorted(e for e in B.entities_in(view) if e not in export)
+    for n in nav_paths(view):
+        if n.startswith("#"):
+            if n not in popups:   # a hash opens a Bubble Card pop-up on this page (V3-026)
+                out["links"].append(n)
+            continue
+        part = n.strip("/").split("/")
+        if len(part) != 2:
+            out["links"].append(n)
+        elif part[0] == own_base:
+            if part[1] not in own_paths:
+                out["links"].append(n)
+        elif part[0] == working_base:
+            # a working page that shares a preview page's name would make the
+            # repository gate read every working link as internal (see c5247b3)
+            if part[1] not in working_paths or part[1] in own_paths:
+                out["links"].append(n)
+        else:
+            out["links"].append(n)
+    for a in actions(view):
+        tgt = (a.get("target") or {}).get("entity_id")
+        tgts = tgt if isinstance(tgt, list) else [tgt]
+        if a.get("perform_action") not in PREVIEW_ACTIONS or not all(str(t).startswith("light.") for t in tgts):
+            out["actions"].append(f"{a.get('perform_action')} -> {tgt}")
+    for c in cards:
+        if c.get("type") != "tile" or not acting(c) or c["entity"].startswith("light."):
+            continue
+        # a read-only domain's details dialog has no control (the working views' rule)
+        if C.effective_tile_actions(c) == ("more-info", "none") and c["entity"].split(".")[0] in C.READ_ONLY_DOMAINS:
+            continue
+        out["tiles"].append(c["entity"])
+    if not foot or foot.get("type") != "grid":
+        out["tabs"].append("no tab bar in the footer")
+    else:
+        btns = foot.get("cards", [])
+        want = spec.get("tab", view["path"])
+        tinted = [b for b in btns if b.get("color")]
+        if [b["tap_action"].get("navigation_path", "").rsplit("/", 1)[-1] or view["path"] for b in btns] != \
+                [t[0] for t in tabs]:
+            out["tabs"].append("tabs differ from the manifest's")
+        if len(tinted) != 1:
+            out["tabs"].append(f"{len(tinted)} tinted tabs")
+        for b, (path, _, _) in zip(btns, tabs):
+            here = path == view["path"]
+            act = b["tap_action"].get("action")
+            if here != (act == "none"):
+                out["tabs"].append(f"{path}: inert={act == 'none'} on page {view['path']}")
+            if bool(b.get("color")) != (path == want):
+                out["tabs"].append(f"{path}: tinted={bool(b.get('color'))}, current tab is {want}")
+    for c in cards:
+        label = c.get("heading") if c.get("type") == "heading" else c.get("name") if c.get("type") == "button" else None
+        if label is not None and not bilingual(str(label)):
+            out["bilingual"].append(str(label))
+    heads, holes, clamps = band_problems(view, spec)
+    out["bands"] = heads + holes + clamps
+    normal, attrs = R.scenarios()["normal"]
+    dark = R.scenarios()["dark"][0]
+    for c in cards:
+        if c.get("type") != "markdown":
+            continue
+        try:
+            txt = R.env_for(normal, attrs).from_string(c["content"]).render()
+            dtxt = R.env_for(dark, {}).from_string(c["content"]).render()
+        except Exception as e:  # noqa: BLE001 — a template that cannot render is a broken card
+            out["renders"].append(f"{type(e).__name__}: {str(e)[:60]}")
+            continue
+        # a self-hiding card (show_empty: false) is read where it shows, and must show somewhere
+        hides = c.get("show_empty") is False
+        if hides and not txt and not dtxt:
+            out["renders"].append("self-hiding card empty in both the fixture and the dark: never shows")
+        for t in ([x for x in (txt, dtxt) if x] if hides else [txt]):
+            if not bilingual(re.sub(r"<[^>]+>", " ", t)):
+                out["bilingual"].append(re.sub(r"\s+", " ", t)[:50])
+        plain = re.sub(r"<[^>]+>", " ", dtxt)
+        hits = [w for w in PREVIEW_DARK_FORBIDDEN if re.search(w, plain)]
+        if hits:
+            out["dark"].append(f"{hits} in: {re.sub(r'\s+', ' ', plain)[:60]}")
+    return out
+
+
 def validate(g: Gate):
     man = B.load_yaml(B.SRC / "manifest.yaml")
     base = man["baseline"]
@@ -437,6 +641,38 @@ def validate(g: Gate):
                     continue  # the patterns themselves
                 hits.append(f"{p.relative_to(ROOT)}:{rx.pattern[:20]}")
     g.check(not hits, "no secrets, tokens or private URLs in V3 files", str(hits[:5]))
+    # the bilingual design preview (V3-025): a separate dashboard, its own gate
+    pv = man.get("preview")
+    g.check(bool(pv) == ("preview" in rep), "preview: built exactly when the manifest declares it")
+    if pv:
+        pdash = yaml.safe_load((ROOT / pv["output"]).read_text(encoding="utf-8"))
+        wloc = next(l for l in man["locales"] if l["url_base"] == pv["working_url_base"])
+        wpaths = {v["path"] for v in yaml.safe_load((ROOT / wloc["output"]).read_text(encoding="utf-8"))["views"]}
+        g.check([v["path"] for v in pdash["views"]] == list(pv["views"]), "preview: its pages, in order")
+        g.check(not rep["preview"]["missing_keys"], "preview: no missing string keys",
+                str(rep["preview"]["missing_keys"]))
+        g.check(not any(pv["output"] == l["output"] for l in man["locales"])
+                and pv["url_base"] not in {l["url_base"] for l in man["locales"]},
+                "preview: its own file and url_path, never a working dashboard's")
+        g.check(not root_problems(pdash, export), "preview: Kiosk Mode and WallPanel settings as reviewed (V3-026)",
+                str(root_problems(pdash, export)[:4]))
+        what = {"types": "native card types, plus the owner-approved custom cards (V3-026)",
+                "custom": "each custom card only does what was reviewed (V3-026)", "entities": "every entity exists in the states export",
+                "links": "every link opens a preview page or a real working page (no shared names)",
+                "actions": "no action but the existing light actions",
+                "tiles": "only light tiles act; every other tile is read-only",
+                "tabs": "the tab bar: the manifest's tabs, one tinted, inert only on its own page",
+                "bilingual": "every heading, button and card says both languages",
+                "bands": "every band packs on the wall iPad and a phone, lit, answering and dark",
+                "dark": "nothing reassuring when nothing answers",
+                "renders": "every template renders (live-shaped and dark)"}
+        for v in pdash["views"]:
+            spec = B.load_yaml(B.SRC / "preview" / f"{v['path']}.yaml")
+            probs = preview_problems(v, spec, export, set(pv["views"]), pv["url_base"], wpaths,
+                                     pv["working_url_base"], pv["tabs"])
+            for k, msg in what.items():
+                g.check(not probs[k], f"preview[{v['path']}] {msg}", str(probs[k][:4]))
+
     for r in rep["views"]:
         if r["dark_at_export"] and r["kind"] == "native":
             g.note(f"[{r['path']}] {len(r['dark_at_export'])} entities were not 'ok' in the 05/09 export "

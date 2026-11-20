@@ -1,0 +1,44 @@
+# Bilingual preview — Rooms (V3-025). Each row says one verified reading. The
+# mockup shows lights for Kitchen, Garage and Guest, which have no light entity
+# (MOCKUP_COMPARISON_2026-11-19.md): their rows show what those rooms do report.
+# A row opens the room on the working dashboard, or — for the three rooms with lights —
+# that room's Bubble Card pop-up over this page (V3-026, owner-approved 20/11/26).
+path: rooms
+title: nav.rooms
+icon: mdi:bed-outline
+band_grid: 24
+sections:
+  - {c: preview_header, title_key: nav.rooms}
+  - span: 2
+    heading: pv.all_rooms
+    cards:
+      - {c: preview_room, name_key: room.living, icon: mdi:sofa-outline, target: '#living-room',
+         status: {entity: light.living_room, label_key: pv.lights, words: {"on": pv.on, "off": pv.off}}}
+      - {c: preview_room, name_key: room.kitchen, icon: mdi:pot-steam-outline, target: kitchen,
+         status: {entity: binary_sensor.k_motion_sensor_motion, label_key: pv.motion, words: {"on": pv.movement, "off": pv.quiet}}}
+      - {c: preview_room, name_key: room.dining, icon: mdi:table-chair, target: '#dining',
+         status: {entity: light.dining, label_key: pv.lights, words: {"on": pv.on, "off": pv.off}}}
+      - {c: preview_room, name_key: pv.room_parents, icon: mdi:bed-king-outline, target: parents-room,
+         status: {entity: sensor.bedroom_motion_sensor_temperature, label_key: pv.temperature, deg: 0}}
+      - {c: preview_room, name_key: pv.room_ray, icon: mdi:bed-outline, target: '#ray-room',
+         status: {entity: light.bedroom_bedroom, label_key: pv.lights, words: {"on": pv.on, "off": pv.off}}}
+      - {c: preview_room, name_key: room.garage, icon: mdi:garage-variant, target: garage,
+         status: {entity: sensor.g_monitor_freezer_p110m_current_consumption, label_key: pv.freezer, value: 0}}
+      - {c: preview_room, name_key: pv.room_guest, icon: mdi:bed-single-outline, target: guest-room, columns: full,
+         status: {entity: switch.g_printer_p100, label_key: pv.printer, words: {"on": pv.on, "off": pv.off}}}
+  # the pop-ups: hidden until a row opens one. Lights are sliders (the same light
+  # controls as Lighting); readings open their details and nothing else
+  - span: 2
+    cards:
+      - {c: preview_bubble_room, hash: '#living-room', name_key: room.living, icon: mdi:sofa-outline,
+         lights: [[light.living_room, pv.light_living]],
+         readings: [[sensor.living_room_living_hue_hue_sensor_temperature, pv.temperature, mdi:thermometer],
+                    [binary_sensor.living_room_living_hue_hue_sensor_motion, pv.living_motion, mdi:motion-sensor],
+                    [binary_sensor.f_contact_sensor_door, room.front_door, mdi:door]]}
+      # binary_sensor.living_room_living_room_motion is the Dining motion sensor (export: "Dining
+      # Room Motion Sensor Motion", area Dining) despite its ID
+      - {c: preview_bubble_room, hash: '#dining', name_key: room.dining, icon: mdi:table-chair,
+         lights: [[light.dining, pv.light_dining]],
+         readings: [[binary_sensor.living_room_living_room_motion, pv.dining_motion, mdi:motion-sensor]]}
+      - {c: preview_bubble_room, hash: '#ray-room', name_key: pv.room_ray, icon: mdi:bed-outline,
+         lights: [[light.bedroom_bedroom, pv.light_ray], [light.bedroom_nightlight, pv.light_night]]}

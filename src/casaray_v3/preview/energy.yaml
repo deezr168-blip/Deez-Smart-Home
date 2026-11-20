@@ -1,0 +1,23 @@
+# Bilingual preview — Energy (V3-026, owner-approved custom cards 20/11/26).
+# Power Flow Card Plus and ApexCharts on the two measured power sensors: the Fronius
+# inverter's AC power (solar) and Powerpal (grid import, not whole-house use —
+# ENTITY_MAPPING). There is no export or consumption sensor, so the flow card's
+# "Home" is a sum and reads high while exporting; the caveat says so beside it.
+path: energy
+title: nav.energy
+icon: mdi:lightning-bolt-outline
+band_grid: 24
+tab: more
+sections:
+  - {c: preview_header, title_key: nav.energy}
+  - span: 1
+    heading: pv.power_now
+    cards:
+      - {c: preview_power_flow, solar: sensor.primo_5_0_1_1_ac_power, grid_import: sensor.powerpal_gateway_powerpal_power}
+  - span: 1
+    heading: pv.today
+    cards:
+      - {c: preview_apex_today, solar: sensor.primo_5_0_1_1_ac_power, grid_import: sensor.powerpal_gateway_powerpal_power}
+  - span: 2
+    cards:
+      - {c: preview_about, title_key: pv.home_power, body_key: pv.home_caveat, columns: full}
