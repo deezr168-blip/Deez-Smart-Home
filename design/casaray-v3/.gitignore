@@ -3,3 +3,7 @@
 # docs/mockups/ (owner renders) and artifacts/screenshots/ (live captures),
 # and a prototype render is neither.
 screenshots/*.png
+
+# HACS recommendation mockups (hacs/mockups/make_mockups.py): regenerated, not committed
+hacs/mockups/out/
+hacs/mockups/*.png
