@@ -507,13 +507,38 @@ def camera_summary(ctx, cams, columns=12, rows="auto"):
     return markdown(head + "**{{ " + ctx.jt("cam.summary", a="ns.a", b="ns.b", c="ns.c") + " }}**\n" + lines, columns, rows)
 
 
-def camera_card(ctx, entity, name_key, subview, columns=6, rows=4):
+def camera_card(ctx, entity, name_key, subview=None, columns=6, rows=4, full_screen="subview",
+                offline=False, battery=None):
+    """A camera's picture. full_screen: 'subview' opens its V2 page (the
+    custom:webrtc-camera card); 'more-info' opens Home Assistant's own camera
+    dialog, whose live stream needs no custom card.
+
+    offline: Home Assistant draws a dark camera as a broken image with no word
+    (hui-image.ts), so the slot gets a twin of the same size that says Offline
+    in words, and shows instead of the picture while the camera entity is
+    unavailable. Exactly one of the two is visible, so the grid keeps its
+    shape. `battery` adds the camera's battery reading to that card: a camera
+    whose battery answers while its stream does not is a stream problem, not
+    a dead camera."""
     ctx.use(entity)
-    return {"type": "picture-entity", "entity": entity, "name": ctx.t(name_key),
-            "camera_view": "auto", "show_state": False, "show_name": True,
-            "tap_action": {"action": "navigate", "navigation_path": ctx.link(subview)},
-            "hold_action": {"action": "none"},
-            "grid_options": grid(columns, rows)}
+    tap = ({"action": "more-info"} if full_screen == "more-info" else
+           {"action": "navigate", "navigation_path": ctx.link(subview)})
+    pic = {"type": "picture-entity", "entity": entity, "name": ctx.t(name_key),
+           "camera_view": "auto", "show_state": False, "show_name": True,
+           "tap_action": tap, "hold_action": {"action": "none"},
+           "grid_options": grid(columns, rows)}
+    if not offline:
+        return pic
+    pic["visibility"] = [{"condition": "state", "entity": entity, "state_not": "unavailable"}]
+    body = "**" + ctx.t(name_key) + "** · **" + ctx.t("s.offline") + "**\n" + ctx.t("cam.no_stream")
+    if battery:
+        ctx.use(battery)
+        b = "states('" + battery + "')"
+        body += (" · {{ (" + ctx.jt("cam.battery", v="(" + b + " | float) | round(0) | int") + ") if "
+                 + b + " | is_number else " + jstr(ctx.t("cam.no_battery")) + " }}")
+    twin = markdown(body, columns, rows)
+    twin["visibility"] = [{"condition": "state", "entity": entity, "state": "unavailable"}]
+    return [pic, twin]
 
 
 def chip_cameras(ctx, ents):

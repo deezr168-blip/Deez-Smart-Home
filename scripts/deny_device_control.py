@@ -33,6 +33,7 @@ BLOCKED = re.compile(
     r"|HassMediaPause|HassMediaUnpause|HassMediaNext|HassMediaPrevious"
     r"|HassMediaSearchAndPlay|HassMediaPlayerMute|HassMediaPlayerUnmute"
     r"|HassBroadcast"
+    r"|media_player__play_media"
     r"|HassCancelAllTimers"
     r"|HassListAddItem|HassListCompleteItem|HassListRemoveItem"
     r")$"

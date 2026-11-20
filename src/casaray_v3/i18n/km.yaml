@@ -523,3 +523,11 @@ rs.printer_on: "ម៉ាស៊ីនបោះពុម្ពបើក"
 rs.printer_off: "ម៉ាស៊ីនបោះពុម្ពបិទ"
 rs.freezer: "ទូកក {v}"
 rs.ac: "ម៉ាស៊ីនត្រជាក់ {mode}"
+
+# Cameras (V3-014)
+cam.no_stream: "Home Assistant មិនទទួលបានវីដេអូទេ"
+cam.battery: "ថ្ម {v}%"
+cam.no_battery: "គ្មានការអានថ្ម"
+cam.privacy_of: "ឯកជនភាព {name}"
+cam.motion_of: "ការចាប់សញ្ញាចលនា {name}"
+cam.live_note: "ចុចលើកាមេរ៉ាដើម្បីមើលផ្ទាល់ក្នុង Home Assistant ដែលអាចពង្រីកពេញអេក្រង់។ ទំព័រកាមេរ៉ានៅក្រោម «ទំព័រផ្សេងទៀត» ប្រើកាត WebRTC Camera ដែលត្រូវការការដំឡើង HACS នោះនៅលើ Green។"

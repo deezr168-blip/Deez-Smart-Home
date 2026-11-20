@@ -203,7 +203,7 @@ views:
               {{ (ns.p | join(' · ')) if ns.p else "គ្មានទិន្នន័យ" }}{{ (' · ' ~ (ns.d) ~ " មិនឆ្លើយតប") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: auto
+              rows: 2
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/living-room
@@ -213,7 +213,7 @@ views:
               {{ (ns.p | join(' · ')) if ns.p else "គ្មានទិន្នន័យ" }}{{ (' · ' ~ (ns.d) ~ " មិនឆ្លើយតប") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: auto
+              rows: 2
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/dining
@@ -223,7 +223,7 @@ views:
               {{ (ns.p | join(' · ')) if ns.p else "គ្មានទិន្នន័យ" }}{{ (' · ' ~ (ns.d) ~ " មិនឆ្លើយតប") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: auto
+              rows: 2
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/kitchen
@@ -233,7 +233,7 @@ views:
               {{ (ns.p | join(' · ')) if ns.p else "គ្មានទិន្នន័យ" }}{{ (' · ' ~ (ns.d) ~ " មិនឆ្លើយតប") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: auto
+              rows: 2
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/parents-room
@@ -243,7 +243,7 @@ views:
               {{ (ns.p | join(' · ')) if ns.p else "គ្មានទិន្នន័យ" }}{{ (' · ' ~ (ns.d) ~ " មិនឆ្លើយតប") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: auto
+              rows: 2
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/ray-bedroom
@@ -253,7 +253,7 @@ views:
               {{ (ns.p | join(' · ')) if ns.p else "គ្មានទិន្នន័យ" }}{{ (' · ' ~ (ns.d) ~ " មិនឆ្លើយតប") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: auto
+              rows: 2
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/garage
@@ -263,7 +263,7 @@ views:
               {{ (ns.p | join(' · ')) if ns.p else "គ្មានទិន្នន័យ" }}{{ (' · ' ~ (ns.d) ~ " មិនឆ្លើយតប") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: auto
+              rows: 2
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/guest-room
@@ -271,7 +271,7 @@ views:
             content: '**បន្ទប់ទាំងអស់**'
             grid_options:
               columns: 6
-              rows: auto
+              rows: 2
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/rooms
@@ -398,7 +398,7 @@ views:
               action: none
             grid_options:
               columns: 12
-              rows: 2
+              rows: 3
             name: បន្ទប់ឪពុកម្ដាយ
             state_content:
               - state
@@ -432,13 +432,27 @@ views:
             show_state: false
             show_name: true
             tap_action:
-              action: navigate
-              navigation_path: /casaray-v3-km/camera-front-door
+              action: more-info
             hold_action:
               action: none
             grid_options:
               columns: 12
               rows: 4
+            visibility:
+              - condition: state
+                entity: camera.front_door_live_view
+                state_not: unavailable
+          - type: markdown
+            content: |-
+              **ទ្វារមុខ** · **ដាច់បណ្ដាញ**
+              Home Assistant មិនទទួលបានវីដេអូទេ · {{ ("ថ្ម " ~ ((states('sensor.front_door_battery') | float) | round(0) | int) ~ "%") if states('sensor.front_door_battery') | is_number else "គ្មានការអានថ្ម" }}
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.front_door_live_view
+                state: unavailable
           - type: tile
             entity: binary_sensor.f_contact_sensor_door
             tap_action:
@@ -9525,13 +9539,195 @@ views:
           - type: markdown
             content: '{%- set ns = namespace(ok=0, on=0) -%}{%- for e in [''camera.front_door_live_view'',''camera.smart_pet_feeder'',''camera.tapo_c200_stockroom_hd_stream_direct'',''camera.tapo_c425_north_wall_hd_stream_direct'',''camera.tapo_c420_east_wall_hd_stream_direct'',''camera.tapo_c420_south_wall_hd_stream_direct''] -%}{%- set s = states(e) -%}{%- if s not in [''unavailable'',''unknown'',''none'',''''] -%}{%- set ns.ok = ns.ok + 1 -%}{%- if s in [''idle'',''streaming'',''recording''] -%}{%- set ns.on = ns.on + 1 -%}{%- endif -%}{%- endif -%}{%- endfor -%}{%- if ns.ok == 0 -%}កាមេរ៉ាដំណើរការ **គ្មានទិន្នន័យ**{%- else -%}កាមេរ៉ាដំណើរការ **{{ ns.on }}**{%- if ns.ok < 6 %} <small>{{ (ns.ok) ~ " ក្នុងចំណោម " ~ (6) ~ " កំពុងឆ្លើយតប" }}</small>{% endif -%}{%- endif -%}'
             grid_options:
-              columns: 12
+              columns: full
               rows: auto
       - type: grid
         column_span: 2
         cards:
           - type: heading
             heading: កាមេរ៉ា
+            heading_style: title
+            grid_options:
+              columns: full
+              rows: auto
+          - type: picture-entity
+            entity: camera.front_door_live_view
+            name: ទ្វារមុខ
+            camera_view: auto
+            show_state: false
+            show_name: true
+            tap_action:
+              action: more-info
+            hold_action:
+              action: none
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.front_door_live_view
+                state_not: unavailable
+          - type: markdown
+            content: |-
+              **ទ្វារមុខ** · **ដាច់បណ្ដាញ**
+              Home Assistant មិនទទួលបានវីដេអូទេ · {{ ("ថ្ម " ~ ((states('sensor.front_door_battery') | float) | round(0) | int) ~ "%") if states('sensor.front_door_battery') | is_number else "គ្មានការអានថ្ម" }}
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.front_door_live_view
+                state: unavailable
+          - type: picture-entity
+            entity: camera.tapo_c425_north_wall_hd_stream_direct
+            name: ជញ្ជាំងខាងជើង
+            camera_view: auto
+            show_state: false
+            show_name: true
+            tap_action:
+              action: more-info
+            hold_action:
+              action: none
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.tapo_c425_north_wall_hd_stream_direct
+                state_not: unavailable
+          - type: markdown
+            content: |-
+              **ជញ្ជាំងខាងជើង** · **ដាច់បណ្ដាញ**
+              Home Assistant មិនទទួលបានវីដេអូទេ · {{ ("ថ្ម " ~ ((states('sensor.tapo_c425_north_wall_battery') | float) | round(0) | int) ~ "%") if states('sensor.tapo_c425_north_wall_battery') | is_number else "គ្មានការអានថ្ម" }}
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.tapo_c425_north_wall_hd_stream_direct
+                state: unavailable
+          - type: picture-entity
+            entity: camera.tapo_c420_east_wall_hd_stream_direct
+            name: ជញ្ជាំងខាងកើត
+            camera_view: auto
+            show_state: false
+            show_name: true
+            tap_action:
+              action: more-info
+            hold_action:
+              action: none
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.tapo_c420_east_wall_hd_stream_direct
+                state_not: unavailable
+          - type: markdown
+            content: |-
+              **ជញ្ជាំងខាងកើត** · **ដាច់បណ្ដាញ**
+              Home Assistant មិនទទួលបានវីដេអូទេ · {{ ("ថ្ម " ~ ((states('sensor.tapo_camera_bcca_battery') | float) | round(0) | int) ~ "%") if states('sensor.tapo_camera_bcca_battery') | is_number else "គ្មានការអានថ្ម" }}
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.tapo_c420_east_wall_hd_stream_direct
+                state: unavailable
+          - type: picture-entity
+            entity: camera.tapo_c420_south_wall_hd_stream_direct
+            name: ជញ្ជាំងខាងត្បូង
+            camera_view: auto
+            show_state: false
+            show_name: true
+            tap_action:
+              action: more-info
+            hold_action:
+              action: none
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.tapo_c420_south_wall_hd_stream_direct
+                state_not: unavailable
+          - type: markdown
+            content: |-
+              **ជញ្ជាំងខាងត្បូង** · **ដាច់បណ្ដាញ**
+              Home Assistant មិនទទួលបានវីដេអូទេ · {{ ("ថ្ម " ~ ((states('sensor.tapo_c420_south_wall_battery') | float) | round(0) | int) ~ "%") if states('sensor.tapo_c420_south_wall_battery') | is_number else "គ្មានការអានថ្ម" }}
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.tapo_c420_south_wall_hd_stream_direct
+                state: unavailable
+          - type: picture-entity
+            entity: camera.tapo_c200_stockroom_hd_stream_direct
+            name: បន្ទប់ស្តុក
+            camera_view: auto
+            show_state: false
+            show_name: true
+            tap_action:
+              action: more-info
+            hold_action:
+              action: none
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.tapo_c200_stockroom_hd_stream_direct
+                state_not: unavailable
+          - type: markdown
+            content: |-
+              **បន្ទប់ស្តុក** · **ដាច់បណ្ដាញ**
+              Home Assistant មិនទទួលបានវីដេអូទេ
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.tapo_c200_stockroom_hd_stream_direct
+                state: unavailable
+          - type: picture-entity
+            entity: camera.smart_pet_feeder
+            name: ឧបករណ៍ដាក់ចំណីសត្វ
+            camera_view: auto
+            show_state: false
+            show_name: true
+            tap_action:
+              action: more-info
+            hold_action:
+              action: none
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.smart_pet_feeder
+                state_not: unavailable
+          - type: markdown
+            content: |-
+              **ឧបករណ៍ដាក់ចំណីសត្វ** · **ដាច់បណ្ដាញ**
+              Home Assistant មិនទទួលបានវីដេអូទេ
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.smart_pet_feeder
+                state: unavailable
+          - type: markdown
+            content: <small>ចុចលើកាមេរ៉ាដើម្បីមើលផ្ទាល់ក្នុង Home Assistant ដែលអាចពង្រីកពេញអេក្រង់។ ទំព័រកាមេរ៉ានៅក្រោម «ទំព័រផ្សេងទៀត» ប្រើកាត WebRTC Camera ដែលត្រូវការការដំឡើង HACS នោះនៅលើ Green។</small>
+            grid_options:
+              columns: full
+              rows: auto
+      - type: grid
+        column_span: 1
+        cards:
+          - type: heading
+            heading: ស្ថានភាពកាមេរ៉ា
             heading_style: title
             grid_options:
               columns: 12
@@ -9548,96 +9744,12 @@ views:
               - ឧបករណ៍ដាក់ចំណីសត្វ — **{{ ("ដាច់បណ្ដាញ" if states('camera.smart_pet_feeder') == 'unavailable' else ("មិនដឹងស្ថានភាព" if states('camera.smart_pet_feeder') in ['unknown','none',''] else "កំពុងដំណើរការ")) }}**
             grid_options:
               columns: 12
-              rows: auto
+              rows: 5
           - type: markdown
             content: <small>មិនទាន់មានកាមេរ៉ាណាភ្ជាប់ជាមួយឧបករណ៍ចាប់ចលនាដែលបានផ្ទៀងផ្ទាត់ទេ ដូច្នេះ V3 មិនបង្ហាញការប្រកាសអាសន្នតាមកាមេរ៉ាទេ។</small>
             grid_options:
               columns: 12
               rows: auto
-          - type: picture-entity
-            entity: camera.front_door_live_view
-            name: ទ្វារមុខ
-            camera_view: auto
-            show_state: false
-            show_name: true
-            tap_action:
-              action: navigate
-              navigation_path: /casaray-v3-km/camera-front-door
-            hold_action:
-              action: none
-            grid_options:
-              columns: 6
-              rows: 4
-          - type: picture-entity
-            entity: camera.tapo_c425_north_wall_hd_stream_direct
-            name: ជញ្ជាំងខាងជើង
-            camera_view: auto
-            show_state: false
-            show_name: true
-            tap_action:
-              action: navigate
-              navigation_path: /casaray-v3-km/camera-north-wall
-            hold_action:
-              action: none
-            grid_options:
-              columns: 6
-              rows: 4
-          - type: picture-entity
-            entity: camera.tapo_c420_east_wall_hd_stream_direct
-            name: ជញ្ជាំងខាងកើត
-            camera_view: auto
-            show_state: false
-            show_name: true
-            tap_action:
-              action: navigate
-              navigation_path: /casaray-v3-km/camera-east-wall
-            hold_action:
-              action: none
-            grid_options:
-              columns: 6
-              rows: 4
-          - type: picture-entity
-            entity: camera.tapo_c420_south_wall_hd_stream_direct
-            name: ជញ្ជាំងខាងត្បូង
-            camera_view: auto
-            show_state: false
-            show_name: true
-            tap_action:
-              action: navigate
-              navigation_path: /casaray-v3-km/camera-south-wall
-            hold_action:
-              action: none
-            grid_options:
-              columns: 6
-              rows: 4
-          - type: picture-entity
-            entity: camera.tapo_c200_stockroom_hd_stream_direct
-            name: បន្ទប់ស្តុក
-            camera_view: auto
-            show_state: false
-            show_name: true
-            tap_action:
-              action: navigate
-              navigation_path: /casaray-v3-km/camera-stockroom
-            hold_action:
-              action: none
-            grid_options:
-              columns: 6
-              rows: 4
-          - type: picture-entity
-            entity: camera.smart_pet_feeder
-            name: ឧបករណ៍ដាក់ចំណីសត្វ
-            camera_view: auto
-            show_state: false
-            show_name: true
-            tap_action:
-              action: navigate
-              navigation_path: /casaray-v3-km/camera-pet-feeder
-            hold_action:
-              action: none
-            grid_options:
-              columns: 6
-              rows: 4
       - type: grid
         column_span: 1
         cards:
@@ -9656,7 +9768,7 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
             name: ទ្វារមុខ
           - type: tile
@@ -9668,7 +9780,7 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
           - type: tile
             entity: sensor.tapo_c425_north_wall_battery
@@ -9679,7 +9791,7 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
             name: ជញ្ជាំងខាងជើង
           - type: tile
@@ -9691,7 +9803,7 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
             name: ជញ្ជាំងខាងកើត
           - type: tile
@@ -9703,7 +9815,7 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
             name: ជញ្ជាំងខាងត្បូង
           - type: tile
@@ -9715,16 +9827,16 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
       - type: grid
-        column_span: 1
+        column_span: 2
         cards:
           - type: heading
             heading: ឯកជនភាព និងការចាប់សញ្ញា
             heading_style: title
             grid_options:
-              columns: 12
+              columns: full
               rows: auto
           - type: tile
             entity: switch.front_door_motion_detection
@@ -9735,8 +9847,9 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
+            name: ការចាប់សញ្ញាចលនា ទ្វារមុខ
           - type: tile
             entity: switch.smart_pet_feeder_privacy_mode
             tap_action:
@@ -9746,8 +9859,9 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
+            name: ឯកជនភាព ឧបករណ៍ដាក់ចំណីសត្វ
           - type: tile
             entity: switch.tapo_c200_stockroom_privacy
             tap_action:
@@ -9757,8 +9871,9 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
+            name: ឯកជនភាព បន្ទប់ស្តុក
           - type: tile
             entity: switch.tapo_c425_north_wall_privacy
             tap_action:
@@ -9768,8 +9883,9 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
+            name: ឯកជនភាព ជញ្ជាំងខាងជើង
           - type: tile
             entity: switch.tapo_c420_east_wall_privacy
             tap_action:
@@ -9779,8 +9895,9 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
+            name: ឯកជនភាព ជញ្ជាំងខាងកើត
           - type: tile
             entity: switch.tapo_c420_south_wall_privacy
             tap_action:
@@ -9790,12 +9907,13 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
+            name: ឯកជនភាព ជញ្ជាំងខាងត្បូង
           - type: markdown
             content: <small>នៅទីនេះសម្រាប់មើលតែប៉ុណ្ណោះ។ ប្ដូរកុងតាក់ឯកជនភាព និងការចាប់សញ្ញានៅទិដ្ឋភាពកាមេរ៉ាចាស់។</small>
             grid_options:
-              columns: 12
+              columns: full
               rows: auto
       - type: grid
         column_span: 2
@@ -9804,7 +9922,7 @@ views:
             heading: ទំព័រផ្សេងទៀត
             heading_style: title
             grid_options:
-              columns: 12
+              columns: full
               rows: auto
           - type: button
             name: សន្តិសុខ
@@ -9815,8 +9933,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/security
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 6
+              rows: 2
           - type: button
             name: ទ្វារមុខ
             icon: mdi:doorbell-video
@@ -9826,8 +9944,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/camera-front-door
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 6
+              rows: 2
           - type: button
             name: ជញ្ជាំងខាងជើង
             icon: mdi:cctv
@@ -9837,8 +9955,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/camera-north-wall
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 6
+              rows: 2
           - type: button
             name: ជញ្ជាំងខាងកើត
             icon: mdi:cctv
@@ -9848,8 +9966,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/camera-east-wall
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 6
+              rows: 2
           - type: button
             name: ជញ្ជាំងខាងត្បូង
             icon: mdi:cctv
@@ -9859,8 +9977,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/camera-south-wall
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 6
+              rows: 2
           - type: button
             name: បន្ទប់ស្តុក
             icon: mdi:cctv
@@ -9870,8 +9988,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/camera-stockroom
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 6
+              rows: 2
           - type: button
             name: ឧបករណ៍ដាក់ចំណីសត្វ
             icon: mdi:paw
@@ -9881,8 +9999,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/camera-pet-feeder
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 6
+              rows: 2
           - type: button
             name: ទិដ្ឋភាព V2 ចាស់
             icon: mdi:history
@@ -9892,8 +10010,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/v2-cameras
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 6
+              rows: 2
   - type: sections
     title: Front Door
     path: camera-front-door

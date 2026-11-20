@@ -427,6 +427,90 @@ same shape every other non-Home native view already carries);
 the two new pages are the same pre-existing WARN class every other zh-Hans
 view already carries from its English-fallback convention, not a new one).
 
+## V3-014 · 15/11/26 · Camera slots that say Offline, a native full-screen tap, and a one-height top bar
+
+**Status:** owner request (15/11/26), prepared on `feature/casaray-v3-cameras-layout`, branched
+from `feature/casaray-v3-build` at `1a669a3`. DEVELOPMENT ONLY — NOT DEPLOYED. Waiting for the
+owner's approval before anything goes to the Green.
+
+1. **Baseline.** The live dashboard configuration could not be read from this session. No
+   computer is connected through Remote Control, and the Home Assistant connector reads entity
+   states, not dashboards. Neither the live export nor `casaray-v3-before-home-upgrade.yaml`
+   reached the session. The baseline is the repo at `7f16e79`. Before any deploy, the live
+   export is diffed against it, so edits made on the Green are not overwritten.
+2. **Camera audit.** Entity IDs and names come from the 05/09 export. "Live" means read
+   through the connector on 15/11; that gives state only, never playback.
+
+   | Slot | Entity (unchanged) | 05/09 export | Live 15/11 |
+   |---|---|---|---|
+   | Front door | `camera.front_door_live_view` (Ring) | ok | idle; battery 66 % |
+   | North wall | `camera.tapo_c425_north_wall_hd_stream_direct` (Tapo Control) | ok | idle; its battery and privacy entities unavailable |
+   | East wall | `camera.tapo_c420_east_wall_hd_stream_direct` (Tapo Control) | unavailable | unavailable |
+   | South wall | `camera.tapo_c420_south_wall_hd_stream_direct` (Tapo Control) | unavailable | unavailable |
+   | Stockroom | `camera.tapo_c200_stockroom_hd_stream_direct` (Tapo Control) | ok | idle |
+   | Pet feeder | `camera.smart_pet_feeder` | ok | not exposed to the connector, so unread |
+
+   - **No camera is remapped. No replacement entity exists.**
+   - Each C420 has a second device record. For East wall it is `tapo_camera_bcca_*`; for
+     South wall it uses the same name prefix.
+   - That record answers live: its battery reads 100 %, and its detection switches respond.
+   - In the export it has **no camera entity**, so there is nothing to stream from.
+   - The cameras answer, but Tapo Control's streams do not. The cause is not established
+     from here.
+3. **Full screen.**
+   - Every camera tap used to open its V2 page, which streams through `custom:webrtc-camera`.
+     That needs the WebRTC Camera integration from HACS and its front-end resource. On 02/11
+     Ray reported `/config/custom_components` missing and the Resources list empty.
+   - Tapo Control's cameras answer live now, so some custom components are back; whether
+     WebRTC Camera is among them is unknown.
+   - A tap now opens Home Assistant's own camera dialog. Its live view needs no custom card,
+     and its video can go full screen.
+   - The six V2 camera pages stay one tap away under More boards, with a note saying what
+     they need.
+4. **Offline in words, same size.**
+   - The installed frontend draws an unavailable camera as a broken image or a spinner, with
+     no state word (`hui-image.ts`, 20260826.7).
+   - Each camera slot is now a picture shown while the camera is not `unavailable`, plus a
+     same-size card shown only while it is. The card reads "*Name* · Offline", "No stream
+     from Home Assistant" and the camera's battery reading, or "No battery reading".
+   - An idle camera shows its picture.
+5. **Compact top bar** (views on `band_grid: 24`: Home, Cameras).
+   - A button showing an icon and a name is at least two rows. The current page's named rail
+     button was twice the height of the rest, which made the iPhone's oversized Home tile
+     and the gap before the chip strip.
+   - Now the rail is six icon-only buttons; the current one is inert, and the title names the
+     page.
+   - The title and clock are text-only markdown, each one heading split by a line break, so
+     no margin overflows the row.
+   - The result is one 56 px row on the wall iPad and two on a phone, every cell the same
+     height.
+   - The clock keeps the time above `DD/MM/YY`.
+   - The banner reads "Preview": it is the V3 Preview on the Green.
+   - Other views keep their top bar until they are reviewed.
+6. **Tightened against the preview**, measured on the frontend's own grid:
+   - Rooms are all two rows, and the shopping list is eight rows to match.
+   - Parents' room occupancy is three rows, and the air-con summary in Climate now is two,
+     closing the gaps beside Right now and Energy now.
+   - Cameras: two across on the wall iPad, one on a phone, Front door first.
+   - Camera health sits beside the batteries, and the privacy tiles are named by camera (the
+     friendly names were cut off).
+   - In the preview, with no horizontal scroll, clipped label or overflowing card on either
+     size: Home's paired sections end within 0, 12 and 25 px of each other, and Cameras'
+     within 1 px.
+7. **Gate.** On `band_grid: 24` views, packing is now checked with visibility applied, in
+   three states: the fixture, everything answering and everything dark. The compact top bar
+   is checked too. A test proves a half-size Offline card is caught.
+8. **Needs action on the Green** (not done from here):
+   - **East and South wall streams:** in Settings → Devices & services → Tapo Control, read
+     each C420 entry's error. That decides re-authentication, a new address, or re-adding the
+     camera through its hub.
+   - **The V2 camera pages:** they need the WebRTC Camera integration (HACS) and its resource.
+     Install it only if the owner wants those pages back.
+   - **North wall:** its battery and privacy entities went unavailable after 05/09 while its
+     camera still answers.
+
+---
+
 ## V3-013 · 14/11/26 · Home against the 14/09 wall render; two-column bands sized for the grid Home Assistant draws
 
 **Status:** owner request (14/11/26), implemented on

@@ -33,7 +33,7 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": ".*Hass.*",
+        "matcher": ".*(?:Hass|media_player__play_media$).*",
         "hooks": [
           {
             "type": "command",

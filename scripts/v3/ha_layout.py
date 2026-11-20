@@ -142,7 +142,39 @@ def place(sizes, n_units):
     return out, used, holes
 
 
-def section_holes(section, n_units, shown=None):
-    """Empty cells left by one section's cards (hidden cards take no space)."""
-    cards = [c for c in section.get("cards", []) if shown is None or shown(c)]
+def visible(card, states):
+    """A card's `visibility` conditions, as the frontend evaluates them, against
+    a {entity: state} map (a missing entity reads 'unknown'). Screen and user
+    conditions pass: a preview has no screen size or user to test."""
+    def ok(c):
+        k = c.get("condition")
+        s = states.get(c.get("entity"), "unknown") if c.get("entity") else None
+        if k == "state":
+            if "state" in c:
+                want = c["state"] if isinstance(c["state"], list) else [c["state"]]
+                return s in [str(x) for x in want]
+            if "state_not" in c:
+                no = c["state_not"] if isinstance(c["state_not"], list) else [c["state_not"]]
+                return s not in [str(x) for x in no]
+            return True
+        if k == "numeric_state":
+            try:
+                v = float(s)
+            except (TypeError, ValueError):
+                return False
+            return (c.get("above") is None or v > c["above"]) and (c.get("below") is None or v < c["below"])
+        if k == "and":
+            return all(ok(x) for x in c["conditions"])
+        if k == "or":
+            return any(ok(x) for x in c["conditions"])
+        if k == "not":
+            return not all(ok(x) for x in c["conditions"])
+        return True
+    return all(ok(c) for c in card.get("visibility") or [])
+
+
+def section_holes(section, n_units, states=None):
+    """Empty cells left by one section's cards. With `states`, cards whose
+    visibility conditions fail take no space, as on the device."""
+    cards = [c for c in section.get("cards", []) if states is None or visible(c, states)]
     return place([effective(c) for c in cards], n_units)[2]

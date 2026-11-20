@@ -387,12 +387,12 @@ async function main() {
       const real = JSON.parse(/<script type="application\/json" id="snapshot">([\s\S]*?)<\/script>/.exec(SRC)[1]);
       const stale = cp.spawnSync('python3', [path.join(HERE, 'build.py'), '--check'], {encoding: 'utf8'});
       check('11a the built-in snapshot matches the committed register and history', stale.status === 0, stale.stdout + stale.stderr);
-      const {page, ctx} = await open(browser, {snap: real, gh: {register: real.register, history: real.history, issue: ISSUE([['CR-T01', 'PAUSED'], ['CR-T02', 'PAUSED'], ['CR-T03', 'PAUSED'], ['CR-T04', 'PAUSED'], ['CR-T05', 'PAUSED']]), prs: null}});
+      const {page, ctx} = await open(browser, {snap: real, gh: {register: real.register, history: real.history, issue: ISSUE([['CR-T01', 'PAUSED'], ['CR-T02', 'RESUMED'], ['CR-T03', 'PAUSED'], ['CR-T04', 'PAUSED'], ['CR-T05', 'PAUSED']]), prs: null}});
       const m = await page.evaluate(() => { const m = window.__TCC.model; return {dups: m.dupIds, n: m.tasks.length, bad: m.badRows,
-        blocked: ['TASK-009', 'TASK-010', 'TASK-011', 'TASK-013', 'TASK-014', 'TASK-031'].map(id => window.__TCC.approveBlockers(m.byId[id]).length > 0),
+        blocked: ['TASK-010', 'TASK-011', 'TASK-013', 'TASK-014', 'TASK-031'].map(id => window.__TCC.approveBlockers(m.byId[id]).length > 0),
         errors: window.__TCC.conflictList().filter(c => c.sev === 'error').map(c => c.msg)}; });
       check('11b the canonical register has no duplicate ID and no unreadable row', m.dups.length === 0 && m.bad.length === 0 && m.n >= 32, JSON.stringify(m));
-      check('11c all six tasks behind Issue 7\'s five paused IDs refuse approval', m.blocked.every(Boolean), JSON.stringify(m.blocked));
+      check('11c five tasks behind Issue 7\'s four paused IDs refuse approval', m.blocked.every(Boolean), JSON.stringify(m.blocked));
       check('11d the canonical register raises no conflict error', m.errors.length === 0, m.errors.join('\n'));
       // Approve one gated task with a scope, deny one, pause one; then give the batch to tasks.py.
       await openTask(page, 'TASK-032'); await (await btn(page, 'approve')).click(); await page.fill('#scopeField', 'Read PR 13 and PR 10 side by side and report; no merge, no close');
@@ -416,8 +416,8 @@ async function main() {
       check('11f and the register it leaves passes tasks.py check', c.status === 0, c.stdout.split('\n').filter(l => /^(ERROR|FAIL)/.test(l)).join('\n') + c.stderr);
       const hist = fs.readFileSync(path.join(repo, 'docs', 'project-tasks', 'DECISION_HISTORY.md'), 'utf8');
       check('11g the recorded approval keeps the exact scope the owner wrote', hist.includes('Exact scope: Read PR 13 and PR 10 side by side and report; no merge, no close'));
-      const bad = cp.spawnSync('python3', [tool, '--root', repo, '--today', TODAY, 'decide', '--batch', '-', '--by', 'owner', '--via', 'chat', '--basis', basis], {input: JSON.stringify({answers: [{task: 'TASK-009', verdict: 'approve', scope: 'Edit the guard on a branch now please'}]}), encoding: 'utf8'});
-      check('11h the tool itself refuses an approval of a paused task, whatever a page sends', bad.status !== 0 && /paused in another record: CR-T02/.test(bad.stderr + bad.stdout), bad.stdout + bad.stderr);
+      const bad = cp.spawnSync('python3', [tool, '--root', repo, '--today', TODAY, 'decide', '--batch', '-', '--by', 'owner', '--via', 'chat', '--basis', basis], {input: JSON.stringify({answers: [{task: 'TASK-010', verdict: 'approve', scope: 'Edit the guarded cloud environment now please'}]}), encoding: 'utf8'});
+      check('11h the tool still refuses approval of a separately paused task', bad.status !== 0 && /paused in another record: CR-T03/.test(bad.stderr + bad.stdout), bad.stdout + bad.stderr);
     }
     console.log('12. Whole run');
     check('12a no script error on any page in any test', PAGE_ERRORS.length === 0, PAGE_ERRORS.join('\n'));

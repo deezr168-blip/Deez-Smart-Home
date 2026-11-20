@@ -10,6 +10,10 @@
 # (scripts/v3/ha_layout.py), so in every `span: 2` band below, `full` is the
 # whole band, 6 is a quarter, 12 is half. The gate checks each band packs
 # into whole rows on both.
+#
+# V3-014 (15/11/26): rooms of equal height, and the front-door camera with a
+# native full-screen tap and a same-size Offline card. Its icon-only top bar
+# gave way to V3-023's labelled one when the two met (V3-024, owner's choice).
 path: home
 title: nav.home
 icon: mdi:home-variant-outline
@@ -107,6 +111,7 @@ sections:
     heading: h.rooms
     cards:
       - c: room_tile
+        rows: 2      # every room the same height (V3-014)
         name_key: room.living
         target: living-room
         parts:
@@ -114,6 +119,7 @@ sections:
           - {entity: sensor.living_room_living_hue_hue_sensor_temperature, deg: 1}
           - {entity: binary_sensor.living_room_living_hue_hue_sensor_motion, words: {"on": rc.movement_word, "off": rc.quiet_word}}
       - c: room_tile
+        rows: 2      # every room the same height (V3-014)
         name_key: room.dining
         target: dining
         parts:
@@ -122,12 +128,14 @@ sections:
           - {entity: sensor.living_room_living_room_temperature, deg: 1}
           - {entity: binary_sensor.sensor_group_motion, words: {"on": rc.movement_word, "off": rc.quiet_word}}
       - c: room_tile
+        rows: 2      # every room the same height (V3-014)
         name_key: room.kitchen
         target: kitchen
         parts:
           - {entity: binary_sensor.k_motion_sensor_motion, words: {"on": rc.movement_word, "off": rc.quiet_word}}
           - {entity: binary_sensor.lg_fridge_door, words: {"on": rs.fridge_open, "off": rs.fridge_closed}}
       - c: room_tile
+        rows: 2      # every room the same height (V3-014)
         name_key: room.parents
         target: parents-room
         parts:
@@ -135,6 +143,7 @@ sections:
           - {entity: sensor.bedroom_motion_sensor_temperature, deg: 1}
           - {entity: climate.bedroom_parents_room_ac, ac: true}
       - c: room_tile
+        rows: 2      # every room the same height (V3-014)
         name_key: room.ray
         target: ray-bedroom
         parts:
@@ -142,17 +151,19 @@ sections:
           - entity: cover.aqara_roller_shade_driver_e1
             words: {open: rs.blind_open, closed: rs.blind_closed, opening: rs.blind_opening, closing: rs.blind_closing}
       - c: room_tile
+        rows: 2      # every room the same height (V3-014)
         name_key: room.garage
         target: garage
         parts:
           - {entity: sensor.g_monitor_freezer_p110m_current_consumption, value: 0, key: rs.freezer}
           - {entity: binary_sensor.g_monitor_freezer_p110m_overloaded, words: {"on": s.overloaded, "off": s.normal}}
       - c: room_tile
+        rows: 2      # every room the same height (V3-014)
         name_key: room.guest
         target: guest-room
         parts:
           - {entity: switch.g_printer_p100, words: {"on": rs.printer_on, "off": rs.printer_off}}
-      - {c: room_tile, name_key: nav.all_rooms, target: rooms, parts: []}
+      - {c: room_tile, name_key: nav.all_rooms, target: rooms, parts: [], rows: 2}
   - span: 1
     heading: h.shopping
     cards:
@@ -189,7 +200,7 @@ sections:
         entity: binary_sensor.bedroom_parents_room_ac_room_occupied
         name: {t: room.parents}
         columns: 12
-        rows: 2      # V2's size; pairs Who's home with Right now's height
+        rows: 3      # pairs Who's home with Right now's height (measured, V3-014)
         state_content: [state, last_changed]
 
   # BAND 7 — security, full width: what each camera says beside the front
@@ -207,7 +218,10 @@ sections:
           - {entity: camera.tapo_c420_south_wall_hd_stream_direct, name_key: room.south_wall}
           - {entity: camera.tapo_c200_stockroom_hd_stream_direct, name_key: room.stockroom}
           - {entity: camera.smart_pet_feeder, name_key: room.pet_feeder}
-      - {c: camera_card, entity: camera.front_door_live_view, name_key: room.front_door, subview: camera-front-door, columns: 12}
+      # A tap opens Home Assistant's own live view (no custom card needed); a
+      # same-size Offline card replaces the picture while the camera is dark.
+      - {c: camera_card, entity: camera.front_door_live_view, name_key: room.front_door, columns: 12,
+         full_screen: more-info, offline: true, battery: sensor.front_door_battery}
       - {c: sensor_tile, entity: binary_sensor.f_contact_sensor_door, name: {t: room.front_door}, columns: 6, nav: security, vertical: true}
       - {c: sensor_tile, entity: binary_sensor.m_contact_sensor_door, name: {t: room.parents}, columns: 6, nav: security, vertical: true}
       - {c: sensor_tile, entity: binary_sensor.b_contact_sensor_door, name: {t: room.backyard}, columns: 6, nav: security, vertical: true}

@@ -1,27 +1,59 @@
 # V3 Cameras — every V2 camera, its state in words (online / offline / state
-# unknown — never colour alone), stills via native picture-entity, and a tap
-# into the carried V2 camera subview, which keeps the custom:webrtc-camera
-# low-latency stream exactly as V2 has it. Privacy and detection switches are
-# READ-ONLY here (approval boundary: nothing in V3 may disable a camera).
+# unknown — never colour alone). Privacy and detection switches are READ-ONLY
+# here (approval boundary: nothing in V3 may disable a camera).
+#
+# V3-014 (15/11/26): on band_grid 24, two cameras across on the wall iPad and
+# one on a phone, Front door first. A tap opens Home Assistant's own camera
+# dialog (live view, full screen from its video), which needs no custom card;
+# the V2 camera pages (custom:webrtc-camera) stay one tap away under More
+# boards. A camera whose entity is unavailable shows a same-size card that
+# says Offline in words, because the native picture card draws a broken
+# image with no word. Entity mapping verified against the 05/09 export and
+# the live states read on 15/11 (DECISIONS.md V3-014): no camera is remapped.
 path: cameras
 title: nav.cameras
 icon: mdi:cctv
+band_grid: 24
 sections:
   - topbar: true
 
   - span: 2
     cards:
       - c: chips
+        columns: full
         parts:
           - c: chip_cameras
             ents: [camera.front_door_live_view, camera.smart_pet_feeder,
                    camera.tapo_c200_stockroom_hd_stream_direct, camera.tapo_c425_north_wall_hd_stream_direct,
                    camera.tapo_c420_east_wall_hd_stream_direct, camera.tapo_c420_south_wall_hd_stream_direct]
 
+  # The grid: half the band each (12 of 24) on the wall iPad, the full width
+  # on a phone; every slot four rows, picture or Offline card alike.
   - span: 2
     heading: h.cameras
     cards:
+      - {c: camera_card, entity: camera.front_door_live_view, name_key: room.front_door,
+         columns: 12, rows: 4, full_screen: more-info, offline: true, battery: sensor.front_door_battery}
+      - {c: camera_card, entity: camera.tapo_c425_north_wall_hd_stream_direct, name_key: room.north_wall,
+         columns: 12, rows: 4, full_screen: more-info, offline: true, battery: sensor.tapo_c425_north_wall_battery}
+      # East wall: the battery reading comes from the camera's second device
+      # record (export name "Tapo C420 - East Wall Battery"); its stream entity
+      # is the Tapo Control one, unavailable since at least 05/09.
+      - {c: camera_card, entity: camera.tapo_c420_east_wall_hd_stream_direct, name_key: room.east_wall,
+         columns: 12, rows: 4, full_screen: more-info, offline: true, battery: sensor.tapo_camera_bcca_battery}
+      - {c: camera_card, entity: camera.tapo_c420_south_wall_hd_stream_direct, name_key: room.south_wall,
+         columns: 12, rows: 4, full_screen: more-info, offline: true, battery: sensor.tapo_c420_south_wall_battery}
+      - {c: camera_card, entity: camera.tapo_c200_stockroom_hd_stream_direct, name_key: room.stockroom,
+         columns: 12, rows: 4, full_screen: more-info, offline: true}
+      - {c: camera_card, entity: camera.smart_pet_feeder, name_key: room.pet_feeder,
+         columns: 12, rows: 4, full_screen: more-info, offline: true}
+      - {c: note, key: cam.live_note, columns: full}
+
+  - span: 1
+    heading: h.camera_health
+    cards:
       - c: camera_summary
+        rows: 5      # pairs Camera health with the six battery rows beside it
         cams:
           - {entity: camera.front_door_live_view, name_key: room.front_door}
           - {entity: camera.tapo_c425_north_wall_hd_stream_direct, name_key: room.north_wall}
@@ -30,35 +62,38 @@ sections:
           - {entity: camera.tapo_c200_stockroom_hd_stream_direct, name_key: room.stockroom}
           - {entity: camera.smart_pet_feeder, name_key: room.pet_feeder}
       - {c: note, key: cam.alert_note}
-      - {c: camera_card, entity: camera.front_door_live_view, name_key: room.front_door, subview: camera-front-door}
-      - {c: camera_card, entity: camera.tapo_c425_north_wall_hd_stream_direct, name_key: room.north_wall, subview: camera-north-wall}
-      - {c: camera_card, entity: camera.tapo_c420_east_wall_hd_stream_direct, name_key: room.east_wall, subview: camera-east-wall}
-      - {c: camera_card, entity: camera.tapo_c420_south_wall_hd_stream_direct, name_key: room.south_wall, subview: camera-south-wall}
-      - {c: camera_card, entity: camera.tapo_c200_stockroom_hd_stream_direct, name_key: room.stockroom, subview: camera-stockroom}
-      - {c: camera_card, entity: camera.smart_pet_feeder, name_key: room.pet_feeder, subview: camera-pet-feeder}
-
   - span: 1
     heading: h.camera_batteries
     cards:
-      - {c: sensor_tile, entity: sensor.front_door_battery, name: {t: room.front_door}}
-      - {c: sensor_tile, entity: sensor.living_room_ringring_battery}
-      - {c: sensor_tile, entity: sensor.tapo_c425_north_wall_battery, name: {t: room.north_wall}}
-      - {c: sensor_tile, entity: sensor.tapo_camera_bcca_battery, name: {t: room.east_wall}}
-      - {c: sensor_tile, entity: sensor.tapo_c420_south_wall_battery, name: {t: room.south_wall}}
-      - {c: sensor_tile, entity: sensor.front_door_last_activity}
-  - span: 1
+      - {c: sensor_tile, entity: sensor.front_door_battery, name: {t: room.front_door}, columns: 12}
+      - {c: sensor_tile, entity: sensor.living_room_ringring_battery, columns: 12}
+      - {c: sensor_tile, entity: sensor.tapo_c425_north_wall_battery, name: {t: room.north_wall}, columns: 12}
+      - {c: sensor_tile, entity: sensor.tapo_camera_bcca_battery, name: {t: room.east_wall}, columns: 12}
+      - {c: sensor_tile, entity: sensor.tapo_c420_south_wall_battery, name: {t: room.south_wall}, columns: 12}
+      - {c: sensor_tile, entity: sensor.front_door_last_activity, columns: 12}
+
+  # Read-only, named by camera so no label is cut short (the entities'
+  # friendly names were).
+  - span: 2
     heading: h.camera_privacy
     cards:
-      - {c: readonly_tile, entity: switch.front_door_motion_detection}
-      - {c: readonly_tile, entity: switch.smart_pet_feeder_privacy_mode}
-      - {c: readonly_tile, entity: switch.tapo_c200_stockroom_privacy}
-      - {c: readonly_tile, entity: switch.tapo_c425_north_wall_privacy}
-      - {c: readonly_tile, entity: switch.tapo_c420_east_wall_privacy}
-      - {c: readonly_tile, entity: switch.tapo_c420_south_wall_privacy}
-      - {c: note, key: cam.privacy_note}
+      - {c: readonly_tile, entity: switch.front_door_motion_detection, columns: 12,
+         name: {c: fmt, key: cam.motion_of, name: {t: room.front_door}}}
+      - {c: readonly_tile, entity: switch.smart_pet_feeder_privacy_mode, columns: 12,
+         name: {c: fmt, key: cam.privacy_of, name: {t: room.pet_feeder}}}
+      - {c: readonly_tile, entity: switch.tapo_c200_stockroom_privacy, columns: 12,
+         name: {c: fmt, key: cam.privacy_of, name: {t: room.stockroom}}}
+      - {c: readonly_tile, entity: switch.tapo_c425_north_wall_privacy, columns: 12,
+         name: {c: fmt, key: cam.privacy_of, name: {t: room.north_wall}}}
+      - {c: readonly_tile, entity: switch.tapo_c420_east_wall_privacy, columns: 12,
+         name: {c: fmt, key: cam.privacy_of, name: {t: room.east_wall}}}
+      - {c: readonly_tile, entity: switch.tapo_c420_south_wall_privacy, columns: 12,
+         name: {c: fmt, key: cam.privacy_of, name: {t: room.south_wall}}}
+      - {c: note, key: cam.privacy_note, columns: full}
 
   - c: more_boards
     classic_of: cameras
+    band24: true
     items:
       - [security, nav.security, mdi:shield-home-outline]
       - [camera-front-door, room.front_door, mdi:doorbell-video]

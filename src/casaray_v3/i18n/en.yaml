@@ -523,3 +523,11 @@ rs.printer_on: "Printer on"
 rs.printer_off: "Printer off"
 rs.freezer: "Freezer {v}"
 rs.ac: "Air-con {mode}"
+
+# Cameras (V3-014)
+cam.no_stream: "No stream from Home Assistant"
+cam.battery: "Battery {v}%"
+cam.no_battery: "No battery reading"
+cam.privacy_of: "{name} privacy"
+cam.motion_of: "{name} motion detection"
+cam.live_note: "Tap a camera for Home Assistant's live view, which can go full screen. The camera pages under More boards use the WebRTC Camera card, which needs that HACS integration on the Green."

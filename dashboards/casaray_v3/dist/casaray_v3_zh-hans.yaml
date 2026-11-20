@@ -203,7 +203,7 @@ views:
               {{ (ns.p | join(' · ')) if ns.p else "无数据" }}{{ (' · ' ~ (ns.d) ~ " not reporting") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: auto
+              rows: 2
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-zh/living-room
@@ -213,7 +213,7 @@ views:
               {{ (ns.p | join(' · ')) if ns.p else "无数据" }}{{ (' · ' ~ (ns.d) ~ " not reporting") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: auto
+              rows: 2
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-zh/dining
@@ -223,7 +223,7 @@ views:
               {{ (ns.p | join(' · ')) if ns.p else "无数据" }}{{ (' · ' ~ (ns.d) ~ " not reporting") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: auto
+              rows: 2
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-zh/kitchen
@@ -233,7 +233,7 @@ views:
               {{ (ns.p | join(' · ')) if ns.p else "无数据" }}{{ (' · ' ~ (ns.d) ~ " not reporting") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: auto
+              rows: 2
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-zh/parents-room
@@ -243,7 +243,7 @@ views:
               {{ (ns.p | join(' · ')) if ns.p else "无数据" }}{{ (' · ' ~ (ns.d) ~ " not reporting") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: auto
+              rows: 2
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-zh/ray-bedroom
@@ -253,7 +253,7 @@ views:
               {{ (ns.p | join(' · ')) if ns.p else "无数据" }}{{ (' · ' ~ (ns.d) ~ " not reporting") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: auto
+              rows: 2
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-zh/garage
@@ -263,7 +263,7 @@ views:
               {{ (ns.p | join(' · ')) if ns.p else "无数据" }}{{ (' · ' ~ (ns.d) ~ " not reporting") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: auto
+              rows: 2
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-zh/guest-room
@@ -271,7 +271,7 @@ views:
             content: '**All rooms**'
             grid_options:
               columns: 6
-              rows: auto
+              rows: 2
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-zh/rooms
@@ -398,7 +398,7 @@ views:
               action: none
             grid_options:
               columns: 12
-              rows: 2
+              rows: 3
             name: 父母房
             state_content:
               - state
@@ -432,13 +432,27 @@ views:
             show_state: false
             show_name: true
             tap_action:
-              action: navigate
-              navigation_path: /casaray-v3-zh/camera-front-door
+              action: more-info
             hold_action:
               action: none
             grid_options:
               columns: 12
               rows: 4
+            visibility:
+              - condition: state
+                entity: camera.front_door_live_view
+                state_not: unavailable
+          - type: markdown
+            content: |-
+              **Front door** · **离线**
+              Home Assistant 没有收到视频流 · {{ ("电量 " ~ ((states('sensor.front_door_battery') | float) | round(0) | int) ~ "%") if states('sensor.front_door_battery') | is_number else "没有电量读数" }}
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.front_door_live_view
+                state: unavailable
           - type: tile
             entity: binary_sensor.f_contact_sensor_door
             tap_action:
@@ -9525,13 +9539,195 @@ views:
           - type: markdown
             content: '{%- set ns = namespace(ok=0, on=0) -%}{%- for e in [''camera.front_door_live_view'',''camera.smart_pet_feeder'',''camera.tapo_c200_stockroom_hd_stream_direct'',''camera.tapo_c425_north_wall_hd_stream_direct'',''camera.tapo_c420_east_wall_hd_stream_direct'',''camera.tapo_c420_south_wall_hd_stream_direct''] -%}{%- set s = states(e) -%}{%- if s not in [''unavailable'',''unknown'',''none'',''''] -%}{%- set ns.ok = ns.ok + 1 -%}{%- if s in [''idle'',''streaming'',''recording''] -%}{%- set ns.on = ns.on + 1 -%}{%- endif -%}{%- endif -%}{%- endfor -%}{%- if ns.ok == 0 -%}Cameras online **无数据**{%- else -%}Cameras online **{{ ns.on }}**{%- if ns.ok < 6 %} <small>{{ (ns.ok) ~ " of " ~ (6) ~ " reporting" }}</small>{% endif -%}{%- endif -%}'
             grid_options:
-              columns: 12
+              columns: full
               rows: auto
       - type: grid
         column_span: 2
         cards:
           - type: heading
             heading: Cameras
+            heading_style: title
+            grid_options:
+              columns: full
+              rows: auto
+          - type: picture-entity
+            entity: camera.front_door_live_view
+            name: Front door
+            camera_view: auto
+            show_state: false
+            show_name: true
+            tap_action:
+              action: more-info
+            hold_action:
+              action: none
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.front_door_live_view
+                state_not: unavailable
+          - type: markdown
+            content: |-
+              **Front door** · **离线**
+              Home Assistant 没有收到视频流 · {{ ("电量 " ~ ((states('sensor.front_door_battery') | float) | round(0) | int) ~ "%") if states('sensor.front_door_battery') | is_number else "没有电量读数" }}
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.front_door_live_view
+                state: unavailable
+          - type: picture-entity
+            entity: camera.tapo_c425_north_wall_hd_stream_direct
+            name: North wall
+            camera_view: auto
+            show_state: false
+            show_name: true
+            tap_action:
+              action: more-info
+            hold_action:
+              action: none
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.tapo_c425_north_wall_hd_stream_direct
+                state_not: unavailable
+          - type: markdown
+            content: |-
+              **North wall** · **离线**
+              Home Assistant 没有收到视频流 · {{ ("电量 " ~ ((states('sensor.tapo_c425_north_wall_battery') | float) | round(0) | int) ~ "%") if states('sensor.tapo_c425_north_wall_battery') | is_number else "没有电量读数" }}
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.tapo_c425_north_wall_hd_stream_direct
+                state: unavailable
+          - type: picture-entity
+            entity: camera.tapo_c420_east_wall_hd_stream_direct
+            name: East wall
+            camera_view: auto
+            show_state: false
+            show_name: true
+            tap_action:
+              action: more-info
+            hold_action:
+              action: none
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.tapo_c420_east_wall_hd_stream_direct
+                state_not: unavailable
+          - type: markdown
+            content: |-
+              **East wall** · **离线**
+              Home Assistant 没有收到视频流 · {{ ("电量 " ~ ((states('sensor.tapo_camera_bcca_battery') | float) | round(0) | int) ~ "%") if states('sensor.tapo_camera_bcca_battery') | is_number else "没有电量读数" }}
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.tapo_c420_east_wall_hd_stream_direct
+                state: unavailable
+          - type: picture-entity
+            entity: camera.tapo_c420_south_wall_hd_stream_direct
+            name: South wall
+            camera_view: auto
+            show_state: false
+            show_name: true
+            tap_action:
+              action: more-info
+            hold_action:
+              action: none
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.tapo_c420_south_wall_hd_stream_direct
+                state_not: unavailable
+          - type: markdown
+            content: |-
+              **South wall** · **离线**
+              Home Assistant 没有收到视频流 · {{ ("电量 " ~ ((states('sensor.tapo_c420_south_wall_battery') | float) | round(0) | int) ~ "%") if states('sensor.tapo_c420_south_wall_battery') | is_number else "没有电量读数" }}
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.tapo_c420_south_wall_hd_stream_direct
+                state: unavailable
+          - type: picture-entity
+            entity: camera.tapo_c200_stockroom_hd_stream_direct
+            name: Stockroom
+            camera_view: auto
+            show_state: false
+            show_name: true
+            tap_action:
+              action: more-info
+            hold_action:
+              action: none
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.tapo_c200_stockroom_hd_stream_direct
+                state_not: unavailable
+          - type: markdown
+            content: |-
+              **Stockroom** · **离线**
+              Home Assistant 没有收到视频流
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.tapo_c200_stockroom_hd_stream_direct
+                state: unavailable
+          - type: picture-entity
+            entity: camera.smart_pet_feeder
+            name: Pet feeder
+            camera_view: auto
+            show_state: false
+            show_name: true
+            tap_action:
+              action: more-info
+            hold_action:
+              action: none
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.smart_pet_feeder
+                state_not: unavailable
+          - type: markdown
+            content: |-
+              **Pet feeder** · **离线**
+              Home Assistant 没有收到视频流
+            grid_options:
+              columns: 12
+              rows: 4
+            visibility:
+              - condition: state
+                entity: camera.smart_pet_feeder
+                state: unavailable
+          - type: markdown
+            content: <small>点击摄像头可打开 Home Assistant 的实时画面，并可全屏。“更多面板”中的摄像头页面使用 WebRTC Camera 卡片，需要在 Green 上安装该 HACS 集成。</small>
+            grid_options:
+              columns: full
+              rows: auto
+      - type: grid
+        column_span: 1
+        cards:
+          - type: heading
+            heading: 摄像头状态
             heading_style: title
             grid_options:
               columns: 12
@@ -9548,96 +9744,12 @@ views:
               - Pet feeder — **{{ ("离线" if states('camera.smart_pet_feeder') == 'unavailable' else ("状态未知" if states('camera.smart_pet_feeder') in ['unknown','none',''] else "Online")) }}**
             grid_options:
               columns: 12
-              rows: auto
+              rows: 5
           - type: markdown
             content: <small>No camera has a verified motion entity mapped to it yet, so V3 shows no per-camera alert state.</small>
             grid_options:
               columns: 12
               rows: auto
-          - type: picture-entity
-            entity: camera.front_door_live_view
-            name: Front door
-            camera_view: auto
-            show_state: false
-            show_name: true
-            tap_action:
-              action: navigate
-              navigation_path: /casaray-v3-zh/camera-front-door
-            hold_action:
-              action: none
-            grid_options:
-              columns: 6
-              rows: 4
-          - type: picture-entity
-            entity: camera.tapo_c425_north_wall_hd_stream_direct
-            name: North wall
-            camera_view: auto
-            show_state: false
-            show_name: true
-            tap_action:
-              action: navigate
-              navigation_path: /casaray-v3-zh/camera-north-wall
-            hold_action:
-              action: none
-            grid_options:
-              columns: 6
-              rows: 4
-          - type: picture-entity
-            entity: camera.tapo_c420_east_wall_hd_stream_direct
-            name: East wall
-            camera_view: auto
-            show_state: false
-            show_name: true
-            tap_action:
-              action: navigate
-              navigation_path: /casaray-v3-zh/camera-east-wall
-            hold_action:
-              action: none
-            grid_options:
-              columns: 6
-              rows: 4
-          - type: picture-entity
-            entity: camera.tapo_c420_south_wall_hd_stream_direct
-            name: South wall
-            camera_view: auto
-            show_state: false
-            show_name: true
-            tap_action:
-              action: navigate
-              navigation_path: /casaray-v3-zh/camera-south-wall
-            hold_action:
-              action: none
-            grid_options:
-              columns: 6
-              rows: 4
-          - type: picture-entity
-            entity: camera.tapo_c200_stockroom_hd_stream_direct
-            name: Stockroom
-            camera_view: auto
-            show_state: false
-            show_name: true
-            tap_action:
-              action: navigate
-              navigation_path: /casaray-v3-zh/camera-stockroom
-            hold_action:
-              action: none
-            grid_options:
-              columns: 6
-              rows: 4
-          - type: picture-entity
-            entity: camera.smart_pet_feeder
-            name: Pet feeder
-            camera_view: auto
-            show_state: false
-            show_name: true
-            tap_action:
-              action: navigate
-              navigation_path: /casaray-v3-zh/camera-pet-feeder
-            hold_action:
-              action: none
-            grid_options:
-              columns: 6
-              rows: 4
       - type: grid
         column_span: 1
         cards:
@@ -9656,7 +9768,7 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
             name: Front door
           - type: tile
@@ -9668,7 +9780,7 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
           - type: tile
             entity: sensor.tapo_c425_north_wall_battery
@@ -9679,7 +9791,7 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
             name: North wall
           - type: tile
@@ -9691,7 +9803,7 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
             name: East wall
           - type: tile
@@ -9703,7 +9815,7 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
             name: South wall
           - type: tile
@@ -9715,16 +9827,16 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
       - type: grid
-        column_span: 1
+        column_span: 2
         cards:
           - type: heading
             heading: Privacy and detection
             heading_style: title
             grid_options:
-              columns: 12
+              columns: full
               rows: auto
           - type: tile
             entity: switch.front_door_motion_detection
@@ -9735,8 +9847,9 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
+            name: Front door动作检测
           - type: tile
             entity: switch.smart_pet_feeder_privacy_mode
             tap_action:
@@ -9746,8 +9859,9 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
+            name: Pet feeder隐私模式
           - type: tile
             entity: switch.tapo_c200_stockroom_privacy
             tap_action:
@@ -9757,8 +9871,9 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
+            name: Stockroom隐私模式
           - type: tile
             entity: switch.tapo_c425_north_wall_privacy
             tap_action:
@@ -9768,8 +9883,9 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
+            name: North wall隐私模式
           - type: tile
             entity: switch.tapo_c420_east_wall_privacy
             tap_action:
@@ -9779,8 +9895,9 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
+            name: East wall隐私模式
           - type: tile
             entity: switch.tapo_c420_south_wall_privacy
             tap_action:
@@ -9790,12 +9907,13 @@ views:
             hold_action:
               action: none
             grid_options:
-              columns: 6
+              columns: 12
               rows: auto
+            name: South wall隐私模式
           - type: markdown
             content: <small>Read-only here. Privacy and detection switches change from the classic Cameras view.</small>
             grid_options:
-              columns: 12
+              columns: full
               rows: auto
       - type: grid
         column_span: 2
@@ -9804,7 +9922,7 @@ views:
             heading: 更多面板
             heading_style: title
             grid_options:
-              columns: 12
+              columns: full
               rows: auto
           - type: button
             name: 安防
@@ -9815,8 +9933,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-zh/security
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 6
+              rows: 2
           - type: button
             name: Front door
             icon: mdi:doorbell-video
@@ -9826,8 +9944,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-zh/camera-front-door
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 6
+              rows: 2
           - type: button
             name: North wall
             icon: mdi:cctv
@@ -9837,8 +9955,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-zh/camera-north-wall
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 6
+              rows: 2
           - type: button
             name: East wall
             icon: mdi:cctv
@@ -9848,8 +9966,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-zh/camera-east-wall
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 6
+              rows: 2
           - type: button
             name: South wall
             icon: mdi:cctv
@@ -9859,8 +9977,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-zh/camera-south-wall
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 6
+              rows: 2
           - type: button
             name: Stockroom
             icon: mdi:cctv
@@ -9870,8 +9988,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-zh/camera-stockroom
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 6
+              rows: 2
           - type: button
             name: Pet feeder
             icon: mdi:paw
@@ -9881,8 +9999,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-zh/camera-pet-feeder
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 6
+              rows: 2
           - type: button
             name: Classic V2 view
             icon: mdi:history
@@ -9892,8 +10010,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-zh/v2-cameras
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 6
+              rows: 2
   - type: sections
     title: Front Door
     path: camera-front-door
