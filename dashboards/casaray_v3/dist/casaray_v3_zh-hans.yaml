@@ -288,7 +288,7 @@ views:
             entity: todo.shopping_list
             grid_options:
               columns: 12
-              rows: 5
+              rows: 8
       - type: grid
         column_span: 1
         cards:
@@ -398,7 +398,7 @@ views:
               action: none
             grid_options:
               columns: 12
-              rows: 3
+              rows: 2
             name: 父母房
             state_content:
               - state

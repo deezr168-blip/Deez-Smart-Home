@@ -167,9 +167,10 @@ sections:
   - span: 1
     heading: h.shopping
     cards:
-      # V3-023: five rows sits level with the Rooms column in Cantonese, the
-      # priority locale (a six-row list left a 43 px gap under Rooms there).
-      - {c: todo, entity: todo.shopping_list, rows: 5}
+      # Eight rows: level with the Rooms column now that every room is two
+      # rows (V3-014). V3-023's five rows were measured against rooms of
+      # automatic height and left a 192 px hole once both landed (V3-024).
+      - {c: todo, entity: todo.shopping_list, rows: 8}
 
   # BAND 6 — right now | who's home. The render's left column: the weather,
   # then the two monitored plugs and the solar forecast with the footnote
@@ -200,7 +201,7 @@ sections:
         entity: binary_sensor.bedroom_parents_room_ac_room_occupied
         name: {t: room.parents}
         columns: 12
-        rows: 3      # pairs Who's home with Right now's height (measured, V3-014)
+        rows: 2      # V3-024: three rows (V3-014) outgrew Right now once V3-023 shortened it
         state_content: [state, last_changed]
 
   # BAND 7 — security, full width: what each camera says beside the front

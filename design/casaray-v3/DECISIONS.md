@@ -6,6 +6,54 @@ and `ha-deploy` are unaffected by everything here.
 
 ---
 
+## V3-024 · 20/11/26 · PR #16 meets PR #21: the labelled top bar stays, Home re-measured on the combination
+
+**Status:** owner decision (20/11/26, "Approve"): bring the updated
+`feature/casaray-v3-build` (PR #16 merged 20/11, PR #20 merged 18/11) into
+PR #21 and keep V3-023's large, labelled navigation. PR #21 stays draft.
+DEVELOPMENT ONLY — NOT DEPLOYED; no merge, no live change.
+
+1. **Top bar.** PR #16 (V3-014) gave the `band_grid: 24` views (Home,
+   Cameras) a compact icon-only rail; PR #21 (V3-023) gave every page a header
+   cell and six named buttons. V3-023's rail is now on every page, Home and
+   Cameras included; `topbar(compact=…)` and its `app.preview_banner` string
+   are gone. Everything else V3-014 did stays: the Offline camera slots, the
+   native full-screen tap, Cameras on the 24-unit grid, named privacy tiles,
+   rooms of one height.
+2. **Two heights changed, because each side was measured against a Home the
+   other side had since changed.** Simulated preview, pinned frontend
+   metrics (`preview_view.py --shots`), wall iPad 1180 × 820:
+
+   | Pair | V3-023 alone (yue) | Merged as resolved | After |
+   |---|---|---|---|
+   | Rooms · Shopping list | 21 px | 192 px | **0 px** |
+   | Right now · Who's home | 31 px | 33 px | **31 px** |
+   | Energy now · Climate now | 11 px | 11 px | **11 px** |
+
+   - Shopping list **8 rows** (V3-014's value). V3-023's 5 were measured
+     against rooms of automatic height; with V3-014's two-row rooms they left
+     192 px, exactly three rows.
+   - Parents' room occupancy tile back to **2 rows**. V3-014 raised it to 3 to
+     match a Right now that also held Solar expected; V3-023 moved that tile
+     to Energy now, so 3 overshot by 33 px. 2 reproduces V3-023's own 31 px.
+     No integer row count closes it (64 px a row).
+   - Climate now keeps V3-023's version (named air-con plus two real
+     temperature tiles), not V3-014's `rows: 2`; the 11 px is V3-023's figure.
+3. **Measured result.** Wall: en 0 · 31 · 32 px, yue 0 · 31 · 11 px,
+   zh-Hans 0 · 31 · 32 px; page 2588 px (en), 2566 px (yue). Phone
+   (390 × 844): no holes, no clipped label, no overflowing card in any of the
+   three; page 4698 px, **128 px taller** than with the 5-row list (the list
+   shows three more rows on a phone). Khmer not previewed (no Khmer font
+   here). All simulated; nothing seen on a device.
+4. **Tests.** The two `CompactTopBar` tests that pinned the icon-only rail
+   now assert the same properties of the labelled one on Home and Cameras;
+   replacing the rail with icon-only buttons still fails them (mutation run).
+   No test was skipped or removed.
+5. **Still outstanding:** the HA schema validation of
+   `docs/casaray-v3/proposals/rubbish_reminder_automation.yaml`; a live check
+   of `weather.forecast_home`; every height above on the wall iPad and an
+   iPhone.
+
 ## V3-023 · 18/11/26 · PR #21: regression on the new head; top bar and Home, measured against the frontend's own rules
 
 **Status:** owner brief (18/11/26): finish PR #21's validation round, then
