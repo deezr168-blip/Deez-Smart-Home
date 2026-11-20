@@ -6,6 +6,66 @@ and `ha-deploy` are unaffected by everything here.
 
 ---
 
+## V3-026 · 20/11/26 · Seven custom cards approved for the preview, and built into it
+
+**Status: owner decision (20/11/26).** Asked what "Approve" covered, the owner chose
+**Adopt cards in V3** and **Merge PR #27**, and for the cards **"Six plus WallPanel"**:
+Kiosk Mode, Bubble Card, Advanced Camera Card, auto-entities, ApexCharts, Power Flow Card
+Plus and WallPanel. PR #27 (the verified recommendation,
+`hacs/HACS_RECOMMENDATIONS_2026-11-20.md`) was merged into `casaray-v3-design` as
+`de983d9`. Built on the preview branch only; the working dashboards stay native and
+byte-identical.
+
+1. **What the preview now uses, and where:**
+   - **Kiosk Mode** (dashboard level): `kiosk_mode: {hide_header: true, hide_sidebar: true}`,
+     the legacy dashboard's settings. Add `?disable_km` to the URL to get the chrome back.
+   - **WallPanel** (dashboard level): after 120 s idle, the photos in Home Assistant's
+     media folder (`media-source://media_source/`) with an info box: time over DD/MM/YY,
+     the parents' room temperature, the front door. `hide_toolbar`/`hide_sidebar` false,
+     so chrome is Kiosk Mode's job alone.
+   - **Bubble Card** (Rooms): Living room, Dining and Ray room open as pop-ups
+     (`#living-room`, `#dining`, `#ray-room`) over the page. Lights are sliders, the same
+     light controls as Lighting. Readings are `button_type: state` with more-info taps.
+     The other four rooms still open their working pages.
+   - **Advanced Camera Card** (Cameras): one card, the same six cameras in the same order,
+     live in a grid three across at most. A camera whose entity is unavailable errors in its
+     own cell (`always_error_if_entity_unavailable`). It replaces V3-025's six native slots;
+     Home's front-door slot stays native.
+   - **Power Flow Card Plus + ApexCharts** (new Energy page, under More): solar
+     (`sensor.primo_5_0_1_1_ac_power`) and grid import
+     (`sensor.powerpal_gateway_powerpal_power`). The flow card's Home is the card's sum; the
+     caveat sits under it in both languages.
+   - **auto-entities** (new House health page, under More): lights, switches, cameras and
+     sensors whose state is `unavailable`, each with an `else` card when none is.
+2. **Gate:** `validate_dashboard.py` allows exactly these five custom types plus the native
+   `entities` card that auto-entities fills (`PREVIEW_TYPES`). `custom_problems()` holds each
+   to what was reviewed:
+   - sliders only on lights; readings only read;
+   - every pop-up linked from its page and every `#` link to a pop-up;
+   - bilingual labels;
+   - auto-entities filters on domain and state only.
+
+   `root_problems()` holds Kiosk Mode and WallPanel to the reviewed options. The layout
+   model counts a closed pop-up as taking no space.
+3. **Tests:** `tests/v3/test_preview_hacs_v3_026.py` (15); V3-025's camera tests now cover
+   Home's front-door slot, plus one that pins the camera card to the same six cameras.
+4. **What makes it work on the Green (the owner's, not done here):**
+   - Install the seven through HACS: NemesisRE/kiosk-mode, Clooos/Bubble-Card,
+     dermotduffy/advanced-camera-card, thomasloven/lovelace-auto-entities,
+     RomRider/apexcharts-card, flixlix/power-flow-card-plus, j-a-n/lovelace-wallpanel. Then
+     reload the browser.
+   - On 02/11 the Resources list was empty. Until each card is installed, Home Assistant draws
+     "Custom element doesn't exist" in its place. Kiosk Mode and WallPanel are simply ignored.
+   - WallPanel needs photos in Media → My media.
+   - The six entity IDs of V3-025 item 13 must be confirmed: the Living room and Dining
+     sliders and four camera cells depend on them.
+5. **Not verified:** nothing was seen on a device; every option is from the cards' own docs
+   (PR #27).
+6. **Task register:** the owner-decisions register (`docs/project-tasks/`) is outside
+   `design/casaray-v3/` and was not written. This entry is the record.
+
+---
+
 ## V3-025 · 19/11/26 · The bilingual mockups as a separate preview dashboard: Home, Rooms, Lighting, Climate, Cameras
 
 **Status:** owner brief (19/11/26): use the supplied bilingual mockups as the
