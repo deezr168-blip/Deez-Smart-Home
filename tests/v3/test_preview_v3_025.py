@@ -110,7 +110,8 @@ class Bilingual(unittest.TestCase):
         self.assertEqual(c.pair("s.no_data"), ("無資料", "No data"))   # the mockups' word, by alias
         self.assertIn("' ' ~", c.jt("chip.reporting", n="1", m="2"))    # a live value said in both
         self.assertEqual(c.link("rooms"), f"/{PV['url_base']}/rooms")
-        self.assertEqual(c.link("energy"), f"/{PV['working_url_base']}/energy")
+        self.assertEqual(c.link("security"), f"/{PV['working_url_base']}/security")
+        self.assertEqual(c.link("energy"), f"/{PV['url_base']}/energy")   # a preview page since V3-026
 
     def test_every_page_title_heading_and_tab_says_both(self):
         for v in preview()["views"]:
@@ -174,9 +175,10 @@ class Honest(unittest.TestCase):
         self.assertIn("前門感應器無回應", silent["content"])
 
     def test_unavailable_camera_gives_its_slot_to_an_offline_card(self):
-        cam = cards(page("cameras"))
-        for e in CAMS:
-            pic, twin = pairs(page("cameras"), e)
+        # Home's front door; the Cameras page is one Advanced Camera Card since V3-026
+        cam = cards(page("home"))
+        for e in CAMS[:1]:
+            pic, twin = pairs(page("home"), e)
             self.assertEqual(pic, next(c for c in cam if c["type"] == "picture-entity" and c["entity"] == e))
             st = dict(self.normal, **{e: "unavailable"})
             self.assertEqual((L.visible(pic, st), L.visible(twin, st)), (False, True), e)
@@ -295,7 +297,7 @@ class Trial(unittest.TestCase):
                 self.assertTrue(c["content"].startswith("{%- if"), path)   # empty unless the case holds
 
     def test_every_camera_one_slot_one_size_in_every_state(self):
-        slots = [(page("cameras"), e) for e in CAMS] + [(page("home"), CAMS[0])]
+        slots = [(page("home"), CAMS[0])]   # the Cameras page's slots became one Advanced Camera Card (V3-026)
         for view, e in slots:
             pic, twin = pairs(view, e)
             self.assertEqual((pic["type"], twin["type"]), ("picture-entity", "markdown"), e)
@@ -322,16 +324,14 @@ class Trial(unittest.TestCase):
         names = [c for c in cards(page("cameras")) if c["type"] == "markdown" and "mdi:video-outline" in c["content"]]
         self.assertEqual(names, [])   # 2914b09's separate 4-unit name cells are gone
 
-    def test_mixed_camera_states_pack_with_no_holes(self):
-        cam = next(s for s in page("cameras")["sections"] if any(c.get("type") == "picture-entity" for c in s["cards"]))
-        mix = dict(self.normal, **dict(zip(CAMS, ["idle", "unavailable", "unknown", "streaming", "idle", "unavailable"])))
-        photo = missing(mix, *CAMS[1:4], CAMS[5])   # the 20/11 photos: four camera IDs not on the instance
-        for st in (mix, missing(mix, CAMS[1], CAMS[3]), photo, R.scenarios()["dark"][0]):
-            shown = [c for c in cam["cards"] if L.visible(c, st)]
-            self.assertEqual(len(shown), len(CAMS))
-            self.assertEqual({L.effective(c) for c in shown}, {(12, 3)})
-            for where, resolved in (("wall iPad", 2), ("phone", 1)):
-                self.assertEqual(L.section_holes(cam, L.units(cam.get("column_span", 1), resolved), st), 0, where)
+    def test_cameras_page_is_one_camera_card_over_the_same_six(self):
+        """V3-026 replaced the six native slots with one Advanced Camera Card: the
+        same cameras, in the same order, each erroring in its own cell when dark."""
+        acc = [c for c in cards(page("cameras")) if c["type"] == "custom:advanced-camera-card"]
+        self.assertEqual(len(acc), 1)
+        self.assertEqual([c["camera_entity"] for c in acc[0]["cameras"]], CAMS)
+        self.assertTrue(all(c["always_error_if_entity_unavailable"] for c in acc[0]["cameras"]))
+        self.assertFalse([c for c in cards(page("cameras")) if c["type"] == "picture-entity"])
 
     def test_light_and_reading_tiles_give_way_to_a_named_no_data_card(self):
         names = {"light.living_room": ("客廳", "Living room"), "light.dining": ("飯廳", "Dining"),
