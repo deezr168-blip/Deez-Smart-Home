@@ -184,6 +184,9 @@ def visible(card, states, missing="hide"):
                 return None
             return all(vals) if k == "and" else any(vals) if k == "or" else not all(vals)
         return True
+    # a Bubble Card pop-up is hidden until its hash is opened (V3-026)
+    if card.get("type") == "custom:bubble-card" and card.get("card_type") == "pop-up":
+        return False
     for c in card.get("visibility") or []:
         if ok(c) is not True:
             return False

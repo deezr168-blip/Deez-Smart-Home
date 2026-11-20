@@ -277,7 +277,13 @@ def build_preview(man, cats, export, ctx_theme):
                      "dark_at_export": sorted(e for e in entities_in(v)
                                               if e in export and export[e]["availability"] != "ok"),
                      "unverified": sorted(e for e in entities_in(v) if e not in export)})
-    dash = {"title": ctx.t(pv["title"]), "views": views}
+    dash = {"title": ctx.t(pv["title"])}
+    # dashboard-level settings of owner-approved custom cards (V3-026): Kiosk Mode, WallPanel
+    for key in ("kiosk_mode", "wallpanel"):
+        if key in pv:
+            ctx.used = set()
+            dash[key] = resolve(pv[key], ctx)
+    dash["views"] = views
     text = PREVIEW_HEADER.format(title=ctx.s.t(pv["title"]), primary=pv["primary"],
                                  secondary=pv["secondary"], url_base=pv["url_base"],
                                  working=pv["working_url_base"]) + dump(dash)

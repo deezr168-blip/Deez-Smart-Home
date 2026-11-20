@@ -1062,7 +1062,9 @@ def preview_room(ctx, name_key, icon, target, status, columns=12):
                '<td align="right" valign="middle">' + la + "：<b>" + va + "</b><br><small>" + lb + vb + "</small></td>"
                '<td width="16" align="right" valign="middle">›</td></tr></table>')
     card = markdown(content, columns)
-    card["tap_action"] = {"action": "navigate", "navigation_path": ctx.link(target)}
+    # '#hash' opens that Bubble Card pop-up on this page (V3-026); a page name opens the page
+    card["tap_action"] = {"action": "navigate",
+                          "navigation_path": target if str(target).startswith("#") else ctx.link(target)}
     return card
 
 
@@ -1274,3 +1276,119 @@ def preview_link(ctx, label_key, target, icon=None, columns=12, rows=1):
     card = markdown("**" + a + "** " + b + " ›", columns, rows)   # no icon: it outgrows a 56 px row
     card["tap_action"] = {"action": "navigate", "navigation_path": ctx.link(target)}
     return card
+
+
+# ---------------------------------------------------------------- custom cards (V3-026)
+# Owner decision 20/11/26: the preview may use seven HACS cards (Kiosk Mode,
+# Bubble Card, Advanced Camera Card, auto-entities, ApexCharts, Power Flow Card
+# Plus, WallPanel). Every option below is in the card's own README or docs/
+# (design/casaray-v3/hacs/HACS_RECOMMENDATIONS_2026-11-20.md). Nothing is
+# installed by this: until the owner installs each card on the Green, Home
+# Assistant draws "Custom element doesn't exist" in its place.
+
+PREVIEW_CUSTOM = {"custom:bubble-card", "custom:advanced-camera-card", "custom:auto-entities",
+                  "custom:apexcharts-card", "custom:power-flow-card-plus"}
+
+
+def _bubble(entity, name, icon=None, kind="state"):
+    """A Bubble Card button. kind: 'slider' (a light: the slider sets its
+    brightness, the icon toggles it) or 'state' (a reading: a tap on the icon or
+    the button opens its details, nothing else acts)."""
+    b = {"type": "custom:bubble-card", "card_type": "button", "button_type": kind, "entity": entity, "name": name}
+    if icon:
+        b["icon"] = icon
+    if kind != "slider":
+        b["tap_action"] = {"action": "more-info"}
+        b["button_action"] = {"tap_action": {"action": "more-info"}}
+    return b
+
+
+def preview_bubble_room(ctx, hash, name_key, icon, lights=(), readings=()):
+    """A room's Bubble Card pop-up (standalone format, v3.2.0+): hidden until
+    its hash is opened (the Rooms row navigates to it), then a sheet over the
+    page with the room's lights as sliders and its readings as state buttons.
+    lights: [[entity, name_key], ...]; readings: [[entity, name_key, icon], ...]."""
+    if not str(hash).startswith("#"):
+        raise SystemExit(f"bubble pop-up hash must start with '#': {hash!r}")
+    cards = []
+    for e, k in lights:
+        if not e.startswith("light."):
+            raise SystemExit(f"bubble slider for a non-light: {e}")
+        ctx.use(e)
+        cards.append(_bubble(e, ctx.t(k), kind="slider"))
+    for e, k, ic in readings:
+        ctx.use(e)
+        cards.append(_bubble(e, ctx.t(k), ic, kind="state"))
+    return {"type": "custom:bubble-card", "card_type": "pop-up", "hash": hash, "name": ctx.t(name_key),
+            "icon": icon, "cards": cards, "grid_options": grid("full")}
+
+
+def preview_acc(ctx, cameras, grid_max_columns=3):
+    """Advanced Camera Card: every camera live in one fixed grid. A camera whose
+    entity is unavailable errors in its own cell (always_error_if_entity_unavailable)
+    instead of spinning. cameras: [[camera entity, name_key], ...]."""
+    cams = []
+    for e, k in cameras:
+        ctx.use(e)
+        cams.append({"camera_entity": e, "title": ctx.t(k), "always_error_if_entity_unavailable": True})
+    return {"type": "custom:advanced-camera-card", "cameras": cams,
+            "live": {"display": {"mode": "grid", "grid_max_columns": grid_max_columns}},
+            "grid_options": grid("full")}
+
+
+def preview_power_flow(ctx, solar, grid_import, columns=12):
+    """Power Flow Card Plus: solar and grid import. With no home or export entity
+    the card adds the sources up for Home, which reads high while the panels
+    export (pv.home_caveat says so beside it)."""
+    ctx.use([solar, grid_import])
+    return {"type": "custom:power-flow-card-plus",
+            "entities": {"solar": {"entity": solar, "name": ctx.t("pv.solar")},
+                         "grid": {"entity": grid_import, "name": ctx.t("pv.grid_import")},
+                         "home": {"name": ctx.t("pv.home_power")}},
+            "grid_options": grid(columns)}
+
+
+def preview_apex_today(ctx, solar, grid_import, columns=12):
+    """ApexCharts: today from midnight, solar and grid import as areas."""
+    ctx.use([solar, grid_import])
+    return {"type": "custom:apexcharts-card", "graph_span": "24h", "span": {"start": "day"},
+            "header": {"show": True, "title": ctx.t("pv.today")}, "now": {"show": True},
+            "series": [{"entity": solar, "name": ctx.t("pv.solar"), "type": "area"},
+                       {"entity": grid_import, "name": ctx.t("pv.grid_import"), "type": "area"}],
+            "grid_options": grid(columns)}
+
+
+def preview_unavailable_list(ctx, title_key, domains, columns=12):
+    """auto-entities: every entity of these domains whose state is unavailable,
+    in an entities card, by name. With none, its `else` card says so for this
+    kind only (a list of what answered, not a reassurance about the house)."""
+    na, nb = _pair(ctx, "pv.hh_none")
+    return {"type": "custom:auto-entities",
+            "card": {"type": "entities", "title": ctx.t(title_key)},
+            "filter": {"include": [{"domain": d, "state": "unavailable"} for d in domains]},
+            "sort": {"method": "name"},
+            "else": markdown("**" + ctx.t(title_key) + "**\n\n" + na + " <small>" + nb + "</small>", columns),
+            "grid_options": grid(columns)}
+
+
+def preview_wallpanel(ctx, idle_time=120, temperature="sensor.bedroom_motion_sensor_temperature",
+                      door="binary_sensor.f_contact_sensor_door"):
+    """WallPanel (dashboard-level `wallpanel:`): after `idle_time` seconds the
+    screen shows the photos in Home Assistant's media folder with an info box —
+    the time over DD/MM/YY, the parents' room temperature and the front door.
+    It leaves the header and sidebar to Kiosk Mode (hide_* false), so the two
+    never fight over them."""
+    ctx.use([temperature, door])
+    days = "[" + ",".join(jstr(" ".join(dict.fromkeys(_pair(ctx, f"pv.wd{i}")))) for i in range(7)) + "]"
+    clock = markdown("# {{ now().strftime('%H:%M') }}\n{{ " + days + "[now().weekday()] }} · {{ now().strftime('%d/%m/%y') }}")
+    ta, tb = _pair(ctx, "pv.parents_temp")
+    temp = markdown("**" + ta + "** " + tb + "\n## {{ " + deg_expr(ctx, temperature, 1) + " }}")
+    da, db = _pair(ctx, "room.front_door")
+    words = {"on": "pv.wp_open", "off": "pv.wp_closed"}
+    door_card = markdown("**" + da + "** " + db + "\n## {{ " + _words(ctx, door, words, 0) + " }} "
+                         "<small>{{ " + _words(ctx, door, words, 1) + " }}</small>")
+    for c in (clock, temp, door_card):
+        c.pop("grid_options", None)   # the info box lays its cards out itself
+    return {"enabled": True, "hide_toolbar": False, "hide_sidebar": False, "fullscreen": False,
+            "idle_time": idle_time, "image_url": "media-source://media_source/",
+            "cards": [clock, temp, door_card]}
