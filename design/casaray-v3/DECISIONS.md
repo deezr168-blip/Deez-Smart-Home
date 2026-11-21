@@ -6,6 +6,53 @@ and `ha-deploy` are unaffected by everything here.
 
 ---
 
+## V3-027 · 21/11/26 · Four of the approved custom cards on the working dashboards
+
+**Status:** owner brief (21/11/26): bring the working V3 dashboards in line with the custom
+cards implemented for the preview (V3-026, where the owner chose **"Adopt cards in V3"**),
+keeping them reliable and easy to recover. Built on a branch stacked on PR #26. Not pushed,
+not merged, not deployed; nothing installed.
+
+1. **Used, and where.** Each in its own band, after every native reading on its page:
+   - **Energy → "Power flow":** Power Flow Card Plus and ApexCharts on the two verified
+     sensors the page already reads, `sensor.primo_5_0_1_1_ac_power` (solar) and
+     `sensor.powerpal_gateway_powerpal_power` (grid import), with the preview's caveat that
+     the card's "Home" is a sum (no export or consumption sensor, V3-003).
+   - **House health → "Not answering now":** four auto-entities lists (lights, cameras,
+     switches, sensors and binary sensors) whose state is `unavailable`, each with an `else`
+     card that speaks only for its kind.
+   - **Dashboard level:** WallPanel with the preview's reviewed options (photos after 120 s
+     idle; time over DD/MM/YY, the parents' room temperature, the front door; header and
+     sidebar left alone). Dark, it says No data / Offline, never Open or Closed.
+2. **Safe handling when a card is not installed.** Home Assistant draws "Custom element
+   doesn't exist" in place of a missing custom card, and has no way for a dashboard to test
+   whether a resource loaded. So nothing native was replaced: each band is additive, sits
+   below the page's readings, controls and links, and ends with a note naming the card(s)
+   it needs (the `cam.live_note` pattern of V3-014). WallPanel is ignored until installed.
+   The gate enforces all three (`working_custom_problems`).
+3. **Not used, and why:**
+   - **Kiosk Mode.** The working dashboards carry no `kiosk_mode` because it was removed
+     after the "kiosk mode lockout" (ARCHITECTURE.md, Dependencies), and "restoring it is an
+     owner decision". V3-026 applied it to the separate preview, where the working dashboard
+     stays reachable. Putting it back on a working dashboard is left to the owner; the
+     generator refuses it and the gate fails on it.
+   - **Bubble Card** (Rooms pop-ups) and **Advanced Camera Card** (Cameras): bound to
+     `light.living_room`, `light.dining` and four camera IDs that are not on the instance
+     (V3-025 item 13). Blocked until the real IDs are confirmed in Settings → Entities.
+4. **Scope, all four locales:** 44 views byte-identical; Energy and House health each gain
+   one section, every existing section identical and in order; one new dashboard key,
+   `wallpanel`; the preview dashboard unchanged. Proven by building with and without the
+   additions (`tests/v3/test_working_hacs_v3_027.py`, 15 tests, including six that break each
+   rule on purpose).
+5. **Strings:** en; yue from the preview's own catalogue; km drafted (awaiting native review,
+   as every km string); zh-Hans falls back to English by its documented convention.
+6. **Needs the owner:** install Power Flow Card Plus, ApexCharts, auto-entities and WallPanel
+   through HACS (`docs/casaray-v3/PREVIEW_DEPLOYMENT.md`, "HACS cards the working dashboards
+   use"); decide Kiosk Mode on the working dashboards; confirm the six entity IDs. Nothing
+   here was seen on a device.
+
+---
+
 ## V3-026 · 20/11/26 · Seven custom cards approved for the preview, and built into it
 
 **Status: owner decision (20/11/26).** Asked what "Approve" covered, the owner chose

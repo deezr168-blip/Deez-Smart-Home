@@ -387,6 +387,36 @@ build is `/casaray-v3/<view>`. A different URL needs a rebuild with a different
 - Without those, the native views still work; the carried and fallback views
   show card errors or default styling.
 
+## HACS cards the working dashboards use (V3-027, 21/11/26)
+
+The working V3 dashboards are native except for these four, approved by the owner on 20/11
+(V3-026) and added on 21/11 (V3-027). **None is installed by this repository.** Each is
+installed on the Green through HACS (HACS → search the name → Download), then the browser
+on the wall iPad is refreshed. Repositories as verified in
+`design/casaray-v3/hacs/HACS_RECOMMENDATIONS_2026-11-20.md` (on `casaray-v3-design`):
+
+| Card | HACS repository | Where V3 uses it | If it is not installed |
+|---|---|---|---|
+| Power Flow Card Plus | `flixlix/power-flow-card-plus` | Energy → Power flow | "Custom element doesn't exist" in that band; every reading above still works |
+| ApexCharts Card | `RomRider/apexcharts-card` | Energy → Power flow | the same; the native "Last 24 hours" graph above shows the same two sensors |
+| auto-entities | `thomasloven/lovelace-auto-entities` | House health → Not answering now | "Custom element doesn't exist" in that band; the counts and devices above still work |
+| WallPanel | `j-a-n/lovelace-wallpanel` | dashboard level (screensaver) | ignored; no screensaver |
+
+**How to verify, read-only, after installing:**
+
+1. **Resources:** Settings → Dashboards → ⋮ → Resources lists one JavaScript module per card.
+   HACS writes these entries itself when a card is downloaded; this repository does not record
+   their exact URLs, so do not type one by hand.
+2. **Energy:** the Power flow band shows the flow and today's chart instead of an error.
+3. **House health:** the Not answering now band shows four lists, or each list's "Nothing of
+   this kind reports unavailable" line.
+4. **WallPanel:** leave the wall iPad untouched for two minutes. The screensaver needs photos
+   in Media → My media; a touch returns to the dashboard.
+
+**Not on the working dashboards:** Kiosk Mode (removed after the kiosk mode lockout; the
+owner's call, V3-027) and Bubble Card / Advanced Camera Card (waiting on six entity IDs). The
+separate design preview (`casaray-v3-mockup`, PR #26) uses all seven.
+
 ## 1. Read-only pre-checks (record each result)
 
 1. **Version:** Settings → About shows the Home Assistant Core and frontend versions.
@@ -406,7 +436,8 @@ build is `/casaray-v3/<view>`. A different URL needs a rebuild with a different
    (`/casaray-v2`) is registered and opens. On 30/10 it was not registered;
    see `scripts/recovery/RUNBOOK_2026-10-30.md` on `recovery/phase0-diagnostics`.
 3. **Resources:** Settings → Dashboards → ⋮ → Resources. Note whether
-   `card-mod` and `webrtc-camera` are listed.
+   `card-mod` and `webrtc-camera` are listed, and the four cards in "HACS cards the
+   working dashboards use" above.
 4. **Themes:** Profile → Theme lists the installed themes. Note whether
    `CasaRay` and `CasaRay V3` are present.
 
