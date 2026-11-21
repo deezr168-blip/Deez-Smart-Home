@@ -280,6 +280,26 @@ def render_card(card, ctx):
         cap = f'<div class="fcap">{html.escape(kind)} forecast: drawn by Home Assistant from the entity, not simulated</div>'
         return (f'<div class="ha-card weather wf">{now if show_now else ""}'
                 f'<div class="fslots">{slots}</div>{cap}</div>')
+    if t == "custom:clock-weather-card":
+        # V3-029: an APPROXIMATION of Clock Weather Card's default layout (header rows, the
+        # hourly strip, the daily list); the card draws itself from the entity at run time
+        e = card["entity"]
+        s = states.get(e, "unknown")
+        a = attrs.get(e) or {}
+        temp = f'{a["temperature"]}°' if "temperature" in a else "—"
+        clock = env.from_string("{{ now().strftime('%H:%M') }}").render()
+        day = env.from_string("{{ now().strftime('%d/%m/%y') }}").render()
+        strip = "".join(f'<div class="fslot"><div class="fk">hour</div>{icons.svg("weather-partly-cloudy", "fic")}'
+                        f'<div class="ft">—</div></div>' for _ in range(6))
+        rows = "".join(f'<div class="cwrow"><span>day {i + 1}</span>{icons.svg("weather-partly-cloudy", "fic")}'
+                       f'<span class="cwbar"></span><span>— / —</span></div>' for i in range(5))
+        return (f'<div class="ha-card weather wf cwc">'
+                f'<div class="cwh">{icons.svg("thermometer", "fic")}<span class="wt">{temp}</span>'
+                f'<span class="cwsp"></span><span class="ws">{state_text(e, s, attrs)}</span></div>'
+                f'<div class="cwt">{clock}</div><div class="cwd">{icons.svg("calendar", "fic")}{day}</div>'
+                f'<div class="fslots">{strip}</div><div>{rows}</div>'
+                f'<div class="fcap">Clock Weather Card: approximation; its forecasts come from the entity '
+                f'at run time, not simulated</div></div>')
     if t == "picture-entity":
         e = card["entity"]
         s = states.get(e, "unknown")
@@ -351,6 +371,10 @@ fill:var(--v3-text-2);position:relative}.btn.accent{fill:var(--v3-accent)}
 .fslots{display:flex;justify-content:space-between;gap:6px}.fslot{flex:1;text-align:center;color:var(--v3-text-2);font-size:12px}
 .fic{width:26px;height:26px;fill:var(--v3-text-2);display:block;margin:4px auto}.ft{font-size:14px;color:var(--v3-text)}
 .fcap{font-size:11px;color:var(--v3-text-2);font-style:italic}
+.cwh{display:flex;align-items:center;gap:8px}.cwsp{flex:1}.cwt{font-size:4rem;line-height:1.1;text-align:center}
+.cwd{display:flex;align-items:center;justify-content:center;gap:6px;color:var(--v3-text-2)}.cwd .fic{margin:0}
+.cwrow{display:flex;align-items:center;gap:10px;color:var(--v3-text-2);font-size:13px;padding:2px 0}
+.cwrow .fic{margin:0;width:22px;height:22px}.cwbar{flex:1;height:6px;border-radius:3px;background:rgba(232,163,61,.25)}
 .navsim{position:fixed;left:0;right:0;bottom:0;z-index:5;pointer-events:none}
 .nbar{display:flex;justify-content:space-around;background:var(--v3-elevated,#1a1f25);border-top:1px solid rgba(255,255,255,.12);padding:8px 4px 22px}
 .nbi{text-align:center;color:var(--v3-text-2);font-size:12px;min-width:56px}.nbic{width:24px;height:24px;fill:currentColor;display:block;margin:0 auto 2px}

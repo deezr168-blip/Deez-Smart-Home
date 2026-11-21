@@ -297,10 +297,15 @@ PREVIEW_ROOT = {"kiosk_mode": {"hide_header", "hide_sidebar"},
 READ_ACTIONS = {None, "none", "more-info", "navigate"}
 # V3-027: the working dashboards may carry four of the seven, each on its page,
 # in a band after the page's native readings, with a note naming what it needs.
-WORKING_CUSTOM = C.WORKING_CUSTOM
+WORKING_CUSTOM = dict(C.WORKING_CUSTOM, home={C.CLOCK_WEATHER})
 WORKING_INNER = C.WORKING_INNER
 PRODUCT = {"custom:power-flow-card-plus": "Power Flow Card Plus", "custom:apexcharts-card": "ApexCharts",
-           "custom:auto-entities": "auto-entities"}
+           "custom:auto-entities": "auto-entities", C.CLOCK_WEATHER: "Clock Weather Card"}
+# V3-029: the owner put the weather on Home mid-page; the chip strip's Outside reading
+# (same entity, native) above it is the fallback, so the band-order rule does not apply
+ORDER_EXEMPT = {"home": {C.CLOCK_WEATHER}}
+CWC_KEYS = {"type", "entity", "locale", "sections", "grid_options"}
+CWC_SEGMENTS = {"icon", "weather", "spacer", "time", "date"}
 DATA_TYPES = {"tile", "history-graph", "picture-entity", "weather-forecast", "todo-list", "media-control"}
 
 
@@ -388,6 +393,10 @@ def working_custom_problems(view):
                 bad.append(f"section {i}: no note naming {missing}")
         elif any(c.get("type") in DATA_TYPES for c in cards):
             data_at.append(i)
+    exempt = ORDER_EXEMPT.get(view["path"], set())
+    custom_at = [i for i in custom_at
+                 if not ({c["type"] for c in walk_cards(secs[i].get("cards", []), True)
+                          if str(c.get("type", "")).startswith("custom:")} - {NAVBAR}) <= exempt]
     if custom_at and data_at and max(data_at) > min(custom_at):
         bad.append(f"native readings in section {max(data_at)} come after the custom band {min(custom_at)}")
     bad += custom_problems(view, label_ok=nonempty)
@@ -450,6 +459,24 @@ def custom_problems(view, label_ok=None):
             for se in c.get("series", []):
                 if not label_ok(str(se.get("name", ""))):
                     bad.append(f"apex series name not bilingual: {se.get('name')!r}")
+        elif t == C.CLOCK_WEATHER:
+            if set(c) - CWC_KEYS:
+                bad.append(f"clock weather: unreviewed options {sorted(set(c) - CWC_KEYS)}")
+            if not str(c.get("entity", "")).startswith("weather."):
+                bad.append("clock weather: entity is not a weather entity")
+            if c.get("locale") not in C.CWC_LOCALE.values():
+                bad.append(f"clock weather: locale {c.get('locale')!r} not reviewed")
+            secs_c = c.get("sections") or {}
+            if set(secs_c) - {"header"} or set(secs_c.get("header") or {}) - {"rows"}:
+                bad.append("clock weather: only header rows are set; strip and list stay the card's defaults")
+            for row in (secs_c.get("header") or {}).get("rows", []):
+                for seg in row.get("segments", []):
+                    if seg.get("type") not in CWC_SEGMENTS:
+                        bad.append(f"clock weather: segment {seg.get('type')!r} not reviewed")
+                    if seg.get("type") == "date" and seg.get("date_pattern") != "dd/MM/yy":
+                        bad.append(f"clock weather: date must be DD/MM/YY, not {seg.get('date_pattern')!r}")
+                    if seg.get("type") == "time" and seg.get("time_pattern") != "HH:mm":
+                        bad.append(f"clock weather: time must be HH:mm, not {seg.get('time_pattern')!r}")
         elif t == "custom:auto-entities":
             for rule in (c.get("filter") or {}).get("include", []):
                 if set(rule) - {"domain", "state"}:

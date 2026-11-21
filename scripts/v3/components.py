@@ -1498,3 +1498,36 @@ def navbar(ctx, routes, more):
             "mobile": {"show_labels": True, "safe_area": True},
             "layout": {"reflect_child_state": True},
             "grid_options": grid("full")}
+
+
+# ---------------------------------------------------------------- Clock Weather Card (V3-029)
+# Owner, 21/11/26: "switch weather band to clock weather". Installed on the instance
+# (docs/casaray-v3/HACS_INSTALLED.md, the owner's HACS list; the owner's phone shows it
+# working). Options from the card's own README and CONTRIBUTING.md at
+# pkissling/clock-weather-card main (3.1.0, 01/11/26), read 21/11/26: the v3 `sections`
+# schema (v3.0.0, 25/10/26). The header keeps the card's documented default rows, with
+# only the two patterns this house needs: time HH:mm over date dd/MM/yy (DD/MM/YY).
+# The hourly forecast strip and the daily forecast list are the card's defaults.
+
+CLOCK_WEATHER = "custom:clock-weather-card"
+# the card's own translations are en, zh-hant and zh-hans (src/locales/, 21/11/26); for
+# any other tag it falls back to English text while dates still format in that language
+CWC_LOCALE = {"en": "en-au", "yue": "zh-hant", "zh-Hans": "zh-hans", "km": "km"}
+
+
+def clock_weather(ctx, entity):
+    """Clock Weather Card on one weather entity: icon, temperature and condition, the
+    time over DD/MM/YY, the hourly strip (with sunrise/sunset), the daily list."""
+    if not entity.startswith("weather."):
+        raise SystemExit(f"clock_weather: {entity} is not a weather entity")
+    ctx.use(entity)
+    rows = [
+        {"segments": [{"type": "icon", "icon": "mdi:thermometer"},
+                      {"type": "weather", "attribute": "temperature"},
+                      {"type": "spacer"}, {"type": "weather"}]},
+        {"font_size": "4rem", "alignment": "center", "segments": [{"type": "time", "time_pattern": "HH:mm"}]},
+        {"alignment": "center", "segments": [{"type": "icon", "icon": "mdi:calendar"},
+                                             {"type": "date", "date_pattern": "dd/MM/yy"}]},
+    ]
+    return {"type": CLOCK_WEATHER, "entity": entity, "locale": CWC_LOCALE[ctx.locale["code"]],
+            "sections": {"header": {"rows": rows}}, "grid_options": grid("full")}
