@@ -532,12 +532,19 @@ def chip_cameras(ctx, ents):
 
 # ---------------------------------------------------------------- misc
 
-def weather(ctx, entity, forecast=False, columns=12):
+def weather(ctx, entity, forecast=False, columns=12, forecast_type="daily", current=True, rows=None):
+    """Native weather-forecast card. forecast_type is the pinned frontend's own
+    set (20260826.7, data/weather.ts: hourly | daily | twice_daily); a forecast
+    the entity does not provide is the card's own "no forecast", never invented."""
+    if forecast_type not in ("hourly", "daily", "twice_daily"):
+        raise SystemExit(f"weather: forecast_type {forecast_type!r} is not one the frontend knows")
     ctx.use(entity)
-    c = {"type": "weather-forecast", "entity": entity, "show_current": True,
+    c = {"type": "weather-forecast", "entity": entity, "show_current": current,
          "show_forecast": forecast, "grid_options": grid(columns)}
     if forecast:
-        c["forecast_type"] = "daily"
+        c["forecast_type"] = forecast_type
+    if rows:
+        c["grid_options"]["rows"] = rows
     return c
 
 
@@ -1462,3 +1469,32 @@ def wallpanel(ctx, idle_time=120, temperature="sensor.bedroom_motion_sensor_temp
     return {"enabled": True, "hide_toolbar": False, "hide_sidebar": False, "fullscreen": False,
             "idle_time": idle_time, "image_url": "media-source://media_source/",
             "cards": [clock, temp, door_card]}
+
+
+# ---------------------------------------------------------------- Navbar card (V3-028)
+# Owner, 21/11/26: "Add in navbar for navigation". Navbar Card is installed on the
+# instance (the owner's card picker lists it). Every option below is in the card's
+# own docs (joseluis9595/lovelace-navbar-card, docs/content/docs/configuration/*.md
+# and advanced/custom-actions.md at main, read 21/11/26); nothing else is set. The
+# native top bar stays on every page: if the card fails to load, the page still
+# navigates (and Home Assistant shows "Custom element doesn't exist" at its foot).
+
+NAVBAR = "custom:navbar-card"
+
+
+def navbar(ctx, routes, more):
+    """One navbar for a page: the main destinations as labelled routes, the rest
+    behind a "More" route that opens the card's popup. A route is drawn selected
+    when its url is the page's own path; with reflect_child_state, More is
+    selected while one of its pages is open, so the current destination is
+    always marked. routes / more: [[path, label_key, icon], ...]."""
+    def route(path, key, icon):
+        return {"url": ctx.link(path), "icon": icon, "label": ctx.t(key)}
+    items = [route(*r) for r in routes]
+    items.append({"icon": "mdi:dots-horizontal", "label": ctx.t("nav.more"),
+                  "tap_action": {"action": "open-popup"}, "popup": [route(*r) for r in more]})
+    return {"type": NAVBAR, "routes": items,
+            "desktop": {"show_labels": True},
+            "mobile": {"show_labels": True, "safe_area": True},
+            "layout": {"reflect_child_state": True},
+            "grid_options": grid("full")}

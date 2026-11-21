@@ -313,6 +313,60 @@ def loc_t(loc, key):
     raise KeyError(key)
 
 
+NAVBAR = C.NAVBAR
+# Navbar card options, exactly those used and documented (V3-028)
+NAVBAR_KEYS = {"type", "routes", "desktop", "mobile", "layout", "grid_options"}
+NAVBAR_ROUTE_KEYS = {"url", "icon", "label", "tap_action", "popup"}
+NAVBAR_SUB = {"desktop": {"show_labels"}, "mobile": {"show_labels", "safe_area"}, "layout": {"reflect_child_state"}}
+
+
+def navbar_problems(view, url_base, paths):
+    """V3-028, one native page: exactly one Navbar card, the last card on the page;
+    only the documented options it uses; every route and popup item a labelled
+    link to a page of this dashboard (or the More route that opens the popup);
+    and Home among the routes."""
+    bad = []
+    bars = [c for c in walk_cards(view) if c.get("type") == NAVBAR]
+    if len(bars) != 1:
+        return [f"{len(bars)} navbar cards"]
+    nb = bars[0]
+    last = (view.get("sections") or [{}])[-1].get("cards") or [{}]
+    if last[-1] is not nb:
+        bad.append("the navbar is not the page's last card")
+    if set(nb) - NAVBAR_KEYS:
+        bad.append(f"unreviewed options {sorted(set(nb) - NAVBAR_KEYS)}")
+    for k, allowed in NAVBAR_SUB.items():
+        if set(nb.get(k) or {}) - allowed:
+            bad.append(f"{k}: unreviewed options {sorted(set(nb[k]) - allowed)}")
+
+    def link_ok(url):
+        part = str(url).strip("/").split("/")
+        return len(part) == 2 and part[0] == url_base and part[1] in paths
+
+    urls = []
+    for r in nb.get("routes", []):
+        if set(r) - NAVBAR_ROUTE_KEYS:
+            bad.append(f"route {r.get('label')!r}: unreviewed keys {sorted(set(r) - NAVBAR_ROUTE_KEYS)}")
+        if not nonempty(r.get("label", "")) or not str(r.get("icon", "")).startswith("mdi:"):
+            bad.append(f"route without a label or an mdi icon: {r}")
+        if "popup" in r:
+            if r.get("tap_action") != {"action": "open-popup"} or "url" in r:
+                bad.append(f"popup route {r.get('label')!r} must open its popup and nothing else")
+            for it in r["popup"]:
+                if set(it) - {"url", "icon", "label"} or not nonempty(it.get("label", "")) or not link_ok(it.get("url")):
+                    bad.append(f"popup item {it}")
+                urls.append(it.get("url"))
+        else:
+            if "tap_action" in r or not link_ok(r.get("url")):
+                bad.append(f"route {r}")
+            urls.append(r.get("url"))
+    if f"/{url_base}/home" not in urls:
+        bad.append("no Home route")
+    if len(urls) != len(set(urls)):
+        bad.append("a destination appears twice")
+    return bad
+
+
 def working_custom_problems(view):
     """V3-027, one working page: the custom types allowed on it and nowhere else;
     each band holding one names it in a note (what the family sees until it is
@@ -323,7 +377,7 @@ def working_custom_problems(view):
     data_at, custom_at = [], []
     for i, sec in enumerate(secs):
         cards = list(walk_cards(sec.get("cards", []), True))
-        customs = {c["type"] for c in cards if str(c.get("type", "")).startswith("custom:")}
+        customs = {c["type"] for c in cards if str(c.get("type", "")).startswith("custom:")} - {NAVBAR}
         if customs - allowed:
             bad.append(f"section {i}: {sorted(customs - allowed)} not allowed on {view['path']}")
         if customs:
@@ -598,7 +652,7 @@ def validate(g: Gate):
 
         # dependencies
         customs = {c["type"] for c in walk_cards(dash) if str(c.get("type", "")).startswith("custom:")}
-        allowed_custom = ALLOWED_CUSTOM.union(*WORKING_CUSTOM.values())
+        allowed_custom = ALLOWED_CUSTOM.union(*WORKING_CUSTOM.values(), {NAVBAR})
         g.check(customs <= allowed_custom, f"{tag} custom cards limited to {sorted(allowed_custom)}",
                 str(customs - allowed_custom))
         g.check("kiosk_mode" not in dash, f"{tag} no kiosk_mode on the working dashboards "
@@ -619,7 +673,7 @@ def validate(g: Gate):
             vt = f"{tag}[{v['path']}]"
             cards = list(walk_cards(v))
             inner = WORKING_INNER.get(v["path"], set())
-            ok_types = NATIVE_TYPES | WORKING_CUSTOM.get(v["path"], set()) | inner
+            ok_types = NATIVE_TYPES | WORKING_CUSTOM.get(v["path"], set()) | inner | {NAVBAR}
             g.check(all(c["type"] in ok_types for c in cards),
                     f"{vt} native card types only (plus its V3-027 custom cards)",
                     str({c['type'] for c in cards} - ok_types))
@@ -627,6 +681,12 @@ def validate(g: Gate):
             g.check(not wc, f"{vt} custom cards: only its own, in a band after its native readings, "
                     "named in a note, with the preview's reviewed behaviour (V3-027)", str(wc[:4]))
             cards = [c for c in cards if c["type"] not in inner]   # laid out by auto-entities, not the section
+            if man.get("navbar"):
+                nbp = navbar_problems(v, loc["url_base"], paths)
+                g.check(not nbp, f"{vt} navbar: one, last, documented options only, every route a labelled "
+                        "link to a page here, Home included (V3-028)", str(nbp[:4]))
+            elif any(c.get("type") == NAVBAR for c in cards):
+                g.check(False, f"{vt} navbar present but the manifest has none", "")
             g.check("card_mod" not in yaml.safe_dump(v), f"{vt} no card_mod (styling is the theme's)")
             g.check(all("grid_options" in c for c in cards), f"{vt} every card declares grid_options")
             g.check(v.get("max_columns", 4) <= 2, f"{vt} max_columns <= 2 (DR-013)")

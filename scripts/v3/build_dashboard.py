@@ -416,6 +416,9 @@ def build(write=True):
             if p in man["native"]:
                 ctx.used = set()
                 nv = build_native(specs[p], ctx)
+                if man.get("navbar"):   # V3-028: the same navbar at the foot of every native page
+                    nb = man["navbar"]
+                    nv["sections"][-1]["cards"].append(C.navbar(ctx, nb["routes"], nb["more"]))
                 views.append(nv)
                 rows.append({"path": p, "kind": "native", "source": f"views/{p}.yaml",
                              "v2_equivalent": p, "entities": sorted(entities_in(nv)),
