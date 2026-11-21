@@ -401,6 +401,15 @@ on the wall iPad is refreshed. Repositories as verified in
 | ApexCharts Card | `RomRider/apexcharts-card` | Energy → Power flow | the same; the native "Last 24 hours" graph above shows the same two sensors |
 | auto-entities | `thomasloven/lovelace-auto-entities` | House health → Not answering now | "Custom element doesn't exist" in that band; the counts and devices above still work |
 | WallPanel | `j-a-n/lovelace-wallpanel` | dashboard level (screensaver) | ignored; no screensaver |
+| Navbar card (V3-028) | `joseluis9595/lovelace-navbar-card` | the foot of every native page | "Custom element doesn't exist" at the foot; the native top bar on the same page still navigates |
+
+Navbar card is already installed (the owner's card picker listed it on 21/11). Its options
+were read from its own repository's docs; see V3-028.
+
+**Weather (V3-028).** Home's Weather band uses native cards on `weather.forecast_home`.
+Before relying on it, open Settings → Entities and confirm that `weather.forecast_home` is
+the weather entity that answers (the phone dashboard showed a working forecast on 21/11; the
+connector cannot see weather entities, so which one it uses is unconfirmed).
 
 **How to verify, read-only, after installing:**
 

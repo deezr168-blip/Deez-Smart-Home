@@ -6,6 +6,52 @@ and `ha-deploy` are unaffected by everything here.
 
 ---
 
+## V3-028 · 21/11/26 · A navbar on every page; weather with hourly and daily forecasts on Home
+
+**Status:** owner request (21/11/26, with three phone screenshots): "Add in navbar for
+navigation, i want weather card and forecast cards in home page", then "Add in rubbish
+collection scheduler as well". Same local branch as V3-027. Not pushed, not deployed.
+
+1. **Navbar card** (`joseluis9595/lovelace-navbar-card`). Installed on the instance: the
+   owner's "Add to dashboard → By card" lists it, which only happens once its resource loads.
+   PR #27 had rated it "not now" because its option docs were unreachable; this session read
+   them from the card's own repository (`docs/content/docs/configuration/*.md`,
+   `advanced/custom-actions.md`, main, 21/11/26). Used: `routes` (url, icon, label), a More
+   route with `tap_action: open-popup` and `popup`, `desktop.show_labels`,
+   `mobile.show_labels`, `mobile.safe_area`, `layout.reflect_child_state`. Nothing else.
+   - On all 18 native pages, last card; routes Home, Rooms, Energy, Cameras, then More
+     (Security, Lighting, Climate, Network, House health, Alerts, Bills), the V3 order; URLs
+     from `ctx.link()`, labels from each catalogue; a route is selected when its URL is the
+     page, More while one of its pages is open.
+   - **The native top bar stays** on every page as the fallback: if the card fails to load,
+     the page still navigates and Home Assistant shows "Custom element doesn't exist" at its
+     foot. Removing the top bar is a separate owner decision.
+   - Carried and classic V2 views are unchanged.
+2. **Home weather.** A full-width Weather band after Rooms | Shopping list (One tap and Rooms
+   stay under Needs attention, CVA-004): two native `weather-forecast` cards on
+   `weather.forecast_home`, current with the hourly forecast beside the daily forecast. Both
+   three rows in the frontend's own sizing, so the band is level. `forecast_type` values
+   checked against the pinned frontend (20260826.7 `data/weather.ts`). Right now's
+   current-weather card moved into the band. **Not verified:** the connector cannot see
+   weather entities, so whether the owner's phone dashboard (23 °C Sunny) uses
+   `weather.forecast_home` is unconfirmed; it is the entity Home already read and is in the
+   05/09 export. If it is dark, the native card says so itself.
+3. **Who's home re-measured** against the shorter Right now: people and the occupancy tile
+   3 → 2 rows. Simulated wall iPad, Cantonese: band gaps 13 · 4 px → 28 · 4 px (no whole-row
+   count closes it); phone: no gaps, no clipped label.
+4. **Preview tool** draws forecasts (labelled, no invented numbers) and the navbar (a
+   labelled approximation); every image from it is a simulation.
+5. **Rubbish collection scheduler: not built.** No rubbish, bin, waste or collection entity
+   exists (connector, 21/11/26; 05/09 export), and the Rubbish Collection page is on PR #21's
+   branch, not this one. A scheduler needs a data source the owner chooses: a council
+   integration (address entered in Home Assistant, never in this repository), a fixed-weekday
+   package, or dates set by hand in helpers. Each is a live configuration change. Waiting on
+   the owner's choice and the collection days.
+6. **Noted, not changed here:** this line's Cantonese `nav.climate` still reads 冷氣同天氣;
+   PR #21 corrected it to 氣候. It now also shows in the navbar's More list.
+
+---
+
 ## V3-027 · 21/11/26 · Four of the approved custom cards on the working dashboards
 
 **Status:** owner brief (21/11/26): bring the working V3 dashboards in line with the custom
