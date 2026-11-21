@@ -6,6 +6,46 @@ and `ha-deploy` are unaffected by everything here.
 
 ---
 
+## V3-029 · 21/11/26 · Clock Weather Card is Home's Weather band
+
+**Status:** owner instruction (21/11/26): "switch weather band to clock weather and i install
+the apex to pr 29". Same branch as V3-027/028 (draft PR #29). Not merged, not deployed.
+
+1. **Clock Weather Card** (`pkissling/clock-weather-card`) replaces the two native
+   `weather-forecast` cards V3-028 put in Home's Weather band. Installed on the instance: the
+   owner's HACS list (`docs/casaray-v3/HACS_INSTALLED.md`, on PR #21's branch) names it.
+   Options read from the card's own README, CHANGELOG and CONTRIBUTING at main (3.1.0,
+   01/11/26), the v3 `sections` schema (v3.0.0, 25/10/26 moved every display option there):
+   - `entity: weather.forecast_home`, the entity Home already reads;
+   - `sections.header.rows`: the card's documented default rows, with two patterns set:
+     `time_pattern: HH:mm` over `date_pattern: dd/MM/yy` (Luxon tokens; the house's
+     DD/MM/YY, time above date);
+   - `forecast_strip` (hourly, sunrise and sunset) and `forecast_list` (daily, five days) are
+     left to the card's defaults; tap opens more-info, the card's default;
+   - `locale` per dashboard: `en-au`, `zh-hant` (Cantonese), `zh-hans`, `km`. The card ships
+     text in English, Traditional and Simplified Chinese only; for Khmer it falls back to
+     English words while dates still format in Khmer.
+2. **Fallback.** A full-width note under the card names it (en, yue, km; zh-Hans falls back to
+   English). If the card is missing, that band alone shows "Custom element doesn't exist", and
+   the chip strip's native Outside reading on the same entity still answers at the top. That
+   is why this band is exempt from V3-027's "custom bands after every native reading" rule; the
+   exemption is Home and this card only.
+3. **Gate** (`validate_dashboard.py`): the card is allowed on Home only, with reviewed options,
+   header segments (icon, weather, spacer, time, date), locales and patterns; a four-digit year
+   or a 12-hour clock fails the build. 18 tests in `test_clock_weather_v3_029.py`, nine of them
+   proving a rule fails on the shape it stops.
+4. **Simulated preview:** the band is full width with no hole on the wall iPad or a phone; the
+   card is drawn as a labelled approximation, forecasts not simulated.
+5. **Still unverified:** that `weather.forecast_home` is the entity showing 23 °C Sunny. The
+   connector cannot see weather entities. The owner confirms it in an isolated preview on Home
+   Assistant before the weather is called verified.
+6. **HACS install status** (the owner's list): Power Flow Card Plus, auto-entities, Navbar card
+   and Clock Weather Card are installed. **ApexCharts** is not listed; the owner is installing
+   it, and it stays in PR #29. **WallPanel** is not listed: Home Assistant ignores the
+   dashboard's `wallpanel:` key until it is installed, so it stays and does nothing meanwhile.
+
+---
+
 ## V3-028 · 21/11/26 · A navbar on every page; weather with hourly and daily forecasts on Home
 
 **Status:** owner request (21/11/26, with three phone screenshots): "Add in navbar for
