@@ -517,3 +517,7 @@ hh.list_sensors: "冇回應嘅感應器"
 hh.list_none: "呢類冇項目報告離線"
 hh.lists_needs: "呢啲清單用 HACS 卡 auto-entities。如果見到「Custom element doesn't exist」，即係仲未安裝；上面嘅數字同裝置照樣用得。"
 wp.parents_temp: "爸媽房溫度"
+
+# Navbar and Home weather (V3-028)
+nav.more: "更多"
+h.weather: "天氣"

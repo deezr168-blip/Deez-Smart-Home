@@ -518,3 +518,7 @@ hh.list_sensors: "ឧបករណ៍ចាប់សញ្ញាដែលមិ�
 hh.list_none: "គ្មានធាតុប្រភេទនេះរាយការណ៍ថាមិនអាចប្រើបានទេ"
 hh.lists_needs: "បញ្ជីទាំងនេះប្រើកាត HACS auto-entities។ បើឃើញ «Custom element doesn't exist» មានន័យថាមិនទាន់ដំឡើងទេ ហើយចំនួន និងឧបករណ៍ខាងលើនៅតែដំណើរការ។"
 wp.parents_temp: "សីតុណ្ហភាពបន្ទប់ឪពុកម្ដាយ"
+
+# Navbar and Home weather (V3-028) — draft, awaiting native review
+nav.more: "ច្រើនទៀត"
+h.weather: "អាកាសធាតុ"

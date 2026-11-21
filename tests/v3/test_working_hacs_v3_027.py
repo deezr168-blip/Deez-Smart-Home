@@ -146,7 +146,7 @@ class Cards(unittest.TestCase):
             self.assertNotIn("kiosk_mode", d)
             self.assertFalse(customs(d) & BLOCKED, code)
             for v in d["views"]:
-                found = customs(v)
+                found = customs(v) - {V.NAVBAR}   # V3-028's navbar is on every native page
                 if v["path"] in BANDS:
                     self.assertEqual(found, V.WORKING_CUSTOM[v["path"]], (code, v["path"]))
                 elif v["path"] in MAN["native"]:

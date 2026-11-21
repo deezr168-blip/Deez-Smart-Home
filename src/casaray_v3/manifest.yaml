@@ -56,6 +56,24 @@ classic_theme: CasaRay     # themes/deez_your_name.yaml, what V2 views need
 working_root:
   wallpanel: {c: wallpanel}
 
+# V3-028 (owner, 21/11/26): Navbar Card at the foot of every native page, the
+# V3 destinations in their navigation order. The native top bar stays: it is the
+# fallback if the card fails to load. Paths are view paths; labels are nav.* keys.
+navbar:
+  routes:
+    - [home, nav.home, mdi:home-variant-outline]
+    - [rooms, nav.rooms, mdi:floor-plan]
+    - [energy, nav.energy, mdi:lightning-bolt-outline]
+    - [cameras, nav.cameras, mdi:cctv]
+  more:
+    - [security, nav.security, mdi:shield-home-outline]
+    - [lighting, nav.lighting, mdi:lightbulb-group-outline]
+    - [climate, nav.climate, mdi:thermometer]
+    - [network, nav.network, mdi:router-wireless]
+    - [house-health, nav.house_health, mdi:home-heart]
+    - [alerts, nav.alerts, mdi:bell-outline]
+    - [bills, nav.bills, mdi:receipt-text-outline]
+
 native:
   - home
   - lighting

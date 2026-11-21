@@ -314,18 +314,36 @@ views:
               columns: 12
               rows: 8
       - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: Weather
+            heading_style: title
+            grid_options:
+              columns: full
+              rows: auto
+          - type: weather-forecast
+            entity: weather.forecast_home
+            show_current: true
+            show_forecast: true
+            grid_options:
+              columns: 12
+              rows: auto
+            forecast_type: hourly
+          - type: weather-forecast
+            entity: weather.forecast_home
+            show_current: false
+            show_forecast: true
+            grid_options:
+              columns: 12
+              rows: auto
+            forecast_type: daily
+      - type: grid
         column_span: 1
         cards:
           - type: heading
             heading: 此刻
             heading_style: title
-            grid_options:
-              columns: 12
-              rows: auto
-          - type: weather-forecast
-            entity: weather.forecast_home
-            show_current: true
-            show_forecast: false
             grid_options:
               columns: 12
               rows: auto
@@ -401,7 +419,7 @@ views:
               action: none
             grid_options:
               columns: 4
-              rows: 3
+              rows: 2
             vertical: true
           - type: tile
             entity: person.vinh_du
@@ -414,7 +432,7 @@ views:
               action: none
             grid_options:
               columns: 4
-              rows: 3
+              rows: 2
             vertical: true
           - type: tile
             entity: person.ai_q_huang
@@ -427,7 +445,7 @@ views:
               action: none
             grid_options:
               columns: 4
-              rows: 3
+              rows: 2
             vertical: true
           - type: tile
             entity: binary_sensor.bedroom_parents_room_ac_room_occupied
@@ -439,7 +457,7 @@ views:
               action: none
             grid_options:
               columns: 12
-              rows: 3
+              rows: 2
             name: 父母房
             state_content:
               - state
@@ -756,6 +774,56 @@ views:
             grid_options:
               columns: 6
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-zh/home
+                icon: mdi:home-variant-outline
+                label: 首页
+              - url: /casaray-v3-zh/rooms
+                icon: mdi:floor-plan
+                label: 房间
+              - url: /casaray-v3-zh/energy
+                icon: mdi:lightning-bolt-outline
+                label: 能源
+              - url: /casaray-v3-zh/cameras
+                icon: mdi:cctv
+                label: 摄像头
+              - icon: mdi:dots-horizontal
+                label: More
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-zh/security
+                    icon: mdi:shield-home-outline
+                    label: 安防
+                  - url: /casaray-v3-zh/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 灯光
+                  - url: /casaray-v3-zh/climate
+                    icon: mdi:thermometer
+                    label: 气候
+                  - url: /casaray-v3-zh/network
+                    icon: mdi:router-wireless
+                    label: 网络
+                  - url: /casaray-v3-zh/house-health
+                    icon: mdi:home-heart
+                    label: 房屋健康
+                  - url: /casaray-v3-zh/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-zh/bills
+                    icon: mdi:receipt-text-outline
+                    label: 账单
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: 房间
     path: rooms
     icon: mdi:floor-plan
@@ -1078,6 +1146,56 @@ views:
             grid_options:
               columns: 4
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-zh/home
+                icon: mdi:home-variant-outline
+                label: 首页
+              - url: /casaray-v3-zh/rooms
+                icon: mdi:floor-plan
+                label: 房间
+              - url: /casaray-v3-zh/energy
+                icon: mdi:lightning-bolt-outline
+                label: 能源
+              - url: /casaray-v3-zh/cameras
+                icon: mdi:cctv
+                label: 摄像头
+              - icon: mdi:dots-horizontal
+                label: More
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-zh/security
+                    icon: mdi:shield-home-outline
+                    label: 安防
+                  - url: /casaray-v3-zh/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 灯光
+                  - url: /casaray-v3-zh/climate
+                    icon: mdi:thermometer
+                    label: 气候
+                  - url: /casaray-v3-zh/network
+                    icon: mdi:router-wireless
+                    label: 网络
+                  - url: /casaray-v3-zh/house-health
+                    icon: mdi:home-heart
+                    label: 房屋健康
+                  - url: /casaray-v3-zh/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-zh/bills
+                    icon: mdi:receipt-text-outline
+                    label: 账单
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: 客厅
     path: living-room
     icon: mdi:sofa-outline
@@ -1919,6 +2037,56 @@ views:
             grid_options:
               columns: 4
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-zh/home
+                icon: mdi:home-variant-outline
+                label: 首页
+              - url: /casaray-v3-zh/rooms
+                icon: mdi:floor-plan
+                label: 房间
+              - url: /casaray-v3-zh/energy
+                icon: mdi:lightning-bolt-outline
+                label: 能源
+              - url: /casaray-v3-zh/cameras
+                icon: mdi:cctv
+                label: 摄像头
+              - icon: mdi:dots-horizontal
+                label: More
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-zh/security
+                    icon: mdi:shield-home-outline
+                    label: 安防
+                  - url: /casaray-v3-zh/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 灯光
+                  - url: /casaray-v3-zh/climate
+                    icon: mdi:thermometer
+                    label: 气候
+                  - url: /casaray-v3-zh/network
+                    icon: mdi:router-wireless
+                    label: 网络
+                  - url: /casaray-v3-zh/house-health
+                    icon: mdi:home-heart
+                    label: 房屋健康
+                  - url: /casaray-v3-zh/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-zh/bills
+                    icon: mdi:receipt-text-outline
+                    label: 账单
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: 厨房
     path: kitchen
     icon: mdi:countertop-outline
@@ -2442,6 +2610,56 @@ views:
             grid_options:
               columns: 4
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-zh/home
+                icon: mdi:home-variant-outline
+                label: 首页
+              - url: /casaray-v3-zh/rooms
+                icon: mdi:floor-plan
+                label: 房间
+              - url: /casaray-v3-zh/energy
+                icon: mdi:lightning-bolt-outline
+                label: 能源
+              - url: /casaray-v3-zh/cameras
+                icon: mdi:cctv
+                label: 摄像头
+              - icon: mdi:dots-horizontal
+                label: More
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-zh/security
+                    icon: mdi:shield-home-outline
+                    label: 安防
+                  - url: /casaray-v3-zh/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 灯光
+                  - url: /casaray-v3-zh/climate
+                    icon: mdi:thermometer
+                    label: 气候
+                  - url: /casaray-v3-zh/network
+                    icon: mdi:router-wireless
+                    label: 网络
+                  - url: /casaray-v3-zh/house-health
+                    icon: mdi:home-heart
+                    label: 房屋健康
+                  - url: /casaray-v3-zh/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-zh/bills
+                    icon: mdi:receipt-text-outline
+                    label: 账单
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: 餐厅
     path: dining
     icon: mdi:table-chair
@@ -3041,6 +3259,56 @@ views:
             grid_options:
               columns: 4
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-zh/home
+                icon: mdi:home-variant-outline
+                label: 首页
+              - url: /casaray-v3-zh/rooms
+                icon: mdi:floor-plan
+                label: 房间
+              - url: /casaray-v3-zh/energy
+                icon: mdi:lightning-bolt-outline
+                label: 能源
+              - url: /casaray-v3-zh/cameras
+                icon: mdi:cctv
+                label: 摄像头
+              - icon: mdi:dots-horizontal
+                label: More
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-zh/security
+                    icon: mdi:shield-home-outline
+                    label: 安防
+                  - url: /casaray-v3-zh/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 灯光
+                  - url: /casaray-v3-zh/climate
+                    icon: mdi:thermometer
+                    label: 气候
+                  - url: /casaray-v3-zh/network
+                    icon: mdi:router-wireless
+                    label: 网络
+                  - url: /casaray-v3-zh/house-health
+                    icon: mdi:home-heart
+                    label: 房屋健康
+                  - url: /casaray-v3-zh/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-zh/bills
+                    icon: mdi:receipt-text-outline
+                    label: 账单
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: 父母房
     path: parents-room
     icon: mdi:bed-outline
@@ -3757,6 +4025,56 @@ views:
             grid_options:
               columns: 4
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-zh/home
+                icon: mdi:home-variant-outline
+                label: 首页
+              - url: /casaray-v3-zh/rooms
+                icon: mdi:floor-plan
+                label: 房间
+              - url: /casaray-v3-zh/energy
+                icon: mdi:lightning-bolt-outline
+                label: 能源
+              - url: /casaray-v3-zh/cameras
+                icon: mdi:cctv
+                label: 摄像头
+              - icon: mdi:dots-horizontal
+                label: More
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-zh/security
+                    icon: mdi:shield-home-outline
+                    label: 安防
+                  - url: /casaray-v3-zh/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 灯光
+                  - url: /casaray-v3-zh/climate
+                    icon: mdi:thermometer
+                    label: 气候
+                  - url: /casaray-v3-zh/network
+                    icon: mdi:router-wireless
+                    label: 网络
+                  - url: /casaray-v3-zh/house-health
+                    icon: mdi:home-heart
+                    label: 房屋健康
+                  - url: /casaray-v3-zh/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-zh/bills
+                    icon: mdi:receipt-text-outline
+                    label: 账单
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: Ray's room
     path: ray-bedroom
     icon: mdi:bed-king-outline
@@ -4379,6 +4697,56 @@ views:
             grid_options:
               columns: 4
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-zh/home
+                icon: mdi:home-variant-outline
+                label: 首页
+              - url: /casaray-v3-zh/rooms
+                icon: mdi:floor-plan
+                label: 房间
+              - url: /casaray-v3-zh/energy
+                icon: mdi:lightning-bolt-outline
+                label: 能源
+              - url: /casaray-v3-zh/cameras
+                icon: mdi:cctv
+                label: 摄像头
+              - icon: mdi:dots-horizontal
+                label: More
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-zh/security
+                    icon: mdi:shield-home-outline
+                    label: 安防
+                  - url: /casaray-v3-zh/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 灯光
+                  - url: /casaray-v3-zh/climate
+                    icon: mdi:thermometer
+                    label: 气候
+                  - url: /casaray-v3-zh/network
+                    icon: mdi:router-wireless
+                    label: 网络
+                  - url: /casaray-v3-zh/house-health
+                    icon: mdi:home-heart
+                    label: 房屋健康
+                  - url: /casaray-v3-zh/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-zh/bills
+                    icon: mdi:receipt-text-outline
+                    label: 账单
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: 车库
     path: garage
     icon: mdi:garage-variant
@@ -4768,6 +5136,56 @@ views:
             grid_options:
               columns: 4
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-zh/home
+                icon: mdi:home-variant-outline
+                label: 首页
+              - url: /casaray-v3-zh/rooms
+                icon: mdi:floor-plan
+                label: 房间
+              - url: /casaray-v3-zh/energy
+                icon: mdi:lightning-bolt-outline
+                label: 能源
+              - url: /casaray-v3-zh/cameras
+                icon: mdi:cctv
+                label: 摄像头
+              - icon: mdi:dots-horizontal
+                label: More
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-zh/security
+                    icon: mdi:shield-home-outline
+                    label: 安防
+                  - url: /casaray-v3-zh/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 灯光
+                  - url: /casaray-v3-zh/climate
+                    icon: mdi:thermometer
+                    label: 气候
+                  - url: /casaray-v3-zh/network
+                    icon: mdi:router-wireless
+                    label: 网络
+                  - url: /casaray-v3-zh/house-health
+                    icon: mdi:home-heart
+                    label: 房屋健康
+                  - url: /casaray-v3-zh/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-zh/bills
+                    icon: mdi:receipt-text-outline
+                    label: 账单
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: 客房
     path: guest-room
     icon: mdi:bed-single-outline
@@ -5080,6 +5498,56 @@ views:
             grid_options:
               columns: 4
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-zh/home
+                icon: mdi:home-variant-outline
+                label: 首页
+              - url: /casaray-v3-zh/rooms
+                icon: mdi:floor-plan
+                label: 房间
+              - url: /casaray-v3-zh/energy
+                icon: mdi:lightning-bolt-outline
+                label: 能源
+              - url: /casaray-v3-zh/cameras
+                icon: mdi:cctv
+                label: 摄像头
+              - icon: mdi:dots-horizontal
+                label: More
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-zh/security
+                    icon: mdi:shield-home-outline
+                    label: 安防
+                  - url: /casaray-v3-zh/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 灯光
+                  - url: /casaray-v3-zh/climate
+                    icon: mdi:thermometer
+                    label: 气候
+                  - url: /casaray-v3-zh/network
+                    icon: mdi:router-wireless
+                    label: 网络
+                  - url: /casaray-v3-zh/house-health
+                    icon: mdi:home-heart
+                    label: 房屋健康
+                  - url: /casaray-v3-zh/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-zh/bills
+                    icon: mdi:receipt-text-outline
+                    label: 账单
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: 灯光
     path: lighting
     icon: mdi:lightbulb-group-outline
@@ -5999,6 +6467,56 @@ views:
             grid_options:
               columns: 4
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-zh/home
+                icon: mdi:home-variant-outline
+                label: 首页
+              - url: /casaray-v3-zh/rooms
+                icon: mdi:floor-plan
+                label: 房间
+              - url: /casaray-v3-zh/energy
+                icon: mdi:lightning-bolt-outline
+                label: 能源
+              - url: /casaray-v3-zh/cameras
+                icon: mdi:cctv
+                label: 摄像头
+              - icon: mdi:dots-horizontal
+                label: More
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-zh/security
+                    icon: mdi:shield-home-outline
+                    label: 安防
+                  - url: /casaray-v3-zh/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 灯光
+                  - url: /casaray-v3-zh/climate
+                    icon: mdi:thermometer
+                    label: 气候
+                  - url: /casaray-v3-zh/network
+                    icon: mdi:router-wireless
+                    label: 网络
+                  - url: /casaray-v3-zh/house-health
+                    icon: mdi:home-heart
+                    label: 房屋健康
+                  - url: /casaray-v3-zh/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-zh/bills
+                    icon: mdi:receipt-text-outline
+                    label: 账单
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: 气候
     path: climate
     icon: mdi:thermometer
@@ -6359,6 +6877,56 @@ views:
             grid_options:
               columns: 4
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-zh/home
+                icon: mdi:home-variant-outline
+                label: 首页
+              - url: /casaray-v3-zh/rooms
+                icon: mdi:floor-plan
+                label: 房间
+              - url: /casaray-v3-zh/energy
+                icon: mdi:lightning-bolt-outline
+                label: 能源
+              - url: /casaray-v3-zh/cameras
+                icon: mdi:cctv
+                label: 摄像头
+              - icon: mdi:dots-horizontal
+                label: More
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-zh/security
+                    icon: mdi:shield-home-outline
+                    label: 安防
+                  - url: /casaray-v3-zh/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 灯光
+                  - url: /casaray-v3-zh/climate
+                    icon: mdi:thermometer
+                    label: 气候
+                  - url: /casaray-v3-zh/network
+                    icon: mdi:router-wireless
+                    label: 网络
+                  - url: /casaray-v3-zh/house-health
+                    icon: mdi:home-heart
+                    label: 房屋健康
+                  - url: /casaray-v3-zh/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-zh/bills
+                    icon: mdi:receipt-text-outline
+                    label: 账单
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: 能源
     path: energy
     icon: mdi:lightning-bolt-outline
@@ -6990,6 +7558,56 @@ views:
             grid_options:
               columns: 4
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-zh/home
+                icon: mdi:home-variant-outline
+                label: 首页
+              - url: /casaray-v3-zh/rooms
+                icon: mdi:floor-plan
+                label: 房间
+              - url: /casaray-v3-zh/energy
+                icon: mdi:lightning-bolt-outline
+                label: 能源
+              - url: /casaray-v3-zh/cameras
+                icon: mdi:cctv
+                label: 摄像头
+              - icon: mdi:dots-horizontal
+                label: More
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-zh/security
+                    icon: mdi:shield-home-outline
+                    label: 安防
+                  - url: /casaray-v3-zh/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 灯光
+                  - url: /casaray-v3-zh/climate
+                    icon: mdi:thermometer
+                    label: 气候
+                  - url: /casaray-v3-zh/network
+                    icon: mdi:router-wireless
+                    label: 网络
+                  - url: /casaray-v3-zh/house-health
+                    icon: mdi:home-heart
+                    label: 房屋健康
+                  - url: /casaray-v3-zh/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-zh/bills
+                    icon: mdi:receipt-text-outline
+                    label: 账单
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - type: sections
     title: Bills
     path: bills
@@ -9471,6 +10089,56 @@ views:
             grid_options:
               columns: 4
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-zh/home
+                icon: mdi:home-variant-outline
+                label: 首页
+              - url: /casaray-v3-zh/rooms
+                icon: mdi:floor-plan
+                label: 房间
+              - url: /casaray-v3-zh/energy
+                icon: mdi:lightning-bolt-outline
+                label: 能源
+              - url: /casaray-v3-zh/cameras
+                icon: mdi:cctv
+                label: 摄像头
+              - icon: mdi:dots-horizontal
+                label: More
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-zh/security
+                    icon: mdi:shield-home-outline
+                    label: 安防
+                  - url: /casaray-v3-zh/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 灯光
+                  - url: /casaray-v3-zh/climate
+                    icon: mdi:thermometer
+                    label: 气候
+                  - url: /casaray-v3-zh/network
+                    icon: mdi:router-wireless
+                    label: 网络
+                  - url: /casaray-v3-zh/house-health
+                    icon: mdi:home-heart
+                    label: 房屋健康
+                  - url: /casaray-v3-zh/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-zh/bills
+                    icon: mdi:receipt-text-outline
+                    label: 账单
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: 摄像头
     path: cameras
     icon: mdi:cctv
@@ -10034,6 +10702,56 @@ views:
             grid_options:
               columns: 6
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-zh/home
+                icon: mdi:home-variant-outline
+                label: 首页
+              - url: /casaray-v3-zh/rooms
+                icon: mdi:floor-plan
+                label: 房间
+              - url: /casaray-v3-zh/energy
+                icon: mdi:lightning-bolt-outline
+                label: 能源
+              - url: /casaray-v3-zh/cameras
+                icon: mdi:cctv
+                label: 摄像头
+              - icon: mdi:dots-horizontal
+                label: More
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-zh/security
+                    icon: mdi:shield-home-outline
+                    label: 安防
+                  - url: /casaray-v3-zh/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 灯光
+                  - url: /casaray-v3-zh/climate
+                    icon: mdi:thermometer
+                    label: 气候
+                  - url: /casaray-v3-zh/network
+                    icon: mdi:router-wireless
+                    label: 网络
+                  - url: /casaray-v3-zh/house-health
+                    icon: mdi:home-heart
+                    label: 房屋健康
+                  - url: /casaray-v3-zh/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-zh/bills
+                    icon: mdi:receipt-text-outline
+                    label: 账单
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - type: sections
     title: Front Door
     path: camera-front-door
@@ -10680,6 +11398,56 @@ views:
             grid_options:
               columns: 4
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-zh/home
+                icon: mdi:home-variant-outline
+                label: 首页
+              - url: /casaray-v3-zh/rooms
+                icon: mdi:floor-plan
+                label: 房间
+              - url: /casaray-v3-zh/energy
+                icon: mdi:lightning-bolt-outline
+                label: 能源
+              - url: /casaray-v3-zh/cameras
+                icon: mdi:cctv
+                label: 摄像头
+              - icon: mdi:dots-horizontal
+                label: More
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-zh/security
+                    icon: mdi:shield-home-outline
+                    label: 安防
+                  - url: /casaray-v3-zh/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 灯光
+                  - url: /casaray-v3-zh/climate
+                    icon: mdi:thermometer
+                    label: 气候
+                  - url: /casaray-v3-zh/network
+                    icon: mdi:router-wireless
+                    label: 网络
+                  - url: /casaray-v3-zh/house-health
+                    icon: mdi:home-heart
+                    label: 房屋健康
+                  - url: /casaray-v3-zh/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-zh/bills
+                    icon: mdi:receipt-text-outline
+                    label: 账单
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - type: sections
     title: Automations
     path: automations
@@ -12258,6 +13026,56 @@ views:
             grid_options:
               columns: 4
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-zh/home
+                icon: mdi:home-variant-outline
+                label: 首页
+              - url: /casaray-v3-zh/rooms
+                icon: mdi:floor-plan
+                label: 房间
+              - url: /casaray-v3-zh/energy
+                icon: mdi:lightning-bolt-outline
+                label: 能源
+              - url: /casaray-v3-zh/cameras
+                icon: mdi:cctv
+                label: 摄像头
+              - icon: mdi:dots-horizontal
+                label: More
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-zh/security
+                    icon: mdi:shield-home-outline
+                    label: 安防
+                  - url: /casaray-v3-zh/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 灯光
+                  - url: /casaray-v3-zh/climate
+                    icon: mdi:thermometer
+                    label: 气候
+                  - url: /casaray-v3-zh/network
+                    icon: mdi:router-wireless
+                    label: 网络
+                  - url: /casaray-v3-zh/house-health
+                    icon: mdi:home-heart
+                    label: 房屋健康
+                  - url: /casaray-v3-zh/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-zh/bills
+                    icon: mdi:receipt-text-outline
+                    label: 账单
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: 网络
     path: network
     icon: mdi:router-wireless
@@ -12627,6 +13445,56 @@ views:
             grid_options:
               columns: 4
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-zh/home
+                icon: mdi:home-variant-outline
+                label: 首页
+              - url: /casaray-v3-zh/rooms
+                icon: mdi:floor-plan
+                label: 房间
+              - url: /casaray-v3-zh/energy
+                icon: mdi:lightning-bolt-outline
+                label: 能源
+              - url: /casaray-v3-zh/cameras
+                icon: mdi:cctv
+                label: 摄像头
+              - icon: mdi:dots-horizontal
+                label: More
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-zh/security
+                    icon: mdi:shield-home-outline
+                    label: 安防
+                  - url: /casaray-v3-zh/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 灯光
+                  - url: /casaray-v3-zh/climate
+                    icon: mdi:thermometer
+                    label: 气候
+                  - url: /casaray-v3-zh/network
+                    icon: mdi:router-wireless
+                    label: 网络
+                  - url: /casaray-v3-zh/house-health
+                    icon: mdi:home-heart
+                    label: 房屋健康
+                  - url: /casaray-v3-zh/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-zh/bills
+                    icon: mdi:receipt-text-outline
+                    label: 账单
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: 通知
     path: alerts
     icon: mdi:bell-outline
@@ -12879,6 +13747,56 @@ views:
             grid_options:
               columns: 4
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-zh/home
+                icon: mdi:home-variant-outline
+                label: 首页
+              - url: /casaray-v3-zh/rooms
+                icon: mdi:floor-plan
+                label: 房间
+              - url: /casaray-v3-zh/energy
+                icon: mdi:lightning-bolt-outline
+                label: 能源
+              - url: /casaray-v3-zh/cameras
+                icon: mdi:cctv
+                label: 摄像头
+              - icon: mdi:dots-horizontal
+                label: More
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-zh/security
+                    icon: mdi:shield-home-outline
+                    label: 安防
+                  - url: /casaray-v3-zh/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 灯光
+                  - url: /casaray-v3-zh/climate
+                    icon: mdi:thermometer
+                    label: 气候
+                  - url: /casaray-v3-zh/network
+                    icon: mdi:router-wireless
+                    label: 网络
+                  - url: /casaray-v3-zh/house-health
+                    icon: mdi:home-heart
+                    label: 房屋健康
+                  - url: /casaray-v3-zh/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-zh/bills
+                    icon: mdi:receipt-text-outline
+                    label: 账单
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - type: sections
     title: CasaRay (V2)
     path: v2-home
