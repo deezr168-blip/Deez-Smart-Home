@@ -267,8 +267,19 @@ def render_card(card, ctx):
         a = attrs.get(e) or {}
         temp = f'{a["temperature"]}°' if "temperature" in a else "—"
         hum = f' · humidity {a["humidity"]}%' if "humidity" in a else ""
-        return (f'<div class="ha-card weather"><div class="wi">{icons.svg("weather-partly-cloudy", "wic")}</div>'
-                f'<div><div class="wt">{temp}</div><div class="ws">{state_text(e, s, attrs)}{hum}</div></div></div>')
+        now = (f'<div class="wnow"><div class="wi">{icons.svg("weather-partly-cloudy", "wic")}</div>'
+               f'<div><div class="wt">{temp}</div><div class="ws">{state_text(e, s, attrs)}{hum}</div></div></div>')
+        show_now = card.get("show_current", True) is not False
+        if card.get("show_forecast", True) is False:
+            return f'<div class="ha-card weather">{now}</div>'
+        # The forecast itself comes from the entity at run time (weather/subscribe_forecast):
+        # the preview draws its place, labelled, never invented numbers (V3-028).
+        kind = card.get("forecast_type", "daily")
+        slots = "".join(f'<div class="fslot"><div class="fk">{kind}</div>{icons.svg("weather-partly-cloudy", "fic")}'
+                        f'<div class="ft">—</div></div>' for _ in range(5))
+        cap = f'<div class="fcap">{html.escape(kind)} forecast: drawn by Home Assistant from the entity, not simulated</div>'
+        return (f'<div class="ha-card weather wf">{now if show_now else ""}'
+                f'<div class="fslots">{slots}</div>{cap}</div>')
     if t == "picture-entity":
         e = card["entity"]
         s = states.get(e, "unknown")
@@ -335,7 +346,17 @@ background:rgba(169,180,195,.12);fill:var(--v3-text-2)}
 .btn{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4% 0;font-size:16px;line-height:1.2;
 fill:var(--v3-text-2);position:relative}.btn.accent{fill:var(--v3-accent)}
 .bic{width:40%;max-height:80%;height:auto;aspect-ratio:1}.bn{margin-top:8px;text-align:center}
-.weather{display:flex;align-items:center;gap:16px;padding:16px}.wic{width:64px;height:64px;fill:var(--v3-text-2)}
+.weather{display:flex;align-items:center;gap:16px;padding:16px}.wnow{display:flex;align-items:center;gap:16px}
+.weather.wf{flex-direction:column;align-items:stretch;gap:10px}
+.fslots{display:flex;justify-content:space-between;gap:6px}.fslot{flex:1;text-align:center;color:var(--v3-text-2);font-size:12px}
+.fic{width:26px;height:26px;fill:var(--v3-text-2);display:block;margin:4px auto}.ft{font-size:14px;color:var(--v3-text)}
+.fcap{font-size:11px;color:var(--v3-text-2);font-style:italic}
+.navsim{position:fixed;left:0;right:0;bottom:0;z-index:5;pointer-events:none}
+.nbar{display:flex;justify-content:space-around;background:var(--v3-elevated,#1a1f25);border-top:1px solid rgba(255,255,255,.12);padding:8px 4px 22px}
+.nbi{text-align:center;color:var(--v3-text-2);font-size:12px;min-width:56px}.nbic{width:24px;height:24px;fill:currentColor;display:block;margin:0 auto 2px}
+.nbcap{position:absolute;right:8px;top:-16px;font-size:10px;color:var(--v3-text-2);font-style:italic}
+@media (min-width:768px){.nbar{margin:0 auto 14px;max-width:560px;border:1px solid rgba(255,255,255,.12);border-radius:22px;padding:8px 6px}}
+body:has(.navsim) .view{padding-bottom:80px}@media (min-width:768px){body:has(.navsim) .view{padding-bottom:100px}}.wic{width:64px;height:64px;fill:var(--v3-text-2)}
 .wt{font-size:28px;line-height:1.2}.ws{color:var(--v3-text-2)}
 .cam{display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#25313b,#10161b);position:relative}
 .camoff{background:#1b1f23}.cic{width:56px;height:56px;fill:rgba(169,180,195,.35)}
@@ -413,6 +434,17 @@ def page(view, states, attrs, names, icons, label, samples=None, sample_badge=No
         f = view["footer"]
         foot = (f'<div class="vfooter" style="--footer-max-width:{int(f.get("max_width", 600))}px">'
                 f'<div class="fwrap">{render_card(f["card"], ctx)}</div></div>')
+    # Navbar card (V3-028): it draws itself fixed to the screen edge, so it is not in the
+    # grid. An approximation from its docs, labelled as one: docked on a phone, floating
+    # on wider screens (desktop.min_width 768), labels shown; auto_padding keeps the last
+    # cards clear of it (80 px on a phone, 100 px wider).
+    nb = next((c for sec in view["sections"] for c in sec.get("cards", []) if c.get("type") == "custom:navbar-card"), None)
+    if nb:
+        items = "".join(
+            f'<div class="nbi">{icons.svg((r.get("icon") or "mdi:circle").split(":", 1)[1], "nbic")}'
+            f'<div class="nbl">{html.escape(str(r.get("label", "")))}</div></div>' for r in nb.get("routes", []))
+        foot += (f'<div class="navsim"><div class="nbar">{items}</div>'
+                 f'<div class="nbcap">Navbar card: approximation, not the card\'s own rendering</div></div>')
     tag = f'<div class="tag">{html.escape(label)}</div>' if label else ""
     return ("<!doctype html><html><head><meta charset='utf-8'>"
             "<meta name='viewport' content='width=device-width,initial-scale=1'>"
