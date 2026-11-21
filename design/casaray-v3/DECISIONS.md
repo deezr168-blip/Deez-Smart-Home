@@ -6,6 +6,139 @@ and `ha-deploy` are unaffected by everything here.
 
 ---
 
+## V3-029 · 21/11/26 · Clock Weather Card is Home's Weather band
+
+**Status:** owner instruction (21/11/26): "switch weather band to clock weather and i install
+the apex to pr 29". Same branch as V3-027/028 (draft PR #29). Not merged, not deployed.
+
+1. **Clock Weather Card** (`pkissling/clock-weather-card`) replaces the two native
+   `weather-forecast` cards V3-028 put in Home's Weather band. Installed on the instance: the
+   owner's HACS list (`docs/casaray-v3/HACS_INSTALLED.md`, on PR #21's branch) names it.
+   Options read from the card's own README, CHANGELOG and CONTRIBUTING at main (3.1.0,
+   01/11/26), the v3 `sections` schema (v3.0.0, 25/10/26 moved every display option there):
+   - `entity: weather.forecast_home`, the entity Home already reads;
+   - `sections.header.rows`: the card's documented default rows, with two patterns set:
+     `time_pattern: HH:mm` over `date_pattern: dd/MM/yy` (Luxon tokens; the house's
+     DD/MM/YY, time above date);
+   - `forecast_strip` (hourly, sunrise and sunset) and `forecast_list` (daily, five days) are
+     left to the card's defaults; tap opens more-info, the card's default;
+   - `locale` per dashboard: `en-au`, `zh-hant` (Cantonese), `zh-hans`, `km`. The card ships
+     text in English, Traditional and Simplified Chinese only; for Khmer it falls back to
+     English words while dates still format in Khmer.
+2. **Fallback.** A full-width note under the card names it (en, yue, km; zh-Hans falls back to
+   English). If the card is missing, that band alone shows "Custom element doesn't exist", and
+   the chip strip's native Outside reading on the same entity still answers at the top. That
+   is why this band is exempt from V3-027's "custom bands after every native reading" rule; the
+   exemption is Home and this card only.
+3. **Gate** (`validate_dashboard.py`): the card is allowed on Home only, with reviewed options,
+   header segments (icon, weather, spacer, time, date), locales and patterns; a four-digit year
+   or a 12-hour clock fails the build. 18 tests in `test_clock_weather_v3_029.py`, nine of them
+   proving a rule fails on the shape it stops.
+4. **Simulated preview:** the band is full width with no hole on the wall iPad or a phone; the
+   card is drawn as a labelled approximation, forecasts not simulated.
+5. **Still unverified:** that `weather.forecast_home` is the entity showing 23 °C Sunny. The
+   connector cannot see weather entities. The owner confirms it in an isolated preview on Home
+   Assistant before the weather is called verified.
+6. **HACS install status** (the owner's list): Power Flow Card Plus, auto-entities, Navbar card
+   and Clock Weather Card are installed. **ApexCharts** is not listed; the owner is installing
+   it, and it stays in PR #29. **WallPanel** is not listed: Home Assistant ignores the
+   dashboard's `wallpanel:` key until it is installed, so it stays and does nothing meanwhile.
+
+---
+
+## V3-028 · 21/11/26 · A navbar on every page; weather with hourly and daily forecasts on Home
+
+**Status:** owner request (21/11/26, with three phone screenshots): "Add in navbar for
+navigation, i want weather card and forecast cards in home page", then "Add in rubbish
+collection scheduler as well". Same local branch as V3-027. Not pushed, not deployed.
+
+1. **Navbar card** (`joseluis9595/lovelace-navbar-card`). Installed on the instance: the
+   owner's "Add to dashboard → By card" lists it, which only happens once its resource loads.
+   PR #27 had rated it "not now" because its option docs were unreachable; this session read
+   them from the card's own repository (`docs/content/docs/configuration/*.md`,
+   `advanced/custom-actions.md`, main, 21/11/26). Used: `routes` (url, icon, label), a More
+   route with `tap_action: open-popup` and `popup`, `desktop.show_labels`,
+   `mobile.show_labels`, `mobile.safe_area`, `layout.reflect_child_state`. Nothing else.
+   - On all 18 native pages, last card; routes Home, Rooms, Energy, Cameras, then More
+     (Security, Lighting, Climate, Network, House health, Alerts, Bills), the V3 order; URLs
+     from `ctx.link()`, labels from each catalogue; a route is selected when its URL is the
+     page, More while one of its pages is open.
+   - **The native top bar stays** on every page as the fallback: if the card fails to load,
+     the page still navigates and Home Assistant shows "Custom element doesn't exist" at its
+     foot. Removing the top bar is a separate owner decision.
+   - Carried and classic V2 views are unchanged.
+2. **Home weather.** A full-width Weather band after Rooms | Shopping list (One tap and Rooms
+   stay under Needs attention, CVA-004): two native `weather-forecast` cards on
+   `weather.forecast_home`, current with the hourly forecast beside the daily forecast. Both
+   three rows in the frontend's own sizing, so the band is level. `forecast_type` values
+   checked against the pinned frontend (20260826.7 `data/weather.ts`). Right now's
+   current-weather card moved into the band. **Not verified:** the connector cannot see
+   weather entities, so whether the owner's phone dashboard (23 °C Sunny) uses
+   `weather.forecast_home` is unconfirmed; it is the entity Home already read and is in the
+   05/09 export. If it is dark, the native card says so itself.
+3. **Who's home re-measured** against the shorter Right now: people and the occupancy tile
+   3 → 2 rows. Simulated wall iPad, Cantonese: band gaps 13 · 4 px → 28 · 4 px (no whole-row
+   count closes it); phone: no gaps, no clipped label.
+4. **Preview tool** draws forecasts (labelled, no invented numbers) and the navbar (a
+   labelled approximation); every image from it is a simulation.
+5. **Rubbish collection scheduler: not built.** No rubbish, bin, waste or collection entity
+   exists (connector, 21/11/26; 05/09 export), and the Rubbish Collection page is on PR #21's
+   branch, not this one. A scheduler needs a data source the owner chooses: a council
+   integration (address entered in Home Assistant, never in this repository), a fixed-weekday
+   package, or dates set by hand in helpers. Each is a live configuration change. Waiting on
+   the owner's choice and the collection days.
+6. **Noted, not changed here:** this line's Cantonese `nav.climate` still reads 冷氣同天氣;
+   PR #21 corrected it to 氣候. It now also shows in the navbar's More list.
+
+---
+
+## V3-027 · 21/11/26 · Four of the approved custom cards on the working dashboards
+
+**Status:** owner brief (21/11/26): bring the working V3 dashboards in line with the custom
+cards implemented for the preview (V3-026, where the owner chose **"Adopt cards in V3"**),
+keeping them reliable and easy to recover. Built on a branch stacked on PR #26. Not pushed,
+not merged, not deployed; nothing installed.
+
+1. **Used, and where.** Each in its own band, after every native reading on its page:
+   - **Energy → "Power flow":** Power Flow Card Plus and ApexCharts on the two verified
+     sensors the page already reads, `sensor.primo_5_0_1_1_ac_power` (solar) and
+     `sensor.powerpal_gateway_powerpal_power` (grid import), with the preview's caveat that
+     the card's "Home" is a sum (no export or consumption sensor, V3-003).
+   - **House health → "Not answering now":** four auto-entities lists (lights, cameras,
+     switches, sensors and binary sensors) whose state is `unavailable`, each with an `else`
+     card that speaks only for its kind.
+   - **Dashboard level:** WallPanel with the preview's reviewed options (photos after 120 s
+     idle; time over DD/MM/YY, the parents' room temperature, the front door; header and
+     sidebar left alone). Dark, it says No data / Offline, never Open or Closed.
+2. **Safe handling when a card is not installed.** Home Assistant draws "Custom element
+   doesn't exist" in place of a missing custom card, and has no way for a dashboard to test
+   whether a resource loaded. So nothing native was replaced: each band is additive, sits
+   below the page's readings, controls and links, and ends with a note naming the card(s)
+   it needs (the `cam.live_note` pattern of V3-014). WallPanel is ignored until installed.
+   The gate enforces all three (`working_custom_problems`).
+3. **Not used, and why:**
+   - **Kiosk Mode.** The working dashboards carry no `kiosk_mode` because it was removed
+     after the "kiosk mode lockout" (ARCHITECTURE.md, Dependencies), and "restoring it is an
+     owner decision". V3-026 applied it to the separate preview, where the working dashboard
+     stays reachable. Putting it back on a working dashboard is left to the owner; the
+     generator refuses it and the gate fails on it.
+   - **Bubble Card** (Rooms pop-ups) and **Advanced Camera Card** (Cameras): bound to
+     `light.living_room`, `light.dining` and four camera IDs that are not on the instance
+     (V3-025 item 13). Blocked until the real IDs are confirmed in Settings → Entities.
+4. **Scope, all four locales:** 44 views byte-identical; Energy and House health each gain
+   one section, every existing section identical and in order; one new dashboard key,
+   `wallpanel`; the preview dashboard unchanged. Proven by building with and without the
+   additions (`tests/v3/test_working_hacs_v3_027.py`, 15 tests, including six that break each
+   rule on purpose).
+5. **Strings:** en; yue from the preview's own catalogue; km drafted (awaiting native review,
+   as every km string); zh-Hans falls back to English by its documented convention.
+6. **Needs the owner:** install Power Flow Card Plus, ApexCharts, auto-entities and WallPanel
+   through HACS (`docs/casaray-v3/PREVIEW_DEPLOYMENT.md`, "HACS cards the working dashboards
+   use"); decide Kiosk Mode on the working dashboards; confirm the six entity IDs. Nothing
+   here was seen on a device.
+
+---
+
 ## V3-026 · 20/11/26 · Seven custom cards approved for the preview, and built into it
 
 **Status: owner decision (20/11/26).** Asked what "Approve" covered, the owner chose

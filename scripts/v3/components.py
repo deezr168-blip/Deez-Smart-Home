@@ -532,12 +532,19 @@ def chip_cameras(ctx, ents):
 
 # ---------------------------------------------------------------- misc
 
-def weather(ctx, entity, forecast=False, columns=12):
+def weather(ctx, entity, forecast=False, columns=12, forecast_type="daily", current=True, rows=None):
+    """Native weather-forecast card. forecast_type is the pinned frontend's own
+    set (20260826.7, data/weather.ts: hourly | daily | twice_daily); a forecast
+    the entity does not provide is the card's own "no forecast", never invented."""
+    if forecast_type not in ("hourly", "daily", "twice_daily"):
+        raise SystemExit(f"weather: forecast_type {forecast_type!r} is not one the frontend knows")
     ctx.use(entity)
-    c = {"type": "weather-forecast", "entity": entity, "show_current": True,
+    c = {"type": "weather-forecast", "entity": entity, "show_current": current,
          "show_forecast": forecast, "grid_options": grid(columns)}
     if forecast:
-        c["forecast_type"] = "daily"
+        c["forecast_type"] = forecast_type
+    if rows:
+        c["grid_options"]["rows"] = rows
     return c
 
 
@@ -1392,3 +1399,135 @@ def preview_wallpanel(ctx, idle_time=120, temperature="sensor.bedroom_motion_sen
     return {"enabled": True, "hide_toolbar": False, "hide_sidebar": False, "fullscreen": False,
             "idle_time": idle_time, "image_url": "media-source://media_source/",
             "cards": [clock, temp, door_card]}
+
+
+# ---------------------------------------------------------------- custom cards on the working dashboards (V3-027)
+# V3-026 approved seven HACS cards and the owner chose "Adopt cards in V3"; V3-027
+# brings four of them to the working dashboards, each in its own band AFTER the
+# page's native content, with a note saying what it needs. Until a card is
+# installed through HACS, Home Assistant draws "Custom element doesn't exist" in
+# that band only; every native reading, control and link above it is unchanged.
+# Not here, and why (V3-027): Kiosk Mode (removed after the "kiosk mode lockout";
+# restoring it on a working dashboard is the owner's call), Bubble Card and
+# Advanced Camera Card (bound to six entity IDs not found on the instance).
+# Options are exactly those reviewed for the preview (V3-026, PR #27); labels are
+# one language per locale, from the working catalogues.
+
+WORKING_CUSTOM = {"energy": {"custom:power-flow-card-plus", "custom:apexcharts-card"},
+                  "house-health": {"custom:auto-entities"}}
+# the native card auto-entities fills, allowed where auto-entities is
+WORKING_INNER = {"house-health": {"entities"}}
+
+
+def power_flow(ctx, solar, grid_import, columns=12):
+    """Power Flow Card Plus: solar and grid import. With no consumption or export
+    entity the card adds the sources up for Home, which reads high while the
+    panels export; energy.flow_caveat says so beside it."""
+    ctx.use([solar, grid_import])
+    return {"type": "custom:power-flow-card-plus",
+            "entities": {"solar": {"entity": solar, "name": ctx.t("h.solar")},
+                         "grid": {"entity": grid_import, "name": ctx.t("energy.flow_grid")},
+                         "home": {"name": ctx.t("energy.flow_home")}},
+            "grid_options": grid(columns)}
+
+
+def apex_today(ctx, solar, grid_import, columns=12):
+    """ApexCharts: today from midnight, solar and grid import as areas."""
+    ctx.use([solar, grid_import])
+    return {"type": "custom:apexcharts-card", "graph_span": "24h", "span": {"start": "day"},
+            "header": {"show": True, "title": ctx.t("energy.flow_today")}, "now": {"show": True},
+            "series": [{"entity": solar, "name": ctx.t("h.solar"), "type": "area"},
+                       {"entity": grid_import, "name": ctx.t("energy.flow_grid"), "type": "area"}],
+            "grid_options": grid(columns)}
+
+
+def unavailable_list(ctx, title_key, domains, columns=12):
+    """auto-entities: every entity of these domains whose state is unavailable, by
+    name, in an entities card. With none, the `else` card says so for this kind
+    only: a statement about what reports unavailable, not about the house."""
+    return {"type": "custom:auto-entities",
+            "card": {"type": "entities", "title": ctx.t(title_key)},
+            "filter": {"include": [{"domain": d, "state": "unavailable"} for d in domains]},
+            "sort": {"method": "name"},
+            "else": markdown("**" + ctx.t(title_key) + "**\n\n<small>" + ctx.t("hh.list_none") + "</small>", columns),
+            "grid_options": grid(columns)}
+
+
+def wallpanel(ctx, idle_time=120, temperature="sensor.bedroom_motion_sensor_temperature",
+              door="binary_sensor.f_contact_sensor_door"):
+    """WallPanel (dashboard-level `wallpanel:`), the preview's reviewed options:
+    after `idle_time` seconds the photos in Home Assistant's media folder, with
+    the time over DD/MM/YY, the parents' room temperature and the front door.
+    Header and sidebar are left alone (hide_* false). Ignored by Home Assistant
+    while the card is not installed; a touch returns to the dashboard."""
+    clock = markdown("# {{ now().strftime('%H:%M') }}\n{{ now().strftime('%d/%m/%y') }}")
+    temp = markdown("**" + ctx.t("wp.parents_temp") + "**\n## {{ " + deg_expr(ctx, temperature, 1) + " }}")
+    door_card = markdown("**" + ctx.t("room.front_door") + "**\n## {{ "
+                         + word_expr(ctx, door, {"on": "s.open", "off": "s.closed"}) + " }}")
+    for c in (clock, temp, door_card):
+        c.pop("grid_options", None)   # the info box lays its cards out itself
+    return {"enabled": True, "hide_toolbar": False, "hide_sidebar": False, "fullscreen": False,
+            "idle_time": idle_time, "image_url": "media-source://media_source/",
+            "cards": [clock, temp, door_card]}
+
+
+# ---------------------------------------------------------------- Navbar card (V3-028)
+# Owner, 21/11/26: "Add in navbar for navigation". Navbar Card is installed on the
+# instance (the owner's card picker lists it). Every option below is in the card's
+# own docs (joseluis9595/lovelace-navbar-card, docs/content/docs/configuration/*.md
+# and advanced/custom-actions.md at main, read 21/11/26); nothing else is set. The
+# native top bar stays on every page: if the card fails to load, the page still
+# navigates (and Home Assistant shows "Custom element doesn't exist" at its foot).
+
+NAVBAR = "custom:navbar-card"
+
+
+def navbar(ctx, routes, more):
+    """One navbar for a page: the main destinations as labelled routes, the rest
+    behind a "More" route that opens the card's popup. A route is drawn selected
+    when its url is the page's own path; with reflect_child_state, More is
+    selected while one of its pages is open, so the current destination is
+    always marked. routes / more: [[path, label_key, icon], ...]."""
+    def route(path, key, icon):
+        return {"url": ctx.link(path), "icon": icon, "label": ctx.t(key)}
+    items = [route(*r) for r in routes]
+    items.append({"icon": "mdi:dots-horizontal", "label": ctx.t("nav.more"),
+                  "tap_action": {"action": "open-popup"}, "popup": [route(*r) for r in more]})
+    return {"type": NAVBAR, "routes": items,
+            "desktop": {"show_labels": True},
+            "mobile": {"show_labels": True, "safe_area": True},
+            "layout": {"reflect_child_state": True},
+            "grid_options": grid("full")}
+
+
+# ---------------------------------------------------------------- Clock Weather Card (V3-029)
+# Owner, 21/11/26: "switch weather band to clock weather". Installed on the instance
+# (docs/casaray-v3/HACS_INSTALLED.md, the owner's HACS list; the owner's phone shows it
+# working). Options from the card's own README and CONTRIBUTING.md at
+# pkissling/clock-weather-card main (3.1.0, 01/11/26), read 21/11/26: the v3 `sections`
+# schema (v3.0.0, 25/10/26). The header keeps the card's documented default rows, with
+# only the two patterns this house needs: time HH:mm over date dd/MM/yy (DD/MM/YY).
+# The hourly forecast strip and the daily forecast list are the card's defaults.
+
+CLOCK_WEATHER = "custom:clock-weather-card"
+# the card's own translations are en, zh-hant and zh-hans (src/locales/, 21/11/26); for
+# any other tag it falls back to English text while dates still format in that language
+CWC_LOCALE = {"en": "en-au", "yue": "zh-hant", "zh-Hans": "zh-hans", "km": "km"}
+
+
+def clock_weather(ctx, entity):
+    """Clock Weather Card on one weather entity: icon, temperature and condition, the
+    time over DD/MM/YY, the hourly strip (with sunrise/sunset), the daily list."""
+    if not entity.startswith("weather."):
+        raise SystemExit(f"clock_weather: {entity} is not a weather entity")
+    ctx.use(entity)
+    rows = [
+        {"segments": [{"type": "icon", "icon": "mdi:thermometer"},
+                      {"type": "weather", "attribute": "temperature"},
+                      {"type": "spacer"}, {"type": "weather"}]},
+        {"font_size": "4rem", "alignment": "center", "segments": [{"type": "time", "time_pattern": "HH:mm"}]},
+        {"alignment": "center", "segments": [{"type": "icon", "icon": "mdi:calendar"},
+                                             {"type": "date", "date_pattern": "dd/MM/yy"}]},
+    ]
+    return {"type": CLOCK_WEATHER, "entity": entity, "locale": CWC_LOCALE[ctx.locale["code"]],
+            "sections": {"header": {"rows": rows}}, "grid_options": grid("full")}

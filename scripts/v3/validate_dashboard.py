@@ -295,10 +295,123 @@ PREVIEW_ROOT = {"kiosk_mode": {"hide_header", "hide_sidebar"},
                 "wallpanel": {"enabled", "hide_toolbar", "hide_sidebar", "fullscreen", "idle_time",
                               "image_url", "cards"}}
 READ_ACTIONS = {None, "none", "more-info", "navigate"}
+# V3-027: the working dashboards may carry four of the seven, each on its page,
+# in a band after the page's native readings, with a note naming what it needs.
+WORKING_CUSTOM = dict(C.WORKING_CUSTOM, home={C.CLOCK_WEATHER})
+WORKING_INNER = C.WORKING_INNER
+PRODUCT = {"custom:power-flow-card-plus": "Power Flow Card Plus", "custom:apexcharts-card": "ApexCharts",
+           "custom:auto-entities": "auto-entities", C.CLOCK_WEATHER: "Clock Weather Card"}
+# V3-029: the owner put the weather on Home mid-page; the chip strip's Outside reading
+# (same entity, native) above it is the fallback, so the band-order rule does not apply
+ORDER_EXEMPT = {"home": {C.CLOCK_WEATHER}}
+CWC_KEYS = {"type", "entity", "locale", "sections", "grid_options"}
+CWC_SEGMENTS = {"icon", "weather", "spacer", "time", "date"}
+DATA_TYPES = {"tile", "history-graph", "picture-entity", "weather-forecast", "todo-list", "media-control"}
 
 
-def custom_problems(view):
-    """V3-026: what each owner-approved custom card on a page may do."""
+def loc_t(loc, key):
+    """A working string as the generator resolves it: the locale, its fallbacks, then en."""
+    for code in [loc["code"]] + list(loc.get("fallback", [])) + ["en"]:
+        cat = B.load_yaml(B.SRC / "i18n" / f"{code}.yaml")
+        if key in cat:
+            return str(cat[key])
+    raise KeyError(key)
+
+
+NAVBAR = C.NAVBAR
+# Navbar card options, exactly those used and documented (V3-028)
+NAVBAR_KEYS = {"type", "routes", "desktop", "mobile", "layout", "grid_options"}
+NAVBAR_ROUTE_KEYS = {"url", "icon", "label", "tap_action", "popup"}
+NAVBAR_SUB = {"desktop": {"show_labels"}, "mobile": {"show_labels", "safe_area"}, "layout": {"reflect_child_state"}}
+
+
+def navbar_problems(view, url_base, paths):
+    """V3-028, one native page: exactly one Navbar card, the last card on the page;
+    only the documented options it uses; every route and popup item a labelled
+    link to a page of this dashboard (or the More route that opens the popup);
+    and Home among the routes."""
+    bad = []
+    bars = [c for c in walk_cards(view) if c.get("type") == NAVBAR]
+    if len(bars) != 1:
+        return [f"{len(bars)} navbar cards"]
+    nb = bars[0]
+    last = (view.get("sections") or [{}])[-1].get("cards") or [{}]
+    if last[-1] is not nb:
+        bad.append("the navbar is not the page's last card")
+    if set(nb) - NAVBAR_KEYS:
+        bad.append(f"unreviewed options {sorted(set(nb) - NAVBAR_KEYS)}")
+    for k, allowed in NAVBAR_SUB.items():
+        if set(nb.get(k) or {}) - allowed:
+            bad.append(f"{k}: unreviewed options {sorted(set(nb[k]) - allowed)}")
+
+    def link_ok(url):
+        part = str(url).strip("/").split("/")
+        return len(part) == 2 and part[0] == url_base and part[1] in paths
+
+    urls = []
+    for r in nb.get("routes", []):
+        if set(r) - NAVBAR_ROUTE_KEYS:
+            bad.append(f"route {r.get('label')!r}: unreviewed keys {sorted(set(r) - NAVBAR_ROUTE_KEYS)}")
+        if not nonempty(r.get("label", "")) or not str(r.get("icon", "")).startswith("mdi:"):
+            bad.append(f"route without a label or an mdi icon: {r}")
+        if "popup" in r:
+            if r.get("tap_action") != {"action": "open-popup"} or "url" in r:
+                bad.append(f"popup route {r.get('label')!r} must open its popup and nothing else")
+            for it in r["popup"]:
+                if set(it) - {"url", "icon", "label"} or not nonempty(it.get("label", "")) or not link_ok(it.get("url")):
+                    bad.append(f"popup item {it}")
+                urls.append(it.get("url"))
+        else:
+            if "tap_action" in r or not link_ok(r.get("url")):
+                bad.append(f"route {r}")
+            urls.append(r.get("url"))
+    if f"/{url_base}/home" not in urls:
+        bad.append("no Home route")
+    if len(urls) != len(set(urls)):
+        bad.append("a destination appears twice")
+    return bad
+
+
+def working_custom_problems(view):
+    """V3-027, one working page: the custom types allowed on it and nowhere else;
+    each band holding one names it in a note (what the family sees until it is
+    installed); and no native reading comes after such a band."""
+    bad = []
+    allowed = WORKING_CUSTOM.get(view["path"], set())
+    secs = view.get("sections", [])
+    data_at, custom_at = [], []
+    for i, sec in enumerate(secs):
+        cards = list(walk_cards(sec.get("cards", []), True))
+        customs = {c["type"] for c in cards if str(c.get("type", "")).startswith("custom:")} - {NAVBAR}
+        if customs - allowed:
+            bad.append(f"section {i}: {sorted(customs - allowed)} not allowed on {view['path']}")
+        if customs:
+            custom_at.append(i)
+            notes = " ".join(c.get("content", "") for c in cards if c.get("type") == "markdown")
+            missing = [PRODUCT[t] for t in customs if t in PRODUCT and PRODUCT[t] not in notes]
+            if missing:
+                bad.append(f"section {i}: no note naming {missing}")
+        elif any(c.get("type") in DATA_TYPES for c in cards):
+            data_at.append(i)
+    exempt = ORDER_EXEMPT.get(view["path"], set())
+    custom_at = [i for i in custom_at
+                 if not ({c["type"] for c in walk_cards(secs[i].get("cards", []), True)
+                          if str(c.get("type", "")).startswith("custom:")} - {NAVBAR}) <= exempt]
+    if custom_at and data_at and max(data_at) > min(custom_at):
+        bad.append(f"native readings in section {max(data_at)} come after the custom band {min(custom_at)}")
+    bad += custom_problems(view, label_ok=nonempty)
+    return bad
+
+
+def nonempty(text):
+    return bool(str(text).strip())
+
+
+def custom_problems(view, label_ok=None):
+    """V3-026: what each owner-approved custom card on a page may do. Labels are
+    bilingual on the preview; on the working dashboards (V3-027) one language
+    per locale, so `label_ok` is just non-empty there."""
+    label_ok = label_ok or bilingual
     bad = []
     cards = list(walk_cards(view))
     hashes = {c["hash"] for c in cards if c.get("type") == "custom:bubble-card" and c.get("card_type") == "pop-up"}
@@ -309,7 +422,7 @@ def custom_problems(view):
         t = c.get("type")
         if t == "custom:bubble-card":
             label = c.get("name", "")
-            if not bilingual(str(label)):
+            if not label_ok(str(label)):
                 bad.append(f"bubble name not bilingual: {label!r}")
             if c.get("card_type") == "pop-up":
                 continue
@@ -334,33 +447,55 @@ def custom_problems(view):
             for cam in c.get("cameras", []):
                 if not str(cam.get("camera_entity", "")).startswith("camera."):
                     bad.append(f"acc camera without a camera_entity: {cam}")
-                if not bilingual(str(cam.get("title", ""))):
+                if not label_ok(str(cam.get("title", ""))):
                     bad.append(f"acc title not bilingual: {cam.get('title')!r}")
             if "menu" in c or "ptz" in str(c):
                 bad.append("acc menu or PTZ settings are not reviewed")
         elif t == "custom:power-flow-card-plus":
             for k, ent in (c.get("entities") or {}).items():
-                if not bilingual(str(ent.get("name", ""))):
+                if not label_ok(str(ent.get("name", ""))):
                     bad.append(f"power flow {k} name not bilingual")
         elif t == "custom:apexcharts-card":
             for se in c.get("series", []):
-                if not bilingual(str(se.get("name", ""))):
+                if not label_ok(str(se.get("name", ""))):
                     bad.append(f"apex series name not bilingual: {se.get('name')!r}")
+        elif t == C.CLOCK_WEATHER:
+            if set(c) - CWC_KEYS:
+                bad.append(f"clock weather: unreviewed options {sorted(set(c) - CWC_KEYS)}")
+            if not str(c.get("entity", "")).startswith("weather."):
+                bad.append("clock weather: entity is not a weather entity")
+            if c.get("locale") not in C.CWC_LOCALE.values():
+                bad.append(f"clock weather: locale {c.get('locale')!r} not reviewed")
+            secs_c = c.get("sections") or {}
+            if set(secs_c) - {"header"} or set(secs_c.get("header") or {}) - {"rows"}:
+                bad.append("clock weather: only header rows are set; strip and list stay the card's defaults")
+            for row in (secs_c.get("header") or {}).get("rows", []):
+                for seg in row.get("segments", []):
+                    if seg.get("type") not in CWC_SEGMENTS:
+                        bad.append(f"clock weather: segment {seg.get('type')!r} not reviewed")
+                    if seg.get("type") == "date" and seg.get("date_pattern") != "dd/MM/yy":
+                        bad.append(f"clock weather: date must be DD/MM/YY, not {seg.get('date_pattern')!r}")
+                    if seg.get("type") == "time" and seg.get("time_pattern") != "HH:mm":
+                        bad.append(f"clock weather: time must be HH:mm, not {seg.get('time_pattern')!r}")
         elif t == "custom:auto-entities":
             for rule in (c.get("filter") or {}).get("include", []):
                 if set(rule) - {"domain", "state"}:
                     bad.append(f"auto-entities filter beyond domain/state: {rule}")
-            if not bilingual(str((c.get("card") or {}).get("title", ""))):
+            if not label_ok(str((c.get("card") or {}).get("title", ""))):
                 bad.append("auto-entities title not bilingual")
             if not c.get("else"):
                 bad.append("auto-entities with no else card: an empty list would say nothing")
     return bad
 
 
-def root_problems(dash, export):
-    """V3-026: the preview's dashboard-level settings of Kiosk Mode and WallPanel."""
+def root_problems(dash, export, label_ok=None, forbidden=None, reviewed=None):
+    """V3-026: the preview's dashboard-level settings of Kiosk Mode and WallPanel.
+    V3-027 reuses it for the working dashboards' WallPanel, one language per
+    locale, with that locale's own reassuring words forbidden when dark."""
+    label_ok = label_ok or bilingual
+    forbidden = PREVIEW_DARK_FORBIDDEN if forbidden is None else forbidden
     bad = []
-    for key, allowed in PREVIEW_ROOT.items():
+    for key, allowed in (reviewed or PREVIEW_ROOT).items():
         if key in dash and set(dash[key]) - allowed:
             bad.append(f"{key}: unreviewed options {sorted(set(dash[key]) - allowed)}")
     km = dash.get("kiosk_mode") or {}
@@ -384,9 +519,9 @@ def root_problems(dash, export):
         except Exception as e:  # noqa: BLE001
             bad.append(f"wallpanel template: {type(e).__name__}")
             continue
-        if not bilingual(re.sub(r"<[^>]+>", " ", txt)):
-            bad.append(f"wallpanel card not bilingual: {txt[:40]!r}")
-        hits = [w for w in PREVIEW_DARK_FORBIDDEN if re.search(w, re.sub(r"<[^>]+>", " ", dtxt))]
+        if not label_ok(re.sub(r"<[^>]+>", " ", txt)):
+            bad.append(f"wallpanel card label check failed: {txt[:40]!r}")
+        hits = [w for w in forbidden if re.search(w, re.sub(r"<[^>]+>", " ", dtxt))]
         if hits:
             bad.append(f"wallpanel dark says {hits}")
     return bad
@@ -544,8 +679,16 @@ def validate(g: Gate):
 
         # dependencies
         customs = {c["type"] for c in walk_cards(dash) if str(c.get("type", "")).startswith("custom:")}
-        g.check(customs <= ALLOWED_CUSTOM, f"{tag} custom cards limited to {sorted(ALLOWED_CUSTOM)}",
-                str(customs - ALLOWED_CUSTOM))
+        allowed_custom = ALLOWED_CUSTOM.union(*WORKING_CUSTOM.values(), {NAVBAR})
+        g.check(customs <= allowed_custom, f"{tag} custom cards limited to {sorted(allowed_custom)}",
+                str(customs - allowed_custom))
+        g.check("kiosk_mode" not in dash, f"{tag} no kiosk_mode on the working dashboards "
+                "(removed after the kiosk mode lockout; restoring it is the owner's call, V3-027)")
+        rp = root_problems(dash, export, label_ok=nonempty,
+                           forbidden=[re.escape(loc_t(loc, "s.open")), re.escape(loc_t(loc, "s.closed"))],
+                           reviewed={"wallpanel": PREVIEW_ROOT["wallpanel"]})
+        g.check(not rp, f"{tag} WallPanel only, with the preview's reviewed options; dark says no data, "
+                "never open or closed (V3-027)", str(rp[:4]))
 
         # entities
         ents = B.entities_in(dash)
@@ -556,8 +699,21 @@ def validate(g: Gate):
         for v in native:
             vt = f"{tag}[{v['path']}]"
             cards = list(walk_cards(v))
-            g.check(all(c["type"] in NATIVE_TYPES for c in cards), f"{vt} native card types only",
-                    str({c['type'] for c in cards} - NATIVE_TYPES))
+            inner = WORKING_INNER.get(v["path"], set())
+            ok_types = NATIVE_TYPES | WORKING_CUSTOM.get(v["path"], set()) | inner | {NAVBAR}
+            g.check(all(c["type"] in ok_types for c in cards),
+                    f"{vt} native card types only (plus its V3-027 custom cards)",
+                    str({c['type'] for c in cards} - ok_types))
+            wc = working_custom_problems(v)
+            g.check(not wc, f"{vt} custom cards: only its own, in a band after its native readings, "
+                    "named in a note, with the preview's reviewed behaviour (V3-027)", str(wc[:4]))
+            cards = [c for c in cards if c["type"] not in inner]   # laid out by auto-entities, not the section
+            if man.get("navbar"):
+                nbp = navbar_problems(v, loc["url_base"], paths)
+                g.check(not nbp, f"{vt} navbar: one, last, documented options only, every route a labelled "
+                        "link to a page here, Home included (V3-028)", str(nbp[:4]))
+            elif any(c.get("type") == NAVBAR for c in cards):
+                g.check(False, f"{vt} navbar present but the manifest has none", "")
             g.check("card_mod" not in yaml.safe_dump(v), f"{vt} no card_mod (styling is the theme's)")
             g.check(all("grid_options" in c for c in cards), f"{vt} every card declares grid_options")
             g.check(v.get("max_columns", 4) <= 2, f"{vt} max_columns <= 2 (DR-013)")

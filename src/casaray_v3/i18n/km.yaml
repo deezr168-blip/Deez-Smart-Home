@@ -502,3 +502,26 @@ cam.no_battery: "គ្មានការអានថ្ម"
 cam.privacy_of: "ឯកជនភាព {name}"
 cam.motion_of: "ការចាប់សញ្ញាចលនា {name}"
 cam.live_note: "ចុចលើកាមេរ៉ាដើម្បីមើលផ្ទាល់ក្នុង Home Assistant ដែលអាចពង្រីកពេញអេក្រង់។ ទំព័រកាមេរ៉ានៅក្រោម «ទំព័រផ្សេងទៀត» ប្រើកាត WebRTC Camera ដែលត្រូវការការដំឡើង HACS នោះនៅលើ Green។"
+
+# Custom cards on the working dashboards (V3-027) — draft, awaiting native review
+h.power_flow: "លំហូរថាមពល"
+energy.flow_grid: "ថាមពលពីបណ្ដាញអគ្គិសនី"
+energy.flow_home: "ផ្ទះ"
+energy.flow_today: "ថ្ងៃនេះ"
+energy.flow_caveat: "«ផ្ទះ» គឺពន្លឺព្រះអាទិត្យ បូកនឹងថាមពលពីបណ្ដាញអគ្គិសនី៖ ដោយគ្មានឧបករណ៍វាស់ការនាំចេញ វាបង្ហាញខ្ពស់ពេលបន្ទះសូឡានាំចេញភ្លើង។"
+energy.flow_needs: "ផ្នែកនេះប្រើកាត HACS ពីរ គឺ Power Flow Card Plus និង ApexCharts។ បើឃើញ «Custom element doesn't exist» មានន័យថាមិនទាន់ដំឡើងទេ ហើយការអានទាំងអស់ខាងលើនៅតែដំណើរការ។"
+h.not_answering: "មិនឆ្លើយតបឥឡូវនេះ"
+hh.list_lights: "ភ្លើងដែលមិនឆ្លើយតប"
+hh.list_switches: "កុងតាក់ដែលមិនឆ្លើយតប"
+hh.list_cameras: "កាមេរ៉ាដែលមិនឆ្លើយតប"
+hh.list_sensors: "ឧបករណ៍ចាប់សញ្ញាដែលមិនឆ្លើយតប"
+hh.list_none: "គ្មានធាតុប្រភេទនេះរាយការណ៍ថាមិនអាចប្រើបានទេ"
+hh.lists_needs: "បញ្ជីទាំងនេះប្រើកាត HACS auto-entities។ បើឃើញ «Custom element doesn't exist» មានន័យថាមិនទាន់ដំឡើងទេ ហើយចំនួន និងឧបករណ៍ខាងលើនៅតែដំណើរការ។"
+wp.parents_temp: "សីតុណ្ហភាពបន្ទប់ឪពុកម្ដាយ"
+
+# Navbar and Home weather (V3-028) — draft, awaiting native review
+nav.more: "ច្រើនទៀត"
+h.weather: "អាកាសធាតុ"
+
+# Clock Weather Card on Home (V3-029) — draft, awaiting native review
+weather.needs: "ផ្នែកនេះប្រើកាត HACS Clock Weather Card។ បើឃើញ «Custom element doesn't exist» មានន័យថាមិនទាន់ដំឡើងទេ ហើយការអាន ខាងក្រៅ នៅខាងលើនៅតែដំណើរការ។"

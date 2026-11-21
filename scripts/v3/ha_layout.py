@@ -187,6 +187,10 @@ def visible(card, states, missing="hide"):
     # a Bubble Card pop-up is hidden until its hash is opened (V3-026)
     if card.get("type") == "custom:bubble-card" and card.get("card_type") == "pop-up":
         return False
+    # the Navbar card draws itself fixed to the screen edge, not in the grid (V3-028;
+    # modelled from its docs, not measured on a device)
+    if card.get("type") == "custom:navbar-card":
+        return False
     for c in card.get("visibility") or []:
         if ok(c) is not True:
             return False

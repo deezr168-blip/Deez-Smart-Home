@@ -378,6 +378,9 @@ def entities_in(node, out=None, key=None):
 
 # ------------------------------------------------------------------ build
 
+WORKING_ROOT_KEYS = ("wallpanel",)   # V3-027: Kiosk Mode stays off the working dashboards
+
+
 def build(write=True):
     man = load_yaml(SRC / "manifest.yaml")
     base = man["baseline"]
@@ -413,6 +416,9 @@ def build(write=True):
             if p in man["native"]:
                 ctx.used = set()
                 nv = build_native(specs[p], ctx)
+                if man.get("navbar"):   # V3-028: the same navbar at the foot of every native page
+                    nb = man["navbar"]
+                    nv["sections"][-1]["cards"].append(C.navbar(ctx, nb["routes"], nb["more"]))
                 views.append(nv)
                 rows.append({"path": p, "kind": "native", "source": f"views/{p}.yaml",
                              "v2_equivalent": p, "entities": sorted(entities_in(nv)),
@@ -431,7 +437,15 @@ def build(write=True):
             views.append(cv)
             rows.append({"path": f"v2-{p}", "kind": "classic", "source": f"{base['file']}#{p}",
                          "v2_equivalent": p, "entities": sorted(entities_in(cv))})
-        dash = {"title": f"CasaRay V3 ({loc['code']})", "views": views}
+        dash = {"title": f"CasaRay V3 ({loc['code']})"}
+        # dashboard-level settings of owner-approved custom cards on the working
+        # dashboards (V3-027): only WallPanel today. Absent, the output is unchanged.
+        for key, node in (man.get("working_root") or {}).items():
+            if key not in WORKING_ROOT_KEYS:
+                raise SystemExit(f"working_root: {key!r} is not reviewed for the working dashboards")
+            ctx.used = set()
+            dash[key] = resolve(node, ctx)
+        dash["views"] = views
         text = HEADER.format(locale_name=loc["name"], url_base=loc["url_base"],
                              baseline_file=base["file"], baseline_sha=sha) + dump(dash)
         outputs[loc["output"]] = text

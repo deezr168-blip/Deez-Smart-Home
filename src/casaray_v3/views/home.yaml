@@ -166,6 +166,20 @@ sections:
     cards:
       - {c: todo, entity: todo.shopping_list, rows: 8}   # as tall as the four rows of rooms beside it
 
+  # BAND 5a — weather, full width (V3-028, owner 21/11/26: "weather card and
+  # forecast cards in home page"; V3-029, owner 21/11/26: "switch weather band
+  # to clock weather"). Clock Weather Card (HACS, installed per HACS_INSTALLED.md)
+  # on the entity Home already reads: temperature and condition, the time over
+  # DD/MM/YY, the hourly strip, the daily list. If the card is missing, this band
+  # alone shows Home Assistant's error and the note; the chip strip's native
+  # Outside reading on the same entity still answers above. After Rooms |
+  # Shopping list, so One tap and Rooms stay under Needs attention (CVA-004).
+  - span: 2
+    heading: h.weather
+    cards:
+      - {c: clock_weather, entity: weather.forecast_home}
+      - {c: note, key: weather.needs, columns: full}
+
   # BAND 6 — right now | who's home. The render's left column: the weather,
   # then the two monitored plugs and the solar forecast with the footnote
   # that says what "monitored" means. Its middle column: the people, then the
@@ -173,7 +187,7 @@ sections:
   - span: 1
     heading: h.right_now
     cards:
-      - {c: weather, entity: weather.forecast_home}
+      # the current-conditions card moved up into the Weather band (V3-028)
       - {c: sensor_tile, entity: sensor.sun_next_rising, name: {t: weather.sunrise}}
       - {c: sensor_tile, entity: sensor.sun_next_setting, name: {t: weather.sunset}}
       - c: plugs_card
@@ -187,14 +201,16 @@ sections:
   - span: 1
     heading: h.whos_home
     cards:
-      - {c: person_tile, entity: person.raymond_du, rows: 3}
-      - {c: person_tile, entity: person.vinh_du, rows: 3}
-      - {c: person_tile, entity: person.ai_q_huang, rows: 3}
+      # V3-028: two rows, a vertical tile's own minimum. Right now lost the
+      # weather card to the Weather band, so three left Who's home 100 px taller.
+      - {c: person_tile, entity: person.raymond_du, rows: 2}
+      - {c: person_tile, entity: person.vinh_du, rows: 2}
+      - {c: person_tile, entity: person.ai_q_huang, rows: 2}
       - c: sensor_tile
         entity: binary_sensor.bedroom_parents_room_ac_room_occupied
         name: {t: room.parents}
         columns: 12
-        rows: 3      # pairs Who's home with Right now's height (measured, V3-014)
+        rows: 2      # V3-028: re-measured against the shorter Right now (V3-014 had 3)
         state_content: [state, last_changed]
 
   # BAND 7 — security, full width: what each camera says beside the front

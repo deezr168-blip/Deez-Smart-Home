@@ -71,12 +71,18 @@ class Approved(unittest.TestCase):
             self.assertFalse(any(p.values()), (v["path"], {k: x for k, x in p.items() if x}))
         self.assertEqual(V.root_problems(dash(), EXPORT), [])
 
-    def test_working_dashboards_never_carry_them(self):
+    def test_working_dashboards_carry_only_the_v3_027_four(self):
+        """V3-026 kept the working dashboards free of these cards. V3-027 (owner
+        brief, 21/11/26) adopts four there: Power Flow Card Plus, ApexCharts,
+        auto-entities and WallPanel. Bubble Card, Advanced Camera Card and Kiosk
+        Mode still never reach a working dashboard."""
+        adopted = set().union(*C.WORKING_CUSTOM.values())
+        self.assertEqual(adopted, {"custom:power-flow-card-plus", "custom:apexcharts-card", "custom:auto-entities"})
         for loc in MAN["locales"]:
             text = (ROOT / loc["output"]).read_text(encoding="utf-8")
-            for t in C.PREVIEW_CUSTOM:
+            for t in C.PREVIEW_CUSTOM - adopted:
                 self.assertNotIn(t, text, loc["code"])
-            self.assertNotIn("wallpanel:", text)
+            self.assertNotIn("kiosk_mode:", text, loc["code"])
 
 
 class DashboardLevel(unittest.TestCase):
