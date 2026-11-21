@@ -521,3 +521,6 @@ wp.parents_temp: "爸媽房溫度"
 # Navbar and Home weather (V3-028)
 nav.more: "更多"
 h.weather: "天氣"
+
+# Clock Weather Card on Home (V3-029)
+weather.needs: "呢度用 HACS 卡 Clock Weather Card。如果見到「Custom element doesn't exist」，即係仲未安裝；頂部嘅室外讀數照樣用得。"

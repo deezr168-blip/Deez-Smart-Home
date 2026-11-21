@@ -322,22 +322,38 @@ views:
             grid_options:
               columns: full
               rows: auto
-          - type: weather-forecast
+          - type: custom:clock-weather-card
             entity: weather.forecast_home
-            show_current: true
-            show_forecast: true
+            locale: zh-hant
+            sections:
+              header:
+                rows:
+                  - segments:
+                      - type: icon
+                        icon: mdi:thermometer
+                      - type: weather
+                        attribute: temperature
+                      - type: spacer
+                      - type: weather
+                  - font_size: 4rem
+                    alignment: center
+                    segments:
+                      - type: time
+                        time_pattern: HH:mm
+                  - alignment: center
+                    segments:
+                      - type: icon
+                        icon: mdi:calendar
+                      - type: date
+                        date_pattern: dd/MM/yy
             grid_options:
-              columns: 12
+              columns: full
               rows: auto
-            forecast_type: hourly
-          - type: weather-forecast
-            entity: weather.forecast_home
-            show_current: false
-            show_forecast: true
+          - type: markdown
+            content: <small>呢度用 HACS 卡 Clock Weather Card。如果見到「Custom element doesn't exist」，即係仲未安裝；頂部嘅室外讀數照樣用得。</small>
             grid_options:
-              columns: 12
+              columns: full
               rows: auto
-            forecast_type: daily
       - type: grid
         column_span: 1
         cards:

@@ -345,6 +345,7 @@
         "s.problem",
         "sec.detection_note",
         "sec.hub",
+        "weather.needs",
         "weather.sunrise",
         "weather.sunset",
         "wp.parents_temp"

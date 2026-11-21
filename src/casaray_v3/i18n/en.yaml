@@ -518,3 +518,6 @@ wp.parents_temp: "Parents' room temperature"
 # Navbar and Home weather (V3-028)
 nav.more: "More"
 h.weather: "Weather"
+
+# Clock Weather Card on Home (V3-029)
+weather.needs: "This band uses the HACS card Clock Weather Card. Where it says “Custom element doesn't exist”, it is not installed yet; the Outside reading at the top works without it."

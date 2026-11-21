@@ -149,8 +149,8 @@ class Cards(unittest.TestCase):
                 found = customs(v) - {V.NAVBAR}   # V3-028's navbar is on every native page
                 if v["path"] in BANDS:
                     self.assertEqual(found, V.WORKING_CUSTOM[v["path"]], (code, v["path"]))
-                elif v["path"] in MAN["native"]:
-                    self.assertEqual(found, set(), (code, v["path"]))
+                elif v["path"] in MAN["native"]:   # V3-029: Clock Weather Card on Home
+                    self.assertEqual(found, V.WORKING_CUSTOM.get(v["path"], set()), (code, v["path"]))
                 else:   # carried and classic V2 views keep V2's one custom card
                     self.assertLessEqual(found, V.ALLOWED_CUSTOM, (code, v["path"]))
 

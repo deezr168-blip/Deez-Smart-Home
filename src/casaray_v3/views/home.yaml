@@ -167,17 +167,18 @@ sections:
       - {c: todo, entity: todo.shopping_list, rows: 8}   # as tall as the four rows of rooms beside it
 
   # BAND 5a — weather, full width (V3-028, owner 21/11/26: "weather card and
-  # forecast cards in home page"). Native weather-forecast cards on the entity
-  # Home already reads: now with the hourly forecast beside the daily one, three
-  # rows each (ha_layout), so the band is level on the wall and stacks on a
-  # phone. A forecast the entity does not give is the card's own "no forecast";
-  # a dark entity is the card's own "unavailable". After Rooms | Shopping list,
-  # so One tap and Rooms stay directly under Needs attention (CVA-004).
+  # forecast cards in home page"; V3-029, owner 21/11/26: "switch weather band
+  # to clock weather"). Clock Weather Card (HACS, installed per HACS_INSTALLED.md)
+  # on the entity Home already reads: temperature and condition, the time over
+  # DD/MM/YY, the hourly strip, the daily list. If the card is missing, this band
+  # alone shows Home Assistant's error and the note; the chip strip's native
+  # Outside reading on the same entity still answers above. After Rooms |
+  # Shopping list, so One tap and Rooms stay under Needs attention (CVA-004).
   - span: 2
     heading: h.weather
     cards:
-      - {c: weather, entity: weather.forecast_home, forecast: true, forecast_type: hourly}
-      - {c: weather, entity: weather.forecast_home, forecast: true, forecast_type: daily, current: false}
+      - {c: clock_weather, entity: weather.forecast_home}
+      - {c: note, key: weather.needs, columns: full}
 
   # BAND 6 — right now | who's home. The render's left column: the weather,
   # then the two monitored plugs and the solar forecast with the footnote

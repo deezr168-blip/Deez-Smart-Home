@@ -522,3 +522,6 @@ wp.parents_temp: "សីតុណ្ហភាពបន្ទប់ឪពុក�
 # Navbar and Home weather (V3-028) — draft, awaiting native review
 nav.more: "ច្រើនទៀត"
 h.weather: "អាកាសធាតុ"
+
+# Clock Weather Card on Home (V3-029) — draft, awaiting native review
+weather.needs: "ផ្នែកនេះប្រើកាត HACS Clock Weather Card។ បើឃើញ «Custom element doesn't exist» មានន័យថាមិនទាន់ដំឡើងទេ ហើយការអាន ខាងក្រៅ នៅខាងលើនៅតែដំណើរការ។"

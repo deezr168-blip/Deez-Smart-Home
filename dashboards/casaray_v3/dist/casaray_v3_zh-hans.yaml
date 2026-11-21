@@ -322,22 +322,38 @@ views:
             grid_options:
               columns: full
               rows: auto
-          - type: weather-forecast
+          - type: custom:clock-weather-card
             entity: weather.forecast_home
-            show_current: true
-            show_forecast: true
+            locale: zh-hans
+            sections:
+              header:
+                rows:
+                  - segments:
+                      - type: icon
+                        icon: mdi:thermometer
+                      - type: weather
+                        attribute: temperature
+                      - type: spacer
+                      - type: weather
+                  - font_size: 4rem
+                    alignment: center
+                    segments:
+                      - type: time
+                        time_pattern: HH:mm
+                  - alignment: center
+                    segments:
+                      - type: icon
+                        icon: mdi:calendar
+                      - type: date
+                        date_pattern: dd/MM/yy
             grid_options:
-              columns: 12
+              columns: full
               rows: auto
-            forecast_type: hourly
-          - type: weather-forecast
-            entity: weather.forecast_home
-            show_current: false
-            show_forecast: true
+          - type: markdown
+            content: <small>This band uses the HACS card Clock Weather Card. Where it says “Custom element doesn't exist”, it is not installed yet; the Outside reading at the top works without it.</small>
             grid_options:
-              columns: 12
+              columns: full
               rows: auto
-            forecast_type: daily
       - type: grid
         column_span: 1
         cards:

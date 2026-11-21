@@ -5,9 +5,10 @@ DEVELOPMENT ONLY.
 
 Owner, 21/11/26: "Add in navbar for navigation, i want weather card and forecast
 cards in home page". Navbar Card is installed on the instance (the owner's card
-picker lists it); its options are from its own docs. The forecasts are native
-weather-forecast cards on the entity Home already reads. Offline: nothing here
-proves either renders on a device.
+picker lists it); its options are from its own docs. The forecasts were native
+weather-forecast cards on the entity Home already reads; V3-029 (owner, 21/11/26)
+replaced them with Clock Weather Card, tested in test_clock_weather_v3_029.py.
+Offline: nothing here proves either renders on a device.
 """
 import copy
 import sys
@@ -114,22 +115,11 @@ class HomeWeather(unittest.TestCase):
         head = V.loc_t(LOCS[code], "h.weather")
         return next(s for s in view("home", code)["sections"] if s["cards"] and s["cards"][0].get("heading") == head)
 
-    def test_now_with_hourly_beside_daily_on_the_entity_home_already_reads(self):
+    def test_full_width_band_that_packs(self):
         for code in LOCS:
-            cards = [c for c in self.band(code)["cards"] if c["type"] == "weather-forecast"]
-            self.assertEqual([(c["entity"], c["show_current"], c["show_forecast"], c["forecast_type"]) for c in cards],
-                             [(W, True, True, "hourly"), (W, False, True, "daily")], code)
             self.assertEqual(self.band(code)["column_span"], 2)
-
-    def test_the_band_is_level_and_packs(self):
-        a, b = [L.effective(c) for c in self.band()["cards"] if c["type"] == "weather-forecast"]
-        self.assertEqual(a[1], b[1], "both forecast cards are the same height")
         spec = B.load_yaml(B.SRC / "views" / "home.yaml")
         self.assertEqual(V.band_problems(view("home"), spec), ([], [], []))
-
-    def test_current_weather_is_not_shown_twice(self):
-        cur = [c for c in V.walk_cards(view("home")) if c.get("type") == "weather-forecast" and c.get("show_current")]
-        self.assertEqual(len(cur), 1)
 
     def test_who_is_home_re_measured(self):
         sec = next(s for s in view("home")["sections"]
