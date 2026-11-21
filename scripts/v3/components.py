@@ -1392,3 +1392,73 @@ def preview_wallpanel(ctx, idle_time=120, temperature="sensor.bedroom_motion_sen
     return {"enabled": True, "hide_toolbar": False, "hide_sidebar": False, "fullscreen": False,
             "idle_time": idle_time, "image_url": "media-source://media_source/",
             "cards": [clock, temp, door_card]}
+
+
+# ---------------------------------------------------------------- custom cards on the working dashboards (V3-027)
+# V3-026 approved seven HACS cards and the owner chose "Adopt cards in V3"; V3-027
+# brings four of them to the working dashboards, each in its own band AFTER the
+# page's native content, with a note saying what it needs. Until a card is
+# installed through HACS, Home Assistant draws "Custom element doesn't exist" in
+# that band only; every native reading, control and link above it is unchanged.
+# Not here, and why (V3-027): Kiosk Mode (removed after the "kiosk mode lockout";
+# restoring it on a working dashboard is the owner's call), Bubble Card and
+# Advanced Camera Card (bound to six entity IDs not found on the instance).
+# Options are exactly those reviewed for the preview (V3-026, PR #27); labels are
+# one language per locale, from the working catalogues.
+
+WORKING_CUSTOM = {"energy": {"custom:power-flow-card-plus", "custom:apexcharts-card"},
+                  "house-health": {"custom:auto-entities"}}
+# the native card auto-entities fills, allowed where auto-entities is
+WORKING_INNER = {"house-health": {"entities"}}
+
+
+def power_flow(ctx, solar, grid_import, columns=12):
+    """Power Flow Card Plus: solar and grid import. With no consumption or export
+    entity the card adds the sources up for Home, which reads high while the
+    panels export; energy.flow_caveat says so beside it."""
+    ctx.use([solar, grid_import])
+    return {"type": "custom:power-flow-card-plus",
+            "entities": {"solar": {"entity": solar, "name": ctx.t("h.solar")},
+                         "grid": {"entity": grid_import, "name": ctx.t("energy.flow_grid")},
+                         "home": {"name": ctx.t("energy.flow_home")}},
+            "grid_options": grid(columns)}
+
+
+def apex_today(ctx, solar, grid_import, columns=12):
+    """ApexCharts: today from midnight, solar and grid import as areas."""
+    ctx.use([solar, grid_import])
+    return {"type": "custom:apexcharts-card", "graph_span": "24h", "span": {"start": "day"},
+            "header": {"show": True, "title": ctx.t("energy.flow_today")}, "now": {"show": True},
+            "series": [{"entity": solar, "name": ctx.t("h.solar"), "type": "area"},
+                       {"entity": grid_import, "name": ctx.t("energy.flow_grid"), "type": "area"}],
+            "grid_options": grid(columns)}
+
+
+def unavailable_list(ctx, title_key, domains, columns=12):
+    """auto-entities: every entity of these domains whose state is unavailable, by
+    name, in an entities card. With none, the `else` card says so for this kind
+    only: a statement about what reports unavailable, not about the house."""
+    return {"type": "custom:auto-entities",
+            "card": {"type": "entities", "title": ctx.t(title_key)},
+            "filter": {"include": [{"domain": d, "state": "unavailable"} for d in domains]},
+            "sort": {"method": "name"},
+            "else": markdown("**" + ctx.t(title_key) + "**\n\n<small>" + ctx.t("hh.list_none") + "</small>", columns),
+            "grid_options": grid(columns)}
+
+
+def wallpanel(ctx, idle_time=120, temperature="sensor.bedroom_motion_sensor_temperature",
+              door="binary_sensor.f_contact_sensor_door"):
+    """WallPanel (dashboard-level `wallpanel:`), the preview's reviewed options:
+    after `idle_time` seconds the photos in Home Assistant's media folder, with
+    the time over DD/MM/YY, the parents' room temperature and the front door.
+    Header and sidebar are left alone (hide_* false). Ignored by Home Assistant
+    while the card is not installed; a touch returns to the dashboard."""
+    clock = markdown("# {{ now().strftime('%H:%M') }}\n{{ now().strftime('%d/%m/%y') }}")
+    temp = markdown("**" + ctx.t("wp.parents_temp") + "**\n## {{ " + deg_expr(ctx, temperature, 1) + " }}")
+    door_card = markdown("**" + ctx.t("room.front_door") + "**\n## {{ "
+                         + word_expr(ctx, door, {"on": "s.open", "off": "s.closed"}) + " }}")
+    for c in (clock, temp, door_card):
+        c.pop("grid_options", None)   # the info box lays its cards out itself
+    return {"enabled": True, "hide_toolbar": False, "hide_sidebar": False, "fullscreen": False,
+            "idle_time": idle_time, "image_url": "media-source://media_source/",
+            "cards": [clock, temp, door_card]}
