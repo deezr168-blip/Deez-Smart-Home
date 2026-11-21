@@ -6,6 +6,28 @@ and `ha-deploy` are unaffected by everything here.
 
 ---
 
+## V3-025 · 21/11/26 · HACS installed list recorded as an agent source reference
+
+**Status:** owner request (21/11/26). Documentation only; no dashboard, theme or
+gate change. DEVELOPMENT ONLY — NOT DEPLOYED.
+
+1. Six owner screenshots of HACS → Installed are stored in
+   `docs/mockups/hacs_installed/` (the one docs path `ha_validate.sh` allows
+   images in) and transcribed in `docs/casaray-v3/HACS_INSTALLED.md`: 40
+   installed rows, plus four not-installed "New" items (Energy Horizon Card
+   among them).
+2. **Inventory, not approval.** V3-native stays native-only; `ALLOWED_CUSTOM`
+   in `validate_dashboard.py` is unchanged. Using any listed card needs its own
+   recorded decision.
+3. **Unverified from here.** "Installed" does not prove a card is a registered
+   Lovelace resource or an integration is configured. The screenshots carry no
+   date.
+4. **Two conflicts flagged, not resolved:** `PREVIEW_DEPLOYMENT.md` (02/11/26:
+   HACS directories reported missing) and `CASARAY_MAPPING_PACK.md` B4
+   (`auto-entities` not installed) both disagree with the screenshots.
+5. Pointer added under Dependencies in `docs/casaray-v3/ARCHITECTURE.md`.
+
+---
 ## V3-024 · 20/11/26 · PR #16 meets PR #21: the labelled top bar stays, Home re-measured on the combination
 
 **Status:** owner decision (20/11/26, "Approve"): bring the updated

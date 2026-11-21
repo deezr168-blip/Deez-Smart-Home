@@ -126,6 +126,8 @@ Each is enforced by `validate_dashboard.py` and `tests/v3`.
 
 - V3-native views: **native cards only**, no `card_mod`, no HACS. Styling is
   the theme's.
+  What HACS has installed, per the owner's screenshots (inventory only, not an
+  approval to use any of it): `docs/casaray-v3/HACS_INSTALLED.md`.
 - Carried / classic views: as V2 — `custom:webrtc-camera` (6 camera subviews)
   and `card_mod` (217 uses). Their installation on the Green is not verified
   from here.
