@@ -2,6 +2,7 @@
 # Placeholders in {braces} are filled by the build, at runtime, from a template.
 app.name: CasaRay
 app.dev_banner: Development build — not deployed
+app.dev_short: Not deployed   # the header cell's short form of app.dev_banner (V3-023)
 
 nav.home: Home
 nav.rooms: Rooms
@@ -117,6 +118,7 @@ ac.mode_heat_cool: Heat/cool
 ac.room: Room
 ac.target: Target
 ac.current: "Current: {mode}"
+ac.parents_name: Parents' air-con
 ac.readonly_note: "V3 shows the air-con read-only until the V3-008 control contract is approved. Controls stay on the classic Parents' room view."
 ac.open_controls: Air-con controls (classic)
 
@@ -137,6 +139,38 @@ energy.two_circuits: "Powerpal and Fronius only — export and whole-house consu
 
 weather.sunrise: Sunrise
 weather.sunset: Sunset
+
+# Weather page (CR-V3-20) — a dedicated board, not just Home's chip. Current
+# condition words are HA core's fixed weather-domain vocabulary
+# (homeassistant/const.py ATTR_CONDITION_*), translated here, not invented.
+nav.weather: Weather
+h.weather_now: Right now
+weather.humidity: Humidity
+weather.cond.clear-night: Clear
+weather.cond.cloudy: Cloudy
+weather.cond.exceptional: Exceptional conditions
+weather.cond.fog: Foggy
+weather.cond.hail: Hail
+weather.cond.lightning: Lightning
+weather.cond.lightning-rainy: Thunderstorms
+weather.cond.partlycloudy: Partly cloudy
+weather.cond.pouring: Pouring rain
+weather.cond.rainy: Rainy
+weather.cond.snowy: Snowy
+weather.cond.snowy-rainy: Snow and rain
+weather.cond.sunny: Sunny
+weather.cond.windy: Windy
+weather.cond.windy-variant: Windy
+weather.unverified_note: "Weather readings haven't been checked against the live system yet."
+
+# Rubbish Collection page (CR-V3-20) — no collection-schedule entity exists
+# on this instance (checked against docs/live/states_export_2026-09-05.txt),
+# so this page states that plainly rather than guessing a bin or a weekday.
+nav.rubbish: Rubbish collection
+nav.rubbish_short: Rubbish
+h.rubbish_collection: Collection schedule
+rubbish.not_configured: "Collection schedule not connected or verified."
+rubbish.setup_path: "This will show the real dates once it's set up and checked."
 
 lang.label: Language
 
@@ -490,8 +524,7 @@ rs.printer_off: "Printer off"
 rs.freezer: "Freezer {v}"
 rs.ac: "Air-con {mode}"
 
-# Cameras and the compact top bar (V3-014)
-app.preview_banner: "Preview"
+# Cameras (V3-014)
 cam.no_stream: "No stream from Home Assistant"
 cam.battery: "Battery {v}%"
 cam.no_battery: "No battery reading"

@@ -1,4 +1,4 @@
-"""V3-014: camera slots, the compact top bar, and bands that pack with
+"""V3-014: camera slots, the top bar on band views, and bands that pack with
 visibility applied.  DEVELOPMENT ONLY.
 
     python3 -m unittest discover -s tests/v3 -v
@@ -100,15 +100,18 @@ class CameraSlots(unittest.TestCase):
 
 
 class CompactTopBar(unittest.TestCase):
+    """V3-014 gave the band-grid views an icon-only rail; V3-024 (merging PR #16
+    into PR #21) replaced it, by owner decision, with V3-023's labelled rail on
+    every page. What V3-014 protected still holds on these two views."""
+
     def test_band_views_get_one_height_top_bar(self):
         for path in ("home", "cameras"):
             top = view(path)["sections"][0]
-            md = [c for c in top["cards"] if c["type"] == "markdown"]
             btn = [c for c in top["cards"] if c["type"] == "button"]
-            self.assertTrue(all(c.get("text_only") for c in md))
             self.assertEqual(len(btn), 6)
-            self.assertTrue(all(c["show_name"] is False for c in btn))
-            self.assertEqual({L.effective(c)[1] for c in top["cards"]}, {1}, path)
+            self.assertTrue(all(c.get("show_name", True) and c.get("name") for c in btn),
+                            "every rail button is named (V3-023)")
+            self.assertEqual(len({L.effective(c)[1] for c in top["cards"]}), 1, path)
             current = [c for c in btn if c["tap_action"] == {"action": "none"}]
             self.assertEqual(len(current), 1, "the current page is inert")
             for units in (24, 12):
@@ -120,10 +123,12 @@ class CompactTopBar(unittest.TestCase):
         self.assertTrue(any(c.get("show_name") for c in top["cards"] if c["type"] == "button"))
 
     def test_clock_keeps_dd_mm_yy_under_the_time(self):
-        clock = view("home")["sections"][0]["cards"][1]["content"]
-        self.assertIn("%H:%M') }}<br>", clock)
-        self.assertIn("%d/%m/%y", clock)
-        self.assertNotIn("%Y", clock)
+        for path in ("home", "cameras"):
+            header = next(c for c in view(path)["sections"][0]["cards"] if c["type"] == "markdown")["content"]
+            time_at, date_at = header.find("%H:%M"), header.find("%d/%m/%y")
+            self.assertTrue(0 <= time_at < date_at, path)
+            self.assertIn("<br>", header[time_at:date_at], "the date sits under the time")
+            self.assertNotIn("%Y", header)
 
 
 class BandsWithVisibility(unittest.TestCase):

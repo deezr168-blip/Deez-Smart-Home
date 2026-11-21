@@ -43,6 +43,13 @@ def nav_button(ctx, label_key, icon, target, columns=3, rows=1, show_name=True, 
            "tap_action": {"action": "none"} if current else
            {"action": "navigate", "navigation_path": ctx.link(target)},
            "grid_options": grid(columns, rows)}
+    if current:
+        # The current destination, marked (V3 CLAUDE.md: "always marked in the
+        # navigation") now that every rail button is named: the button card's
+        # own `color` tints its icon even with no entity, and `accent` resolves
+        # to var(--accent-color), which the installed CasaRay V3 theme maps to
+        # --v3-accent — amber, "selected" in the semantic colours (V3-023).
+        btn["color"] = "accent"
     return btn
 
 
@@ -131,7 +138,7 @@ def person_tile(ctx, entity, nav="people", columns=4, rows=2):
 
 # ---------------------------------------------------------------- chrome
 
-RAIL = [  # (view path, label key, icon) — six glyphs, 2 columns each = 12
+RAIL = [  # (view path, label key, icon) — six named buttons, 3 units each (V3-023)
     ("home", "nav.home", "mdi:home-variant-outline"),
     ("lighting", "nav.lighting", "mdi:lightbulb-group-outline"),
     ("climate", "nav.climate", "mdi:thermometer"),
@@ -141,51 +148,41 @@ RAIL = [  # (view path, label key, icon) — six glyphs, 2 columns each = 12
 ]
 
 
-def topbar(ctx, view_path, title_key, compact=False):
-    """Wordmark/title + clock, then the in-page rail (kiosk hides HA chrome).
+def topbar(ctx, view_path, title_key):
+    """Header cell, then the in-page rail (kiosk hides HA chrome).
 
-    Home and the rail are on every V3 view; the current destination is marked
-    by showing its name and making it inert. History-back has no native
+    Home and the rail are on every V3 view. History-back has no native
     Lovelace action, so Back on a top-level view IS Home (documented).
 
-    compact (V3-014, the band_grid 24 views): one 56 px row on the wall iPad
-    and two on a phone, every cell the same height. The title and clock are
-    text-only markdown, each one heading split by a line break so there is
-    no margin to overflow the row; the rail is six icon-only buttons (a named
-    button cannot be under two rows, which is what made the current one twice
-    as tall as the rest). The current page is inert and named by the title."""
+    V3-023, sized from the pinned frontend (ha_layout.py) so the row has ONE
+    height on both devices — a named button can never be under two rows:
+      * wall iPad, 24 units: header 6 + six buttons x 3 = one row, 120 px;
+      * phone, 12 units: header 6 + 3 + 3, then 3 x 4 = two rows of 120 px.
+    Every button is named (V3-022) and at least 3 units wide, so a label is
+    ~87 px on a phone, not 55 px (V3-022's 2 units clipped four of six English
+    labels). The current destination is inert and tinted (nav_button).
+    The header holds the title, then the time above the date (DD/MM/YY) and
+    the short development marker — one heading and one paragraph, which fit
+    the two-row cell at the frontend's own type sizes (h2 20 px)."""
     title = ctx.t("app.name") if view_path == "home" else ctx.t(title_key)
-    if compact:
-        wordmark = {"type": "markdown", "text_only": True,
-                    "content": "## " + title + "<br><small>" + ctx.t("app.preview_banner") + "</small>",
-                    "grid_options": grid(8, 1)}
-        clock = {"type": "markdown", "text_only": True,
-                 "content": "## {{ now().strftime('%H:%M') }}<br><small>{{ now().strftime('%d/%m/%y') }}</small>",
-                 "grid_options": grid(4, 1)}
-        cards = [wordmark, clock]
-        for path, key, icon in RAIL:
-            cards.append(nav_button(ctx, key, icon, path, columns=2, rows=1,
-                                    show_name=False, current=path == view_path))
-        return {"type": "grid", "column_span": 2, "cards": cards}
-    wordmark = markdown(
-        "## " + title + "\n<small>" + ctx.t("app.dev_banner") + "</small>", 6)
-    clock = markdown(
-        "## {{ now().strftime('%H:%M') }}\n{{ now().strftime('%d/%m/%y') }}", 6)
-    cards = [wordmark, clock]
+    header = markdown(
+        "## " + title + "\n**{{ now().strftime('%H:%M') }}**<br>"
+        "<small>{{ now().strftime('%d/%m/%y') }} · " + ctx.t("app.dev_short") + "</small>", 6, 2)
+    cards = [header]
     for path, key, icon in RAIL:
-        cur = path == view_path
-        cards.append(nav_button(ctx, key, icon, path, columns=2, rows=1,
-                                show_name=cur, current=cur))
+        cards.append(nav_button(ctx, key, icon, path, columns=3, rows=2, current=path == view_path))
     return {"type": "grid", "column_span": 2, "cards": cards}
 
 
-def more_boards(ctx, items, classic_of=None, band24=False):
+def more_boards(ctx, items, classic_of=None, band24=False, columns=None):
     """Named index of every board, four across (12 = 4 x 3, no reflow).
 
     band24: sized for the 24-unit grid Home Assistant gives a two-column band
     (ha_layout.py): a full-width heading, then four across at 6 units and the
     two rows a named button really takes — two across on a phone."""
     cols, rows = (6, 2) if band24 else (3, 1)
+    if columns:   # V3-023: Home asks for 4 — six across on the wall, three on a phone
+        cols = columns
     cards = [heading(ctx, "h.more", columns="full" if band24 else 12)]
     for path, key, icon in items:
         cards.append(nav_button(ctx, key, icon, path, columns=cols, rows=rows))
@@ -279,12 +276,16 @@ def chip_plugs(ctx, label_key, total, plugs, digits=1):
     return pre + ctx.t(label_key) + " **{{ " + val + " }}**{{ " + note + " }}"
 
 
-def plugs_card(ctx, label_key, total, plugs, detail_key, nav=None, columns=12, digits=1):
+def plugs_card(ctx, label_key, total, plugs, detail_key, nav=None, columns=12, digits=1, note_key=None):
     """The mockups' Monitored power card: the two-plug total, which plugs, and
-    how many answered; a tap opens the board that shows each plug."""
+    how many answered; a tap opens the board that shows each plug.
+
+    note_key (V3-023): the footnote that qualifies the figure, inside the card
+    it qualifies, as the render draws it, rather than as a card of its own."""
     pre, val, note = _plugs(ctx, total, plugs, digits)
+    foot = ("\n<small>" + ctx.t(note_key) + "</small>") if note_key else ""
     card = markdown(pre + "**" + ctx.t(label_key) + "**\n{{ " + val + " }} · " + ctx.t(detail_key)
-                    + "{{ " + note + " }}", columns)
+                    + "{{ " + note + " }}" + foot, columns)
     if nav:
         card["tap_action"] = {"action": "navigate", "navigation_path": ctx.link(nav)}
     return card
@@ -439,9 +440,14 @@ def ac_mode_expr(ctx, entity):
     return "(" + m + ").get(states('" + entity + "'), states('" + entity + "'))"
 
 
-def ac_summary(ctx, entity, nav=None, columns=12, rows="auto"):
+def ac_summary(ctx, entity, nav=None, columns=12, rows="auto", name_key=None, compact=False):
     """Read-only air-con card (V3-008 R1/R7): mode as reported, room and
-    target from the entity's own attributes, "No data" otherwise."""
+    target from the entity's own attributes, "No data" otherwise.
+
+    name_key (V3-023): a first line naming which air-con this is — the card
+    otherwise reads only "Current: Cool". compact: the name, then the mode and
+    the room temperature on one line (V3-007's own "Off · room 23.3°" form),
+    for a slot the size of a button. Without either, the card is unchanged."""
     ctx.use(entity)
     nd = jstr(ctx.t("s.no_data"))
 
@@ -449,6 +455,23 @@ def ac_summary(ctx, entity, nav=None, columns=12, rows="auto"):
         v = "state_attr('" + entity + "','" + attr + "')"
         return ("{{ ((" + v + " | float) | round(1) ~ '°') if " + v + " is number or ("
                 + v + " | is_number) else " + nd + " }}")
+    if name_key or compact:
+        head = ("**" + ctx.t(name_key) + "**<br>") if name_key else ""
+        if compact:
+            live = ("{{ " + ac_mode_expr(ctx, entity) + " }} · " + ctx.t("ac.room") + " "
+                    + temp("current_temperature"))
+        else:
+            live = ("{{ " + ctx.jt("ac.current", mode=ac_mode_expr(ctx, entity)) + " }}\n\n"
+                    + ctx.t("ac.room") + " " + temp("current_temperature") + " · "
+                    + ctx.t("ac.target") + " " + temp("temperature"))
+        body = ("{%- set s = states('" + entity + "') -%}" + head
+                + "{%- if s == 'unavailable' -%}" + ctx.t("s.offline") + " · " + ctx.t("s.no_data")
+                + "{%- elif s in ['unknown','none',''] -%}" + ctx.t("s.state_unknown") + " · " + ctx.t("s.no_data")
+                + "{%- else -%}" + live + "{%- endif -%}")
+        card = markdown(body, columns, rows)
+        if nav:
+            card["tap_action"] = {"action": "navigate", "navigation_path": ctx.link(nav)}
+        return card
     body = ("{%- set s = states('" + entity + "') -%}"
             "{%- if s == 'unavailable' -%}**" + ctx.t("s.offline") + "** · " + ctx.t("s.no_data")
             + "{%- elif s in ['unknown','none',''] -%}**" + ctx.t("s.state_unknown") + "** · " + ctx.t("s.no_data")
@@ -532,6 +555,53 @@ def weather(ctx, entity, forecast=False, columns=12):
     if forecast:
         c["forecast_type"] = "daily"
     return c
+
+
+# HA core's fixed weather-domain condition vocabulary (homeassistant/const.py
+# ATTR_CONDITION_*), not house-specific data: a `weather` entity's `state` is
+# always one of these or unavailable/unknown, so this is a translation table,
+# not an invented value.
+WEATHER_CONDITIONS = [
+    "clear-night", "cloudy", "exceptional", "fog", "hail", "lightning",
+    "lightning-rainy", "partlycloudy", "pouring", "rainy", "snowy",
+    "snowy-rainy", "sunny", "windy", "windy-variant",
+]
+
+
+def weather_detail(ctx, entity, columns=12):
+    """Current condition in words, temperature and humidity, each reading its
+    own branch for unavailable/unknown rather than trusting the native card's
+    own rendering alone (CR-V3-20)."""
+    ctx.use(entity)
+    # `word_expr` translates its own values (it takes state -> translation
+    # KEY, not resolved text) — pass the keys through untouched or every
+    # condition word gets looked up twice, which (harmlessly) renders right
+    # but logs 15 false "missing" keys per locale (CR-V3-20 build fix).
+    words = {c: f"weather.cond.{c}" for c in WEATHER_CONDITIONS}
+    cond = word_expr(ctx, entity, words)
+    # CR-V3-20 (ChatGPT review on PR #21): deg_expr()'s own `attr` form only
+    # checks whether the ATTRIBUTE is numeric, on the assumption that Home
+    # Assistant always clears an entity's attributes while it is dark. That
+    # is not guaranteed — an integration can leave a stale numeric attribute
+    # behind on an entity whose overall state has gone unavailable/unknown.
+    # Reading from the entity's own state here, not deg_expr(), so both
+    # readings are gated on overall availability FIRST, the same way
+    # word_expr() already gates the condition word above: a retained-looking
+    # number must never survive the entity itself going dark.
+    s = "states('" + entity + "')"
+    avail = s + " not in ['unavailable', 'unknown', 'none', '']"
+    temp_attr = "state_attr('" + entity + "','temperature')"
+    temp = ("(((" + temp_attr + " | float) | round(1)) ~ '°') if (" + avail + ") and ("
+            + temp_attr + " | is_number) else " + jstr(ctx.t("s.no_data")))
+    hum_attr = "state_attr('" + entity + "','humidity')"
+    hum = ("((" + hum_attr + " | round(0) | int) ~ '%') if (" + avail + ") and ("
+           + hum_attr + " | is_number) else " + jstr(ctx.t("s.no_data")))
+    content = (
+        "## {{ " + cond + " }}\n"
+        "### {{ " + temp + " }}\n"
+        + ctx.t("weather.humidity") + ": {{ " + hum + " }}"
+    )
+    return markdown(content, columns)
 
 
 def history(ctx, entities, hours=24, rows=4):

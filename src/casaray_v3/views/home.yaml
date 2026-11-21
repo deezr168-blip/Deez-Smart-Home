@@ -11,15 +11,16 @@
 # whole band, 6 is a quarter, 12 is half. The gate checks each band packs
 # into whole rows on both.
 #
-# V3-014 (15/11/26): the compact top bar (one row on the wall, two on a
-# phone, every cell one height), rooms of equal height, and the front-door
-# camera with a native full-screen tap and a same-size Offline card.
+# V3-014 (15/11/26): rooms of equal height, and the front-door camera with a
+# native full-screen tap and a same-size Offline card. Its icon-only top bar
+# gave way to V3-023's labelled one when the two met (V3-024, owner's choice).
 path: home
 title: nav.home
 icon: mdi:home-variant-outline
 band_grid: 24
 sections:
-  # BAND 1 — wordmark, clock (DD/MM/YY), in-page rail (shared chrome, unchanged)
+  # BAND 1 — header (title, time above DD/MM/YY) and the six named rail buttons
+  # (shared chrome, components.topbar; V3-023)
   - topbar: true
 
   # BAND 2 — the render's four pills: Outside, Inside, Home, Monitored.
@@ -99,7 +100,10 @@ sections:
         action: light.turn_off
         target: [light.living_room, light.dining, light.bedroom_bedroom]
         columns: 6
-      - {c: ac_summary, entity: climate.bedroom_parents_room_ac, nav: climate, columns: 6, rows: 2}
+      # V3-023: names WHICH air-con (it read only "Current: Cool") and fits a
+      # button's slot in every locale: the name, then mode and room temperature.
+      - {c: ac_summary, entity: climate.bedroom_parents_room_ac, nav: climate, columns: 6, rows: 2,
+         name_key: ac.parents_name, compact: true}
 
   # BAND 5 — rooms | shopping list. Each room says what its sensors say, as
   # the render's room rows and V2 Home's room cards do; a tap opens the room.
@@ -163,7 +167,10 @@ sections:
   - span: 1
     heading: h.shopping
     cards:
-      - {c: todo, entity: todo.shopping_list, rows: 8}   # as tall as the four rows of rooms beside it
+      # Eight rows: level with the Rooms column now that every room is two
+      # rows (V3-014). V3-023's five rows were measured against rooms of
+      # automatic height and left a 192 px hole once both landed (V3-024).
+      - {c: todo, entity: todo.shopping_list, rows: 8}
 
   # BAND 6 — right now | who's home. The render's left column: the weather,
   # then the two monitored plugs and the solar forecast with the footnote
@@ -180,20 +187,21 @@ sections:
         total: sensor.casa_monitored_power
         plugs: [sensor.g_monitor_freezer_p110m_current_consumption, sensor.r_energy_monitor_p110m_current_consumption]
         detail_key: energy.plugs_which
+        note_key: energy.monitored_note   # V3-023: the footnote, inside the card it qualifies
         nav: energy
-      - {c: sensor_tile, entity: sensor.casa_solar_expected_today, name: {t: energy.solar_expected}, columns: 12, nav: energy}
-      - {c: note, key: energy.monitored_note}
   - span: 1
     heading: h.whos_home
     cards:
-      - {c: person_tile, entity: person.raymond_du, rows: 3}
-      - {c: person_tile, entity: person.vinh_du, rows: 3}
-      - {c: person_tile, entity: person.ai_q_huang, rows: 3}
+      # V3-023: two rows, a vertical tile's own minimum and the render's size;
+      # three rows left each card about half empty.
+      - {c: person_tile, entity: person.raymond_du, rows: 2}
+      - {c: person_tile, entity: person.vinh_du, rows: 2}
+      - {c: person_tile, entity: person.ai_q_huang, rows: 2}
       - c: sensor_tile
         entity: binary_sensor.bedroom_parents_room_ac_room_occupied
         name: {t: room.parents}
         columns: 12
-        rows: 3      # pairs Who's home with Right now's height (measured, V3-014)
+        rows: 2      # V3-024: three rows (V3-014) outgrew Right now once V3-023 shortened it
         state_content: [state, last_changed]
 
   # BAND 7 — security, full width: what each camera says beside the front
@@ -228,18 +236,47 @@ sections:
       - {c: sensor_tile, entity: sensor.powerpal_gateway_powerpal_daily_energy, name: {t: energy.used_today}, nav: energy}
       - {c: sensor_tile, entity: sensor.primo_5_0_1_1_ac_power, name: {t: energy.solar_now}, nav: energy}
       - {c: sensor_tile, entity: sensor.primo_5_0_1_1_energy_day, name: {t: energy.solar_today}, nav: energy}
+      # V3-023: beside Solar now and Solar today, where it reads as the day's
+      # forecast; in Right now it made that column ~100 px taller than Who's home.
+      - {c: sensor_tile, entity: sensor.casa_solar_expected_today, name: {t: energy.solar_expected}, columns: 12, nav: energy}
       - {c: note, key: energy.two_circuits}
   - span: 1
     heading: h.climate_now
     cards:
-      - {c: ac_summary, entity: climate.bedroom_parents_room_ac, nav: climate, rows: 2}   # pairs Climate now with Energy now
+      # CR-V3-20 (Home visual review): Climate now packed visibly shorter
+      # than Energy now beside it (1 markdown + 2 tiles vs 4 tiles + a note)
+      # — a real, measured gap in the offline preview, not a style nit;
+      # CLAUDE.md's "a lone short section leaves a hole beside it" rule
+      # applies between two paired sections here, not only within one. A
+      # first attempt sized the tiles to columns: 4 to fit three per row —
+      # validate_dashboard.py correctly failed that: the native tile card's
+      # own minimum is columns: 6 (ha_layout.py element_grid), so it always
+      # draws 6 wide regardless of what is asked, leaving the same hole with
+      # an extra "draws larger than grid_options" failure on top. A tile
+      # card only packs cleanly at 6-wide multiples of 2 or 4 within a
+      # 12-unit half-band, so the fix is a 4th REAL reading, not a narrower
+      # one: every room temperature sensor the house actually has, the same
+      # four already used across the Rooms band above — Living, Parents',
+      # Dining (sensor.living_room_living_room_temperature — exported as
+      # "Dining Room Motion Sensor Temperature", area Dining) and Ray's
+      # (sensor.presence_multi_sensor_fp300_temperature — exported as
+      # "unavailable", Ray Bedroom device is down per docs/entity_inventory.md;
+      # drawn honestly as "no data" rather than hidden, same as any other
+      # offline reading). Four tiles at columns: 6 fill two full rows (two
+      # 6+6 rows, no orphan), matching Energy now's own 2x2 tile grid.
+      - {c: ac_summary, entity: climate.bedroom_parents_room_ac, nav: climate, name_key: ac.parents_name}
       - {c: sensor_tile, entity: sensor.living_room_living_hue_hue_sensor_temperature, name: {t: room.living}, nav: climate}
       - {c: sensor_tile, entity: sensor.bedroom_motion_sensor_temperature, name: {t: room.parents}, nav: climate}
+      - {c: sensor_tile, entity: sensor.living_room_living_room_temperature, name: {t: room.dining}, nav: climate}
+      - {c: sensor_tile, entity: sensor.presence_multi_sensor_fp300_temperature, name: {t: room.ray}, nav: climate}
 
-  # BAND 9 — every board by name (rail is six glyphs); four across on the wall
+  # BAND 9 — every board by name; six across on the wall, three on a phone
   - c: more_boards
     classic_of: home
     band24: true
+    # V3-023: 4 units — six across on the wall (two rows, not three) and three
+    # on a phone (four rows, not six); at 6 units each icon drew ~100 px.
+    columns: 4
     items:
       - [bills, nav.bills, mdi:receipt-text-outline]
       - [people, nav.people, mdi:account-group-outline]
@@ -248,3 +285,19 @@ sections:
       - [alerts, nav.alerts, mdi:bell-outline]
       - [entertainment, nav.entertainment, mdi:television-classic]
       - [automations, nav.automations, mdi:robot-outline]
+      # CR-V3-20: this band must sum to a multiple of four — confirmed a real,
+      # measured gate (section_holes against ha_layout.py's own packing
+      # arithmetic), not a style note; an unpadded 9+classic=10 failed
+      # validation on every locale with a genuine 24-empty-cell hole. Adding
+      # only the two new pages (no V2 equivalent) landed on 10, so two more
+      # real, already-existing boards are added rather than an invented
+      # filler tile: `lighting` has no other Home nav target at all (One tap
+      # only fires lighting scenes, never opens the Lighting board itself —
+      # a genuine pre-existing gap), and `rooms` duplicates the "All rooms"
+      # room_tile the way alerts.yaml's more_boards already duplicates
+      # security/energy/network links that Home also reaches elsewhere —
+      # an established, not invented, pattern. 11 items + classic_of = 12.
+      - [lighting, nav.lighting, mdi:lightbulb-group-outline]
+      - [weather, nav.weather, mdi:weather-partly-cloudy]
+      - [rubbish-collection, nav.rubbish, mdi:trash-can-outline]
+      - [rooms, nav.rooms, mdi:floor-plan]

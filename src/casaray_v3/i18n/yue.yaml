@@ -5,11 +5,12 @@
 # Proper nouns and device names stay Latin (CasaRay, Hue, Fronius, eero, Ray).
 app.name: CasaRay
 app.dev_banner: 開發版本 — 未部署
+app.dev_short: 未部署
 
 nav.home: 主頁
 nav.rooms: 房間
 nav.lighting: 燈光
-nav.climate: 冷氣同天氣
+nav.climate: 氣候
 nav.cameras: 鏡頭
 nav.energy: 用電
 nav.security: 保安
@@ -120,6 +121,7 @@ ac.mode_heat_cool: 冷暖自動
 ac.room: 室溫
 ac.target: 設定溫度
 ac.current: "而家：{mode}"
+ac.parents_name: 爸媽房冷氣機
 ac.readonly_note: "V3-008 控制規則未批准之前，V3 只顯示冷氣狀態。控制仍然喺舊版爸媽房畫面。"
 ac.open_controls: 冷氣控制（舊版）
 
@@ -140,6 +142,34 @@ energy.two_circuits: "只計 Powerpal 同 Fronius — 輸出電網同全屋用�
 
 weather.sunrise: 日出
 weather.sunset: 日落
+
+# Weather page (CR-V3-20) — draft translation, pending owner/native-speaker review.
+nav.weather: 天氣
+h.weather_now: 而家
+weather.humidity: 濕度
+weather.cond.clear-night: 天晴
+weather.cond.cloudy: 多雲
+weather.cond.exceptional: 異常天氣
+weather.cond.fog: 有霧
+weather.cond.hail: 落冰粒
+weather.cond.lightning: 打雷
+weather.cond.lightning-rainy: 雷暴
+weather.cond.partlycloudy: 多雲時晴
+weather.cond.pouring: 落大雨
+weather.cond.rainy: 落雨
+weather.cond.snowy: 落雪
+weather.cond.snowy-rainy: 雨夾雪
+weather.cond.sunny: 天晴
+weather.cond.windy: 大風
+weather.cond.windy-variant: 大風
+weather.unverified_note: "天氣資料仲未同實際系統核實過。"
+
+# Rubbish Collection page (CR-V3-20) — draft translation, pending owner/native-speaker review.
+nav.rubbish: 垃圾收集
+nav.rubbish_short: 垃圾收集
+h.rubbish_collection: 收垃圾時間表
+rubbish.not_configured: "收垃圾時間表未連接或未核實。"
+rubbish.setup_path: "設定同核實之後，呢版就會顯示實際日期。"
 
 lang.label: 語言
 
@@ -493,8 +523,7 @@ rs.printer_off: "打印機閂咗"
 rs.freezer: "冰櫃 {v}"
 rs.ac: "冷氣機：{mode}"
 
-# Cameras and the compact top bar (V3-014)
-app.preview_banner: "預覽版"
+# Cameras (V3-014)
 cam.no_stream: "Home Assistant 收唔到影像"
 cam.battery: "電量 {v}%"
 cam.no_battery: "冇電量讀數"
