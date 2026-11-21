@@ -6,6 +6,26 @@
 # Baseline: dashboards/casaray_v2.yaml sha256 77a4991626d6f8afcd9b78f235c34417d84d9f36c129549a386d8a66c324226c
 # ============================================================================
 title: CasaRay V3 (km)
+wallpanel:
+  enabled: true
+  hide_toolbar: false
+  hide_sidebar: false
+  fullscreen: false
+  idle_time: 120
+  image_url: media-source://media_source/
+  cards:
+    - type: markdown
+      content: |-
+        # {{ now().strftime('%H:%M') }}
+        {{ now().strftime('%d/%m/%y') }}
+    - type: markdown
+      content: |-
+        **សីតុណ្ហភាពបន្ទប់ឪពុកម្ដាយ**
+        ## {{ (((states('sensor.bedroom_motion_sensor_temperature') | float) | round(1)) ~ '°') if states('sensor.bedroom_motion_sensor_temperature') | is_number else "គ្មានទិន្នន័យ" }}
+    - type: markdown
+      content: |-
+        **ទ្វារមុខ**
+        ## {{ ("ដាច់បណ្ដាញ" if states('binary_sensor.f_contact_sensor_door') == 'unavailable' else ("មិនដឹងស្ថានភាព" if states('binary_sensor.f_contact_sensor_door') in ['unknown','none',''] else ({"on":"បើកចំហ","off":"បិទជិត"}).get(states('binary_sensor.f_contact_sensor_door'), states('binary_sensor.f_contact_sensor_door')))) }}
 views:
   - title: ទំព័រដើម
     path: home
@@ -6826,6 +6846,57 @@ views:
         column_span: 2
         cards:
           - type: heading
+            heading: លំហូរថាមពល
+            heading_style: title
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: custom:power-flow-card-plus
+            entities:
+              solar:
+                entity: sensor.primo_5_0_1_1_ac_power
+                name: ពន្លឺព្រះអាទិត្យ
+              grid:
+                entity: sensor.powerpal_gateway_powerpal_power
+                name: ថាមពលពីបណ្ដាញអគ្គិសនី
+              home:
+                name: ផ្ទះ
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: custom:apexcharts-card
+            graph_span: 24h
+            span:
+              start: day
+            header:
+              show: true
+              title: ថ្ងៃនេះ
+            now:
+              show: true
+            series:
+              - entity: sensor.primo_5_0_1_1_ac_power
+                name: ពន្លឺព្រះអាទិត្យ
+                type: area
+              - entity: sensor.powerpal_gateway_powerpal_power
+                name: ថាមពលពីបណ្ដាញអគ្គិសនី
+                type: area
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: markdown
+            content: <small>«ផ្ទះ» គឺពន្លឺព្រះអាទិត្យ បូកនឹងថាមពលពីបណ្ដាញអគ្គិសនី៖ ដោយគ្មានឧបករណ៍វាស់ការនាំចេញ វាបង្ហាញខ្ពស់ពេលបន្ទះសូឡានាំចេញភ្លើង។</small>
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: markdown
+            content: <small>ផ្នែកនេះប្រើកាត HACS ពីរ គឺ Power Flow Card Plus និង ApexCharts។ បើឃើញ «Custom element doesn't exist» មានន័យថាមិនទាន់ដំឡើងទេ ហើយការអានទាំងអស់ខាងលើនៅតែដំណើរការ។</small>
+            grid_options:
+              columns: 12
+              rows: auto
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
             heading: ទំព័រផ្សេងទៀត
             heading_style: title
             grid_options:
@@ -11965,6 +12036,110 @@ views:
             name: កម្មវិធីបង្កប់ម៉ាស៊ីនត្រជាក់
           - type: markdown
             content: <small>ការធ្វើបច្ចុប្បន្នភាពរបស់ Home Assistant នៅទីនេះសម្រាប់មើលតែប៉ុណ្ណោះ៖ ការដំឡើងនឹងចាប់ផ្ដើមប្រព័ន្ធផ្ទះឡើងវិញ ដូច្នេះធ្វើពីទិដ្ឋភាពចាស់ (ចុចមួយដើម្បីទៅទីនោះ)។ ចំនួនរាប់តែធាតុធ្វើបច្ចុប្បន្នភាពទាំងបួនដែលបានរាយ។</small>
+            grid_options:
+              columns: 12
+              rows: auto
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: មិនឆ្លើយតបឥឡូវនេះ
+            heading_style: title
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: custom:auto-entities
+            card:
+              type: entities
+              title: ភ្លើងដែលមិនឆ្លើយតប
+            filter:
+              include:
+                - domain: light
+                  state: unavailable
+            sort:
+              method: name
+            else:
+              type: markdown
+              content: |-
+                **ភ្លើងដែលមិនឆ្លើយតប**
+
+                <small>គ្មានធាតុប្រភេទនេះរាយការណ៍ថាមិនអាចប្រើបានទេ</small>
+              grid_options:
+                columns: 12
+                rows: auto
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: custom:auto-entities
+            card:
+              type: entities
+              title: កាមេរ៉ាដែលមិនឆ្លើយតប
+            filter:
+              include:
+                - domain: camera
+                  state: unavailable
+            sort:
+              method: name
+            else:
+              type: markdown
+              content: |-
+                **កាមេរ៉ាដែលមិនឆ្លើយតប**
+
+                <small>គ្មានធាតុប្រភេទនេះរាយការណ៍ថាមិនអាចប្រើបានទេ</small>
+              grid_options:
+                columns: 12
+                rows: auto
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: custom:auto-entities
+            card:
+              type: entities
+              title: កុងតាក់ដែលមិនឆ្លើយតប
+            filter:
+              include:
+                - domain: switch
+                  state: unavailable
+            sort:
+              method: name
+            else:
+              type: markdown
+              content: |-
+                **កុងតាក់ដែលមិនឆ្លើយតប**
+
+                <small>គ្មានធាតុប្រភេទនេះរាយការណ៍ថាមិនអាចប្រើបានទេ</small>
+              grid_options:
+                columns: 12
+                rows: auto
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: custom:auto-entities
+            card:
+              type: entities
+              title: ឧបករណ៍ចាប់សញ្ញាដែលមិនឆ្លើយតប
+            filter:
+              include:
+                - domain: sensor
+                  state: unavailable
+                - domain: binary_sensor
+                  state: unavailable
+            sort:
+              method: name
+            else:
+              type: markdown
+              content: |-
+                **ឧបករណ៍ចាប់សញ្ញាដែលមិនឆ្លើយតប**
+
+                <small>គ្មានធាតុប្រភេទនេះរាយការណ៍ថាមិនអាចប្រើបានទេ</small>
+              grid_options:
+                columns: 12
+                rows: auto
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: markdown
+            content: <small>បញ្ជីទាំងនេះប្រើកាត HACS auto-entities។ បើឃើញ «Custom element doesn't exist» មានន័យថាមិនទាន់ដំឡើងទេ ហើយចំនួន និងឧបករណ៍ខាងលើនៅតែដំណើរការ។</small>
             grid_options:
               columns: 12
               rows: auto

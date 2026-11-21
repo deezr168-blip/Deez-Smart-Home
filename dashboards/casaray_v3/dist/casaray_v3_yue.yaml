@@ -6,6 +6,26 @@
 # Baseline: dashboards/casaray_v2.yaml sha256 77a4991626d6f8afcd9b78f235c34417d84d9f36c129549a386d8a66c324226c
 # ============================================================================
 title: CasaRay V3 (yue)
+wallpanel:
+  enabled: true
+  hide_toolbar: false
+  hide_sidebar: false
+  fullscreen: false
+  idle_time: 120
+  image_url: media-source://media_source/
+  cards:
+    - type: markdown
+      content: |-
+        # {{ now().strftime('%H:%M') }}
+        {{ now().strftime('%d/%m/%y') }}
+    - type: markdown
+      content: |-
+        **爸媽房溫度**
+        ## {{ (((states('sensor.bedroom_motion_sensor_temperature') | float) | round(1)) ~ '°') if states('sensor.bedroom_motion_sensor_temperature') | is_number else "冇數據" }}
+    - type: markdown
+      content: |-
+        **前門**
+        ## {{ ("離線" if states('binary_sensor.f_contact_sensor_door') == 'unavailable' else ("狀態未知" if states('binary_sensor.f_contact_sensor_door') in ['unknown','none',''] else ({"on":"打開咗","off":"閂咗"}).get(states('binary_sensor.f_contact_sensor_door'), states('binary_sensor.f_contact_sensor_door')))) }}
 views:
   - title: 主頁
     path: home
@@ -6826,6 +6846,57 @@ views:
         column_span: 2
         cards:
           - type: heading
+            heading: 電力流向
+            heading_style: title
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: custom:power-flow-card-plus
+            entities:
+              solar:
+                entity: sensor.primo_5_0_1_1_ac_power
+                name: 太陽能
+              grid:
+                entity: sensor.powerpal_gateway_powerpal_power
+                name: 電網入電
+              home:
+                name: 屋企
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: custom:apexcharts-card
+            graph_span: 24h
+            span:
+              start: day
+            header:
+              show: true
+              title: 今日
+            now:
+              show: true
+            series:
+              - entity: sensor.primo_5_0_1_1_ac_power
+                name: 太陽能
+                type: area
+              - entity: sensor.powerpal_gateway_powerpal_power
+                name: 電網入電
+                type: area
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: markdown
+            content: <small>「屋企」等於太陽能加電網入電：冇輸出感應器，所以賣電時呢個數會偏高。</small>
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: markdown
+            content: <small>呢度用咗兩張 HACS 卡：Power Flow Card Plus 同 ApexCharts。如果見到「Custom element doesn't exist」，即係仲未安裝；上面所有讀數照樣用得。</small>
+            grid_options:
+              columns: 12
+              rows: auto
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
             heading: 更多畫面
             heading_style: title
             grid_options:
@@ -11965,6 +12036,110 @@ views:
             name: 冷氣韌體
           - type: markdown
             content: <small>Home Assistant 本身嘅更新喺度只可以睇：安裝會令成個屋企系統重新啟動，所以要喺舊版畫面做（撳一個就會去嗰度）。呢個數只計列出嘅四個更新實體。</small>
+            grid_options:
+              columns: 12
+              rows: auto
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: 而家冇回應
+            heading_style: title
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: custom:auto-entities
+            card:
+              type: entities
+              title: 冇回應嘅燈
+            filter:
+              include:
+                - domain: light
+                  state: unavailable
+            sort:
+              method: name
+            else:
+              type: markdown
+              content: |-
+                **冇回應嘅燈**
+
+                <small>呢類冇項目報告離線</small>
+              grid_options:
+                columns: 12
+                rows: auto
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: custom:auto-entities
+            card:
+              type: entities
+              title: 冇回應嘅鏡頭
+            filter:
+              include:
+                - domain: camera
+                  state: unavailable
+            sort:
+              method: name
+            else:
+              type: markdown
+              content: |-
+                **冇回應嘅鏡頭**
+
+                <small>呢類冇項目報告離線</small>
+              grid_options:
+                columns: 12
+                rows: auto
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: custom:auto-entities
+            card:
+              type: entities
+              title: 冇回應嘅開關
+            filter:
+              include:
+                - domain: switch
+                  state: unavailable
+            sort:
+              method: name
+            else:
+              type: markdown
+              content: |-
+                **冇回應嘅開關**
+
+                <small>呢類冇項目報告離線</small>
+              grid_options:
+                columns: 12
+                rows: auto
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: custom:auto-entities
+            card:
+              type: entities
+              title: 冇回應嘅感應器
+            filter:
+              include:
+                - domain: sensor
+                  state: unavailable
+                - domain: binary_sensor
+                  state: unavailable
+            sort:
+              method: name
+            else:
+              type: markdown
+              content: |-
+                **冇回應嘅感應器**
+
+                <small>呢類冇項目報告離線</small>
+              grid_options:
+                columns: 12
+                rows: auto
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: markdown
+            content: <small>呢啲清單用 HACS 卡 auto-entities。如果見到「Custom element doesn't exist」，即係仲未安裝；上面嘅數字同裝置照樣用得。</small>
             grid_options:
               columns: 12
               rows: auto

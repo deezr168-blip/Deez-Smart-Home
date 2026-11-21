@@ -6,6 +6,26 @@
 # Baseline: dashboards/casaray_v2.yaml sha256 77a4991626d6f8afcd9b78f235c34417d84d9f36c129549a386d8a66c324226c
 # ============================================================================
 title: CasaRay V3 (en)
+wallpanel:
+  enabled: true
+  hide_toolbar: false
+  hide_sidebar: false
+  fullscreen: false
+  idle_time: 120
+  image_url: media-source://media_source/
+  cards:
+    - type: markdown
+      content: |-
+        # {{ now().strftime('%H:%M') }}
+        {{ now().strftime('%d/%m/%y') }}
+    - type: markdown
+      content: |-
+        **Parents' room temperature**
+        ## {{ (((states('sensor.bedroom_motion_sensor_temperature') | float) | round(1)) ~ '°') if states('sensor.bedroom_motion_sensor_temperature') | is_number else "No data" }}
+    - type: markdown
+      content: |-
+        **Front door**
+        ## {{ ("Offline" if states('binary_sensor.f_contact_sensor_door') == 'unavailable' else ("State unknown" if states('binary_sensor.f_contact_sensor_door') in ['unknown','none',''] else ({"on":"Open","off":"Closed"}).get(states('binary_sensor.f_contact_sensor_door'), states('binary_sensor.f_contact_sensor_door')))) }}
 views:
   - title: Home
     path: home
@@ -6826,6 +6846,57 @@ views:
         column_span: 2
         cards:
           - type: heading
+            heading: Power flow
+            heading_style: title
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: custom:power-flow-card-plus
+            entities:
+              solar:
+                entity: sensor.primo_5_0_1_1_ac_power
+                name: Solar
+              grid:
+                entity: sensor.powerpal_gateway_powerpal_power
+                name: Grid import
+              home:
+                name: Home
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: custom:apexcharts-card
+            graph_span: 24h
+            span:
+              start: day
+            header:
+              show: true
+              title: Today
+            now:
+              show: true
+            series:
+              - entity: sensor.primo_5_0_1_1_ac_power
+                name: Solar
+                type: area
+              - entity: sensor.powerpal_gateway_powerpal_power
+                name: Grid import
+                type: area
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: markdown
+            content: '<small>"Home" is solar plus grid import: with no export sensor it reads high while the panels export.</small>'
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: markdown
+            content: <small>This band uses two HACS cards, Power Flow Card Plus and ApexCharts. Where one says “Custom element doesn't exist”, it is not installed yet; every reading above works without it.</small>
+            grid_options:
+              columns: 12
+              rows: auto
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
             heading: More boards
             heading_style: title
             grid_options:
@@ -11965,6 +12036,110 @@ views:
             name: Air-con firmware
           - type: markdown
             content: '<small>Home Assistant''s own updates are read-only here: an install restarts the house system, so it is done from the classic view (tap one to go there). The count covers the four update entities listed.</small>'
+            grid_options:
+              columns: 12
+              rows: auto
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: Not answering now
+            heading_style: title
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: custom:auto-entities
+            card:
+              type: entities
+              title: Lights not answering
+            filter:
+              include:
+                - domain: light
+                  state: unavailable
+            sort:
+              method: name
+            else:
+              type: markdown
+              content: |-
+                **Lights not answering**
+
+                <small>Nothing of this kind reports unavailable</small>
+              grid_options:
+                columns: 12
+                rows: auto
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: custom:auto-entities
+            card:
+              type: entities
+              title: Cameras not answering
+            filter:
+              include:
+                - domain: camera
+                  state: unavailable
+            sort:
+              method: name
+            else:
+              type: markdown
+              content: |-
+                **Cameras not answering**
+
+                <small>Nothing of this kind reports unavailable</small>
+              grid_options:
+                columns: 12
+                rows: auto
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: custom:auto-entities
+            card:
+              type: entities
+              title: Switches not answering
+            filter:
+              include:
+                - domain: switch
+                  state: unavailable
+            sort:
+              method: name
+            else:
+              type: markdown
+              content: |-
+                **Switches not answering**
+
+                <small>Nothing of this kind reports unavailable</small>
+              grid_options:
+                columns: 12
+                rows: auto
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: custom:auto-entities
+            card:
+              type: entities
+              title: Sensors not answering
+            filter:
+              include:
+                - domain: sensor
+                  state: unavailable
+                - domain: binary_sensor
+                  state: unavailable
+            sort:
+              method: name
+            else:
+              type: markdown
+              content: |-
+                **Sensors not answering**
+
+                <small>Nothing of this kind reports unavailable</small>
+              grid_options:
+                columns: 12
+                rows: auto
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: markdown
+            content: <small>These lists use the HACS card auto-entities. Where one says “Custom element doesn't exist”, it is not installed yet; the counts and devices above work without it.</small>
             grid_options:
               columns: 12
               rows: auto

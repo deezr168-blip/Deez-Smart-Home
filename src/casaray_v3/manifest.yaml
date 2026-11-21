@@ -48,6 +48,14 @@ classic_theme: CasaRay     # themes/deez_your_name.yaml, what V2 views need
 # V3-native views, rebuilt from sources in src/casaray_v3/views/.
 # Each replaces the V2 view with the same path (so every carried link still
 # lands) and the original V2 view is kept as a `v2-<path>` classic subview.
+# V3-027: dashboard-level settings of owner-approved custom cards (V3-026) on the
+# working dashboards. WallPanel only: Home Assistant ignores it until the card is
+# installed through HACS. Kiosk Mode is NOT here (removed after the kiosk mode
+# lockout; restoring it on a working dashboard is the owner's call), and the
+# generator refuses it.
+working_root:
+  wallpanel: {c: wallpanel}
+
 native:
   - home
   - lighting
