@@ -1,0 +1,29 @@
+# Bilingual preview — Climate (V3-025). Read-only (V3-008): no control on the
+# page; the air-con card opens the working Parents' room page. Climate lives
+# under the More tab, as the mockup's tab bar has no Climate tab.
+path: climate
+title: pv.climate
+icon: mdi:air-conditioner
+band_grid: 24
+tab: more
+sections:
+  - {c: preview_header, title_key: pv.climate}
+  - span: 1
+    heading: pv.ac_title
+    cards:
+      - {c: preview_ac_status, entity: climate.bedroom_parents_room_ac, nav: parents-room, rows: 3}   # level with the filter and timer column
+      - {c: preview_reading, label_key: pv.room_temp, entity: climate.bedroom_parents_room_ac, attr: current_temperature, rows: auto}
+      - {c: preview_reading, label_key: pv.target_temp, entity: climate.bedroom_parents_room_ac, attr: temperature, rows: auto}
+      - {c: preview_reading, label_key: pv.humidity, entity: sensor.bedroom_motion_sensor_humidity, rows: auto}
+  - span: 1
+    heading: pv.ac_care
+    cards:
+      - {c: preview_filter, flag: binary_sensor.bedroom_parents_room_ac_filter_clean_required,
+         last_reset: sensor.bedroom_parents_room_ac_filter_last_reset}
+      - {c: preview_timer, switch: switch.bedroom_parents_room_ac_timer,
+         end: sensor.bedroom_parents_room_ac_timer_end_time}
+  - span: 2
+    cards:
+      # live 20/11: "Living Room Motion Sensor Temperature" read unknown — the named No data card
+      - {c: preview_tile, kind: sensor, entity: sensor.living_room_living_hue_hue_sensor_temperature,
+         name_key: pv.living_sensor, nodata_key: pv.living_temp, icon: mdi:thermometer, columns: full}

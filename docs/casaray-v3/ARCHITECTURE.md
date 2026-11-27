@@ -124,8 +124,16 @@ Each is enforced by `validate_dashboard.py` and `tests/v3`.
 
 ## Dependencies
 
-- V3-native views: **native cards only**, no `card_mod`, no HACS. Styling is
-  the theme's.
+- V3-native views: **native cards**, no `card_mod`. Styling is the theme's.
+  Exception (V3-027): one additive band on Energy (Power Flow Card Plus,
+  ApexCharts) and one on House health (auto-entities), each after the page's
+  native readings with a note naming the card, and WallPanel at dashboard
+  level; (V3-028) a Navbar card as the last card of every native page,
+  with the native top bar kept as its fallback; and (V3-029) Clock Weather
+  Card as Home's Weather band, with the chip strip's native Outside reading
+  as its fallback. All six come from HACS;
+  none is installed by this repository (`PREVIEW_DEPLOYMENT.md`). The gate
+  allows nothing else.
 - Carried / classic views: as V2 — `custom:webrtc-camera` (6 camera subviews)
   and `card_mod` (217 uses). Their installation on the Green is not verified
   from here.

@@ -720,6 +720,13 @@ class CoreBoards(unittest.TestCase):
         outs = R.render_view(view(dash("en"), "alerts"), dict(self.states, **st), self.attrs)
         return outs
 
+    @staticmethod
+    def past_top_bar(outs):
+        """The rendered markdown after the shared top bar's own cards, however many it
+        emits (V3-024: one header card; before it, a wordmark and a clock)."""
+        top = view(dash("en"), "alerts")["sections"][0]["cards"]
+        return outs[sum(1 for c in top if c.get("type") == "markdown"):]
+
     def test_strip_and_lists_agree(self):
         W, D, M = ("binary_sensor.eero_wan_status", "binary_sensor.emergency_button_dad_cloud_connection",
                    "binary_sensor.emergency_button_mum_cloud_connection")
@@ -727,7 +734,8 @@ class CoreBoards(unittest.TestCase):
                      {"binary_sensor.lph_se_dcd9_pump": "on", "binary_sensor.lg_fridge_door": "on"}]
         for st in scenarios + [None]:
             outs = R.render_view(view(dash("en"), "alerts"), self.dark if st is None else dict(self.states, **st), self.attrs)
-            strip, lists = outs[2], outs[3:6]
+            body = self.past_top_bar(outs)
+            strip, lists = body[0], body[1:4]
             counts = [int(x) if x.isdigit() else None for x in re.findall(r"\*\*(\d+|No data)\*\*", strip)]
             self.assertEqual(len(counts), 3, strip)
             for n, body in zip(counts, lists):
@@ -736,7 +744,7 @@ class CoreBoards(unittest.TestCase):
 
     def test_emergency_buttons_are_never_cleared_by_silence_or_an_odd_state(self):
         D, M = "binary_sensor.emergency_button_dad_cloud_connection", "binary_sensor.emergency_button_mum_cloud_connection"
-        crit = lambda **st: self.alerts(**st)[3]
+        crit = lambda **st: self.past_top_bar(self.alerts(**st))[1]
         self.assertIn("Dad's emergency button cannot be confirmed", crit(**{D: "unavailable"}))
         self.assertIn("Dad's emergency button cannot be confirmed", crit(**{D: "weird"}))
         self.assertIn("Mum's emergency button is not connected", crit(**{M: "off"}))

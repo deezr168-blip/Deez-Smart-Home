@@ -1,0 +1,23 @@
+# Bilingual preview — More (V3-025): the page behind the mockups' 更多 tab.
+# Climate is in this preview; every other page opens on the working dashboard.
+path: more
+title: pv.more
+icon: mdi:dots-horizontal
+band_grid: 24
+sections:
+  - {c: preview_header, title_key: pv.more}
+  - span: 2
+    heading: pv.boards
+    cards:
+      - {c: nav_button, label_key: pv.climate, icon: mdi:air-conditioner, target: climate, columns: 4, rows: 2}
+      - {c: nav_button, label_key: nav.energy, icon: mdi:lightning-bolt-outline, target: energy, columns: 4, rows: 2}
+      - {c: nav_button, label_key: nav.security, icon: mdi:shield-home-outline, target: security, columns: 4, rows: 2}
+      - {c: nav_button, label_key: nav.people, icon: mdi:account-group-outline, target: people, columns: 4, rows: 2}
+      - {c: nav_button, label_key: nav.network, icon: mdi:router-wireless, target: network, columns: 4, rows: 2}
+      - {c: nav_button, label_key: nav.house_health, icon: mdi:home-heart, target: house-health, columns: 4, rows: 2}
+      - {c: nav_button, label_key: nav.alerts, icon: mdi:bell-outline, target: alerts, columns: 4, rows: 2}
+      - {c: nav_button, label_key: nav.bills, icon: mdi:receipt-text-outline, target: bills, columns: 4, rows: 2}
+      - {c: nav_button, label_key: nav.automations, icon: mdi:robot-outline, target: automations, columns: 4, rows: 2}
+      - {c: nav_button, label_key: nav.entertainment, icon: mdi:television-classic, target: entertainment, columns: 4, rows: 2}
+      - {c: nav_button, label_key: pv.bill_setup, icon: mdi:cog-outline, target: bills-details, columns: 4, rows: 2}
+      - {c: nav_button, label_key: nav.classic, icon: mdi:history, target: v2-home, columns: 4, rows: 2}

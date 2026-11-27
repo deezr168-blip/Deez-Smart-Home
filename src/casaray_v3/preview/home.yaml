@@ -1,0 +1,36 @@
+# Bilingual preview — Home (V3-025; docs/mockups/2026-11-19_bilingual_1_*.png).
+# DESIGN PREVIEW — NOT DEPLOYED. Every reading from a verified entity; the
+# lights are read-only here (a tap opens Lighting), as on V3 Home.
+path: home
+title: nav.home
+icon: mdi:home-outline
+band_grid: 24
+sections:
+  - {c: preview_header, title_key: nav.home}
+  - span: 2
+    cards:
+      - {c: preview_greeting, columns: 12, rows: 2}
+      - {c: preview_weather, entity: weather.forecast_home, columns: 12, rows: 2}
+      # amber while open; a plain line while the sensor is silent (so no banner
+      # never stands for "closed" when nothing answered)
+      - {c: preview_door_banner, entity: binary_sensor.f_contact_sensor_door, open_key: pv.door_open,
+         dark_key: pv.door_dark, target: cameras}
+  - span: 1
+    heading: pv.room_lights
+    cards:
+      # a tile while the light answers; the named No data card of the same size while it
+      # does not, or while the instance has no such entity (the 20/11 trial's missing tiles)
+      - {c: preview_tile, entity: light.living_room, name_key: room.living, nav: lighting}
+      - {c: preview_tile, entity: light.dining, name_key: room.dining, nav: lighting}
+      - {c: preview_tile, entity: light.bedroom_bedroom, name_key: pv.room_ray, nav: lighting}
+  - span: 1
+    heading: pv.front_door_cam
+    cards:
+      # one slot: the picture, or Offline / State unknown in words (same size)
+      - {c: preview_cam_slot, entity: camera.front_door_live_view, name_key: room.front_door, rows: 2,
+         battery: sensor.front_door_battery}
+      - {c: preview_link, label_key: pv.view_front_door, target: cameras, icon: mdi:cctv}
+  - span: 2
+    cards:
+      - {c: preview_tile, kind: sensor, entity: sensor.bedroom_motion_sensor_temperature, name_key: pv.parents_temp,
+         icon: mdi:thermometer, columns: full, nav: climate}

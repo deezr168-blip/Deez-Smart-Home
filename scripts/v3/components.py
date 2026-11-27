@@ -43,6 +43,13 @@ def nav_button(ctx, label_key, icon, target, columns=3, rows=1, show_name=True, 
            "tap_action": {"action": "none"} if current else
            {"action": "navigate", "navigation_path": ctx.link(target)},
            "grid_options": grid(columns, rows)}
+    if current:
+        # The current destination is marked, not only inert (V3 CLAUDE.md: "always marked in
+        # the navigation"). Read from the pinned frontend (20260826.7, hui-button-card.ts
+        # _computeColor): with no entity, `color` sets --state-color, which tints the icon;
+        # computeCssColor("accent") is var(--accent-color), which the CasaRay V3 theme maps to
+        # --v3-accent — amber, "selected" in the semantic colours. No theme change needed.
+        btn["color"] = "accent"
     return btn
 
 
@@ -131,7 +138,7 @@ def person_tile(ctx, entity, nav="people", columns=4, rows=2):
 
 # ---------------------------------------------------------------- chrome
 
-RAIL = [  # (view path, label key, icon) — six glyphs, 2 columns each = 12
+RAIL = [  # (view path, label key, icon) — six named buttons, 3 units each (V3-024)
     ("home", "nav.home", "mdi:home-variant-outline"),
     ("lighting", "nav.lighting", "mdi:lightbulb-group-outline"),
     ("climate", "nav.climate", "mdi:thermometer"),
@@ -141,51 +148,51 @@ RAIL = [  # (view path, label key, icon) — six glyphs, 2 columns each = 12
 ]
 
 
-def topbar(ctx, view_path, title_key, compact=False):
-    """Wordmark/title + clock, then the in-page rail (kiosk hides HA chrome).
+TOPBAR_HEADER = (6, 2)   # header cell: units, rows
+TOPBAR_BUTTON = (3, 2)   # each rail button: units, rows (a named button is never under 2 rows)
 
-    Home and the rail are on every V3 view; the current destination is marked
-    by showing its name and making it inert. History-back has no native
-    Lovelace action, so Back on a top-level view IS Home (documented).
 
-    compact (V3-014, the band_grid 24 views): one 56 px row on the wall iPad
-    and two on a phone, every cell the same height. The title and clock are
-    text-only markdown, each one heading split by a line break so there is
-    no margin to overflow the row; the rail is six icon-only buttons (a named
-    button cannot be under two rows, which is what made the current one twice
-    as tall as the rest). The current page is inert and named by the title."""
+def topbar(ctx, view_path, title_key):
+    """Header cell, then the in-page rail (kiosk hides HA chrome). One bar on
+    every native view, so Home sits in the same place on every page.
+
+    History-back has no native Lovelace action, so Back on a top-level view IS
+    Home (documented).
+
+    V3-024 (release preview): readable, named navigation on both devices,
+    sized from the pinned frontend's grid (ha_layout.py) so every cell has ONE
+    height — a button showing an icon and a name is never under two rows:
+      * wall iPad, 24 units: header 6 + six buttons x 3 = one 120 px row;
+      * phone, 12 units: header 6 + 3 + 3, then 3 x 4 = two 120 px rows.
+    It replaces V3-014's icon-only rail (no word on any button) and the older
+    bar where only the current button was named and twice the height of the
+    rest. The header holds the title, then the time above the DD/MM/YY date
+    and "Preview" — text only, so it reads as a title, not a card. The current
+    destination is inert and its icon amber (nav_button)."""
     title = ctx.t("app.name") if view_path == "home" else ctx.t(title_key)
-    if compact:
-        wordmark = {"type": "markdown", "text_only": True,
-                    "content": "## " + title + "<br><small>" + ctx.t("app.preview_banner") + "</small>",
-                    "grid_options": grid(8, 1)}
-        clock = {"type": "markdown", "text_only": True,
-                 "content": "## {{ now().strftime('%H:%M') }}<br><small>{{ now().strftime('%d/%m/%y') }}</small>",
-                 "grid_options": grid(4, 1)}
-        cards = [wordmark, clock]
-        for path, key, icon in RAIL:
-            cards.append(nav_button(ctx, key, icon, path, columns=2, rows=1,
-                                    show_name=False, current=path == view_path))
-        return {"type": "grid", "column_span": 2, "cards": cards}
-    wordmark = markdown(
-        "## " + title + "\n<small>" + ctx.t("app.dev_banner") + "</small>", 6)
-    clock = markdown(
-        "## {{ now().strftime('%H:%M') }}\n{{ now().strftime('%d/%m/%y') }}", 6)
-    cards = [wordmark, clock]
+    header = {"type": "markdown", "text_only": True,
+              "content": "## " + title + "\n**{{ now().strftime('%H:%M') }}**<br><small>"
+                         "{{ now().strftime('%d/%m/%y') }} · " + ctx.t("app.preview_banner") + "</small>",
+              "grid_options": grid(*TOPBAR_HEADER)}
+    cards = [header]
     for path, key, icon in RAIL:
-        cur = path == view_path
-        cards.append(nav_button(ctx, key, icon, path, columns=2, rows=1,
-                                show_name=cur, current=cur))
+        cards.append(nav_button(ctx, key, icon, path, columns=TOPBAR_BUTTON[0], rows=TOPBAR_BUTTON[1],
+                                current=path == view_path))
     return {"type": "grid", "column_span": 2, "cards": cards}
 
 
 def more_boards(ctx, items, classic_of=None, band24=False):
-    """Named index of every board, four across (12 = 4 x 3, no reflow).
+    """Named index of every board.
 
     band24: sized for the 24-unit grid Home Assistant gives a two-column band
     (ha_layout.py): a full-width heading, then four across at 6 units and the
-    two rows a named button really takes — two across on a phone."""
-    cols, rows = (6, 2) if band24 else (3, 1)
+    two rows a named button really takes — two across on a phone.
+
+    Otherwise (V3-024) 4 units and the 2 rows the button draws anyway: six
+    across on the wall iPad, three on a phone (~119 px). At 3 units a phone
+    label had ~87 px, which clipped "Entertainment" (a button clips, it never
+    ellipsises)."""
+    cols, rows = (6, 2) if band24 else (4, 2)
     cards = [heading(ctx, "h.more", columns="full" if band24 else 12)]
     for path, key, icon in items:
         cards.append(nav_button(ctx, key, icon, path, columns=cols, rows=rows))
@@ -525,12 +532,19 @@ def chip_cameras(ctx, ents):
 
 # ---------------------------------------------------------------- misc
 
-def weather(ctx, entity, forecast=False, columns=12):
+def weather(ctx, entity, forecast=False, columns=12, forecast_type="daily", current=True, rows=None):
+    """Native weather-forecast card. forecast_type is the pinned frontend's own
+    set (20260826.7, data/weather.ts: hourly | daily | twice_daily); a forecast
+    the entity does not provide is the card's own "no forecast", never invented."""
+    if forecast_type not in ("hourly", "daily", "twice_daily"):
+        raise SystemExit(f"weather: forecast_type {forecast_type!r} is not one the frontend knows")
     ctx.use(entity)
-    c = {"type": "weather-forecast", "entity": entity, "show_current": True,
+    c = {"type": "weather-forecast", "entity": entity, "show_current": current,
          "show_forecast": forecast, "grid_options": grid(columns)}
     if forecast:
-        c["forecast_type"] = "daily"
+        c["forecast_type"] = forecast_type
+    if rows:
+        c["grid_options"]["rows"] = rows
     return c
 
 
@@ -875,3 +889,645 @@ def scene_buttons(ctx, scenes, prefix, columns=3):
                                    "target": {"entity_id": sid}},
                     "hold_action": {"action": "none"}, "grid_options": grid(columns, 1)})
     return out
+
+
+# ---------------------------------------------------------------- bilingual preview (V3-025)
+# The 19/11/26 bilingual mockups, as a SEPARATE preview dashboard (build_preview).
+# Every label is two-level — 中文 strong, English small — from ctx.pair(), so
+# these components only run with the build's BiCtx. Native cards only; each
+# rendering trick below was read in the pinned frontend (20260826.7):
+#   * markdown raw HTML: table[role=presentation] is styled borderless by
+#     ha-markdown; td align/valign, b, small, big, br and <ha-icon icon> pass
+#     its sanitiser (xss default whitelist + table role + ha-icon);
+#   * GitHub alert blocks (> [!WARNING]) become ha-alert: warning uses
+#     --warning-color (the V3 theme's amber), caution --error-color (red);
+#   * the sections view's own `footer` is sticky at the bottom of the screen;
+#   * a button's `color` tints its icon with no entity (the current tab).
+
+def _pair(ctx, key):
+    if not hasattr(ctx, "pair"):
+        raise SystemExit("preview components need the build's bilingual BiCtx")
+    return ctx.pair(key)
+
+
+def _two(ctx, key, strong=True):
+    """'<b>中文</b><br><small>English</small>' — the mockups' two-level label."""
+    a, b = _pair(ctx, key)
+    return ("<b>" + a + "</b>" if strong else a) + ("<br><small>" + b + "</small>" if b != a else "")
+
+
+def _words(ctx, entity, words, which):
+    """Jinja expression: the state in words in ONE language (which: 0 or 1).
+    unavailable / unknown are their own branches, never a word from `words`."""
+    ctx.use(entity)
+    m = "{" + ",".join(jstr(k) + ":" + jstr(_pair(ctx, v)[which]) for k, v in words.items()) + "}"
+    s = "states('" + entity + "')"
+    return ("(" + jstr(_pair(ctx, "s.no_data")[which]) + " if " + s + " in " + BAD + " else "
+            "(" + m + ").get(" + s + ", " + s + "))")
+
+
+WEATHER_ICONS = {
+    "clear-night": "weather-night", "cloudy": "weather-cloudy", "exceptional": "alert-circle-outline",
+    "fog": "weather-fog", "hail": "weather-hail", "lightning": "weather-lightning",
+    "lightning-rainy": "weather-lightning-rainy", "partlycloudy": "weather-partly-cloudy",
+    "pouring": "weather-pouring", "rainy": "weather-rainy", "snowy": "weather-snowy",
+    "snowy-rainy": "weather-snowy-rainy", "sunny": "weather-sunny", "windy": "weather-windy",
+    "windy-variant": "weather-windy-variant",
+}
+
+
+def _weather_icon(entity):
+    m = "{" + ",".join("'" + k + "':'mdi:" + v + "'" for k, v in WEATHER_ICONS.items()) + "}"
+    return "(" + m + ").get(states('" + entity + "'), 'mdi:weather-cloudy-alert')"
+
+
+def _attr_deg(ctx, entity, attr, digits=0):
+    """An attribute temperature, only while the ENTITY answers (V3-021: a dark
+    entity's leftover attribute is never shown)."""
+    ctx.use(entity)
+    v = "state_attr('" + entity + "','" + attr + "')"
+    rnd = "| round(0) | int" if digits == 0 else "| round(" + str(digits) + ")"
+    return ("(((" + v + " | float) " + rnd + ") ~ '°C') if (states('" + entity + "') not in " + BAD
+            + " and " + v + " | is_number) else " + jstr(_pair(ctx, "s.no_data")[0]))
+
+
+def preview_header(ctx, title_key, weather="weather.forecast_home"):
+    """The mockups' header band: CasaRay｜page, the preview badge, the weather,
+    then the time above the date (DD/MM/YY, repository rule; the mockup's 18/11
+    drops the year) with the weekday in both languages."""
+    a, b = _pair(ctx, title_key)
+    ba, bb = _pair(ctx, "pv.badge")
+    days = "[" + ",".join(jstr(" ".join(dict.fromkeys(_pair(ctx, f"pv.wd{i}")))) for i in range(7)) + "]"
+    temp = _attr_deg(ctx, weather, "temperature")
+    content = (
+        '<table role="presentation" width="100%"><tr>'
+        '<td valign="middle"><big><b>CasaRay</b>｜<b>' + a + "</b> " + (b if b != a else "") + "</big>"
+        "<br><small>" + ba + " · " + bb + "</small></td>"
+        '<td align="right" valign="middle" width="96"><ha-icon icon="{{ ' + _weather_icon(weather) + ' }}"></ha-icon> '
+        "<b>{{ " + temp + " }}</b></td>"
+        '<td align="right" valign="middle" width="150"><big><b>{{ now().strftime(\'%H:%M\') }}</b></big>'
+        "<br><small>{{ " + days + "[now().weekday()] }} · {{ now().strftime('%d/%m/%y') }}</small></td>"
+        "</tr></table>")
+    return {"type": "grid", "column_span": 2, "cards": [markdown(content, "full")]}
+
+
+def preview_footer(ctx, tabs, current_tab, view_path, max_width=1032):
+    """Home Assistant's sticky sections-view footer holding ONE grid card of the
+    mockups' five tabs. The tab whose section this page belongs to is tinted
+    amber; it is inert only on the tab's own page (on Climate, More is tinted
+    and still opens More, as a tab bar returns to its root). Five fit a phone
+    (~68 px each); `icon_height` keeps the bar near the mockups' height."""
+    cards = []
+    for path, key, icon in tabs:
+        here = path == view_path
+        btn = {"type": "button", "name": ctx.t(key), "icon": icon, "icon_height": "28px",
+               "show_name": True, "show_icon": True,
+               "tap_action": {"action": "none"} if here else
+               {"action": "navigate", "navigation_path": ctx.link(path)},
+               "hold_action": {"action": "none"}, "grid_options": grid(12, 1)}
+        if path == current_tab:
+            btn["color"] = "accent"
+        cards.append(btn)
+    return {"card": {"type": "grid", "columns": len(tabs), "square": False, "cards": cards},
+            "max_width": max_width}
+
+
+def preview_greeting(ctx, columns=12, rows=2):
+    """早晨，今日屋企點？ by the hour, as the mockup's greeting card."""
+    parts = []
+    for key, test in (("pv.morning", "h < 12"), ("pv.afternoon", "h < 18"), ("pv.evening", None)):
+        a, b = _pair(ctx, key)
+        parts.append((test, a, b))
+    qa, qb = _pair(ctx, "pv.how_home")
+    expr = ("{%- set h = now().hour -%}"
+            "{%- if " + parts[0][0] + " -%}{%- set g = [" + jstr(parts[0][1]) + "," + jstr(parts[0][2]) + "] -%}"
+            "{%- elif " + parts[1][0] + " -%}{%- set g = [" + jstr(parts[1][1]) + "," + jstr(parts[1][2]) + "] -%}"
+            "{%- else -%}{%- set g = [" + jstr(parts[2][1]) + "," + jstr(parts[2][2]) + "] -%}{%- endif -%}")
+    return markdown(expr + "## {{ g[0] }}，" + qa + "\n{{ g[1] }}, " + qb, columns, rows)
+
+
+def preview_weather(ctx, entity="weather.forecast_home", columns=12, rows=2):
+    """The mockups' weather card: the temperature large, the condition in both
+    languages. While the entity does not answer (or the instance has no such
+    entity) it is the named No data card: 天氣 Weather · 無資料 No data."""
+    ctx.use(entity)
+    conds = {c: f"pv.cond.{c}" for c in WEATHER_ICONS}
+    wa, wb = _pair(ctx, "pv.weather")
+    da, db = _pair(ctx, "s.no_data")
+    s = "states('" + entity + "')"
+    return markdown(
+        "{%- if " + s + " in " + BAD + " -%}"
+        '## <ha-icon icon="mdi:weather-cloudy-alert"></ha-icon> ' + wa + " " + wb + "\n"
+        "**" + da + "** <small>" + db + "</small>"
+        "{%- else -%}"
+        '## <ha-icon icon="{{ ' + _weather_icon(entity) + ' }}"></ha-icon> {{ '
+        + _attr_deg(ctx, entity, "temperature") + " }}\n"
+        "**{{ " + _words(ctx, entity, conds, 0) + " }}**<br><small>{{ " + _words(ctx, entity, conds, 1) + " }}</small>"
+        "{%- endif -%}",
+        columns, rows)
+
+
+def preview_door_banner(ctx, entity, open_key, dark_key, target):
+    """The mockups' amber banner while the door is open, and — because a missing
+    banner would read as "closed" — a plain one while the sensor is silent.
+    Nothing shows only while the door reports closed."""
+    ctx.use(entity)
+    oa, ob = _pair(ctx, open_key)
+    va, vb = _pair(ctx, "pv.view_door")
+    da, db = _pair(ctx, dark_key)
+    opened = markdown("> [!WARNING]\n> **" + oa + "** " + ob + " · **" + va + "** " + vb + " ›", "full")
+    opened["visibility"] = [{"condition": "state", "entity": entity, "state": "on"}]
+    opened["tap_action"] = {"action": "navigate", "navigation_path": ctx.link(target)}
+    # self-hiding, not a condition: a sensor the instance lacks must still say so
+    dark = _self_hiding("{%- if states('" + entity + "') not in ['on', 'off'] -%}**" + da + "** <small>" + db
+                        + "</small>{%- endif -%}", "full", "auto")
+    return [opened, dark]
+
+
+def preview_room(ctx, name_key, icon, target, status, columns=12):
+    """A row of the mockups' room list: icon, name in both languages, one
+    reading in both, a chevron; a tap opens the room. status:
+      {entity, label_key, words: {state: key}}   a state in words
+      {entity, label_key, deg: digits}           a temperature
+      {entity, label_key, value: digits}         a number with its unit"""
+    e = status["entity"]
+    ctx.use(e)
+    la, lb = _pair(ctx, status["label_key"])
+    if "words" in status:
+        va = "{{ " + _words(ctx, e, status["words"], 0) + " }}"
+        vb = ": {{ " + _words(ctx, e, status["words"], 1) + " }}"
+    elif "deg" in status:
+        va, vb = "{{ " + deg_expr(ctx, e, status["deg"]).replace(jstr(ctx.t("s.no_data")),
+                                                                  jstr(_pair(ctx, "s.no_data")[0])) + " }}", ""
+    else:
+        va, vb = "{{ " + value_expr(ctx, e, status["value"]).replace(jstr(ctx.t("s.no_data")),
+                                                                      jstr(_pair(ctx, "s.no_data")[0])) + " }}", ""
+    na, nb = _pair(ctx, name_key)
+    content = ('<table role="presentation" width="100%"><tr>'
+               '<td width="40" valign="middle"><ha-icon icon="' + icon + '"></ha-icon></td>'
+               '<td valign="middle"><b>' + na + "</b><br><small>" + nb + "</small></td>"
+               '<td align="right" valign="middle">' + la + "：<b>" + va + "</b><br><small>" + lb + vb + "</small></td>"
+               '<td width="16" align="right" valign="middle">›</td></tr></table>')
+    card = markdown(content, columns)
+    # '#hash' opens that Bubble Card pop-up on this page (V3-026); a page name opens the page
+    card["tap_action"] = {"action": "navigate",
+                          "navigation_path": target if str(target).startswith("#") else ctx.link(target)}
+    return card
+
+
+def preview_mode(ctx, label_key, icon, note_key, action=None, target=None, data=None, columns=12, rows="auto"):
+    """A scene-mode card from the mockups. With an action it does exactly what
+    its line says (an existing, owner-approved light action); without one it is
+    inert and says it is not set up — no scene entity backs it."""
+    a, b = _pair(ctx, label_key)
+    na, nb = _pair(ctx, note_key)
+    card = markdown('<ha-icon icon="' + icon + '"></ha-icon> **' + a + "** " + b
+                    + "<br><small>" + na + " · " + nb + "</small>", columns, rows)
+    if action:
+        ctx.use(target)
+        tap = {"action": "perform-action", "perform_action": action, "target": {"entity_id": target}}
+        if data:
+            tap["data"] = data
+        card["tap_action"] = tap
+        card["hold_action"] = {"action": "none"}
+    return card
+
+
+def preview_about(ctx, title_key, body_key, columns=12, rows="auto"):
+    ta, tb = _pair(ctx, title_key)
+    ba, bb = _pair(ctx, body_key)
+    return markdown("**" + ta + "** " + tb + "\n\n" + ba + "\n\n<small>" + bb + "</small>", columns, rows)
+
+
+def preview_ac_status(ctx, entity, nav=None, columns=12, rows="auto"):
+    """The mockups' big air-con state, read-only (V3-008): running / off in
+    words with the mode, never a control; offline and unknown in their own words."""
+    ctx.use(entity)
+    va, vb = _pair(ctx, "pv.view_only")
+    ra, rb = _pair(ctx, "pv.running")
+    oa, ob = _pair(ctx, "pv.ac_off")
+    xa, xb = _pair(ctx, "s.offline")
+    ua, ub = _pair(ctx, "s.state_unknown")
+    modes = {k: "ac.mode_" + k for k in AC_MODES}
+    body = ("{%- set s = states('" + entity + "') -%}"
+            "{%- if s == 'unavailable' -%}## " + xa + "\n" + xb +
+            "{%- elif s in ['unknown','none',''] -%}## " + ua + "\n" + ub +
+            "{%- elif s == 'off' -%}## " + oa + "（" + va + "）\n" + ob + " (" + vb + ")" +
+            "{%- else -%}## " + ra + "：{{ " + _words(ctx, entity, modes, 0) + " }}（" + va + "）\n"
+            + rb + ": {{ " + _words(ctx, entity, modes, 1) + " }} (" + vb + ")" + "{%- endif -%}")
+    card = markdown(body, columns, rows)
+    if nav:
+        card["tap_action"] = {"action": "navigate", "navigation_path": ctx.link(nav)}
+    return card
+
+
+def preview_reading(ctx, label_key, entity, attr=None, columns=4, rows=2):
+    """A labelled reading: label in both languages over the value; an attribute
+    reading only while its entity answers."""
+    ctx.use(entity)
+    if attr:
+        val = _attr_deg(ctx, entity, attr, digits=0)
+    else:
+        val = value_expr(ctx, entity, 0).replace(jstr(ctx.t("s.no_data")), jstr(_pair(ctx, "s.no_data")[0]))
+    return markdown(_two(ctx, label_key) + "\n## {{ " + val + " }}", columns, rows)
+
+
+def preview_filter(ctx, flag, last_reset, columns=12):
+    """Filter reminder from what is measured: the needs-cleaning flag and the
+    last reset. The mockups' "in about 30 days" needs an interval no entity
+    gives, so it is not drawn."""
+    ctx.use([flag, last_reset])
+    words = {"on": "pv.filter_due", "off": "pv.filter_ok"}
+    ra, rb = _pair(ctx, "pv.last_reset")
+    # Days since the reset, said in both languages. Not relative_time(): Home
+    # Assistant returns that in English ("3 days") whatever the dashboard says.
+    # as_datetime() raises on a dark sensor's state unless given a default.
+    dt = "as_datetime(states('" + last_reset + "'), none)"
+    da, db = _pair(ctx, "pv.days_ago")
+    nd = _pair(ctx, "s.no_data")
+    days = "(now() - " + dt + ").days"
+    lr_a = "(" + jstr(da.split("{n}")[0]) + " ~ " + days + " ~ " + jstr(da.split("{n}")[1]) + ") if " + dt + " is not none else " + jstr(nd[0])
+    lr_b = "(" + jstr(db.split("{n}")[0]) + " ~ " + days + " ~ " + jstr(db.split("{n}")[1]) + ") if " + dt + " is not none else " + jstr(nd[1])
+    return markdown(_two(ctx, "pv.filter") + "\n\n**{{ " + _words(ctx, flag, words, 0) + " }}**<br>"
+                    "<small>{{ " + _words(ctx, flag, words, 1) + " }}</small>\n\n"
+                    "<small>" + ra + "：{{ " + lr_a + " }} · " + rb + ": {{ " + lr_b + " }}</small>", columns)
+
+
+def preview_timer(ctx, switch, end, columns=12):
+    """The air-con's own timer, read-only: off, or on with its end time. The
+    end time is read only while the timer is on (as V2 does)."""
+    ctx.use([switch, end])
+    na, nb = _pair(ctx, "pv.timer_off")
+    ea, eb = _pair(ctx, "pv.timer_on")
+    ts = "as_timestamp(states('" + end + "'), none)"   # local time; raises without the default
+    t = "(" + ts + " | timestamp_custom('%H:%M')) if " + ts + " is not none else " + jstr(_pair(ctx, "s.no_data")[0])
+    s = "states('" + switch + "')"
+    da, db = _pair(ctx, "s.no_data")
+    # "{% if" (no left trim): a "{%-" here would eat the blank line and run the
+    # label into the state ("Timer無資料")
+    return markdown(_two(ctx, "pv.timer") + "\n\n"
+                    "{% if " + s + " == 'on' -%}**" + ea + " {{ " + t + " }}**<br><small>" + eb + " {{ " + t + " }}</small>"
+                    "{%- elif " + s + " == 'off' -%}**" + na + "**<br><small>" + nb + "</small>"
+                    "{%- else -%}**" + da + "**<br><small>" + db + "</small>{%- endif -%}", columns)
+
+
+DARK = ["unavailable", "unknown"]   # states() reads an entity the instance lacks as 'unknown'
+
+
+def _self_hiding(body, columns, rows):
+    """A markdown card that hides itself while `body` renders to nothing
+    (`show_empty: false`, hui-markdown-card.ts). Used instead of a visibility
+    condition wherever the card must appear for an entity the instance may
+    not have: newer frontends evaluate visibility in Home Assistant Core,
+    which errors on an unknown entity, and the card is then hidden whatever
+    the condition says (the 20/11/26 trial). A template reads that entity as
+    'unknown', so the card still shows."""
+    card = markdown(body, columns, rows)
+    card["show_empty"] = False
+    return card
+
+
+def preview_nodata(ctx, entity, name_key, icon, columns=12, rows=1):
+    """The named No data card that stands in a reading's place, at the same size,
+    while Home Assistant cannot confirm it: unavailable, unknown, or an entity ID
+    the instance does not have. Self-hiding (no visibility condition: see
+    _self_hiding). A tile for a missing entity draws an empty warning card whose
+    text only admins see (hui-error-card) — the trial's "missing tiles"; its own
+    visibility condition hides it in both frontends. One row holds one line, so
+    the one-row card carries no icon (an icon outgrows a 56 px row) and sets its
+    English small, so the line fits a phone's 56 px row."""
+    ctx.use(entity)
+    na, nb = _pair(ctx, name_key)
+    da, db = _pair(ctx, "s.no_data")
+    s = "states('" + entity + "')"
+    gate = "{%- if " + s + " in " + str(DARK).replace('"', "'") + " -%}"
+    if rows == 1:
+        body = "**" + na + "** <small>" + nb + "</small> · **" + da + "** <small>" + db + "</small>"
+    else:
+        why = ("{{ (" + jstr(ctx.t("s.offline")) + " if " + s + " == 'unavailable' else "
+               + jstr(ctx.t("pv.unconfirmed")) + ") }}")
+        body = ('<ha-icon icon="' + icon + '"></ha-icon> **' + na + "** " + nb + " · **" + da + "** " + db
+                + "<br><small>" + why + "</small>")
+    return _self_hiding(gate + body + "{%- endif -%}", columns, rows)
+
+
+def preview_tile(ctx, entity, name_key, kind="readonly", icon="mdi:lightbulb-outline", columns=12, nav=None,
+                 nodata_key=None):
+    """A tile while its entity answers, the named No data card of the same size
+    while it does not; exactly one shows, so the grid keeps its shape — in both
+    frontends: the tile's condition hides it for a dark or missing entity, and
+    the No data card hides itself while the entity answers.
+    kind: light    V3 Lighting's own controls (details, icon toggle, brightness bar)
+          readonly state only; a tap navigates (`nav`), nothing else acts
+          sensor   a reading; a tap opens its history (read-only dialog)
+    nodata_key: a shorter name for the No data card, where the tile's own name
+    (which the tile ellipsises) would not fit one line on a phone."""
+    name = ctx.t(name_key)
+    if kind == "light":
+        t, rows = light_tile(ctx, entity, name, columns), 2
+    elif kind == "sensor":
+        t, rows = sensor_tile(ctx, entity, name, columns, nav=nav, rows=1), 1
+    else:
+        t, rows = readonly_tile(ctx, entity, name, columns, nav=nav), 1
+        t["grid_options"]["rows"] = 1
+    t["visibility"] = [{"condition": "state", "entity": entity, "state_not": list(DARK)}]
+    nd = preview_nodata(ctx, entity, nodata_key or name_key, icon, columns, rows)
+    if nav:
+        nd["tap_action"] = {"action": "navigate", "navigation_path": ctx.link(nav)}
+    return [t, nd]
+
+
+def preview_cam_slot(ctx, entity, name_key, battery=None, columns=12, rows=3):
+    """One camera, one slot of one size whatever its state: the picture while
+    the camera entity answers (a tap opens Home Assistant's camera dialog, where
+    the live stream plays), otherwise a named card in words — Offline, or State
+    unknown, which also covers a camera ID the instance does not have (a
+    self-hiding card: see _self_hiding). The picture card claims no state: an idle entity is not proof that its stream
+    plays, which only the dialog shows. Replaces the 2914b09 pair (a 4-unit name
+    cell beside an 8-unit picture) whose two halves read as uneven slots."""
+    ctx.use(entity)
+    na, nb = _pair(ctx, name_key)
+    # name and a chevron: "· 點擊查看畫面 Tap to view" was cut off on the trial iPad
+    pic = {"type": "picture-entity", "entity": entity, "name": na + " " + nb + " ›",
+           "camera_view": "auto", "show_state": False, "show_name": True,
+           "tap_action": {"action": "more-info"}, "hold_action": {"action": "none"},
+           "grid_options": grid(columns, rows),
+           "visibility": [{"condition": "state", "entity": entity, "state_not": list(DARK)}]}
+    s = "states('" + entity + "')"
+    bat = ""
+    if battery:
+        ctx.use(battery)
+        b = "states('" + battery + "')"
+        bat = (" · {{ (" + ctx.jt("cam.battery", v="(" + b + " | float) | round(0) | int") + ") if "
+               + b + " | is_number else " + jstr(ctx.t("cam.no_battery")) + " }}")
+    xa, xb = _pair(ctx, "s.offline")
+    ua, ub = _pair(ctx, "s.state_unknown")
+    head = '<ha-icon icon="mdi:video-off-outline"></ha-icon> **' + na + "** " + nb + " · "
+    body = ("{%- if " + s + " == 'unavailable' -%}" + head + "**" + xa + "** " + xb
+            + "<br><small>" + ctx.t("cam.no_stream") + bat + "</small>"
+            "{%- elif " + s + " == 'unknown' -%}" + head + "**" + ua + "** " + ub
+            + "<br><small>" + ctx.t("pv.cam_unreadable") + bat + "</small>{%- endif -%}")
+    return [pic, _self_hiding(body, columns, rows)]
+
+
+def preview_camera(ctx, entity, name_key, battery=None):
+    """One cell of the Cameras overview: a full slot (12 units, 3 rows; two
+    across on the wall iPad, one on a phone)."""
+    return preview_cam_slot(ctx, entity, name_key, battery, columns=12, rows=3)
+
+
+def preview_link(ctx, label_key, target, icon=None, columns=12, rows=1):
+    """A one-row link in both languages (the mockups' 睇門口 View front door).
+    One heading-free line, so it fits a 56 px row."""
+    a, b = _pair(ctx, label_key)
+    card = markdown("**" + a + "** " + b + " ›", columns, rows)   # no icon: it outgrows a 56 px row
+    card["tap_action"] = {"action": "navigate", "navigation_path": ctx.link(target)}
+    return card
+
+
+# ---------------------------------------------------------------- custom cards (V3-026)
+# Owner decision 20/11/26: the preview may use seven HACS cards (Kiosk Mode,
+# Bubble Card, Advanced Camera Card, auto-entities, ApexCharts, Power Flow Card
+# Plus, WallPanel). Every option below is in the card's own README or docs/
+# (design/casaray-v3/hacs/HACS_RECOMMENDATIONS_2026-11-20.md). Nothing is
+# installed by this: until the owner installs each card on the Green, Home
+# Assistant draws "Custom element doesn't exist" in its place.
+
+PREVIEW_CUSTOM = {"custom:bubble-card", "custom:advanced-camera-card", "custom:auto-entities",
+                  "custom:apexcharts-card", "custom:power-flow-card-plus"}
+
+
+def _bubble(entity, name, icon=None, kind="state"):
+    """A Bubble Card button. kind: 'slider' (a light: the slider sets its
+    brightness, the icon toggles it) or 'state' (a reading: a tap on the icon or
+    the button opens its details, nothing else acts)."""
+    b = {"type": "custom:bubble-card", "card_type": "button", "button_type": kind, "entity": entity, "name": name}
+    if icon:
+        b["icon"] = icon
+    if kind != "slider":
+        b["tap_action"] = {"action": "more-info"}
+        b["button_action"] = {"tap_action": {"action": "more-info"}}
+    return b
+
+
+def preview_bubble_room(ctx, hash, name_key, icon, lights=(), readings=()):
+    """A room's Bubble Card pop-up (standalone format, v3.2.0+): hidden until
+    its hash is opened (the Rooms row navigates to it), then a sheet over the
+    page with the room's lights as sliders and its readings as state buttons.
+    lights: [[entity, name_key], ...]; readings: [[entity, name_key, icon], ...]."""
+    if not str(hash).startswith("#"):
+        raise SystemExit(f"bubble pop-up hash must start with '#': {hash!r}")
+    cards = []
+    for e, k in lights:
+        if not e.startswith("light."):
+            raise SystemExit(f"bubble slider for a non-light: {e}")
+        ctx.use(e)
+        cards.append(_bubble(e, ctx.t(k), kind="slider"))
+    for e, k, ic in readings:
+        ctx.use(e)
+        cards.append(_bubble(e, ctx.t(k), ic, kind="state"))
+    return {"type": "custom:bubble-card", "card_type": "pop-up", "hash": hash, "name": ctx.t(name_key),
+            "icon": icon, "cards": cards, "grid_options": grid("full")}
+
+
+def preview_acc(ctx, cameras, grid_max_columns=3):
+    """Advanced Camera Card: every camera live in one fixed grid. A camera whose
+    entity is unavailable errors in its own cell (always_error_if_entity_unavailable)
+    instead of spinning. cameras: [[camera entity, name_key], ...]."""
+    cams = []
+    for e, k in cameras:
+        ctx.use(e)
+        cams.append({"camera_entity": e, "title": ctx.t(k), "always_error_if_entity_unavailable": True})
+    return {"type": "custom:advanced-camera-card", "cameras": cams,
+            "live": {"display": {"mode": "grid", "grid_max_columns": grid_max_columns}},
+            "grid_options": grid("full")}
+
+
+def preview_power_flow(ctx, solar, grid_import, columns=12):
+    """Power Flow Card Plus: solar and grid import. With no home or export entity
+    the card adds the sources up for Home, which reads high while the panels
+    export (pv.home_caveat says so beside it)."""
+    ctx.use([solar, grid_import])
+    return {"type": "custom:power-flow-card-plus",
+            "entities": {"solar": {"entity": solar, "name": ctx.t("pv.solar")},
+                         "grid": {"entity": grid_import, "name": ctx.t("pv.grid_import")},
+                         "home": {"name": ctx.t("pv.home_power")}},
+            "grid_options": grid(columns)}
+
+
+def preview_apex_today(ctx, solar, grid_import, columns=12):
+    """ApexCharts: today from midnight, solar and grid import as areas."""
+    ctx.use([solar, grid_import])
+    return {"type": "custom:apexcharts-card", "graph_span": "24h", "span": {"start": "day"},
+            "header": {"show": True, "title": ctx.t("pv.today")}, "now": {"show": True},
+            "series": [{"entity": solar, "name": ctx.t("pv.solar"), "type": "area"},
+                       {"entity": grid_import, "name": ctx.t("pv.grid_import"), "type": "area"}],
+            "grid_options": grid(columns)}
+
+
+def preview_unavailable_list(ctx, title_key, domains, columns=12):
+    """auto-entities: every entity of these domains whose state is unavailable,
+    in an entities card, by name. With none, its `else` card says so for this
+    kind only (a list of what answered, not a reassurance about the house)."""
+    na, nb = _pair(ctx, "pv.hh_none")
+    return {"type": "custom:auto-entities",
+            "card": {"type": "entities", "title": ctx.t(title_key)},
+            "filter": {"include": [{"domain": d, "state": "unavailable"} for d in domains]},
+            "sort": {"method": "name"},
+            "else": markdown("**" + ctx.t(title_key) + "**\n\n" + na + " <small>" + nb + "</small>", columns),
+            "grid_options": grid(columns)}
+
+
+def preview_wallpanel(ctx, idle_time=120, temperature="sensor.bedroom_motion_sensor_temperature",
+                      door="binary_sensor.f_contact_sensor_door"):
+    """WallPanel (dashboard-level `wallpanel:`): after `idle_time` seconds the
+    screen shows the photos in Home Assistant's media folder with an info box —
+    the time over DD/MM/YY, the parents' room temperature and the front door.
+    It leaves the header and sidebar to Kiosk Mode (hide_* false), so the two
+    never fight over them."""
+    ctx.use([temperature, door])
+    days = "[" + ",".join(jstr(" ".join(dict.fromkeys(_pair(ctx, f"pv.wd{i}")))) for i in range(7)) + "]"
+    clock = markdown("# {{ now().strftime('%H:%M') }}\n{{ " + days + "[now().weekday()] }} · {{ now().strftime('%d/%m/%y') }}")
+    ta, tb = _pair(ctx, "pv.parents_temp")
+    temp = markdown("**" + ta + "** " + tb + "\n## {{ " + deg_expr(ctx, temperature, 1) + " }}")
+    da, db = _pair(ctx, "room.front_door")
+    words = {"on": "pv.wp_open", "off": "pv.wp_closed"}
+    door_card = markdown("**" + da + "** " + db + "\n## {{ " + _words(ctx, door, words, 0) + " }} "
+                         "<small>{{ " + _words(ctx, door, words, 1) + " }}</small>")
+    for c in (clock, temp, door_card):
+        c.pop("grid_options", None)   # the info box lays its cards out itself
+    return {"enabled": True, "hide_toolbar": False, "hide_sidebar": False, "fullscreen": False,
+            "idle_time": idle_time, "image_url": "media-source://media_source/",
+            "cards": [clock, temp, door_card]}
+
+
+# ---------------------------------------------------------------- custom cards on the working dashboards (V3-027)
+# V3-026 approved seven HACS cards and the owner chose "Adopt cards in V3"; V3-027
+# brings four of them to the working dashboards, each in its own band AFTER the
+# page's native content, with a note saying what it needs. Until a card is
+# installed through HACS, Home Assistant draws "Custom element doesn't exist" in
+# that band only; every native reading, control and link above it is unchanged.
+# Not here, and why (V3-027): Kiosk Mode (removed after the "kiosk mode lockout";
+# restoring it on a working dashboard is the owner's call), Bubble Card and
+# Advanced Camera Card (bound to six entity IDs not found on the instance).
+# Options are exactly those reviewed for the preview (V3-026, PR #27); labels are
+# one language per locale, from the working catalogues.
+
+WORKING_CUSTOM = {"energy": {"custom:power-flow-card-plus", "custom:apexcharts-card"},
+                  "house-health": {"custom:auto-entities"}}
+# the native card auto-entities fills, allowed where auto-entities is
+WORKING_INNER = {"house-health": {"entities"}}
+
+
+def power_flow(ctx, solar, grid_import, columns=12):
+    """Power Flow Card Plus: solar and grid import. With no consumption or export
+    entity the card adds the sources up for Home, which reads high while the
+    panels export; energy.flow_caveat says so beside it."""
+    ctx.use([solar, grid_import])
+    return {"type": "custom:power-flow-card-plus",
+            "entities": {"solar": {"entity": solar, "name": ctx.t("h.solar")},
+                         "grid": {"entity": grid_import, "name": ctx.t("energy.flow_grid")},
+                         "home": {"name": ctx.t("energy.flow_home")}},
+            "grid_options": grid(columns)}
+
+
+def apex_today(ctx, solar, grid_import, columns=12):
+    """ApexCharts: today from midnight, solar and grid import as areas."""
+    ctx.use([solar, grid_import])
+    return {"type": "custom:apexcharts-card", "graph_span": "24h", "span": {"start": "day"},
+            "header": {"show": True, "title": ctx.t("energy.flow_today")}, "now": {"show": True},
+            "series": [{"entity": solar, "name": ctx.t("h.solar"), "type": "area"},
+                       {"entity": grid_import, "name": ctx.t("energy.flow_grid"), "type": "area"}],
+            "grid_options": grid(columns)}
+
+
+def unavailable_list(ctx, title_key, domains, columns=12):
+    """auto-entities: every entity of these domains whose state is unavailable, by
+    name, in an entities card. With none, the `else` card says so for this kind
+    only: a statement about what reports unavailable, not about the house."""
+    return {"type": "custom:auto-entities",
+            "card": {"type": "entities", "title": ctx.t(title_key)},
+            "filter": {"include": [{"domain": d, "state": "unavailable"} for d in domains]},
+            "sort": {"method": "name"},
+            "else": markdown("**" + ctx.t(title_key) + "**\n\n<small>" + ctx.t("hh.list_none") + "</small>", columns),
+            "grid_options": grid(columns)}
+
+
+def wallpanel(ctx, idle_time=120, temperature="sensor.bedroom_motion_sensor_temperature",
+              door="binary_sensor.f_contact_sensor_door"):
+    """WallPanel (dashboard-level `wallpanel:`), the preview's reviewed options:
+    after `idle_time` seconds the photos in Home Assistant's media folder, with
+    the time over DD/MM/YY, the parents' room temperature and the front door.
+    Header and sidebar are left alone (hide_* false). Ignored by Home Assistant
+    while the card is not installed; a touch returns to the dashboard."""
+    clock = markdown("# {{ now().strftime('%H:%M') }}\n{{ now().strftime('%d/%m/%y') }}")
+    temp = markdown("**" + ctx.t("wp.parents_temp") + "**\n## {{ " + deg_expr(ctx, temperature, 1) + " }}")
+    door_card = markdown("**" + ctx.t("room.front_door") + "**\n## {{ "
+                         + word_expr(ctx, door, {"on": "s.open", "off": "s.closed"}) + " }}")
+    for c in (clock, temp, door_card):
+        c.pop("grid_options", None)   # the info box lays its cards out itself
+    return {"enabled": True, "hide_toolbar": False, "hide_sidebar": False, "fullscreen": False,
+            "idle_time": idle_time, "image_url": "media-source://media_source/",
+            "cards": [clock, temp, door_card]}
+
+
+# ---------------------------------------------------------------- Navbar card (V3-028)
+# Owner, 21/11/26: "Add in navbar for navigation". Navbar Card is installed on the
+# instance (the owner's card picker lists it). Every option below is in the card's
+# own docs (joseluis9595/lovelace-navbar-card, docs/content/docs/configuration/*.md
+# and advanced/custom-actions.md at main, read 21/11/26); nothing else is set. The
+# native top bar stays on every page: if the card fails to load, the page still
+# navigates (and Home Assistant shows "Custom element doesn't exist" at its foot).
+
+NAVBAR = "custom:navbar-card"
+
+
+def navbar(ctx, routes, more):
+    """One navbar for a page: the main destinations as labelled routes, the rest
+    behind a "More" route that opens the card's popup. A route is drawn selected
+    when its url is the page's own path; with reflect_child_state, More is
+    selected while one of its pages is open, so the current destination is
+    always marked. routes / more: [[path, label_key, icon], ...]."""
+    def route(path, key, icon):
+        return {"url": ctx.link(path), "icon": icon, "label": ctx.t(key)}
+    items = [route(*r) for r in routes]
+    items.append({"icon": "mdi:dots-horizontal", "label": ctx.t("nav.more"),
+                  "tap_action": {"action": "open-popup"}, "popup": [route(*r) for r in more]})
+    return {"type": NAVBAR, "routes": items,
+            "desktop": {"show_labels": True},
+            "mobile": {"show_labels": True, "safe_area": True},
+            "layout": {"reflect_child_state": True},
+            "grid_options": grid("full")}
+
+
+# ---------------------------------------------------------------- Clock Weather Card (V3-029)
+# Owner, 21/11/26: "switch weather band to clock weather". Installed on the instance
+# (docs/casaray-v3/HACS_INSTALLED.md, the owner's HACS list; the owner's phone shows it
+# working). Options from the card's own README and CONTRIBUTING.md at
+# pkissling/clock-weather-card main (3.1.0, 01/11/26), read 21/11/26: the v3 `sections`
+# schema (v3.0.0, 25/10/26). The header keeps the card's documented default rows, with
+# only the two patterns this house needs: time HH:mm over date dd/MM/yy (DD/MM/YY).
+# The hourly forecast strip and the daily forecast list are the card's defaults.
+
+CLOCK_WEATHER = "custom:clock-weather-card"
+# the card's own translations are en, zh-hant and zh-hans (src/locales/, 21/11/26); for
+# any other tag it falls back to English text while dates still format in that language
+CWC_LOCALE = {"en": "en-au", "yue": "zh-hant", "zh-Hans": "zh-hans", "km": "km"}
+
+
+def clock_weather(ctx, entity):
+    """Clock Weather Card on one weather entity: icon, temperature and condition, the
+    time over DD/MM/YY, the hourly strip (with sunrise/sunset), the daily list."""
+    if not entity.startswith("weather."):
+        raise SystemExit(f"clock_weather: {entity} is not a weather entity")
+    ctx.use(entity)
+    rows = [
+        {"segments": [{"type": "icon", "icon": "mdi:thermometer"},
+                      {"type": "weather", "attribute": "temperature"},
+                      {"type": "spacer"}, {"type": "weather"}]},
+        {"font_size": "4rem", "alignment": "center", "segments": [{"type": "time", "time_pattern": "HH:mm"}]},
+        {"alignment": "center", "segments": [{"type": "icon", "icon": "mdi:calendar"},
+                                             {"type": "date", "date_pattern": "dd/MM/yy"}]},
+    ]
+    return {"type": CLOCK_WEATHER, "entity": entity, "locale": CWC_LOCALE[ctx.locale["code"]],
+            "sections": {"header": {"rows": rows}}, "grid_options": grid("full")}

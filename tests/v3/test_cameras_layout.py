@@ -1,5 +1,5 @@
-"""V3-014: camera slots, the compact top bar, and bands that pack with
-visibility applied.  DEVELOPMENT ONLY.
+"""V3-014: camera slots and bands that pack with visibility applied (the top
+bar's tests moved to test_topbar_v3_024.py).  DEVELOPMENT ONLY.
 
     python3 -m unittest discover -s tests/v3 -v
 
@@ -99,31 +99,9 @@ class CameraSlots(unittest.TestCase):
             self.assertEqual(V.C.effective_tile_actions(t)[1], "none", t["entity"])
 
 
-class CompactTopBar(unittest.TestCase):
-    def test_band_views_get_one_height_top_bar(self):
-        for path in ("home", "cameras"):
-            top = view(path)["sections"][0]
-            md = [c for c in top["cards"] if c["type"] == "markdown"]
-            btn = [c for c in top["cards"] if c["type"] == "button"]
-            self.assertTrue(all(c.get("text_only") for c in md))
-            self.assertEqual(len(btn), 6)
-            self.assertTrue(all(c["show_name"] is False for c in btn))
-            self.assertEqual({L.effective(c)[1] for c in top["cards"]}, {1}, path)
-            current = [c for c in btn if c["tap_action"] == {"action": "none"}]
-            self.assertEqual(len(current), 1, "the current page is inert")
-            for units in (24, 12):
-                self.assertEqual(L.place([L.effective(c) for c in top["cards"]], units)[2], 0, (path, units))
-
-    def test_other_views_keep_their_top_bar(self):
-        top = view("lighting")["sections"][0]
-        self.assertFalse(any(c.get("text_only") for c in top["cards"]))
-        self.assertTrue(any(c.get("show_name") for c in top["cards"] if c["type"] == "button"))
-
-    def test_clock_keeps_dd_mm_yy_under_the_time(self):
-        clock = view("home")["sections"][0]["cards"][1]["content"]
-        self.assertIn("%H:%M') }}<br>", clock)
-        self.assertIn("%d/%m/%y", clock)
-        self.assertNotIn("%Y", clock)
+# The V3-014 compact top bar (six icon-only buttons) was superseded for the
+# release preview by one shared, named top bar on every native view (V3-024):
+# see test_topbar_v3_024.py, which also proves the gate rejects the icon-only bar.
 
 
 class BandsWithVisibility(unittest.TestCase):
