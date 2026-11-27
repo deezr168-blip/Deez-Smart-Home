@@ -286,12 +286,16 @@ def chip_plugs(ctx, label_key, total, plugs, digits=1):
     return pre + ctx.t(label_key) + " **{{ " + val + " }}**{{ " + note + " }}"
 
 
-def plugs_card(ctx, label_key, total, plugs, detail_key, nav=None, columns=12, digits=1):
+def plugs_card(ctx, label_key, total, plugs, detail_key, nav=None, columns=12, digits=1, note_key=None):
     """The mockups' Monitored power card: the two-plug total, which plugs, and
-    how many answered; a tap opens the board that shows each plug."""
+    how many answered; a tap opens the board that shows each plug.
+
+    note_key (V3-023): the footnote that qualifies the figure, inside the card
+    it qualifies, as the render draws it, rather than as a card of its own."""
     pre, val, note = _plugs(ctx, total, plugs, digits)
+    foot = ("\n<small>" + ctx.t(note_key) + "</small>") if note_key else ""
     card = markdown(pre + "**" + ctx.t(label_key) + "**\n{{ " + val + " }} · " + ctx.t(detail_key)
-                    + "{{ " + note + " }}", columns)
+                    + "{{ " + note + " }}" + foot, columns)
     if nav:
         card["tap_action"] = {"action": "navigate", "navigation_path": ctx.link(nav)}
     return card
@@ -446,9 +450,14 @@ def ac_mode_expr(ctx, entity):
     return "(" + m + ").get(states('" + entity + "'), states('" + entity + "'))"
 
 
-def ac_summary(ctx, entity, nav=None, columns=12, rows="auto"):
+def ac_summary(ctx, entity, nav=None, columns=12, rows="auto", name_key=None, compact=False):
     """Read-only air-con card (V3-008 R1/R7): mode as reported, room and
-    target from the entity's own attributes, "No data" otherwise."""
+    target from the entity's own attributes, "No data" otherwise.
+
+    name_key (V3-023): a first line naming which air-con this is — the card
+    otherwise reads only "Current: Cool". compact: the name, then the mode and
+    the room temperature on one line (V3-007's own "Off · room 23.3°" form),
+    for a slot the size of a button. Without either, the card is unchanged."""
     ctx.use(entity)
     nd = jstr(ctx.t("s.no_data"))
 
@@ -456,6 +465,23 @@ def ac_summary(ctx, entity, nav=None, columns=12, rows="auto"):
         v = "state_attr('" + entity + "','" + attr + "')"
         return ("{{ ((" + v + " | float) | round(1) ~ '°') if " + v + " is number or ("
                 + v + " | is_number) else " + nd + " }}")
+    if name_key or compact:
+        head = ("**" + ctx.t(name_key) + "**<br>") if name_key else ""
+        if compact:
+            live = ("{{ " + ac_mode_expr(ctx, entity) + " }} · " + ctx.t("ac.room") + " "
+                    + temp("current_temperature"))
+        else:
+            live = ("{{ " + ctx.jt("ac.current", mode=ac_mode_expr(ctx, entity)) + " }}\n\n"
+                    + ctx.t("ac.room") + " " + temp("current_temperature") + " · "
+                    + ctx.t("ac.target") + " " + temp("temperature"))
+        body = ("{%- set s = states('" + entity + "') -%}" + head
+                + "{%- if s == 'unavailable' -%}" + ctx.t("s.offline") + " · " + ctx.t("s.no_data")
+                + "{%- elif s in ['unknown','none',''] -%}" + ctx.t("s.state_unknown") + " · " + ctx.t("s.no_data")
+                + "{%- else -%}" + live + "{%- endif -%}")
+        card = markdown(body, columns, rows)
+        if nav:
+            card["tap_action"] = {"action": "navigate", "navigation_path": ctx.link(nav)}
+        return card
     body = ("{%- set s = states('" + entity + "') -%}"
             "{%- if s == 'unavailable' -%}**" + ctx.t("s.offline") + "** · " + ctx.t("s.no_data")
             + "{%- elif s in ['unknown','none',''] -%}**" + ctx.t("s.state_unknown") + "** · " + ctx.t("s.no_data")
@@ -503,7 +529,15 @@ def camera_card(ctx, entity, name_key, subview=None, columns=6, rows=4, full_scr
     unavailable. Exactly one of the two is visible, so the grid keeps its
     shape. `battery` adds the camera's battery reading to that card: a camera
     whose battery answers while its stream does not is a stream problem, not
-    a dead camera."""
+    a dead camera.
+
+    V3-030: the twin also covers `unknown`, and says "State unknown" there
+    rather than Offline. hui-image still fetches an unknown camera's image
+    (a broken image, no word), and the frontend evaluates a camera entity that
+    does not exist at all as `unknown` (validate-condition.ts), so without this
+    a removed or renamed camera would draw an empty frame. Offline and unknown
+    are different states and say different words (V3 rule: four camera states,
+    never colour alone)."""
     ctx.use(entity)
     tap = ({"action": "more-info"} if full_screen == "more-info" else
            {"action": "navigate", "navigation_path": ctx.link(subview)})
@@ -513,15 +547,18 @@ def camera_card(ctx, entity, name_key, subview=None, columns=6, rows=4, full_scr
            "grid_options": grid(columns, rows)}
     if not offline:
         return pic
-    pic["visibility"] = [{"condition": "state", "entity": entity, "state_not": "unavailable"}]
-    body = "**" + ctx.t(name_key) + "** · **" + ctx.t("s.offline") + "**\n" + ctx.t("cam.no_stream")
+    dark = ["unavailable", "unknown"]
+    pic["visibility"] = [{"condition": "state", "entity": entity, "state_not": list(dark)}]
+    word = ("{{ " + jstr(ctx.t("s.offline")) + " if states('" + entity + "') == 'unavailable' else "
+            + jstr(ctx.t("s.state_unknown")) + " }}")
+    body = "**" + ctx.t(name_key) + "** · **" + word + "**\n" + ctx.t("cam.no_stream")
     if battery:
         ctx.use(battery)
         b = "states('" + battery + "')"
         body += (" · {{ (" + ctx.jt("cam.battery", v="(" + b + " | float) | round(0) | int") + ") if "
                  + b + " | is_number else " + jstr(ctx.t("cam.no_battery")) + " }}")
     twin = markdown(body, columns, rows)
-    twin["visibility"] = [{"condition": "state", "entity": entity, "state": "unavailable"}]
+    twin["visibility"] = [{"condition": "state", "entity": entity, "state": list(dark)}]
     return [pic, twin]
 
 

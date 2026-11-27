@@ -182,10 +182,7 @@ views:
               columns: 6
               rows: 2
           - type: markdown
-            content: |-
-              {%- set s = states('climate.bedroom_parents_room_ac') -%}{%- if s == 'unavailable' -%}**Offline** · No data{%- elif s in ['unknown','none',''] -%}**State unknown** · No data{%- else -%}**{{ "Current: " ~ (({'off':"Off",'cool':"Cool",'heat':"Heat",'fan_only':"Fan only",'dry':"Dry",'auto':"Auto",'heat_cool':"Heat/cool"}).get(states('climate.bedroom_parents_room_ac'), states('climate.bedroom_parents_room_ac'))) }}**
-
-              Room {{ ((state_attr('climate.bedroom_parents_room_ac','current_temperature') | float) | round(1) ~ '°') if state_attr('climate.bedroom_parents_room_ac','current_temperature') is number or (state_attr('climate.bedroom_parents_room_ac','current_temperature') | is_number) else "No data" }} · Target {{ ((state_attr('climate.bedroom_parents_room_ac','temperature') | float) | round(1) ~ '°') if state_attr('climate.bedroom_parents_room_ac','temperature') is number or (state_attr('climate.bedroom_parents_room_ac','temperature') | is_number) else "No data" }}{%- endif -%}
+            content: '{%- set s = states(''climate.bedroom_parents_room_ac'') -%}**Parents'' air-con**<br>{%- if s == ''unavailable'' -%}Offline · No data{%- elif s in [''unknown'',''none'',''''] -%}State unknown · No data{%- else -%}{{ ({''off'':"Off",''cool'':"Cool",''heat'':"Heat",''fan_only'':"Fan only",''dry'':"Dry",''auto'':"Auto",''heat_cool'':"Heat/cool"}).get(states(''climate.bedroom_parents_room_ac''), states(''climate.bedroom_parents_room_ac'')) }} · Room {{ ((state_attr(''climate.bedroom_parents_room_ac'',''current_temperature'') | float) | round(1) ~ ''°'') if state_attr(''climate.bedroom_parents_room_ac'',''current_temperature'') is number or (state_attr(''climate.bedroom_parents_room_ac'',''current_temperature'') | is_number) else "No data" }}{%- endif -%}'
             grid_options:
               columns: 6
               rows: 2
@@ -207,7 +204,7 @@ views:
               {{ (ns.p | join(' · ')) if ns.p else "No data" }}{{ (' · ' ~ (ns.d) ~ " not reporting") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: 2
+              rows: auto
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/living-room
@@ -217,7 +214,7 @@ views:
               {{ (ns.p | join(' · ')) if ns.p else "No data" }}{{ (' · ' ~ (ns.d) ~ " not reporting") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: 2
+              rows: auto
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/dining
@@ -227,7 +224,7 @@ views:
               {{ (ns.p | join(' · ')) if ns.p else "No data" }}{{ (' · ' ~ (ns.d) ~ " not reporting") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: 2
+              rows: auto
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/kitchen
@@ -237,7 +234,7 @@ views:
               {{ (ns.p | join(' · ')) if ns.p else "No data" }}{{ (' · ' ~ (ns.d) ~ " not reporting") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: 2
+              rows: auto
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/parents-room
@@ -247,7 +244,7 @@ views:
               {{ (ns.p | join(' · ')) if ns.p else "No data" }}{{ (' · ' ~ (ns.d) ~ " not reporting") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: 2
+              rows: auto
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/ray-bedroom
@@ -257,7 +254,7 @@ views:
               {{ (ns.p | join(' · ')) if ns.p else "No data" }}{{ (' · ' ~ (ns.d) ~ " not reporting") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: 2
+              rows: auto
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/garage
@@ -267,7 +264,7 @@ views:
               {{ (ns.p | join(' · ')) if ns.p else "No data" }}{{ (' · ' ~ (ns.d) ~ " not reporting") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: 2
+              rows: auto
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/guest-room
@@ -275,7 +272,7 @@ views:
             content: '**All rooms**'
             grid_options:
               columns: 6
-              rows: 2
+              rows: auto
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/rooms
@@ -292,7 +289,7 @@ views:
             entity: todo.shopping_list
             grid_options:
               columns: 12
-              rows: 8
+              rows: 5
       - type: grid
         column_span: 1
         cards:
@@ -337,30 +334,13 @@ views:
             content: |-
               {%- set pp = namespace(ok=0) -%}{%- for e in ['sensor.g_monitor_freezer_p110m_current_consumption','sensor.r_energy_monitor_p110m_current_consumption'] -%}{%- if states(e) | is_number -%}{%- set pp.ok = pp.ok + 1 -%}{%- endif -%}{%- endfor -%}**Two monitored plugs**
               {{ (((states('sensor.casa_monitored_power') | float) | round(1) ~ ((' ' ~ state_attr('sensor.casa_monitored_power','unit_of_measurement')) if state_attr('sensor.casa_monitored_power','unit_of_measurement') else '')) if states('sensor.casa_monitored_power') | is_number else "No data") if pp.ok == 2 else "No data" }} · garage freezer and Ray's desk{{ (' <small>' ~ (pp.ok) ~ " of " ~ (2) ~ " reporting" ~ '</small>') if (pp.ok > 0 and pp.ok < 2) else '' }}
+              <small>Two circuits are metered, so this is monitored load — not the whole house.</small>
             grid_options:
               columns: 12
               rows: auto
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/energy
-          - type: tile
-            entity: sensor.casa_solar_expected_today
-            tap_action:
-              action: navigate
-              navigation_path: /casaray-v3/energy
-            icon_tap_action:
-              action: none
-            hold_action:
-              action: none
-            grid_options:
-              columns: 12
-              rows: auto
-            name: Solar expected today
-          - type: markdown
-            content: <small>Two circuits are metered, so this is monitored load — not the whole house.</small>
-            grid_options:
-              columns: 12
-              rows: auto
       - type: grid
         column_span: 1
         cards:
@@ -381,7 +361,7 @@ views:
               action: none
             grid_options:
               columns: 4
-              rows: 3
+              rows: 2
             vertical: true
           - type: tile
             entity: person.vinh_du
@@ -394,7 +374,7 @@ views:
               action: none
             grid_options:
               columns: 4
-              rows: 3
+              rows: 2
             vertical: true
           - type: tile
             entity: person.ai_q_huang
@@ -407,7 +387,7 @@ views:
               action: none
             grid_options:
               columns: 4
-              rows: 3
+              rows: 2
             vertical: true
           - type: tile
             entity: binary_sensor.bedroom_parents_room_ac_room_occupied
@@ -419,7 +399,7 @@ views:
               action: none
             grid_options:
               columns: 12
-              rows: 3
+              rows: 2
             name: Parents' room
             state_content:
               - state
@@ -462,10 +442,12 @@ views:
             visibility:
               - condition: state
                 entity: camera.front_door_live_view
-                state_not: unavailable
+                state_not:
+                  - unavailable
+                  - unknown
           - type: markdown
             content: |-
-              **Front door** · **Offline**
+              **Front door** · **{{ "Offline" if states('camera.front_door_live_view') == 'unavailable' else "State unknown" }}**
               No stream from Home Assistant · {{ ("Battery " ~ ((states('sensor.front_door_battery') | float) | round(0) | int) ~ "%") if states('sensor.front_door_battery') | is_number else "No battery reading" }}
             grid_options:
               columns: 12
@@ -473,7 +455,9 @@ views:
             visibility:
               - condition: state
                 entity: camera.front_door_live_view
-                state: unavailable
+                state:
+                  - unavailable
+                  - unknown
           - type: tile
             entity: binary_sensor.f_contact_sensor_door
             tap_action:
@@ -588,6 +572,19 @@ views:
               columns: 6
               rows: auto
             name: Solar today
+          - type: tile
+            entity: sensor.casa_solar_expected_today
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3/energy
+            icon_tap_action:
+              action: none
+            hold_action:
+              action: none
+            grid_options:
+              columns: 12
+              rows: auto
+            name: Solar expected today
           - type: markdown
             content: <small>Powerpal and Fronius only — export and whole-house consumption have no verified source (V3-003).</small>
             grid_options:
@@ -604,12 +601,12 @@ views:
               rows: auto
           - type: markdown
             content: |-
-              {%- set s = states('climate.bedroom_parents_room_ac') -%}{%- if s == 'unavailable' -%}**Offline** · No data{%- elif s in ['unknown','none',''] -%}**State unknown** · No data{%- else -%}**{{ "Current: " ~ (({'off':"Off",'cool':"Cool",'heat':"Heat",'fan_only':"Fan only",'dry':"Dry",'auto':"Auto",'heat_cool':"Heat/cool"}).get(states('climate.bedroom_parents_room_ac'), states('climate.bedroom_parents_room_ac'))) }}**
+              {%- set s = states('climate.bedroom_parents_room_ac') -%}**Parents' air-con**<br>{%- if s == 'unavailable' -%}Offline · No data{%- elif s in ['unknown','none',''] -%}State unknown · No data{%- else -%}{{ "Current: " ~ (({'off':"Off",'cool':"Cool",'heat':"Heat",'fan_only':"Fan only",'dry':"Dry",'auto':"Auto",'heat_cool':"Heat/cool"}).get(states('climate.bedroom_parents_room_ac'), states('climate.bedroom_parents_room_ac'))) }}
 
               Room {{ ((state_attr('climate.bedroom_parents_room_ac','current_temperature') | float) | round(1) ~ '°') if state_attr('climate.bedroom_parents_room_ac','current_temperature') is number or (state_attr('climate.bedroom_parents_room_ac','current_temperature') | is_number) else "No data" }} · Target {{ ((state_attr('climate.bedroom_parents_room_ac','temperature') | float) | round(1) ~ '°') if state_attr('climate.bedroom_parents_room_ac','temperature') is number or (state_attr('climate.bedroom_parents_room_ac','temperature') | is_number) else "No data" }}{%- endif -%}
             grid_options:
               columns: 12
-              rows: 2
+              rows: auto
             tap_action:
               action: navigate
               navigation_path: /casaray-v3/climate
@@ -639,6 +636,32 @@ views:
               columns: 6
               rows: auto
             name: Parents' room
+          - type: tile
+            entity: sensor.living_room_living_room_temperature
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3/climate
+            icon_tap_action:
+              action: none
+            hold_action:
+              action: none
+            grid_options:
+              columns: 6
+              rows: auto
+            name: Dining
+          - type: tile
+            entity: sensor.presence_multi_sensor_fp300_temperature
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3/climate
+            icon_tap_action:
+              action: none
+            hold_action:
+              action: none
+            grid_options:
+              columns: 6
+              rows: auto
+            name: Ray's room
       - type: grid
         column_span: 2
         cards:
@@ -9517,10 +9540,12 @@ views:
             visibility:
               - condition: state
                 entity: camera.front_door_live_view
-                state_not: unavailable
+                state_not:
+                  - unavailable
+                  - unknown
           - type: markdown
             content: |-
-              **Front door** · **Offline**
+              **Front door** · **{{ "Offline" if states('camera.front_door_live_view') == 'unavailable' else "State unknown" }}**
               No stream from Home Assistant · {{ ("Battery " ~ ((states('sensor.front_door_battery') | float) | round(0) | int) ~ "%") if states('sensor.front_door_battery') | is_number else "No battery reading" }}
             grid_options:
               columns: 12
@@ -9528,7 +9553,9 @@ views:
             visibility:
               - condition: state
                 entity: camera.front_door_live_view
-                state: unavailable
+                state:
+                  - unavailable
+                  - unknown
           - type: picture-entity
             entity: camera.tapo_c425_north_wall_hd_stream_direct
             name: North wall
@@ -9545,10 +9572,12 @@ views:
             visibility:
               - condition: state
                 entity: camera.tapo_c425_north_wall_hd_stream_direct
-                state_not: unavailable
+                state_not:
+                  - unavailable
+                  - unknown
           - type: markdown
             content: |-
-              **North wall** · **Offline**
+              **North wall** · **{{ "Offline" if states('camera.tapo_c425_north_wall_hd_stream_direct') == 'unavailable' else "State unknown" }}**
               No stream from Home Assistant · {{ ("Battery " ~ ((states('sensor.tapo_c425_north_wall_battery') | float) | round(0) | int) ~ "%") if states('sensor.tapo_c425_north_wall_battery') | is_number else "No battery reading" }}
             grid_options:
               columns: 12
@@ -9556,7 +9585,9 @@ views:
             visibility:
               - condition: state
                 entity: camera.tapo_c425_north_wall_hd_stream_direct
-                state: unavailable
+                state:
+                  - unavailable
+                  - unknown
           - type: picture-entity
             entity: camera.tapo_c420_east_wall_hd_stream_direct
             name: East wall
@@ -9573,10 +9604,12 @@ views:
             visibility:
               - condition: state
                 entity: camera.tapo_c420_east_wall_hd_stream_direct
-                state_not: unavailable
+                state_not:
+                  - unavailable
+                  - unknown
           - type: markdown
             content: |-
-              **East wall** · **Offline**
+              **East wall** · **{{ "Offline" if states('camera.tapo_c420_east_wall_hd_stream_direct') == 'unavailable' else "State unknown" }}**
               No stream from Home Assistant · {{ ("Battery " ~ ((states('sensor.tapo_camera_bcca_battery') | float) | round(0) | int) ~ "%") if states('sensor.tapo_camera_bcca_battery') | is_number else "No battery reading" }}
             grid_options:
               columns: 12
@@ -9584,7 +9617,9 @@ views:
             visibility:
               - condition: state
                 entity: camera.tapo_c420_east_wall_hd_stream_direct
-                state: unavailable
+                state:
+                  - unavailable
+                  - unknown
           - type: picture-entity
             entity: camera.tapo_c420_south_wall_hd_stream_direct
             name: South wall
@@ -9601,10 +9636,12 @@ views:
             visibility:
               - condition: state
                 entity: camera.tapo_c420_south_wall_hd_stream_direct
-                state_not: unavailable
+                state_not:
+                  - unavailable
+                  - unknown
           - type: markdown
             content: |-
-              **South wall** · **Offline**
+              **South wall** · **{{ "Offline" if states('camera.tapo_c420_south_wall_hd_stream_direct') == 'unavailable' else "State unknown" }}**
               No stream from Home Assistant · {{ ("Battery " ~ ((states('sensor.tapo_c420_south_wall_battery') | float) | round(0) | int) ~ "%") if states('sensor.tapo_c420_south_wall_battery') | is_number else "No battery reading" }}
             grid_options:
               columns: 12
@@ -9612,7 +9649,9 @@ views:
             visibility:
               - condition: state
                 entity: camera.tapo_c420_south_wall_hd_stream_direct
-                state: unavailable
+                state:
+                  - unavailable
+                  - unknown
           - type: picture-entity
             entity: camera.tapo_c200_stockroom_hd_stream_direct
             name: Stockroom
@@ -9629,10 +9668,12 @@ views:
             visibility:
               - condition: state
                 entity: camera.tapo_c200_stockroom_hd_stream_direct
-                state_not: unavailable
+                state_not:
+                  - unavailable
+                  - unknown
           - type: markdown
             content: |-
-              **Stockroom** · **Offline**
+              **Stockroom** · **{{ "Offline" if states('camera.tapo_c200_stockroom_hd_stream_direct') == 'unavailable' else "State unknown" }}**
               No stream from Home Assistant
             grid_options:
               columns: 12
@@ -9640,7 +9681,9 @@ views:
             visibility:
               - condition: state
                 entity: camera.tapo_c200_stockroom_hd_stream_direct
-                state: unavailable
+                state:
+                  - unavailable
+                  - unknown
           - type: picture-entity
             entity: camera.smart_pet_feeder
             name: Pet feeder
@@ -9657,10 +9700,12 @@ views:
             visibility:
               - condition: state
                 entity: camera.smart_pet_feeder
-                state_not: unavailable
+                state_not:
+                  - unavailable
+                  - unknown
           - type: markdown
             content: |-
-              **Pet feeder** · **Offline**
+              **Pet feeder** · **{{ "Offline" if states('camera.smart_pet_feeder') == 'unavailable' else "State unknown" }}**
               No stream from Home Assistant
             grid_options:
               columns: 12
@@ -9668,7 +9713,9 @@ views:
             visibility:
               - condition: state
                 entity: camera.smart_pet_feeder
-                state: unavailable
+                state:
+                  - unavailable
+                  - unknown
           - type: markdown
             content: <small>Tap a camera for Home Assistant's live view, which can go full screen. The camera pages under More boards use the WebRTC Camera card, which needs that HACS integration on the Green.</small>
             grid_options:

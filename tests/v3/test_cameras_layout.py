@@ -1,6 +1,9 @@
 """V3-014: camera slots and bands that pack with visibility applied (the top
 bar's tests moved to test_topbar_v3_024.py).  DEVELOPMENT ONLY.
 
+V3-030: the Offline card also covers `unknown`, where it says "State
+unknown" instead (ported from PR #25).
+
     python3 -m unittest discover -s tests/v3 -v
 
 No network, no Home Assistant: these check the generated YAML and what its
@@ -54,8 +57,10 @@ class CameraSlots(unittest.TestCase):
                 i = sec["cards"].index(pic)
                 twin = sec["cards"][i + 1]
                 self.assertEqual(twin["type"], "markdown", e)
-                self.assertEqual(pic["visibility"], [{"condition": "state", "entity": e, "state_not": "unavailable"}])
-                self.assertEqual(twin["visibility"], [{"condition": "state", "entity": e, "state": "unavailable"}])
+                self.assertEqual(pic["visibility"], [{"condition": "state", "entity": e,
+                                                      "state_not": ["unavailable", "unknown"]}])
+                self.assertEqual(twin["visibility"], [{"condition": "state", "entity": e,
+                                                       "state": ["unavailable", "unknown"]}])
                 self.assertEqual(L.effective(pic), L.effective(twin), e)
 
     def test_exactly_one_of_each_pair_shows(self):
@@ -67,6 +72,29 @@ class CameraSlots(unittest.TestCase):
         idle = {e: "idle" for e in CAMS}
         self.assertTrue(all(c["type"] == "picture-entity" for c in sec["cards"]
                             if c.get("visibility") and L.visible(c, idle)), "an idle camera is available")
+        for st in ("unavailable", "unknown"):
+            dark = {e: st for e in CAMS}
+            self.assertTrue(all(c["type"] == "markdown" for c in sec["cards"]
+                                if c.get("visibility") and L.visible(c, dark)), f"a {st} camera shows words")
+        # a camera entity that does not exist reads `unknown` in the frontend
+        # (validate-condition.ts): its slot shows words, not an empty frame
+        shown = [c for c in sec["cards"] if c.get("visibility") and L.visible(c, {})]
+        self.assertEqual(len(shown), 6)
+        self.assertTrue(all(c["type"] == "markdown" for c in shown))
+
+    def test_unknown_camera_says_state_unknown_not_offline(self):
+        """V3-030: offline and unknown are different states with different
+        words (V3 rule: four camera states, never colour alone)."""
+        E = "camera.tapo_c200_stockroom_hd_stream_direct"
+        for code, word, wrong in (("en", "State unknown", "Offline"), ("yue", "狀態未知", "離線"),
+                                  ("zh-Hans", "状态未知", "离线"), ("km", "មិនដឹងស្ថានភាព", "ដាច់បណ្ដាញ")):
+            twin = next(c for c in grid_section(view("cameras", code))["cards"]
+                        if c["type"] == "markdown" and c.get("visibility") and E in str(c["visibility"]))
+            out = R.env_for(dict(self.states, **{E: "unknown"}), {}).from_string(twin["content"]).render()
+            self.assertIn("· **" + word + "**", out, code)
+            self.assertNotIn(wrong, out, code)
+            out = R.env_for(dict(self.states, **{E: "unavailable"}), {}).from_string(twin["content"]).render()
+            self.assertIn("· **" + wrong + "**", out, code)
 
     def test_a_tap_opens_the_native_live_view(self):
         for path in ("cameras", "home"):
