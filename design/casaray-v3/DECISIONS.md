@@ -6,6 +6,75 @@ and `ha-deploy` are unaffected by everything here.
 
 ---
 
+## V3-030 · 27/11/26 · PR #25's extras ported onto PR #24's release preview; PR #25 to close
+
+**Status:** **owner decision, 27/11/26** (asked as a selection: "Keep #24, port #25
+extras"). Prepared on `feature/casaray-v3-release-preview-extras`, branched from PR #24's
+head `0f90277`, as a follow-up pull request into PR #24's branch. DEVELOPMENT ONLY — NOT
+DEPLOYED. No merge without a separate owner approval.
+
+1. **Why this entry exists.** On 18/11/26 two sessions opened integration PRs a minute
+   apart, both numbering their record V3-024:
+   - PR #24 (this branch's base): PR #16, PR #23's gate document, and one named top bar;
+   - PR #25: PR #16, the same named top bar, and PR #21's Home work.
+
+   PR #26 (V3-025) and PR #29 (V3-027 to V3-029) are built on PR #24, so the owner kept
+   PR #24 and asked for PR #25's extras as one follow-up. **V3-024 means PR #24's entry
+   below.** PR #25's own V3-024 stays on its branch for the record. (Other numbers collide
+   too: PR #21 now carries its own V3-024 and V3-025, PR #26 has V3-026, and so does
+   PR #29. This entry takes V3-030, the next number free on every open branch.)
+2. **Ported from PR #25:**
+   - **Home spacing** (V3-023): room lines at auto height, Shopping list five rows,
+     people two rows, Parents' occupancy two rows, the monitored footnote inside the
+     plugs card, and Solar expected today in Energy now. V3-014's equal room heights
+     (rooms two rows, list eight, occupancy three) are superseded.
+   - **Climate now** names the air-con at auto height, and shows all four room
+     temperatures (Dining, and Ray's room's FP300, which was `unavailable` in the
+     export and draws No data).
+   - **One tap air-con** names its device: Parents' air-con / 爸媽房冷氣機 / 父母房空调,
+     then mode and room temperature on one line.
+   - **Cantonese** `nav.climate` 冷氣同天氣 → 氣候.
+   - **Camera `unknown`:** the same-size card also covers `unknown` and says "State
+     unknown". The pinned frontend's `validate-condition.ts` reads a missing entity as
+     `unknown`, and `hui-image.ts` still fetches an unknown camera's image.
+3. **Kept from PR #24 unchanged:** its top bar, `topbar_problems` gate,
+   `test_topbar_v3_024.py`, More boards at 4 units off the band views, its Alerts-test
+   fix, and the gate document's integration record.
+4. **Measured** with `preview_view.py --shots` (simulated, not a device). Wall holes
+   are the three paired bands: rooms · right now · energy.
+
+   | | PR #24 | With V3-030 |
+   |---|---|---|
+   | Home, wall / phone page, en | 2,630 / 4,807 px | 2,439 / 4,401 px |
+   | Home, wall / phone page, yue | 2,608 / 4,807 px | 2,396 / 4,357 px |
+   | Home wall holes, yue | 0 · 13 · 4 px | 21 · 31 · 11 px |
+   | Home wall holes, en | 0 · 13 · 26 px | 43 · 31 · 32 px |
+
+   - **The trade, stated plainly:** PR #24's equal heights leave smaller gaps between
+     paired sections. PR #21's spacing makes Home about 200 px shorter on the wall and
+     about 410 px shorter on a phone, with gaps of up to 43 px. The V3 rule asks Home for
+     minimal scrolling on the wall iPad. The owner chose the port with the height saving
+     in front of them; **the larger gaps were not stated at the time** and are flagged
+     for the owner's review here and in the pull request. Reverting is a few lines in
+     `home.yaml`.
+   - Home and Cameras in all four locales: no clipped label, no overflowing card, no tap
+     target under 44 px.
+   - Khmer "Pet feeder" wraps on a phone on Cameras; it already does on PR #24.
+5. **Entity audit against PR #24 (`0f90277`), all four locales:**
+   - the same 46 views;
+   - no entity removed or substituted;
+   - one added on Home, `sensor.presence_multi_sensor_fp300_temperature`, which is in
+     the export.
+6. **Gates at `51e2e1c`:** `build_dashboard.py --check` current; `validate_dashboard.py`
+   1509 passed / 0 failed; `tests/v3` **126 tests, 0 failures** (PR #24: 114);
+   `ha_validate.sh` passed, 470 warnings as on PR #24. Hashes are in the gate document's
+   V3-030 section.
+7. **Not done here:**
+   - PR #26 and PR #29 are not rebased. They will pick this up when it merges into
+     PR #24's branch and they merge from it.
+   - The register has no row for PR #24 or PR #25. Writing it from a V3 branch needs the
+     owner's approval (TASK-016).
+
 ## V3-024 · 18/11/26 · Release preview integration: PR #16's cameras with one named, readable top bar
 
 **Status:** owner brief (18/11/26, "CasaRay V3 release preparation"), against the gate

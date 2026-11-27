@@ -67,16 +67,16 @@ grid everywhere, and on the wall iPad they are wrong for two-column bands:
 |---|---|---|
 | `topbar` | text-only markdown header + 6 × named button | one bar on every native view (V3-024): header (6 units × 2 rows) holds the title, the time over `DD/MM/YY` and "Preview"; six named buttons at 3 units × 2 rows — one 120 px row on the wall iPad, two on a phone, every cell one height; the current destination is inert and its icon amber (`color: accent`). Gated by `validate_dashboard.topbar_problems` |
 | `chips` + `chip_count` / `chip_value` / `chip_cameras` | markdown | `n of m reporting`; "No data" when nothing answered |
-| `chip_temp`, `chip_plugs`, `plugs_card` | markdown | `19.7°` from a sensor or a weather attribute; a plug total shown only while every plug it adds up answers |
-| `camera_card(…, offline=True, full_screen="more-info")` | picture-entity + markdown twin | the twin, same size, shows only while the camera is unavailable and says Offline with the battery reading; a tap opens Home Assistant's own live view (V3-014) |
+| `chip_temp`, `chip_plugs`, `plugs_card` | markdown | `19.7°` from a sensor or a weather attribute; a plug total shown only while every plug it adds up answers; `plugs_card(note_key=…)` puts the qualifying footnote inside the card (V3-023, V3-030) |
+| `camera_card(…, offline=True, full_screen="more-info")` | picture-entity + markdown twin | the twin, same size, shows only while the camera is `unavailable` (says Offline) or `unknown` (says State unknown), with the battery reading; a tap opens Home Assistant's own live view (V3-014, V3-030) |
 | `room_tile` | markdown, tap navigates | room name over one line of readings in words; a dark reading is counted ("1 not reporting"), never shown; "No data" when none answer |
 | `attention` | markdown | one honest list; all-clear only when every check answered |
 | `action_button` | button | one action per button; hold does nothing |
 | `nav_button`, `more_boards` | button | named index: 6 units on `band_grid: 24` views (four across on the wall, two on a phone), otherwise 4 units (six across, three on a phone — V3-024) |
 | `light_tile` | tile + `light-brightness` feature | |
 | `readonly_tile`, `sensor_tile`, `person_tile` | tile | tap / icon-tap / hold cannot act |
-| `ac_summary` | markdown | V3-008 R1/R7 wording; read-only |
-| `camera_summary`, `camera_card` | markdown, picture-entity | state in words; tap opens the V2 webrtc subview |
+| `ac_summary` | markdown | V3-008 R1/R7 wording; read-only. `name_key` adds which air-con; `compact` puts mode and room temperature on one line for a button-sized slot (V3-023, V3-030) |
+| `camera_summary`, `camera_card` | markdown, picture-entity | state in words; on Home and Cameras a tap opens the native camera dialog, elsewhere the V2 webrtc subview |
 | `weather`, `todo`, `scene_buttons`, `note`, `heading` | native | scene labels from the export's friendly names |
 
 ## State language
