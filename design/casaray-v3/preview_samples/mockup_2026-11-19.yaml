@@ -1,0 +1,56 @@
+# SAMPLE DATA — the 19/11/26 bilingual mockups' own values and pictures, for the
+# OFFLINE preview renders only (scripts/v3/preview_view.py --sample). Never read
+# by the dashboard build and never a live reading. Every render made with this
+# file is captioned "示例數據 Sample data (from the mockup)".
+#
+# Source: docs/mockups/2026-11-19_bilingual_1_home_rooms_lighting_climate.png and
+# _2_cameras.png. Entity IDs are the verified ones the preview reads
+# (design/casaray-v3/MOCKUP_COMPARISON_2026-11-19.md); a value the mockup shows
+# for something with no entity (Kitchen / Garage lights) is not carried over.
+label: 示例數據 Sample data (from the mockup) — SIMULATED, not Home Assistant
+now: "2026-11-18T09:41:00"        # the mockup's 09:41, 星期三 · 18/11
+states:
+  weather.forecast_home: partlycloudy
+  binary_sensor.f_contact_sensor_door: "on"            # 前門現正開啟
+  light.living_room: "on"
+  light.dining: "off"
+  light.bedroom_bedroom: "on"
+  light.bedroom_nightlight: "off"
+  sensor.bedroom_motion_sensor_temperature: "23"
+  binary_sensor.k_motion_sensor_motion: "off"
+  sensor.g_monitor_freezer_p110m_current_consumption: "120"   # the Energy sheet's freezer plug
+  switch.g_printer_p100: "off"
+  climate.bedroom_parents_room_ac: cool                  # 運行中
+  sensor.bedroom_motion_sensor_humidity: "55"
+  binary_sensor.bedroom_parents_room_ac_filter_clean_required: "off"
+  sensor.bedroom_parents_room_ac_filter_last_reset: "2026-09-19T09:00:00"   # the mockup gives no date
+  switch.bedroom_parents_room_ac_timer: "off"            # 時間資料待核實 in the mockup
+  sensor.bedroom_parents_room_ac_timer_end_time: unknown
+  sensor.living_room_living_hue_hue_sensor_temperature: "24"
+  camera.front_door_live_view: idle
+  camera.tapo_c425_north_wall_hd_stream_direct: idle
+  camera.tapo_c420_east_wall_hd_stream_direct: unavailable   # 東牆 無資料
+  camera.tapo_c420_south_wall_hd_stream_direct: idle
+  camera.tapo_c200_stockroom_hd_stream_direct: idle
+  camera.smart_pet_feeder: idle
+  sensor.front_door_battery: "72"
+  sensor.tapo_c425_north_wall_battery: "65"
+  sensor.tapo_camera_bcca_battery: unavailable           # East wall: 電量 無資料
+attrs:
+  weather.forecast_home: {temperature: 21, humidity: 60}
+  light.living_room: {brightness: 179}                   # 70%
+  light.bedroom_bedroom: {brightness: 204}               # 80%
+  climate.bedroom_parents_room_ac: {current_temperature: 23, temperature: 22}
+  sensor.bedroom_motion_sensor_temperature: {unit_of_measurement: "°C"}
+  sensor.bedroom_motion_sensor_humidity: {unit_of_measurement: "%"}
+  sensor.g_monitor_freezer_p110m_current_consumption: {unit_of_measurement: W}
+  sensor.living_room_living_hue_hue_sensor_temperature: {unit_of_measurement: "°C"}
+pictures:
+  badge: 示例圖片 Sample image (mockup)
+  source: docs/mockups/2026-11-19_bilingual_2_cameras.png
+  crops:   # [left, top, right, bottom] in the sheet's pixels; the illustration only
+    camera.front_door_live_view: [156, 80, 350, 154]
+    camera.tapo_c425_north_wall_hd_stream_direct: [505, 80, 700, 154]
+    camera.tapo_c420_south_wall_hd_stream_direct: [505, 202, 700, 276]
+    camera.tapo_c200_stockroom_hd_stream_direct: [156, 325, 350, 399]
+    camera.smart_pet_feeder: [505, 325, 700, 399]

@@ -73,6 +73,18 @@ sections:
       - {c: note, key: energy.battery_not_installed}
       - {c: note, key: energy.export_note}
 
+  # V3-027: two owner-approved HACS cards (V3-026), after every native reading
+  # on this page. Until each is installed through HACS, Home Assistant draws
+  # "Custom element doesn't exist" here and nowhere else, and the note says so;
+  # the native 24-hour history above shows the same two sensors.
+  - span: 2
+    heading: h.power_flow
+    cards:
+      - {c: power_flow, solar: sensor.primo_5_0_1_1_ac_power, grid_import: sensor.powerpal_gateway_powerpal_power}
+      - {c: apex_today, solar: sensor.primo_5_0_1_1_ac_power, grid_import: sensor.powerpal_gateway_powerpal_power}
+      - {c: note, key: energy.flow_caveat}
+      - {c: note, key: energy.flow_needs}
+
   - c: more_boards
     classic_of: energy
     items:

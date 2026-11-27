@@ -119,6 +119,11 @@
         "energy.fc_this_hour",
         "energy.fc_today",
         "energy.fc_tomorrow",
+        "energy.flow_caveat",
+        "energy.flow_grid",
+        "energy.flow_home",
+        "energy.flow_needs",
+        "energy.flow_today",
         "energy.freezer_now",
         "energy.freezer_today",
         "energy.grid_carbon",
@@ -174,18 +179,27 @@
         "h.history",
         "h.house",
         "h.indicators",
+        "h.not_answering",
         "h.outdoor_lights",
+        "h.power_flow",
         "h.room_lights",
         "h.scenes_bedroom",
         "h.scenes_dining",
         "h.scenes_living",
         "h.temperatures",
         "h.wall_switches",
+        "h.weather",
         "h.whole_house",
         "hh.core",
         "hh.device_offline",
         "hh.entities_note",
         "hh.last_backup",
+        "hh.list_cameras",
+        "hh.list_lights",
+        "hh.list_none",
+        "hh.list_sensors",
+        "hh.list_switches",
+        "hh.lists_needs",
         "hh.living_hue",
         "hh.living_motion",
         "hh.living_switch",
@@ -239,6 +253,7 @@
         "lr.spots_on",
         "nav.all_rooms",
         "nav.classic",
+        "nav.more",
         "net.none_reporting",
         "net.north_signal",
         "net.not_measured",
@@ -330,8 +345,10 @@
         "s.problem",
         "sec.detection_note",
         "sec.hub",
+        "weather.needs",
         "weather.sunrise",
-        "weather.sunset"
+        "weather.sunset",
+        "wp.parents_temp"
       ],
       "missing_keys": [],
       "views": 46
@@ -2407,5 +2424,130 @@
       "unverified": [],
       "dark_at_export": []
     }
-  ]
+  ],
+  "preview": {
+    "output": "dashboards/casaray_v3/preview/casaray_v3_mockup_preview.yaml",
+    "url_base": "casaray-v3-mockup",
+    "views": [
+      {
+        "path": "home",
+        "source": "preview/home.yaml",
+        "entities": [
+          "binary_sensor.f_contact_sensor_door",
+          "camera.front_door_live_view",
+          "light.bedroom_bedroom",
+          "light.dining",
+          "light.living_room",
+          "sensor.bedroom_motion_sensor_temperature",
+          "sensor.front_door_battery",
+          "weather.forecast_home"
+        ],
+        "dark_at_export": [
+          "binary_sensor.f_contact_sensor_door"
+        ],
+        "unverified": []
+      },
+      {
+        "path": "rooms",
+        "source": "preview/rooms.yaml",
+        "entities": [
+          "binary_sensor.f_contact_sensor_door",
+          "binary_sensor.k_motion_sensor_motion",
+          "binary_sensor.living_room_living_hue_hue_sensor_motion",
+          "binary_sensor.living_room_living_room_motion",
+          "light.bedroom_bedroom",
+          "light.bedroom_nightlight",
+          "light.dining",
+          "light.living_room",
+          "sensor.bedroom_motion_sensor_temperature",
+          "sensor.g_monitor_freezer_p110m_current_consumption",
+          "sensor.living_room_living_hue_hue_sensor_temperature",
+          "switch.g_printer_p100",
+          "weather.forecast_home"
+        ],
+        "dark_at_export": [
+          "binary_sensor.f_contact_sensor_door"
+        ],
+        "unverified": []
+      },
+      {
+        "path": "lighting",
+        "source": "preview/lighting.yaml",
+        "entities": [
+          "light.bedroom_bedroom",
+          "light.bedroom_nightlight",
+          "light.dining",
+          "light.living_room",
+          "weather.forecast_home"
+        ],
+        "dark_at_export": [],
+        "unverified": []
+      },
+      {
+        "path": "climate",
+        "source": "preview/climate.yaml",
+        "entities": [
+          "binary_sensor.bedroom_parents_room_ac_filter_clean_required",
+          "climate.bedroom_parents_room_ac",
+          "sensor.bedroom_motion_sensor_humidity",
+          "sensor.bedroom_parents_room_ac_filter_last_reset",
+          "sensor.bedroom_parents_room_ac_timer_end_time",
+          "sensor.living_room_living_hue_hue_sensor_temperature",
+          "switch.bedroom_parents_room_ac_timer",
+          "weather.forecast_home"
+        ],
+        "dark_at_export": [],
+        "unverified": []
+      },
+      {
+        "path": "cameras",
+        "source": "preview/cameras.yaml",
+        "entities": [
+          "camera.front_door_live_view",
+          "camera.smart_pet_feeder",
+          "camera.tapo_c200_stockroom_hd_stream_direct",
+          "camera.tapo_c420_east_wall_hd_stream_direct",
+          "camera.tapo_c420_south_wall_hd_stream_direct",
+          "camera.tapo_c425_north_wall_hd_stream_direct",
+          "weather.forecast_home"
+        ],
+        "dark_at_export": [
+          "camera.tapo_c420_east_wall_hd_stream_direct",
+          "camera.tapo_c420_south_wall_hd_stream_direct"
+        ],
+        "unverified": []
+      },
+      {
+        "path": "energy",
+        "source": "preview/energy.yaml",
+        "entities": [
+          "sensor.powerpal_gateway_powerpal_power",
+          "sensor.primo_5_0_1_1_ac_power",
+          "weather.forecast_home"
+        ],
+        "dark_at_export": [],
+        "unverified": []
+      },
+      {
+        "path": "house-health",
+        "source": "preview/house-health.yaml",
+        "entities": [
+          "weather.forecast_home"
+        ],
+        "dark_at_export": [],
+        "unverified": []
+      },
+      {
+        "path": "more",
+        "source": "preview/more.yaml",
+        "entities": [
+          "weather.forecast_home"
+        ],
+        "dark_at_export": [],
+        "unverified": []
+      }
+    ],
+    "fallback_keys": [],
+    "missing_keys": []
+  }
 }

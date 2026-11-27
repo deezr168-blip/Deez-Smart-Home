@@ -122,6 +122,19 @@ sections:
       - {c: control_tile, entity: update.bedroom_parents_room_ac_firmware, name: {t: parents.firmware}, columns: 3}
       - {c: note, key: hh.updates_note}
 
+  # V3-027: auto-entities (V3-026) lists every entity of a kind that reports
+  # unavailable, after the native counts and devices above. Until it is
+  # installed through HACS, Home Assistant draws "Custom element doesn't exist"
+  # here and nowhere else, and the note says so. Same four lists as the preview.
+  - span: 2
+    heading: h.not_answering
+    cards:
+      - {c: unavailable_list, title_key: hh.list_lights, domains: [light]}
+      - {c: unavailable_list, title_key: hh.list_cameras, domains: [camera]}
+      - {c: unavailable_list, title_key: hh.list_switches, domains: [switch]}
+      - {c: unavailable_list, title_key: hh.list_sensors, domains: [sensor, binary_sensor]}
+      - {c: note, key: hh.lists_needs}
+
   - span: 2
     heading: h.instrumentation
     cards:

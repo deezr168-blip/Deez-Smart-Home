@@ -6,6 +6,26 @@
 # Baseline: dashboards/casaray_v2.yaml sha256 77a4991626d6f8afcd9b78f235c34417d84d9f36c129549a386d8a66c324226c
 # ============================================================================
 title: CasaRay V3 (km)
+wallpanel:
+  enabled: true
+  hide_toolbar: false
+  hide_sidebar: false
+  fullscreen: false
+  idle_time: 120
+  image_url: media-source://media_source/
+  cards:
+    - type: markdown
+      content: |-
+        # {{ now().strftime('%H:%M') }}
+        {{ now().strftime('%d/%m/%y') }}
+    - type: markdown
+      content: |-
+        **សីតុណ្ហភាពបន្ទប់ឪពុកម្ដាយ**
+        ## {{ (((states('sensor.bedroom_motion_sensor_temperature') | float) | round(1)) ~ '°') if states('sensor.bedroom_motion_sensor_temperature') | is_number else "គ្មានទិន្នន័យ" }}
+    - type: markdown
+      content: |-
+        **ទ្វារមុខ**
+        ## {{ ("ដាច់បណ្ដាញ" if states('binary_sensor.f_contact_sensor_door') == 'unavailable' else ("មិនដឹងស្ថានភាព" if states('binary_sensor.f_contact_sensor_door') in ['unknown','none',''] else ({"on":"បើកចំហ","off":"បិទជិត"}).get(states('binary_sensor.f_contact_sensor_door'), states('binary_sensor.f_contact_sensor_door')))) }}
 views:
   - title: ទំព័រដើម
     path: home
@@ -19,81 +39,78 @@ views:
         cards:
           - type: markdown
             text_only: true
-            content: '## CasaRay<br><small>កំណែមើលជាមុន</small>'
+            content: |-
+              ## CasaRay
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · កំណែមើលជាមុន</small>
             grid_options:
-              columns: 8
-              rows: 1
-          - type: markdown
-            text_only: true
-            content: '## {{ now().strftime(''%H:%M'') }}<br><small>{{ now().strftime(''%d/%m/%y'') }}</small>'
-            grid_options:
-              columns: 4
-              rows: 1
+              columns: 6
+              rows: 2
           - type: button
             name: ទំព័រដើម
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: none
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
+            color: accent
           - type: button
             name: ភ្លើង
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/lighting
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: អាកាសធាតុ
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/climate
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: កាមេរ៉ា
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/cameras
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: ថាមពល
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/energy
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: សន្តិសុខ
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/security
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -297,18 +314,52 @@ views:
               columns: 12
               rows: 8
       - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: អាកាសធាតុ
+            heading_style: title
+            grid_options:
+              columns: full
+              rows: auto
+          - type: custom:clock-weather-card
+            entity: weather.forecast_home
+            locale: km
+            sections:
+              header:
+                rows:
+                  - segments:
+                      - type: icon
+                        icon: mdi:thermometer
+                      - type: weather
+                        attribute: temperature
+                      - type: spacer
+                      - type: weather
+                  - font_size: 4rem
+                    alignment: center
+                    segments:
+                      - type: time
+                        time_pattern: HH:mm
+                  - alignment: center
+                    segments:
+                      - type: icon
+                        icon: mdi:calendar
+                      - type: date
+                        date_pattern: dd/MM/yy
+            grid_options:
+              columns: full
+              rows: auto
+          - type: markdown
+            content: <small>ផ្នែកនេះប្រើកាត HACS Clock Weather Card។ បើឃើញ «Custom element doesn't exist» មានន័យថាមិនទាន់ដំឡើងទេ ហើយការអាន ខាងក្រៅ នៅខាងលើនៅតែដំណើរការ។</small>
+            grid_options:
+              columns: full
+              rows: auto
+      - type: grid
         column_span: 1
         cards:
           - type: heading
             heading: ឥឡូវនេះ
             heading_style: title
-            grid_options:
-              columns: 12
-              rows: auto
-          - type: weather-forecast
-            entity: weather.forecast_home
-            show_current: true
-            show_forecast: false
             grid_options:
               columns: 12
               rows: auto
@@ -384,7 +435,7 @@ views:
               action: none
             grid_options:
               columns: 4
-              rows: 3
+              rows: 2
             vertical: true
           - type: tile
             entity: person.vinh_du
@@ -397,7 +448,7 @@ views:
               action: none
             grid_options:
               columns: 4
-              rows: 3
+              rows: 2
             vertical: true
           - type: tile
             entity: person.ai_q_huang
@@ -410,7 +461,7 @@ views:
               action: none
             grid_options:
               columns: 4
-              rows: 3
+              rows: 2
             vertical: true
           - type: tile
             entity: binary_sensor.bedroom_parents_room_ac_room_occupied
@@ -422,7 +473,7 @@ views:
               action: none
             grid_options:
               columns: 12
-              rows: 3
+              rows: 2
             name: បន្ទប់ឪពុកម្ដាយ
             state_content:
               - state
@@ -739,6 +790,56 @@ views:
             grid_options:
               columns: 6
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-km/home
+                icon: mdi:home-variant-outline
+                label: ទំព័រដើម
+              - url: /casaray-v3-km/rooms
+                icon: mdi:floor-plan
+                label: បន្ទប់
+              - url: /casaray-v3-km/energy
+                icon: mdi:lightning-bolt-outline
+                label: ថាមពល
+              - url: /casaray-v3-km/cameras
+                icon: mdi:cctv
+                label: កាមេរ៉ា
+              - icon: mdi:dots-horizontal
+                label: ច្រើនទៀត
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-km/security
+                    icon: mdi:shield-home-outline
+                    label: សន្តិសុខ
+                  - url: /casaray-v3-km/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: ភ្លើង
+                  - url: /casaray-v3-km/climate
+                    icon: mdi:thermometer
+                    label: អាកាសធាតុ
+                  - url: /casaray-v3-km/network
+                    icon: mdi:router-wireless
+                    label: បណ្ដាញ
+                  - url: /casaray-v3-km/house-health
+                    icon: mdi:home-heart
+                    label: សុខភាពផ្ទះ
+                  - url: /casaray-v3-km/alerts
+                    icon: mdi:bell-outline
+                    label: ការជូនដំណឹង
+                  - url: /casaray-v3-km/bills
+                    icon: mdi:receipt-text-outline
+                    label: វិក្កយបត្រ
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: បន្ទប់
     path: rooms
     icon: mdi:floor-plan
@@ -750,85 +851,79 @@ views:
         column_span: 2
         cards:
           - type: markdown
+            text_only: true
             content: |-
               ## បន្ទប់
-              <small>កំណែអភិវឌ្ឍន៍ — មិនទាន់ដាក់ឱ្យប្រើ</small>
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · កំណែមើលជាមុន</small>
             grid_options:
               columns: 6
-              rows: auto
-          - type: markdown
-            content: |-
-              ## {{ now().strftime('%H:%M') }}
-              {{ now().strftime('%d/%m/%y') }}
-            grid_options:
-              columns: 6
-              rows: auto
+              rows: 2
           - type: button
             name: ទំព័រដើម
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/home
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: ភ្លើង
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/lighting
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: អាកាសធាតុ
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/climate
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: កាមេរ៉ា
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/cameras
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: ថាមពល
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/energy
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: សន្តិសុខ
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/security
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -988,8 +1083,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/home
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ភ្លើង
             icon: mdi:lightbulb-group-outline
@@ -999,8 +1094,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/lighting
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: អាកាសធាតុ
             icon: mdi:thermometer
@@ -1010,8 +1105,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/climate
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: សន្តិសុខ
             icon: mdi:shield-home-outline
@@ -1021,8 +1116,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/security
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ថាមពល
             icon: mdi:lightning-bolt-outline
@@ -1032,8 +1127,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/energy
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: សុខភាពផ្ទះ
             icon: mdi:home-heart
@@ -1043,8 +1138,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/house-health
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: មនុស្ស
             icon: mdi:account-group-outline
@@ -1054,8 +1149,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/people
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ទិដ្ឋភាព V2 ចាស់
             icon: mdi:history
@@ -1065,8 +1160,58 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/v2-rooms
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-km/home
+                icon: mdi:home-variant-outline
+                label: ទំព័រដើម
+              - url: /casaray-v3-km/rooms
+                icon: mdi:floor-plan
+                label: បន្ទប់
+              - url: /casaray-v3-km/energy
+                icon: mdi:lightning-bolt-outline
+                label: ថាមពល
+              - url: /casaray-v3-km/cameras
+                icon: mdi:cctv
+                label: កាមេរ៉ា
+              - icon: mdi:dots-horizontal
+                label: ច្រើនទៀត
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-km/security
+                    icon: mdi:shield-home-outline
+                    label: សន្តិសុខ
+                  - url: /casaray-v3-km/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: ភ្លើង
+                  - url: /casaray-v3-km/climate
+                    icon: mdi:thermometer
+                    label: អាកាសធាតុ
+                  - url: /casaray-v3-km/network
+                    icon: mdi:router-wireless
+                    label: បណ្ដាញ
+                  - url: /casaray-v3-km/house-health
+                    icon: mdi:home-heart
+                    label: សុខភាពផ្ទះ
+                  - url: /casaray-v3-km/alerts
+                    icon: mdi:bell-outline
+                    label: ការជូនដំណឹង
+                  - url: /casaray-v3-km/bills
+                    icon: mdi:receipt-text-outline
+                    label: វិក្កយបត្រ
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: បន្ទប់ទទួលភ្ញៀវ
     path: living-room
     icon: mdi:sofa-outline
@@ -1078,85 +1223,79 @@ views:
         column_span: 2
         cards:
           - type: markdown
+            text_only: true
             content: |-
               ## បន្ទប់ទទួលភ្ញៀវ
-              <small>កំណែអភិវឌ្ឍន៍ — មិនទាន់ដាក់ឱ្យប្រើ</small>
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · កំណែមើលជាមុន</small>
             grid_options:
               columns: 6
-              rows: auto
-          - type: markdown
-            content: |-
-              ## {{ now().strftime('%H:%M') }}
-              {{ now().strftime('%d/%m/%y') }}
-            grid_options:
-              columns: 6
-              rows: auto
+              rows: 2
           - type: button
             name: ទំព័រដើម
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/home
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: ភ្លើង
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/lighting
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: អាកាសធាតុ
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/climate
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: កាមេរ៉ា
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/cameras
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: ថាមពល
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/energy
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: សន្តិសុខ
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/security
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -1835,8 +1974,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/rooms
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ភ្លើង
             icon: mdi:lightbulb-group-outline
@@ -1846,8 +1985,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/lighting
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: កាមេរ៉ា
             icon: mdi:cctv
@@ -1857,8 +1996,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/cameras
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ទំព័រដើម
             icon: mdi:home-variant-outline
@@ -1868,8 +2007,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/home
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: បន្ទប់បាយ
             icon: mdi:table-chair
@@ -1879,8 +2018,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/dining
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ផ្ទះបាយ
             icon: mdi:countertop-outline
@@ -1890,8 +2029,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/kitchen
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: កម្សាន្ត
             icon: mdi:television-classic
@@ -1901,8 +2040,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/entertainment
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ទិដ្ឋភាព V2 ចាស់
             icon: mdi:history
@@ -1912,8 +2051,58 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/v2-living-room
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-km/home
+                icon: mdi:home-variant-outline
+                label: ទំព័រដើម
+              - url: /casaray-v3-km/rooms
+                icon: mdi:floor-plan
+                label: បន្ទប់
+              - url: /casaray-v3-km/energy
+                icon: mdi:lightning-bolt-outline
+                label: ថាមពល
+              - url: /casaray-v3-km/cameras
+                icon: mdi:cctv
+                label: កាមេរ៉ា
+              - icon: mdi:dots-horizontal
+                label: ច្រើនទៀត
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-km/security
+                    icon: mdi:shield-home-outline
+                    label: សន្តិសុខ
+                  - url: /casaray-v3-km/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: ភ្លើង
+                  - url: /casaray-v3-km/climate
+                    icon: mdi:thermometer
+                    label: អាកាសធាតុ
+                  - url: /casaray-v3-km/network
+                    icon: mdi:router-wireless
+                    label: បណ្ដាញ
+                  - url: /casaray-v3-km/house-health
+                    icon: mdi:home-heart
+                    label: សុខភាពផ្ទះ
+                  - url: /casaray-v3-km/alerts
+                    icon: mdi:bell-outline
+                    label: ការជូនដំណឹង
+                  - url: /casaray-v3-km/bills
+                    icon: mdi:receipt-text-outline
+                    label: វិក្កយបត្រ
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: ផ្ទះបាយ
     path: kitchen
     icon: mdi:countertop-outline
@@ -1925,85 +2114,79 @@ views:
         column_span: 2
         cards:
           - type: markdown
+            text_only: true
             content: |-
               ## ផ្ទះបាយ
-              <small>កំណែអភិវឌ្ឍន៍ — មិនទាន់ដាក់ឱ្យប្រើ</small>
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · កំណែមើលជាមុន</small>
             grid_options:
               columns: 6
-              rows: auto
-          - type: markdown
-            content: |-
-              ## {{ now().strftime('%H:%M') }}
-              {{ now().strftime('%d/%m/%y') }}
-            grid_options:
-              columns: 6
-              rows: auto
+              rows: 2
           - type: button
             name: ទំព័រដើម
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/home
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: ភ្លើង
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/lighting
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: អាកាសធាតុ
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/climate
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: កាមេរ៉ា
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/cameras
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: ថាមពល
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/energy
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: សន្តិសុខ
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/security
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -2364,8 +2547,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/rooms
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: បន្ទប់បាយ
             icon: mdi:table-chair
@@ -2375,8 +2558,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/dining
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: បន្ទប់ទទួលភ្ញៀវ
             icon: mdi:sofa-outline
@@ -2386,8 +2569,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/living-room
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ទំព័រដើម
             icon: mdi:home-variant-outline
@@ -2397,8 +2580,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/home
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ថាមពល
             icon: mdi:lightning-bolt-outline
@@ -2408,8 +2591,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/energy
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: សន្តិសុខ
             icon: mdi:shield-home-outline
@@ -2419,8 +2602,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/security
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: បណ្ដាញ
             icon: mdi:router-wireless
@@ -2430,8 +2613,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/network
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ទិដ្ឋភាព V2 ចាស់
             icon: mdi:history
@@ -2441,8 +2624,58 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/v2-kitchen
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-km/home
+                icon: mdi:home-variant-outline
+                label: ទំព័រដើម
+              - url: /casaray-v3-km/rooms
+                icon: mdi:floor-plan
+                label: បន្ទប់
+              - url: /casaray-v3-km/energy
+                icon: mdi:lightning-bolt-outline
+                label: ថាមពល
+              - url: /casaray-v3-km/cameras
+                icon: mdi:cctv
+                label: កាមេរ៉ា
+              - icon: mdi:dots-horizontal
+                label: ច្រើនទៀត
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-km/security
+                    icon: mdi:shield-home-outline
+                    label: សន្តិសុខ
+                  - url: /casaray-v3-km/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: ភ្លើង
+                  - url: /casaray-v3-km/climate
+                    icon: mdi:thermometer
+                    label: អាកាសធាតុ
+                  - url: /casaray-v3-km/network
+                    icon: mdi:router-wireless
+                    label: បណ្ដាញ
+                  - url: /casaray-v3-km/house-health
+                    icon: mdi:home-heart
+                    label: សុខភាពផ្ទះ
+                  - url: /casaray-v3-km/alerts
+                    icon: mdi:bell-outline
+                    label: ការជូនដំណឹង
+                  - url: /casaray-v3-km/bills
+                    icon: mdi:receipt-text-outline
+                    label: វិក្កយបត្រ
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: បន្ទប់បាយ
     path: dining
     icon: mdi:table-chair
@@ -2454,85 +2687,79 @@ views:
         column_span: 2
         cards:
           - type: markdown
+            text_only: true
             content: |-
               ## បន្ទប់បាយ
-              <small>កំណែអភិវឌ្ឍន៍ — មិនទាន់ដាក់ឱ្យប្រើ</small>
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · កំណែមើលជាមុន</small>
             grid_options:
               columns: 6
-              rows: auto
-          - type: markdown
-            content: |-
-              ## {{ now().strftime('%H:%M') }}
-              {{ now().strftime('%d/%m/%y') }}
-            grid_options:
-              columns: 6
-              rows: auto
+              rows: 2
           - type: button
             name: ទំព័រដើម
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/home
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: ភ្លើង
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/lighting
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: អាកាសធាតុ
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/climate
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: កាមេរ៉ា
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/cameras
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: ថាមពល
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/energy
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: សន្តិសុខ
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/security
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -2969,8 +3196,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/rooms
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ភ្លើង
             icon: mdi:lightbulb-group-outline
@@ -2980,8 +3207,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/lighting
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ផ្ទះបាយ
             icon: mdi:countertop-outline
@@ -2991,8 +3218,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/kitchen
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: បន្ទប់ទទួលភ្ញៀវ
             icon: mdi:sofa-outline
@@ -3002,8 +3229,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/living-room
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: កាមេរ៉ា
             icon: mdi:cctv
@@ -3013,8 +3240,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/cameras
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ទំព័រដើម
             icon: mdi:home-variant-outline
@@ -3024,8 +3251,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/home
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: សន្តិសុខ
             icon: mdi:shield-home-outline
@@ -3035,8 +3262,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/security
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ទិដ្ឋភាព V2 ចាស់
             icon: mdi:history
@@ -3046,8 +3273,58 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/v2-dining
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-km/home
+                icon: mdi:home-variant-outline
+                label: ទំព័រដើម
+              - url: /casaray-v3-km/rooms
+                icon: mdi:floor-plan
+                label: បន្ទប់
+              - url: /casaray-v3-km/energy
+                icon: mdi:lightning-bolt-outline
+                label: ថាមពល
+              - url: /casaray-v3-km/cameras
+                icon: mdi:cctv
+                label: កាមេរ៉ា
+              - icon: mdi:dots-horizontal
+                label: ច្រើនទៀត
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-km/security
+                    icon: mdi:shield-home-outline
+                    label: សន្តិសុខ
+                  - url: /casaray-v3-km/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: ភ្លើង
+                  - url: /casaray-v3-km/climate
+                    icon: mdi:thermometer
+                    label: អាកាសធាតុ
+                  - url: /casaray-v3-km/network
+                    icon: mdi:router-wireless
+                    label: បណ្ដាញ
+                  - url: /casaray-v3-km/house-health
+                    icon: mdi:home-heart
+                    label: សុខភាពផ្ទះ
+                  - url: /casaray-v3-km/alerts
+                    icon: mdi:bell-outline
+                    label: ការជូនដំណឹង
+                  - url: /casaray-v3-km/bills
+                    icon: mdi:receipt-text-outline
+                    label: វិក្កយបត្រ
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: បន្ទប់ឪពុកម្ដាយ
     path: parents-room
     icon: mdi:bed-outline
@@ -3059,85 +3336,79 @@ views:
         column_span: 2
         cards:
           - type: markdown
+            text_only: true
             content: |-
               ## បន្ទប់ឪពុកម្ដាយ
-              <small>កំណែអភិវឌ្ឍន៍ — មិនទាន់ដាក់ឱ្យប្រើ</small>
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · កំណែមើលជាមុន</small>
             grid_options:
               columns: 6
-              rows: auto
-          - type: markdown
-            content: |-
-              ## {{ now().strftime('%H:%M') }}
-              {{ now().strftime('%d/%m/%y') }}
-            grid_options:
-              columns: 6
-              rows: auto
+              rows: 2
           - type: button
             name: ទំព័រដើម
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/home
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: ភ្លើង
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/lighting
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: អាកាសធាតុ
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/climate
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: កាមេរ៉ា
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/cameras
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: ថាមពល
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/energy
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: សន្តិសុខ
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/security
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -3691,8 +3962,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/rooms
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: អាកាសធាតុ
             icon: mdi:thermometer
@@ -3702,8 +3973,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/climate
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ទំព័រដើម
             icon: mdi:home-variant-outline
@@ -3713,8 +3984,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/home
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: សន្តិសុខ
             icon: mdi:shield-home-outline
@@ -3724,8 +3995,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/security
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: មនុស្ស
             icon: mdi:account-group-outline
@@ -3735,8 +4006,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/people
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: កម្សាន្ត
             icon: mdi:television-classic
@@ -3746,8 +4017,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/entertainment
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: បន្ទប់ Ray
             icon: mdi:bed-king-outline
@@ -3757,8 +4028,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/ray-bedroom
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ទិដ្ឋភាព V2 ចាស់
             icon: mdi:history
@@ -3768,8 +4039,58 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/v2-parents-room
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-km/home
+                icon: mdi:home-variant-outline
+                label: ទំព័រដើម
+              - url: /casaray-v3-km/rooms
+                icon: mdi:floor-plan
+                label: បន្ទប់
+              - url: /casaray-v3-km/energy
+                icon: mdi:lightning-bolt-outline
+                label: ថាមពល
+              - url: /casaray-v3-km/cameras
+                icon: mdi:cctv
+                label: កាមេរ៉ា
+              - icon: mdi:dots-horizontal
+                label: ច្រើនទៀត
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-km/security
+                    icon: mdi:shield-home-outline
+                    label: សន្តិសុខ
+                  - url: /casaray-v3-km/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: ភ្លើង
+                  - url: /casaray-v3-km/climate
+                    icon: mdi:thermometer
+                    label: អាកាសធាតុ
+                  - url: /casaray-v3-km/network
+                    icon: mdi:router-wireless
+                    label: បណ្ដាញ
+                  - url: /casaray-v3-km/house-health
+                    icon: mdi:home-heart
+                    label: សុខភាពផ្ទះ
+                  - url: /casaray-v3-km/alerts
+                    icon: mdi:bell-outline
+                    label: ការជូនដំណឹង
+                  - url: /casaray-v3-km/bills
+                    icon: mdi:receipt-text-outline
+                    label: វិក្កយបត្រ
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: បន្ទប់ Ray
     path: ray-bedroom
     icon: mdi:bed-king-outline
@@ -3781,85 +4102,79 @@ views:
         column_span: 2
         cards:
           - type: markdown
+            text_only: true
             content: |-
               ## បន្ទប់ Ray
-              <small>កំណែអភិវឌ្ឍន៍ — មិនទាន់ដាក់ឱ្យប្រើ</small>
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · កំណែមើលជាមុន</small>
             grid_options:
               columns: 6
-              rows: auto
-          - type: markdown
-            content: |-
-              ## {{ now().strftime('%H:%M') }}
-              {{ now().strftime('%d/%m/%y') }}
-            grid_options:
-              columns: 6
-              rows: auto
+              rows: 2
           - type: button
             name: ទំព័រដើម
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/home
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: ភ្លើង
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/lighting
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: អាកាសធាតុ
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/climate
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: កាមេរ៉ា
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/cameras
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: ថាមពល
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/energy
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: សន្តិសុខ
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/security
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -4319,8 +4634,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/rooms
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ភ្លើង
             icon: mdi:lightbulb-group-outline
@@ -4330,8 +4645,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/lighting
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ថាមពល
             icon: mdi:lightning-bolt-outline
@@ -4341,8 +4656,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/energy
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ទំព័រដើម
             icon: mdi:home-variant-outline
@@ -4352,8 +4667,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/home
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: បន្ទប់ភ្ញៀវ
             icon: mdi:bed-single-outline
@@ -4363,8 +4678,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/guest-room
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: បន្ទប់ឪពុកម្ដាយ
             icon: mdi:bed-outline
@@ -4374,8 +4689,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/parents-room
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: សន្តិសុខ
             icon: mdi:shield-home-outline
@@ -4385,8 +4700,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/security
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ទិដ្ឋភាព V2 ចាស់
             icon: mdi:history
@@ -4396,8 +4711,58 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/v2-ray-bedroom
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-km/home
+                icon: mdi:home-variant-outline
+                label: ទំព័រដើម
+              - url: /casaray-v3-km/rooms
+                icon: mdi:floor-plan
+                label: បន្ទប់
+              - url: /casaray-v3-km/energy
+                icon: mdi:lightning-bolt-outline
+                label: ថាមពល
+              - url: /casaray-v3-km/cameras
+                icon: mdi:cctv
+                label: កាមេរ៉ា
+              - icon: mdi:dots-horizontal
+                label: ច្រើនទៀត
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-km/security
+                    icon: mdi:shield-home-outline
+                    label: សន្តិសុខ
+                  - url: /casaray-v3-km/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: ភ្លើង
+                  - url: /casaray-v3-km/climate
+                    icon: mdi:thermometer
+                    label: អាកាសធាតុ
+                  - url: /casaray-v3-km/network
+                    icon: mdi:router-wireless
+                    label: បណ្ដាញ
+                  - url: /casaray-v3-km/house-health
+                    icon: mdi:home-heart
+                    label: សុខភាពផ្ទះ
+                  - url: /casaray-v3-km/alerts
+                    icon: mdi:bell-outline
+                    label: ការជូនដំណឹង
+                  - url: /casaray-v3-km/bills
+                    icon: mdi:receipt-text-outline
+                    label: វិក្កយបត្រ
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: យានដ្ឋាន
     path: garage
     icon: mdi:garage-variant
@@ -4409,85 +4774,79 @@ views:
         column_span: 2
         cards:
           - type: markdown
+            text_only: true
             content: |-
               ## យានដ្ឋាន
-              <small>កំណែអភិវឌ្ឍន៍ — មិនទាន់ដាក់ឱ្យប្រើ</small>
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · កំណែមើលជាមុន</small>
             grid_options:
               columns: 6
-              rows: auto
-          - type: markdown
-            content: |-
-              ## {{ now().strftime('%H:%M') }}
-              {{ now().strftime('%d/%m/%y') }}
-            grid_options:
-              columns: 6
-              rows: auto
+              rows: 2
           - type: button
             name: ទំព័រដើម
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/home
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: ភ្លើង
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/lighting
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: អាកាសធាតុ
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/climate
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: កាមេរ៉ា
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/cameras
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: ថាមពល
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/energy
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: សន្តិសុខ
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/security
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -4714,8 +5073,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/rooms
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ថាមពល
             icon: mdi:lightning-bolt-outline
@@ -4725,8 +5084,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/energy
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ទំព័រដើម
             icon: mdi:home-variant-outline
@@ -4736,8 +5095,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/home
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: បណ្ដាញ
             icon: mdi:router-wireless
@@ -4747,8 +5106,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/network
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: សុខភាពផ្ទះ
             icon: mdi:home-heart
@@ -4758,8 +5117,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/house-health
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ផ្ទះបាយ
             icon: mdi:countertop-outline
@@ -4769,8 +5128,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/kitchen
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: សន្តិសុខ
             icon: mdi:shield-home-outline
@@ -4780,8 +5139,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/security
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ទិដ្ឋភាព V2 ចាស់
             icon: mdi:history
@@ -4791,8 +5150,58 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/v2-garage
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-km/home
+                icon: mdi:home-variant-outline
+                label: ទំព័រដើម
+              - url: /casaray-v3-km/rooms
+                icon: mdi:floor-plan
+                label: បន្ទប់
+              - url: /casaray-v3-km/energy
+                icon: mdi:lightning-bolt-outline
+                label: ថាមពល
+              - url: /casaray-v3-km/cameras
+                icon: mdi:cctv
+                label: កាមេរ៉ា
+              - icon: mdi:dots-horizontal
+                label: ច្រើនទៀត
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-km/security
+                    icon: mdi:shield-home-outline
+                    label: សន្តិសុខ
+                  - url: /casaray-v3-km/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: ភ្លើង
+                  - url: /casaray-v3-km/climate
+                    icon: mdi:thermometer
+                    label: អាកាសធាតុ
+                  - url: /casaray-v3-km/network
+                    icon: mdi:router-wireless
+                    label: បណ្ដាញ
+                  - url: /casaray-v3-km/house-health
+                    icon: mdi:home-heart
+                    label: សុខភាពផ្ទះ
+                  - url: /casaray-v3-km/alerts
+                    icon: mdi:bell-outline
+                    label: ការជូនដំណឹង
+                  - url: /casaray-v3-km/bills
+                    icon: mdi:receipt-text-outline
+                    label: វិក្កយបត្រ
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: បន្ទប់ភ្ញៀវ
     path: guest-room
     icon: mdi:bed-single-outline
@@ -4804,85 +5213,79 @@ views:
         column_span: 2
         cards:
           - type: markdown
+            text_only: true
             content: |-
               ## បន្ទប់ភ្ញៀវ
-              <small>កំណែអភិវឌ្ឍន៍ — មិនទាន់ដាក់ឱ្យប្រើ</small>
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · កំណែមើលជាមុន</small>
             grid_options:
               columns: 6
-              rows: auto
-          - type: markdown
-            content: |-
-              ## {{ now().strftime('%H:%M') }}
-              {{ now().strftime('%d/%m/%y') }}
-            grid_options:
-              columns: 6
-              rows: auto
+              rows: 2
           - type: button
             name: ទំព័រដើម
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/home
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: ភ្លើង
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/lighting
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: អាកាសធាតុ
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/climate
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: កាមេរ៉ា
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/cameras
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: ថាមពល
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/energy
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: សន្តិសុខ
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/security
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -5032,8 +5435,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/rooms
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: បណ្ដាញ
             icon: mdi:router-wireless
@@ -5043,8 +5446,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/network
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: កម្សាន្ត
             icon: mdi:television-classic
@@ -5054,8 +5457,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/entertainment
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ទំព័រដើម
             icon: mdi:home-variant-outline
@@ -5065,8 +5468,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/home
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: បន្ទប់ Ray
             icon: mdi:bed-king-outline
@@ -5076,8 +5479,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/ray-bedroom
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ថាមពល
             icon: mdi:lightning-bolt-outline
@@ -5087,8 +5490,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/energy
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: សន្តិសុខ
             icon: mdi:shield-home-outline
@@ -5098,8 +5501,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/security
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ទិដ្ឋភាព V2 ចាស់
             icon: mdi:history
@@ -5109,8 +5512,58 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/v2-guest-room
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-km/home
+                icon: mdi:home-variant-outline
+                label: ទំព័រដើម
+              - url: /casaray-v3-km/rooms
+                icon: mdi:floor-plan
+                label: បន្ទប់
+              - url: /casaray-v3-km/energy
+                icon: mdi:lightning-bolt-outline
+                label: ថាមពល
+              - url: /casaray-v3-km/cameras
+                icon: mdi:cctv
+                label: កាមេរ៉ា
+              - icon: mdi:dots-horizontal
+                label: ច្រើនទៀត
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-km/security
+                    icon: mdi:shield-home-outline
+                    label: សន្តិសុខ
+                  - url: /casaray-v3-km/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: ភ្លើង
+                  - url: /casaray-v3-km/climate
+                    icon: mdi:thermometer
+                    label: អាកាសធាតុ
+                  - url: /casaray-v3-km/network
+                    icon: mdi:router-wireless
+                    label: បណ្ដាញ
+                  - url: /casaray-v3-km/house-health
+                    icon: mdi:home-heart
+                    label: សុខភាពផ្ទះ
+                  - url: /casaray-v3-km/alerts
+                    icon: mdi:bell-outline
+                    label: ការជូនដំណឹង
+                  - url: /casaray-v3-km/bills
+                    icon: mdi:receipt-text-outline
+                    label: វិក្កយបត្រ
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: ភ្លើង
     path: lighting
     icon: mdi:lightbulb-group-outline
@@ -5122,30 +5575,24 @@ views:
         column_span: 2
         cards:
           - type: markdown
+            text_only: true
             content: |-
               ## ភ្លើង
-              <small>កំណែអភិវឌ្ឍន៍ — មិនទាន់ដាក់ឱ្យប្រើ</small>
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · កំណែមើលជាមុន</small>
             grid_options:
               columns: 6
-              rows: auto
-          - type: markdown
-            content: |-
-              ## {{ now().strftime('%H:%M') }}
-              {{ now().strftime('%d/%m/%y') }}
-            grid_options:
-              columns: 6
-              rows: auto
+              rows: 2
           - type: button
             name: ទំព័រដើម
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/home
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: ភ្លើង
             icon: mdi:lightbulb-group-outline
@@ -5154,52 +5601,53 @@ views:
             tap_action:
               action: none
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
+            color: accent
           - type: button
             name: អាកាសធាតុ
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/climate
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: កាមេរ៉ា
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/cameras
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: ថាមពល
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/energy
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: សន្តិសុខ
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/security
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -5956,8 +6404,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/rooms
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: បន្ទប់ទទួលភ្ញៀវ
             icon: mdi:sofa-outline
@@ -5967,8 +6415,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/living-room
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: បន្ទប់បាយ
             icon: mdi:table-chair
@@ -5978,8 +6426,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/dining
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: បន្ទប់ឪពុកម្ដាយ
             icon: mdi:bed-outline
@@ -5989,8 +6437,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/parents-room
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: បន្ទប់ Ray
             icon: mdi:bed-king-outline
@@ -6000,8 +6448,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/ray-bedroom
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: បន្ទប់ភ្ញៀវ
             icon: mdi:bed-single-outline
@@ -6011,8 +6459,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/guest-room
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: យានដ្ឋាន
             icon: mdi:garage-variant
@@ -6022,8 +6470,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/garage
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ទិដ្ឋភាព V2 ចាស់
             icon: mdi:history
@@ -6033,8 +6481,58 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/v2-lighting
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-km/home
+                icon: mdi:home-variant-outline
+                label: ទំព័រដើម
+              - url: /casaray-v3-km/rooms
+                icon: mdi:floor-plan
+                label: បន្ទប់
+              - url: /casaray-v3-km/energy
+                icon: mdi:lightning-bolt-outline
+                label: ថាមពល
+              - url: /casaray-v3-km/cameras
+                icon: mdi:cctv
+                label: កាមេរ៉ា
+              - icon: mdi:dots-horizontal
+                label: ច្រើនទៀត
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-km/security
+                    icon: mdi:shield-home-outline
+                    label: សន្តិសុខ
+                  - url: /casaray-v3-km/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: ភ្លើង
+                  - url: /casaray-v3-km/climate
+                    icon: mdi:thermometer
+                    label: អាកាសធាតុ
+                  - url: /casaray-v3-km/network
+                    icon: mdi:router-wireless
+                    label: បណ្ដាញ
+                  - url: /casaray-v3-km/house-health
+                    icon: mdi:home-heart
+                    label: សុខភាពផ្ទះ
+                  - url: /casaray-v3-km/alerts
+                    icon: mdi:bell-outline
+                    label: ការជូនដំណឹង
+                  - url: /casaray-v3-km/bills
+                    icon: mdi:receipt-text-outline
+                    label: វិក្កយបត្រ
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: អាកាសធាតុ
     path: climate
     icon: mdi:thermometer
@@ -6046,41 +6544,35 @@ views:
         column_span: 2
         cards:
           - type: markdown
+            text_only: true
             content: |-
               ## អាកាសធាតុ
-              <small>កំណែអភិវឌ្ឍន៍ — មិនទាន់ដាក់ឱ្យប្រើ</small>
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · កំណែមើលជាមុន</small>
             grid_options:
               columns: 6
-              rows: auto
-          - type: markdown
-            content: |-
-              ## {{ now().strftime('%H:%M') }}
-              {{ now().strftime('%d/%m/%y') }}
-            grid_options:
-              columns: 6
-              rows: auto
+              rows: 2
           - type: button
             name: ទំព័រដើម
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/home
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: ភ្លើង
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/lighting
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: អាកាសធាតុ
             icon: mdi:thermometer
@@ -6089,41 +6581,42 @@ views:
             tap_action:
               action: none
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
+            color: accent
           - type: button
             name: កាមេរ៉ា
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/cameras
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: ថាមពល
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/energy
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: សន្តិសុខ
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/security
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -6321,8 +6814,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/parents-room
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: បន្ទប់ទទួលភ្ញៀវ
             icon: mdi:sofa-outline
@@ -6332,8 +6825,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/living-room
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: បន្ទប់បាយ
             icon: mdi:table-chair
@@ -6343,8 +6836,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/dining
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ថាមពល
             icon: mdi:lightning-bolt-outline
@@ -6354,8 +6847,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/energy
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: សុខភាពផ្ទះ
             icon: mdi:home-heart
@@ -6365,8 +6858,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/house-health
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: បន្ទប់
             icon: mdi:floor-plan
@@ -6376,8 +6869,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/rooms
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ទំព័រដើម
             icon: mdi:home-variant-outline
@@ -6387,8 +6880,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/home
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ទិដ្ឋភាព V2 ចាស់
             icon: mdi:history
@@ -6398,8 +6891,58 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/v2-climate
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-km/home
+                icon: mdi:home-variant-outline
+                label: ទំព័រដើម
+              - url: /casaray-v3-km/rooms
+                icon: mdi:floor-plan
+                label: បន្ទប់
+              - url: /casaray-v3-km/energy
+                icon: mdi:lightning-bolt-outline
+                label: ថាមពល
+              - url: /casaray-v3-km/cameras
+                icon: mdi:cctv
+                label: កាមេរ៉ា
+              - icon: mdi:dots-horizontal
+                label: ច្រើនទៀត
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-km/security
+                    icon: mdi:shield-home-outline
+                    label: សន្តិសុខ
+                  - url: /casaray-v3-km/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: ភ្លើង
+                  - url: /casaray-v3-km/climate
+                    icon: mdi:thermometer
+                    label: អាកាសធាតុ
+                  - url: /casaray-v3-km/network
+                    icon: mdi:router-wireless
+                    label: បណ្ដាញ
+                  - url: /casaray-v3-km/house-health
+                    icon: mdi:home-heart
+                    label: សុខភាពផ្ទះ
+                  - url: /casaray-v3-km/alerts
+                    icon: mdi:bell-outline
+                    label: ការជូនដំណឹង
+                  - url: /casaray-v3-km/bills
+                    icon: mdi:receipt-text-outline
+                    label: វិក្កយបត្រ
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: ថាមពល
     path: energy
     icon: mdi:lightning-bolt-outline
@@ -6411,63 +6954,57 @@ views:
         column_span: 2
         cards:
           - type: markdown
+            text_only: true
             content: |-
               ## ថាមពល
-              <small>កំណែអភិវឌ្ឍន៍ — មិនទាន់ដាក់ឱ្យប្រើ</small>
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · កំណែមើលជាមុន</small>
             grid_options:
               columns: 6
-              rows: auto
-          - type: markdown
-            content: |-
-              ## {{ now().strftime('%H:%M') }}
-              {{ now().strftime('%d/%m/%y') }}
-            grid_options:
-              columns: 6
-              rows: auto
+              rows: 2
           - type: button
             name: ទំព័រដើម
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/home
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: ភ្លើង
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/lighting
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: អាកាសធាតុ
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/climate
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: កាមេរ៉ា
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/cameras
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: ថាមពល
             icon: mdi:lightning-bolt-outline
@@ -6476,19 +7013,20 @@ views:
             tap_action:
               action: none
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
+            color: accent
           - type: button
             name: សន្តិសុខ
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/security
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -6892,6 +7430,57 @@ views:
         column_span: 2
         cards:
           - type: heading
+            heading: លំហូរថាមពល
+            heading_style: title
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: custom:power-flow-card-plus
+            entities:
+              solar:
+                entity: sensor.primo_5_0_1_1_ac_power
+                name: ពន្លឺព្រះអាទិត្យ
+              grid:
+                entity: sensor.powerpal_gateway_powerpal_power
+                name: ថាមពលពីបណ្ដាញអគ្គិសនី
+              home:
+                name: ផ្ទះ
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: custom:apexcharts-card
+            graph_span: 24h
+            span:
+              start: day
+            header:
+              show: true
+              title: ថ្ងៃនេះ
+            now:
+              show: true
+            series:
+              - entity: sensor.primo_5_0_1_1_ac_power
+                name: ពន្លឺព្រះអាទិត្យ
+                type: area
+              - entity: sensor.powerpal_gateway_powerpal_power
+                name: ថាមពលពីបណ្ដាញអគ្គិសនី
+                type: area
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: markdown
+            content: <small>«ផ្ទះ» គឺពន្លឺព្រះអាទិត្យ បូកនឹងថាមពលពីបណ្ដាញអគ្គិសនី៖ ដោយគ្មានឧបករណ៍វាស់ការនាំចេញ វាបង្ហាញខ្ពស់ពេលបន្ទះសូឡានាំចេញភ្លើង។</small>
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: markdown
+            content: <small>ផ្នែកនេះប្រើកាត HACS ពីរ គឺ Power Flow Card Plus និង ApexCharts។ បើឃើញ «Custom element doesn't exist» មានន័យថាមិនទាន់ដំឡើងទេ ហើយការអានទាំងអស់ខាងលើនៅតែដំណើរការ។</small>
+            grid_options:
+              columns: 12
+              rows: auto
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
             heading: ទំព័រផ្សេងទៀត
             heading_style: title
             grid_options:
@@ -6906,8 +7495,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/bills
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: សុខភាពផ្ទះ
             icon: mdi:home-heart
@@ -6917,8 +7506,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/house-health
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: អាកាសធាតុ
             icon: mdi:thermometer
@@ -6928,8 +7517,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/climate
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: យានដ្ឋាន
             icon: mdi:garage-variant
@@ -6939,8 +7528,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/garage
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: បន្ទប់ Ray
             icon: mdi:bed-king-outline
@@ -6950,8 +7539,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/ray-bedroom
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ទំព័រដើម
             icon: mdi:home-variant-outline
@@ -6961,8 +7550,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/home
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ការជូនដំណឹង
             icon: mdi:bell-outline
@@ -6972,8 +7561,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/alerts
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ទិដ្ឋភាព V2 ចាស់
             icon: mdi:history
@@ -6983,8 +7572,58 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/v2-energy
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-km/home
+                icon: mdi:home-variant-outline
+                label: ទំព័រដើម
+              - url: /casaray-v3-km/rooms
+                icon: mdi:floor-plan
+                label: បន្ទប់
+              - url: /casaray-v3-km/energy
+                icon: mdi:lightning-bolt-outline
+                label: ថាមពល
+              - url: /casaray-v3-km/cameras
+                icon: mdi:cctv
+                label: កាមេរ៉ា
+              - icon: mdi:dots-horizontal
+                label: ច្រើនទៀត
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-km/security
+                    icon: mdi:shield-home-outline
+                    label: សន្តិសុខ
+                  - url: /casaray-v3-km/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: ភ្លើង
+                  - url: /casaray-v3-km/climate
+                    icon: mdi:thermometer
+                    label: អាកាសធាតុ
+                  - url: /casaray-v3-km/network
+                    icon: mdi:router-wireless
+                    label: បណ្ដាញ
+                  - url: /casaray-v3-km/house-health
+                    icon: mdi:home-heart
+                    label: សុខភាពផ្ទះ
+                  - url: /casaray-v3-km/alerts
+                    icon: mdi:bell-outline
+                    label: ការជូនដំណឹង
+                  - url: /casaray-v3-km/bills
+                    icon: mdi:receipt-text-outline
+                    label: វិក្កយបត្រ
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - type: sections
     title: Bills
     path: bills
@@ -8838,74 +9477,68 @@ views:
         column_span: 2
         cards:
           - type: markdown
+            text_only: true
             content: |-
               ## សន្តិសុខ
-              <small>កំណែអភិវឌ្ឍន៍ — មិនទាន់ដាក់ឱ្យប្រើ</small>
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · កំណែមើលជាមុន</small>
             grid_options:
               columns: 6
-              rows: auto
-          - type: markdown
-            content: |-
-              ## {{ now().strftime('%H:%M') }}
-              {{ now().strftime('%d/%m/%y') }}
-            grid_options:
-              columns: 6
-              rows: auto
+              rows: 2
           - type: button
             name: ទំព័រដើម
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/home
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: ភ្លើង
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/lighting
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: អាកាសធាតុ
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/climate
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: កាមេរ៉ា
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/cameras
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: ថាមពល
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/energy
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: សន្តិសុខ
             icon: mdi:shield-home-outline
@@ -8914,8 +9547,9 @@ views:
             tap_action:
               action: none
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
+            color: accent
       - type: grid
         column_span: 2
         cards:
@@ -9392,8 +10026,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/cameras
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: បណ្ដាញ
             icon: mdi:router-wireless
@@ -9403,8 +10037,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/network
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: សុខភាពផ្ទះ
             icon: mdi:home-heart
@@ -9414,8 +10048,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/house-health
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ការជូនដំណឹង
             icon: mdi:bell-outline
@@ -9425,8 +10059,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/alerts
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: បន្ទប់
             icon: mdi:floor-plan
@@ -9436,8 +10070,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/rooms
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ទំព័រដើម
             icon: mdi:home-variant-outline
@@ -9447,8 +10081,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/home
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: មនុស្ស
             icon: mdi:account-group-outline
@@ -9458,8 +10092,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/people
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ទិដ្ឋភាព V2 ចាស់
             icon: mdi:history
@@ -9469,8 +10103,58 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/v2-security
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-km/home
+                icon: mdi:home-variant-outline
+                label: ទំព័រដើម
+              - url: /casaray-v3-km/rooms
+                icon: mdi:floor-plan
+                label: បន្ទប់
+              - url: /casaray-v3-km/energy
+                icon: mdi:lightning-bolt-outline
+                label: ថាមពល
+              - url: /casaray-v3-km/cameras
+                icon: mdi:cctv
+                label: កាមេរ៉ា
+              - icon: mdi:dots-horizontal
+                label: ច្រើនទៀត
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-km/security
+                    icon: mdi:shield-home-outline
+                    label: សន្តិសុខ
+                  - url: /casaray-v3-km/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: ភ្លើង
+                  - url: /casaray-v3-km/climate
+                    icon: mdi:thermometer
+                    label: អាកាសធាតុ
+                  - url: /casaray-v3-km/network
+                    icon: mdi:router-wireless
+                    label: បណ្ដាញ
+                  - url: /casaray-v3-km/house-health
+                    icon: mdi:home-heart
+                    label: សុខភាពផ្ទះ
+                  - url: /casaray-v3-km/alerts
+                    icon: mdi:bell-outline
+                    label: ការជូនដំណឹង
+                  - url: /casaray-v3-km/bills
+                    icon: mdi:receipt-text-outline
+                    label: វិក្កយបត្រ
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: កាមេរ៉ា
     path: cameras
     icon: mdi:cctv
@@ -9483,81 +10167,78 @@ views:
         cards:
           - type: markdown
             text_only: true
-            content: '## កាមេរ៉ា<br><small>កំណែមើលជាមុន</small>'
+            content: |-
+              ## កាមេរ៉ា
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · កំណែមើលជាមុន</small>
             grid_options:
-              columns: 8
-              rows: 1
-          - type: markdown
-            text_only: true
-            content: '## {{ now().strftime(''%H:%M'') }}<br><small>{{ now().strftime(''%d/%m/%y'') }}</small>'
-            grid_options:
-              columns: 4
-              rows: 1
+              columns: 6
+              rows: 2
           - type: button
             name: ទំព័រដើម
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/home
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: ភ្លើង
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/lighting
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: អាកាសធាតុ
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/climate
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: កាមេរ៉ា
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: none
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
+            color: accent
           - type: button
             name: ថាមពល
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/energy
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: សន្តិសុខ
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/security
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -10037,6 +10718,56 @@ views:
             grid_options:
               columns: 6
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-km/home
+                icon: mdi:home-variant-outline
+                label: ទំព័រដើម
+              - url: /casaray-v3-km/rooms
+                icon: mdi:floor-plan
+                label: បន្ទប់
+              - url: /casaray-v3-km/energy
+                icon: mdi:lightning-bolt-outline
+                label: ថាមពល
+              - url: /casaray-v3-km/cameras
+                icon: mdi:cctv
+                label: កាមេរ៉ា
+              - icon: mdi:dots-horizontal
+                label: ច្រើនទៀត
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-km/security
+                    icon: mdi:shield-home-outline
+                    label: សន្តិសុខ
+                  - url: /casaray-v3-km/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: ភ្លើង
+                  - url: /casaray-v3-km/climate
+                    icon: mdi:thermometer
+                    label: អាកាសធាតុ
+                  - url: /casaray-v3-km/network
+                    icon: mdi:router-wireless
+                    label: បណ្ដាញ
+                  - url: /casaray-v3-km/house-health
+                    icon: mdi:home-heart
+                    label: សុខភាពផ្ទះ
+                  - url: /casaray-v3-km/alerts
+                    icon: mdi:bell-outline
+                    label: ការជូនដំណឹង
+                  - url: /casaray-v3-km/bills
+                    icon: mdi:receipt-text-outline
+                    label: វិក្កយបត្រ
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - type: sections
     title: Front Door
     path: camera-front-door
@@ -10268,85 +10999,79 @@ views:
         column_span: 2
         cards:
           - type: markdown
+            text_only: true
             content: |-
               ## មនុស្ស
-              <small>កំណែអភិវឌ្ឍន៍ — មិនទាន់ដាក់ឱ្យប្រើ</small>
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · កំណែមើលជាមុន</small>
             grid_options:
               columns: 6
-              rows: auto
-          - type: markdown
-            content: |-
-              ## {{ now().strftime('%H:%M') }}
-              {{ now().strftime('%d/%m/%y') }}
-            grid_options:
-              columns: 6
-              rows: auto
+              rows: 2
           - type: button
             name: ទំព័រដើម
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/home
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: ភ្លើង
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/lighting
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: អាកាសធាតុ
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/climate
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: កាមេរ៉ា
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/cameras
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: ថាមពល
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/energy
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: សន្តិសុខ
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/security
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -10610,8 +11335,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/home
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: បន្ទប់
             icon: mdi:floor-plan
@@ -10621,8 +11346,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/rooms
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: សន្តិសុខ
             icon: mdi:shield-home-outline
@@ -10632,8 +11357,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/security
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: បណ្ដាញ
             icon: mdi:router-wireless
@@ -10643,8 +11368,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/network
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: សុខភាពផ្ទះ
             icon: mdi:home-heart
@@ -10654,8 +11379,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/house-health
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ការជូនដំណឹង
             icon: mdi:bell-outline
@@ -10665,8 +11390,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/alerts
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: បន្ទប់ឪពុកម្ដាយ
             icon: mdi:bed-outline
@@ -10676,8 +11401,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/parents-room
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ទិដ្ឋភាព V2 ចាស់
             icon: mdi:history
@@ -10687,8 +11412,58 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/v2-people
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-km/home
+                icon: mdi:home-variant-outline
+                label: ទំព័រដើម
+              - url: /casaray-v3-km/rooms
+                icon: mdi:floor-plan
+                label: បន្ទប់
+              - url: /casaray-v3-km/energy
+                icon: mdi:lightning-bolt-outline
+                label: ថាមពល
+              - url: /casaray-v3-km/cameras
+                icon: mdi:cctv
+                label: កាមេរ៉ា
+              - icon: mdi:dots-horizontal
+                label: ច្រើនទៀត
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-km/security
+                    icon: mdi:shield-home-outline
+                    label: សន្តិសុខ
+                  - url: /casaray-v3-km/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: ភ្លើង
+                  - url: /casaray-v3-km/climate
+                    icon: mdi:thermometer
+                    label: អាកាសធាតុ
+                  - url: /casaray-v3-km/network
+                    icon: mdi:router-wireless
+                    label: បណ្ដាញ
+                  - url: /casaray-v3-km/house-health
+                    icon: mdi:home-heart
+                    label: សុខភាពផ្ទះ
+                  - url: /casaray-v3-km/alerts
+                    icon: mdi:bell-outline
+                    label: ការជូនដំណឹង
+                  - url: /casaray-v3-km/bills
+                    icon: mdi:receipt-text-outline
+                    label: វិក្កយបត្រ
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - type: sections
     title: Automations
     path: automations
@@ -11582,85 +12357,79 @@ views:
         column_span: 2
         cards:
           - type: markdown
+            text_only: true
             content: |-
               ## សុខភាពផ្ទះ
-              <small>កំណែអភិវឌ្ឍន៍ — មិនទាន់ដាក់ឱ្យប្រើ</small>
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · កំណែមើលជាមុន</small>
             grid_options:
               columns: 6
-              rows: auto
-          - type: markdown
-            content: |-
-              ## {{ now().strftime('%H:%M') }}
-              {{ now().strftime('%d/%m/%y') }}
-            grid_options:
-              columns: 6
-              rows: auto
+              rows: 2
           - type: button
             name: ទំព័រដើម
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/home
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: ភ្លើង
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/lighting
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: អាកាសធាតុ
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/climate
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: កាមេរ៉ា
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/cameras
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: ថាមពល
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/energy
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: សន្តិសុខ
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/security
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -12058,6 +12827,110 @@ views:
         column_span: 2
         cards:
           - type: heading
+            heading: មិនឆ្លើយតបឥឡូវនេះ
+            heading_style: title
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: custom:auto-entities
+            card:
+              type: entities
+              title: ភ្លើងដែលមិនឆ្លើយតប
+            filter:
+              include:
+                - domain: light
+                  state: unavailable
+            sort:
+              method: name
+            else:
+              type: markdown
+              content: |-
+                **ភ្លើងដែលមិនឆ្លើយតប**
+
+                <small>គ្មានធាតុប្រភេទនេះរាយការណ៍ថាមិនអាចប្រើបានទេ</small>
+              grid_options:
+                columns: 12
+                rows: auto
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: custom:auto-entities
+            card:
+              type: entities
+              title: កាមេរ៉ាដែលមិនឆ្លើយតប
+            filter:
+              include:
+                - domain: camera
+                  state: unavailable
+            sort:
+              method: name
+            else:
+              type: markdown
+              content: |-
+                **កាមេរ៉ាដែលមិនឆ្លើយតប**
+
+                <small>គ្មានធាតុប្រភេទនេះរាយការណ៍ថាមិនអាចប្រើបានទេ</small>
+              grid_options:
+                columns: 12
+                rows: auto
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: custom:auto-entities
+            card:
+              type: entities
+              title: កុងតាក់ដែលមិនឆ្លើយតប
+            filter:
+              include:
+                - domain: switch
+                  state: unavailable
+            sort:
+              method: name
+            else:
+              type: markdown
+              content: |-
+                **កុងតាក់ដែលមិនឆ្លើយតប**
+
+                <small>គ្មានធាតុប្រភេទនេះរាយការណ៍ថាមិនអាចប្រើបានទេ</small>
+              grid_options:
+                columns: 12
+                rows: auto
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: custom:auto-entities
+            card:
+              type: entities
+              title: ឧបករណ៍ចាប់សញ្ញាដែលមិនឆ្លើយតប
+            filter:
+              include:
+                - domain: sensor
+                  state: unavailable
+                - domain: binary_sensor
+                  state: unavailable
+            sort:
+              method: name
+            else:
+              type: markdown
+              content: |-
+                **ឧបករណ៍ចាប់សញ្ញាដែលមិនឆ្លើយតប**
+
+                <small>គ្មានធាតុប្រភេទនេះរាយការណ៍ថាមិនអាចប្រើបានទេ</small>
+              grid_options:
+                columns: 12
+                rows: auto
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: markdown
+            content: <small>បញ្ជីទាំងនេះប្រើកាត HACS auto-entities។ បើឃើញ «Custom element doesn't exist» មានន័យថាមិនទាន់ដំឡើងទេ ហើយចំនួន និងឧបករណ៍ខាងលើនៅតែដំណើរការ។</small>
+            grid_options:
+              columns: 12
+              rows: auto
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
             heading: កំណត់ចំណាំអំពីឧបករណ៍វាស់
             heading_style: title
             grid_options:
@@ -12090,8 +12963,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/home
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ការជូនដំណឹង
             icon: mdi:bell-outline
@@ -12101,8 +12974,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/alerts
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: បណ្ដាញ
             icon: mdi:router-wireless
@@ -12112,8 +12985,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/network
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ថាមពល
             icon: mdi:lightning-bolt-outline
@@ -12123,8 +12996,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/energy
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: សន្តិសុខ
             icon: mdi:shield-home-outline
@@ -12134,8 +13007,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/security
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: បន្ទប់
             icon: mdi:floor-plan
@@ -12145,8 +13018,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/rooms
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: មនុស្ស
             icon: mdi:account-group-outline
@@ -12156,8 +13029,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/people
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ទិដ្ឋភាព V2 ចាស់
             icon: mdi:history
@@ -12167,8 +13040,58 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/v2-house-health
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-km/home
+                icon: mdi:home-variant-outline
+                label: ទំព័រដើម
+              - url: /casaray-v3-km/rooms
+                icon: mdi:floor-plan
+                label: បន្ទប់
+              - url: /casaray-v3-km/energy
+                icon: mdi:lightning-bolt-outline
+                label: ថាមពល
+              - url: /casaray-v3-km/cameras
+                icon: mdi:cctv
+                label: កាមេរ៉ា
+              - icon: mdi:dots-horizontal
+                label: ច្រើនទៀត
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-km/security
+                    icon: mdi:shield-home-outline
+                    label: សន្តិសុខ
+                  - url: /casaray-v3-km/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: ភ្លើង
+                  - url: /casaray-v3-km/climate
+                    icon: mdi:thermometer
+                    label: អាកាសធាតុ
+                  - url: /casaray-v3-km/network
+                    icon: mdi:router-wireless
+                    label: បណ្ដាញ
+                  - url: /casaray-v3-km/house-health
+                    icon: mdi:home-heart
+                    label: សុខភាពផ្ទះ
+                  - url: /casaray-v3-km/alerts
+                    icon: mdi:bell-outline
+                    label: ការជូនដំណឹង
+                  - url: /casaray-v3-km/bills
+                    icon: mdi:receipt-text-outline
+                    label: វិក្កយបត្រ
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: បណ្ដាញ
     path: network
     icon: mdi:router-wireless
@@ -12180,85 +13103,79 @@ views:
         column_span: 2
         cards:
           - type: markdown
+            text_only: true
             content: |-
               ## បណ្ដាញ
-              <small>កំណែអភិវឌ្ឍន៍ — មិនទាន់ដាក់ឱ្យប្រើ</small>
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · កំណែមើលជាមុន</small>
             grid_options:
               columns: 6
-              rows: auto
-          - type: markdown
-            content: |-
-              ## {{ now().strftime('%H:%M') }}
-              {{ now().strftime('%d/%m/%y') }}
-            grid_options:
-              columns: 6
-              rows: auto
+              rows: 2
           - type: button
             name: ទំព័រដើម
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/home
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: ភ្លើង
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/lighting
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: អាកាសធាតុ
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/climate
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: កាមេរ៉ា
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/cameras
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: ថាមពល
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/energy
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: សន្តិសុខ
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/security
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -12465,8 +13382,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/house-health
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: សន្តិសុខ
             icon: mdi:shield-home-outline
@@ -12476,8 +13393,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/security
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: កាមេរ៉ា
             icon: mdi:cctv
@@ -12487,8 +13404,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/cameras
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ការជូនដំណឹង
             icon: mdi:bell-outline
@@ -12498,8 +13415,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/alerts
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ថាមពល
             icon: mdi:lightning-bolt-outline
@@ -12509,8 +13426,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/energy
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: បន្ទប់
             icon: mdi:floor-plan
@@ -12520,8 +13437,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/rooms
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ទំព័រដើម
             icon: mdi:home-variant-outline
@@ -12531,8 +13448,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/home
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ទិដ្ឋភាព V2 ចាស់
             icon: mdi:history
@@ -12542,8 +13459,58 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/v2-network
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-km/home
+                icon: mdi:home-variant-outline
+                label: ទំព័រដើម
+              - url: /casaray-v3-km/rooms
+                icon: mdi:floor-plan
+                label: បន្ទប់
+              - url: /casaray-v3-km/energy
+                icon: mdi:lightning-bolt-outline
+                label: ថាមពល
+              - url: /casaray-v3-km/cameras
+                icon: mdi:cctv
+                label: កាមេរ៉ា
+              - icon: mdi:dots-horizontal
+                label: ច្រើនទៀត
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-km/security
+                    icon: mdi:shield-home-outline
+                    label: សន្តិសុខ
+                  - url: /casaray-v3-km/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: ភ្លើង
+                  - url: /casaray-v3-km/climate
+                    icon: mdi:thermometer
+                    label: អាកាសធាតុ
+                  - url: /casaray-v3-km/network
+                    icon: mdi:router-wireless
+                    label: បណ្ដាញ
+                  - url: /casaray-v3-km/house-health
+                    icon: mdi:home-heart
+                    label: សុខភាពផ្ទះ
+                  - url: /casaray-v3-km/alerts
+                    icon: mdi:bell-outline
+                    label: ការជូនដំណឹង
+                  - url: /casaray-v3-km/bills
+                    icon: mdi:receipt-text-outline
+                    label: វិក្កយបត្រ
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: ការជូនដំណឹង
     path: alerts
     icon: mdi:bell-outline
@@ -12555,85 +13522,79 @@ views:
         column_span: 2
         cards:
           - type: markdown
+            text_only: true
             content: |-
               ## ការជូនដំណឹង
-              <small>កំណែអភិវឌ្ឍន៍ — មិនទាន់ដាក់ឱ្យប្រើ</small>
+              **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · កំណែមើលជាមុន</small>
             grid_options:
               columns: 6
-              rows: auto
-          - type: markdown
-            content: |-
-              ## {{ now().strftime('%H:%M') }}
-              {{ now().strftime('%d/%m/%y') }}
-            grid_options:
-              columns: 6
-              rows: auto
+              rows: 2
           - type: button
             name: ទំព័រដើម
             icon: mdi:home-variant-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/home
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: ភ្លើង
             icon: mdi:lightbulb-group-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/lighting
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: អាកាសធាតុ
             icon: mdi:thermometer
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/climate
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: កាមេរ៉ា
             icon: mdi:cctv
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/cameras
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: ថាមពល
             icon: mdi:lightning-bolt-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/energy
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
           - type: button
             name: សន្តិសុខ
             icon: mdi:shield-home-outline
-            show_name: false
+            show_name: true
             show_icon: true
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-km/security
             grid_options:
-              columns: 2
-              rows: 1
+              columns: 3
+              rows: 2
       - type: grid
         column_span: 2
         cards:
@@ -12723,8 +13684,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/home
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: សុខភាពផ្ទះ
             icon: mdi:home-heart
@@ -12734,8 +13695,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/house-health
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: សន្តិសុខ
             icon: mdi:shield-home-outline
@@ -12745,8 +13706,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/security
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: បណ្ដាញ
             icon: mdi:router-wireless
@@ -12756,8 +13717,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/network
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: បន្ទប់ឪពុកម្ដាយ
             icon: mdi:bed-outline
@@ -12767,8 +13728,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/parents-room
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: យានដ្ឋាន
             icon: mdi:garage-variant
@@ -12778,8 +13739,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/garage
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ថាមពល
             icon: mdi:lightning-bolt-outline
@@ -12789,8 +13750,8 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/energy
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
           - type: button
             name: ទិដ្ឋភាព V2 ចាស់
             icon: mdi:history
@@ -12800,8 +13761,58 @@ views:
               action: navigate
               navigation_path: /casaray-v3-km/v2-alerts
             grid_options:
-              columns: 3
-              rows: 1
+              columns: 4
+              rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-km/home
+                icon: mdi:home-variant-outline
+                label: ទំព័រដើម
+              - url: /casaray-v3-km/rooms
+                icon: mdi:floor-plan
+                label: បន្ទប់
+              - url: /casaray-v3-km/energy
+                icon: mdi:lightning-bolt-outline
+                label: ថាមពល
+              - url: /casaray-v3-km/cameras
+                icon: mdi:cctv
+                label: កាមេរ៉ា
+              - icon: mdi:dots-horizontal
+                label: ច្រើនទៀត
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-km/security
+                    icon: mdi:shield-home-outline
+                    label: សន្តិសុខ
+                  - url: /casaray-v3-km/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: ភ្លើង
+                  - url: /casaray-v3-km/climate
+                    icon: mdi:thermometer
+                    label: អាកាសធាតុ
+                  - url: /casaray-v3-km/network
+                    icon: mdi:router-wireless
+                    label: បណ្ដាញ
+                  - url: /casaray-v3-km/house-health
+                    icon: mdi:home-heart
+                    label: សុខភាពផ្ទះ
+                  - url: /casaray-v3-km/alerts
+                    icon: mdi:bell-outline
+                    label: ការជូនដំណឹង
+                  - url: /casaray-v3-km/bills
+                    icon: mdi:receipt-text-outline
+                    label: វិក្កយបត្រ
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - type: sections
     title: CasaRay (V2)
     path: v2-home
