@@ -68,6 +68,17 @@ native:
   - alerts
   - people
 
+# CR-V3-20 (18/11/26, owner instruction): pages with NO V2 equivalent. Unlike
+# `native:`, a `new_views` path is not expected to exist in
+# dashboards/casaray_v2.yaml — the build refuses to run if one does (use
+# `native:` for that; `new_views` is only for a genuinely new destination).
+# Each still needs views/<path>.yaml, gets every safety/geometry/honesty
+# check a native rebuild gets, and is linked in from Home's More boards band
+# by hand — nothing here adds itself to navigation automatically.
+new_views:
+  - weather
+  - rubbish-collection
+
 # Switches a V3-native view may control. V3-native views are read-only for
 # switches by default; each switch below is a device control that V2 already
 # offers on the named view (a tile whose icon toggles it), carried over with

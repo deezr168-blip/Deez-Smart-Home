@@ -65,11 +65,10 @@ grid everywhere, and on the wall iPad they are wrong for two-column bands:
 
 | Component | Card | Notes |
 |---|---|---|
-| `topbar` | 2 × markdown + 6 × button | title + dev banner, clock `HH:MM` over `DD/MM/YY`, six-glyph rail; current destination shown named and inert |
+| `topbar` | 1 × markdown + 6 × button | every page: a header cell (title, `HH:MM` over `DD/MM/YY`, development marker) and six named buttons at 3 units; one row on the wall iPad, two equal rows on a phone; the current destination is inert and tinted (V3-023). `header_title` shortens the header only |
 | `chips` + `chip_count` / `chip_value` / `chip_cameras` | markdown | `n of m reporting`; "No data" when nothing answered |
 | `chip_temp`, `chip_plugs`, `plugs_card` | markdown | `19.7°` from a sensor or a weather attribute; a plug total shown only while every plug it adds up answers |
 | `camera_card(…, offline=True, full_screen="more-info")` | picture-entity + markdown twin | the twin, same size, shows only while the camera is unavailable and says Offline with the battery reading; a tap opens Home Assistant's own live view (V3-014) |
-| `topbar(…, compact=True)` | 2 × text-only markdown + 6 × icon-only button | given to `band_grid: 24` views: one 56 px row on the wall iPad, two on a phone; the title names the page, the current icon is inert (V3-014) |
 | `room_tile` | markdown, tap navigates | room name over one line of readings in words; a dark reading is counted ("1 not reporting"), never shown; "No data" when none answer |
 | `attention` | markdown | one honest list; all-clear only when every check answered |
 | `action_button` | button | one action per button; hold does nothing |

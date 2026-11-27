@@ -209,7 +209,10 @@ def build_native(spec, ctx):
     sections = []
     for sec in spec["sections"]:
         if sec.get("topbar"):
-            sections.append(C.topbar(ctx, spec["path"], spec["title"], compact=band == 24))
+            # `header_title` (optional): a shorter key for the top bar's header
+            # cell, for a title too long for it on a phone (V3-023). Absent,
+            # the view title is used and the output is unchanged.
+            sections.append(C.topbar(ctx, spec["path"], spec.get("header_title", spec["title"])))
             continue
         if "c" in sec:
             sections.append(resolve(sec, ctx))
@@ -271,6 +274,27 @@ def build(write=True):
 
     v2_views = v2["views"]
     v2_paths = [v["path"] for v in v2_views]
+
+    # Pages with no V2 equivalent (CR-V3-20): the loop below cannot discover
+    # them from v2_views, so they are listed separately and validated up
+    # front, once, rather than per locale.
+    new_paths = man.get("new_views", []) or []
+    if len(new_paths) != len(set(new_paths)):
+        dupes = sorted({p for p in new_paths if new_paths.count(p) > 1})
+        raise SystemExit(f"new_views: duplicate path(s) {dupes}")
+    for p in new_paths:
+        if p not in specs:
+            raise SystemExit(f"new_views: {p!r} has no source in src/casaray_v3/views/")
+        if p in v2_paths:
+            raise SystemExit(f"new_views: {p!r} collides with an existing V2 view path "
+                             "(use `native:` to rebuild an existing V2 view instead)")
+        if p in man["native"]:
+            raise SystemExit(f"new_views: {p!r} is also listed in `native:` — a path is "
+                             "either a V2 rebuild or a new page, never both")
+        if p.startswith("v2-"):
+            raise SystemExit(f"new_views: {p!r} starts with the reserved `v2-` prefix "
+                             "(classic-copy paths use it)")
+
     outputs, report = {}, {"baseline": {"file": base["file"], "sha256": sha, "ref": base["ref"]},
                            "locales": {}, "views": []}
 
@@ -303,6 +327,13 @@ def build(write=True):
             views.append(cv)
             rows.append({"path": f"v2-{p}", "kind": "classic", "source": f"{base['file']}#{p}",
                          "v2_equivalent": p, "entities": sorted(entities_in(cv))})
+        for p in new_paths:  # pages with no V2 equivalent (CR-V3-20), appended last so
+                             # existing output is byte-identical when new_views is empty
+            ctx.used = set()
+            nv = build_native(specs[p], ctx)
+            views.append(nv)
+            rows.append({"path": p, "kind": "new", "source": f"views/{p}.yaml",
+                         "v2_equivalent": None, "entities": sorted(entities_in(nv))})
         dash = {"title": f"CasaRay V3 ({loc['code']})", "views": views}
         text = HEADER.format(locale_name=loc["name"], url_base=loc["url_base"],
                              baseline_file=base["file"], baseline_sha=sha) + dump(dash)

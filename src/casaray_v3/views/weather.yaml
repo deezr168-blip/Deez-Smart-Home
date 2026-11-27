@@ -1,0 +1,35 @@
+# V3 Weather — new page (CR-V3-20, 18/11/26). No V2 equivalent: V2 never had
+# a dedicated weather board, only the inline temperature chip Home already
+# carries (unchanged by this page). Single verified source,
+# `weather.forecast_home`: it existed and reported `ok` in the 05/09/26
+# export, but that is historical evidence, not today's state — its current
+# availability and which forecast types it actually serves are UNVERIFIED
+# from this offline build and need a live check before this page is relied
+# on (see docs/casaray-v3/DECISIONS.md CR-V3-20).
+# No radar, UV index or any other reading: this instance has no entity for
+# them, and V3 does not draw a dial with nothing behind it.
+path: weather
+title: nav.weather
+icon: mdi:weather-partly-cloudy
+sections:
+  - topbar: true
+
+  - span: 2
+    heading: h.weather_now
+    cards:
+      - {c: weather_detail, entity: weather.forecast_home}
+
+  - span: 2
+    heading: h.forecast
+    cards:
+      - {c: weather, entity: weather.forecast_home, forecast: true, columns: 12}
+
+  - span: 2
+    cards:
+      - {c: note, key: weather.unverified_note}
+
+  - c: more_boards
+    items:
+      - [home, nav.home, mdi:home-variant-outline]
+      - [energy, nav.energy, mdi:lightning-bolt-outline]
+      - [climate, nav.climate, mdi:thermometer]

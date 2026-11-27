@@ -6,6 +6,497 @@ and `ha-deploy` are unaffected by everything here.
 
 ---
 
+## V3-025 · 21/11/26 · HACS installed list recorded as an agent source reference
+
+**Status:** owner request (21/11/26). Documentation only; no dashboard, theme or
+gate change. DEVELOPMENT ONLY — NOT DEPLOYED.
+
+1. Six owner screenshots of HACS → Installed are stored in
+   `docs/mockups/hacs_installed/` (the one docs path `ha_validate.sh` allows
+   images in) and transcribed in `docs/casaray-v3/HACS_INSTALLED.md`: 40
+   installed rows, plus four not-installed "New" items (Energy Horizon Card
+   among them).
+2. **Inventory, not approval.** V3-native stays native-only; `ALLOWED_CUSTOM`
+   in `validate_dashboard.py` is unchanged. Using any listed card needs its own
+   recorded decision.
+3. **Unverified from here.** "Installed" does not prove a card is a registered
+   Lovelace resource or an integration is configured. The screenshots carry no
+   date.
+4. **Two conflicts flagged, not resolved:** `PREVIEW_DEPLOYMENT.md` (02/11/26:
+   HACS directories reported missing) and `CASARAY_MAPPING_PACK.md` B4
+   (`auto-entities` not installed) both disagree with the screenshots.
+5. Pointer added under Dependencies in `docs/casaray-v3/ARCHITECTURE.md`.
+
+---
+## V3-024 · 20/11/26 · PR #16 meets PR #21: the labelled top bar stays, Home re-measured on the combination
+
+**Status:** owner decision (20/11/26, "Approve"): bring the updated
+`feature/casaray-v3-build` (PR #16 merged 20/11, PR #20 merged 18/11) into
+PR #21 and keep V3-023's large, labelled navigation. PR #21 stays draft.
+DEVELOPMENT ONLY — NOT DEPLOYED; no merge, no live change.
+
+1. **Top bar.** PR #16 (V3-014) gave the `band_grid: 24` views (Home,
+   Cameras) a compact icon-only rail; PR #21 (V3-023) gave every page a header
+   cell and six named buttons. V3-023's rail is now on every page, Home and
+   Cameras included; `topbar(compact=…)` and its `app.preview_banner` string
+   are gone. Everything else V3-014 did stays: the Offline camera slots, the
+   native full-screen tap, Cameras on the 24-unit grid, named privacy tiles,
+   rooms of one height.
+2. **Two heights changed, because each side was measured against a Home the
+   other side had since changed.** Simulated preview, pinned frontend
+   metrics (`preview_view.py --shots`), wall iPad 1180 × 820:
+
+   | Pair | V3-023 alone (yue) | Merged as resolved | After |
+   |---|---|---|---|
+   | Rooms · Shopping list | 21 px | 192 px | **0 px** |
+   | Right now · Who's home | 31 px | 33 px | **31 px** |
+   | Energy now · Climate now | 11 px | 11 px | **11 px** |
+
+   - Shopping list **8 rows** (V3-014's value). V3-023's 5 were measured
+     against rooms of automatic height; with V3-014's two-row rooms they left
+     192 px, exactly three rows.
+   - Parents' room occupancy tile back to **2 rows**. V3-014 raised it to 3 to
+     match a Right now that also held Solar expected; V3-023 moved that tile
+     to Energy now, so 3 overshot by 33 px. 2 reproduces V3-023's own 31 px.
+     No integer row count closes it (64 px a row).
+   - Climate now keeps V3-023's version (named air-con plus two real
+     temperature tiles), not V3-014's `rows: 2`; the 11 px is V3-023's figure.
+3. **Measured result.** Wall: en 0 · 31 · 32 px, yue 0 · 31 · 11 px,
+   zh-Hans 0 · 31 · 32 px; page 2588 px (en), 2566 px (yue). Phone
+   (390 × 844): no holes, no clipped label, no overflowing card in any of the
+   three; page 4698 px, **128 px taller** than with the 5-row list (the list
+   shows three more rows on a phone). Khmer not previewed (no Khmer font
+   here). All simulated; nothing seen on a device.
+4. **Tests.** The two `CompactTopBar` tests that pinned the icon-only rail
+   now assert the same properties of the labelled one on Home and Cameras;
+   replacing the rail with icon-only buttons still fails them (mutation run).
+   No test was skipped or removed.
+5. **Still outstanding:** the HA schema validation of
+   `docs/casaray-v3/proposals/rubbish_reminder_automation.yaml`; a live check
+   of `weather.forecast_home`; every height above on the wall iPad and an
+   iPhone.
+
+## V3-023 · 18/11/26 · PR #21: regression on the new head; top bar and Home, measured against the frontend's own rules
+
+**Status:** owner brief (18/11/26): finish PR #21's validation round, then
+the already-authorised Home visual items — large labelled navigation,
+consistent alignment and spacing, readable Cantonese-first labels, compact
+everyday controls. Same `feature/casaray-v3/weather-rubbish` branch, PR #21
+still draft. DEVELOPMENT ONLY — NOT DEPLOYED; no merge, no live change.
+
+1. **Regression, both heads, run here.** The earlier session's background
+   result was not reachable from this container, so the full suite was run
+   again: `56c0405` — **105 tests, 0 failures, exit 0** (512.7 s), clean tree.
+   While it ran, a parallel session pushed `69b5164` (V3-022). That head was
+   re-run in a clean worktree pinned to exactly `69b5164`: **105 tests,
+   0 failures, exit 0** (604.5 s); `build_dashboard.py --check` current;
+   `validate_dashboard.py` 1569 passed / 0 failed; `ha_validate.sh` PASSED.
+2. **Built on V3-022, not redone.** V3-022 had already named every rail
+   button, corrected `nav.climate` (氣候) and balanced Climate now. The
+   preview it was judged in drew button labels at 14 px with side padding;
+   the pinned frontend (20260826.7) draws them at `--ha-font-size-l`, 16 px,
+   unpadded and clipped, never ellipsised. Corrected (`fd0b3df`, tooling
+   only), the same build measured: four of six English rail labels clipped
+   on a phone (2-unit buttons, ~55 px), "Cameras" clipped on the wall, the
+   wall row two heights again (auto wordmark and clock, ~87 px, beside
+   120 px buttons), and — with every button named — no visible mark on the
+   current destination (V3 CLAUDE.md: "always marked in the navigation").
+3. **Shared top bar** (`components.topbar`, every native view):
+   - Header cell (6 units, 2 rows) + six named buttons at 3 units, 2 rows:
+     one 120 px row on the wall (buttons ~132 px wide, up from ~77), two
+     equal rows on a phone (~87 px, up from 55). Every cell one height.
+   - Header: title, then the time above the `DD/MM/YY` date, then a short
+     development marker, `app.dev_short` — in each locale an exact part of
+     its own `app.dev_banner` (en "Not deployed", yue/zh-Hans 未部署,
+     km កំណែអភិវឌ្ឍន៍), so no new vocabulary. Khmer uses the banner's
+     first half because its second half wraps the line on a phone.
+   - Current destination: inert, as before, and its icon tinted with the
+     button card's own `color: accent` — read from the pinned source: it
+     applies with no entity, and `accent` resolves to `var(--accent-color)`,
+     which the installed CasaRay V3 theme maps to `--v3-accent` (amber,
+     "selected"). No theme file change, so nothing to re-install.
+   - `header_title` (optional view key, generator commit on its own): a
+     shorter key for the header only. Used once, Rubbish collection (181 px
+     of title in a 151 px cell); the page keeps its full name everywhere
+     else. Without the key the output is unchanged.
+4. **Home** (`src/casaray_v3/views/home.yaml`):
+   - One tap's air-con slot keeps V3-007's role (state in words, a tap opens
+     Climate) and now says which air-con it is: 「爸媽房冷氣機」 / "Parents'
+     air-con", then mode and room temperature on one line, V3-007's own
+     "Off · room 23.3°" form. It read only 「而家：冷氣」 before, and it
+     overran its cell in Khmer. Climate now gets the same name line. The
+     name reuses each catalogue's own words (爸媽房 + 冷氣機; V2's 父母房空调).
+   - People at two rows, the vertical tile's minimum and the render's
+     ~115 px; three rows left each card about half empty.
+   - The "monitored" footnote moves inside the plugs card it qualifies.
+   - Solar expected today moves from Right now to Energy now, beside Solar
+     now and Solar today. **Departs from the 14/09 render**, which keeps it in
+     its left column: with people compacted, it made Right now ~100 px
+     taller than Who's home beside it. Still on Home (the V3-013 migration
+     test only pins presence).
+   - Shopping list at five rows: level with Rooms in Cantonese, the priority
+     locale. Room lines are auto-height, so the list can only trade the gap
+     between locales: English now has 43 px under Shopping, Cantonese 21 px.
+   - More boards at 4 units: six across on the wall (two rows, not three),
+     three on a phone (four rows, not six). At 6 units each icon drew
+     ~100 px, the largest glyph on the page.
+5. **Measured, simulated** (`preview_view.py --shots`, frontend geometry,
+   approximated card interiors, fixture states; not a device):
+
+   | | 69b5164 | V3-023 |
+   |---|---|---|
+   | Wall band holes, yue (rooms · right now · energy) | 43 · 77 · 36 px | 21 · 31 · 11 px |
+   | Wall band holes, en | 21 · 77 · 14 px | 43 · 31 · 32 px |
+   | Wall page height, yue / en | 2,644 / 2,644 px | 2,396 / 2,439 px |
+   | Phone page height, yue / en | 4,738 / 4,803 px | 4,357 / 4,401 px |
+   | Clipped labels on a phone, en / yue | 4 / 0 | 0 / 0 |
+   | Top bar on all 20 native pages × 3 locales | not measured | wall: no fault; phone: only km Living room and Parents' room (title wraps) |
+
+6. **Scope, checked:** in all four locales 28 views are byte-identical to
+   `69b5164`, 19 native views differ only in the top bar section, and Home.
+   Every changed card was rendered against the normal and the fully dark
+   fixture in English and Cantonese: dark reads 「離線 · 冇數據」 / "Offline ·
+   No data", never a stale temperature.
+7. **Overlap with PR #16 (open, awaiting the owner, TASK-028):** PR #16 made
+   the top bar icon-only to hold one row; this brief asks for named
+   buttons, and V3-022 already named them. The two conflict in
+   `components.topbar`; whichever merges second must choose. PR #16's equal
+   room heights (rows 2) were not copied: by the frontend's row arithmetic
+   (four 120 px rows against ~85 px auto lines) they would add roughly
+   140 px on a phone, for alignment the Shopping list already gives in
+   Cantonese. An estimate, not a measurement.
+8. **Gated, so it cannot regress silently.** `band_problems()` skips the
+   top bar by design ("not the spec's to size"), which is how V3-022's row
+   passed. `validate_dashboard.py` now runs `topbar_problems()` on every
+   native page in every locale (+80 checks, 1649 passed): whole rows on the
+   wall and a phone, one cell height, every rail button named and at least
+   3 units, and on a rail page exactly one inert, tinted button (none
+   elsewhere). `tests/v3/test_topbar_home_v3_023.py` (12 tests) pins it,
+   including a test that the gate rejects V3-022's bar on all three counts.
+   The full suite on the gated commit (`7fbc394`) then failed two Alerts
+   tests (117 run, 2 failures): they picked rendered cards by position
+   (`outs[2]` the strip, `outs[3:6]` the lists) and the top bar now emits one
+   markdown card where it emitted two. The Alerts board is byte-identical
+   apart from its top bar. Fixed in the tests, not the board: they skip past
+   however many cards the top bar emits (`past_top_bar`), every assertion
+   unchanged, and pass against both V3-022's bar and this one.
+9. **Still open — needs a device or the owner:**
+   - Nothing here was seen in Home Assistant. Typography, the amber icon,
+     the header fit and every height above are from the pinned source and a
+     simulation.
+   - Khmer (draft, awaiting native review): the Living room and Parents'
+     room titles wrap the header on a phone; "Automations" may clip in More
+     boards on a phone; កំណែអភិវឌ្ឍន៍ fits by 4 px.
+   - Tile states, the to-do card's "Add item" and the weather words are
+     Home Assistant's own text, in the HA user's profile language, not this
+     catalogue's. A Cantonese wall needs that user set to Chinese.
+   - From the pinned sanitiser: markdown accepts `<ha-icon icon=…>`, so the
+     room lines could carry the render's room icons (V3-013 listed this as
+     unverified). Not done here.
+   - The rubbish reminder automation proposal (V3-021) is still **not**
+     checked by a Home Assistant schema validator.
+
+## V3-022 · 18/11/26 · PR #21 full-suite validation; Home visual pass against the 14/09 wall render
+
+**Status:** owner-relayed round, implemented on the same
+`feature/casaray-v3/weather-rubbish` branch, same PR #21 (still draft, no
+merge, no live changes). DEVELOPMENT ONLY — NOT DEPLOYED.
+
+1. **Full-suite regression, run to completion.** `python3 -m unittest
+   discover -s tests/v3` — **105 tests, 0 failures, exit 0, 679.990s**,
+   against commit `56c0405` (the V3-021 review-fix commit). No file edits
+   occurred between launching that run and `56c0405` landing, so the tree the
+   suite tested is exactly that commit's tree. Not re-run a second time for
+   this round's own changes below — a *targeted* `unittest discover` was run
+   instead (same command, full `tests/v3` package, just not re-described as
+   "the full-suite round" a second time) after the Home edits, and is logged
+   under point 4.
+2. **Home compared against the established mockup.** `docs/mockups/2026-09-14_wall_home.png`
+   (= "CasaRay Wall Panel.pdf" p.1), the reference V3-013 already built Home
+   against — no new mockup was supplied this round. Rendered the current
+   build offline with `scripts/v3/preview_view.py` (real Home Assistant
+   sections-view grid geometry at frontend 20260826.7, hand-approximated
+   card interiors, fixture data — **not a Home Assistant screenshot**) at
+   iPad landscape (1180×820) and iPhone (390×844) before any change, to
+   compare against like for like rather than from memory.
+3. **Four visual fixes, each tied to something the offline render actually
+   showed, not a stylistic guess:**
+   - **Large, labelled navigation.** The in-page rail (`topbar()`,
+     `scripts/v3/components.py`) showed a name only on the current page's
+     icon; the other five were unlabelled dots, and — because a
+     `button` card draws one row icon-only and two rows once it shows a
+     name (`ha_layout.py` `element_grid`) — the row was two different
+     heights at once. Changed to `show_name=True` for every rail button, not
+     just the current page's. Same six `columns: 2` slots (2×6=12, plus the
+     12 the wordmark and clock already take = the full 24-unit band), now
+     all two rows tall and all labelled.
+   - **Cantonese-first label correction.** `nav.climate` in `yue.yaml` read
+     "冷氣同天氣" ("air-con and weather", 5 characters) — materially longer
+     than every sibling rail label (2–4 characters) and not what
+     `climate.yaml`'s page actually is (climate/AC control; weather is its
+     own separate page, CR-V3-20). Replaced with "氣候", the Traditional
+     form of the term `zh-Hans.yaml` already uses for the same destination
+     ("气候") — grepped the existing vocabulary first per `CLAUDE.md`, not
+     invented.
+   - **Climate now vs. Energy now, an oversized empty area.** The paired
+     Band 8 sections packed to visibly different heights in the offline
+     render — Energy now: 4 tiles + a note; Climate now: 1 markdown card +
+     2 tiles — leaving a real gap under Climate now, the same "a lone short
+     section leaves a hole beside it" failure mode `CLAUDE.md` documents for
+     Home's own bands, just between two paired sections instead of within
+     one. First attempt sized the two existing tiles to `columns: 4` to fit
+     a third in one row; `validate_dashboard.py` correctly failed it — a
+     native `tile` card's own minimum is `columns: 6`
+     (`ha_layout.py` `element_grid`), so it always draws 6 wide regardless
+     of what is asked, which would have shipped the same hole plus a
+     "draws larger than grid_options" fault. Fixed instead with two more
+     REAL readings at the tile's real minimum width: Dining
+     (`sensor.living_room_living_room_temperature`, already used by the
+     Dining room_tile above) and Ray's room
+     (`sensor.presence_multi_sensor_fp300_temperature`, Ray Bedroom —
+     reported `unavailable` in the 05/09 export per
+     `docs/entity_inventory.md`'s "device is down" note, drawn honestly as
+     "No data" rather than hidden or omitted). Four tiles at `columns: 6`
+     now fill two full rows, matching Energy now's own 2×2 grid, with no
+     invented filler.
+   - **Consistent alignment**, largely a side effect of the nav-rail fix
+     above (one row height instead of two) — no other card-alignment fault
+     was found in the offline render; the "One tap" row's three action
+     buttons and the `ac_summary` tile already draw at the same `rows: 2`.
+4. **Re-validated after the change, not re-run blind.** `python3 scripts/v3/build_dashboard.py`
+   (0 missing, 0 unexpected fallback deltas) → `python3 scripts/v3/validate_dashboard.py`
+   (first attempt: 8 failures, exactly the `columns: 4` mistake above, on
+   `home` in all 4 locales; after the fix: **1569 passed, 0 failed**, same 33
+   pre-existing NOTEs) → `python3 -m unittest discover -s tests/v3` (targeted
+   re-run, warranted by an actual change, not a blind repeat of point 1).
+5. **Before/after previews delivered**, iPad landscape and iPhone, each
+   pair composited side by side with `preview_view.py --side-by-side` and
+   captioned in the image itself: *"Offline preview, not a Home Assistant
+   screenshot: layout from Home Assistant's sections-view CSS (frontend
+   20260826.7); card interiors approximated; fixture states, not live
+   readings."* Icons render as plain dots in every shot — the preview's
+   Material Design Icons folder (`--icons`) was not supplied this round;
+   that is a limitation of this offline tool, not evidence about the
+   dashboard, and is said so to the owner rather than left to look like a
+   missing-icon bug.
+6. **Outstanding, restated:** the rubbish reminder automation proposal
+   (`docs/casaray-v3/proposals/rubbish_reminder_automation.yaml`, corrected
+   in V3-021) is still **not** covered by an actual Home Assistant schema
+   validator — no `hass` CLI, no reachable instance in this environment. It
+   rests on documented HA automation-config behaviour only, and that gap
+   does not close until there is a real instance to check it against.
+
+---
+
+## V3-021 · 18/11/26 · PR #21 review fixes (ChatGPT review on the V3-020 diff)
+
+**Status:** owner-relayed review, implemented on the same
+`feature/casaray-v3/weather-rubbish` branch, same PR #21 (still draft, no
+merge). DEVELOPMENT ONLY — NOT DEPLOYED.
+
+1. **Automation schema correction.** `docs/casaray-v3/proposals/rubbish_reminder_automation.yaml`
+   used `enabled: false` on both automations. That is not a key the
+   automation schema reads — Home Assistant does not reject an unknown key
+   on an automation item, so this would have been silently ignored rather
+   than erroring, and neither automation would actually have started off.
+   Replaced with `initial_state: false`, the schema's real supported
+   mechanism for a default-off YAML automation's startup/reload state. The
+   header's explanation was rewritten to describe what that key actually
+   does (startup/reload state only) versus the separate, independent
+   `input_boolean` condition gate, rather than conflating the two.
+   **Not covered by an actual HA schema validator** — this environment has
+   no `hass` CLI and no reachable instance (`ha_validate.sh` section 8 is a
+   standing SKIP for exactly this reason), so the correction rests on
+   documented Home Assistant automation-config behaviour, not a live or
+   CLI-run schema check. That check still needs to happen once there is a
+   reachable instance, before this file is ever installed.
+2. **Exact-equality rewrite of the "unchanged when unconfigured" test.**
+   The original `test_empty_new_views_yields_unchanged_output` checked that
+   every line of a `new_views`-stripped build appeared, in order, somewhere
+   in the real build — a subsequence check. That passes even when a card
+   was duplicated or an extra one silently inserted into an existing view,
+   because every original line is still present, just with extras
+   interleaved. Rewritten to parse both builds and compare per-view dict
+   structures for exact equality, plus an independently-derived expected
+   view count (from `len(v2_views) + len(native)` computed directly off
+   `dashboards/casaray_v2.yaml` and the manifest, not from running the
+   generator a second time). A new test,
+   `test_exact_comparison_rejects_duplicated_or_inserted_card`, proves the
+   new check has teeth: it duplicates one card in a cloned `home` view and
+   confirms the same comparison helper raises, rather than merely asserting
+   `!=` on hand-built dicts.
+3. **Cantonese correction.** `weather.unverified_note` in `yue.yaml` had an
+   actual bug — two English words ("answering") left embedded mid-sentence
+   from an earlier draft — not a style issue. Fixed, and all three
+   family-facing strings (`weather.unverified_note`, `rubbish.not_configured`,
+   `rubbish.setup_path`) shortened across en/yue/km: what the household sees
+   on the dashboard is now a short, plain sentence with no entity IDs, dates
+   or technical reasoning in it. That detail — `weather.forecast_home`, the
+   05/09/26 export, the entity contract — stays in this file, the view
+   source comments and the automation proposal's header, which is where an
+   implementer needs it and a family member reading the dashboard does not.
+4. **Rubbish wording.** `rubbish.not_configured` changed to "Collection
+   schedule not connected or verified." (and the matching yue/km
+   translations), replacing a sentence that stated — in the user-facing
+   string — that no entity exists, which is an inference from a single
+   stale export, not a current fact a family-facing card should assert.
+   The page's source-file comments still state plainly, as documentation,
+   that no such entity was found in the 05/09/26 export; only the
+   dashboard string itself was softened to not overclaim from that.
+5. **`weather_detail()` no longer trusts a dark entity's leftover
+   attributes.** It read `state_attr(entity, 'temperature')` /
+   `...'humidity')` and showed them whenever the ATTRIBUTE value itself
+   was numeric, on the documented assumption (`deg_expr()`'s own docstring)
+   that Home Assistant always clears attributes once an entity goes
+   unavailable/unknown. That is not guaranteed, and the condition word
+   (`word_expr()`) was already gated on the entity's own state first,
+   which temperature/humidity were not — an inconsistency between two
+   readings on the same card. Both readings now check
+   `states(entity) not in ['unavailable','unknown','none','']` before ever
+   looking at the attribute, matching the pattern `word_expr()` already
+   uses. Two new regression tests
+   (`test_weather_detail_suppresses_stale_attributes_when_entity_dark` and
+   its positive control) render the card with the entity `unavailable` but
+   the attributes still carrying plausible numbers (21.3°, 55%) and confirm
+   "No data" is shown for both — this is an offline Jinja render
+   (`scripts/v3/render_check.py`), proof of what the template says, not
+   proof of how the live card draws.
+
+None of this changes scope, the entity contract, the more_boards padding
+reasoning, or the task-register scope conflict recorded under V3-020 above —
+those stand as written. Build/validate/test run again clean after these
+fixes: `build_dashboard.py` (48 views × 4 locales, 0 missing), 
+`validate_dashboard.py` (1569 passed, 0 failed), `python3 -m unittest
+discover -s tests/v3` (full suite, including the rewritten and two new
+cases), `ha_validate.sh` (VALIDATION PASSED, 8 sections).
+
+## V3-020 · 18/11/26 · Generator extended for pages with no V2 equivalent; Weather and Rubbish Collection added
+
+**Status:** owner instruction (18/11/26), implemented on
+`feature/casaray-v3/weather-rubbish`, branched from `feature/casaray-v3-build`
+at `777f836`. DEVELOPMENT ONLY — NOT DEPLOYED.
+
+**Evidence-handling correction, carried forward from this point on.** The
+owner corrected two framings in an earlier reply this same session: repository
+deployment notes (e.g. `docs/casaray-v3/BUILD_STATUS.md` saying V3 "is not
+registered, synced, reloaded or seen on any device") cannot disprove the
+owner's own report that a V3 dashboard is live on a device — both are stated
+as independently unverified from this offline session, never as one
+disproving the other. Likewise `weather.forecast_home`'s presence, with
+availability `ok`, in `docs/live/states_export_2026-09-05.txt` proves only
+that it existed on 05/09/26; it is not evidence of today's availability or of
+which forecast types it serves. Both caveats are written into
+`src/casaray_v3/i18n/en.yaml`'s `weather.unverified_note` (and its yue/km
+drafts) and onto the Weather page itself, not only here.
+
+1. **Generator extended with a `new_views:` manifest key.** Until now
+   `scripts/v3/build_dashboard.py` could only ever rebuild a path that already
+   existed in `dashboards/casaray_v2.yaml` — a `native:` entry for a
+   non-existent V2 path would silently never be emitted; there was no code
+   path for a genuinely new page. `new_views:` (manifest.yaml) lists paths
+   with no V2 equivalent; the build validates each one up front (must have a
+   source file, must not collide with an existing V2 path, must not also be
+   in `native:`, must not start with the reserved `v2-` prefix, no
+   duplicates) and appends them last, per locale, so existing output is
+   byte-identical when the key is empty or absent — proved by
+   `tests/v3/test_new_views.py::test_empty_new_views_yields_unchanged_output`,
+   which rebuilds with the key stripped and checks every line of the
+   unconfigured build appears, in order, in the real one.
+   `scripts/v3/validate_dashboard.py`'s safety/geometry/honesty gate filter
+   (`native = [...]`) was broadened to include `new_views` paths too — a new
+   page is not a lower-trust path through that gate; missing this would have
+   silently excluded Weather and Rubbish Collection from every HVAC,
+   protected-switch, native-card-type and band-packing check the existing
+   boards get.
+2. **Weather page** (`src/casaray_v3/views/weather.yaml`): current
+   conditions and daily forecast only, both from `weather.forecast_home`
+   (provisional — see the evidence-handling note above). HA core's fixed
+   `ATTR_CONDITION_*` vocabulary is translated (`weather.cond.*`, 15 keys),
+   not invented; `weather_detail()` (new in `scripts/v3/components.py`) reads
+   unavailable/unknown as explicit branches rather than trusting the native
+   `weather-forecast` card's own rendering. No radar, UV or any other reading
+   — no entity exists for them. A build-time bug in this component double
+   translated every condition word (pre-resolving the key, then passing the
+   resolved text back into `word_expr()`, which translates its own values) —
+   harmless in the rendered output but it logged 15 false "missing" keys per
+   locale in the build report; fixed by passing the keys through untouched.
+3. **Rubbish Collection page** (`src/casaray_v3/views/rubbish-collection.yaml`):
+   no entity of any kind exists in the states export for a bin, a collection
+   day or a council schedule, so the page states "not configured" and nothing
+   else — no invented sensor ID, date, bin service or weekday. The future
+   entity contract (one entity reporting the next collection date, optionally
+   which bin) is documented on the page itself and is the same contract the
+   proposed Home reminder (below) is written against.
+4. **No conditional Home reminder was wired in.** `shown_when()` already
+   exists and is the right component for "a card that appears only when valid
+   data exists," but wiring it needs a real entity, and none exists. Rather
+   than invent one or leave the requirement half-done, the entity contract is
+   documented (point 3) and a reminder automation is drafted but not
+   installed: `docs/casaray-v3/proposals/rubbish_reminder_automation.yaml`,
+   two `time`-triggered automations (18:00 the evening before, 07:00 the
+   collection morning, both evaluated in Home Assistant's own configured
+   Australia/Melbourne timezone) gated by a default-off `input_boolean` and
+   `enabled: false`, both reading the hypothetical
+   `sensor.rubbish_collection_next_date` with unavailable/unknown treated as
+   "do nothing." It lives under `docs/casaray-v3/`, not `design/casaray-v3/`
+   or `packages/` — the latter is auto-included by Home Assistant's own
+   `packages: !include_dir_named packages`, and a drafted-not-installed file
+   has no business sitting in a directory that loads itself.
+5. **Translations.** `en.yaml` is the reference catalogue (all keys land
+   there). `yue.yaml` (priority — Traditional, HK Cantonese) and `km.yaml`
+   got full draft translations for every new key, pending owner or
+   native-speaker review — flagged here rather than presented as verified.
+   `zh-Hans.yaml` was deliberately left to its existing English-fallback
+   convention: that file's own header says it is "partial on purpose,"
+   reusing only vocabulary already established in
+   `dashboards/casaray_v2.yaml`, and V2 has no weather or rubbish-collection
+   page to borrow a Simplified term from — inventing one would depart from
+   the file's own stated convention, not follow it.
+6. **Home's `more_boards` band needed four real links, not two, to stay
+   valid — this was a real gate, not a style note.** Linking only the two new
+   pages took the band from 8 items (7 existing + the V2 classic-copy link, a
+   clean multiple of four) to 10, and `validate_dashboard.py`'s band-packing
+   check — a literal simulation of Home Assistant's own CSS grid packing
+   (`scripts/v3/ha_layout.py`, read from the pinned frontend source, the same
+   method behind V3-013) — failed on all four locales with a genuine 24-cell
+   hole in the last row. Rather than pad with an invented filler tile (a
+   blank clickable-to-nothing button would itself be dishonest content), two
+   more *real, already-existing* boards were added: `lighting` (which turned
+   out to have no other Home navigation target at all — One tap only fires
+   lighting scenes, it never opens the Lighting board itself, a genuine
+   pre-existing gap this surfaced) and `rooms` (duplicates the "All rooms"
+   room_tile the same way `alerts.yaml`'s own `more_boards` already duplicates
+   links — security, energy, network — that Home also reaches elsewhere; an
+   established pattern in this codebase, not an invented one). 11 items +
+   classic_of = 12, a clean multiple of four; the validation gate now passes
+   with 0 failures on all four locales.
+7. **`entity_matrix()` left native-only, deliberately.** It is not extended
+   to cover `kind: "new"` rows; Weather and Rubbish Collection have no V2
+   migration to track (there is nothing to migrate from), so there is nothing
+   for that report to usefully say about them. `view_inventory()` and the
+   `unverified`/`dark_at_export` reporting, which are generic, do cover the
+   two new pages correctly.
+8. **Scope conflict surfaced, not resolved.** The owner's standing
+   instruction to "update the established task register" names
+   `docs/project-tasks/TASK_REGISTER.md` / `DECISION_HISTORY.md`, but
+   `session-orient --scope` on this branch reports those paths outside
+   `feature/casaray-v3/weather-rubbish`'s `MAY WRITE` scope. Per the root
+   `CLAUDE.md`'s own Standing Rule ("a conflict between two governing
+   instructions is not a safe ambiguity to resolve unilaterally"), this is
+   reported to the owner rather than silently written to or silently
+   skipped.
+
+Build and validation, this batch: `python3 scripts/v3/build_dashboard.py`
+(48 views × 4 locales, 0 fallback for en/yue/km, 0 missing keys for every
+locale); `python3 scripts/v3/validate_dashboard.py` (1569 passed, 0 failed,
+33 notes — all pre-existing `band_grid`-24 and dark-at-export notes, in the
+same shape every other non-Home native view already carries);
+`python3 -m unittest discover -s tests/v3` (full suite, including nine new
+`tests/v3/test_new_views.py` cases); `bash scripts/ha_validate.sh`
+(VALIDATION PASSED, 8 sections — the zh-Hans bilingual-heading warnings on
+the two new pages are the same pre-existing WARN class every other zh-Hans
+view already carries from its English-fallback convention, not a new one).
+
 ## V3-014 · 15/11/26 · Camera slots that say Offline, a native full-screen tap, and a one-height top bar
 
 **Status:** owner request (15/11/26), prepared on `feature/casaray-v3-cameras-layout`, branched
