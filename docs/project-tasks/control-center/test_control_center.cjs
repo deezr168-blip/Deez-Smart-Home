@@ -17,6 +17,11 @@ const fs = require('fs'), os = require('os'), path = require('path'), cp = requi
 const HERE = __dirname, ROOT = path.resolve(HERE, '..', '..', '..');
 const SRC = fs.readFileSync(path.join(HERE, 'index.html'), 'utf8');
 const TODAY = '2026-11-16';
+// Section 11 runs the real tool on a copy of the real register. tasks.py refuses a row dated before the row above it (E15),
+// so the date it stamps must not be earlier than the register's own newest row. Everything else keeps the fixed TODAY.
+const NEWEST_ROW = (fs.readFileSync(path.join(ROOT, 'docs', 'project-tasks', 'DECISION_HISTORY.md'), 'utf8').match(/^\| DEC-\d+ \| (\d{4}-\d{2}-\d{2}) /gm) || [])
+  .map(m => m.match(/\d{4}-\d{2}-\d{2}/)[0]).sort().pop() || TODAY;
+const REAL_TODAY = NEWEST_ROW > TODAY ? NEWEST_ROW : TODAY;
 const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'tcc-test-'));
 let failures = 0, passes = 0; const PAGE_ERRORS = [];
 function check(name, ok, detail) { if (ok) { passes++; console.log('  PASS ' + name); } else { failures++; console.log('  FAIL ' + name + (detail ? '\n       ' + String(detail).slice(0, 600).replace(/\n/g, '\n       ') : '')); } }
@@ -410,13 +415,13 @@ async function main() {
       const tool = path.join(ROOT, '.claude', 'skills', 'owner-decisions', 'scripts', 'tasks.py');
       const basis = /--basis "([^"]+)"/.exec(text)[1];
       const batch = text.split('BATCH JSON\n')[1];
-      const r = cp.spawnSync('python3', [tool, '--root', repo, '--today', TODAY, 'decide', '--batch', '-', '--by', 'owner', '--via', 'chat', '--basis', basis], {input: batch, encoding: 'utf8'});
+      const r = cp.spawnSync('python3', [tool, '--root', repo, '--today', REAL_TODAY, 'decide', '--batch', '-', '--by', 'owner', '--via', 'chat', '--basis', basis], {input: batch, encoding: 'utf8'});
       check('11e tasks.py accepts the handoff batch as printed', r.status === 0 && /TASK-032 APPROVED/.test(r.stdout) && /TASK-004 DENIED/.test(r.stdout) && /TASK-003 PAUSED/.test(r.stdout), r.stdout + r.stderr);
-      const c = cp.spawnSync('python3', [tool, '--root', repo, '--today', TODAY, 'check'], {encoding: 'utf8'});
+      const c = cp.spawnSync('python3', [tool, '--root', repo, '--today', REAL_TODAY, 'check'], {encoding: 'utf8'});
       check('11f and the register it leaves passes tasks.py check', c.status === 0, c.stdout.split('\n').filter(l => /^(ERROR|FAIL)/.test(l)).join('\n') + c.stderr);
       const hist = fs.readFileSync(path.join(repo, 'docs', 'project-tasks', 'DECISION_HISTORY.md'), 'utf8');
       check('11g the recorded approval keeps the exact scope the owner wrote', hist.includes('Exact scope: Read PR 13 and PR 10 side by side and report; no merge, no close'));
-      const bad = cp.spawnSync('python3', [tool, '--root', repo, '--today', TODAY, 'decide', '--batch', '-', '--by', 'owner', '--via', 'chat', '--basis', basis], {input: JSON.stringify({answers: [{task: 'TASK-010', verdict: 'approve', scope: 'Edit the guarded cloud environment now please'}]}), encoding: 'utf8'});
+      const bad = cp.spawnSync('python3', [tool, '--root', repo, '--today', REAL_TODAY, 'decide', '--batch', '-', '--by', 'owner', '--via', 'chat', '--basis', basis], {input: JSON.stringify({answers: [{task: 'TASK-010', verdict: 'approve', scope: 'Edit the guarded cloud environment now please'}]}), encoding: 'utf8'});
       check('11h the tool still refuses approval of a separately paused task', bad.status !== 0 && /paused in another record: CR-T03/.test(bad.stderr + bad.stdout), bad.stdout + bad.stderr);
     }
     console.log('12. Whole run');

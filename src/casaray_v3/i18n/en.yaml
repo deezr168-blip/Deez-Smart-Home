@@ -499,3 +499,26 @@ cam.no_battery: "No battery reading"
 cam.privacy_of: "{name} privacy"
 cam.motion_of: "{name} motion detection"
 cam.live_note: "Tap a camera for Home Assistant's live view, which can go full screen. The camera pages under More boards use the WebRTC Camera card, which needs that HACS integration on the Green."
+
+# Custom cards on the working dashboards (V3-027)
+h.power_flow: "Power flow"
+energy.flow_grid: "Grid import"
+energy.flow_home: "Home"
+energy.flow_today: "Today"
+energy.flow_caveat: "\"Home\" is solar plus grid import: with no export sensor it reads high while the panels export."
+energy.flow_needs: "This band uses two HACS cards, Power Flow Card Plus and ApexCharts. Where one says “Custom element doesn't exist”, it is not installed yet; every reading above works without it."
+h.not_answering: "Not answering now"
+hh.list_lights: "Lights not answering"
+hh.list_switches: "Switches not answering"
+hh.list_cameras: "Cameras not answering"
+hh.list_sensors: "Sensors not answering"
+hh.list_none: "Nothing of this kind reports unavailable"
+hh.lists_needs: "These lists use the HACS card auto-entities. Where one says “Custom element doesn't exist”, it is not installed yet; the counts and devices above work without it."
+wp.parents_temp: "Parents' room temperature"
+
+# Navbar and Home weather (V3-028)
+nav.more: "More"
+h.weather: "Weather"
+
+# Clock Weather Card on Home (V3-029)
+weather.needs: "This band uses the HACS card Clock Weather Card. Where it says “Custom element doesn't exist”, it is not installed yet; the Outside reading at the top works without it."

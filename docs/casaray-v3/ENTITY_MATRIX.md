@@ -217,7 +217,6 @@ Authority: `docs/live/states_export_2026-09-05.txt` — proves an ID **exists**.
 | `sensor.powerpal_gateway_powerpal_daily_energy` | Powerpal Gateway Powerpal Daily Energy | Energy | ok | home, energy |
 | `sensor.powerpal_gateway_powerpal_power` | Powerpal Gateway Powerpal Power | Energy | ok | home, energy |
 | `sensor.powerpal_gateway_powerpal_total_energy` | Powerpal Gateway Powerpal Total Energy | Energy | ok | energy |
-| `sensor.presence_multi_sensor_fp300_temperature` | Presence Multi-Sensor FP300 Temperature | Ray Bedroom | unavailable | home |
 | `sensor.primo_5_0_1_1_ac_power` | Primo 5.0-1 (1) AC power | Energy | ok | home, energy, house-health, alerts |
 | `sensor.primo_5_0_1_1_energy_day` | Primo 5.0-1 (1) Energy day | Energy | ok | home, energy |
 | `sensor.primo_5_0_1_1_energy_year` | Primo 5.0-1 (1) Energy year | Energy | ok | energy |

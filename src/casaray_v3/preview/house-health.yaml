@@ -1,0 +1,22 @@
+# Bilingual preview — House health (V3-026, owner-approved custom cards 20/11/26).
+# auto-entities lists every entity of a kind whose state is unavailable, so the page
+# never needs a hand-kept list. An ID the instance does not have is not an entity and
+# cannot appear here (the six to confirm, V3-025 item 13).
+path: house-health
+title: nav.house_health
+icon: mdi:home-heart
+band_grid: 24
+tab: more
+sections:
+  - {c: preview_header, title_key: nav.house_health}
+  - span: 2
+    cards:
+      - {c: preview_about, title_key: nav.house_health, body_key: pv.hh_intro, columns: full}
+  - span: 1
+    cards:
+      - {c: preview_unavailable_list, title_key: pv.hh_lights, domains: [light]}
+      - {c: preview_unavailable_list, title_key: pv.hh_cameras, domains: [camera]}
+  - span: 1
+    cards:
+      - {c: preview_unavailable_list, title_key: pv.hh_switches, domains: [switch]}
+      - {c: preview_unavailable_list, title_key: pv.hh_sensors, domains: [sensor, binary_sensor]}

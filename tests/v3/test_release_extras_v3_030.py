@@ -172,6 +172,14 @@ class CameraSafety(unittest.TestCase):
             for n in walk(cams):
                 for key in ("tap_action", "hold_action", "double_tap_action", "icon_tap_action"):
                     act = (n.get(key) or {}).get("action")
+                    if act == "open-popup":
+                        # V3-028's Navbar card "More" route: allowed only as a popup of
+                        # plain navigation entries (url, icon, label), nothing that acts
+                        self.assertTrue(n.get("popup"), (code, n))
+                        for item in n["popup"]:
+                            self.assertLessEqual(set(item), {"url", "icon", "label"}, (code, item))
+                            self.assertTrue(str(item["url"]).startswith("/"), (code, item))
+                        continue
                     self.assertIn(act, (None, "none", "more-info", "navigate"), (code, n.get("entity"), key))
                 if str(n.get("entity", "")).startswith("switch."):
                     self.assertEqual((n.get("icon_tap_action") or {}).get("action"), "none", (code, n["entity"]))

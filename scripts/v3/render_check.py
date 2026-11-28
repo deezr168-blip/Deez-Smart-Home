@@ -54,7 +54,35 @@ def env_for(states: dict, attrs: dict | None = None):
     g["is_state"] = lambda e, s: states.get(e, "unknown") == s
     g["state_attr"] = lambda e, a: attrs.get(e, {}).get(a)
     g["now"] = lambda: FIXED_NOW
+    # Home Assistant's time helpers, with its own rule: invalid input and no
+    # default is a template ERROR (a broken card), so a template that forgets
+    # the default for a dark sensor fails here too.
+    g["as_datetime"] = _as_datetime
+    g["as_timestamp"] = _as_timestamp
+    env.filters["timestamp_custom"] = lambda ts, fmt="%Y-%m-%d %H:%M:%S": dt.datetime.fromtimestamp(ts).strftime(fmt)
     return env
+
+
+_NO_DEFAULT = object()
+
+
+def _as_datetime(value, default=_NO_DEFAULT):
+    try:   # naive, like FIXED_NOW, so now() - as_datetime(...) works offline
+        v = dt.datetime.fromisoformat(str(value))
+        return v.astimezone().replace(tzinfo=None) if v.tzinfo else v
+    except (TypeError, ValueError):
+        if default is _NO_DEFAULT:
+            raise ValueError(f"as_datetime got invalid input {value!r} and no default")
+        return default
+
+
+def _as_timestamp(value, default=_NO_DEFAULT):
+    d = _as_datetime(value, None)
+    if d is None:
+        if default is _NO_DEFAULT:
+            raise ValueError(f"as_timestamp got invalid input {value!r} and no default")
+        return default
+    return d.timestamp()
 
 
 def load_fixture():

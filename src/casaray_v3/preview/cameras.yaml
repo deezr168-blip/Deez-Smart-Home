@@ -1,0 +1,20 @@
+# Bilingual preview — Cameras overview (V3-025, V3-026). One Advanced Camera Card
+# (owner-approved 20/11/26): every camera live in one fixed grid, three across at most;
+# a camera whose entity is unavailable errors in its own cell. Until the card is
+# installed on the Green, Home Assistant draws "Custom element doesn't exist" here.
+# Four of these camera IDs were not on the instance on 20/11 (V3-025 item 13): they
+# show the card's error until the owner confirms the new IDs.
+path: cameras
+title: nav.cameras
+icon: mdi:video-outline
+band_grid: 24
+sections:
+  - {c: preview_header, title_key: nav.cameras}
+  - span: 2
+    cards:
+      - {c: preview_acc, cameras: [[camera.front_door_live_view, room.front_door],
+                                   [camera.tapo_c425_north_wall_hd_stream_direct, room.north_wall],
+                                   [camera.tapo_c420_east_wall_hd_stream_direct, room.east_wall],
+                                   [camera.tapo_c420_south_wall_hd_stream_direct, room.south_wall],
+                                   [camera.tapo_c200_stockroom_hd_stream_direct, room.stockroom],
+                                   [camera.smart_pet_feeder, pv.pet_cam]]}

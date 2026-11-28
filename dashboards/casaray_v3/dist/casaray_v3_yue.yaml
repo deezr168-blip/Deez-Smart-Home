@@ -6,6 +6,26 @@
 # Baseline: dashboards/casaray_v2.yaml sha256 77a4991626d6f8afcd9b78f235c34417d84d9f36c129549a386d8a66c324226c
 # ============================================================================
 title: CasaRay V3 (yue)
+wallpanel:
+  enabled: true
+  hide_toolbar: false
+  hide_sidebar: false
+  fullscreen: false
+  idle_time: 120
+  image_url: media-source://media_source/
+  cards:
+    - type: markdown
+      content: |-
+        # {{ now().strftime('%H:%M') }}
+        {{ now().strftime('%d/%m/%y') }}
+    - type: markdown
+      content: |-
+        **爸媽房溫度**
+        ## {{ (((states('sensor.bedroom_motion_sensor_temperature') | float) | round(1)) ~ '°') if states('sensor.bedroom_motion_sensor_temperature') | is_number else "冇數據" }}
+    - type: markdown
+      content: |-
+        **前門**
+        ## {{ ("離線" if states('binary_sensor.f_contact_sensor_door') == 'unavailable' else ("狀態未知" if states('binary_sensor.f_contact_sensor_door') in ['unknown','none',''] else ({"on":"打開咗","off":"閂咗"}).get(states('binary_sensor.f_contact_sensor_door'), states('binary_sensor.f_contact_sensor_door')))) }}
 views:
   - title: 主頁
     path: home
@@ -291,18 +311,52 @@ views:
               columns: 12
               rows: 5
       - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: 天氣
+            heading_style: title
+            grid_options:
+              columns: full
+              rows: auto
+          - type: custom:clock-weather-card
+            entity: weather.forecast_home
+            locale: zh-hant
+            sections:
+              header:
+                rows:
+                  - segments:
+                      - type: icon
+                        icon: mdi:thermometer
+                      - type: weather
+                        attribute: temperature
+                      - type: spacer
+                      - type: weather
+                  - font_size: 4rem
+                    alignment: center
+                    segments:
+                      - type: time
+                        time_pattern: HH:mm
+                  - alignment: center
+                    segments:
+                      - type: icon
+                        icon: mdi:calendar
+                      - type: date
+                        date_pattern: dd/MM/yy
+            grid_options:
+              columns: full
+              rows: auto
+          - type: markdown
+            content: <small>呢度用 HACS 卡 Clock Weather Card。如果見到「Custom element doesn't exist」，即係仲未安裝；頂部嘅室外讀數照樣用得。</small>
+            grid_options:
+              columns: full
+              rows: auto
+      - type: grid
         column_span: 1
         cards:
           - type: heading
             heading: 而家
             heading_style: title
-            grid_options:
-              columns: 12
-              rows: auto
-          - type: weather-forecast
-            entity: weather.forecast_home
-            show_current: true
-            show_forecast: false
             grid_options:
               columns: 12
               rows: auto
@@ -341,6 +395,19 @@ views:
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/energy
+          - type: tile
+            entity: sensor.casa_solar_expected_today
+            tap_action:
+              action: navigate
+              navigation_path: /casaray-v3-yue/energy
+            icon_tap_action:
+              action: none
+            hold_action:
+              action: none
+            grid_options:
+              columns: 12
+              rows: auto
+            name: 今日預計太陽能
       - type: grid
         column_span: 1
         cards:
@@ -572,19 +639,6 @@ views:
               columns: 6
               rows: auto
             name: 太陽能今日
-          - type: tile
-            entity: sensor.casa_solar_expected_today
-            tap_action:
-              action: navigate
-              navigation_path: /casaray-v3-yue/energy
-            icon_tap_action:
-              action: none
-            hold_action:
-              action: none
-            grid_options:
-              columns: 12
-              rows: auto
-            name: 今日預計太陽能
           - type: markdown
             content: <small>只計 Powerpal 同 Fronius — 輸出電網同全屋用電未有已核實數據來源（V3-003）。</small>
             grid_options:
@@ -636,32 +690,6 @@ views:
               columns: 6
               rows: auto
             name: 爸媽房
-          - type: tile
-            entity: sensor.living_room_living_room_temperature
-            tap_action:
-              action: navigate
-              navigation_path: /casaray-v3-yue/climate
-            icon_tap_action:
-              action: none
-            hold_action:
-              action: none
-            grid_options:
-              columns: 6
-              rows: auto
-            name: 飯廳
-          - type: tile
-            entity: sensor.presence_multi_sensor_fp300_temperature
-            tap_action:
-              action: navigate
-              navigation_path: /casaray-v3-yue/climate
-            icon_tap_action:
-              action: none
-            hold_action:
-              action: none
-            grid_options:
-              columns: 6
-              rows: auto
-            name: Ray 間房
       - type: grid
         column_span: 2
         cards:
@@ -759,6 +787,56 @@ views:
             grid_options:
               columns: 6
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-yue/home
+                icon: mdi:home-variant-outline
+                label: 主頁
+              - url: /casaray-v3-yue/rooms
+                icon: mdi:floor-plan
+                label: 房間
+              - url: /casaray-v3-yue/energy
+                icon: mdi:lightning-bolt-outline
+                label: 用電
+              - url: /casaray-v3-yue/cameras
+                icon: mdi:cctv
+                label: 鏡頭
+              - icon: mdi:dots-horizontal
+                label: 更多
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-yue/security
+                    icon: mdi:shield-home-outline
+                    label: 保安
+                  - url: /casaray-v3-yue/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 燈光
+                  - url: /casaray-v3-yue/climate
+                    icon: mdi:thermometer
+                    label: 氣候
+                  - url: /casaray-v3-yue/network
+                    icon: mdi:router-wireless
+                    label: 網絡
+                  - url: /casaray-v3-yue/house-health
+                    icon: mdi:home-heart
+                    label: 屋企狀況
+                  - url: /casaray-v3-yue/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-yue/bills
+                    icon: mdi:receipt-text-outline
+                    label: 帳單
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: 房間
     path: rooms
     icon: mdi:floor-plan
@@ -1081,6 +1159,56 @@ views:
             grid_options:
               columns: 4
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-yue/home
+                icon: mdi:home-variant-outline
+                label: 主頁
+              - url: /casaray-v3-yue/rooms
+                icon: mdi:floor-plan
+                label: 房間
+              - url: /casaray-v3-yue/energy
+                icon: mdi:lightning-bolt-outline
+                label: 用電
+              - url: /casaray-v3-yue/cameras
+                icon: mdi:cctv
+                label: 鏡頭
+              - icon: mdi:dots-horizontal
+                label: 更多
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-yue/security
+                    icon: mdi:shield-home-outline
+                    label: 保安
+                  - url: /casaray-v3-yue/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 燈光
+                  - url: /casaray-v3-yue/climate
+                    icon: mdi:thermometer
+                    label: 氣候
+                  - url: /casaray-v3-yue/network
+                    icon: mdi:router-wireless
+                    label: 網絡
+                  - url: /casaray-v3-yue/house-health
+                    icon: mdi:home-heart
+                    label: 屋企狀況
+                  - url: /casaray-v3-yue/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-yue/bills
+                    icon: mdi:receipt-text-outline
+                    label: 帳單
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: 客廳
     path: living-room
     icon: mdi:sofa-outline
@@ -1922,6 +2050,56 @@ views:
             grid_options:
               columns: 4
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-yue/home
+                icon: mdi:home-variant-outline
+                label: 主頁
+              - url: /casaray-v3-yue/rooms
+                icon: mdi:floor-plan
+                label: 房間
+              - url: /casaray-v3-yue/energy
+                icon: mdi:lightning-bolt-outline
+                label: 用電
+              - url: /casaray-v3-yue/cameras
+                icon: mdi:cctv
+                label: 鏡頭
+              - icon: mdi:dots-horizontal
+                label: 更多
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-yue/security
+                    icon: mdi:shield-home-outline
+                    label: 保安
+                  - url: /casaray-v3-yue/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 燈光
+                  - url: /casaray-v3-yue/climate
+                    icon: mdi:thermometer
+                    label: 氣候
+                  - url: /casaray-v3-yue/network
+                    icon: mdi:router-wireless
+                    label: 網絡
+                  - url: /casaray-v3-yue/house-health
+                    icon: mdi:home-heart
+                    label: 屋企狀況
+                  - url: /casaray-v3-yue/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-yue/bills
+                    icon: mdi:receipt-text-outline
+                    label: 帳單
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: 廚房
     path: kitchen
     icon: mdi:countertop-outline
@@ -2445,6 +2623,56 @@ views:
             grid_options:
               columns: 4
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-yue/home
+                icon: mdi:home-variant-outline
+                label: 主頁
+              - url: /casaray-v3-yue/rooms
+                icon: mdi:floor-plan
+                label: 房間
+              - url: /casaray-v3-yue/energy
+                icon: mdi:lightning-bolt-outline
+                label: 用電
+              - url: /casaray-v3-yue/cameras
+                icon: mdi:cctv
+                label: 鏡頭
+              - icon: mdi:dots-horizontal
+                label: 更多
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-yue/security
+                    icon: mdi:shield-home-outline
+                    label: 保安
+                  - url: /casaray-v3-yue/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 燈光
+                  - url: /casaray-v3-yue/climate
+                    icon: mdi:thermometer
+                    label: 氣候
+                  - url: /casaray-v3-yue/network
+                    icon: mdi:router-wireless
+                    label: 網絡
+                  - url: /casaray-v3-yue/house-health
+                    icon: mdi:home-heart
+                    label: 屋企狀況
+                  - url: /casaray-v3-yue/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-yue/bills
+                    icon: mdi:receipt-text-outline
+                    label: 帳單
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: 飯廳
     path: dining
     icon: mdi:table-chair
@@ -3044,6 +3272,56 @@ views:
             grid_options:
               columns: 4
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-yue/home
+                icon: mdi:home-variant-outline
+                label: 主頁
+              - url: /casaray-v3-yue/rooms
+                icon: mdi:floor-plan
+                label: 房間
+              - url: /casaray-v3-yue/energy
+                icon: mdi:lightning-bolt-outline
+                label: 用電
+              - url: /casaray-v3-yue/cameras
+                icon: mdi:cctv
+                label: 鏡頭
+              - icon: mdi:dots-horizontal
+                label: 更多
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-yue/security
+                    icon: mdi:shield-home-outline
+                    label: 保安
+                  - url: /casaray-v3-yue/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 燈光
+                  - url: /casaray-v3-yue/climate
+                    icon: mdi:thermometer
+                    label: 氣候
+                  - url: /casaray-v3-yue/network
+                    icon: mdi:router-wireless
+                    label: 網絡
+                  - url: /casaray-v3-yue/house-health
+                    icon: mdi:home-heart
+                    label: 屋企狀況
+                  - url: /casaray-v3-yue/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-yue/bills
+                    icon: mdi:receipt-text-outline
+                    label: 帳單
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: 爸媽房
     path: parents-room
     icon: mdi:bed-outline
@@ -3760,6 +4038,56 @@ views:
             grid_options:
               columns: 4
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-yue/home
+                icon: mdi:home-variant-outline
+                label: 主頁
+              - url: /casaray-v3-yue/rooms
+                icon: mdi:floor-plan
+                label: 房間
+              - url: /casaray-v3-yue/energy
+                icon: mdi:lightning-bolt-outline
+                label: 用電
+              - url: /casaray-v3-yue/cameras
+                icon: mdi:cctv
+                label: 鏡頭
+              - icon: mdi:dots-horizontal
+                label: 更多
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-yue/security
+                    icon: mdi:shield-home-outline
+                    label: 保安
+                  - url: /casaray-v3-yue/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 燈光
+                  - url: /casaray-v3-yue/climate
+                    icon: mdi:thermometer
+                    label: 氣候
+                  - url: /casaray-v3-yue/network
+                    icon: mdi:router-wireless
+                    label: 網絡
+                  - url: /casaray-v3-yue/house-health
+                    icon: mdi:home-heart
+                    label: 屋企狀況
+                  - url: /casaray-v3-yue/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-yue/bills
+                    icon: mdi:receipt-text-outline
+                    label: 帳單
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: Ray 間房
     path: ray-bedroom
     icon: mdi:bed-king-outline
@@ -4382,6 +4710,56 @@ views:
             grid_options:
               columns: 4
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-yue/home
+                icon: mdi:home-variant-outline
+                label: 主頁
+              - url: /casaray-v3-yue/rooms
+                icon: mdi:floor-plan
+                label: 房間
+              - url: /casaray-v3-yue/energy
+                icon: mdi:lightning-bolt-outline
+                label: 用電
+              - url: /casaray-v3-yue/cameras
+                icon: mdi:cctv
+                label: 鏡頭
+              - icon: mdi:dots-horizontal
+                label: 更多
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-yue/security
+                    icon: mdi:shield-home-outline
+                    label: 保安
+                  - url: /casaray-v3-yue/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 燈光
+                  - url: /casaray-v3-yue/climate
+                    icon: mdi:thermometer
+                    label: 氣候
+                  - url: /casaray-v3-yue/network
+                    icon: mdi:router-wireless
+                    label: 網絡
+                  - url: /casaray-v3-yue/house-health
+                    icon: mdi:home-heart
+                    label: 屋企狀況
+                  - url: /casaray-v3-yue/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-yue/bills
+                    icon: mdi:receipt-text-outline
+                    label: 帳單
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: 車房
     path: garage
     icon: mdi:garage-variant
@@ -4771,6 +5149,56 @@ views:
             grid_options:
               columns: 4
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-yue/home
+                icon: mdi:home-variant-outline
+                label: 主頁
+              - url: /casaray-v3-yue/rooms
+                icon: mdi:floor-plan
+                label: 房間
+              - url: /casaray-v3-yue/energy
+                icon: mdi:lightning-bolt-outline
+                label: 用電
+              - url: /casaray-v3-yue/cameras
+                icon: mdi:cctv
+                label: 鏡頭
+              - icon: mdi:dots-horizontal
+                label: 更多
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-yue/security
+                    icon: mdi:shield-home-outline
+                    label: 保安
+                  - url: /casaray-v3-yue/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 燈光
+                  - url: /casaray-v3-yue/climate
+                    icon: mdi:thermometer
+                    label: 氣候
+                  - url: /casaray-v3-yue/network
+                    icon: mdi:router-wireless
+                    label: 網絡
+                  - url: /casaray-v3-yue/house-health
+                    icon: mdi:home-heart
+                    label: 屋企狀況
+                  - url: /casaray-v3-yue/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-yue/bills
+                    icon: mdi:receipt-text-outline
+                    label: 帳單
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: 客房
     path: guest-room
     icon: mdi:bed-single-outline
@@ -5083,6 +5511,56 @@ views:
             grid_options:
               columns: 4
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-yue/home
+                icon: mdi:home-variant-outline
+                label: 主頁
+              - url: /casaray-v3-yue/rooms
+                icon: mdi:floor-plan
+                label: 房間
+              - url: /casaray-v3-yue/energy
+                icon: mdi:lightning-bolt-outline
+                label: 用電
+              - url: /casaray-v3-yue/cameras
+                icon: mdi:cctv
+                label: 鏡頭
+              - icon: mdi:dots-horizontal
+                label: 更多
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-yue/security
+                    icon: mdi:shield-home-outline
+                    label: 保安
+                  - url: /casaray-v3-yue/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 燈光
+                  - url: /casaray-v3-yue/climate
+                    icon: mdi:thermometer
+                    label: 氣候
+                  - url: /casaray-v3-yue/network
+                    icon: mdi:router-wireless
+                    label: 網絡
+                  - url: /casaray-v3-yue/house-health
+                    icon: mdi:home-heart
+                    label: 屋企狀況
+                  - url: /casaray-v3-yue/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-yue/bills
+                    icon: mdi:receipt-text-outline
+                    label: 帳單
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: 燈光
     path: lighting
     icon: mdi:lightbulb-group-outline
@@ -6002,6 +6480,56 @@ views:
             grid_options:
               columns: 4
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-yue/home
+                icon: mdi:home-variant-outline
+                label: 主頁
+              - url: /casaray-v3-yue/rooms
+                icon: mdi:floor-plan
+                label: 房間
+              - url: /casaray-v3-yue/energy
+                icon: mdi:lightning-bolt-outline
+                label: 用電
+              - url: /casaray-v3-yue/cameras
+                icon: mdi:cctv
+                label: 鏡頭
+              - icon: mdi:dots-horizontal
+                label: 更多
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-yue/security
+                    icon: mdi:shield-home-outline
+                    label: 保安
+                  - url: /casaray-v3-yue/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 燈光
+                  - url: /casaray-v3-yue/climate
+                    icon: mdi:thermometer
+                    label: 氣候
+                  - url: /casaray-v3-yue/network
+                    icon: mdi:router-wireless
+                    label: 網絡
+                  - url: /casaray-v3-yue/house-health
+                    icon: mdi:home-heart
+                    label: 屋企狀況
+                  - url: /casaray-v3-yue/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-yue/bills
+                    icon: mdi:receipt-text-outline
+                    label: 帳單
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: 氣候
     path: climate
     icon: mdi:thermometer
@@ -6362,6 +6890,56 @@ views:
             grid_options:
               columns: 4
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-yue/home
+                icon: mdi:home-variant-outline
+                label: 主頁
+              - url: /casaray-v3-yue/rooms
+                icon: mdi:floor-plan
+                label: 房間
+              - url: /casaray-v3-yue/energy
+                icon: mdi:lightning-bolt-outline
+                label: 用電
+              - url: /casaray-v3-yue/cameras
+                icon: mdi:cctv
+                label: 鏡頭
+              - icon: mdi:dots-horizontal
+                label: 更多
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-yue/security
+                    icon: mdi:shield-home-outline
+                    label: 保安
+                  - url: /casaray-v3-yue/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 燈光
+                  - url: /casaray-v3-yue/climate
+                    icon: mdi:thermometer
+                    label: 氣候
+                  - url: /casaray-v3-yue/network
+                    icon: mdi:router-wireless
+                    label: 網絡
+                  - url: /casaray-v3-yue/house-health
+                    icon: mdi:home-heart
+                    label: 屋企狀況
+                  - url: /casaray-v3-yue/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-yue/bills
+                    icon: mdi:receipt-text-outline
+                    label: 帳單
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: 用電
     path: energy
     icon: mdi:lightning-bolt-outline
@@ -6849,6 +7427,57 @@ views:
         column_span: 2
         cards:
           - type: heading
+            heading: 電力流向
+            heading_style: title
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: custom:power-flow-card-plus
+            entities:
+              solar:
+                entity: sensor.primo_5_0_1_1_ac_power
+                name: 太陽能
+              grid:
+                entity: sensor.powerpal_gateway_powerpal_power
+                name: 電網入電
+              home:
+                name: 屋企
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: custom:apexcharts-card
+            graph_span: 24h
+            span:
+              start: day
+            header:
+              show: true
+              title: 今日
+            now:
+              show: true
+            series:
+              - entity: sensor.primo_5_0_1_1_ac_power
+                name: 太陽能
+                type: area
+              - entity: sensor.powerpal_gateway_powerpal_power
+                name: 電網入電
+                type: area
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: markdown
+            content: <small>「屋企」等於太陽能加電網入電：冇輸出感應器，所以賣電時呢個數會偏高。</small>
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: markdown
+            content: <small>呢度用咗兩張 HACS 卡：Power Flow Card Plus 同 ApexCharts。如果見到「Custom element doesn't exist」，即係仲未安裝；上面所有讀數照樣用得。</small>
+            grid_options:
+              columns: 12
+              rows: auto
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
             heading: 更多畫面
             heading_style: title
             grid_options:
@@ -6942,6 +7571,56 @@ views:
             grid_options:
               columns: 4
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-yue/home
+                icon: mdi:home-variant-outline
+                label: 主頁
+              - url: /casaray-v3-yue/rooms
+                icon: mdi:floor-plan
+                label: 房間
+              - url: /casaray-v3-yue/energy
+                icon: mdi:lightning-bolt-outline
+                label: 用電
+              - url: /casaray-v3-yue/cameras
+                icon: mdi:cctv
+                label: 鏡頭
+              - icon: mdi:dots-horizontal
+                label: 更多
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-yue/security
+                    icon: mdi:shield-home-outline
+                    label: 保安
+                  - url: /casaray-v3-yue/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 燈光
+                  - url: /casaray-v3-yue/climate
+                    icon: mdi:thermometer
+                    label: 氣候
+                  - url: /casaray-v3-yue/network
+                    icon: mdi:router-wireless
+                    label: 網絡
+                  - url: /casaray-v3-yue/house-health
+                    icon: mdi:home-heart
+                    label: 屋企狀況
+                  - url: /casaray-v3-yue/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-yue/bills
+                    icon: mdi:receipt-text-outline
+                    label: 帳單
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - type: sections
     title: Bills
     path: bills
@@ -9423,6 +10102,56 @@ views:
             grid_options:
               columns: 4
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-yue/home
+                icon: mdi:home-variant-outline
+                label: 主頁
+              - url: /casaray-v3-yue/rooms
+                icon: mdi:floor-plan
+                label: 房間
+              - url: /casaray-v3-yue/energy
+                icon: mdi:lightning-bolt-outline
+                label: 用電
+              - url: /casaray-v3-yue/cameras
+                icon: mdi:cctv
+                label: 鏡頭
+              - icon: mdi:dots-horizontal
+                label: 更多
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-yue/security
+                    icon: mdi:shield-home-outline
+                    label: 保安
+                  - url: /casaray-v3-yue/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 燈光
+                  - url: /casaray-v3-yue/climate
+                    icon: mdi:thermometer
+                    label: 氣候
+                  - url: /casaray-v3-yue/network
+                    icon: mdi:router-wireless
+                    label: 網絡
+                  - url: /casaray-v3-yue/house-health
+                    icon: mdi:home-heart
+                    label: 屋企狀況
+                  - url: /casaray-v3-yue/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-yue/bills
+                    icon: mdi:receipt-text-outline
+                    label: 帳單
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: 鏡頭
     path: cameras
     icon: mdi:cctv
@@ -10010,6 +10739,56 @@ views:
             grid_options:
               columns: 6
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-yue/home
+                icon: mdi:home-variant-outline
+                label: 主頁
+              - url: /casaray-v3-yue/rooms
+                icon: mdi:floor-plan
+                label: 房間
+              - url: /casaray-v3-yue/energy
+                icon: mdi:lightning-bolt-outline
+                label: 用電
+              - url: /casaray-v3-yue/cameras
+                icon: mdi:cctv
+                label: 鏡頭
+              - icon: mdi:dots-horizontal
+                label: 更多
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-yue/security
+                    icon: mdi:shield-home-outline
+                    label: 保安
+                  - url: /casaray-v3-yue/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 燈光
+                  - url: /casaray-v3-yue/climate
+                    icon: mdi:thermometer
+                    label: 氣候
+                  - url: /casaray-v3-yue/network
+                    icon: mdi:router-wireless
+                    label: 網絡
+                  - url: /casaray-v3-yue/house-health
+                    icon: mdi:home-heart
+                    label: 屋企狀況
+                  - url: /casaray-v3-yue/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-yue/bills
+                    icon: mdi:receipt-text-outline
+                    label: 帳單
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - type: sections
     title: Front Door
     path: camera-front-door
@@ -10656,6 +11435,56 @@ views:
             grid_options:
               columns: 4
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-yue/home
+                icon: mdi:home-variant-outline
+                label: 主頁
+              - url: /casaray-v3-yue/rooms
+                icon: mdi:floor-plan
+                label: 房間
+              - url: /casaray-v3-yue/energy
+                icon: mdi:lightning-bolt-outline
+                label: 用電
+              - url: /casaray-v3-yue/cameras
+                icon: mdi:cctv
+                label: 鏡頭
+              - icon: mdi:dots-horizontal
+                label: 更多
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-yue/security
+                    icon: mdi:shield-home-outline
+                    label: 保安
+                  - url: /casaray-v3-yue/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 燈光
+                  - url: /casaray-v3-yue/climate
+                    icon: mdi:thermometer
+                    label: 氣候
+                  - url: /casaray-v3-yue/network
+                    icon: mdi:router-wireless
+                    label: 網絡
+                  - url: /casaray-v3-yue/house-health
+                    icon: mdi:home-heart
+                    label: 屋企狀況
+                  - url: /casaray-v3-yue/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-yue/bills
+                    icon: mdi:receipt-text-outline
+                    label: 帳單
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - type: sections
     title: Automations
     path: automations
@@ -12019,6 +12848,110 @@ views:
         column_span: 2
         cards:
           - type: heading
+            heading: 而家冇回應
+            heading_style: title
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: custom:auto-entities
+            card:
+              type: entities
+              title: 冇回應嘅燈
+            filter:
+              include:
+                - domain: light
+                  state: unavailable
+            sort:
+              method: name
+            else:
+              type: markdown
+              content: |-
+                **冇回應嘅燈**
+
+                <small>呢類冇項目報告離線</small>
+              grid_options:
+                columns: 12
+                rows: auto
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: custom:auto-entities
+            card:
+              type: entities
+              title: 冇回應嘅鏡頭
+            filter:
+              include:
+                - domain: camera
+                  state: unavailable
+            sort:
+              method: name
+            else:
+              type: markdown
+              content: |-
+                **冇回應嘅鏡頭**
+
+                <small>呢類冇項目報告離線</small>
+              grid_options:
+                columns: 12
+                rows: auto
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: custom:auto-entities
+            card:
+              type: entities
+              title: 冇回應嘅開關
+            filter:
+              include:
+                - domain: switch
+                  state: unavailable
+            sort:
+              method: name
+            else:
+              type: markdown
+              content: |-
+                **冇回應嘅開關**
+
+                <small>呢類冇項目報告離線</small>
+              grid_options:
+                columns: 12
+                rows: auto
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: custom:auto-entities
+            card:
+              type: entities
+              title: 冇回應嘅感應器
+            filter:
+              include:
+                - domain: sensor
+                  state: unavailable
+                - domain: binary_sensor
+                  state: unavailable
+            sort:
+              method: name
+            else:
+              type: markdown
+              content: |-
+                **冇回應嘅感應器**
+
+                <small>呢類冇項目報告離線</small>
+              grid_options:
+                columns: 12
+                rows: auto
+            grid_options:
+              columns: 12
+              rows: auto
+          - type: markdown
+            content: <small>呢啲清單用 HACS 卡 auto-entities。如果見到「Custom element doesn't exist」，即係仲未安裝；上面嘅數字同裝置照樣用得。</small>
+            grid_options:
+              columns: 12
+              rows: auto
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
             heading: 監測說明
             heading_style: title
             grid_options:
@@ -12130,6 +13063,56 @@ views:
             grid_options:
               columns: 4
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-yue/home
+                icon: mdi:home-variant-outline
+                label: 主頁
+              - url: /casaray-v3-yue/rooms
+                icon: mdi:floor-plan
+                label: 房間
+              - url: /casaray-v3-yue/energy
+                icon: mdi:lightning-bolt-outline
+                label: 用電
+              - url: /casaray-v3-yue/cameras
+                icon: mdi:cctv
+                label: 鏡頭
+              - icon: mdi:dots-horizontal
+                label: 更多
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-yue/security
+                    icon: mdi:shield-home-outline
+                    label: 保安
+                  - url: /casaray-v3-yue/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 燈光
+                  - url: /casaray-v3-yue/climate
+                    icon: mdi:thermometer
+                    label: 氣候
+                  - url: /casaray-v3-yue/network
+                    icon: mdi:router-wireless
+                    label: 網絡
+                  - url: /casaray-v3-yue/house-health
+                    icon: mdi:home-heart
+                    label: 屋企狀況
+                  - url: /casaray-v3-yue/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-yue/bills
+                    icon: mdi:receipt-text-outline
+                    label: 帳單
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: 網絡
     path: network
     icon: mdi:router-wireless
@@ -12499,6 +13482,56 @@ views:
             grid_options:
               columns: 4
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-yue/home
+                icon: mdi:home-variant-outline
+                label: 主頁
+              - url: /casaray-v3-yue/rooms
+                icon: mdi:floor-plan
+                label: 房間
+              - url: /casaray-v3-yue/energy
+                icon: mdi:lightning-bolt-outline
+                label: 用電
+              - url: /casaray-v3-yue/cameras
+                icon: mdi:cctv
+                label: 鏡頭
+              - icon: mdi:dots-horizontal
+                label: 更多
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-yue/security
+                    icon: mdi:shield-home-outline
+                    label: 保安
+                  - url: /casaray-v3-yue/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 燈光
+                  - url: /casaray-v3-yue/climate
+                    icon: mdi:thermometer
+                    label: 氣候
+                  - url: /casaray-v3-yue/network
+                    icon: mdi:router-wireless
+                    label: 網絡
+                  - url: /casaray-v3-yue/house-health
+                    icon: mdi:home-heart
+                    label: 屋企狀況
+                  - url: /casaray-v3-yue/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-yue/bills
+                    icon: mdi:receipt-text-outline
+                    label: 帳單
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - title: 通知
     path: alerts
     icon: mdi:bell-outline
@@ -12751,6 +13784,56 @@ views:
             grid_options:
               columns: 4
               rows: 2
+          - type: custom:navbar-card
+            routes:
+              - url: /casaray-v3-yue/home
+                icon: mdi:home-variant-outline
+                label: 主頁
+              - url: /casaray-v3-yue/rooms
+                icon: mdi:floor-plan
+                label: 房間
+              - url: /casaray-v3-yue/energy
+                icon: mdi:lightning-bolt-outline
+                label: 用電
+              - url: /casaray-v3-yue/cameras
+                icon: mdi:cctv
+                label: 鏡頭
+              - icon: mdi:dots-horizontal
+                label: 更多
+                tap_action:
+                  action: open-popup
+                popup:
+                  - url: /casaray-v3-yue/security
+                    icon: mdi:shield-home-outline
+                    label: 保安
+                  - url: /casaray-v3-yue/lighting
+                    icon: mdi:lightbulb-group-outline
+                    label: 燈光
+                  - url: /casaray-v3-yue/climate
+                    icon: mdi:thermometer
+                    label: 氣候
+                  - url: /casaray-v3-yue/network
+                    icon: mdi:router-wireless
+                    label: 網絡
+                  - url: /casaray-v3-yue/house-health
+                    icon: mdi:home-heart
+                    label: 屋企狀況
+                  - url: /casaray-v3-yue/alerts
+                    icon: mdi:bell-outline
+                    label: 通知
+                  - url: /casaray-v3-yue/bills
+                    icon: mdi:receipt-text-outline
+                    label: 帳單
+            desktop:
+              show_labels: true
+            mobile:
+              show_labels: true
+              safe_area: true
+            layout:
+              reflect_child_state: true
+            grid_options:
+              columns: full
+              rows: auto
   - type: sections
     title: CasaRay (V2)
     path: v2-home

@@ -8,7 +8,7 @@ Baseline: `dashboards/casaray_v2.yaml` ha-deploy@18a4e5d sha256 `77a4991626d6f8a
 
 | # | Path | Kind | Source | Entities | Not in export | Dark at 05/09 export |
 |---|---|---|---|---|---|---|
-| 1 | `home` | native | `views/home.yaml` | 53 | — | 6 |
+| 1 | `home` | native | `views/home.yaml` | 52 | — | 5 |
 | 2 | `rooms` | native | `views/rooms.yaml` | 18 | — | 1 |
 | 3 | `living-room` | native | `views/living-room.yaml` | 46 | — | 10 |
 | 4 | `kitchen` | native | `views/kitchen.yaml` | 22 | — | — |
@@ -154,4 +154,4 @@ Every V2 entity of this view is on its native rebuild.
 | en | `dashboards/casaray_v3.yaml` | `/casaray-v3` | 46 | 0 | 0 |
 | yue | `dashboards/casaray_v3/dist/casaray_v3_yue.yaml` | `/casaray-v3-yue` | 46 | 0 | 0 |
 | km | `dashboards/casaray_v3/dist/casaray_v3_km.yaml` | `/casaray-v3-km` | 46 | 0 | 0 |
-| zh-Hans | `dashboards/casaray_v3/dist/casaray_v3_zh-hans.yaml` | `/casaray-v3-zh` | 46 | 302 | 0 |
+| zh-Hans | `dashboards/casaray_v3/dist/casaray_v3_zh-hans.yaml` | `/casaray-v3-zh` | 46 | 319 | 0 |

@@ -76,11 +76,19 @@ class CameraSlots(unittest.TestCase):
             dark = {e: st for e in CAMS}
             self.assertTrue(all(c["type"] == "markdown" for c in sec["cards"]
                                 if c.get("visibility") and L.visible(c, dark)), f"a {st} camera shows words")
-        # a camera entity that does not exist reads `unknown` in the frontend
-        # (validate-condition.ts): its slot shows words, not an empty frame
-        shown = [c for c in sec["cards"] if c.get("visibility") and L.visible(c, {})]
+        # A camera entity that does not exist (V3-030, both frontend behaviours,
+        # ha_layout.visible): frontend 20260826.7 reads it as `unknown`, so the
+        # slot shows words; the newer frontend seen on the Green on 20/11/26
+        # sends the condition to Core, which errors, so BOTH cards hide and the
+        # slot vanishes. Then Camera health below still names the camera.
+        shown = [c for c in sec["cards"] if c.get("visibility") and L.visible(c, {}, missing="unknown")]
         self.assertEqual(len(shown), 6)
         self.assertTrue(all(c["type"] == "markdown" for c in shown))
+        self.assertEqual([c for c in sec["cards"] if c.get("visibility") and L.visible(c, {}, missing="hide")], [])
+        E = "camera.tapo_c200_stockroom_hd_stream_direct"
+        gone = {k: v for k, v in self.states.items() if k != E}
+        health = "\n".join(R.render_view(view("cameras"), gone, {}))
+        self.assertRegex(health, r"Stockroom — \*\*State unknown\*\*")
 
     def test_unknown_camera_says_state_unknown_not_offline(self):
         """V3-030: offline and unknown are different states with different

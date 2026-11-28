@@ -48,6 +48,32 @@ classic_theme: CasaRay     # themes/deez_your_name.yaml, what V2 views need
 # V3-native views, rebuilt from sources in src/casaray_v3/views/.
 # Each replaces the V2 view with the same path (so every carried link still
 # lands) and the original V2 view is kept as a `v2-<path>` classic subview.
+# V3-027: dashboard-level settings of owner-approved custom cards (V3-026) on the
+# working dashboards. WallPanel only: Home Assistant ignores it until the card is
+# installed through HACS. Kiosk Mode is NOT here (removed after the kiosk mode
+# lockout; restoring it on a working dashboard is the owner's call), and the
+# generator refuses it.
+working_root:
+  wallpanel: {c: wallpanel}
+
+# V3-028 (owner, 21/11/26): Navbar Card at the foot of every native page, the
+# V3 destinations in their navigation order. The native top bar stays: it is the
+# fallback if the card fails to load. Paths are view paths; labels are nav.* keys.
+navbar:
+  routes:
+    - [home, nav.home, mdi:home-variant-outline]
+    - [rooms, nav.rooms, mdi:floor-plan]
+    - [energy, nav.energy, mdi:lightning-bolt-outline]
+    - [cameras, nav.cameras, mdi:cctv]
+  more:
+    - [security, nav.security, mdi:shield-home-outline]
+    - [lighting, nav.lighting, mdi:lightbulb-group-outline]
+    - [climate, nav.climate, mdi:thermometer]
+    - [network, nav.network, mdi:router-wireless]
+    - [house-health, nav.house_health, mdi:home-heart]
+    - [alerts, nav.alerts, mdi:bell-outline]
+    - [bills, nav.bills, mdi:receipt-text-outline]
+
 native:
   - home
   - lighting
@@ -136,3 +162,31 @@ migration:
       {to: lighting, status: native, note: camera floodlight}
     light.tapo_c425_north_wall_floodlight_timed:
       {to: lighting, status: native, note: camera floodlight}
+
+# Bilingual design preview (V3-025): the 19/11/26 mockups' Home, Rooms,
+# Lighting, Climate and Cameras overview, plus the More page their tab bar
+# needs. A SEPARATE dashboard — its own file and url_path. The working
+# dashboards above are built exactly as before and never read it; a page the
+# preview does not carry opens on the working English dashboard.
+preview:
+  title: pv.title
+  output: dashboards/casaray_v3/preview/casaray_v3_mockup_preview.yaml
+  url_base: casaray-v3-mockup
+  working_url_base: casaray-v3
+  primary: yue
+  secondary: en
+  views: [home, rooms, lighting, climate, cameras, energy, house-health, more]
+  tabs:   # the mockups' five tabs; Climate lives under More, as they draw it
+    - [home, nav.home, mdi:home-outline]
+    - [rooms, nav.rooms, mdi:bed-outline]
+    - [lighting, nav.lighting, mdi:lamp-outline]
+    - [cameras, pv.tab_cameras, mdi:video-outline]   # "Camera": "Cameras" is 67 px in a 66 px phone tab
+    - [more, pv.more, mdi:dots-horizontal]
+  # Dashboard-level settings of two owner-approved custom cards (V3-026, 20/11/26).
+  # Kiosk Mode hides Home Assistant's header and sidebar (the legacy dashboard's
+  # settings; `?disable_km` on the URL brings them back). WallPanel is the idle
+  # screensaver. Both are ignored until installed on the Green.
+  kiosk_mode: {hide_header: true, hide_sidebar: true}
+  wallpanel: {c: preview_wallpanel}
+  vocabulary:   # the mockups' words for the shared honesty components
+    s.no_data: pv.no_data

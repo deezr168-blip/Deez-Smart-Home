@@ -387,6 +387,53 @@ build is `/casaray-v3/<view>`. A different URL needs a rebuild with a different
 - Without those, the native views still work; the carried and fallback views
   show card errors or default styling.
 
+## HACS cards the working dashboards use (V3-027 to V3-029, 21/11/26)
+
+The working V3 dashboards are native except for the cards below: four approved by the owner
+on 20/11 (V3-026) and added on 21/11 (V3-027), then Navbar card (V3-028) and Clock Weather
+Card (V3-029) at the owner's request. **None is installed by this repository.** Each is
+installed on the Green through HACS (HACS → search the name → Download), then the browser
+on the wall iPad is refreshed. Repositories as verified in
+`design/casaray-v3/hacs/HACS_RECOMMENDATIONS_2026-11-20.md` (on `casaray-v3-design`), and for
+the last two, in each card's own repository:
+
+| Card | HACS repository | Where V3 uses it | If it is not installed |
+|---|---|---|---|
+| Power Flow Card Plus | `flixlix/power-flow-card-plus` | Energy → Power flow | "Custom element doesn't exist" in that band; every reading above still works |
+| ApexCharts Card | `RomRider/apexcharts-card` | Energy → Power flow | the same; the native "Last 24 hours" graph above shows the same two sensors |
+| auto-entities | `thomasloven/lovelace-auto-entities` | House health → Not answering now | "Custom element doesn't exist" in that band; the counts and devices above still work |
+| WallPanel | `j-a-n/lovelace-wallpanel` | dashboard level (screensaver) | ignored; no screensaver |
+| Navbar card (V3-028) | `joseluis9595/lovelace-navbar-card` | the foot of every native page | "Custom element doesn't exist" at the foot; the native top bar on the same page still navigates |
+| Clock Weather Card (V3-029) | `pkissling/clock-weather-card` | Home → Weather | "Custom element doesn't exist" in that band; the chip strip's Outside reading still works |
+
+**Install status, from the owner's HACS list** (21/11; `docs/casaray-v3/HACS_INSTALLED.md` on
+PR #21's branch): Power Flow Card Plus, auto-entities, Navbar card and Clock Weather Card are
+installed. ApexCharts is not listed and the owner is installing it. WallPanel is not listed;
+until it is installed, nothing happens. Options for Navbar card and Clock Weather Card were
+read from each card's own repository; see V3-028 and V3-029.
+
+**Weather (V3-029).** Home's Weather band is Clock Weather Card on `weather.forecast_home`.
+Before relying on it, open Settings → Entities and confirm that `weather.forecast_home` is
+the weather entity that answers (the phone dashboard showed 23 °C Sunny on 21/11; the
+connector cannot see weather entities, so which one it uses is unconfirmed).
+
+**How to verify, read-only, after installing:**
+
+1. **Resources:** Settings → Dashboards → ⋮ → Resources lists one JavaScript module per card.
+   HACS writes these entries itself when a card is downloaded; this repository does not record
+   their exact URLs, so do not type one by hand.
+2. **Energy:** the Power flow band shows the flow and today's chart instead of an error.
+3. **House health:** the Not answering now band shows four lists, or each list's "Nothing of
+   this kind reports unavailable" line.
+4. **WallPanel:** leave the wall iPad untouched for two minutes. The screensaver needs photos
+   in Media → My media; a touch returns to the dashboard.
+5. **Home weather:** the Weather band shows the time over DD/MM/YY, the hourly strip and five
+   days, and its temperature matches the Outside reading in the chip strip above.
+
+**Not on the working dashboards:** Kiosk Mode (removed after the kiosk mode lockout; the
+owner's call, V3-027) and Bubble Card / Advanced Camera Card (waiting on six entity IDs). The
+separate design preview (`casaray-v3-mockup`, PR #26) uses all seven.
+
 ## 1. Read-only pre-checks (record each result)
 
 1. **Version:** Settings → About shows the Home Assistant Core and frontend versions.
@@ -406,7 +453,8 @@ build is `/casaray-v3/<view>`. A different URL needs a rebuild with a different
    (`/casaray-v2`) is registered and opens. On 30/10 it was not registered;
    see `scripts/recovery/RUNBOOK_2026-10-30.md` on `recovery/phase0-diagnostics`.
 3. **Resources:** Settings → Dashboards → ⋮ → Resources. Note whether
-   `card-mod` and `webrtc-camera` are listed.
+   `card-mod` and `webrtc-camera` are listed, and the four cards in "HACS cards the
+   working dashboards use" above.
 4. **Themes:** Profile → Theme lists the installed themes. Note whether
    `CasaRay` and `CasaRay V3` are present.
 
