@@ -68,7 +68,7 @@ views:
               columns: 3
               rows: 2
           - type: button
-            name: 冷氣同天氣
+            name: 氣候
             icon: mdi:thermometer
             show_name: true
             show_icon: true
@@ -202,10 +202,7 @@ views:
               columns: 6
               rows: 2
           - type: markdown
-            content: |-
-              {%- set s = states('climate.bedroom_parents_room_ac') -%}{%- if s == 'unavailable' -%}**離線** · 冇數據{%- elif s in ['unknown','none',''] -%}**狀態未知** · 冇數據{%- else -%}**{{ "而家：" ~ (({'off':"關",'cool':"冷氣",'heat':"暖氣",'fan_only':"淨係吹風",'dry':"抽濕",'auto':"自動",'heat_cool':"冷暖自動"}).get(states('climate.bedroom_parents_room_ac'), states('climate.bedroom_parents_room_ac'))) }}**
-
-              室溫 {{ ((state_attr('climate.bedroom_parents_room_ac','current_temperature') | float) | round(1) ~ '°') if state_attr('climate.bedroom_parents_room_ac','current_temperature') is number or (state_attr('climate.bedroom_parents_room_ac','current_temperature') | is_number) else "冇數據" }} · 設定溫度 {{ ((state_attr('climate.bedroom_parents_room_ac','temperature') | float) | round(1) ~ '°') if state_attr('climate.bedroom_parents_room_ac','temperature') is number or (state_attr('climate.bedroom_parents_room_ac','temperature') | is_number) else "冇數據" }}{%- endif -%}
+            content: '{%- set s = states(''climate.bedroom_parents_room_ac'') -%}**爸媽房冷氣機**<br>{%- if s == ''unavailable'' -%}離線 · 冇數據{%- elif s in [''unknown'',''none'',''''] -%}狀態未知 · 冇數據{%- else -%}{{ ({''off'':"關",''cool'':"冷氣",''heat'':"暖氣",''fan_only'':"淨係吹風",''dry'':"抽濕",''auto'':"自動",''heat_cool'':"冷暖自動"}).get(states(''climate.bedroom_parents_room_ac''), states(''climate.bedroom_parents_room_ac'')) }} · 室溫 {{ ((state_attr(''climate.bedroom_parents_room_ac'',''current_temperature'') | float) | round(1) ~ ''°'') if state_attr(''climate.bedroom_parents_room_ac'',''current_temperature'') is number or (state_attr(''climate.bedroom_parents_room_ac'',''current_temperature'') | is_number) else "冇數據" }}{%- endif -%}'
             grid_options:
               columns: 6
               rows: 2
@@ -227,7 +224,7 @@ views:
               {{ (ns.p | join(' · ')) if ns.p else "冇數據" }}{{ (' · ' ~ (ns.d) ~ " 個冇回應") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: 2
+              rows: auto
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/living-room
@@ -237,7 +234,7 @@ views:
               {{ (ns.p | join(' · ')) if ns.p else "冇數據" }}{{ (' · ' ~ (ns.d) ~ " 個冇回應") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: 2
+              rows: auto
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/dining
@@ -247,7 +244,7 @@ views:
               {{ (ns.p | join(' · ')) if ns.p else "冇數據" }}{{ (' · ' ~ (ns.d) ~ " 個冇回應") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: 2
+              rows: auto
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/kitchen
@@ -257,7 +254,7 @@ views:
               {{ (ns.p | join(' · ')) if ns.p else "冇數據" }}{{ (' · ' ~ (ns.d) ~ " 個冇回應") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: 2
+              rows: auto
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/parents-room
@@ -267,7 +264,7 @@ views:
               {{ (ns.p | join(' · ')) if ns.p else "冇數據" }}{{ (' · ' ~ (ns.d) ~ " 個冇回應") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: 2
+              rows: auto
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/ray-bedroom
@@ -277,7 +274,7 @@ views:
               {{ (ns.p | join(' · ')) if ns.p else "冇數據" }}{{ (' · ' ~ (ns.d) ~ " 個冇回應") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: 2
+              rows: auto
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/garage
@@ -287,7 +284,7 @@ views:
               {{ (ns.p | join(' · ')) if ns.p else "冇數據" }}{{ (' · ' ~ (ns.d) ~ " 個冇回應") if (ns.p and ns.d) else '' }}
             grid_options:
               columns: 6
-              rows: 2
+              rows: auto
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/guest-room
@@ -295,7 +292,7 @@ views:
             content: '**所有房間**'
             grid_options:
               columns: 6
-              rows: 2
+              rows: auto
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/rooms
@@ -312,7 +309,7 @@ views:
             entity: todo.shopping_list
             grid_options:
               columns: 12
-              rows: 8
+              rows: 5
       - type: grid
         column_span: 2
         cards:
@@ -391,6 +388,7 @@ views:
             content: |-
               {%- set pp = namespace(ok=0) -%}{%- for e in ['sensor.g_monitor_freezer_p110m_current_consumption','sensor.r_energy_monitor_p110m_current_consumption'] -%}{%- if states(e) | is_number -%}{%- set pp.ok = pp.ok + 1 -%}{%- endif -%}{%- endfor -%}**兩個監察插蘇**
               {{ (((states('sensor.casa_monitored_power') | float) | round(1) ~ ((' ' ~ state_attr('sensor.casa_monitored_power','unit_of_measurement')) if state_attr('sensor.casa_monitored_power','unit_of_measurement') else '')) if states('sensor.casa_monitored_power') | is_number else "冇數據") if pp.ok == 2 else "冇數據" }} · 車房冰櫃同 Ray 張書枱{{ (' <small>' ~ (2) ~ " 個之中 " ~ (pp.ok) ~ " 個有回應" ~ '</small>') if (pp.ok > 0 and pp.ok < 2) else '' }}
+              <small>只有兩個電路裝咗計量插蘇，所以呢個係監察到嘅用電，唔係全屋。</small>
             grid_options:
               columns: 12
               rows: auto
@@ -410,11 +408,6 @@ views:
               columns: 12
               rows: auto
             name: 今日預計太陽能
-          - type: markdown
-            content: <small>只有兩個電路裝咗計量插蘇，所以呢個係監察到嘅用電，唔係全屋。</small>
-            grid_options:
-              columns: 12
-              rows: auto
       - type: grid
         column_span: 1
         cards:
@@ -516,10 +509,12 @@ views:
             visibility:
               - condition: state
                 entity: camera.front_door_live_view
-                state_not: unavailable
+                state_not:
+                  - unavailable
+                  - unknown
           - type: markdown
             content: |-
-              **前門** · **離線**
+              **前門** · **{{ "離線" if states('camera.front_door_live_view') == 'unavailable' else "狀態未知" }}**
               Home Assistant 收唔到影像 · {{ ("電量 " ~ ((states('sensor.front_door_battery') | float) | round(0) | int) ~ "%") if states('sensor.front_door_battery') | is_number else "冇電量讀數" }}
             grid_options:
               columns: 12
@@ -527,7 +522,9 @@ views:
             visibility:
               - condition: state
                 entity: camera.front_door_live_view
-                state: unavailable
+                state:
+                  - unavailable
+                  - unknown
           - type: tile
             entity: binary_sensor.f_contact_sensor_door
             tap_action:
@@ -658,12 +655,12 @@ views:
               rows: auto
           - type: markdown
             content: |-
-              {%- set s = states('climate.bedroom_parents_room_ac') -%}{%- if s == 'unavailable' -%}**離線** · 冇數據{%- elif s in ['unknown','none',''] -%}**狀態未知** · 冇數據{%- else -%}**{{ "而家：" ~ (({'off':"關",'cool':"冷氣",'heat':"暖氣",'fan_only':"淨係吹風",'dry':"抽濕",'auto':"自動",'heat_cool':"冷暖自動"}).get(states('climate.bedroom_parents_room_ac'), states('climate.bedroom_parents_room_ac'))) }}**
+              {%- set s = states('climate.bedroom_parents_room_ac') -%}**爸媽房冷氣機**<br>{%- if s == 'unavailable' -%}離線 · 冇數據{%- elif s in ['unknown','none',''] -%}狀態未知 · 冇數據{%- else -%}{{ "而家：" ~ (({'off':"關",'cool':"冷氣",'heat':"暖氣",'fan_only':"淨係吹風",'dry':"抽濕",'auto':"自動",'heat_cool':"冷暖自動"}).get(states('climate.bedroom_parents_room_ac'), states('climate.bedroom_parents_room_ac'))) }}
 
               室溫 {{ ((state_attr('climate.bedroom_parents_room_ac','current_temperature') | float) | round(1) ~ '°') if state_attr('climate.bedroom_parents_room_ac','current_temperature') is number or (state_attr('climate.bedroom_parents_room_ac','current_temperature') | is_number) else "冇數據" }} · 設定溫度 {{ ((state_attr('climate.bedroom_parents_room_ac','temperature') | float) | round(1) ~ '°') if state_attr('climate.bedroom_parents_room_ac','temperature') is number or (state_attr('climate.bedroom_parents_room_ac','temperature') | is_number) else "冇數據" }}{%- endif -%}
             grid_options:
               columns: 12
-              rows: 2
+              rows: auto
             tap_action:
               action: navigate
               navigation_path: /casaray-v3-yue/climate
@@ -817,7 +814,7 @@ views:
                     label: 燈光
                   - url: /casaray-v3-yue/climate
                     icon: mdi:thermometer
-                    label: 冷氣同天氣
+                    label: 氣候
                   - url: /casaray-v3-yue/network
                     icon: mdi:router-wireless
                     label: 網絡
@@ -881,7 +878,7 @@ views:
               columns: 3
               rows: 2
           - type: button
-            name: 冷氣同天氣
+            name: 氣候
             icon: mdi:thermometer
             show_name: true
             show_icon: true
@@ -1097,7 +1094,7 @@ views:
               columns: 4
               rows: 2
           - type: button
-            name: 冷氣同天氣
+            name: 氣候
             icon: mdi:thermometer
             show_name: true
             show_icon: true
@@ -1189,7 +1186,7 @@ views:
                     label: 燈光
                   - url: /casaray-v3-yue/climate
                     icon: mdi:thermometer
-                    label: 冷氣同天氣
+                    label: 氣候
                   - url: /casaray-v3-yue/network
                     icon: mdi:router-wireless
                     label: 網絡
@@ -1253,7 +1250,7 @@ views:
               columns: 3
               rows: 2
           - type: button
-            name: 冷氣同天氣
+            name: 氣候
             icon: mdi:thermometer
             show_name: true
             show_icon: true
@@ -2080,7 +2077,7 @@ views:
                     label: 燈光
                   - url: /casaray-v3-yue/climate
                     icon: mdi:thermometer
-                    label: 冷氣同天氣
+                    label: 氣候
                   - url: /casaray-v3-yue/network
                     icon: mdi:router-wireless
                     label: 網絡
@@ -2144,7 +2141,7 @@ views:
               columns: 3
               rows: 2
           - type: button
-            name: 冷氣同天氣
+            name: 氣候
             icon: mdi:thermometer
             show_name: true
             show_icon: true
@@ -2653,7 +2650,7 @@ views:
                     label: 燈光
                   - url: /casaray-v3-yue/climate
                     icon: mdi:thermometer
-                    label: 冷氣同天氣
+                    label: 氣候
                   - url: /casaray-v3-yue/network
                     icon: mdi:router-wireless
                     label: 網絡
@@ -2717,7 +2714,7 @@ views:
               columns: 3
               rows: 2
           - type: button
-            name: 冷氣同天氣
+            name: 氣候
             icon: mdi:thermometer
             show_name: true
             show_icon: true
@@ -3302,7 +3299,7 @@ views:
                     label: 燈光
                   - url: /casaray-v3-yue/climate
                     icon: mdi:thermometer
-                    label: 冷氣同天氣
+                    label: 氣候
                   - url: /casaray-v3-yue/network
                     icon: mdi:router-wireless
                     label: 網絡
@@ -3366,7 +3363,7 @@ views:
               columns: 3
               rows: 2
           - type: button
-            name: 冷氣同天氣
+            name: 氣候
             icon: mdi:thermometer
             show_name: true
             show_icon: true
@@ -3965,7 +3962,7 @@ views:
               columns: 4
               rows: 2
           - type: button
-            name: 冷氣同天氣
+            name: 氣候
             icon: mdi:thermometer
             show_name: true
             show_icon: true
@@ -4068,7 +4065,7 @@ views:
                     label: 燈光
                   - url: /casaray-v3-yue/climate
                     icon: mdi:thermometer
-                    label: 冷氣同天氣
+                    label: 氣候
                   - url: /casaray-v3-yue/network
                     icon: mdi:router-wireless
                     label: 網絡
@@ -4132,7 +4129,7 @@ views:
               columns: 3
               rows: 2
           - type: button
-            name: 冷氣同天氣
+            name: 氣候
             icon: mdi:thermometer
             show_name: true
             show_icon: true
@@ -4740,7 +4737,7 @@ views:
                     label: 燈光
                   - url: /casaray-v3-yue/climate
                     icon: mdi:thermometer
-                    label: 冷氣同天氣
+                    label: 氣候
                   - url: /casaray-v3-yue/network
                     icon: mdi:router-wireless
                     label: 網絡
@@ -4804,7 +4801,7 @@ views:
               columns: 3
               rows: 2
           - type: button
-            name: 冷氣同天氣
+            name: 氣候
             icon: mdi:thermometer
             show_name: true
             show_icon: true
@@ -5179,7 +5176,7 @@ views:
                     label: 燈光
                   - url: /casaray-v3-yue/climate
                     icon: mdi:thermometer
-                    label: 冷氣同天氣
+                    label: 氣候
                   - url: /casaray-v3-yue/network
                     icon: mdi:router-wireless
                     label: 網絡
@@ -5243,7 +5240,7 @@ views:
               columns: 3
               rows: 2
           - type: button
-            name: 冷氣同天氣
+            name: 氣候
             icon: mdi:thermometer
             show_name: true
             show_icon: true
@@ -5541,7 +5538,7 @@ views:
                     label: 燈光
                   - url: /casaray-v3-yue/climate
                     icon: mdi:thermometer
-                    label: 冷氣同天氣
+                    label: 氣候
                   - url: /casaray-v3-yue/network
                     icon: mdi:router-wireless
                     label: 網絡
@@ -5605,7 +5602,7 @@ views:
               rows: 2
             color: accent
           - type: button
-            name: 冷氣同天氣
+            name: 氣候
             icon: mdi:thermometer
             show_name: true
             show_icon: true
@@ -6510,7 +6507,7 @@ views:
                     label: 燈光
                   - url: /casaray-v3-yue/climate
                     icon: mdi:thermometer
-                    label: 冷氣同天氣
+                    label: 氣候
                   - url: /casaray-v3-yue/network
                     icon: mdi:router-wireless
                     label: 網絡
@@ -6533,7 +6530,7 @@ views:
             grid_options:
               columns: full
               rows: auto
-  - title: 冷氣同天氣
+  - title: 氣候
     path: climate
     icon: mdi:thermometer
     type: sections
@@ -6546,7 +6543,7 @@ views:
           - type: markdown
             text_only: true
             content: |-
-              ## 冷氣同天氣
+              ## 氣候
               **{{ now().strftime('%H:%M') }}**<br><small>{{ now().strftime('%d/%m/%y') }} · 預覽版</small>
             grid_options:
               columns: 6
@@ -6574,7 +6571,7 @@ views:
               columns: 3
               rows: 2
           - type: button
-            name: 冷氣同天氣
+            name: 氣候
             icon: mdi:thermometer
             show_name: true
             show_icon: true
@@ -6920,7 +6917,7 @@ views:
                     label: 燈光
                   - url: /casaray-v3-yue/climate
                     icon: mdi:thermometer
-                    label: 冷氣同天氣
+                    label: 氣候
                   - url: /casaray-v3-yue/network
                     icon: mdi:router-wireless
                     label: 網絡
@@ -6984,7 +6981,7 @@ views:
               columns: 3
               rows: 2
           - type: button
-            name: 冷氣同天氣
+            name: 氣候
             icon: mdi:thermometer
             show_name: true
             show_icon: true
@@ -7509,7 +7506,7 @@ views:
               columns: 4
               rows: 2
           - type: button
-            name: 冷氣同天氣
+            name: 氣候
             icon: mdi:thermometer
             show_name: true
             show_icon: true
@@ -7601,7 +7598,7 @@ views:
                     label: 燈光
                   - url: /casaray-v3-yue/climate
                     icon: mdi:thermometer
-                    label: 冷氣同天氣
+                    label: 氣候
                   - url: /casaray-v3-yue/network
                     icon: mdi:router-wireless
                     label: 網絡
@@ -9507,7 +9504,7 @@ views:
               columns: 3
               rows: 2
           - type: button
-            name: 冷氣同天氣
+            name: 氣候
             icon: mdi:thermometer
             show_name: true
             show_icon: true
@@ -10132,7 +10129,7 @@ views:
                     label: 燈光
                   - url: /casaray-v3-yue/climate
                     icon: mdi:thermometer
-                    label: 冷氣同天氣
+                    label: 氣候
                   - url: /casaray-v3-yue/network
                     icon: mdi:router-wireless
                     label: 網絡
@@ -10196,7 +10193,7 @@ views:
               columns: 3
               rows: 2
           - type: button
-            name: 冷氣同天氣
+            name: 氣候
             icon: mdi:thermometer
             show_name: true
             show_icon: true
@@ -10272,10 +10269,12 @@ views:
             visibility:
               - condition: state
                 entity: camera.front_door_live_view
-                state_not: unavailable
+                state_not:
+                  - unavailable
+                  - unknown
           - type: markdown
             content: |-
-              **前門** · **離線**
+              **前門** · **{{ "離線" if states('camera.front_door_live_view') == 'unavailable' else "狀態未知" }}**
               Home Assistant 收唔到影像 · {{ ("電量 " ~ ((states('sensor.front_door_battery') | float) | round(0) | int) ~ "%") if states('sensor.front_door_battery') | is_number else "冇電量讀數" }}
             grid_options:
               columns: 12
@@ -10283,7 +10282,9 @@ views:
             visibility:
               - condition: state
                 entity: camera.front_door_live_view
-                state: unavailable
+                state:
+                  - unavailable
+                  - unknown
           - type: picture-entity
             entity: camera.tapo_c425_north_wall_hd_stream_direct
             name: 北牆
@@ -10300,10 +10301,12 @@ views:
             visibility:
               - condition: state
                 entity: camera.tapo_c425_north_wall_hd_stream_direct
-                state_not: unavailable
+                state_not:
+                  - unavailable
+                  - unknown
           - type: markdown
             content: |-
-              **北牆** · **離線**
+              **北牆** · **{{ "離線" if states('camera.tapo_c425_north_wall_hd_stream_direct') == 'unavailable' else "狀態未知" }}**
               Home Assistant 收唔到影像 · {{ ("電量 " ~ ((states('sensor.tapo_c425_north_wall_battery') | float) | round(0) | int) ~ "%") if states('sensor.tapo_c425_north_wall_battery') | is_number else "冇電量讀數" }}
             grid_options:
               columns: 12
@@ -10311,7 +10314,9 @@ views:
             visibility:
               - condition: state
                 entity: camera.tapo_c425_north_wall_hd_stream_direct
-                state: unavailable
+                state:
+                  - unavailable
+                  - unknown
           - type: picture-entity
             entity: camera.tapo_c420_east_wall_hd_stream_direct
             name: 東牆
@@ -10328,10 +10333,12 @@ views:
             visibility:
               - condition: state
                 entity: camera.tapo_c420_east_wall_hd_stream_direct
-                state_not: unavailable
+                state_not:
+                  - unavailable
+                  - unknown
           - type: markdown
             content: |-
-              **東牆** · **離線**
+              **東牆** · **{{ "離線" if states('camera.tapo_c420_east_wall_hd_stream_direct') == 'unavailable' else "狀態未知" }}**
               Home Assistant 收唔到影像 · {{ ("電量 " ~ ((states('sensor.tapo_camera_bcca_battery') | float) | round(0) | int) ~ "%") if states('sensor.tapo_camera_bcca_battery') | is_number else "冇電量讀數" }}
             grid_options:
               columns: 12
@@ -10339,7 +10346,9 @@ views:
             visibility:
               - condition: state
                 entity: camera.tapo_c420_east_wall_hd_stream_direct
-                state: unavailable
+                state:
+                  - unavailable
+                  - unknown
           - type: picture-entity
             entity: camera.tapo_c420_south_wall_hd_stream_direct
             name: 南牆
@@ -10356,10 +10365,12 @@ views:
             visibility:
               - condition: state
                 entity: camera.tapo_c420_south_wall_hd_stream_direct
-                state_not: unavailable
+                state_not:
+                  - unavailable
+                  - unknown
           - type: markdown
             content: |-
-              **南牆** · **離線**
+              **南牆** · **{{ "離線" if states('camera.tapo_c420_south_wall_hd_stream_direct') == 'unavailable' else "狀態未知" }}**
               Home Assistant 收唔到影像 · {{ ("電量 " ~ ((states('sensor.tapo_c420_south_wall_battery') | float) | round(0) | int) ~ "%") if states('sensor.tapo_c420_south_wall_battery') | is_number else "冇電量讀數" }}
             grid_options:
               columns: 12
@@ -10367,7 +10378,9 @@ views:
             visibility:
               - condition: state
                 entity: camera.tapo_c420_south_wall_hd_stream_direct
-                state: unavailable
+                state:
+                  - unavailable
+                  - unknown
           - type: picture-entity
             entity: camera.tapo_c200_stockroom_hd_stream_direct
             name: 雜物房
@@ -10384,10 +10397,12 @@ views:
             visibility:
               - condition: state
                 entity: camera.tapo_c200_stockroom_hd_stream_direct
-                state_not: unavailable
+                state_not:
+                  - unavailable
+                  - unknown
           - type: markdown
             content: |-
-              **雜物房** · **離線**
+              **雜物房** · **{{ "離線" if states('camera.tapo_c200_stockroom_hd_stream_direct') == 'unavailable' else "狀態未知" }}**
               Home Assistant 收唔到影像
             grid_options:
               columns: 12
@@ -10395,7 +10410,9 @@ views:
             visibility:
               - condition: state
                 entity: camera.tapo_c200_stockroom_hd_stream_direct
-                state: unavailable
+                state:
+                  - unavailable
+                  - unknown
           - type: picture-entity
             entity: camera.smart_pet_feeder
             name: 寵物餵食器
@@ -10412,10 +10429,12 @@ views:
             visibility:
               - condition: state
                 entity: camera.smart_pet_feeder
-                state_not: unavailable
+                state_not:
+                  - unavailable
+                  - unknown
           - type: markdown
             content: |-
-              **寵物餵食器** · **離線**
+              **寵物餵食器** · **{{ "離線" if states('camera.smart_pet_feeder') == 'unavailable' else "狀態未知" }}**
               Home Assistant 收唔到影像
             grid_options:
               columns: 12
@@ -10423,7 +10442,9 @@ views:
             visibility:
               - condition: state
                 entity: camera.smart_pet_feeder
-                state: unavailable
+                state:
+                  - unavailable
+                  - unknown
           - type: markdown
             content: <small>㩒鏡頭睇 Home Assistant 嘅即時畫面，可以全螢幕。「更多畫面」入面嘅鏡頭頁用 WebRTC Camera 卡，要喺 Green 裝咗嗰個 HACS 整合先用得。</small>
             grid_options:
@@ -10745,7 +10766,7 @@ views:
                     label: 燈光
                   - url: /casaray-v3-yue/climate
                     icon: mdi:thermometer
-                    label: 冷氣同天氣
+                    label: 氣候
                   - url: /casaray-v3-yue/network
                     icon: mdi:router-wireless
                     label: 網絡
@@ -11029,7 +11050,7 @@ views:
               columns: 3
               rows: 2
           - type: button
-            name: 冷氣同天氣
+            name: 氣候
             icon: mdi:thermometer
             show_name: true
             show_icon: true
@@ -11441,7 +11462,7 @@ views:
                     label: 燈光
                   - url: /casaray-v3-yue/climate
                     icon: mdi:thermometer
-                    label: 冷氣同天氣
+                    label: 氣候
                   - url: /casaray-v3-yue/network
                     icon: mdi:router-wireless
                     label: 網絡
@@ -12387,7 +12408,7 @@ views:
               columns: 3
               rows: 2
           - type: button
-            name: 冷氣同天氣
+            name: 氣候
             icon: mdi:thermometer
             show_name: true
             show_icon: true
@@ -13069,7 +13090,7 @@ views:
                     label: 燈光
                   - url: /casaray-v3-yue/climate
                     icon: mdi:thermometer
-                    label: 冷氣同天氣
+                    label: 氣候
                   - url: /casaray-v3-yue/network
                     icon: mdi:router-wireless
                     label: 網絡
@@ -13133,7 +13154,7 @@ views:
               columns: 3
               rows: 2
           - type: button
-            name: 冷氣同天氣
+            name: 氣候
             icon: mdi:thermometer
             show_name: true
             show_icon: true
@@ -13488,7 +13509,7 @@ views:
                     label: 燈光
                   - url: /casaray-v3-yue/climate
                     icon: mdi:thermometer
-                    label: 冷氣同天氣
+                    label: 氣候
                   - url: /casaray-v3-yue/network
                     icon: mdi:router-wireless
                     label: 網絡
@@ -13552,7 +13573,7 @@ views:
               columns: 3
               rows: 2
           - type: button
-            name: 冷氣同天氣
+            name: 氣候
             icon: mdi:thermometer
             show_name: true
             show_icon: true
@@ -13790,7 +13811,7 @@ views:
                     label: 燈光
                   - url: /casaray-v3-yue/climate
                     icon: mdi:thermometer
-                    label: 冷氣同天氣
+                    label: 氣候
                   - url: /casaray-v3-yue/network
                     icon: mdi:router-wireless
                     label: 網絡

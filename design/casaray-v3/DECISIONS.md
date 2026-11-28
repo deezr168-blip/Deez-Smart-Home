@@ -6,6 +6,109 @@ and `ha-deploy` are unaffected by everything here.
 
 ---
 
+## V3-030 · 27/11/26 · PR #25's extras ported onto PR #24's release preview; PR #25 to close
+
+**Status:** **owner decision, 27/11/26** (asked as a selection: "Keep #24, port #25
+extras"). Prepared on `feature/casaray-v3-release-preview-extras`, branched from PR #24's
+head `0f90277`. **Rebased 28/11/26 onto `feature/casaray-v3-build`** after Route B
+(PR #31) merged PR #24, #26 and #29 there; PR #32 now targets the build branch (item 8).
+Items 2 and 4 to 6 describe the first version on PR #24's base; item 8 is the candidate.
+DEVELOPMENT ONLY — NOT DEPLOYED. No merge without a separate owner approval.
+
+1. **Why this entry exists.** On 18/11/26 two sessions opened integration PRs a minute
+   apart, both numbering their record V3-024:
+   - PR #24 (this branch's base): PR #16, PR #23's gate document, and one named top bar;
+   - PR #25: PR #16, the same named top bar, and PR #21's Home work.
+
+   PR #26 (V3-025) and PR #29 (V3-027 to V3-029) are built on PR #24, so the owner kept
+   PR #24 and asked for PR #25's extras as one follow-up. **V3-024 means PR #24's entry
+   below.** PR #25's own V3-024 stays on its branch for the record. (Other numbers collide
+   too: PR #21 now carries its own V3-024 and V3-025, PR #26 has V3-026, and so does
+   PR #29. This entry takes V3-030, the next number free on every open branch.)
+2. **Ported from PR #25:**
+   - **Home spacing** (V3-023): room lines at auto height, Shopping list five rows,
+     people two rows, Parents' occupancy two rows, the monitored footnote inside the
+     plugs card, and Solar expected today in Energy now (returned to Right now in
+     item 8). V3-014's equal room heights (rooms two rows, list eight, occupancy three)
+     are superseded.
+   - **Climate now** names the air-con at auto height, and shows all four room
+     temperatures (Dining, and Ray's room's FP300, which was `unavailable` in the
+     export and draws No data). The two extra tiles are dropped in item 8.
+   - **One tap air-con** names its device: Parents' air-con / 爸媽房冷氣機 / 父母房空调,
+     then mode and room temperature on one line.
+   - **Cantonese** `nav.climate` 冷氣同天氣 → 氣候.
+   - **Camera `unknown`:** the same-size card also covers `unknown` and says "State
+     unknown". `hui-image.ts` still fetches an unknown camera's image. A camera entity
+     that does not exist at all only reaches this card on frontend 20260826.7, which
+     reads it as `unknown`; the newer frontend seen on the Green (V3-025) hides both
+     cards, and Camera health still names it (corrected in item 8).
+3. **Kept from PR #24 unchanged:** its top bar, `topbar_problems` gate,
+   `test_topbar_v3_024.py`, More boards at 4 units off the band views, its Alerts-test
+   fix, and the gate document's integration record.
+4. **Measured on PR #24's base, 27/11** with `preview_view.py --shots` (simulated, not a device). Wall holes
+   are the three paired bands: rooms · right now · energy.
+
+   | | PR #24 | With V3-030 |
+   |---|---|---|
+   | Home, wall / phone page, en | 2,630 / 4,807 px | 2,439 / 4,401 px |
+   | Home, wall / phone page, yue | 2,608 / 4,807 px | 2,396 / 4,357 px |
+   | Home wall holes, yue | 0 · 13 · 4 px | 21 · 31 · 11 px |
+   | Home wall holes, en | 0 · 13 · 26 px | 43 · 31 · 32 px |
+
+   - **The trade, stated plainly:** PR #24's equal heights leave smaller gaps between
+     paired sections. PR #21's spacing makes Home about 200 px shorter on the wall and
+     about 410 px shorter on a phone, with gaps of up to 43 px. The V3 rule asks Home for
+     minimal scrolling on the wall iPad. The owner chose the port with the height saving
+     in front of them; **the larger gaps were not stated at the time** and are flagged
+     for the owner's review here and in the pull request. Reverting is a few lines in
+     `home.yaml`.
+   - Home and Cameras in all four locales: no clipped label, no overflowing card, no tap
+     target under 44 px.
+   - Khmer "Pet feeder" wraps on a phone on Cameras; it already does on PR #24.
+5. **Entity audit against PR #24 (`0f90277`), all four locales** (27/11; see item 8):
+   - the same 46 views;
+   - no entity removed or substituted;
+   - one added on Home, `sensor.presence_multi_sensor_fp300_temperature`, which is in
+     the export.
+6. **Gates at `51e2e1c`:** `build_dashboard.py --check` current; `validate_dashboard.py`
+   1509 passed / 0 failed; `tests/v3` **126 tests, 0 failures** (PR #24: 114);
+   `ha_validate.sh` passed, 470 warnings as on PR #24. Hashes are in the gate document's
+   V3-030 section.
+7. **Not done here:** the register has no row for PR #24, #25 or #32. Writing it from a
+   V3 branch needs the owner's approval (TASK-016).
+8. **Rebased onto the Route B build, 28/11/26.** PR #31 merged PR #24, #26 and #29 into
+   `feature/casaray-v3-build` at 15:15 on 27/11, six minutes before PR #32 was opened
+   against PR #24's branch. Its later fetch had not been made, so that was missed at the
+   time. The build was merged in (`0f80be7`) and PR #32 retargeted at it.
+   - **Conflicts.** This log and Home's comments only. Both sides had chosen two-row
+     people and occupancy. The generated Cantonese file was rebuilt.
+   - **Re-measured**, because V3-028 had moved the weather card out of Right now.
+     Three viewports (1180 × 820, 924 × 764, 390 × 844), four locales, simulated.
+     - Taken as merged: the Right now | Who's home gap was 81 px on the wall.
+     - Solar expected today **back in Right now**, where the 14/09 render has it, closes
+       that gap to 14 px. V3-023 had moved it out only because Right now ran tall.
+     - With Solar back, Climate now's two balancing tiles from V3-022 overshot Energy
+       now (Cantonese, 57 px), so **they are dropped**. Ray's FP300 is no longer added.
+
+     | Home | Route B build | With V3-030 |
+     |---|---|---|
+     | Wall page, yue / en | 3,152 / 3,173 px | 2,953 / 2,996 px |
+     | Phone page, yue / en | 5,263 / 5,263 px | 4,874 / 4,917 px |
+     | Wall gaps, yue (rooms · right now · energy) | 0 · 28 · 4 px | 21 · 14 · 10 px |
+     | Wall gaps, en | 0 · 28 · 26 px | 43 · 14 · 32 px |
+
+     The trade is still a shorter Home for a larger Rooms | Shopping gap (21 px in
+     Cantonese, 43 px in English). It is smaller now than on PR #24's base.
+   - **Tests adjusted for what Route B changed, not loosened.**
+     - The camera-safety test allows V3-028's Navbar "More" popup only as plain url, icon
+       and label navigation entries.
+     - The camera test pins both frontend behaviours for a missing camera entity, and
+       that Camera health still names the camera.
+   - **Entity audit against the build (`32af19e`), all four locales:** no view or entity
+     added, removed or substituted.
+   - **Gates at `0f80be7`:** `--check` current; `validate_dashboard.py` 1754 passed /
+     0 failed; `tests/v3` **211 tests, 0 failures** (the build: 199); `ha_validate.sh`
+     passed, 492 warnings as on the build. Hashes: the gate document's V3-030 section.
 ## V3-029 · 21/11/26 · Clock Weather Card is Home's Weather band
 
 **Status:** owner instruction (21/11/26): "switch weather band to clock weather and i install
